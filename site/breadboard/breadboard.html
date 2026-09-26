@@ -90,6 +90,7 @@ tr.test[aria-selected="true"] td{background:var(--panel2)}
 td.mono{font-family:var(--mono)}
 .pass{color:var(--ok);font-weight:600}.fail{color:var(--bad);font-weight:600}
 .boardbox{position:relative}
+.boardhint{position:absolute;left:12px;right:12px;bottom:10px;text-align:center;font-size:13px;line-height:1.35;color:var(--muted);pointer-events:none;text-wrap:balance}
 .pop{position:absolute;z-index:2;width:236px;background:var(--panel);border:1px solid var(--ink);border-radius:8px;padding:10px 11px;display:flex;flex-direction:column;gap:7px;box-shadow:0 6px 22px rgba(0,0,0,.28)}
 .pop.dock{position:static;width:auto;border:0;border-top:1px solid var(--line);border-radius:0;box-shadow:none}
 .pop .ph{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
@@ -139,7 +140,7 @@ footer code{font-family:var(--mono);font-size:12px}
 
     <section class="boardcol">
       <div class="toolbar" id="palette" role="group"></div>
-      <div class="canvasbox boardbox" id="boardbox"><canvas id="board" aria-label="Breadboard"></canvas><div class="pop" id="pop" hidden></div></div>
+      <div class="canvasbox boardbox" id="boardbox"><canvas id="board" aria-label="Breadboard"></canvas><div class="boardhint" id="boardhint" hidden></div><div class="pop" id="pop" hidden></div></div>
       <div class="rastercap"><span id="rastercap"></span><span data-i="rasterhint"></span></div>
       <div class="canvasbox"><canvas id="raster" aria-label="Impulse raster"></canvas></div>
     </section>
@@ -276,9 +277,9 @@ const FUTURE = ["pace","dofa","nora","musc"];
 // ---------- state ----------
 const W=760, H=420, R=19;
 let lang="en", cur=0, sel=null, selTest=0;
-let circuits={}, best={}, hintsUsed={}, stash={}, solSeen={}, solAsk=false;
-function store(){ try{ localStorage.setItem("bb20w", JSON.stringify({lang,cur,circuits,best,hintsUsed,stash,solSeen})); }catch(e){} }
-try{ const s=JSON.parse(localStorage.getItem("bb20w")||"null"); if(s){ lang=s.lang||lang; cur=s.cur||0; circuits=s.circuits||{}; best=s.best||{}; hintsUsed=s.hintsUsed||{}; stash=s.stash||{}; solSeen=s.solSeen||{}; } else { lang=(navigator.language||"").toLowerCase().startsWith("ru")?"ru":"en"; } }catch(e){ lang=(navigator.language||"").toLowerCase().startsWith("ru")?"ru":"en"; }
+let circuits={}, best={}, hintsUsed={}, stash={}, solSeen={}, solAsk=false, wired=false;
+function store(){ try{ localStorage.setItem("bb20w", JSON.stringify({lang,cur,circuits,best,hintsUsed,stash,solSeen,wired})); }catch(e){} }
+try{ const s=JSON.parse(localStorage.getItem("bb20w")||"null"); if(s){ lang=s.lang||lang; cur=s.cur||0; circuits=s.circuits||{}; best=s.best||{}; hintsUsed=s.hintsUsed||{}; stash=s.stash||{}; solSeen=s.solSeen||{}; wired=!!s.wired; } else { lang=(navigator.language||"").toLowerCase().startsWith("ru")?"ru":"en"; } }catch(e){ lang=(navigator.language||"").toLowerCase().startsWith("ru")?"ru":"en"; }
 if(cur<0||cur>=CH.length) cur=0;
 
 function fresh(ch){
@@ -486,13 +487,9 @@ function drawBoard(){
     bctx.beginPath(); bctx.arc(pp.x,pp.y,hot?7.5:6,0,Math.PI*2); bctx.fillStyle=hot?col:k.panel2; bctx.fill(); bctx.lineWidth=2; bctx.strokeStyle=col; bctx.stroke();
     if(selected){ bctx.setLineDash([4,4]); bctx.strokeStyle=k.ink; bctx.lineWidth=2; bctx.beginPath(); if(n.t==="in") roundRect(n.x-32,n.y-25,64,50,9); else bctx.arc(n.x,n.y,(n.t==="out"?R+5:R)+10,0,Math.PI*2); bctx.stroke(); bctx.setLineDash([]); }
   });
-  drawFirstHint(k);
+  drawFirstHint();
 }
-function drawFirstHint(k){
-  if(circ().wires.length) return; const L=S[lang]; bctx.fillStyle=k.muted; bctx.font=`500 13px ${getComputedStyle(document.body).getPropertyValue("--sans")||"sans-serif"}`;
-  bctx.textAlign="center"; bctx.textBaseline="alphabetic"; wrapText(L.firsthint, W/2, H-38, W-160, 17);
-}
-function wrapText(t,x,y,maxw,lh){ const words=t.split(" "); let line="", lines=[]; words.forEach(w=>{ const tt=line?line+" "+w:w; if(bctx.measureText(tt).width>maxw&&line){ lines.push(line); line=w; } else line=tt; }); lines.push(line); lines.forEach((l,i)=>bctx.fillText(l,x,y+i*lh)); }
+function drawFirstHint(){ const h=$("boardhint"); h.hidden=wired; if(!wired) h.textContent=S[lang].firsthint; }
 function portPos(n){ const r=n.t==="in"?24:n.t==="out"?R+5:R; return {x:n.x+r+8, y:n.y}; }
 function roundRect(x,y,w,h,r){ bctx.beginPath(); bctx.moveTo(x+r,y); bctx.arcTo(x+w,y,x+w,y+h,r); bctx.arcTo(x+w,y+h,x,y+h,r); bctx.arcTo(x,y+h,x,y,r); bctx.arcTo(x,y,x+w,y,r); bctx.closePath(); }
 
@@ -521,13 +518,16 @@ function drawRaster(){
 function pos(e){ const r=board.getBoundingClientRect(); const s=r.width/W; return {x:(e.clientX-r.left)/s, y:(e.clientY-r.top)/s}; }
 const snap=v=>Math.round(v/20)*20;
 function nodeAt(p){ const c=circ(); for(let i=c.nodes.length-1;i>=0;i--){ const n=c.nodes[i]; if(n.t==="in"? Math.abs(p.x-n.x)<=26&&Math.abs(p.y-n.y)<=19 : Math.hypot(p.x-n.x,p.y-n.y)<=R+6) return n; } return null; }
-function wireAt(p){ const c=circ(); let bestW=null, bd=8; c.wires.forEach(wr=>{ const a=nodeById(c,wr.f), b=nodeById(c,wr.to); if(!a||!b) return; const dx=b.x-a.x, dy=b.y-a.y, L2=dx*dx+dy*dy||1; let t=((p.x-a.x)*dx+(p.y-a.y)*dy)/L2; t=Math.max(0,Math.min(1,t)); const d=Math.hypot(p.x-(a.x+t*dx),p.y-(a.y+t*dy)); if(d<bd){bd=d;bestW=wr;} }); return bestW; }
+function wireAt(p){ const c=circ(); let bestW=null, bd=Math.max(8,hitR(10)); c.wires.forEach(wr=>{ const a=nodeById(c,wr.f), b=nodeById(c,wr.to); if(!a||!b) return; const dx=b.x-a.x, dy=b.y-a.y, L=Math.hypot(dx,dy)||1, L2=L*L; let t=((p.x-a.x)*dx+(p.y-a.y)*dy)/L2; t=Math.max(0,Math.min(1,t)); let d=Math.hypot(p.x-(a.x+t*dx),p.y-(a.y+t*dy));
+    const lx=(a.x+b.x)/2-dy/L*12, ly=(a.y+b.y)/2+dx/L*12; if(Math.abs(p.x-lx)<=34&&Math.abs(p.y-ly)<=10) d=Math.min(d,1); if(d<bd){bd=d;bestW=wr;} }); return bestW; }
 function addNeuron(t,p){ const c=circ(), ch=CH[cur]; if(!ch.allowed.includes(t)) return; const id="n"+(c.next++); const x=Math.min(W-40,Math.max(40,snap(p.x))), y=Math.min(H-30,Math.max(30,snap(p.y))); c.nodes.push({id,t,x,y,tau:5,th:1}); sel={kind:"node",id}; renderResults(); }
 function freeSpot(){ const c=circ(); for(const y of [220,140,300,80,360]) for(const x of [380,260,500,200,560,320,440]) if(c.nodes.every(n=>Math.hypot(n.x-x,n.y-y)>=70)) return {x,y}; return {x:380,y:220}; }
 function removeSel(){ const c=circ(); if(!sel) return; if(sel.kind==="node"){ const n=nodeById(c,sel.id); if(!n||n.t==="in"||n.t==="out") return; c.nodes=c.nodes.filter(x=>x.id!==n.id); c.wires=c.wires.filter(w=>w.f!==n.id&&w.to!==n.id); } else c.wires=c.wires.filter(w=>w.id!==sel.id); sel=null; renderResults(); }
 // hit radius in board units: at least 12 CSS px so ports stay usable on a phone
 function hitR(px){ const s=board.getBoundingClientRect().width/W; return Math.max(px*0.75, px/s); }
-function portAt(p){ const c=circ(), r=hitR(14); for(let i=c.nodes.length-1;i>=0;i--){ const n=c.nodes[i], pp=portPos(n); if(Math.hypot(p.x-pp.x,p.y-pp.y)<=r) return n; } return null; }
+function inBody(n,p){ return n.t==="in"? Math.abs(p.x-n.x)<=24&&Math.abs(p.y-n.y)<=17 : Math.hypot(p.x-n.x,p.y-n.y)<=(n.t==="out"?R+5:R); }
+function portAt(p){ const c=circ(), r=hitR(14); if(c.nodes.some(n=>inBody(n,p))) return null;
+  for(let i=c.nodes.length-1;i>=0;i--){ const n=c.nodes[i], pp=portPos(n); if(Math.hypot(p.x-pp.x,p.y-pp.y)<=r) return n; } return null; }
 board.addEventListener("pointerdown",e=>{ const p=pos(e), pn=portAt(p), n=pn?null:nodeAt(p), wr=(pn||n)?null:wireAt(p); board.setPointerCapture(e.pointerId);
   if(pn){ const pp=portPos(pn); drag={wireFrom:pn}; preview={x1:pp.x,y1:pp.y,x2:p.x,y2:p.y}; drawBoard(); return; }
   if(n){ sel={kind:"node",id:n.id}; drag={node:n,moved:false}; } else if(wr){ sel={kind:"wire",id:wr.id}; } else sel=null;
@@ -540,8 +540,8 @@ board.addEventListener("pointermove",e=>{ const p=pos(e);
   else if(drag.wireFrom){ preview.x2=p.x; preview.y2=p.y; const t=nodeAt(p); hover={port:drag.wireFrom.id,target:t&&t.id}; drawBoard(); } });
 board.addEventListener("pointerup",e=>{ const p=pos(e);
   if(drag&&drag.wireFrom){ const t=nodeAt(p), c=circ(), f=drag.wireFrom;
-    if(t&&t!==f&&t.t!=="in"&&!c.wires.some(w=>w.f===f.id&&w.to===t.id)){ const id="w"+(c.next++); c.wires.push({id,f:f.id,to:t.id,w:1.2,d:1}); sel={kind:"wire",id}; } preview=null; drag=null; hover=null; renderResults(); return; }
-  if(drag&&drag.moved){ store(); } drag=null; });
+    if(t&&t!==f&&t.t!=="in"&&!c.wires.some(w=>w.f===f.id&&w.to===t.id)){ const id="w"+(c.next++); c.wires.push({id,f:f.id,to:t.id,w:1.2,d:1}); sel={kind:"wire",id}; wired=true; } preview=null; drag=null; hover=null; renderResults(); return; }
+  if(drag&&drag.moved){ store(); $("sharecode").value=shareLink(); board.style.cursor="grab"; } drag=null; });
 board.addEventListener("pointerleave",()=>{ if(!drag&&hover){ hover=null; drawBoard(); } });
 board.addEventListener("dblclick",e=>{ const p=pos(e); if(!nodeAt(p)&&!wireAt(p)&&!portAt(p)&&CH[cur].allowed.includes("glut")) addNeuron("glut",p); });
 document.addEventListener("keydown",e=>{ if(e.target instanceof HTMLInputElement) return; if((e.key==="Delete"||e.key==="Backspace")&&sel){ e.preventDefault(); removeSel(); } else if(e.key==="Escape"&&sel){ sel=null; renderResults(); } });
