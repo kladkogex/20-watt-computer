@@ -19,6 +19,25 @@
 
 Наденьте очки, сдвигающие картинку вбок, и бросайте дротики. Первые броски уходят в сторону, но за десятки попыток вы приспособитесь. Снимите очки --- и снова промахи, теперь в другую сторону. Интересное начинается дальше. Опыты хорошо описываются двумя учениками сразу: быстрый быстро учится и быстро забывает, медленный учится медленно, но помнит долго. Если после долгого приспособления коротко переучиться обратно, общая поправка вернётся к нулю --- но старое умение затем само частично всплывёт: быстрый ученик забыл, а медленный помнит. Модель с одним учеником так не умеет, а люди --- умеют.
 
+\pencilfig{115}{%
+% figures/tworate_*.dat from models/motor_learning.py: adapt 200 throws, reverse until the sum is back to zero, then no errors at all
+\begin{scope}[x=0.026cm, y=1.45cm]
+\fill[pcGray, opacity=0.08] (220,-1.1) rectangle (226,1.1);
+\draw[pen] (0,0) -- (340,0);
+\draw[pcGray, line width=0.4pt] plot file {figures/tworate_p.dat};
+\draw[penlite=pcAmber] plot file {figures/tworate_fast.dat};
+\draw[penlite=pcBlue] plot file {figures/tworate_slow.dat};
+\draw[pcGray!40!black, line width=1.1pt] plot file {figures/tworate_net.dat};
+\draw[pcGray, densely dashed, line width=0.4pt] (226,-1.1) -- (226,1.1);
+\end{scope}
+\node[lbl, anchor=south] at (3.1,1.47) {очки надеты};
+\node[lbl, anchor=north west, align=left] at (6.3,-0.55) {коротко\\переучились};
+\node[lbl, anchor=south west] at (6.0,1.47) {ошибок нет};
+\node[lbl, text=pcBlue, anchor=north] at (4.4,0.8) {медленный};
+\node[lbl, text=pcAmber!80!black, anchor=south west] at (1.15,0.5) {быстрый};
+\node[lbl, text=pcGray!40!black, anchor=south] at (7.7,0.95) {сумма всплыла};
+}{Поправка двух учеников в модели. После короткого переучивания сумма на нуле, но медленный помнит старое, и оно само всплывает.}
+
 Зачем два ученика? По гипотезе, это тот же рецепт, что у штурмана из девятой главы: мир меняется и быстро, и медленно, и разумно следить за обоими.
 
 \fullversion{15}
