@@ -1,0 +1,27 @@
+# The 20-Watt Computer · Компьютер на 20 ваттах
+
+**How the Brain Computes — A Quantitative Approach for Engineers**
+**Как вычисляет мозг: количественный подход для инженеров**
+
+A free textbook that treats the brain as an engineer would treat a machine:
+circuits, signals, codes, learning rules, energy. Every number in the book
+comes from a small, runnable simulation.
+
+| Language | Source | PDF |
+|---|---|---|
+| Русский | [`ru/`](ru/) | [`ru/20-watt-computer-ru.pdf`](ru/20-watt-computer-ru.pdf) |
+| English | [`en/`](en/) | in progress |
+
+## Layout
+
+- `ru/`, `en/` — one folder per language: `main.tex` + `chapters/`
+- `figures/` — shared TikZ icons and data files used by every edition
+- `models/` — Python models behind the book's figures and numbers
+- `site/` — the interactive website with a language switcher
+
+## Build
+
+Requires Docker (uses the `texlive/texlive` image).
+
+    make ru          # build the Russian PDF
+    make models      # regenerate simulation data in figures/ (acet_memory.py needs numpy)
