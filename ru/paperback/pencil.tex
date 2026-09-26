@@ -1,0 +1,35 @@
+% Minimal colour-pencil illustrations for the paperback edition.
+% \pencilfig{seed}{tikz drawing}{caption}: a small centred drawing (no float, no number) with an italic caption.
+% Lines are drawn with a slight hand wobble (random steps, fixed seed per drawing so every build is identical)
+% and a faint second stroke, fills are a light "pencil wash".
+\usepackage{tikz}
+\usetikzlibrary{decorations.pathmorphing,arrows.meta,calc}
+\definecolor{pcBlue}{HTML}{4A72B8}
+\definecolor{pcRed}{HTML}{C8553D}
+\definecolor{pcAmber}{HTML}{D39A2E}
+\definecolor{pcGreen}{HTML}{5E9B63}
+\definecolor{pcGray}{HTML}{5F6368}
+\definecolor{pcViolet}{HTML}{8A6BB8}
+\tikzset{
+  pen/.style={draw=#1, line width=0.6pt, line cap=round, line join=round,
+    decorate, decoration={random steps, segment length=1.8pt, amplitude=0.3pt},
+    preaction={draw=#1, draw opacity=0.3, line width=1.0pt,
+      decorate, decoration={random steps, segment length=3pt, amplitude=0.5pt}}},
+  pen/.default=pcGray,
+  dotpen/.style={draw=#1, line width=0.6pt}, % small circles: the wobble breaks on radii below ~0.15 cm
+  dotpen/.default=pcGray,
+  penlite/.style={draw=#1, line width=0.6pt, line cap=round, preaction={draw=#1, draw opacity=0.3, line width=1.0pt}}, % short arcs, rounded corners
+  penlite/.default=pcGray,
+  wash/.style={fill=#1, fill opacity=0.22},
+  arr/.style={draw=#1, line width=0.6pt, line cap=round, -{Stealth[length=4pt]}},
+  arr/.default=pcGray,
+  lbl/.style={font=\scriptsize\itshape, text=pcGray},
+}
+\newcommand{\pencilfig}[3]{%
+  \par\medskip
+  \begin{center}
+    \pgfmathsetseed{#1}%
+    \begin{tikzpicture}[>=Stealth]#2\end{tikzpicture}\par\smallskip
+    \begin{minipage}{0.86\linewidth}\centering\small\itshape #3\end{minipage}
+  \end{center}
+  \medskip}
