@@ -11,7 +11,6 @@ comes from a small, runnable simulation.
 |---|---|---|
 | Русский | [`ru/`](ru/) | [`ru/20-watt-computer-ru.pdf`](ru/20-watt-computer-ru.pdf) |
 | English | [`en/`](en/) | in progress |
-| Русский, популярная версия («коротко и просто») | [`ru/paperback/`](ru/paperback/) | `make ru-paperback` → `ru/20-watt-computer-ru-paperback.pdf` |
 
 ## Layout
 
@@ -26,7 +25,6 @@ comes from a small, runnable simulation.
 Requires Docker (uses the `texlive/texlive` image).
 
     make ru          # build the Russian PDF
-    make ru-paperback  # build the popular pocket-size edition (one short chapter per full chapter)
     make models      # regenerate simulation data in figures/ (acet_memory.py needs numpy)
 
 ## License

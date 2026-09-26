@@ -5,7 +5,7 @@ set -euo pipefail
 rm -rf _site
 mkdir -p _site/breadboard _site/pdf
 cp site/index.html _site/
-cp ru/20-watt-computer-ru.pdf ru/20-watt-computer-ru-paperback.pdf _site/pdf/
+cp ru/20-watt-computer-ru.pdf _site/pdf/
 # breadboard.html is a page fragment (title, styles, markup, script); wrap it into a full document
 {
   printf '<!doctype html>\n<html lang="ru">\n<head>\n<meta charset="utf-8">\n'
