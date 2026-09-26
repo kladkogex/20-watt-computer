@@ -1,0 +1,491 @@
+<title>Neuron Breadboard</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root{
+  --bg:#EDF1F5; --panel:#F8FAFC; --panel2:#FFFFFF; --grid:#DDE4EC; --grid2:#C8D2DD;
+  --ink:#15202B; --muted:#586677; --line:#C6D0DB;
+  --glut:#2F5DA8; --gaba:#BF3A2B; --spike:#C98A06; --inn:#4B5563;
+  --ok:#2E7D4F; --bad:#B42318; --okbg:#E3F2E9; --badbg:#FBE7E5;
+  --sans:"IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --cond:"IBM Plex Sans Condensed", "Arial Narrow", system-ui, sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#10161D; --panel:#161E27; --panel2:#1B2531; --grid:#1C2631; --grid2:#263444;
+    --ink:#E4E9EF; --muted:#93A1B1; --line:#2E3C4B;
+    --glut:#86ACEA; --gaba:#F08C7F; --spike:#F2C14E; --inn:#A9B4C2;
+    --ok:#62C48F; --bad:#F2806F; --okbg:#173326; --badbg:#3A1C19;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#10161D; --panel:#161E27; --panel2:#1B2531; --grid:#1C2631; --grid2:#263444;
+  --ink:#E4E9EF; --muted:#93A1B1; --line:#2E3C4B;
+  --glut:#86ACEA; --gaba:#F08C7F; --spike:#F2C14E; --inn:#A9B4C2;
+  --ok:#62C48F; --bad:#F2806F; --okbg:#173326; --badbg:#3A1C19;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:15px/1.5 var(--sans);padding-inline:16px;padding-block:14px 28px}
+.wrap{max-width:1320px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+header.top{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:10px}
+.brand{font:600 12px/1 var(--cond);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+h1{font:700 30px/1.1 var(--cond);margin:4px 0 0;text-wrap:balance}
+h1 .watt{color:var(--spike)}
+.langs{display:flex;gap:6px}
+button{font:inherit;color:inherit;cursor:pointer}
+.chip{border:1px solid var(--line);background:var(--panel);border-radius:6px;padding:5px 10px;font:600 13px/1.2 var(--cond);letter-spacing:.04em}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.chip:focus-visible,.tool:focus-visible,.ch:focus-visible,input:focus-visible{outline:2px solid var(--spike);outline-offset:2px}
+.bench{display:grid;grid-template-columns:250px minmax(0,1fr) 290px;gap:14px;align-items:start}
+@media (max-width:1060px){.bench{grid-template-columns:minmax(0,1fr)}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.eyebrow{font:600 11px/1 var(--cond);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.chlist{display:flex;flex-direction:column;gap:6px}
+.ch{display:grid;grid-template-columns:22px 1fr auto;gap:8px;align-items:center;text-align:left;border:1px solid var(--line);background:var(--panel2);border-radius:6px;padding:7px 9px}
+.ch .num{font:500 12px var(--mono);color:var(--muted)}
+.ch .nm{font-weight:500;font-size:14px;line-height:1.25}
+.ch .st{font:600 11px var(--cond);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.ch .st.done{color:var(--ok)}
+.ch[aria-current="true"]{border-color:var(--ink);box-shadow:inset 3px 0 0 var(--spike)}
+.task h2{font:700 20px/1.2 var(--cond);margin:0;text-wrap:balance}
+.task p{margin:0;color:var(--ink)}
+.task .hint{color:var(--muted);font-size:13.5px}
+.parts{display:flex;flex-wrap:wrap;gap:6px}
+.part{font:600 12px/1 var(--cond);letter-spacing:.05em;padding:5px 7px;border-radius:4px;border:1px solid var(--line);color:var(--muted)}
+.part.on{color:var(--ink)}
+.part .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;vertical-align:0}
+.boardcol{display:flex;flex-direction:column;gap:10px;min-width:0}
+.toolbar{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.tool{border:1px solid var(--line);background:var(--panel);border-radius:6px;padding:6px 10px;font:600 13px/1.2 var(--cond);letter-spacing:.03em;display:inline-flex;gap:6px;align-items:center}
+.tool[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.tool:disabled{opacity:.45;cursor:not-allowed}
+.tool .sw{width:10px;height:10px;border-radius:50%}
+.lock{font:500 11px var(--mono);opacity:.8}
+.spacer{flex:1}
+.canvasbox{background:var(--panel2);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+canvas{display:block;width:100%;touch-action:none}
+#board{aspect-ratio:760/420;cursor:crosshair}
+.rastercap{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+.score{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.metric{display:flex;flex-direction:column;gap:2px}
+.metric b{font:500 22px/1.1 var(--mono);font-variant-numeric:tabular-nums}
+.metric span{font:600 11px/1.2 var(--cond);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.status{border-radius:6px;padding:8px 10px;font-weight:600;font-size:14px}
+.status.ok{background:var(--okbg);color:var(--ok)}
+.status.bad{background:var(--badbg);color:var(--bad)}
+.record{font-size:13px;color:var(--muted)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{font:600 11px var(--cond);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-align:left;padding:4px 4px;border-bottom:1px solid var(--line)}
+td{padding:5px 4px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+tr.test{cursor:pointer}
+tr.test[aria-selected="true"] td{background:var(--panel2)}
+td.mono{font-family:var(--mono)}
+.pass{color:var(--ok);font-weight:600}.fail{color:var(--bad);font-weight:600}
+.insp{display:flex;flex-direction:column;gap:8px}
+.field{display:grid;grid-template-columns:1fr 92px;gap:8px;align-items:center;font-size:14px}
+.field input{width:100%;font:500 14px var(--mono);padding:5px 7px;border:1px solid var(--line);border-radius:5px;background:var(--panel2);color:var(--ink)}
+.small{font-size:13px;color:var(--muted)}
+.share{display:flex;flex-direction:column;gap:6px}
+.share input{width:100%;font:12px var(--mono);padding:6px 7px;border:1px solid var(--line);border-radius:5px;background:var(--panel2);color:var(--ink)}
+.row{display:flex;gap:6px;flex-wrap:wrap}
+.btn{border:1px solid var(--ink);background:var(--ink);color:var(--bg);border-radius:6px;padding:6px 11px;font:600 13px/1.2 var(--cond);letter-spacing:.04em}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+footer{font-size:12.5px;color:var(--muted);border-top:1px solid var(--line);padding-top:10px}
+footer code{font-family:var(--mono);font-size:12px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <div class="brand" data-i="brand"></div>
+      <h1 id="title"></h1>
+    </div>
+    <div class="langs" role="group" aria-label="Language">
+      <button class="chip" id="lang-ru" aria-pressed="false">RU</button>
+      <button class="chip" id="lang-en" aria-pressed="false">EN</button>
+    </div>
+  </header>
+
+  <div class="bench">
+    <aside class="panel" aria-labelledby="chal-h">
+      <div class="eyebrow" id="chal-h" data-i="challenges"></div>
+      <div class="chlist" id="chlist"></div>
+      <div class="task" id="task" style="display:flex;flex-direction:column;gap:8px"></div>
+      <div class="eyebrow" data-i="parts"></div>
+      <div class="parts" id="parts"></div>
+    </aside>
+
+    <section class="boardcol">
+      <div class="toolbar" id="toolbar"></div>
+      <div class="canvasbox"><canvas id="board" aria-label="Breadboard"></canvas></div>
+      <div class="rastercap"><span id="rastercap"></span><span data-i="rasterhint"></span></div>
+      <div class="canvasbox"><canvas id="raster" aria-label="Impulse raster"></canvas></div>
+    </section>
+
+    <aside class="panel">
+      <div class="eyebrow" data-i="score"></div>
+      <div class="status" id="status"></div>
+      <div class="score">
+        <div class="metric"><b id="m-neu">0</b><span data-i="neurons"></span></div>
+        <div class="metric"><b id="m-imp">0</b><span data-i="impulses"></span></div>
+        <div class="metric"><b id="m-en">0</b><span data-i="energy"></span></div>
+      </div>
+      <div class="record" id="record"></div>
+      <table>
+        <thead><tr><th data-i="test"></th><th data-i="expect"></th><th data-i="got"></th><th></th></tr></thead>
+        <tbody id="tests"></tbody>
+      </table>
+      <div class="eyebrow" data-i="inspector"></div>
+      <div class="insp" id="insp"></div>
+      <div class="eyebrow" data-i="share"></div>
+      <div class="share">
+        <div class="row">
+          <button class="btn" id="copy" type="button"></button>
+          <button class="btn ghost" id="reset" type="button"></button>
+        </div>
+        <label class="small" for="sharecode" data-i="sharelbl"></label>
+        <input id="sharecode" readonly>
+        <label class="small" for="loadcode" data-i="loadlbl"></label>
+        <div class="row" style="flex-wrap:nowrap">
+          <input id="loadcode" placeholder="bb.…">
+          <button class="btn ghost" id="load" type="button"></button>
+        </div>
+        <div class="small" id="sharemsg" role="status"></div>
+      </div>
+    </aside>
+  </div>
+
+  <footer id="foot"></footer>
+</div>
+
+<script>
+(function(){
+"use strict";
+// ---------- strings ----------
+const S = {
+  ru:{ brand:"Компьютер на 20 ваттах · глава 2–3", title:'Макетная плата <span class="watt">·</span> собери машину сам',
+    challenges:"Задачи", parts:"Детали", score:"Результат", neurons:"нейронов", impulses:"имп./ответ", energy:"пДж/ответ",
+    test:"Тест", expect:"Нужно", got:"Вышло", inspector:"Свойства", share:"Поделиться",
+    copy:"Скопировать ссылку", reset:"Сбросить схему", sharelbl:"Ссылка на вашу схему", loadlbl:"Открыть чужую схему по коду", load:"Открыть",
+    copied:"Ссылка скопирована.", copyfail:"Не удалось скопировать: выделите ссылку в поле и скопируйте вручную.", loaded:"Схема открыта.", badcode:"Код не распознан: проверьте, что он скопирован целиком.",
+    rasterhint:"Нажмите на строку теста, чтобы увидеть его импульсы",
+    raster:(n)=>`Импульсы в тесте «${n}» и напряжение на выходе`,
+    tools:{move:"Двигать", glut:"ГЛУТ", gaba:"ГАМК", wire:"Провод", del:"Удалить"},
+    locked:{gaba:"гл. 3", pace:"гл. 5", dofa:"гл. 6", nora:"гл. 8", musc:"гл. 13"},
+    partnames:{glut:"ГЛУТ", gaba:"ГАМК", pace:"Ритмоводитель", dofa:"ДОФА", nora:"НОРА", musc:"Мышца"},
+    pass:(p,n)=>`Пройдено ${p} из ${n}`, solved:"Решено!", forbidden:(t)=>`Деталь ${t} в этой задаче не разрешена`,
+    record:(r,n)=> n<r? `Меньше рекорда книги (${r}) — отличный результат!` : n===r? `Как рекорд книги: ${r} ${plural(r)}.` : `Рекорд книги: ${r} ${plural(r)}. Можно проще.`,
+    recordOnly:(r)=>`Рекорд книги: ${r} ${plural(r)}.`,
+    best:(n,i)=>`Ваш лучший результат: ${n} ${plural(n)}, ${i} имп./ответ`,
+    noSel:"Выберите нейрон или провод на плате. Двойной щелчок по пустому месту ставит ГЛУТ-нейрон.",
+    tau:"Постоянная времени τ, мс", th:"Порог θ", w:"Вес |w|", d:"Задержка d, мс", sign:(s)=> s<0?"Провод тормозящий: отправитель — ГАМК.":"Провод возбуждающий.",
+    inputnode:"Вход задачи: подаёт импульсы по тестам. Его нельзя удалить.", outnode:"Выходной ГЛУТ-нейрон: его импульсы — ответ схемы.",
+    yes:"да", no:"нет",
+    foot:'Модель — интегрирующий нейрон с утечкой из главы 2: <code>τ dV/dt = −V + τ Σ w δ(t − t<sub>j</sub> − d<sub>j</sub>)</code>, импульс при V ≥ θ, сброс в ноль, 1 мс невосприимчивости. Знак провода задаёт отправитель (правило Дейла, гл. 1). Энергия: около 10⁻¹⁰ Дж = 100 пДж на импульс (гл. 4). Схема хранится в вашем браузере.'
+  },
+  en:{ brand:"The 20-Watt Computer · chapters 2–3", title:'Neuron Breadboard <span class="watt">·</span> build the machine yourself',
+    challenges:"Challenges", parts:"Parts", score:"Result", neurons:"neurons", impulses:"imp./answer", energy:"pJ/answer",
+    test:"Test", expect:"Want", got:"Got", inspector:"Properties", share:"Share",
+    copy:"Copy link", reset:"Reset circuit", sharelbl:"Link to your circuit", loadlbl:"Open someone else's circuit by code", load:"Open",
+    copied:"Link copied.", copyfail:"Couldn't copy: select the link in the field and copy it by hand.", loaded:"Circuit opened.", badcode:"Code not recognized: check that it was copied in full.",
+    rasterhint:"Click a test row to see its impulses",
+    raster:(n)=>`Impulses in test “${n}” and output voltage`,
+    tools:{move:"Move", glut:"ГЛУТ", gaba:"ГАМК", wire:"Wire", del:"Delete"},
+    locked:{gaba:"ch. 3", pace:"ch. 5", dofa:"ch. 6", nora:"ch. 8", musc:"ch. 13"},
+    partnames:{glut:"ГЛУТ (glutamate)", gaba:"ГАМК (GABA)", pace:"Pacemaker", dofa:"ДОФА (dopamine)", nora:"НОРА (noradrenaline)", musc:"Muscle"},
+    pass:(p,n)=>`Passed ${p} of ${n}`, solved:"Solved!", forbidden:(t)=>`Part ${t} is not allowed in this challenge`,
+    record:(r,n)=> n<r? `Fewer than the book's record (${r}) — excellent!` : n===r? `Matches the book's record: ${r} neuron${r>1?"s":""}.` : `Book's record: ${r} neuron${r>1?"s":""}. It can be simpler.`,
+    recordOnly:(r)=>`Book's record: ${r} neuron${r>1?"s":""}.`,
+    best:(n,i)=>`Your best: ${n} neuron${n>1?"s":""}, ${i} imp./answer`,
+    noSel:"Select a neuron or a wire on the board. Double-click an empty spot to place a ГЛУТ neuron.",
+    tau:"Time constant τ, ms", th:"Threshold θ", w:"Weight |w|", d:"Delay d, ms", sign:(s)=> s<0?"Inhibitory wire: the sender is ГАМК.":"Excitatory wire.",
+    inputnode:"Challenge input: fires impulses according to the tests. It can't be deleted.", outnode:"Output ГЛУТ neuron: its impulses are the circuit's answer.",
+    yes:"yes", no:"no",
+    foot:'Model: the leaky integrator of chapter 2, <code>τ dV/dt = −V + τ Σ w δ(t − t<sub>j</sub> − d<sub>j</sub>)</code>, an impulse when V ≥ θ, reset to zero, 1 ms refractory. The wire\'s sign is set by the sender (Dale\'s rule, ch. 1). Energy: about 10⁻¹⁰ J = 100 pJ per impulse (ch. 4). Your circuit is kept in your browser.'
+  }
+};
+function plural(n){ const m=n%10, h=n%100; if(m===1&&h!==11) return "нейрон"; if(m>=2&&m<=4&&(h<10||h>=20)) return "нейрона"; return "нейронов"; }
+
+// ---------- challenges ----------
+const T = (ru,en)=>({ru,en});
+const CH = [
+ {id:"or", allowed:["glut"], record:1,
+  title:T("ИЛИ","OR"),
+  desc:T("Выход должен выдать импульс, если импульс пришёл на A или на B.","The output must fire if an impulse arrives on A or on B."),
+  hint:T("Один импульс должен поднимать выход выше порога: w ≥ θ (гл. 2).","One impulse must lift the output above threshold: w ≥ θ (ch. 2)."),
+  tests:[{n:T("только A","A only"),A:[5],B:[],e:1},{n:T("только B","B only"),A:[],B:[5],e:1},{n:T("A и B","A and B"),A:[5],B:[5],e:1},{n:T("тишина","silence"),A:[],B:[],e:0}],
+  start:[["A","OUT",1.2,1]]},
+ {id:"and", allowed:["glut"], record:1,
+  title:T("Совпадение: И во времени","Coincidence: AND in time"),
+  desc:T("Выход срабатывает, только если импульсы A и B пришли почти одновременно, в пределах нескольких миллисекунд.","The output fires only if impulses on A and B arrive almost together, within a few milliseconds."),
+  hint:T("Окно совпадения Δmax = τ·ln(w/(θ−w)), формула (2.2): подберите w и τ.","The coincidence window is Δmax = τ·ln(w/(θ−w)), eq. (2.2): tune w and τ."),
+  tests:[{n:T("вместе (0,5 мс)","together (0.5 ms)"),A:[5],B:[5.5],e:1},{n:T("врозь (10 мс)","apart (10 ms)"),A:[5],B:[15],e:0},{n:T("только A","A only"),A:[5],B:[],e:0},{n:T("только B","B only"),A:[],B:[5],e:0}],
+  start:[]},
+ {id:"veto", allowed:["glut","gaba"], record:2,
+  title:T("Запрет: A, но не при B","Veto: A but not B"),
+  desc:T("Выход срабатывает на A и молчит, когда вместе с A пришёл B.","The output fires for A and stays silent when B arrives together with A."),
+  hint:T("Смена знака стоит одного ГАМК-нейрона и одной задержки (гл. 3): торможение должно успеть раньше.","A sign change costs one ГАМК neuron and one delay (ch. 3): the inhibition must arrive first."),
+  tests:[{n:T("только A","A only"),A:[5],B:[],e:1},{n:T("только B","B only"),A:[],B:[5],e:0},{n:T("A и B вместе","A and B together"),A:[5],B:[5],e:0},{n:T("тишина","silence"),A:[],B:[],e:0}],
+  start:[]},
+ {id:"xor", allowed:["glut","gaba"], record:2,
+  title:T("Исключающее ИЛИ","XOR"),
+  desc:T("Выход срабатывает, если пришёл ровно один из импульсов, и молчит при обоих.","The output fires if exactly one impulse arrives, and stays silent for both."),
+  hint:T("В главе 3 XOR собран из пяти нейронов. Можно гораздо меньше.","Chapter 3 builds XOR from five neurons. You can do it with far fewer."),
+  tests:[{n:T("только A","A only"),A:[5],B:[],e:1},{n:T("только B","B only"),A:[],B:[5],e:1},{n:T("A и B вместе","A and B together"),A:[5],B:[5],e:0},{n:T("тишина","silence"),A:[],B:[],e:0}],
+  start:[]},
+ {id:"dir", allowed:["glut","gaba"], record:2,
+  title:T("Детектор направления","Direction detector"),
+  desc:T("Датчики A и B стоят рядом. Выход срабатывает при движении от B к A (B раньше на 5 мс) и молчит при движении от A к B.","Sensors A and B sit side by side. The output fires for motion from B to A (B first, by 5 ms) and stays silent for motion from A to B."),
+  hint:T("Схема рис. 3.1: возбуждение от B, торможение от A с задержкой, v* = Δx/d.","The circuit of Fig. 3.1: excitation from B, delayed inhibition from A, v* = Δx/d."),
+  tests:[{n:T("B → A","B → A"),A:[10],B:[5],e:1},{n:T("A → B","A → B"),A:[5],B:[10],e:0},{n:T("только A","A only"),A:[5],B:[],e:0}],
+  start:[]}
+];
+const FUTURE = ["pace","dofa","nora","musc"];
+
+// ---------- state ----------
+const W=760, H=420, R=19;
+let lang="en", cur=0, tool="move", sel=null, selTest=0;
+let circuits={}, best={};
+function store(){ try{ localStorage.setItem("bb20w", JSON.stringify({lang,cur,circuits,best})); }catch(e){} }
+try{ const s=JSON.parse(localStorage.getItem("bb20w")||"null"); if(s){ lang=s.lang||lang; cur=s.cur||0; circuits=s.circuits||{}; best=s.best||{}; } else { lang=(navigator.language||"").toLowerCase().startsWith("ru")?"ru":"en"; } }catch(e){ lang=(navigator.language||"").toLowerCase().startsWith("ru")?"ru":"en"; }
+if(cur<0||cur>=CH.length) cur=0;
+
+function fresh(ch){
+  const c={nodes:[{id:"A",t:"in",x:70,y:120},{id:"B",t:"in",x:70,y:300},{id:"OUT",t:"out",x:670,y:210,tau:5,th:1}],wires:[],next:1};
+  ch.start.forEach(([f,to,w,d])=>c.wires.push({id:"w"+(c.next++),f,to,w,d}));
+  return c;
+}
+function circ(){ const ch=CH[cur]; if(!circuits[ch.id]) circuits[ch.id]=fresh(ch); return circuits[ch.id]; }
+const nodeById=(c,id)=>c.nodes.find(n=>n.id===id);
+
+// ---------- simulator: leaky integrate-and-fire, continuous time (Euler dt = 0.05 ms) ----------
+function simulate(c, test){
+  const dt=0.05, TT=40, K=Math.round(TT/dt);
+  const neu=c.nodes.filter(n=>n.t!=="in"), idx=new Map(); neu.forEach((n,i)=>idx.set(n.id,i));
+  const V=new Float64Array(neu.length), refr=new Float64Array(neu.length).fill(-1);
+  const decay=neu.map(n=>Math.exp(-dt/Math.max(0.05,+n.tau||5)));
+  const spikes=new Map(c.nodes.map(n=>[n.id,[]])), q=new Map(), outs=new Map(c.nodes.map(n=>[n.id,[]]));
+  c.wires.forEach(w=>{ const s=nodeById(c,w.f); if(!s||!nodeById(c,w.to)) return; outs.get(w.f).push([w.to,(s.t==="gaba"?-1:1)*Math.abs(+w.w||0),Math.max(1,Math.round((+w.d||0)/dt))]); });
+  function emit(id,k){ spikes.get(id).push(k*dt); for(const [to,ww,s] of outs.get(id)){ const i=idx.get(to); if(i===undefined) continue; const kk=k+s; if(kk>K) continue; if(!q.has(kk)) q.set(kk,[]); q.get(kk).push([i,ww]); } }
+  const inSteps=[]; c.nodes.forEach(n=>{ if(n.t==="in") (test[n.id]||[]).forEach(ts=>inSteps.push([Math.round(ts/dt),n.id])); });
+  const iOut=idx.get("OUT"), trace=[];
+  for(let k=0;k<=K;k++){
+    const t=k*dt;
+    for(const [ks,id] of inSteps) if(ks===k) emit(id,k);
+    for(let i=0;i<neu.length;i++) V[i]*=decay[i];
+    const arr=q.get(k); if(arr) for(const [i,ww] of arr) if(t>=refr[i]) V[i]+=ww;
+    for(let i=0;i<neu.length;i++){
+      if(t<refr[i]){ V[i]=0; continue; }
+      if(V[i]>=(+neu[i].th||1)){ emit(neu[i].id,k); V[i]=0; refr[i]=t+1.0; }
+    }
+    if(k%4===0) trace.push(V[iOut]);
+  }
+  return {spikes,trace,dt:dt*4,T:TT};
+}
+function evaluate(){
+  const ch=CH[cur], c=circ();
+  const bad=c.nodes.find(n=>(n.t==="glut"||n.t==="gaba")&&!ch.allowed.includes(n.t));
+  const runs=ch.tests.map(tt=>simulate(c,tt));
+  let total=0; runs.forEach(r=>{ for(const [id,s] of r.spikes){ const n=nodeById(c,id); if(n&&n.t!=="in") total+=s.length; } });
+  const res=ch.tests.map((tt,i)=>{ const got=runs[i].spikes.get("OUT").length>0?1:0; return {got,ok:got===tt.e}; });
+  const neurons=c.nodes.filter(n=>n.t!=="in").length;
+  const imp=total/ch.tests.length;
+  const passed=res.filter(r=>r.ok).length, solved=!bad&&passed===res.length;
+  if(solved){ const b=best[ch.id]; if(!b||neurons<b.n||(neurons===b.n&&imp<b.i)) best[ch.id]={n:neurons,i:+imp.toFixed(2)}; }
+  return {runs,res,neurons,imp,passed,solved,bad};
+}
+
+// ---------- DOM ----------
+const $=id=>document.getElementById(id);
+const board=$("board"), raster=$("raster"), bctx=board.getContext("2d"), rctx=raster.getContext("2d");
+let state=null;
+function tok(){ const cs=getComputedStyle(document.documentElement); const g=k=>cs.getPropertyValue(k).trim(); return {ink:g("--ink"),muted:g("--muted"),grid:g("--grid"),grid2:g("--grid2"),line:g("--line"),glut:g("--glut"),gaba:g("--gaba"),spike:g("--spike"),inn:g("--inn"),panel2:g("--panel2"),ok:g("--ok"),bad:g("--bad")}; }
+const colorOf=(k,t)=> t==="gaba"?k.gaba : t==="in"?k.inn : k.glut;
+
+function renderStatic(){
+  const L=S[lang];
+  document.documentElement.lang=lang;
+  document.querySelectorAll("[data-i]").forEach(el=>{ el.textContent=L[el.dataset.i]; });
+  $("title").innerHTML=L.title; $("foot").innerHTML=L.foot;
+  $("lang-ru").setAttribute("aria-pressed",lang==="ru"); $("lang-en").setAttribute("aria-pressed",lang==="en");
+  $("copy").textContent=L.copy; $("reset").textContent=L.reset; $("load").textContent=L.load;
+  // challenge list
+  $("chlist").innerHTML="";
+  CH.forEach((ch,i)=>{ const b=document.createElement("button"); b.className="ch"; b.type="button"; b.setAttribute("aria-current",i===cur);
+    const done=!!best[ch.id];
+    b.innerHTML=`<span class="num">${i+1}</span><span class="nm">${ch.title[lang]}</span><span class="st ${done?"done":""}">${done?"✓ "+best[ch.id].n:""}</span>`;
+    b.onclick=()=>{ cur=i; sel=null; selTest=0; store(); renderAll(); }; $("chlist").appendChild(b); });
+  const ch=CH[cur];
+  $("task").innerHTML=`<h2>${cur+1}. ${ch.title[lang]}</h2><p>${ch.desc[lang]}</p><p class="hint">${ch.hint[lang]}</p>`;
+  // parts
+  const k=tok(); $("parts").innerHTML="";
+  ["glut","gaba",...FUTURE].forEach(p=>{ const on=ch.allowed.includes(p); const s=document.createElement("span"); s.className="part"+(on?" on":"");
+    const col=p==="gaba"?k.gaba:p==="glut"?k.glut:k.muted;
+    s.innerHTML=`<span class="dot" style="background:${col}"></span>${L.partnames[p]}${on?"":` <span class="lock">· ${L.locked[p]||L.locked.gaba}</span>`}`; $("parts").appendChild(s); });
+  // toolbar
+  if(!ch.allowed.includes(tool)&&(tool==="glut"||tool==="gaba")) tool="move";
+  $("toolbar").innerHTML="";
+  [["move"],["glut"],["gaba"],["wire"],["del"]].forEach(([t])=>{ const b=document.createElement("button"); b.className="tool"; b.type="button"; b.id="tool-"+t;
+    const locked=(t==="glut"||t==="gaba")&&!ch.allowed.includes(t);
+    b.disabled=locked; b.setAttribute("aria-pressed",tool===t);
+    const sw=t==="glut"?`<span class="sw" style="background:${k.glut}"></span>`:t==="gaba"?`<span class="sw" style="background:${k.gaba}"></span>`:"";
+    b.innerHTML=sw+L.tools[t]+(locked?` <span class="lock">· ${L.locked[t]}</span>`:"");
+    b.onclick=()=>{ tool=t; renderStatic(); drawBoard(); }; $("toolbar").appendChild(b); });
+  if(!ch.allowed.includes(tool)&&(tool==="glut"||tool==="gaba")) tool="move";
+}
+function renderResults(keepInsp){
+  const L=S[lang], ch=CH[cur]; state=evaluate(); store();
+  $("m-neu").textContent=state.neurons; $("m-imp").textContent=state.imp.toFixed(1); $("m-en").textContent=Math.round(state.imp*100);
+  const st=$("status");
+  if(state.bad){ st.className="status bad"; st.textContent=L.forbidden(L.partnames[state.bad.t]); }
+  else if(state.solved){ st.className="status ok"; st.textContent=L.solved+" "+L.pass(state.passed,state.res.length); }
+  else { st.className="status bad"; st.textContent=L.pass(state.passed,state.res.length); }
+  const b=best[ch.id];
+  $("record").textContent=(state.solved?L.record(ch.record,state.neurons):L.recordOnly(ch.record))+(b?" "+L.best(b.n,b.i):"");
+  const tb=$("tests"); tb.innerHTML="";
+  ch.tests.forEach((tt,i)=>{ const r=state.res[i]; const tr=document.createElement("tr"); tr.className="test"; tr.tabIndex=0; tr.setAttribute("aria-selected",i===selTest);
+    tr.innerHTML=`<td>${tt.n[lang]}</td><td class="mono">${tt.e?L.yes:L.no}</td><td class="mono">${r.got?L.yes:L.no}</td><td class="${r.ok?"pass":"fail"}">${r.ok?"✓":"✗"}</td>`;
+    const pick=()=>{ selTest=i; renderResults(); }; tr.onclick=pick; tr.onkeydown=e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); pick(); } };
+    tb.appendChild(tr); });
+  $("rastercap").textContent=L.raster(ch.tests[selTest].n[lang]);
+  $("sharecode").value=shareLink();
+  if(!keepInsp) renderInspector(); drawBoard(); drawRaster();
+  // refresh ✓ in list
+  document.querySelectorAll(".ch").forEach((el,i)=>{ const bb=best[CH[i].id]; const s=el.querySelector(".st"); s.className="st"+(bb?" done":""); s.textContent=bb?"✓ "+bb.n:""; });
+}
+function renderInspector(){
+  const L=S[lang], c=circ(), box=$("insp"); box.innerHTML="";
+  if(!sel){ box.innerHTML=`<div class="small">${L.noSel}</div>`; return; }
+  if(sel.kind==="node"){ const n=nodeById(c,sel.id); if(!n){ sel=null; return renderInspector(); }
+    if(n.t==="in"){ box.innerHTML=`<div class="small">${L.inputnode}</div>`; return; }
+    if(n.t==="out") box.insertAdjacentHTML("beforeend",`<div class="small">${L.outnode}</div>`);
+    box.insertAdjacentHTML("beforeend",field("insp-tau",L.tau,n.tau,0.5,50,0.5)+field("insp-th",L.th,n.th,0.1,5,0.1));
+    bind("insp-tau",v=>n.tau=v); bind("insp-th",v=>n.th=v);
+  } else { const w=c.wires.find(x=>x.id===sel.id); if(!w){ sel=null; return renderInspector(); }
+    const s=nodeById(c,w.f); const sg=s&&s.t==="gaba"?-1:1;
+    box.insertAdjacentHTML("beforeend",`<div class="small">${w.f} → ${w.to}. ${L.sign(sg)}</div>`+field("insp-w",L.w,w.w,0.05,5,0.05)+field("insp-d",L.d,w.d,0.1,20,0.1));
+    bind("insp-w",v=>w.w=v); bind("insp-d",v=>w.d=v);
+  }
+}
+function field(id,label,val,min,max,step){ return `<div class="field"><label for="${id}">${label}</label><input id="${id}" type="number" min="${min}" max="${max}" step="${step}" value="${val}"></div>`; }
+function bind(id,set){ const el=$(id); el.addEventListener("input",()=>{ const v=parseFloat(el.value); if(!isFinite(v)) return; set(Math.min(+el.max,Math.max(+el.min,v))); renderResults(true); }); }
+
+// ---------- drawing ----------
+function fit(cv,h){ const r=cv.getBoundingClientRect(); const dpr=window.devicePixelRatio||1; const w=Math.max(10,r.width); cv.width=Math.round(w*dpr); cv.height=Math.round((h?h:w*H/W)*dpr); if(h) cv.style.height=h+"px"; return {w, h:(h?h:w*H/W), dpr}; }
+let drag=null, hover=null, preview=null;
+function drawBoard(){
+  const {w,h,dpr}=fit(board); const s=w/W, k=tok(), c=circ();
+  bctx.setTransform(dpr*s,0,0,dpr*s,0,0); bctx.clearRect(0,0,W,H);
+  bctx.fillStyle=k.panel2; bctx.fillRect(0,0,W,H);
+  for(let x=0;x<=W;x+=20){ bctx.strokeStyle=x%100===0?k.grid2:k.grid; bctx.lineWidth=1/s; bctx.beginPath(); bctx.moveTo(x,0); bctx.lineTo(x,H); bctx.stroke(); }
+  for(let y=0;y<=H;y+=20){ bctx.strokeStyle=y%100===0?k.grid2:k.grid; bctx.beginPath(); bctx.moveTo(0,y); bctx.lineTo(W,y); bctx.stroke(); }
+  // which nodes fired in the selected test
+  const fired=new Set(); if(state&&state.runs[selTest]) for(const [id,sp] of state.runs[selTest].spikes) if(sp.length) fired.add(id);
+  // wires
+  c.wires.forEach(wr=>{ const a=nodeById(c,wr.f), b=nodeById(c,wr.to); if(!a||!b) return;
+    const rev=c.wires.some(x=>x.f===wr.to&&x.to===wr.f); const inh=a.t==="gaba";
+    const dx=b.x-a.x, dy=b.y-a.y, L=Math.hypot(dx,dy)||1, ux=dx/L, uy=dy/L, off=rev?7:0;
+    const ox=-uy*off, oy=ux*off; const ra=a.t==="in"?24:R, rb=b.t==="in"?24:R+ (b.t==="out"?4:0);
+    const x1=a.x+ux*ra+ox, y1=a.y+uy*ra+oy, x2=b.x-ux*(rb+2)+ox, y2=b.y-uy*(rb+2)+oy;
+    const selected=sel&&sel.kind==="wire"&&sel.id===wr.id;
+    bctx.strokeStyle=selected?k.spike:(inh?k.gaba:k.ink); bctx.lineWidth=selected?3:2;
+    bctx.beginPath(); bctx.moveTo(x1,y1); bctx.lineTo(x2,y2); bctx.stroke();
+    bctx.fillStyle=bctx.strokeStyle;
+    if(inh){ bctx.beginPath(); bctx.moveTo(x2-uy*8,y2+ux*8); bctx.lineTo(x2+uy*8,y2-ux*8); bctx.lineWidth=3; bctx.stroke(); }
+    else { bctx.beginPath(); bctx.moveTo(x2,y2); bctx.lineTo(x2-ux*11-uy*5,y2-uy*11+ux*5); bctx.lineTo(x2-ux*11+uy*5,y2-uy*11-ux*5); bctx.closePath(); bctx.fill(); }
+    const mx=(x1+x2)/2-uy*12, my=(y1+y2)/2+ux*12;
+    const lbl=`${inh?"−":""}${(+wr.w).toFixed(2).replace(/0$/,"")} · ${(+wr.d)}ms`;
+    bctx.font=`500 11px ${getComputedStyle(document.body).getPropertyValue("--mono")||"monospace"}`; bctx.textAlign="center"; bctx.textBaseline="middle";
+    const tw=bctx.measureText(lbl).width+8; bctx.fillStyle=k.panel2; bctx.fillRect(mx-tw/2,my-8,tw,16); bctx.fillStyle=inh?k.gaba:k.muted; bctx.fillText(lbl,mx,my);
+  });
+  if(preview){ bctx.setLineDash([5,5]); bctx.strokeStyle=k.spike; bctx.lineWidth=2; bctx.beginPath(); bctx.moveTo(preview.x1,preview.y1); bctx.lineTo(preview.x2,preview.y2); bctx.stroke(); bctx.setLineDash([]); }
+  // nodes
+  const cond=getComputedStyle(document.body).getPropertyValue("--cond")||"sans-serif";
+  c.nodes.forEach(n=>{ const col=colorOf(k,n.t); const selected=sel&&sel.kind==="node"&&sel.id===n.id;
+    bctx.lineWidth=2.5; bctx.strokeStyle=col;
+    if(n.t==="in"){ roundRect(n.x-24,n.y-17,48,34,6); bctx.fillStyle=k.panel2; bctx.fill(); bctx.stroke();
+      bctx.fillStyle=k.ink; bctx.font=`700 18px ${cond}`; bctx.textAlign="center"; bctx.textBaseline="middle"; bctx.fillText(n.id,n.x,n.y+1); }
+    else { bctx.beginPath(); bctx.arc(n.x,n.y,R,0,Math.PI*2); bctx.fillStyle=k.panel2; bctx.fill(); bctx.globalAlpha=.16; bctx.fillStyle=col; bctx.fill(); bctx.globalAlpha=1; bctx.stroke();
+      if(n.t==="out"){ bctx.beginPath(); bctx.arc(n.x,n.y,R+5,0,Math.PI*2); bctx.stroke(); }
+      bctx.fillStyle=k.ink; bctx.font=`700 12px ${cond}`; bctx.textAlign="center"; bctx.textBaseline="middle"; bctx.fillText(n.t==="out"?"OUT":n.id.replace("n",""),n.x,n.y+1);
+      bctx.fillStyle=col; bctx.font=`700 10px ${cond}`; bctx.fillText(n.t==="gaba"?"ГАМК":"ГЛУТ",n.x,n.y+R+(n.t==="out"?15:11)); }
+    if(fired.has(n.id)){ bctx.fillStyle=k.spike; bctx.beginPath(); const rx=n.t==="in"?n.x+24:n.x+R*0.8, ry=n.t==="in"?n.y-17:n.y-R*0.8; bctx.arc(rx,ry,5,0,Math.PI*2); bctx.fill(); }
+    if(selected){ bctx.setLineDash([4,4]); bctx.strokeStyle=k.spike; bctx.lineWidth=2; bctx.beginPath(); if(n.t==="in") roundRect(n.x-30,n.y-23,60,46,8); else bctx.arc(n.x,n.y,R+10,0,Math.PI*2); bctx.stroke(); bctx.setLineDash([]); }
+  });
+}
+function roundRect(x,y,w,h,r){ bctx.beginPath(); bctx.moveTo(x+r,y); bctx.arcTo(x+w,y,x+w,y+h,r); bctx.arcTo(x+w,y+h,x,y+h,r); bctx.arcTo(x,y+h,x,y,r); bctx.arcTo(x,y,x+w,y,r); bctx.closePath(); }
+
+function drawRaster(){
+  if(!state) return; const c=circ(), run=state.runs[selTest]; const rows=c.nodes.slice().sort((a,b)=>(a.t==="in"?0:a.t==="out"?2:1)-(b.t==="in"?0:b.t==="out"?2:1));
+  const rowH=18, top=48, left=64, bottom=22; const hh=top+rows.length*rowH+bottom;
+  const {w,dpr}=fit(raster,hh); const k=tok(); const mono=getComputedStyle(document.body).getPropertyValue("--mono")||"monospace";
+  rctx.setTransform(dpr,0,0,dpr,0,0); rctx.clearRect(0,0,w,hh); rctx.fillStyle=k.panel2; rctx.fillRect(0,0,w,hh);
+  const X=t=>left+(w-left-14)*t/run.T;
+  // time grid
+  rctx.font=`11px ${mono}`; rctx.fillStyle=k.muted; rctx.textAlign="center"; rctx.textBaseline="top";
+  for(let t=0;t<=run.T;t+=10){ rctx.strokeStyle=k.grid; rctx.lineWidth=1; rctx.beginPath(); rctx.moveTo(X(t),6); rctx.lineTo(X(t),hh-bottom); rctx.stroke(); rctx.fillText(t+(t===run.T?" ms":""),X(t),hh-bottom+5); }
+  // output voltage trace with threshold
+  const out=nodeById(c,"OUT"); const vmax=Math.max(1.5,(+out.th||1)*1.4), vmin=-1.5; const Y=v=>6+(top-12)*(1-(v-vmin)/(vmax-vmin));
+  rctx.setLineDash([4,4]); rctx.strokeStyle=k.muted; rctx.beginPath(); rctx.moveTo(left,Y(+out.th||1)); rctx.lineTo(w-14,Y(+out.th||1)); rctx.stroke(); rctx.setLineDash([]);
+  rctx.fillStyle=k.muted; rctx.textAlign="right"; rctx.textBaseline="middle"; rctx.fillText("V(OUT)",left-8,Y(0)); rctx.fillText("θ",left-8,Y(+out.th||1));
+  rctx.strokeStyle=k.glut; rctx.lineWidth=1.6; rctx.beginPath(); run.trace.forEach((v,i)=>{ const x=X(i*run.dt), y=Y(Math.max(vmin,Math.min(vmax,v))); i?rctx.lineTo(x,y):rctx.moveTo(x,y); }); rctx.stroke();
+  // raster rows
+  rows.forEach((n,r)=>{ const y=top+r*rowH+rowH/2; rctx.fillStyle=k.ink; rctx.textAlign="right"; rctx.fillText(n.t==="out"?"OUT":n.id,left-8,y);
+    rctx.strokeStyle=k.grid; rctx.beginPath(); rctx.moveTo(left,y); rctx.lineTo(w-14,y); rctx.stroke();
+    rctx.strokeStyle=n.t==="gaba"?k.gaba:n.t==="in"?k.inn:k.spike; rctx.lineWidth=2.5;
+    (run.spikes.get(n.id)||[]).forEach(t=>{ rctx.beginPath(); rctx.moveTo(X(t),y-7); rctx.lineTo(X(t),y+7); rctx.stroke(); }); rctx.lineWidth=1; });
+}
+
+// ---------- editing on the board ----------
+function pos(e){ const r=board.getBoundingClientRect(); const s=r.width/W; return {x:(e.clientX-r.left)/s, y:(e.clientY-r.top)/s}; }
+const snap=v=>Math.round(v/20)*20;
+function nodeAt(p){ const c=circ(); for(let i=c.nodes.length-1;i>=0;i--){ const n=c.nodes[i]; if(n.t==="in"? Math.abs(p.x-n.x)<=26&&Math.abs(p.y-n.y)<=19 : Math.hypot(p.x-n.x,p.y-n.y)<=R+6) return n; } return null; }
+function wireAt(p){ const c=circ(); let bestW=null, bd=8; c.wires.forEach(wr=>{ const a=nodeById(c,wr.f), b=nodeById(c,wr.to); if(!a||!b) return; const dx=b.x-a.x, dy=b.y-a.y, L2=dx*dx+dy*dy||1; let t=((p.x-a.x)*dx+(p.y-a.y)*dy)/L2; t=Math.max(0,Math.min(1,t)); const d=Math.hypot(p.x-(a.x+t*dx),p.y-(a.y+t*dy)); if(d<bd){bd=d;bestW=wr;} }); return bestW; }
+function addNeuron(t,p){ const c=circ(), ch=CH[cur]; if(!ch.allowed.includes(t)) return; const id="n"+(c.next++); const x=Math.min(W-30,Math.max(30,snap(p.x))), y=Math.min(H-30,Math.max(30,snap(p.y))); c.nodes.push({id,t,x,y,tau:5,th:1}); sel={kind:"node",id}; renderResults(); }
+function removeSel(){ const c=circ(); if(!sel) return; if(sel.kind==="node"){ const n=nodeById(c,sel.id); if(!n||n.t==="in"||n.t==="out") return; c.nodes=c.nodes.filter(x=>x.id!==n.id); c.wires=c.wires.filter(w=>w.f!==n.id&&w.to!==n.id); } else c.wires=c.wires.filter(w=>w.id!==sel.id); sel=null; renderResults(); }
+board.addEventListener("pointerdown",e=>{ const p=pos(e), n=nodeAt(p), wr=n?null:wireAt(p); board.setPointerCapture(e.pointerId);
+  if(tool==="glut"||tool==="gaba"){ if(n){ sel={kind:"node",id:n.id}; drag={node:n,moved:false}; renderResults(); } else addNeuron(tool,p); return; }
+  if(tool==="del"){ if(n){ sel={kind:"node",id:n.id}; removeSel(); } else if(wr){ sel={kind:"wire",id:wr.id}; removeSel(); } return; }
+  if(tool==="wire"){ if(n){ drag={wireFrom:n}; preview={x1:n.x,y1:n.y,x2:p.x,y2:p.y}; drawBoard(); } return; }
+  if(n){ sel={kind:"node",id:n.id}; drag={node:n,moved:false}; } else if(wr){ sel={kind:"wire",id:wr.id}; } else sel=null;
+  renderResults();
+});
+board.addEventListener("pointermove",e=>{ if(!drag) return; const p=pos(e);
+  if(drag.node){ const nx=Math.min(W-30,Math.max(30,snap(p.x))), ny=Math.min(H-30,Math.max(30,snap(p.y))); if(nx!==drag.node.x||ny!==drag.node.y){ drag.node.x=nx; drag.node.y=ny; drag.moved=true; drawBoard(); } }
+  else if(drag.wireFrom){ preview.x2=p.x; preview.y2=p.y; drawBoard(); } });
+board.addEventListener("pointerup",e=>{ const p=pos(e);
+  if(drag&&drag.wireFrom){ const t=nodeAt(p), c=circ(), f=drag.wireFrom;
+    if(t&&t!==f&&t.t!=="in"&&!c.wires.some(w=>w.f===f.id&&w.to===t.id)){ const id="w"+(c.next++); c.wires.push({id,f:f.id,to:t.id,w:1.2,d:1}); sel={kind:"wire",id}; } preview=null; drag=null; renderResults(); return; }
+  if(drag&&drag.moved){ store(); } drag=null; });
+board.addEventListener("dblclick",e=>{ const p=pos(e); if(!nodeAt(p)&&!wireAt(p)&&CH[cur].allowed.includes("glut")) addNeuron("glut",p); });
+document.addEventListener("keydown",e=>{ if((e.key==="Delete"||e.key==="Backspace")&&sel&&!(e.target instanceof HTMLInputElement)){ e.preventDefault(); removeSel(); } });
+
+// ---------- share ----------
+function b64u(s){ return btoa(unescape(encodeURIComponent(s))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,""); }
+function unb64u(s){ s=s.replace(/-/g,"+").replace(/_/g,"/"); while(s.length%4) s+="="; return decodeURIComponent(escape(atob(s))); }
+function code(){ const c=circ(); return "bb."+b64u(JSON.stringify({c:CH[cur].id,n:c.nodes.filter(n=>n.t!=="in").map(n=>[n.id,n.t,n.x,n.y,+n.tau,+n.th]),w:c.wires.map(w=>[w.f,w.to,+w.w,+w.d])})); }
+function shareLink(){ return location.href.split("#")[0]+"#"+code(); }
+function loadCode(str){ try{ str=(str||"").trim(); const i=str.indexOf("bb."); if(i<0) throw 0; const o=JSON.parse(unb64u(str.slice(i+3).replace(/[^A-Za-z0-9_-].*$/,""))); const ci=CH.findIndex(x=>x.id===o.c); if(ci<0) throw 0;
+    const c=fresh(CH[ci]); c.wires=[]; c.nodes=c.nodes.filter(n=>n.t==="in");
+    o.n.forEach(([id,t,x,y,tau,th])=>c.nodes.push({id,t,x,y,tau,th})); o.w.forEach(([f,to,w,d])=>c.wires.push({id:"w"+(c.next++),f,to,w,d}));
+    c.nodes.forEach(n=>{ const m=/^n(\d+)$/.exec(n.id); if(m) c.next=Math.max(c.next,+m[1]+1); });
+    circuits[o.c]=c; cur=ci; sel=null; selTest=0; return true; }catch(e){ return false; } }
+$("copy").onclick=()=>{ const L=S[lang], link=shareLink(), msg=$("sharemsg");
+  const done=()=>{ msg.textContent=L.copied; }, fail=()=>{ const el=$("sharecode"); el.focus(); el.select(); msg.textContent=L.copyfail; };
+  try{ navigator.clipboard.writeText(link).then(done,fail); }catch(e){ fail(); } };
+$("load").onclick=()=>{ const L=S[lang]; if(loadCode($("loadcode").value)){ renderAll(); $("sharemsg").textContent=L.loaded; } else $("sharemsg").textContent=L.badcode; };
+$("reset").onclick=()=>{ circuits[CH[cur].id]=fresh(CH[cur]); sel=null; renderResults(); };
+$("lang-ru").onclick=()=>{ lang="ru"; renderAll(); }; $("lang-en").onclick=()=>{ lang="en"; renderAll(); };
+
+function renderAll(){ renderStatic(); renderResults(); }
+if(location.hash.startsWith("#bb.")) loadCode(location.hash.slice(1));
+window.addEventListener("resize",()=>{ drawBoard(); drawRaster(); });
+if(window.matchMedia) window.matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change",()=>renderAll());
+new MutationObserver(()=>renderAll()).observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
+if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>{ drawBoard(); drawRaster(); });
+renderAll();
+})();
+</script>
