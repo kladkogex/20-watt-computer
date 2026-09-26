@@ -414,7 +414,7 @@ function simulate(ch, c, test){
   const syn=[], outs=new Map(c.nodes.map(n=>[n.id,[]])), synOf=neu.map(()=>[]);
   c.wires.forEach(w=>{ const s=nodeById(c,w.f), i=idx.get(w.to); if(!s||i===undefined) return; const m=medOf(ch,s);
     if(isVol(m)){ volIn[i].push({src:vol.get(w.f),g:Math.abs(+w.w||0),sg:(+w.sg<0?-1:1),m}); return; }
-    const k=syn.length; syn.push({i,w:Math.abs(+w.w||0),sign:m==="gaba"?-1:1,steps:Math.max(1,Math.round((+w.d||0)/dt)),last:-1e9,e:0}); outs.get(w.f).push(k); synOf[i].push(k); });
+    const k=syn.length; syn.push({i,w:Math.abs(+w.w||0),w0:Math.abs(+w.w||0),wid:w.id,sign:m==="gaba"?-1:1,steps:Math.max(1,Math.round((+w.d||0)/dt)),last:-1e9,e:0}); outs.get(w.f).push(k); synOf[i].push(k); });
   const hasDofa=volIn.map(a=>a.some(x=>x.m==="dofa")), eDecay=neu.map(n=>Math.exp(-dt/(1000*Math.max(0.001,+n.te||0.05))));
   const q=new Map(), inAt=new Map();
   c.nodes.forEach(n=>{ if(n.t==="in") testInput(test,n.id).forEach(ts=>{ const k=Math.round(ts/dt); if(k>K) return; if(!inAt.has(k)) inAt.set(k,[]); inAt.get(k).push(n.id); }); });
@@ -437,7 +437,8 @@ function simulate(ch, c, test){
     }
     if(k%every===0) trace.push(iOut===undefined?0:V[iOut]+P[iOut]);
   }
-  return {spikes,trace,dt:dt*every,T:TT};
+  const learned=new Map(); syn.forEach(y=>{ if(Math.abs(y.w-y.w0)>0.005) learned.set(y.wid,y.w); });
+  return {spikes,trace,dt:dt*every,T:TT,learned};
 }
 // muscle force F(t) = Σ h(t − t_k), h(t) = (t/T_c)·e^{1 − t/T_c}, T_c = 50 ms (ch. 13), in units of F₁
 function force(sp,t){ let F=0; for(const tk of sp){ const x=t-tk; if(x>0) F+=x/TC*Math.exp(1-x/TC); } return F; }
@@ -458,7 +459,7 @@ function evaluate(){
   const neurons=c.nodes.filter(n=>n.t!=="in").length;
   const imp=total/ch.tests.length;
   const passed=res.filter(r=>r.ok).length, solved=!bad&&passed===res.length;
-  if(solved){ const b=best[ch.id]; if(!b||neurons<b.n||(neurons===b.n&&imp<b.i)) best[ch.id]={n:neurons,i:+imp.toFixed(2),h:hintsUsed[ch.id]||0,s:solSeen[ch.id]?1:0}; }
+  if(solved&&!stash[ch.id]){ const b=best[ch.id]; if(!b||neurons<b.n||(neurons===b.n&&imp<b.i)) best[ch.id]={n:neurons,i:+imp.toFixed(2),h:hintsUsed[ch.id]||0,s:solSeen[ch.id]?1:0}; }
   return {runs,res,neurons,imp,passed,solved,bad};
 }
 
@@ -621,9 +622,10 @@ function drawBoard(){
     else { bctx.beginPath(); bctx.moveTo(x2,y2); bctx.lineTo(x2-ux*11-uy*5,y2-uy*11+ux*5); bctx.lineTo(x2-ux*11+uy*5,y2-uy*11-ux*5); bctx.closePath(); bctx.fill(); }
     const mx=(x1+x2)/2-uy*12, my=(y1+y2)/2+ux*12;
     const wv=(+wr.w).toFixed(2).replace(/0$/,"").replace(/\.0$/,"");
-    const lbl=am==="sero"?`${wr.sg<0?"−":"+"}${wv} ${S[lang].rec}`:am==="nora"?`×(1+${wv}c)`:am==="dofa"?`δ ${wv}`:`${inh?"−":""}${wv} · ${(+wr.d)}ms`;
+    const lw=state&&state.runs[selTest]&&state.runs[selTest].learned&&state.runs[selTest].learned.get(wr.id);
+    const lbl=am==="sero"?`${wr.sg<0?"−":"+"}${wv} ${S[lang].rec}`:am==="nora"?`×(1+${wv}c)`:am==="dofa"?`δ ${wv}`:`${inh?"−":""}${wv}${lw!=null?" → "+lw.toFixed(2):""} · ${(+wr.d)}ms`;
     bctx.font=`500 11px ${getComputedStyle(document.body).getPropertyValue("--mono")||"monospace"}`; bctx.textAlign="center"; bctx.textBaseline="middle";
-    const tw=bctx.measureText(lbl).width+8; bctx.fillStyle=k.panel2; bctx.fillRect(mx-tw/2,my-8,tw,16); bctx.fillStyle=vol?k[am]:inh?k.gaba:k.muted; bctx.fillText(lbl,mx,my);
+    const tw=bctx.measureText(lbl).width+8; bctx.fillStyle=k.panel2; bctx.fillRect(mx-tw/2,my-8,tw,16); bctx.fillStyle=vol?k[am]:inh?k.gaba:lw!=null?k.dofa:k.muted; bctx.fillText(lbl,mx,my);
   });
   if(preview){ bctx.setLineDash([5,5]); bctx.strokeStyle=k.spike; bctx.lineWidth=2; bctx.beginPath(); bctx.moveTo(preview.x1,preview.y1); bctx.lineTo(preview.x2,preview.y2); bctx.stroke(); bctx.setLineDash([]); }
   // nodes
@@ -696,7 +698,7 @@ function removeSel(){ const c=circ(); if(!sel) return; if(sel.kind==="node"){ co
 // hit radius in board units: at least 12 CSS px so ports stay usable on a phone
 function hitR(px){ const s=board.getBoundingClientRect().width/W; return Math.max(px*0.75, px/s); }
 function inBody(n,p){ return n.t==="in"? Math.abs(p.x-n.x)<=24&&Math.abs(p.y-n.y)<=17 : Math.hypot(p.x-n.x,p.y-n.y)<=(n.t==="out"?R+5:R); }
-function portAt(p){ const c=circ(), r=hitR(14); if(c.nodes.some(n=>inBody(n,p))) return null;
+function portAt(p){ const c=circ(), r=Math.min(hitR(14),22); if(c.nodes.some(n=>inBody(n,p))) return null;
   for(let i=c.nodes.length-1;i>=0;i--){ const n=c.nodes[i], pp=portPos(n); if(hasPort(n)&&Math.hypot(p.x-pp.x,p.y-pp.y)<=r) return n; } return null; }
 board.addEventListener("pointerdown",e=>{ const p=pos(e), pn=portAt(p), n=pn?null:nodeAt(p), wr=(pn||n)?null:wireAt(p); board.setPointerCapture(e.pointerId);
   if(pn){ const pp=portPos(pn); drag={wireFrom:pn}; preview={x1:pp.x,y1:pp.y,x2:p.x,y2:p.y}; drawBoard(); return; }
@@ -766,10 +768,11 @@ if(location.hash==="#selftest"){
   { const old="bb."+b64u(JSON.stringify({c:"veto",n:[["OUT","out",670,210,5,1],["n1","gaba",360,300,5,1]],w:[["A","OUT",1.2,3],["B","n1",1.2,1],["n1","OUT",3,1]]}));
     const okl=loadCode(old); lines.push(`old share code: loaded=${okl} solved=${okl&&evaluate().solved}`); }
   // UI flow: show solution with the in-page confirm, then bring the user's circuit back
-  try{ cur=1; circuits={}; stash={}; solSeen={}; renderAll(); const before=JSON.stringify(circ());
-    $("solbtn").click(); const asked=!!$("solyes"); $("solyes").click(); const shown=evaluate().solved;
+  try{ cur=1; circuits={}; stash={}; solSeen={}; best={}; renderAll(); const before=JSON.stringify(circ());
+    $("solbtn").click(); const asked=!!$("solyes"); $("solyes").click(); const shown=evaluate().solved; const nobest=best.and===undefined&&document.querySelectorAll(".ch .st.done").length===0;
     $("solback").click(); const back=JSON.stringify(circ())===before;
-    lines.push(`UI show-solution: confirm=${asked} solved=${shown} restored=${back}`); }catch(e){ lines.push("UI show-solution: ERROR "+e); }
+    lines.push(`UI show-solution: confirm=${asked} solved=${shown} restored=${back} no-best-recorded=${nobest}`); }catch(e){ lines.push("UI show-solution: ERROR "+e); }
+  { const ci=CH.findIndex(x=>x.id==="credit"); cur=ci; circuits.credit=fromSol(CH[ci]); const r=evaluate(); lines.push("credit learned A→OUT: "+r.runs.map(x=>[...x.learned.values()].map(v=>v.toFixed(2)).join("/")).join(" | ")); }
   document.body.innerHTML=`<pre id="selftest">${lines.join("\n")}\nTOTAL ${ok}/${CH.length}</pre>`; document.title=`PASS ${ok}/${CH.length}`;
 } else renderAll();
 })();
