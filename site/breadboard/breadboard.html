@@ -55,6 +55,8 @@ button{font:inherit;color:inherit;cursor:pointer}
 .hints li::marker{color:var(--spike);font:600 13px var(--mono)}
 .hints li:focus{outline:none}
 #hintbtn{align-self:flex-start}
+.solbox{display:flex;flex-direction:column;gap:6px;align-items:flex-start}
+.solbox p{margin:0}
 #hintbtn:disabled{opacity:.55;cursor:default}
 .parts{display:flex;flex-wrap:wrap;gap:6px}
 .part{font:600 12px/1 var(--cond);letter-spacing:.05em;padding:5px 7px;border-radius:4px;border:1px solid var(--line);color:var(--muted)}
@@ -185,6 +187,8 @@ const S = {
     hintbtn:(k,n)=> k>=n?`Все подсказки открыты (${n}/${n})`:(k===0?`Подсказка`:`Ещё подсказка`)+` (${k}/${n})`, withhints:(h)=>` (с подсказками: ${h}).`,
     recordOnly:(r)=>`Рекорд книги: ${r} ${plural(r)}.`,
     best:(n,i)=>`Ваш лучший результат: ${n} ${plural(n)}, ${i} имп./ответ`,
+    solbtn:"Показать решение", solask:"Решение заменит вашу схему на плате. Вашу схему можно будет вернуть одной кнопкой.", solyes:"Показать", solno:"Отмена",
+    solshown:"На плате решение из книги. Нажмите на провод или нейрон, чтобы увидеть его настройки.", solback:"Вернуть мою схему", solmark:" (решение подсмотрено)",
     noSel:"Выберите нейрон или провод на плате. Двойной щелчок по пустому месту ставит ГЛУТ-нейрон.",
     tau:"Постоянная времени τ, мс", th:"Порог θ", w:"Вес |w|", d:"Задержка d, мс", sign:(s)=> s<0?"Провод тормозящий: отправитель — ГАМК.":"Провод возбуждающий.",
     inputnode:"Вход задачи: подаёт импульсы по тестам. Его нельзя удалить.", outnode:"Выходной ГЛУТ-нейрон: его импульсы — ответ схемы.",
@@ -206,6 +210,8 @@ const S = {
     hintbtn:(k,n)=> k>=n?`All hints shown (${n}/${n})`:(k===0?`Hint`:`Another hint`)+` (${k}/${n})`, withhints:(h)=>` (with ${h} hint${h>1?"s":""}).`,
     recordOnly:(r)=>`Book's record: ${r} neuron${r>1?"s":""}.`,
     best:(n,i)=>`Your best: ${n} neuron${n>1?"s":""}, ${i} imp./answer`,
+    solbtn:"Show solution", solask:"The solution will replace your circuit on the board. You can bring your circuit back with one click.", solyes:"Show", solno:"Cancel",
+    solshown:"The board shows the book's solution. Click a wire or a neuron to see its settings.", solback:"Back to my circuit", solmark:" (solution viewed)",
     noSel:"Select a neuron or a wire on the board. Double-click an empty spot to place a ГЛУТ neuron.",
     tau:"Time constant τ, ms", th:"Threshold θ", w:"Weight |w|", d:"Delay d, ms", sign:(s)=> s<0?"Inhibitory wire: the sender is ГАМК.":"Excitatory wire.",
     inputnode:"Challenge input: fires impulses according to the tests. It can't be deleted.", outnode:"Output ГЛУТ neuron: its impulses are the circuit's answer.",
@@ -223,40 +229,41 @@ const CH = [
   desc:T("Выход должен выдать импульс, если импульс пришёл на A или на B.","The output must fire if an impulse arrives on A or on B."),
   hints:[T("Один импульс должен поднимать выход выше порога: w ≥ θ (гл. 2).","One impulse must lift the output above threshold: w ≥ θ (ch. 2)."),T("Нужны два провода: A → OUT и B → OUT, каждый сам по себе достаточно сильный.","You need two wires, A → OUT and B → OUT, each strong enough on its own."),T("Проведите провод B → OUT с весом 1,2: он больше порога θ = 1.","Draw a wire B → OUT with weight 1.2: that is above the threshold θ = 1.")],
   tests:[{n:T("только A","A only"),A:[5],B:[],e:1},{n:T("только B","B only"),A:[],B:[5],e:1},{n:T("A и B","A and B"),A:[5],B:[5],e:1},{n:T("тишина","silence"),A:[],B:[],e:0}],
-  start:[["A","OUT",1.2,1]]},
+  start:[["A","OUT",1.2,1]],
+  sol:{n:[],w:[["A","OUT",1.2,1],["B","OUT",1.2,1]]}},
  {id:"and", allowed:["glut"], record:1,
   title:T("Совпадение: И во времени","Coincidence: AND in time"),
   desc:T("Выход срабатывает, только если импульсы A и B пришли почти одновременно, в пределах нескольких миллисекунд.","The output fires only if impulses on A and B arrive almost together, within a few milliseconds."),
   hints:[T("Окно совпадения Δmax = τ·ln(w/(θ−w)), формула (2.2): подберите w и τ.","The coincidence window is Δmax = τ·ln(w/(θ−w)), eq. (2.2): tune w and τ."),T("Один импульс не должен дотягивать до порога, а два близких должны: θ/2 < w < θ.","One impulse must stay below threshold, two close ones must reach it: θ/2 < w < θ."),T("Провода A → OUT и B → OUT с весом 0,6 каждый; при τ = 5 мс окно около 2 мс.","Wires A → OUT and B → OUT with weight 0.6 each; with τ = 5 ms the window is about 2 ms.")],
   tests:[{n:T("вместе (0,5 мс)","together (0.5 ms)"),A:[5],B:[5.5],e:1},{n:T("врозь (10 мс)","apart (10 ms)"),A:[5],B:[15],e:0},{n:T("только A","A only"),A:[5],B:[],e:0},{n:T("только B","B only"),A:[],B:[5],e:0}],
-  start:[]},
+  start:[], sol:{n:[],w:[["A","OUT",0.6,1],["B","OUT",0.6,1]]}},
  {id:"veto", allowed:["glut","gaba"], record:2,
   title:T("Запрет: A, но не при B","Veto: A but not B"),
   desc:T("Выход срабатывает на A и молчит, когда вместе с A пришёл B.","The output fires for A and stays silent when B arrives together with A."),
   hints:[T("Смена знака стоит одного ГАМК-нейрона и одной задержки (гл. 3): торможение должно успеть раньше.","A sign change costs one ГАМК neuron and one delay (ch. 3): the inhibition must arrive first."),T("A возбуждает OUT напрямую. B возбуждает ГАМК-нейрон, а тот тормозит OUT.","A excites OUT directly. B excites a ГАМК neuron, which inhibits OUT."),T("Путь торможения на одно звено длиннее: задержите провод A → OUT до 3 мс, а вес ГАМК → OUT сделайте 3.","The inhibitory path is one link longer: delay the wire A → OUT to 3 ms and set the ГАМК → OUT weight to 3.")],
   tests:[{n:T("только A","A only"),A:[5],B:[],e:1},{n:T("только B","B only"),A:[],B:[5],e:0},{n:T("A и B вместе","A and B together"),A:[5],B:[5],e:0},{n:T("тишина","silence"),A:[],B:[],e:0}],
-  start:[]},
+  start:[], sol:{n:[["n1","gaba",360,300,5,1]],w:[["A","OUT",1.2,3],["B","n1",1.2,1],["n1","OUT",3,1]]}},
  {id:"xor", allowed:["glut","gaba"], record:2,
   title:T("Исключающее ИЛИ","XOR"),
   desc:T("Выход срабатывает, если пришёл ровно один из импульсов, и молчит при обоих.","The output fires if exactly one impulse arrives, and stays silent for both."),
   hints:[T("В главе 3 XOR собран из пяти нейронов. Можно гораздо меньше.","Chapter 3 builds XOR from five neurons. You can do it with far fewer."),T("Выход — это ИЛИ от A и B, запрещённое, когда пришли оба. Запрет даёт один ГАМК-нейрон, которому нужны оба входа сразу.","The output is an OR of A and B, vetoed when both arrive. The veto is one ГАМК neuron that needs both inputs at once."),T("A и B → OUT (вес 1,2, задержка 3 мс); A и B → ГАМК (вес 0,6, задержка 1 мс); ГАМК → OUT (вес 3, задержка 1 мс).","A and B → OUT (weight 1.2, delay 3 ms); A and B → ГАМК (weight 0.6, delay 1 ms); ГАМК → OUT (weight 3, delay 1 ms).")],
   tests:[{n:T("только A","A only"),A:[5],B:[],e:1},{n:T("только B","B only"),A:[],B:[5],e:1},{n:T("A и B вместе","A and B together"),A:[5],B:[5],e:0},{n:T("тишина","silence"),A:[],B:[],e:0}],
-  start:[]},
+  start:[], sol:{n:[["n1","gaba",360,340,5,1]],w:[["A","OUT",1.2,3],["B","OUT",1.2,3],["A","n1",0.6,1],["B","n1",0.6,1],["n1","OUT",3,1]]}},
  {id:"dir", allowed:["glut","gaba"], record:2,
   title:T("Детектор направления","Direction detector"),
   desc:T("Датчики A и B стоят рядом. Выход срабатывает при движении от B к A (B раньше на 5 мс) и молчит при движении от A к B.","Sensors A and B sit side by side. The output fires for motion from B to A (B first, by 5 ms) and stays silent for motion from A to B."),
   hints:[T("Схема рис. 3.1: возбуждение от B, торможение от A с задержкой, v* = Δx/d.","The circuit of Fig. 3.1: excitation from B, delayed inhibition from A, v* = Δx/d."),T("B возбуждает OUT. A через ГАМК-нейрон тормозит OUT, но с задержкой, чтобы торможение пришло к моменту импульса B.","B excites OUT. A inhibits OUT through a ГАМК neuron, delayed so the inhibition arrives together with B's impulse."),T("B → OUT (1,2; 1 мс), A → ГАМК (1,2; 1 мс), ГАМК → OUT (вес 3, задержка 4 мс).","B → OUT (1.2; 1 ms), A → ГАМК (1.2; 1 ms), ГАМК → OUT (weight 3, delay 4 ms).")],
   tests:[{n:T("B → A","B → A"),A:[10],B:[5],e:1},{n:T("A → B","A → B"),A:[5],B:[10],e:0},{n:T("только A","A only"),A:[5],B:[],e:0}],
-  start:[]}
+  start:[], sol:{n:[["n1","gaba",360,120,5,1]],w:[["B","OUT",1.2,1],["A","n1",1.2,1],["n1","OUT",3,4]]}}
 ];
 const FUTURE = ["pace","dofa","nora","musc"];
 
 // ---------- state ----------
 const W=760, H=420, R=19;
 let lang="en", cur=0, tool="move", sel=null, selTest=0;
-let circuits={}, best={}, hintsUsed={};
-function store(){ try{ localStorage.setItem("bb20w", JSON.stringify({lang,cur,circuits,best,hintsUsed})); }catch(e){} }
-try{ const s=JSON.parse(localStorage.getItem("bb20w")||"null"); if(s){ lang=s.lang||lang; cur=s.cur||0; circuits=s.circuits||{}; best=s.best||{}; hintsUsed=s.hintsUsed||{}; } else { lang=(navigator.language||"").toLowerCase().startsWith("ru")?"ru":"en"; } }catch(e){ lang=(navigator.language||"").toLowerCase().startsWith("ru")?"ru":"en"; }
+let circuits={}, best={}, hintsUsed={}, stash={}, solSeen={}, solAsk=false;
+function store(){ try{ localStorage.setItem("bb20w", JSON.stringify({lang,cur,circuits,best,hintsUsed,stash,solSeen})); }catch(e){} }
+try{ const s=JSON.parse(localStorage.getItem("bb20w")||"null"); if(s){ lang=s.lang||lang; cur=s.cur||0; circuits=s.circuits||{}; best=s.best||{}; hintsUsed=s.hintsUsed||{}; stash=s.stash||{}; solSeen=s.solSeen||{}; } else { lang=(navigator.language||"").toLowerCase().startsWith("ru")?"ru":"en"; } }catch(e){ lang=(navigator.language||"").toLowerCase().startsWith("ru")?"ru":"en"; }
 if(cur<0||cur>=CH.length) cur=0;
 
 function fresh(ch){
@@ -264,6 +271,9 @@ function fresh(ch){
   ch.start.forEach(([f,to,w,d])=>c.wires.push({id:"w"+(c.next++),f,to,w,d}));
   return c;
 }
+function fromSol(ch){ const c=fresh(ch); c.wires=[]; c.nodes=c.nodes.filter(n=>n.t==="in"||n.t==="out");
+  ch.sol.n.forEach(([id,t,x,y,tau,th])=>c.nodes.push({id,t,x,y,tau,th})); ch.sol.w.forEach(([f,to,w,d])=>c.wires.push({id:"w"+(c.next++),f,to,w,d}));
+  c.nodes.forEach(n=>{ const m=/^n(\d+)$/.exec(n.id); if(m) c.next=Math.max(c.next,+m[1]+1); }); return c; }
 function circ(){ const ch=CH[cur]; if(!circuits[ch.id]) circuits[ch.id]=fresh(ch); return circuits[ch.id]; }
 const nodeById=(c,id)=>c.nodes.find(n=>n.id===id);
 
@@ -300,7 +310,7 @@ function evaluate(){
   const neurons=c.nodes.filter(n=>n.t!=="in").length;
   const imp=total/ch.tests.length;
   const passed=res.filter(r=>r.ok).length, solved=!bad&&passed===res.length;
-  if(solved){ const b=best[ch.id]; if(!b||neurons<b.n||(neurons===b.n&&imp<b.i)) best[ch.id]={n:neurons,i:+imp.toFixed(2),h:hintsUsed[ch.id]||0}; }
+  if(solved){ const b=best[ch.id]; if(!b||neurons<b.n||(neurons===b.n&&imp<b.i)) best[ch.id]={n:neurons,i:+imp.toFixed(2),h:hintsUsed[ch.id]||0,s:solSeen[ch.id]?1:0}; }
   return {runs,res,neurons,imp,passed,solved,bad};
 }
 
@@ -323,10 +333,10 @@ function renderStatic(){
   CH.forEach((ch,i)=>{ const b=document.createElement("button"); b.className="ch"; b.type="button"; b.setAttribute("aria-current",i===cur);
     const done=!!best[ch.id];
     b.innerHTML=`<span class="num">${i+1}</span><span class="nm">${ch.title[lang]}</span><span class="st ${done?"done":""}">${done?"✓ "+best[ch.id].n:""}</span>`;
-    b.onclick=()=>{ cur=i; sel=null; selTest=0; store(); renderAll(); }; $("chlist").appendChild(b); });
+    b.onclick=()=>{ cur=i; sel=null; selTest=0; solAsk=false; store(); renderAll(); }; $("chlist").appendChild(b); });
   const ch=CH[cur];
-  $("task").innerHTML=`<h2>${cur+1}. ${ch.title[lang]}</h2><p>${ch.desc[lang]}</p><ol class="hints" id="hints"></ol><button class="btn ghost" id="hintbtn" type="button"></button>`;
-  renderHints();
+  $("task").innerHTML=`<h2>${cur+1}. ${ch.title[lang]}</h2><p>${ch.desc[lang]}</p><ol class="hints" id="hints"></ol><button class="btn ghost" id="hintbtn" type="button"></button><div class="solbox" id="solbox"></div>`;
+  renderHints(); renderSol();
   // parts
   const k=tok(); $("parts").innerHTML="";
   ["glut","gaba",...FUTURE].forEach(p=>{ const on=ch.allowed.includes(p); const s=document.createElement("span"); s.className="part"+(on?" on":"");
@@ -343,6 +353,16 @@ function renderStatic(){
     b.onclick=()=>{ tool=t; renderStatic(); drawBoard(); }; $("toolbar").appendChild(b); });
   if(!ch.allowed.includes(tool)&&(tool==="glut"||tool==="gaba")) tool="move";
 }
+function renderSol(){
+  const L=S[lang], ch=CH[cur], box=$("solbox"); if(!box) return;
+  if(solAsk){ box.innerHTML=`<p class="small">${L.solask}</p><div class="row"><button class="btn" id="solyes" type="button">${L.solyes}</button><button class="btn ghost" id="solno" type="button">${L.solno}</button></div>`;
+    $("solyes").onclick=()=>{ stash[ch.id]=JSON.parse(JSON.stringify(circ())); circuits[ch.id]=fromSol(ch); solSeen[ch.id]=1; solAsk=false; sel=null; store(); renderSol(); renderResults(); };
+    $("solno").onclick=()=>{ solAsk=false; renderSol(); $("solbtn")&&$("solbtn").focus(); }; $("solyes").focus(); return; }
+  if(stash[ch.id]){ box.innerHTML=`<p class="small">${L.solshown}</p><div class="row"><button class="btn ghost" id="solback" type="button">${L.solback}</button></div>`;
+    $("solback").onclick=()=>{ circuits[ch.id]=stash[ch.id]; delete stash[ch.id]; sel=null; store(); renderSol(); renderResults(); }; return; }
+  box.innerHTML=`<button class="btn ghost" id="solbtn" type="button">${L.solbtn}</button>`;
+  $("solbtn").onclick=()=>{ solAsk=true; renderSol(); };
+}
 function renderHints(){
   const L=S[lang], ch=CH[cur], k=Math.min(hintsUsed[ch.id]||0, ch.hints.length), ol=$("hints"), b=$("hintbtn");
   ol.innerHTML=ch.hints.slice(0,k).map(h=>`<li>${h[lang]}</li>`).join(""); ol.hidden=k===0;
@@ -357,7 +377,7 @@ function renderResults(keepInsp){
   else if(state.solved){ st.className="status ok"; st.textContent=L.solved+" "+L.pass(state.passed,state.res.length); }
   else { st.className="status bad"; st.textContent=L.pass(state.passed,state.res.length); }
   const b=best[ch.id];
-  $("record").textContent=(state.solved?L.record(ch.record,state.neurons):L.recordOnly(ch.record))+(b?" "+L.best(b.n,b.i)+(b.h?L.withhints(b.h):""):"");
+  $("record").textContent=(state.solved?L.record(ch.record,state.neurons):L.recordOnly(ch.record))+(b?" "+L.best(b.n,b.i)+(b.s?L.solmark:b.h?L.withhints(b.h):""):"");
   const tb=$("tests"); tb.innerHTML="";
   ch.tests.forEach((tt,i)=>{ const r=state.res[i]; const tr=document.createElement("tr"); tr.className="test"; tr.tabIndex=0; tr.setAttribute("aria-selected",i===selTest);
     tr.innerHTML=`<td>${tt.n[lang]}</td><td class="mono">${tt.e?L.yes:L.no}</td><td class="mono">${r.got?L.yes:L.no}</td><td class="${r.ok?"pass":"fail"}">${r.ok?"✓":"✗"}</td>`;
@@ -490,7 +510,7 @@ $("copy").onclick=()=>{ const L=S[lang], link=shareLink(), msg=$("sharemsg");
   const done=()=>{ msg.textContent=L.copied; }, fail=()=>{ const el=$("sharecode"); el.focus(); el.select(); msg.textContent=L.copyfail; };
   try{ navigator.clipboard.writeText(link).then(done,fail); }catch(e){ fail(); } };
 $("load").onclick=()=>{ const L=S[lang]; if(loadCode($("loadcode").value)){ renderAll(); $("sharemsg").textContent=L.loaded; } else $("sharemsg").textContent=L.badcode; };
-$("reset").onclick=()=>{ circuits[CH[cur].id]=fresh(CH[cur]); sel=null; renderResults(); };
+$("reset").onclick=()=>{ circuits[CH[cur].id]=fresh(CH[cur]); delete stash[CH[cur].id]; sel=null; renderSol(); renderResults(); };
 $("lang-ru").onclick=()=>{ lang="ru"; renderAll(); }; $("lang-en").onclick=()=>{ lang="en"; renderAll(); };
 
 function renderAll(){ renderStatic(); renderResults(); }
@@ -499,6 +519,16 @@ window.addEventListener("resize",()=>{ drawBoard(); drawRaster(); });
 if(window.matchMedia) window.matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change",()=>renderAll());
 new MutationObserver(()=>renderAll()).observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
 if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>{ drawBoard(); drawRaster(); });
-renderAll();
+if(location.hash==="#selftest"){
+  const lines=[]; let ok=0;
+  CH.forEach((ch,i)=>{ cur=i; circuits[ch.id]=fromSol(ch); const t0=performance.now(); const r=evaluate(); const ms=performance.now()-t0;
+    if(r.solved) ok++; lines.push(`${r.solved?"PASS":"FAIL"} ${ch.id.padEnd(8)} ${r.passed}/${r.res.length} neurons=${r.neurons} record=${ch.record} ${ms.toFixed(1)}ms`+(r.solved?"":"  "+r.res.map((x,j)=>x.ok?"":"["+ch.tests[j].n.en+" got "+x.got+"]").join(""))); });
+  // UI flow: show solution with the in-page confirm, then bring the user's circuit back
+  try{ cur=1; circuits={}; stash={}; solSeen={}; renderAll(); const before=JSON.stringify(circ());
+    $("solbtn").click(); const asked=!!$("solyes"); $("solyes").click(); const shown=evaluate().solved;
+    $("solback").click(); const back=JSON.stringify(circ())===before;
+    lines.push(`UI show-solution: confirm=${asked} solved=${shown} restored=${back}`); }catch(e){ lines.push("UI show-solution: ERROR "+e); }
+  document.body.innerHTML=`<pre id="selftest">${lines.join("\n")}\nTOTAL ${ok}/${CH.length}</pre>`; document.title=`PASS ${ok}/${CH.length}`;
+} else renderAll();
 })();
 </script>
