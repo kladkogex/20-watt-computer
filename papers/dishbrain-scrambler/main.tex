@@ -1,4 +1,5 @@
-\documentclass[11pt]{article}
+% Neural Computation Letter: submission format (12 pt, double spaced, line numbers, author-year references).
+\documentclass[12pt]{article}
 \usepackage[margin=1in]{geometry}
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
@@ -8,51 +9,77 @@
 \usepackage{pgfplots}
 \pgfplotsset{compat=1.18}
 \usepackage{caption}
+\usepackage[round,authoryear]{natbib}
+\usepackage{setspace}
+\usepackage{lineno}
 \usepackage[colorlinks=true,linkcolor=blue!50!black,citecolor=blue!50!black,urlcolor=blue!50!black]{hyperref}
 \usepackage{microtype}
 
 \newtheorem{proposition}{Proposition}
-\captionsetup{font=small,labelfont=bf}
+\captionsetup{font={small,singlespacing},labelfont=bf}
+\renewcommand{\thesection}{\arabic{section}}
+\numberwithin{equation}{section}
 
-\title{Scrambled when wrong, left alone when right:\\a prediction-free account of learning in DishBrain}
-\author{Konstantin Kladko}
+\title{Scrambled When Wrong, Left Alone When Right:\\A Prediction-Free Account of Learning in DishBrain}
+\author{Konstantin Kladko\\[2pt]
+\small [Affiliation, City, Country]\\ \small [email]}
 \date{}
 
 \begin{document}
 \maketitle
+\doublespacing
+\linenumbers
 
 \begin{abstract}
 \noindent
-Cortical cultures improve at Pong when misses are followed by unpredictable stimulation, which has been read as support for the free-energy principle~\cite{Kagan2022}. But the post-miss stimulus is also more disruptive: twice the amplitude and followed by eight seconds without input. We show that this alone suffices: if failure perturbs the network more than success, the network stays in each setting in inverse proportion to its failure rate, and improves with no prediction or reward. A closed-loop model reproduces the reported conditions and predicts anti-learning when success is more disruptive. We propose experiments that separate the two accounts.
+Cultured cortical neurons improve at a simplified Pong game when a miss is followed by unpredictable stimulation and a hit by predictable stimulation, a result read as support for the free-energy principle. The stimulus after a miss, however, is also more disruptive: twice the amplitude, chosen to force action potentials, and followed by eight seconds without sensory input. We show that this difference is sufficient on its own. If a failure perturbs a network's settings by a symmetric random kick and a success does not, the network occupies each setting in inverse proportion to that setting's failure rate, and its long-run failure rate is the harmonic mean of the failure rates, below their arithmetic mean. When both outcomes perturb, learning, no learning and anti-learning are separated by the ratio $\kappa$ of the perturbation variances after a success and after a failure, at $\kappa=1$. Predictability does not enter. A closed-loop Pong model with plastic readout weights and no prediction, reward or error signal reproduces the reported ordering of the experimental conditions. We propose stimulation protocols and analyses of existing recordings on which the predictability and perturbation accounts make opposite predictions.
 \end{abstract}
 
-\section{Two differences, one interpretation}
+\section{Introduction}
 
-In DishBrain~\cite{Kagan2022}, after a hit the culture receives a ``predictable'' stimulus: 100~Hz for 100~ms on all eight electrodes at the sensory amplitude, 75~mV. After a miss it receives an ``unpredictable'' one: 150~mV at 5~Hz, at random sites and times, for 4~s, then 4~s without stimulation. The authors chose the higher voltage so that it would force action potentials ``regardless of the state the cell was in, thereby being even more disruptive to the culture''~\cite{Kagan2022}. The post-miss feedback is therefore both less predictable and more disruptive, and the published controls do not separate the two: \emph{No feedback} removes both differences, and \emph{Silent} still withdraws the sensory input for eight seconds after a miss only. Earlier criticism concerned the words ``intelligence'' and ``sentience''~\cite{Balci2023,Kagan2023reply}; our question is which property of the feedback teaches.
+In the DishBrain experiment \citep{Kagan2022}, spikes recorded in two motor regions of a cortical culture on a multi-electrode array move a paddle, and the position of the ball is delivered to eight sensory electrodes as a place and rate code. After a hit the culture receives a ``predictable'' stimulus: 100~Hz for 100~ms on all eight electrodes at the sensory amplitude, 75~mV. After a miss it receives an ``unpredictable'' one: 150~mV at 5~Hz at random sites and times for 4~s, followed by 4~s without stimulation. Cultures in this condition improved within a session, and the improvement was interpreted as networks acting to make their input predictable, in line with the free-energy principle \citep{Friston2010,Kagan2022}.
 
-\section{The scrambler}
+The higher voltage after a miss was chosen so that it would force action potentials ``regardless of the state the cell was in, thereby being even more disruptive to the culture'' \citep{Kagan2022}. The feedback after a miss therefore differs from that after a hit in two ways at once: it is less predictable and more disruptive. The published controls do not separate the two. \emph{No feedback} removes both differences; \emph{Silent} replaces both stimuli by the same interval without stimulation, which still withdraws the sensory input for eight seconds after a miss and hardly at all after a hit. Published criticism of the work concerned mainly the terms ``intelligence'' and ``sentience'' \citep{Balci2023,Kagan2023reply}.
 
-Let $\psi$ be the network's setting and $P(\psi)$ its probability of missing. Suppose a miss moves $\psi$ by a symmetric kernel $K(\psi,\psi')=K(\psi',\psi)$ and a hit leaves it in place. Nothing tells the network which way to change.
+Here we ask which property of the feedback teaches. We show that the difference in disruption is sufficient (section~\ref{sec:theory}), confirm it in a closed-loop model (section~\ref{sec:model}), and propose experiments that decide between the accounts (section~\ref{sec:exp}).
+
+\section{Learning by Outcome-Contingent Perturbation}\label{sec:theory}
+
+Let $\psi\in\Omega$ denote the network's setting, the state variables that determine its play, and $P(\psi)$ its probability of missing a ball. Suppose that after a miss $\psi$ jumps according to a symmetric kernel, $K(\psi,\psi')=K(\psi',\psi)$, and that after a hit it stays where it is. Nothing tells the network in which direction to change; we call this teacher a \emph{scrambler}.
 
 \begin{proposition}\label{prop:exact}
-If $P>0$ and $K$ is irreducible, the stationary distribution is $\rho(\psi)\propto1/P(\psi)$. The long-run miss rate is the harmonic mean of $P$, which is below its arithmetic mean (the miss rate of a random setting) unless $P$ is constant.
+Let $\Omega$ be finite, $P>0$ on $\Omega$ and $K$ irreducible. The stationary distribution of the setting over ball approaches is
+\begin{equation}
+\rho(\psi)\propto\frac{1}{P(\psi)},
+\end{equation}
+and the long-run miss rate is the harmonic mean of $P$ over $\Omega$. It is at most the arithmetic mean, the miss rate of a setting drawn uniformly at random, with equality only if $P$ is constant.
 \end{proposition}
 
-\begin{proof}
-$\rho\propto1/P$ satisfies detailed balance, $\rho(\psi)P(\psi)K(\psi,\psi')=\rho(\psi')P(\psi')K(\psi',\psi)$, because $K$ is symmetric; the rest is the AM--HM inequality.
-\end{proof}
-
-A setting that misses ten times less often is kept ten times longer: good settings are not sought, only left alone. In general both outcomes perturb, with variance $\sigma_m^2$ after a miss and $\sigma_h^2$ after a hit. For small isotropic steps the setting diffuses with $D(\psi)=\tfrac12[\sigma_m^2P+\sigma_h^2(1-P)]$, and the It\^o form of the diffusion gives $\rho\propto1/D$~\cite{Schnitzer1993}.
+A setting that misses ten times less often is kept ten times longer: good settings are not sought, they are left alone. In general both outcomes perturb the network, with variance $\sigma_m^2$ per event after a miss and $\sigma_h^2$ after a hit. For small isotropic perturbations the setting diffuses with the state-dependent coefficient
+\begin{equation}
+D(\psi)=\tfrac12\left[\sigma_m^2P(\psi)+\sigma_h^2\bigl(1-P(\psi)\bigr)\right].
+\label{eq:D}
+\end{equation}
 
 \begin{proposition}\label{prop:kappa}
-With $\kappa=\sigma_h^2/\sigma_m^2$, $\rho\propto1/[\kappa+(1-\kappa)P]$. The stationary miss rate is below the uniform average for $\kappa<1$ (learning), equal to it for $\kappa=1$, and above it for $\kappa>1$ (anti-learning).
+Let $\kappa=\sigma_h^2/\sigma_m^2$ and let the setting diffuse on a bounded domain with reflecting boundary and coefficient \eqref{eq:D}, the step size being set at the point of departure. The stationary density is
+\begin{equation}
+\rho(\psi)\propto\frac{1}{\kappa+(1-\kappa)P(\psi)} .
+\end{equation}
+The stationary miss rate is below the uniform average of $P$ for $\kappa<1$ (learning), equal to it for $\kappa=1$, and above it for $\kappa>1$ (anti-learning), unless $P$ is constant.
 \end{proposition}
 
-Predictability does not enter; what matters is how far each outcome moves the network. The principle is old: Ashby's ultrastability~\cite{Ashby1952}, orthokinesis~\cite{Schnitzer1993}, the stimulus regulation principle in cultures~\cite{Shahaf2001,Marom2002} and learning by stimulation avoidance~\cite{Sinapayen2017,Masumori2020}. None of these works analyses DishBrain. We add that DishBrain's own feedback contains this contingency, its quantitative consequences including the sign reversal at $\kappa=1$, and experiments that decide.
+Proofs are in appendix~\ref{app:proofs}. Predictability does not enter either statement; what matters is how far each outcome moves the network. The size of the effect is set by the spread of $P$ over the reachable settings; a task in which no setting is much better than the others cannot be learned this way.
 
-\section{A closed-loop model}
+The principle has a long history. Ashby's ultrastable homeostat changes its parameters at random until its essential variables stay within bounds \citep{Ashby1952}. Woodlice gather in damp places by moving more in dry air \citep{Gunn1937}, and random walkers accumulate where they move slowly \citep{Schnitzer1993}; the scrambler is this orthokinesis in the space of network settings. Cortical cultures learn a target response when stimulation is withdrawn as soon as the response occurs, which led to the stimulus regulation principle \citep{Shahaf2001,Marom2002}, and spiking networks with spike-timing-dependent plasticity learn behaviors that stop external stimulation \citep{Sinapayen2017,Masumori2020}. None of these works analyzes DishBrain. We add the observation that DishBrain's own feedback contains this contingency, its quantitative consequences including the sign reversal at $\kappa=1$, and experiments that decide.
 
-On a two-parameter paddle model ($31\times21$ grid of settings) Proposition~\ref{prop:exact} predicts a stationary miss rate of $0.815$; simulation gives $0.810$, against $0.845$ for a random setting. In a DishBrain-like loop (\texttt{scrambler.py}) the ball is place- and rate-coded on 8 channels as in the experiment, two motor populations read it through 16 plastic weights, and the only teacher is a random kick to all weights after each approach (s.d.\ $\sigma_m$ after a miss, $\sigma_h$ after a hit). Sessions of 2000 approaches compare the first quarter with the rest, like the first 5 of 20 minutes. Silent is modelled as a weaker scrambler ($\sigma_m=0.03$ against $0.08$), because without stimulation unstimulated cultures burst~\cite{Wagenaar2005} and bursts make weights drift~\cite{Chao2005}; this is a testable assumption.
+\section{A Closed-Loop Model}\label{sec:model}
+
+We first checked Proposition~\ref{prop:exact} on a two-parameter paddle, $p=\mathrm{clip}(ay+b)$ for a ball arriving at height $y\sim U(0,1)$, with a miss moving $(a,b)$ to a random neighbor on a $31\times21$ grid. The predicted stationary miss rate is $0.815$ and the simulated rate $0.810$, against $0.845$ for a uniformly random setting.
+
+We then built a DishBrain-like loop (appendix~\ref{app:sim}). The ball's height relative to the paddle is place-coded on 8 sensory channels and its distance to the paddle wall rate-coded from 4 to 40, as in the experiment. Two motor populations read the active channel through 16 plastic weights in $[-1,1]$, and their rectified noisy rates move the paddle. The only teacher is a random kick to all weights after each approach, of standard deviation $\sigma_m$ after a miss and $\sigma_h$ after a hit, on top of a small spontaneous drift. Sessions of 2000 approaches compare the first quarter with the remaining three, as the experiment compares the first 5 of 20 minutes.
+
+The Silent condition removes the stimulation after a miss but not the eight-second withdrawal of sensory input. Rapid distributed stimulation suppresses the global bursts that dominate unstimulated cultures \citep{Wagenaar2005}, and such bursts make synaptic weights drift \citep{Chao2005}. We therefore model Silent as a weaker scrambler ($\sigma_m=0.03$) than Stimulus ($\sigma_m=0.08$); this assumption is testable (section~\ref{sec:exp}).
 
 \begin{figure}[t]
 \centering
@@ -81,56 +108,82 @@ On a two-parameter paddle model ($31\times21$ grid of settings) Proposition~\ref
 \end{tikzpicture}
 
 \vspace{4pt}\ref*{simleg}
-\caption{Scrambler learning in a closed-loop Pong model (400 simulated cultures). (a)~Hit fraction along a session (sliding window of 100 approaches). (b)~Hit fraction over the last three quarters of a session against how much a hit perturbs relative to a miss ($\sigma_m=0.08$); dashed: the information-free level. Nothing in the model computes a prediction, a reward or the sign of an error.}
+\caption{Learning by outcome-contingent perturbation in a closed-loop Pong model (400 simulated cultures). (a)~Hit fraction along a session, in a sliding window of 100 approaches. (b)~Hit fraction over the last three quarters of a session as a function of $\kappa$, with $\sigma_m=0.08$; the dashed line is the information-free level, $\kappa=1$. Nothing in the model computes a prediction, a reward or the sign of an error.}
 \label{fig:sim}
 \end{figure}
 
-Over 400 simulated cultures the within-session gain in hit fraction is $+0.161\pm0.014$ for Stimulus, $+0.068\pm0.012$ for Silent and $+0.017\pm0.007$ for No feedback: the reported ordering, with Silent above No feedback but weaker~\cite{Kagan2022}. The same kick after every outcome gives $-0.010\pm0.007$, and reversed disruption $-0.019\pm0.006$. Performance falls monotonically with $\kappa$ and crosses the information-free level at $\kappa=1$ (Fig.~\ref{fig:sim}b). The model is not fitted to data; the claim is only that the contingency suffices.
+Over 400 simulated cultures the within-session change in hit fraction (mean $\pm$ s.e.) is $+0.161\pm0.014$ for Stimulus, $+0.068\pm0.012$ for Silent and $+0.017\pm0.007$ for No feedback (Figure~\ref{fig:sim}a). This is the reported ordering, with Silent above No feedback but with a smaller effect \citep{Kagan2022}. The same kick after every outcome gives $-0.010\pm0.007$, and reversed disruption $-0.019\pm0.006$. Performance falls monotonically with $\kappa$ and crosses the information-free level at $\kappa=1$ (Figure~\ref{fig:sim}b), as Proposition~\ref{prop:kappa} requires. The model is not fitted to data: the time scale of learning depends on the kick size and the number of plastic parameters, both unknown for a culture. The claim is qualitative, that the contingency in DishBrain's feedback suffices to produce its effects.
 
-\section{Experiments that decide}
+\section{Experiments That Decide}\label{sec:exp}
 
-The accounts agree on every condition tested so far and disagree on those in Table~\ref{tab:exp}. B and C each change one property of the post-miss feedback and hold the other; D reverses which outcome is more disruptive.
+The two accounts agree on every condition tested so far and disagree on those in Table~\ref{tab:exp}. Protocols B and C each change one property of the feedback after a miss while holding the other fixed; protocol D reverses which outcome is the more disruptive.
 
 \begin{table}[t]
 \centering
 \small
+\singlespacing
 \renewcommand{\arraystretch}{1.15}
 \begin{tabular}{>{\raggedright}p{2.3cm}>{\raggedright}p{2.5cm}>{\raggedright}p{3.6cm}>{\raggedright}p{2.5cm}>{\raggedright\arraybackslash}p{2.5cm}}
 \toprule
-Protocol & After a hit & After a miss & Predictability & Scrambler \\
+Protocol & After a hit & After a miss & Predictability account & Perturbation account \\
 \midrule
 A. Published & 75~mV, 100~Hz, 100~ms & 150~mV random, 4~s; 4~s without input & learns & learns \\
 B. Predictable penalty & as A & 150~mV, same dose as A, in a fixed sequence & weak or none & learns as A \\
-C. Quenched penalty & as A & 8~s of random rapid low-amplitude stimulation that suppresses bursts~\cite{Wagenaar2005} & learns & weak or none \\
-D. Reversed & 150~mV fixed, 1~s & 75~mV random, 1~s & learns & below E \\
+C. Quenched penalty & as A & 8~s of random, rapid, low-amplitude stimulation that suppresses bursts & learns & weak or none \\
+D. Reversed & 150~mV fixed pattern, 1~s & 75~mV random, 1~s & learns & below E \\
 E. Information-free & same random stimulus & same random stimulus & none & none \\
 \bottomrule
 \end{tabular}
-\caption{Protocols that separate the accounts. B and C are the minimal pair; D tests the sign rule; E is the reference level for D.}
+\caption{Protocols that separate the accounts. B and C are the minimal pair; D tests the sign rule of Proposition~\ref{prop:kappa}; E is the reference level for D.}
 \label{tab:exp}
 \end{table}
 
-Two analyses of existing recordings also decide. \emph{Per-event displacement:} the scrambler predicts that a miss moves the network's state (e.g.\ the evoked response to a fixed probe) further than a hit, and that across cultures the gain grows with this difference. \emph{Bursts after a miss:} in Silent, the number of spontaneous bursts after misses should predict each culture's gain.
+Two analyses of existing recordings also decide. \emph{Per-event displacement:} measure how far each feedback event moves the network's state, for example the change in the evoked response to a fixed probe or in functional connectivity across the event. The perturbation account predicts that a miss moves the state further than a hit and that, across cultures and conditions, the within-session gain grows with the difference of the mean squared displacements. \emph{Bursts after a miss:} in the Silent condition, the number of spontaneous bursts in the eight seconds after each miss should predict a culture's gain.
 
 \section{Discussion}
 
-If the scrambler account holds, DishBrain shows a generic property of plastic networks under outcome-contingent perturbation rather than predictive processing, though a surprise-minimizing system may implement exactly this. It also explains why gains did not carry over between sessions~\cite{Kagan2022}: a setting held only by the absence of perturbation is diffused by bursting~\cite{Chao2005}. \emph{Limitations:} stimulation is not isotropic, and a 100~Hz burst may itself potentiate pathways~\cite{Jimbo1999}; the displacement analysis measures this directly.
+If the perturbation account holds, DishBrain demonstrates a generic property of plastic networks under outcome-contingent perturbation rather than predictive processing in particular. The accounts are not mutually exclusive: a surprise-minimizing system may implement exactly this stabilization, and the present data cannot tell them apart. The account also explains why the improvement did not carry over between sessions \citep{Kagan2022}: a setting held only by the absence of perturbation is diffused by spontaneous bursting between sessions \citep{Chao2005}, which predicts that quenching bursts between sessions should improve retention. For comparisons of sample efficiency between cultures and learning algorithms, the natural baseline is a learner that uses only the hit-or-miss signal by perturbing on failure.
 
-\paragraph{Code availability.} \texttt{scrambler.py} (standard-library Python) and the data behind Fig.~\ref{fig:sim} are in \texttt{papers/dishbrain-scrambler} of \url{https://github.com/kladkogex/20-watt-computer}.
+Two limitations apply. Real stimulation does not perturb synapses isotropically, and a patterned 100~Hz burst can itself induce pathway-specific potentiation and depression \citep{Jimbo1999}, so the ``predictable'' stimulus may push the network in a consistent direction rather than leave it alone; the displacement analysis measures such effects directly. And the reading of the Silent condition through post-miss bursts is a hypothesis, which the burst analysis tests.
 
-\begin{thebibliography}{99}\small
-\bibitem{Kagan2022} B.~J. Kagan, A.~C. Kitchen, N.~T. Tran, F.~Habibollahi, M.~Khajehnejad, B.~J. Parker, A.~Bhat, B.~Rollo, A.~Razi, and K.~J. Friston, In vitro neurons learn and exhibit sentience when embodied in a simulated game-world, \emph{Neuron} \textbf{110}, 3952--3969 (2022). doi:10.1016/j.neuron.2022.09.001
-\bibitem{Balci2023} F.~Balci, S.~Ben Hamed, T.~Boraud, S.~Bouret et al., A response to claims of emergent intelligence and sentience in a dish, \emph{Neuron} \textbf{111}, 604--605 (2023).
-\bibitem{Kagan2023reply} B.~J. Kagan, A.~Razi, A.~Bhat, A.~C. Kitchen et al., Scientific communication and the semantics of sentience, \emph{Neuron} \textbf{111}, 606--607 (2023).
-\bibitem{Schnitzer1993} M.~J. Schnitzer, Theory of continuum random walks and application to chemotaxis, \emph{Phys. Rev. E} \textbf{48}, 2553--2568 (1993).
-\bibitem{Ashby1952} W.~R. Ashby, \emph{Design for a Brain} (Chapman \& Hall, London, 1952).
-\bibitem{Shahaf2001} G.~Shahaf and S.~Marom, Learning in networks of cortical neurons, \emph{J. Neurosci.} \textbf{21}, 8782--8788 (2001).
-\bibitem{Marom2002} S.~Marom and G.~Shahaf, Development, learning and memory in large random networks of cortical neurons: lessons beyond anatomy, \emph{Q. Rev. Biophys.} \textbf{35}, 63--87 (2002).
-\bibitem{Sinapayen2017} L.~Sinapayen, A.~Masumori, and T.~Ikegami, Learning by stimulation avoidance: a principle to control spiking neural networks dynamics, \emph{PLoS ONE} \textbf{12}, e0170388 (2017).
-\bibitem{Masumori2020} A.~Masumori, L.~Sinapayen, N.~Maruyama, T.~Mita, D.~Bakkum, U.~Frey, H.~Takahashi, and T.~Ikegami, Neural autopoiesis: organizing self-boundaries by stimulus avoidance in biological and artificial neural networks, \emph{Artif. Life} \textbf{26}, 130--151 (2020).
-\bibitem{Wagenaar2005} D.~A. Wagenaar, R.~Madhavan, J.~Pine, and S.~M. Potter, Controlling bursting in cortical cultures with closed-loop multi-electrode stimulation, \emph{J. Neurosci.} \textbf{25}, 680--688 (2005).
-\bibitem{Chao2005} Z.~C. Chao, D.~J. Bakkum, D.~A. Wagenaar, and S.~M. Potter, Effects of random external background stimulation on network synaptic stability after tetanization: a modeling study, \emph{Neuroinformatics} \textbf{3}, 263--280 (2005).
-\bibitem{Jimbo1999} Y.~Jimbo, T.~Tateno, and H.~P.~C. Robinson, Simultaneous induction of pathway-specific potentiation and depression in networks of cortical neurons, \emph{Biophys. J.} \textbf{76}, 670--678 (1999).
+\section*{Code Availability}
+The simulation (\texttt{scrambler.py}, standard-library Python) and the data behind Figure~\ref{fig:sim} are in the folder \texttt{papers/\allowbreak dishbrain-scrambler} of the repository\\ \url{https://github.com/kladkogex/20-watt-computer}.
+
+\appendix
+\section{Proofs}\label{app:proofs}
+
+\emph{Proposition~\ref{prop:exact}.} Between approaches the setting moves from $\psi$ to $\psi'$ with probability $P(\psi)K(\psi,\psi')$. The measure $\rho\propto1/P$ satisfies detailed balance, $\rho(\psi)P(\psi)K(\psi,\psi')=\rho(\psi')P(\psi')K(\psi',\psi)$, because $K$ is symmetric; since $K$ is irreducible and $P>0$, it is the unique stationary distribution. The long-run miss rate is $\sum_\psi\rho(\psi)P(\psi)=|\Omega|/\sum_\psi1/P(\psi)$, the harmonic mean of $P$, which is at most the arithmetic mean by the inequality of the means, with equality only for constant $P$.
+
+\emph{Proposition~\ref{prop:kappa}.} When the size of a step is set at the point of departure, the density obeys the It\^o form of the Fokker--Planck equation, $\partial_t\rho=\nabla^2(D\rho)$ \citep{Schnitzer1993}. With a reflecting boundary the stationary flux vanishes, so $D\rho$ is constant and $\rho\propto1/D\propto1/[\kappa+(1-\kappa)P]$. Write $w=1/[\kappa+(1-\kappa)P]$ and let $\mathbb{E}_u$ denote the average over the uniform measure on the domain, the stationary law of information-free kicks. The stationary miss rate is $\mathbb{E}_u[Pw]/\mathbb{E}_u[w]$. For $\kappa<1$, $w$ is a decreasing function of $P$, and Chebyshev's association inequality gives $\mathbb{E}_u[Pw]\le\mathbb{E}_u[P]\,\mathbb{E}_u[w]$, with equality only if $P$ is constant; hence the miss rate is at most $\mathbb{E}_u[P]$. For $\kappa=1$, $w$ is constant. For $\kappa>1$, $w$ increases with $P$ and the inequality reverses.
+
+\section{Simulation Details}\label{app:sim}
+
+\emph{Court and ball.} The court is $1\times1$ with the paddle on the right wall; the paddle has half-length $0.1$ and its center is confined to $[0.1,0.9]$. Each serve starts at the far wall with horizontal speed 1 (one crossing per second) and vertical speed uniform in $[-0.8,0.8]$; the ball reflects from the other walls. A hit ($|y-p|<0.1$ at the paddle wall) returns the ball; a miss is followed by a new serve. The loop runs in steps of 20~ms (DishBrain uses 10~ms).
+
+\emph{Sensory code and readout.} The ball's height relative to the paddle, clipped to $[-0.5,0.5)$, selects one of 8 channels, $k=\lfloor8(y-p+0.5)\rfloor$, and its horizontal position $x$ sets the rate $s=(4+36x)/40$, from 0.1 at the far wall to 1 at the paddle. The motor rates are $r_\uparrow=[W_\uparrow[k]\,s+\xi_\uparrow]_+$ and $r_\downarrow=[W_\downarrow[k]\,s+\xi_\downarrow]_+$ with independent Gaussian noise of standard deviation 0.35 per step, and the paddle moves by $1.5\,(r_\uparrow-r_\downarrow)$ court heights per second.
+
+\emph{Plasticity.} The 16 weights start uniformly random in $[-1,1]$. After every approach each weight receives a Gaussian kick of standard deviation $\sigma_0=0.01$, and then one of standard deviation $\sigma_h$ after a hit or $\sigma_m$ after a miss; weights reflect at $\pm1$, so information-free kicks leave the uniform law invariant. Conditions: Stimulus $(\sigma_h,\sigma_m)=(0,0.08)$; Silent $(0,0.03)$; No feedback $(0,0)$; same kick after every outcome $(0.08,0.08)$; reversed disruption $(0.08,0.02)$. For Figure~\ref{fig:sim}b, $\sigma_m=0.08$ and $\sigma_h\in\{0,0.02,0.04,0.06,0.08,0.10,0.12,0.16\}$.
+
+\emph{Sessions and statistics.} Each of 400 simulated cultures plays one session of 2000 approaches; the hit fraction over the first 500 approaches is compared with that over the remaining 1500.
+
+\emph{Grid check of Proposition~\ref{prop:exact}.} $a\in\{-1,-0.9,\dots,2\}$, $b\in\{-1,-0.9,\dots,1\}$; $P(a,b)$ is evaluated on 400 equally spaced ball heights. After a miss the setting moves to a uniformly chosen neighbor; moves off the grid or into one of the seven never-miss settings are rejected, which keeps the kernel symmetric on the remaining states. The chain is run for $3\times10^6$ approaches.
+
+\begin{thebibliography}{}
+\small\singlespacing
+\bibitem[Ashby(1952)]{Ashby1952} Ashby, W.~R. (1952). \emph{Design for a brain}. Chapman \& Hall.
+\bibitem[Balci et~al.(2023)]{Balci2023} Balci, F., Ben~Hamed, S., Boraud, T., Bouret, S., et~al. (2023). A response to claims of emergent intelligence and sentience in a dish. \emph{Neuron}, \emph{111}, 604--605.
+\bibitem[Chao et~al.(2005)]{Chao2005} Chao, Z.~C., Bakkum, D.~J., Wagenaar, D.~A., \& Potter, S.~M. (2005). Effects of random external background stimulation on network synaptic stability after tetanization: A modeling study. \emph{Neuroinformatics}, \emph{3}, 263--280.
+\bibitem[Friston(2010)]{Friston2010} Friston, K. (2010). The free-energy principle: A unified brain theory? \emph{Nature Reviews Neuroscience}, \emph{11}, 127--138.
+\bibitem[Gunn(1937)]{Gunn1937} Gunn, D.~L. (1937). The humidity reactions of the wood-louse, \emph{Porcellio scaber} (Latreille). \emph{Journal of Experimental Biology}, \emph{14}, 178--186.
+\bibitem[Jimbo et~al.(1999)]{Jimbo1999} Jimbo, Y., Tateno, T., \& Robinson, H.~P.~C. (1999). Simultaneous induction of pathway-specific potentiation and depression in networks of cortical neurons. \emph{Biophysical Journal}, \emph{76}, 670--678.
+\bibitem[Kagan et~al.(2022)]{Kagan2022} Kagan, B.~J., Kitchen, A.~C., Tran, N.~T., Habibollahi, F., Khajehnejad, M., Parker, B.~J., Bhat, A., Rollo, B., Razi, A., \& Friston, K.~J. (2022). In vitro neurons learn and exhibit sentience when embodied in a simulated game-world. \emph{Neuron}, \emph{110}, 3952--3969. \url{https://doi.org/10.1016/j.neuron.2022.09.001}
+\bibitem[Kagan et~al.(2023)]{Kagan2023reply} Kagan, B.~J., Razi, A., Bhat, A., Kitchen, A.~C., et~al. (2023). Scientific communication and the semantics of sentience. \emph{Neuron}, \emph{111}, 606--607.
+\bibitem[Marom \& Shahaf(2002)]{Marom2002} Marom, S., \& Shahaf, G. (2002). Development, learning and memory in large random networks of cortical neurons: Lessons beyond anatomy. \emph{Quarterly Reviews of Biophysics}, \emph{35}, 63--87.
+\bibitem[Masumori et~al.(2020)]{Masumori2020} Masumori, A., Sinapayen, L., Maruyama, N., Mita, T., Bakkum, D., Frey, U., Takahashi, H., \& Ikegami, T. (2020). Neural autopoiesis: Organizing self-boundaries by stimulus avoidance in biological and artificial neural networks. \emph{Artificial Life}, \emph{26}, 130--151.
+\bibitem[Schnitzer(1993)]{Schnitzer1993} Schnitzer, M.~J. (1993). Theory of continuum random walks and application to chemotaxis. \emph{Physical Review E}, \emph{48}, 2553--2568.
+\bibitem[Shahaf \& Marom(2001)]{Shahaf2001} Shahaf, G., \& Marom, S. (2001). Learning in networks of cortical neurons. \emph{Journal of Neuroscience}, \emph{21}, 8782--8788.
+\bibitem[Sinapayen et~al.(2017)]{Sinapayen2017} Sinapayen, L., Masumori, A., \& Ikegami, T. (2017). Learning by stimulation avoidance: A principle to control spiking neural networks dynamics. \emph{PLOS ONE}, \emph{12}, e0170388.
+\bibitem[Wagenaar et~al.(2005)]{Wagenaar2005} Wagenaar, D.~A., Madhavan, R., Pine, J., \& Potter, S.~M. (2005). Controlling bursting in cortical cultures with closed-loop multi-electrode stimulation. \emph{Journal of Neuroscience}, \emph{25}, 680--688.
 \end{thebibliography}
 
 \end{document}
