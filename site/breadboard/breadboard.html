@@ -6,6 +6,7 @@
   --ink:#15202B; --muted:#586677; --line:#C6D0DB;
   --glut:#2F5DA8; --gaba:#BF3A2B; --spike:#C98A06; --inn:#4B5563;
   --ok:#2E7D4F; --bad:#B42318; --okbg:#E3F2E9; --badbg:#FBE7E5;
+  --sero:#7B4FB8; --nora:#1F8A80; --dofa:#C2610C; --acet:#A07A00;
   --sans:"IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --cond:"IBM Plex Sans Condensed", "Arial Narrow", system-ui, sans-serif;
   --mono:"IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
@@ -17,6 +18,7 @@
     --ink:#E4E9EF; --muted:#93A1B1; --line:#2E3C4B;
     --glut:#86ACEA; --gaba:#F08C7F; --spike:#F2C14E; --inn:#A9B4C2;
     --ok:#62C48F; --bad:#F2806F; --okbg:#173326; --badbg:#3A1C19;
+    --sero:#B79AF0; --nora:#5CCFC2; --dofa:#F5A25D; --acet:#E6C35C;
   }
 }
 :root[data-theme="dark"]{
@@ -25,6 +27,7 @@
   --ink:#E4E9EF; --muted:#93A1B1; --line:#2E3C4B;
   --glut:#86ACEA; --gaba:#F08C7F; --spike:#F2C14E; --inn:#A9B4C2;
   --ok:#62C48F; --bad:#F2806F; --okbg:#173326; --badbg:#3A1C19;
+  --sero:#B79AF0; --nora:#5CCFC2; --dofa:#F5A25D; --acet:#E6C35C;
 }
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font:15px/1.5 var(--sans);padding-inline:16px;padding-block:14px 28px}
@@ -38,7 +41,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 .chip{border:1px solid var(--line);background:var(--panel);border-radius:6px;padding:5px 10px;font:600 13px/1.2 var(--cond);letter-spacing:.04em}
 .chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .chip:focus-visible,.tool:focus-visible,.ch:focus-visible,input:focus-visible{outline:2px solid var(--spike);outline-offset:2px}
-.bench{display:grid;grid-template-columns:250px minmax(0,1fr) 290px;gap:14px;align-items:start}
+.bench{display:grid;grid-template-columns:260px minmax(0,1fr) 300px;gap:14px;align-items:start}
 @media (max-width:1060px){.bench{grid-template-columns:minmax(0,1fr)}}
 .panel{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px;display:flex;flex-direction:column;gap:10px;min-width:0}
 .eyebrow{font:600 11px/1 var(--cond);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
@@ -84,13 +87,14 @@ canvas{display:block;width:100%;touch-action:none}
 .record{font-size:13px;color:var(--muted)}
 table{width:100%;border-collapse:collapse;font-size:13px}
 th{font:600 11px var(--cond);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-align:left;padding:4px 4px;border-bottom:1px solid var(--line)}
-td{padding:5px 4px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+td{padding:5px 4px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums;vertical-align:top}
+td div+div{margin-top:4px}
 tr.test{cursor:pointer}
 tr.test[aria-selected="true"] td{background:var(--panel2)}
 td.mono{font-family:var(--mono)}
 .pass{color:var(--ok);font-weight:600}.fail{color:var(--bad);font-weight:600}
 .boardbox{position:relative}
-.boardhint{position:absolute;left:12px;right:12px;bottom:10px;text-align:center;font-size:13px;line-height:1.35;color:var(--muted);pointer-events:none;text-wrap:balance}
+.boardhint{font-size:13.5px;line-height:1.4;color:var(--ink);background:var(--panel);border:1px dashed var(--line);border-radius:6px;padding:7px 10px}
 .pop{position:absolute;z-index:2;width:236px;background:var(--panel);border:1px solid var(--ink);border-radius:8px;padding:10px 11px;display:flex;flex-direction:column;gap:7px;box-shadow:0 6px 22px rgba(0,0,0,.28)}
 .pop.dock{position:static;width:auto;border:0;border-top:1px solid var(--line);border-radius:0;box-shadow:none}
 .pop .ph{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
@@ -102,6 +106,16 @@ td.mono{font-family:var(--mono)}
 .pf input[type=number]{width:100%;font:500 13px var(--mono);padding:3px 5px;border:1px solid var(--line);border-radius:5px;background:var(--panel2);color:var(--ink)}
 .pst{font:600 12.5px/1.2 var(--sans);padding:5px 7px;border-radius:5px}
 .pst.ok{background:var(--okbg);color:var(--ok)} .pst.bad{background:var(--badbg);color:var(--bad)}
+.seg{display:flex;border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.seg button{flex:1;border:0;background:transparent;padding:5px 6px;font:600 12.5px/1.2 var(--cond);color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.chdet{margin-top:6px} .chdet summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:8px;padding:4px 0}
+.chdet summary::-webkit-details-marker{display:none} .chdet summary::after{content:"▾";font-size:12px} .chdet[open] summary::after{content:"▴"}
+.chdet .chlist{margin-top:6px}
+.chpart{font:600 10.5px/1 var(--cond);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:6px}
+.ch{padding:5px 9px}
+.ch .nm small{font:500 11px/1.2 var(--mono);color:var(--muted);margin-left:6px;white-space:nowrap}
+.win{display:block;font:500 11px/1.25 var(--mono);color:var(--muted)}
 .pop .danger{align-self:flex-start;border:1px solid var(--line);background:transparent;color:var(--bad);border-radius:6px;padding:4px 9px;font:600 12.5px/1.2 var(--cond)}
 .palette-lbl{font:600 11px/1 var(--cond);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-right:2px}
 .tool{touch-action:none}
@@ -133,14 +147,14 @@ footer code{font-family:var(--mono);font-size:12px}
 
   <div class="bench">
     <aside class="panel" aria-labelledby="chal-h">
-      <div class="eyebrow" id="chal-h" data-i="challenges"></div>
-      <div class="chlist" id="chlist"></div>
       <div class="task" id="task" style="display:flex;flex-direction:column;gap:8px"></div>
+      <details class="chdet" id="chdet"><summary class="eyebrow" id="chal-h"></summary><div class="chlist" id="chlist"></div></details>
     </aside>
 
     <section class="boardcol">
       <div class="toolbar" id="palette" role="group"></div>
-      <div class="canvasbox boardbox" id="boardbox"><canvas id="board" aria-label="Breadboard"></canvas><div class="boardhint" id="boardhint" hidden></div><div class="pop" id="pop" hidden></div></div>
+      <div class="canvasbox boardbox" id="boardbox"><canvas id="board" aria-label="Breadboard"></canvas><div class="pop" id="pop" hidden></div></div>
+      <div class="boardhint" id="boardhint" hidden></div>
       <div class="rastercap"><span id="rastercap"></span><span data-i="rasterhint"></span></div>
       <div class="canvasbox"><canvas id="raster" aria-label="Impulse raster"></canvas></div>
     </section>
@@ -184,7 +198,7 @@ footer code{font-family:var(--mono);font-size:12px}
 "use strict";
 // ---------- strings ----------
 const S = {
-  ru:{ brand:"Компьютер на 20 ваттах · глава 2–3", title:'Макетная плата <span class="watt">·</span> собери машину сам',
+  ru:{ brand:"Компьютер на 20 ваттах · задачи к главам 2–18", title:'Макетная плата <span class="watt">·</span> собери машину сам',
     challenges:"Задачи", parts:"Детали", score:"Результат", neurons:"нейронов", impulses:"имп./ответ", energy:"пДж/ответ",
     test:"Тест", expect:"Нужно", got:"Вышло", inspector:"Свойства", share:"Поделиться",
     copy:"Скопировать ссылку", reset:"Сбросить схему", sharelbl:"Ссылка на вашу схему", loadlbl:"Открыть чужую схему по коду", load:"Открыть",
@@ -194,8 +208,16 @@ const S = {
     add:"Добавить", addtip:(p)=>`Нажмите, чтобы поставить нейрон ${p} на плату, или перетащите его на нужное место`,
     firsthint:"Тяните от кружка ○ у нейрона к другому нейрону — получится провод. Нажмите на провод, чтобы изменить вес.",
     delwire:"Удалить провод", delnode:"Удалить нейрон", close:"Закрыть",
-    locked:{gaba:"гл. 3", pace:"гл. 5", dofa:"гл. 6", nora:"гл. 8", musc:"гл. 13"},
-    partnames:{glut:"ГЛУТ", gaba:"ГАМК", pace:"Ритмоводитель", dofa:"ДОФА", nora:"НОРА", musc:"Мышца"},
+    partnames:{glut:"ГЛУТ", gaba:"ГАМК", sero:"СЕРО (ритмоводитель)"},
+    parts4:["Основа","Широковещательные каналы","Входы и выходы","Лаборатория"], chap:(n)=>`гл. ${n}`,
+    imp:(n)=>`${n} имп.`, s:"с", ms:"мс", fmin:"мин", fmax:"макс", forcelbl:"F/F₁", muscle:"мышца", rec:"рец.",
+    noparts:"Новых нейронов не нужно: только провода и их настройки.",
+    inmed:{sero:"В тестах это группа СЕРО-нейронов: она выбрасывает серотонин в объём.", nora:"В тестах это НОРА-нейроны: они выбрасывают норадреналин в объём.", dofa:"Это ДОФА-нейроны: их выброс дофамина — сигнал награды."},
+    outsero:"Выходной СЕРО-ритмоводитель: сам выдаёт импульсы с частотой своего ритма, пока его не затормозят. Его импульсы — ответ схемы.",
+    outmuscle:"АЦЕТ-нейрон, управляющий мышцей: его импульсы складываются в силу мышцы (гл. 13).",
+    seropart:"СЕРО-ритмоводитель: работает сам с частотой своего ритма и выбрасывает серотонин в объём; знак действия выбирает получатель.",
+    hz:"Собственный ритм, имп/с", te:"След τ_e, с", receptor:"Рецептор", recpos:"возбуждающий", recneg:"тормозящий", sens:"Чувствительность g",
+    volwire:{sero:"Объёмная передача (гл. 5): получатель чувствует концентрацию серотонина c, сглаженную за τ_c ≈ 1 с, а не отдельные импульсы. Знак выбирает рецептор получателя.", nora:"Норадреналин меняет усиление (гл. 8): вход получателя умножается на 1 + g·c.", dofa:"Дофамин — третий множитель (гл. 6): веса возбуждающих входов получателя растут на η·g·c·e, где e — след совместной активности."},
     pass:(p,n)=>`Пройдено ${p} из ${n}`, solved:"Решено!", forbidden:(t)=>`Деталь ${t} в этой задаче не разрешена`,
     record:(r,n)=> n<r? `Меньше рекорда книги (${r}) — отличный результат!` : n===r? `Как рекорд книги: ${r} ${plural(r)}.` : `Рекорд книги: ${r} ${plural(r)}. Можно проще.`,
     hintbtn:(k,n)=> k>=n?`Все подсказки открыты (${n}/${n})`:(k===0?`Подсказка`:`Ещё подсказка`)+` (${k}/${n})`, withhints:(h)=>` (с подсказками: ${h}).`,
@@ -207,9 +229,9 @@ const S = {
     tau:"Постоянная времени τ, мс", th:"Порог θ", w:"Вес |w|", d:"Задержка d, мс", sign:(s)=> s<0?"Провод тормозящий: отправитель — ГАМК.":"Провод возбуждающий.",
     inputnode:"Вход задачи: подаёт импульсы по тестам. Его нельзя удалить.", outnode:"Выходной ГЛУТ-нейрон: его импульсы — ответ схемы.",
     yes:"да", no:"нет",
-    foot:'Модель — интегрирующий нейрон с утечкой из главы 2: <code>τ dV/dt = −V + τ Σ w δ(t − t<sub>j</sub> − d<sub>j</sub>)</code>, импульс при V ≥ θ, сброс в ноль, 1 мс невосприимчивости. Знак провода задаёт отправитель (правило Дейла, гл. 1). Энергия: около 10⁻¹⁰ Дж = 100 пДж на импульс (гл. 4). Схема хранится в вашем браузере.'
+    foot:'Модель — интегрирующий нейрон с утечкой из главы 2: <code>τ dV/dt = −V + τ Σ w δ(t − t<sub>j</sub> − d<sub>j</sub>)</code>, импульс при V ≥ θ, сброс в ноль, 1 мс невосприимчивости. Знак быстрого провода задаёт отправитель (правило Дейла, гл. 1). Объёмные каналы (гл. 5): <code>τ<sub>c</sub> dc/dt = −c + κ Σ δ(t − t<sub>k</sub>)</code>, τ<sub>c</sub> = 1 с — допущение книги, а не измерение; у СЕРО знак выбирает рецептор получателя, ритмоводитель работает с частотой <code>f·[1 + s·g·c]<sub>+</sub></code>. НОРА умножает вход на <code>1 + g·c</code> (модель гл. 8). ДОФА — третий множитель: <code>dw/dt = η·δ·e</code>, <code>τ<sub>e</sub> de/dt = −e + x·y</code> (гл. 6); выброс дофамина тает за 0,2 с — допущение. Мышца: <code>F(t) = Σ h(t − t<sub>k</sub>)</code>, <code>h = (t/T<sub>c</sub>)·e<sup>1 − t/T<sub>c</sub></sup></code>, T<sub>c</sub> = 50 мс (гл. 13). Энергия: около 10⁻¹⁰ Дж = 100 пДж на импульс (гл. 4). Схема хранится в вашем браузере.'
   },
-  en:{ brand:"The 20-Watt Computer · chapters 2–3", title:'Neuron Breadboard <span class="watt">·</span> build the machine yourself',
+  en:{ brand:"The 20-Watt Computer · challenges for chapters 2–18", title:'Neuron Breadboard <span class="watt">·</span> build the machine yourself',
     challenges:"Challenges", parts:"Parts", score:"Result", neurons:"neurons", impulses:"imp./answer", energy:"pJ/answer",
     test:"Test", expect:"Want", got:"Got", inspector:"Properties", share:"Share",
     copy:"Copy link", reset:"Reset circuit", sharelbl:"Link to your circuit", loadlbl:"Open someone else's circuit by code", load:"Open",
@@ -219,8 +241,16 @@ const S = {
     add:"Add", addtip:(p)=>`Click to put a ${p} neuron on the board, or drag it where you want it`,
     firsthint:"Drag from the ○ on a neuron to another neuron to make a wire. Click a wire to change its weight.",
     delwire:"Delete wire", delnode:"Delete neuron", close:"Close",
-    locked:{gaba:"ch. 3", pace:"ch. 5", dofa:"ch. 6", nora:"ch. 8", musc:"ch. 13"},
-    partnames:{glut:"ГЛУТ (glutamate)", gaba:"ГАМК (GABA)", pace:"Pacemaker", dofa:"ДОФА (dopamine)", nora:"НОРА (noradrenaline)", musc:"Muscle"},
+    partnames:{glut:"ГЛУТ (glutamate)", gaba:"ГАМК (GABA)", sero:"СЕРО (pacemaker)"},
+    parts4:["Foundations","Broadcast channels","Inputs and outputs","The lab"], chap:(n)=>`ch. ${n}`,
+    imp:(n)=>`${n} imp.`, s:"s", ms:"ms", fmin:"min", fmax:"max", forcelbl:"F/F₁", muscle:"muscle", rec:"rec.",
+    noparts:"No new neurons needed: only wires and their settings.",
+    inmed:{sero:"In the tests it is a group of СЕРО neurons releasing serotonin into the volume.", nora:"In the tests these are НОРА neurons releasing noradrenaline into the volume.", dofa:"These are ДОФА neurons: their release of dopamine is the reward signal."},
+    outsero:"Output СЕРО pacemaker: it fires by itself at its own rhythm until something inhibits it. Its impulses are the circuit's answer.",
+    outmuscle:"АЦЕТ neuron driving a muscle: its impulses add up to the muscle's force (ch. 13).",
+    seropart:"СЕРО pacemaker: fires by itself at its own rhythm and releases serotonin into the volume; the receiver chooses the sign.",
+    hz:"Own rhythm, impulses/s", te:"Trace τ_e, s", receptor:"Receptor", recpos:"excitatory", recneg:"inhibitory", sens:"Sensitivity g",
+    volwire:{sero:"Volume transmission (ch. 5): the receiver feels the serotonin concentration c, smoothed over τ_c ≈ 1 s, not single impulses. The receiver's receptor chooses the sign.", nora:"Noradrenaline changes the gain (ch. 8): the receiver's input is multiplied by 1 + g·c.", dofa:"Dopamine is the third factor (ch. 6): the weights of the receiver's excitatory inputs grow by η·g·c·e, where e is the trace of joint activity."},
     pass:(p,n)=>`Passed ${p} of ${n}`, solved:"Solved!", forbidden:(t)=>`Part ${t} is not allowed in this challenge`,
     record:(r,n)=> n<r? `Fewer than the book's record (${r}) — excellent!` : n===r? `Matches the book's record: ${r} neuron${r>1?"s":""}.` : `Book's record: ${r} neuron${r>1?"s":""}. It can be simpler.`,
     hintbtn:(k,n)=> k>=n?`All hints shown (${n}/${n})`:(k===0?`Hint`:`Another hint`)+` (${k}/${n})`, withhints:(h)=>` (with ${h} hint${h>1?"s":""}).`,
@@ -232,47 +262,109 @@ const S = {
     tau:"Time constant τ, ms", th:"Threshold θ", w:"Weight |w|", d:"Delay d, ms", sign:(s)=> s<0?"Inhibitory wire: the sender is ГАМК.":"Excitatory wire.",
     inputnode:"Challenge input: fires impulses according to the tests. It can't be deleted.", outnode:"Output ГЛУТ neuron: its impulses are the circuit's answer.",
     yes:"yes", no:"no",
-    foot:'Model: the leaky integrator of chapter 2, <code>τ dV/dt = −V + τ Σ w δ(t − t<sub>j</sub> − d<sub>j</sub>)</code>, an impulse when V ≥ θ, reset to zero, 1 ms refractory. The wire\'s sign is set by the sender (Dale\'s rule, ch. 1). Energy: about 10⁻¹⁰ J = 100 pJ per impulse (ch. 4). Your circuit is kept in your browser.'
+    foot:'Model: the leaky integrator of chapter 2, <code>τ dV/dt = −V + τ Σ w δ(t − t<sub>j</sub> − d<sub>j</sub>)</code>, an impulse when V ≥ θ, reset to zero, 1 ms refractory. A fast wire\'s sign is set by the sender (Dale\'s rule, ch. 1). Volume channels (ch. 5): <code>τ<sub>c</sub> dc/dt = −c + κ Σ δ(t − t<sub>k</sub>)</code>, with τ<sub>c</sub> = 1 s an assumption of the book, not a measurement; for СЕРО the receiver\'s receptor sets the sign, and a pacemaker fires at <code>f·[1 + s·g·c]<sub>+</sub></code>. НОРА multiplies the input by <code>1 + g·c</code> (the model of ch. 8). ДОФА is the third factor: <code>dw/dt = η·δ·e</code>, <code>τ<sub>e</sub> de/dt = −e + x·y</code> (ch. 6); a dopamine release fades in 0.2 s — an assumption. Muscle: <code>F(t) = Σ h(t − t<sub>k</sub>)</code>, <code>h = (t/T<sub>c</sub>)·e<sup>1 − t/T<sub>c</sub></sup></code>, T<sub>c</sub> = 50 ms (ch. 13). Energy: about 10⁻¹⁰ J = 100 pJ per impulse (ch. 4). Your circuit is kept in your browser.'
   }
 };
 function plural(n){ const m=n%10, h=n%100; if(m===1&&h!==11) return "нейрон"; if(m>=2&&m<=4&&(h<10||h>=20)) return "нейрона"; return "нейронов"; }
 
 // ---------- challenges ----------
 const T = (ru,en)=>({ru,en});
+// a regular impulse train on [t0, t1) at f impulses per second
+function train(t0,t1,f){ const r=[]; for(let t=t0;t<t1-1e-9;t+=1000/f) r.push(+t.toFixed(3)); return r; }
+// learning trials: A (cue) and B (action, 2 ms later) at each start, dopamine from D after a delay, then A alone as a probe
+function trials(starts,delay,probe){ return {A:starts.concat([probe]), B:starts.map(t=>t+2), D:delay===null?[]:starts.map(t=>t+delay)}; }
 const CH = [
- {id:"or", allowed:["glut"], record:1,
+ {id:"or", part:1, ch:2, allowed:["glut"], record:1,
   title:T("ИЛИ","OR"),
   desc:T("Выход должен выдать импульс, если импульс пришёл на A или на B.","The output must fire if an impulse arrives on A or on B."),
   hints:[T("Один импульс должен поднимать выход выше порога: w ≥ θ (гл. 2).","One impulse must lift the output above threshold: w ≥ θ (ch. 2)."),T("Нужны два провода: A → OUT и B → OUT, каждый сам по себе достаточно сильный.","You need two wires, A → OUT and B → OUT, each strong enough on its own."),T("Проведите провод B → OUT с весом 1,2: он больше порога θ = 1.","Draw a wire B → OUT with weight 1.2: that is above the threshold θ = 1.")],
   tests:[{n:T("только A","A only"),A:[5],B:[],e:1},{n:T("только B","B only"),A:[],B:[5],e:1},{n:T("A и B","A and B"),A:[5],B:[5],e:1},{n:T("тишина","silence"),A:[],B:[],e:0}],
   start:[["A","OUT",1.2,1]],
   sol:{n:[],w:[["A","OUT",1.2,1],["B","OUT",1.2,1]]}},
- {id:"and", allowed:["glut"], record:1,
+ {id:"and", part:1, ch:2, allowed:["glut"], record:1,
   title:T("Совпадение: И во времени","Coincidence: AND in time"),
   desc:T("Выход срабатывает, только если импульсы A и B пришли почти одновременно, в пределах нескольких миллисекунд.","The output fires only if impulses on A and B arrive almost together, within a few milliseconds."),
   hints:[T("Окно совпадения Δmax = τ·ln(w/(θ−w)), формула (2.2): подберите w и τ.","The coincidence window is Δmax = τ·ln(w/(θ−w)), eq. (2.2): tune w and τ."),T("Один импульс не должен дотягивать до порога, а два близких должны: θ/2 < w < θ.","One impulse must stay below threshold, two close ones must reach it: θ/2 < w < θ."),T("Провода A → OUT и B → OUT с весом 0,6 каждый; при τ = 5 мс окно около 2 мс.","Wires A → OUT and B → OUT with weight 0.6 each; with τ = 5 ms the window is about 2 ms.")],
   tests:[{n:T("вместе (0,5 мс)","together (0.5 ms)"),A:[5],B:[5.5],e:1},{n:T("врозь (10 мс)","apart (10 ms)"),A:[5],B:[15],e:0},{n:T("только A","A only"),A:[5],B:[],e:0},{n:T("только B","B only"),A:[],B:[5],e:0}],
   start:[], sol:{n:[],w:[["A","OUT",0.6,1],["B","OUT",0.6,1]]}},
- {id:"veto", allowed:["glut","gaba"], record:2,
+ {id:"veto", part:1, ch:3, allowed:["glut","gaba"], record:2,
   title:T("Запрет: A, но не при B","Veto: A but not B"),
   desc:T("Выход срабатывает на A и молчит, когда вместе с A пришёл B.","The output fires for A and stays silent when B arrives together with A."),
   hints:[T("Смена знака стоит одного ГАМК-нейрона и одной задержки (гл. 3): торможение должно успеть раньше.","A sign change costs one ГАМК neuron and one delay (ch. 3): the inhibition must arrive first."),T("A возбуждает OUT напрямую. B возбуждает ГАМК-нейрон, а тот тормозит OUT.","A excites OUT directly. B excites a ГАМК neuron, which inhibits OUT."),T("Путь торможения на одно звено длиннее: задержите провод A → OUT до 3 мс, а вес ГАМК → OUT сделайте 3.","The inhibitory path is one link longer: delay the wire A → OUT to 3 ms and set the ГАМК → OUT weight to 3.")],
   tests:[{n:T("только A","A only"),A:[5],B:[],e:1},{n:T("только B","B only"),A:[],B:[5],e:0},{n:T("A и B вместе","A and B together"),A:[5],B:[5],e:0},{n:T("тишина","silence"),A:[],B:[],e:0}],
   start:[], sol:{n:[["n1","gaba",360,300,5,1]],w:[["A","OUT",1.2,3],["B","n1",1.2,1],["n1","OUT",3,1]]}},
- {id:"xor", allowed:["glut","gaba"], record:2,
+ {id:"xor", part:1, ch:3, allowed:["glut","gaba"], record:2,
   title:T("Исключающее ИЛИ","XOR"),
   desc:T("Выход срабатывает, если пришёл ровно один из импульсов, и молчит при обоих.","The output fires if exactly one impulse arrives, and stays silent for both."),
   hints:[T("В главе 3 XOR собран из пяти нейронов. Можно гораздо меньше.","Chapter 3 builds XOR from five neurons. You can do it with far fewer."),T("Выход — это ИЛИ от A и B, запрещённое, когда пришли оба. Запрет даёт один ГАМК-нейрон, которому нужны оба входа сразу.","The output is an OR of A and B, vetoed when both arrive. The veto is one ГАМК neuron that needs both inputs at once."),T("A и B → OUT (вес 1,2, задержка 3 мс); A и B → ГАМК (вес 0,6, задержка 1 мс); ГАМК → OUT (вес 3, задержка 1 мс).","A and B → OUT (weight 1.2, delay 3 ms); A and B → ГАМК (weight 0.6, delay 1 ms); ГАМК → OUT (weight 3, delay 1 ms).")],
   tests:[{n:T("только A","A only"),A:[5],B:[],e:1},{n:T("только B","B only"),A:[],B:[5],e:1},{n:T("A и B вместе","A and B together"),A:[5],B:[5],e:0},{n:T("тишина","silence"),A:[],B:[],e:0}],
   start:[], sol:{n:[["n1","gaba",360,340,5,1]],w:[["A","OUT",1.2,3],["B","OUT",1.2,3],["A","n1",0.6,1],["B","n1",0.6,1],["n1","OUT",3,1]]}},
- {id:"dir", allowed:["glut","gaba"], record:2,
+ {id:"dir", part:1, ch:3, allowed:["glut","gaba"], record:2,
   title:T("Детектор направления","Direction detector"),
   desc:T("Датчики A и B стоят рядом. Выход срабатывает при движении от B к A (B раньше на 5 мс) и молчит при движении от A к B.","Sensors A and B sit side by side. The output fires for motion from B to A (B first, by 5 ms) and stays silent for motion from A to B."),
   hints:[T("Схема рис. 3.1: возбуждение от B, торможение от A с задержкой, v* = Δx/d.","The circuit of Fig. 3.1: excitation from B, delayed inhibition from A, v* = Δx/d."),T("B возбуждает OUT. A через ГАМК-нейрон тормозит OUT, но с задержкой, чтобы торможение пришло к моменту импульса B.","B excites OUT. A inhibits OUT through a ГАМК neuron, delayed so the inhibition arrives together with B's impulse."),T("B → OUT (1,2; 1 мс), A → ГАМК (1,2; 1 мс), ГАМК → OUT (вес 3, задержка 4 мс).","B → OUT (1.2; 1 ms), A → ГАМК (1.2; 1 ms), ГАМК → OUT (weight 3, delay 4 ms).")],
   tests:[{n:T("B → A","B → A"),A:[10],B:[5],e:1},{n:T("A → B","A → B"),A:[5],B:[10],e:0},{n:T("только A","A only"),A:[5],B:[],e:0}],
-  start:[], sol:{n:[["n1","gaba",360,120,5,1]],w:[["B","OUT",1.2,1],["A","n1",1.2,1],["n1","OUT",3,4]]}}
+  start:[], sol:{n:[["n1","gaba",360,120,5,1]],w:[["B","OUT",1.2,1],["A","n1",1.2,1],["n1","OUT",3,4]]}},
+ {id:"dash", part:1, ch:4, allowed:["glut"], record:1, T:80,
+  title:T("Тире, а не точки","A dash, not dots"),
+  desc:T("A передаёт азбуку Морзе. Выход срабатывает на «тире» — пачку из трёх импульсов через 2 мс — и молчит на «точках»: одиночных импульсах, даже если их три через 15 мс.","A sends Morse code. The output fires on a dash — a burst of three impulses 2 ms apart — and stays silent on dots: single impulses, even three of them 15 ms apart."),
+  hints:[T("Одну и ту же последовательность получатель читает по-своему (гл. 4): интегратор с утечкой складывает импульсы, пришедшие в пределах τ (гл. 2).","The receiver decides how a train is read (ch. 4): a leaky integrator adds impulses that arrive within τ (ch. 2)."),T("Уменьшите вес, чтобы один импульс давал около половины порога, и удлините τ выхода, чтобы три импульса через 2 мс успели сложиться.","Lower the weight so one impulse gives about half the threshold, and lengthen OUT's τ so three impulses 2 ms apart add up."),T("A → OUT с весом 0,45; у OUT τ = 10 мс.","A → OUT with weight 0.45; OUT's τ = 10 ms.")],
+  inputs:[{id:"A"}],
+  tests:[{n:T("тире: 3 импульса через 2 мс","dash: 3 impulses 2 ms apart"),in:{A:[10,12,14]},e:1},{n:T("три точки через 15 мс","three dots 15 ms apart"),in:{A:[10,25,40]},e:0},{n:T("два импульса через 2 мс","two impulses 2 ms apart"),in:{A:[10,12]},e:0},{n:T("одна точка","one dot"),in:{A:[10]},e:0}],
+  start:[["A","OUT",1.2,1]], sol:{n:[["OUT","out",670,210,10,1]],w:[["A","OUT",0.45,1]]}},
+ {id:"nor", part:2, ch:5, allowed:["sero"], record:1, T:4000, dt:0.2, outMed:"sero", outHz:4,
+  title:T("ИЛИ-НЕ за один нейрон","NOR in one neuron"),
+  desc:T("OUT — СЕРО-ритмоводитель: на ровном фоновом притоке он сам выдаёт 4 импульса в секунду. A и B — группы СЕРО-нейронов: в тестах они работают с частотой 20 имп/с и выбрасывают серотонин в объём. OUT должен работать, когда A и B молчат, и замолкать, когда работает хотя бы одна группа.","OUT is a СЕРО pacemaker: on its steady background inflow it fires 4 times a second by itself. A and B are groups of СЕРО neurons: in the tests they fire at 20 impulses/s and release serotonin into the volume. OUT must keep firing while A and B are silent and fall silent when at least one group is active."),
+  hints:[T("Ритмоводитель работает, пока его не остановили: так СЕРО-сеть получает НЕ и ИЛИ-НЕ за один нейрон (гл. 5).","A pacemaker works until something stops it: that is how a СЕРО network gets NOT and NOR from one neuron (ch. 5)."),T("Знак выбирает получатель, а не отправитель: проведите провода A → OUT и B → OUT и поставьте на OUT тормозящий рецептор.","The receiver chooses the sign, not the sender: draw wires A → OUT and B → OUT and give OUT an inhibitory receptor."),T("Чувствительность 1 на каждом проводе: при 20 имп/с концентрация доходит до 2, и приток 1 − 2 < 0 останавливает ритм.","Sensitivity 1 on each wire: at 20 impulses/s the concentration reaches 2, and the inflow 1 − 2 < 0 stops the rhythm.")],
+  inputs:[{id:"A",med:"sero"},{id:"B",med:"sero"}],
+  tests:[{n:T("тишина","silence"),in:{},c:[{w:[2000,4000],min:5}]},{n:T("работает A","A active"),in:{A:train(0,4000,20)},c:[{w:[2000,4000],max:0}]},{n:T("работает B","B active"),in:{B:train(0,4000,20)},c:[{w:[2000,4000],max:0}]},{n:T("работают обе","both active"),in:{A:train(0,4000,20),B:train(0,4000,20)},c:[{w:[2000,4000],max:0}]}],
+  start:[], sol:{n:[],w:[["A","OUT",1,0,-1],["B","OUT",1,0,-1]]}},
+ {id:"credit", part:2, ch:6, allowed:[], record:1, T:17500, dt:0.2, outTe:0.05,
+  title:T("Награда через полсекунды","Reward half a second later"),
+  desc:T("A — сигнал, B — действие: вместе они заставляют OUT сработать. Потом приходит награда — выброс дофамина из D. Синапс A → OUT должен выучиться так, чтобы OUT потом срабатывал на одно A, если награда пришла через 0,5 с, и не учиться, если она пришла через 3 с или не пришла вовсе.","A is a cue and B an action: together they make OUT fire. Then the reward comes — a release of dopamine from D. The synapse A → OUT must learn so that afterwards A alone fires OUT if the reward came 0.5 s later, and must not learn if it came 3 s later or not at all."),
+  hints:[T("Правило трёх множителей (гл. 6): совместная активность оставляет в синапсе след, который тает за τ_e; вес меняется, только если дофамин пришёл, пока след жив.","The three-factor rule (ch. 6): joint activity leaves a trace in the synapse that fades with τ_e; the weight changes only if dopamine arrives while the trace is alive."),T("Дофамин должен дойти до OUT: проведите D → OUT. Потом задайте след τ_e у OUT: достаточно длинный, чтобы пережить 0,5 с, и достаточно короткий, чтобы забыть за 3 с.","Dopamine must reach OUT: draw D → OUT. Then set OUT's trace τ_e: long enough to survive 0.5 s and short enough to be forgotten in 3 s."),T("D → OUT с чувствительностью 1 и след τ_e = 1 с у OUT — как окно в секунду-две, измеренное на ГЛУТ-синапсах.","D → OUT with sensitivity 1 and a trace τ_e = 1 s on OUT — like the one-to-two-second window measured at ГЛУТ synapses.")],
+  inputs:[{id:"A"},{id:"B"},{id:"D",med:"dofa"}],
+  tests:[{n:T("награда через 0,5 с","reward after 0.5 s"),in:trials([500,2500,4500,6500],500,9000),c:[{w:[9000,9030],min:1}]},
+         {n:T("награда через 3 с","reward after 3 s"),in:trials([500,4500,8500,12500],3000,17000),c:[{w:[17000,17030],max:0}]},
+         {n:T("без награды","no reward"),in:trials([500,2500,4500,6500],null,9000),c:[{w:[9000,9030],max:0}]}],
+  start:[["A","OUT",0.6,1],["B","OUT",1.2,1]], sol:{n:[["OUT","out",670,210,5,1,0,1]],w:[["A","OUT",0.6,1],["B","OUT",1.2,1],["D","OUT",1,0]]}},
+ {id:"gain", part:2, ch:8, allowed:[], record:1, T:2000, dt:0.1,
+  title:T("Усиление, а не сигнал","Gain, not signal"),
+  desc:T("A — слабый стимул: один импульс в 1,5 с. N — НОРА-нейроны: в режиме «бодрость» они работают с 20 имп/с. Выход должен ответить на стимул в бодрости, пропустить его в дремоте и молчать в бодрости без стимула.","A is a weak stimulus: one impulse at 1.5 s. N are НОРА neurons: when alert they fire at 20 impulses/s. The output must answer the stimulus when alert, miss it when drowsy, and stay silent when alert without a stimulus."),
+  hints:[T("НОРА не добавляет сигнал, а меняет коэффициент усиления (гл. 8): тот же вход даёт больший ответ.","НОРА does not add a signal, it changes the gain (ch. 8): the same input gives a bigger response."),T("Проведите N → OUT: вход OUT умножится на 1 + g·c, где c — концентрация норадреналина.","Draw N → OUT: OUT's input is multiplied by 1 + g·c, where c is the noradrenaline concentration."),T("N → OUT с чувствительностью 1: к 1,5 с концентрация около 1,5, усиление около 2,5, и вес 0,5 даёт 1,3 — выше порога.","N → OUT with sensitivity 1: by 1.5 s the concentration is about 1.5, the gain about 2.5, and the weight 0.5 gives 1.3 — above threshold.")],
+  inputs:[{id:"A"},{id:"N",med:"nora"}],
+  tests:[{n:T("бодрость и стимул","alert, stimulus"),in:{A:[1500],N:train(0,2000,20)},c:[{w:[1500,1530],min:1},{w:[0,1500],max:0}]},{n:T("дремота и стимул","drowsy, stimulus"),in:{A:[1500]},e:0},{n:T("бодрость без стимула","alert, no stimulus"),in:{N:train(0,2000,20)},e:0}],
+  start:[["A","OUT",0.5,1]], sol:{n:[],w:[["A","OUT",0.5,1],["N","OUT",1,0]]}},
+ {id:"onset", part:3, ch:11, allowed:["glut","gaba"], record:2, T:200,
+  title:T("Сообщи о перемене","Report the change"),
+  desc:T("A — датчик: пока стимул длится, он работает с частотой 100 имп/с. Выход должен выдать один импульс в начале каждого стимула и молчать, пока стимул не меняется.","A is a sensor: while a stimulus lasts it fires at 100 impulses/s. The output must give one impulse at the start of each stimulus and stay silent while the stimulus is steady."),
+  hints:[T("Датчики передают прежде всего перемены (гл. 11); фазический нейрон отвечает на фронт и замолкает (гл. 18).","Sensors report changes first (ch. 11); a phasic neuron answers the front and falls silent (ch. 18)."),T("Возбудите OUT от A напрямую, а через ГАМК-нейрон затормозите его с задержкой: первый импульс проходит, следующие встречают торможение.","Excite OUT from A directly and inhibit it through a ГАМК neuron with a delay: the first impulse gets through, the next ones meet the inhibition."),T("A → OUT (1,2; 1 мс), A → ГАМК (1,2; 1 мс), ГАМК → OUT (вес 3, задержка 2 мс).","A → OUT (1.2; 1 ms), A → ГАМК (1.2; 1 ms), ГАМК → OUT (weight 3, delay 2 ms).")],
+  inputs:[{id:"A"}],
+  tests:[{n:T("долгий стимул","long stimulus"),in:{A:train(10,101,100)},c:[{w:[10,25],min:1,max:1},{w:[25,200],max:0}]},{n:T("два стимула","two stimuli"),in:{A:train(10,51,100).concat(train(120,161,100))},c:[{w:[10,25],min:1,max:1},{w:[25,120],max:0},{w:[120,135],min:1,max:1},{w:[135,200],max:0}]},{n:T("один импульс","one impulse"),in:{A:[10]},c:[{w:[10,25],min:1,max:1}]},{n:T("тишина","silence"),in:{},e:0}],
+  start:[["A","OUT",1.2,1]], sol:{n:[["n1","gaba",380,300,5,1]],w:[["A","OUT",1.2,1],["A","n1",1.2,1],["n1","OUT",3,2]]}},
+ {id:"object", part:3, ch:12, allowed:["glut"], record:3,
+  title:T("Предмет, а не части","An object, not its parts"),
+  desc:T("A и B — две части предмета, 1 и 2 — два места в поле зрения. Выход срабатывает, когда обе части пришли с одного места, где бы оно ни было, и молчит, когда части пришли с разных мест или пришла только одна.","A and B are two parts of an object, 1 and 2 are two places in the visual field. The output fires when both parts come from the same place, wherever it is, and stays silent when the parts come from different places or only one part arrives."),
+  hints:[T("Распознавание — конвейер (гл. 12): И по частям делает ответ избирательным, ИЛИ по местам — независимым от сдвига.","Recognition is a conveyor (ch. 12): AND over parts makes the answer selective, OR over places makes it independent of shifts."),T("Соберите И для каждого места — нейрон, которому нужны обе части сразу, — и объедините их выходы через ИЛИ.","Build an AND for each place — a neuron that needs both parts at once — and join their outputs with an OR."),T("A1, B1 → n1 и A2, B2 → n2 с весом 0,6; n1 → OUT и n2 → OUT с весом 1,2.","A1, B1 → n1 and A2, B2 → n2 with weight 0.6; n1 → OUT and n2 → OUT with weight 1.2.")],
+  inputs:[{id:"A1"},{id:"B1"},{id:"A2"},{id:"B2"}],
+  tests:[{n:T("предмет на месте 1","object at place 1"),in:{A1:[5],B1:[5]},e:1},{n:T("предмет на месте 2","object at place 2"),in:{A2:[5],B2:[5]},e:1},{n:T("части с разных мест","parts from different places"),in:{A1:[5],B2:[5]},e:0},{n:T("части с разных мест, наоборот","parts from different places, swapped"),in:{A2:[5],B1:[5]},e:0},{n:T("одна часть","one part"),in:{A1:[5]},e:0}],
+  start:[], sol:{n:[["n1","glut",340,110,5,1],["n2","glut",340,310,5,1]],w:[["A1","n1",0.6,1],["B1","n1",0.6,1],["A2","n2",0.6,1],["B2","n2",0.6,1],["n1","OUT",1.2,1],["n2","OUT",1.2,1]]}},
+ {id:"grip", part:3, ch:13, allowed:["glut","gaba"], record:4, T:1000, dt:0.1, outMed:"acet", muscle:true,
+  title:T("Сжать и отпустить","Grip and release"),
+  desc:T("OUT — АЦЕТ-нейрон, управляющий мышцей. A — короткая команда «сжать», B — «отпустить». Мышца должна держать силу не меньше 2F₁ от 0,3 с до команды «отпустить» и расслабиться до 0,5F₁ через 0,25 с после неё.","OUT is an АЦЕТ neuron driving a muscle. A is a short command “grip”, B is “release”. The muscle must hold at least 2F₁ from 0.3 s until the release command and relax to 0.5F₁ within 0.25 s after it."),
+  hints:[T("Мышца складывает подёргивания (гл. 13): ровной силе нужен ровный поток импульсов, а команда короткая — кто-то должен держать поток.","A muscle adds twitches (ch. 13): steady force needs a steady stream of impulses, and the command is short — something must keep the stream going."),T("Два ГЛУТ-нейрона, возбуждающие друг друга, держат активность, как память главы 2; один из них возбуждает OUT. B останавливает петлю через ГАМК-нейрон.","Two ГЛУТ neurons exciting each other hold the activity, like the memory of chapter 2; one of them drives OUT. B stops the loop through a ГАМК neuron."),T("A → n1; n1 ⇄ n2 (1,2; задержка 10 мс в обе стороны); n1 → OUT; B → ГАМК → n1 и n2 (вес 5).","A → n1; n1 ⇄ n2 (1.2; delay 10 ms each way); n1 → OUT; B → ГАМК → n1 and n2 (weight 5).")],
+  inputs:[{id:"A"},{id:"B"}],
+  tests:[{n:T("сжать, потом отпустить","grip, then release"),in:{A:[100],B:[600]},c:[{f:1,w:[300,600],min:2},{f:1,w:[850,1000],max:0.5}]},{n:T("только сжать","grip only"),in:{A:[100]},c:[{f:1,w:[300,1000],min:2}]},{n:T("только отпустить","release only"),in:{B:[600]},c:[{f:1,w:[0,1000],max:0.5}]},{n:T("ничего","nothing"),in:{},c:[{f:1,w:[0,1000],max:0.5}]}],
+  start:[], sol:{n:[["n1","glut",260,120,5,1],["n2","glut",420,300,5,1],["n3","gaba",240,360,5,1]],w:[["A","n1",1.2,1],["n1","n2",1.2,10],["n2","n1",1.2,10],["n1","OUT",1.2,1],["B","n3",1.2,1],["n3","n1",5,1],["n3","n2",5,1]]}},
+ {id:"divider", part:4, ch:18, allowed:["glut"], record:1, T:100,
+  title:T("Делитель частоты","Frequency divider"),
+  desc:T("Выход должен выдавать один импульс на каждые два импульса A — при любом интервале от 5 до 10 мс.","The output must give one impulse for every two impulses on A — at any interval from 5 to 10 ms."),
+  hints:[T("Делитель — интегратор с утечкой, которому для порога нужны два импульса (гл. 18).","A divider is a leaky integrator that needs two impulses to reach threshold (ch. 18)."),T("Пусть один импульс даёт чуть больше половины порога, а τ выхода будет достаточно долгим, чтобы помнить предыдущий импульс 10 мс.","Let one impulse give a bit more than half the threshold, and make OUT's τ long enough to remember the previous impulse for 10 ms."),T("A → OUT с весом 0,6; у OUT τ = 50 мс.","A → OUT with weight 0.6; OUT's τ = 50 ms.")],
+  inputs:[{id:"A"}],
+  tests:[{n:T("8 импульсов через 10 мс","8 impulses 10 ms apart"),in:{A:train(5,80,100)},c:[{w:[0,100],min:4,max:4}]},{n:T("8 импульсов через 5 мс","8 impulses 5 ms apart"),in:{A:train(5,45,200)},c:[{w:[0,100],min:4,max:4}]},{n:T("2 импульса","2 impulses"),in:{A:[5,15]},c:[{w:[0,100],min:1,max:1}]},{n:T("1 импульс","1 impulse"),in:{A:[5]},e:0}],
+  start:[["A","OUT",1.2,1]], sol:{n:[["OUT","out",670,210,50,1]],w:[["A","OUT",0.6,1]]}}
+
 ];
-const FUTURE = ["pace","dofa","nora","musc"];
 
 // ---------- state ----------
 const W=760, H=420, R=19;
@@ -282,47 +374,87 @@ function store(){ try{ localStorage.setItem("bb20w", JSON.stringify({lang,cur,ci
 try{ const s=JSON.parse(localStorage.getItem("bb20w")||"null"); if(s){ lang=s.lang||lang; cur=s.cur||0; circuits=s.circuits||{}; best=s.best||{}; hintsUsed=s.hintsUsed||{}; stash=s.stash||{}; solSeen=s.solSeen||{}; wired=!!s.wired; } else { lang=(navigator.language||"").toLowerCase().startsWith("ru")?"ru":"en"; } }catch(e){ lang=(navigator.language||"").toLowerCase().startsWith("ru")?"ru":"en"; }
 if(cur<0||cur>=CH.length) cur=0;
 
+const INPUTS=[{id:"A"},{id:"B"}];
 function fresh(ch){
-  const c={nodes:[{id:"A",t:"in",x:70,y:120},{id:"B",t:"in",x:70,y:300},{id:"OUT",t:"out",x:670,y:210,tau:5,th:1}],wires:[],next:1};
-  ch.start.forEach(([f,to,w,d])=>c.wires.push({id:"w"+(c.next++),f,to,w,d}));
+  const ins=ch.inputs||INPUTS, ys=ins.length===1?[210]:ins.length===2?[120,300]:ins.length===3?[90,210,330]:[60,160,260,360];
+  const c={nodes:ins.map((d,i)=>({id:d.id,t:"in",x:70,y:ys[i]})),wires:[],next:1};
+  c.nodes.push({id:"OUT",t:"out",x:ch.muscle?600:670,y:210,tau:5,th:1,hz:ch.outHz||0,te:ch.outTe||0.05});
+  ch.start.forEach(([f,to,w,d,sg])=>c.wires.push({id:"w"+(c.next++),f,to,w,d,sg:sg||1}));
   return c;
 }
-function fromSol(ch){ const c=fresh(ch); c.wires=[]; c.nodes=c.nodes.filter(n=>n.t==="in"||n.t==="out");
-  ch.sol.n.forEach(([id,t,x,y,tau,th])=>c.nodes.push({id,t,x,y,tau,th})); ch.sol.w.forEach(([f,to,w,d])=>c.wires.push({id:"w"+(c.next++),f,to,w,d}));
+// solutions and share codes use the same arrays: nodes [id,type,x,y,tau,th,hz,te], wires [from,to,w,d,sign]
+function build(ch,nodes,wires){ const c=fresh(ch); c.wires=[]; const out=nodeById(c,"OUT");
+  nodes.forEach(([id,t,x,y,tau,th,hz,te])=>{ const o={id,t,x,y,tau,th,hz:hz||0,te:te==null?(ch.outTe||0.05):te}; if(t==="out"){ Object.assign(out,o,{t:"out"}); if(hz==null) out.hz=ch.outHz||0; } else c.nodes.push(o); });
+  wires.forEach(([f,to,w,d,sg])=>c.wires.push({id:"w"+(c.next++),f,to,w,d,sg:sg||1}));
   c.nodes.forEach(n=>{ const m=/^n(\d+)$/.exec(n.id); if(m) c.next=Math.max(c.next,+m[1]+1); }); return c; }
+function fromSol(ch){ return build(ch,ch.sol.n,ch.sol.w); }
 function circ(){ const ch=CH[cur]; if(!circuits[ch.id]) circuits[ch.id]=fresh(ch); return circuits[ch.id]; }
 const nodeById=(c,id)=>c.nodes.find(n=>n.id===id);
 
-// ---------- simulator: leaky integrate-and-fire, continuous time (Euler dt = 0.05 ms) ----------
-function simulate(c, test){
-  const dt=0.05, TT=40, K=Math.round(TT/dt);
-  const neu=c.nodes.filter(n=>n.t!=="in"), idx=new Map(); neu.forEach((n,i)=>idx.set(n.id,i));
-  const V=new Float64Array(neu.length), refr=new Float64Array(neu.length).fill(-1);
-  const decay=neu.map(n=>Math.exp(-dt/Math.max(0.05,+n.tau||5)));
-  const spikes=new Map(c.nodes.map(n=>[n.id,[]])), q=new Map(), outs=new Map(c.nodes.map(n=>[n.id,[]]));
-  c.wires.forEach(w=>{ const s=nodeById(c,w.f); if(!s||!nodeById(c,w.to)) return; outs.get(w.f).push([w.to,(s.t==="gaba"?-1:1)*Math.abs(+w.w||0),Math.max(1,Math.round((+w.d||0)/dt))]); });
-  function emit(id,k){ spikes.get(id).push(k*dt); for(const [to,ww,s] of outs.get(id)){ const i=idx.get(to); if(i===undefined) continue; const kk=k+s; if(kk>K) continue; if(!q.has(kk)) q.set(kk,[]); q.get(kk).push([i,ww]); } }
-  const inSteps=[]; c.nodes.forEach(n=>{ if(n.t==="in") (test[n.id]||[]).forEach(ts=>inSteps.push([Math.round(ts/dt),n.id])); });
-  const iOut=idx.get("OUT"), trace=[];
+// ---------- simulator ----------
+// Leaky integrate-and-fire in continuous time (Euler step dt). Point synapses (ГЛУТ +, ГАМК −, АЦЕТ +) add w to V after the delay.
+// Volume senders (СЕРО, НОРА, ДОФА) raise a concentration c that relaxes with τ_c (ch. 5):
+//   СЕРО: drive s·g·c with the receptor sign s chosen by the receiver; a pacemaker's ramp runs at f·[1 + s·g·c]_+ (ch. 5)
+//   НОРА: gain — arriving synaptic input is multiplied by 1 + g·c (ch. 8)
+//   ДОФА: third factor — dw/dt = η·g·c·e on the receiver's excitatory synapses, trace τ_e·de/dt = −e + (pre-then-post) (ch. 6)
+const MED_TAU={sero:1000,nora:1000,dofa:200}, ETA=0.3, TC=50;
+function medOf(ch,n){ if(!n) return "glut"; if(n.t==="in"){ const d=(ch.inputs||INPUTS).find(x=>x.id===n.id); return (d&&d.med)||"glut"; } if(n.t==="out") return ch.outMed||"glut"; return n.t; }
+const isVol=m=>m==="sero"||m==="nora"||m==="dofa";
+function testInput(test,id){ return test.in?(test.in[id]||[]):(test[id]||[]); }
+function simulate(ch, c, test){
+  const dt=ch.dt||0.05, TT=ch.T||40, K=Math.round(TT/dt);
+  const neu=c.nodes.filter(n=>n.t!=="in"), N=neu.length, idx=new Map(); neu.forEach((n,i)=>idx.set(n.id,i));
+  const V=new Float64Array(N), P=new Float64Array(N), refr=new Float64Array(N).fill(-1);
+  const decay=neu.map(n=>Math.exp(-dt/Math.max(0.05,+n.tau||5))), th=neu.map(n=>+n.th||1), hz=neu.map(n=>Math.max(0,+n.hz||0)), tau=neu.map(n=>Math.max(0.05,+n.tau||5));
+  const spikes=new Map(c.nodes.map(n=>[n.id,[]]));
+  // volume sources
+  const vol=new Map(); c.nodes.forEach(n=>{ const m=medOf(ch,n); if(isVol(m)) vol.set(n.id,{m,c:0,f:Math.exp(-dt/MED_TAU[m]),jump:m==="dofa"?1/MED_TAU[m]:100/MED_TAU[m]}); });
+  const volIn=neu.map(()=>[]);
+  // point synapses
+  const syn=[], outs=new Map(c.nodes.map(n=>[n.id,[]])), synOf=neu.map(()=>[]);
+  c.wires.forEach(w=>{ const s=nodeById(c,w.f), i=idx.get(w.to); if(!s||i===undefined) return; const m=medOf(ch,s);
+    if(isVol(m)){ volIn[i].push({src:vol.get(w.f),g:Math.abs(+w.w||0),sg:(+w.sg<0?-1:1),m}); return; }
+    const k=syn.length; syn.push({i,w:Math.abs(+w.w||0),sign:m==="gaba"?-1:1,steps:Math.max(1,Math.round((+w.d||0)/dt)),last:-1e9,e:0}); outs.get(w.f).push(k); synOf[i].push(k); });
+  const hasDofa=volIn.map(a=>a.some(x=>x.m==="dofa")), eDecay=neu.map(n=>Math.exp(-dt/(1000*Math.max(0.001,+n.te||0.05))));
+  const q=new Map(), inAt=new Map();
+  c.nodes.forEach(n=>{ if(n.t==="in") testInput(test,n.id).forEach(ts=>{ const k=Math.round(ts/dt); if(k>K) return; if(!inAt.has(k)) inAt.set(k,[]); inAt.get(k).push(n.id); }); });
+  function emit(id,k){ spikes.get(id).push(k*dt); const v=vol.get(id); if(v) v.c+=v.jump;
+    for(const s of outs.get(id)){ const kk=k+syn[s].steps; if(kk>K) continue; if(!q.has(kk)) q.set(kk,[]); q.get(kk).push(s); } }
+  const iOut=idx.get("OUT"), every=Math.max(1,Math.round(K/900)), trace=[];
+  const u=new Float64Array(N), g=new Float64Array(N), dop=new Float64Array(N);
   for(let k=0;k<=K;k++){
     const t=k*dt;
-    for(const [ks,id] of inSteps) if(ks===k) emit(id,k);
-    for(let i=0;i<neu.length;i++) V[i]*=decay[i];
-    const arr=q.get(k); if(arr) for(const [i,ww] of arr) if(t>=refr[i]) V[i]+=ww;
-    for(let i=0;i<neu.length;i++){
-      if(t<refr[i]){ V[i]=0; continue; }
-      if(V[i]>=(+neu[i].th||1)){ emit(neu[i].id,k); V[i]=0; refr[i]=t+1.0; }
+    const ins=inAt.get(k); if(ins) for(const id of ins) emit(id,k);
+    for(const v of vol.values()) v.c*=v.f;
+    for(let i=0;i<N;i++){ let uu=0, gg=1, dd=0; for(const x of volIn[i]){ if(x.m==="sero") uu+=x.sg*x.g*x.src.c; else if(x.m==="nora") gg+=x.g*x.src.c; else dd+=x.g*x.src.c; } u[i]=uu; g[i]=gg; dop[i]=dd; V[i]*=decay[i]; }
+    const arr=q.get(k); if(arr){ for(const s of arr){ const y=syn[s], i=y.i; y.last=t; if(t>=refr[i]) V[i]+=g[i]*y.sign*y.w; } q.delete(k); }
+    for(let i=0;i<N;i++){
+      if(hz[i]>0) P[i]+=dt*hz[i]/1000*th[i]*Math.max(0,1+u[i]); else V[i]+=dt/tau[i]*u[i];
+      if(hasDofa[i]) for(const s of synOf[i]){ const y=syn[s]; if(y.sign>0&&dop[i]>0) y.w=Math.min(5,y.w+ETA*dop[i]*y.e*dt); y.e*=eDecay[i]; }
+      if(t<refr[i]){ V[i]=0; P[i]=0; continue; }
+      if(V[i]+P[i]>=th[i]){ emit(neu[i].id,k); V[i]=0; P[i]=0; refr[i]=t+1.0;
+        if(hasDofa[i]) for(const s of synOf[i]){ const y=syn[s]; if(y.sign>0&&t-y.last<=20) y.e+=1; } }
     }
-    if(k%4===0) trace.push(V[iOut]);
+    if(k%every===0) trace.push(iOut===undefined?0:V[iOut]+P[iOut]);
   }
-  return {spikes,trace,dt:dt*4,T:TT};
+  return {spikes,trace,dt:dt*every,T:TT};
+}
+// muscle force F(t) = Σ h(t − t_k), h(t) = (t/T_c)·e^{1 − t/T_c}, T_c = 50 ms (ch. 13), in units of F₁
+function force(sp,t){ let F=0; for(const tk of sp){ const x=t-tk; if(x>0) F+=x/TC*Math.exp(1-x/TC); } return F; }
+function crits(ch,tt){ return tt.c||[{w:[0,ch.T||40],min:tt.e?1:0,max:tt.e?undefined:0,yn:1}]; }
+function checkTest(ch,tt,run){
+  const out=run.spikes.get("OUT")||[];
+  return crits(ch,tt).map(cr=>{ let v;
+    if(cr.f){ const vals=[]; for(let t=cr.w[0];t<=cr.w[1];t+=2) vals.push(force(out,t)); v=cr.min!=null?Math.min(...vals):Math.max(...vals); }
+    else v=out.filter(t=>t>=cr.w[0]&&t<=cr.w[1]).length;
+    const ok=(cr.min==null||v>=cr.min-1e-9)&&(cr.max==null||v<=cr.max+1e-9); return {cr,v,ok}; });
 }
 function evaluate(){
   const ch=CH[cur], c=circ();
-  const bad=c.nodes.find(n=>(n.t==="glut"||n.t==="gaba")&&!ch.allowed.includes(n.t));
-  const runs=ch.tests.map(tt=>simulate(c,tt));
+  const bad=c.nodes.find(n=>(n.t==="glut"||n.t==="gaba"||n.t==="sero")&&!ch.allowed.includes(n.t));
+  const runs=ch.tests.map(tt=>simulate(ch,c,tt));
   let total=0; runs.forEach(r=>{ for(const [id,s] of r.spikes){ const n=nodeById(c,id); if(n&&n.t!=="in") total+=s.length; } });
-  const res=ch.tests.map((tt,i)=>{ const got=runs[i].spikes.get("OUT").length>0?1:0; return {got,ok:got===tt.e}; });
+  const res=ch.tests.map((tt,i)=>{ const cs=checkTest(ch,tt,runs[i]); return {cs,ok:cs.every(x=>x.ok),got:(runs[i].spikes.get("OUT")||[]).length>0?1:0}; });
   const neurons=c.nodes.filter(n=>n.t!=="in").length;
   const imp=total/ch.tests.length;
   const passed=res.filter(r=>r.ok).length, solved=!bad&&passed===res.length;
@@ -334,8 +466,8 @@ function evaluate(){
 const $=id=>document.getElementById(id);
 const board=$("board"), raster=$("raster"), bctx=board.getContext("2d"), rctx=raster.getContext("2d");
 let state=null;
-function tok(){ const cs=getComputedStyle(document.documentElement); const g=k=>cs.getPropertyValue(k).trim(); return {ink:g("--ink"),muted:g("--muted"),grid:g("--grid"),grid2:g("--grid2"),line:g("--line"),glut:g("--glut"),gaba:g("--gaba"),spike:g("--spike"),inn:g("--inn"),panel2:g("--panel2"),ok:g("--ok"),bad:g("--bad")}; }
-const colorOf=(k,t)=> t==="gaba"?k.gaba : t==="in"?k.inn : k.glut;
+function tok(){ const cs=getComputedStyle(document.documentElement); const g=k=>cs.getPropertyValue(k).trim(); return {ink:g("--ink"),muted:g("--muted"),grid:g("--grid"),grid2:g("--grid2"),line:g("--line"),glut:g("--glut"),gaba:g("--gaba"),spike:g("--spike"),inn:g("--inn"),panel2:g("--panel2"),ok:g("--ok"),bad:g("--bad"),sero:g("--sero"),nora:g("--nora"),dofa:g("--dofa"),acet:g("--acet")}; }
+function colorOf(k,n){ const m=medOf(CH[cur],n); if(n.t==="in"&&m==="glut") return k.inn; return k[m]||k.glut; }
 
 function renderStatic(){
   const L=S[lang];
@@ -345,22 +477,25 @@ function renderStatic(){
   $("lang-ru").setAttribute("aria-pressed",lang==="ru"); $("lang-en").setAttribute("aria-pressed",lang==="en");
   $("copy").textContent=L.copy; $("reset").textContent=L.reset; $("load").textContent=L.load;
   // challenge list
+  $("chal-h").textContent=`${L.challenges} · ${CH.filter(x=>best[x.id]).length}/${CH.length}`;
   $("chlist").innerHTML="";
-  CH.forEach((ch,i)=>{ const b=document.createElement("button"); b.className="ch"; b.type="button"; b.setAttribute("aria-current",i===cur);
+  CH.forEach((ch,i)=>{ if(i===0||CH[i-1].part!==ch.part){ const h=document.createElement("div"); h.className="chpart"; h.textContent=L.parts4[ch.part-1]; $("chlist").appendChild(h); }
+    const b=document.createElement("button"); b.className="ch"; b.type="button"; b.setAttribute("aria-current",i===cur);
     const done=!!best[ch.id];
-    b.innerHTML=`<span class="num">${i+1}</span><span class="nm">${ch.title[lang]}</span><span class="st ${done?"done":""}">${done?"✓ "+best[ch.id].n:""}</span>`;
-    b.onclick=()=>{ cur=i; sel=null; selTest=0; solAsk=false; store(); renderAll(); }; $("chlist").appendChild(b); });
+    b.innerHTML=`<span class="num">${i+1}</span><span class="nm">${ch.title[lang]}<small>${L.chap(ch.ch)}</small></span><span class="st ${done?"done":""}">${done?"✓ "+best[ch.id].n:""}</span>`;
+    b.onclick=()=>{ cur=i; sel=null; selTest=0; solAsk=false; store(); renderAll(); if(window.innerWidth<=1060){ $("chdet").open=false; $("task").scrollIntoView({block:"start"}); } }; $("chlist").appendChild(b); });
   const ch=CH[cur];
-  $("task").innerHTML=`<h2>${cur+1}. ${ch.title[lang]}</h2><p>${ch.desc[lang]}</p><ol class="hints" id="hints"></ol><button class="btn ghost" id="hintbtn" type="button"></button><div class="solbox" id="solbox"></div>`;
+  $("task").innerHTML=`<div class="eyebrow">${L.chap(ch.ch)}</div><h2>${cur+1}. ${ch.title[lang]}</h2><p>${ch.desc[lang]}</p><ol class="hints" id="hints"></ol><button class="btn ghost" id="hintbtn" type="button"></button><div class="solbox" id="solbox"></div>`;
   renderHints(); renderSol();
   // palette: click adds a neuron at a free spot, drag places it
   const k=tok(), pal=$("palette"); pal.innerHTML=`<span class="palette-lbl">${L.add}</span>`;
-  ["glut","gaba",...FUTURE].filter(p=>ch.allowed.includes(p)).forEach(p=>{ const on=true; const b=document.createElement("button"); b.className="tool"; b.type="button"; b.id="add-"+p;
-    const col=p==="gaba"?k.gaba:p==="glut"?k.glut:k.muted; b.disabled=!on; if(on) b.title=L.addtip(L.partnames[p]);
+  ["glut","gaba","sero"].filter(p=>ch.allowed.includes(p)).forEach(p=>{ const on=true; const b=document.createElement("button"); b.className="tool"; b.type="button"; b.id="add-"+p;
+    const col=k[p]||k.glut; b.disabled=!on; if(on) b.title=L.addtip(L.partnames[p]);
     b.innerHTML=`<span class="sw" style="background:${col}"></span>${on?"+ ":""}${L.partnames[p]}${on?"":` <span class="lock">· ${L.locked[p]||L.locked.gaba}</span>`}`;
     if(on) b.addEventListener("pointerdown",e=>paletteDown(e,p));
     b.addEventListener("click",e=>{ if(e.detail===0&&on) addNeuron(p,freeSpot()); }); // keyboard activation
     pal.appendChild(b); });
+  if(!ch.allowed.length) pal.innerHTML=`<span class="palette-lbl">${L.add}</span><span class="small">${L.noparts}</span>`;
 }
 function renderSol(){
   const L=S[lang], ch=CH[cur], box=$("solbox"); if(!box) return;
@@ -378,6 +513,15 @@ function renderHints(){
   b.textContent=L.hintbtn(k,ch.hints.length); b.disabled=k>=ch.hints.length;
   b.onclick=()=>{ hintsUsed[ch.id]=k+1; store(); renderHints(); const li=ol.lastElementChild; if(li) li.setAttribute("tabindex","-1"), li.focus(); };
 }
+function fmtT(t,T){ const L=S[lang]; return T>1000? `${+(t/1000).toFixed(2)}`.replace(".",lang==="ru"?",":".") : `${t}`; }
+function winTxt(ch,w){ const L=S[lang], T=ch.T||40; if(w[0]===0&&w[1]===T) return ""; return `<span class="win">${fmtT(w[0],T)}–${fmtT(w[1],T)} ${T>1000?L.s:L.ms}</span>`; }
+function wantTxt(ch,cr){ const L=S[lang];
+  if(cr.yn) return cr.min?L.yes:L.no;
+  if(cr.f) return (cr.min!=null?`F ≥ ${fmtN(cr.min)}`:`F ≤ ${fmtN(cr.max)}`)+winTxt(ch,cr.w);
+  const n=cr.min!=null&&cr.max!=null? (cr.min===cr.max?`${cr.min}`:`${cr.min}–${cr.max}`) : cr.min!=null?`≥ ${cr.min}`:`${cr.max===0?"0":"≤ "+cr.max}`;
+  return n+winTxt(ch,cr.w); }
+function gotTxt(x){ const L=S[lang]; if(x.cr.yn) return x.v>0?L.yes:L.no; if(x.cr.f) return (x.cr.min!=null?L.fmin:L.fmax)+" "+fmtN(x.v); return `${x.v}`; }
+const fmtN=v=>(+v.toFixed(1)).toString().replace(".",lang==="ru"?",":".");
 function renderResults(keepInsp){
   const L=S[lang], ch=CH[cur]; state=evaluate(); store();
   $("m-neu").textContent=state.neurons; $("m-imp").textContent=state.imp.toFixed(1); $("m-en").textContent=Math.round(state.imp*100);
@@ -389,33 +533,44 @@ function renderResults(keepInsp){
   $("record").textContent=(state.solved?L.record(ch.record,state.neurons):L.recordOnly(ch.record))+(b?" "+L.best(b.n,b.i)+(b.s?L.solmark:b.h?L.withhints(b.h):""):"");
   const tb=$("tests"); tb.innerHTML="";
   ch.tests.forEach((tt,i)=>{ const r=state.res[i]; const tr=document.createElement("tr"); tr.className="test"; tr.tabIndex=0; tr.setAttribute("aria-selected",i===selTest);
-    tr.innerHTML=`<td>${tt.n[lang]}</td><td class="mono">${tt.e?L.yes:L.no}</td><td class="mono">${r.got?L.yes:L.no}</td><td class="${r.ok?"pass":"fail"}">${r.ok?"✓":"✗"}</td>`;
+    tr.innerHTML=`<td>${tt.n[lang]}</td><td class="mono">${r.cs.map(x=>`<div>${wantTxt(ch,x.cr)}</div>`).join("")}</td><td class="mono">${r.cs.map(x=>`<div>${gotTxt(x)}${x.cr.w&&!(x.cr.w[0]===0&&x.cr.w[1]===(ch.T||40))&&!x.cr.yn?'<span class="win">&nbsp;</span>':""}</div>`).join("")}</td><td class="${r.ok?"pass":"fail"}">${r.ok?"✓":"✗"}</td>`;
     const pick=()=>{ selTest=i; renderResults(); }; tr.onclick=pick; tr.onkeydown=e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); pick(); } };
     tb.appendChild(tr); });
   $("rastercap").textContent=L.raster(ch.tests[selTest].n[lang]);
   $("sharecode").value=shareLink();
   if(!keepInsp) renderPop(); else popStatus(); drawBoard(); drawRaster(); placePop();
   // refresh ✓ in list
+  $("chal-h").textContent=`${L.challenges} · ${CH.filter(x=>best[x.id]).length}/${CH.length}`;
   document.querySelectorAll(".ch").forEach((el,i)=>{ const bb=best[CH[i].id]; const s=el.querySelector(".st"); s.className="st"+(bb?" done":""); s.textContent=bb?"✓ "+bb.n:""; });
 }
 function renderPop(){
-  const L=S[lang], c=circ(), box=$("pop");
+  const L=S[lang], ch=CH[cur], c=circ(), box=$("pop");
   if(!sel){ box.hidden=true; box.innerHTML=""; return; }
-  let head="", body="";
-  if(sel.kind==="node"){ const n=nodeById(c,sel.id); if(!n){ sel=null; return renderPop(); }
-    head=n.t==="in"?n.id:n.t==="out"?"OUT · ГЛУТ":`${n.id} · ${n.t==="gaba"?"ГАМК":"ГЛУТ"}`;
-    if(n.t==="in") body=`<div class="small">${L.inputnode}</div>`;
-    else { body=(n.t==="out"?`<div class="small">${L.outnode}</div>`:"")+pfield("p-tau",L.tau,n.tau,0.5,50,0.5)+pfield("p-th",L.th,n.th,0.1,5,0.1)+(n.t==="out"?"":`<button class="danger" id="p-del" type="button">${L.delnode}</button>`); }
+  const MEDN={glut:"ГЛУТ",gaba:"ГАМК",sero:"СЕРО",nora:"НОРА",dofa:"ДОФА",acet:"АЦЕТ"};
+  let head="", body="", binds=[];
+  if(sel.kind==="node"){ const n=nodeById(c,sel.id); if(!n){ sel=null; return renderPop(); } const m=medOf(ch,n);
+    head=(n.t==="out"?"OUT":n.id)+" · "+MEDN[m];
+    if(n.t==="in") body=`<div class="small">${L.inputnode}${L.inmed[m]?" "+L.inmed[m]:""}</div>`;
+    else { if(n.t==="out") body+=`<div class="small">${ch.muscle?L.outmuscle:m==="sero"?L.outsero:L.outnode}</div>`;
+      if(n.t==="sero") body+=`<div class="small">${L.seropart}</div>`;
+      body+=pfield("p-tau",L.tau,n.tau,0.5,50,0.5)+pfield("p-th",L.th,n.th,0.1,5,0.1); binds.push(["p-tau",v=>n.tau=v],["p-th",v=>n.th=v]);
+      if(m==="sero"||+n.hz>0){ body+=pfield("p-hz",L.hz,n.hz||0,0,20,0.5); binds.push(["p-hz",v=>n.hz=v]); }
+      if((ch.inputs||[]).some(d=>d.med==="dofa")&&m!=="gaba"){ body+=pfield("p-te",L.te,n.te==null?0.05:n.te,0.01,10,0.01); binds.push(["p-te",v=>n.te=v]); }
+      if(n.t!=="out") body+=`<button class="danger" id="p-del" type="button">${L.delnode}</button>`; }
   } else { const w=c.wires.find(x=>x.id===sel.id); if(!w){ sel=null; return renderPop(); }
-    const sn=nodeById(c,w.f); const sg=sn&&sn.t==="gaba"?-1:1;
-    head=`${w.f==="OUT"?"OUT":w.f} → ${w.to}`;
-    body=`<div class="small">${L.sign(sg)}</div>`+pfield("p-w",L.w,w.w,0.05,5,0.05)+pfield("p-d",L.d,w.d,0.1,20,0.1)+`<button class="danger" id="p-del" type="button">${L.delwire}</button>`;
+    const sn=nodeById(c,w.f), m=medOf(ch,sn);
+    head=`${w.f} → ${w.to}`;
+    if(isVol(m)){ body=`<div class="small">${L.volwire[m]}</div>`;
+      if(m==="sero") body+=`<div class="seg" role="group" aria-label="${L.receptor}"><button type="button" id="p-sgp" aria-pressed="${w.sg>=0}">${L.recpos}</button><button type="button" id="p-sgn" aria-pressed="${w.sg<0}">${L.recneg}</button></div>`;
+      body+=pfield("p-w",L.sens,w.w,0,5,0.05); binds.push(["p-w",v=>w.w=v]); }
+    else { body=`<div class="small">${L.sign(m==="gaba"?-1:1)}</div>`+pfield("p-w",L.w,w.w,0.05,5,0.05)+pfield("p-d",L.d,w.d,0.1,20,0.1); binds.push(["p-w",v=>w.w=v],["p-d",v=>w.d=v]); }
+    body+=`<button class="danger" id="p-del" type="button">${L.delwire}</button>`;
   }
   box.innerHTML=`<div class="ph"><b>${head}</b><button class="x" id="p-x" type="button" aria-label="${L.close}">×</button></div>${body}<div class="pst" id="p-st" role="status"></div>`; box.hidden=false; popStatus();
   $("p-x").onclick=()=>{ sel=null; renderResults(); };
   if($("p-del")) $("p-del").onclick=()=>removeSel();
-  if(sel.kind==="node"){ const n=nodeById(c,sel.id); if(n.t!=="in"){ pbind("p-tau",v=>n.tau=v); pbind("p-th",v=>n.th=v); } }
-  else { const w=c.wires.find(x=>x.id===sel.id); pbind("p-w",v=>w.w=v); pbind("p-d",v=>w.d=v); }
+  binds.forEach(([id,f])=>pbind(id,f));
+  if($("p-sgp")){ const w=c.wires.find(x=>x.id===sel.id); $("p-sgp").onclick=()=>{ w.sg=1; renderResults(); }; $("p-sgn").onclick=()=>{ w.sg=-1; renderResults(); }; }
   placePop();
 }
 function popStatus(){ const el=$("p-st"); if(!el||!state) return; const L=S[lang]; el.className="pst "+(state.solved?"ok":"bad"); el.textContent=(state.solved?L.solved+" ":"")+L.pass(state.passed,state.res.length); }
@@ -454,42 +609,50 @@ function drawBoard(){
   const fired=new Set(); if(state&&state.runs[selTest]) for(const [id,sp] of state.runs[selTest].spikes) if(sp.length) fired.add(id);
   // wires
   c.wires.forEach(wr=>{ const a=nodeById(c,wr.f), b=nodeById(c,wr.to); if(!a||!b) return;
-    const rev=c.wires.some(x=>x.f===wr.to&&x.to===wr.f); const inh=a.t==="gaba";
+    const rev=c.wires.some(x=>x.f===wr.to&&x.to===wr.f); const am=medOf(CH[cur],a), vol=isVol(am), inh=am==="gaba"||(am==="sero"&&wr.sg<0);
     const dx=b.x-a.x, dy=b.y-a.y, L=Math.hypot(dx,dy)||1, ux=dx/L, uy=dy/L, off=rev?7:0;
     const ox=-uy*off, oy=ux*off; const ra=a.t==="in"?24:R, rb=b.t==="in"?24:R+ (b.t==="out"?4:0);
     const x1=a.x+ux*ra+ox, y1=a.y+uy*ra+oy, x2=b.x-ux*(rb+2)+ox, y2=b.y-uy*(rb+2)+oy;
     const selected=sel&&sel.kind==="wire"&&sel.id===wr.id;
-    bctx.strokeStyle=inh?k.gaba:k.ink; bctx.lineWidth=selected?4:2; if(selected){ bctx.save(); bctx.globalAlpha=.25; bctx.lineWidth=10; bctx.beginPath(); bctx.moveTo(x1,y1); bctx.lineTo(x2,y2); bctx.stroke(); bctx.restore(); }
-    bctx.beginPath(); bctx.moveTo(x1,y1); bctx.lineTo(x2,y2); bctx.stroke();
+    bctx.strokeStyle=vol?k[am]:inh?k.gaba:k.ink; bctx.lineWidth=selected?4:2; if(vol) bctx.setLineDash([7,5]); if(selected){ bctx.save(); bctx.globalAlpha=.25; bctx.lineWidth=10; bctx.beginPath(); bctx.moveTo(x1,y1); bctx.lineTo(x2,y2); bctx.stroke(); bctx.restore(); }
+    bctx.beginPath(); bctx.moveTo(x1,y1); bctx.lineTo(x2,y2); bctx.stroke(); bctx.setLineDash([]);
     bctx.fillStyle=bctx.strokeStyle;
     if(inh){ bctx.beginPath(); bctx.moveTo(x2-uy*8,y2+ux*8); bctx.lineTo(x2+uy*8,y2-ux*8); bctx.lineWidth=3; bctx.stroke(); }
     else { bctx.beginPath(); bctx.moveTo(x2,y2); bctx.lineTo(x2-ux*11-uy*5,y2-uy*11+ux*5); bctx.lineTo(x2-ux*11+uy*5,y2-uy*11-ux*5); bctx.closePath(); bctx.fill(); }
     const mx=(x1+x2)/2-uy*12, my=(y1+y2)/2+ux*12;
-    const lbl=`${inh?"−":""}${(+wr.w).toFixed(2).replace(/0$/,"")} · ${(+wr.d)}ms`;
+    const wv=(+wr.w).toFixed(2).replace(/0$/,"").replace(/\.0$/,"");
+    const lbl=am==="sero"?`${wr.sg<0?"−":"+"}${wv} ${S[lang].rec}`:am==="nora"?`×(1+${wv}c)`:am==="dofa"?`δ ${wv}`:`${inh?"−":""}${wv} · ${(+wr.d)}ms`;
     bctx.font=`500 11px ${getComputedStyle(document.body).getPropertyValue("--mono")||"monospace"}`; bctx.textAlign="center"; bctx.textBaseline="middle";
-    const tw=bctx.measureText(lbl).width+8; bctx.fillStyle=k.panel2; bctx.fillRect(mx-tw/2,my-8,tw,16); bctx.fillStyle=inh?k.gaba:k.muted; bctx.fillText(lbl,mx,my);
+    const tw=bctx.measureText(lbl).width+8; bctx.fillStyle=k.panel2; bctx.fillRect(mx-tw/2,my-8,tw,16); bctx.fillStyle=vol?k[am]:inh?k.gaba:k.muted; bctx.fillText(lbl,mx,my);
   });
   if(preview){ bctx.setLineDash([5,5]); bctx.strokeStyle=k.spike; bctx.lineWidth=2; bctx.beginPath(); bctx.moveTo(preview.x1,preview.y1); bctx.lineTo(preview.x2,preview.y2); bctx.stroke(); bctx.setLineDash([]); }
   // nodes
   const cond=getComputedStyle(document.body).getPropertyValue("--cond")||"sans-serif";
-  c.nodes.forEach(n=>{ const col=colorOf(k,n.t); const selected=(sel&&sel.kind==="node"&&sel.id===n.id)||(hover&&hover.target===n.id&&drag&&drag.wireFrom&&n.t!=="in"&&n!==drag.wireFrom);
+  const ch=CH[cur], MEDN={glut:"ГЛУТ",gaba:"ГАМК",sero:"СЕРО",nora:"НОРА",dofa:"ДОФА",acet:"АЦЕТ"};
+  if(ch.muscle){ const o=nodeById(c,"OUT"), mx=o.x+92, my=o.y; bctx.strokeStyle=k.acet; bctx.lineWidth=2.5; bctx.beginPath(); bctx.moveTo(o.x+R+5,my); bctx.lineTo(mx-38,my); bctx.stroke();
+    bctx.beginPath(); bctx.ellipse(mx,my,38,17,0,0,Math.PI*2); bctx.fillStyle=k.panel2; bctx.fill(); bctx.globalAlpha=.2; bctx.fillStyle=k.acet; bctx.fill(); bctx.globalAlpha=1; bctx.stroke();
+    bctx.fillStyle=k.ink; bctx.font=`700 11px ${getComputedStyle(document.body).getPropertyValue("--cond")||"sans-serif"}`; bctx.textAlign="center"; bctx.textBaseline="middle"; bctx.fillText(S[lang].muscle,mx,my+1); }
+  c.nodes.forEach(n=>{ const col=colorOf(k,n), m=medOf(ch,n); const selected=(sel&&sel.kind==="node"&&sel.id===n.id)||(hover&&hover.target===n.id&&drag&&drag.wireFrom&&n.t!=="in"&&n!==drag.wireFrom);
     bctx.lineWidth=2.5; bctx.strokeStyle=col;
     if(n.t==="in"){ roundRect(n.x-24,n.y-17,48,34,6); bctx.fillStyle=k.panel2; bctx.fill(); bctx.stroke();
-      bctx.fillStyle=k.ink; bctx.font=`700 18px ${cond}`; bctx.textAlign="center"; bctx.textBaseline="middle"; bctx.fillText(n.id,n.x,n.y+1); }
+      bctx.fillStyle=k.ink; bctx.font=`700 18px ${cond}`; bctx.textAlign="center"; bctx.textBaseline="middle"; bctx.fillText(n.id,n.x,n.y+1);
+      if(m!=="glut"){ bctx.fillStyle=col; bctx.font=`700 10px ${cond}`; bctx.fillText(MEDN[m],n.x,n.y+29); } }
     else { bctx.beginPath(); bctx.arc(n.x,n.y,R,0,Math.PI*2); bctx.fillStyle=k.panel2; bctx.fill(); bctx.globalAlpha=.16; bctx.fillStyle=col; bctx.fill(); bctx.globalAlpha=1; bctx.stroke();
       if(n.t==="out"){ bctx.beginPath(); bctx.arc(n.x,n.y,R+5,0,Math.PI*2); bctx.stroke(); }
+      if(+n.hz>0){ bctx.lineWidth=1.3; bctx.beginPath(); bctx.arc(n.x,n.y,R-4,0,Math.PI*2); bctx.stroke(); bctx.lineWidth=2.5; } // pacemaker: double ring, as in the book
       bctx.fillStyle=k.ink; bctx.font=`700 12px ${cond}`; bctx.textAlign="center"; bctx.textBaseline="middle"; bctx.fillText(n.t==="out"?"OUT":n.id.replace("n",""),n.x,n.y+1);
-      bctx.fillStyle=col; bctx.font=`700 10px ${cond}`; bctx.fillText(n.t==="gaba"?"ГАМК":"ГЛУТ",n.x,n.y+R+(n.t==="out"?15:11)); }
+      bctx.fillStyle=col; bctx.font=`700 10px ${cond}`; bctx.fillText(MEDN[m]||"ГЛУТ",n.x,n.y+R+(n.t==="out"?15:11)); }
     if(fired.has(n.id)){ bctx.save(); bctx.strokeStyle=k.spike; bctx.lineWidth=3; bctx.globalAlpha=.9; bctx.shadowColor=k.spike; bctx.shadowBlur=10; bctx.beginPath();
       if(n.t==="in") roundRect(n.x-28,n.y-21,56,42,8); else bctx.arc(n.x,n.y,(n.t==="out"?R+5:R)+4,0,Math.PI*2); bctx.stroke(); bctx.restore(); }
     // output port: drag from here to make a wire
-    const pp=portPos(n), hot=hover&&hover.port===n.id;
-    bctx.beginPath(); bctx.arc(pp.x,pp.y,hot?7.5:6,0,Math.PI*2); bctx.fillStyle=hot?col:k.panel2; bctx.fill(); bctx.lineWidth=2; bctx.strokeStyle=col; bctx.stroke();
+    if(hasPort(n)){ const pp=portPos(n), hot=hover&&hover.port===n.id;
+      bctx.beginPath(); bctx.arc(pp.x,pp.y,hot?7.5:6,0,Math.PI*2); bctx.fillStyle=hot?col:k.panel2; bctx.fill(); bctx.lineWidth=2; bctx.strokeStyle=col; bctx.stroke(); }
     if(selected){ bctx.setLineDash([4,4]); bctx.strokeStyle=k.ink; bctx.lineWidth=2; bctx.beginPath(); if(n.t==="in") roundRect(n.x-32,n.y-25,64,50,9); else bctx.arc(n.x,n.y,(n.t==="out"?R+5:R)+10,0,Math.PI*2); bctx.stroke(); bctx.setLineDash([]); }
   });
   drawFirstHint();
 }
 function drawFirstHint(){ const h=$("boardhint"); h.hidden=wired; if(!wired) h.textContent=S[lang].firsthint; }
+function hasPort(n){ return !(n.t==="out"&&CH[cur].muscle); } // a motor neuron's output is the muscle
 function portPos(n){ const r=n.t==="in"?24:n.t==="out"?R+5:R; return {x:n.x+r+8, y:n.y}; }
 function roundRect(x,y,w,h,r){ bctx.beginPath(); bctx.moveTo(x+r,y); bctx.arcTo(x+w,y,x+w,y+h,r); bctx.arcTo(x+w,y+h,x,y+h,r); bctx.arcTo(x,y+h,x,y,r); bctx.arcTo(x,y,x+w,y,r); bctx.closePath(); }
 
@@ -501,16 +664,23 @@ function drawRaster(){
   const X=t=>left+(w-left-14)*t/run.T;
   // time grid
   rctx.font=`11px ${mono}`; rctx.fillStyle=k.muted; rctx.textAlign="center"; rctx.textBaseline="top";
-  for(let t=0;t<=run.T;t+=10){ rctx.strokeStyle=k.grid; rctx.lineWidth=1; rctx.beginPath(); rctx.moveTo(X(t),6); rctx.lineTo(X(t),hh-bottom); rctx.stroke(); rctx.fillText(t+(t===run.T?" ms":""),X(t),hh-bottom+5); }
-  // output voltage trace with threshold
-  const out=nodeById(c,"OUT"); const vmax=Math.max(1.5,(+out.th||1)*1.4), vmin=-1.5; const Y=v=>6+(top-12)*(1-(v-vmin)/(vmax-vmin));
-  rctx.setLineDash([4,4]); rctx.strokeStyle=k.muted; rctx.beginPath(); rctx.moveTo(left,Y(+out.th||1)); rctx.lineTo(w-14,Y(+out.th||1)); rctx.stroke(); rctx.setLineDash([]);
-  rctx.fillStyle=k.muted; rctx.textAlign="right"; rctx.textBaseline="middle"; rctx.fillText("V(OUT)",left-8,Y(0)); rctx.fillText("θ",left-8,Y(+out.th||1));
-  rctx.strokeStyle=k.glut; rctx.lineWidth=1.6; rctx.beginPath(); run.trace.forEach((v,i)=>{ const x=X(i*run.dt), y=Y(Math.max(vmin,Math.min(vmax,v))); i?rctx.lineTo(x,y):rctx.moveTo(x,y); }); rctx.stroke();
+  const L=S[lang], ch=CH[cur], step=[10,20,50,100,200,500,1000,2000,5000].find(s=>run.T/s<=8)||10000;
+  for(let t=0;t<=run.T+1e-9;t+=step){ rctx.strokeStyle=k.grid; rctx.lineWidth=1; rctx.beginPath(); rctx.moveTo(X(t),6); rctx.lineTo(X(t),hh-bottom); rctx.stroke(); const last=t+step>run.T; rctx.textAlign=last?"right":"center"; rctx.fillText(fmtT(t,run.T)+(last?" "+(run.T>1000?L.s:L.ms):""),last?Math.min(X(t)+6,w-2):X(t),hh-bottom+5); rctx.textAlign="center"; }
+  const out=nodeById(c,"OUT");
+  if(ch.muscle){ // muscle force with the levels the tests ask for
+    const sp=run.spikes.get("OUT")||[], n=300, F=[]; for(let i=0;i<=n;i++) F.push(force(sp,run.T*i/n)); const fmax=Math.max(3,...F)*1.08, Y=v=>6+(top-12)*(1-v/fmax);
+    rctx.setLineDash([4,4]); rctx.strokeStyle=k.muted; [2,0.5].forEach(v=>{ rctx.beginPath(); rctx.moveTo(left,Y(v)); rctx.lineTo(w-14,Y(v)); rctx.stroke(); }); rctx.setLineDash([]);
+    rctx.fillStyle=k.muted; rctx.textAlign="right"; rctx.textBaseline="middle"; rctx.fillText(L.forcelbl,left-8,Y(fmax*0.55));
+    rctx.strokeStyle=k.acet; rctx.lineWidth=1.6; rctx.beginPath(); F.forEach((v,i)=>{ const x=X(run.T*i/n), y=Y(v); i?rctx.lineTo(x,y):rctx.moveTo(x,y); }); rctx.stroke();
+  } else { // output voltage (for a pacemaker: voltage plus its own ramp) with the threshold
+    const vmax=Math.max(1.5,(+out.th||1)*1.4), vmin=-1.5; const Y=v=>6+(top-12)*(1-(v-vmin)/(vmax-vmin));
+    rctx.setLineDash([4,4]); rctx.strokeStyle=k.muted; rctx.beginPath(); rctx.moveTo(left,Y(+out.th||1)); rctx.lineTo(w-14,Y(+out.th||1)); rctx.stroke(); rctx.setLineDash([]);
+    rctx.fillStyle=k.muted; rctx.textAlign="right"; rctx.textBaseline="middle"; rctx.fillText("V(OUT)",left-8,Y(0)); rctx.fillText("θ",left-8,Y(+out.th||1));
+    rctx.strokeStyle=k.glut; rctx.lineWidth=1.6; rctx.beginPath(); run.trace.forEach((v,i)=>{ const x=X(i*run.dt), y=Y(Math.max(vmin,Math.min(vmax,v))); i?rctx.lineTo(x,y):rctx.moveTo(x,y); }); rctx.stroke(); }
   // raster rows
   rows.forEach((n,r)=>{ const y=top+r*rowH+rowH/2; rctx.fillStyle=k.ink; rctx.textAlign="right"; rctx.fillText(n.t==="out"?"OUT":n.id,left-8,y);
     rctx.strokeStyle=k.grid; rctx.beginPath(); rctx.moveTo(left,y); rctx.lineTo(w-14,y); rctx.stroke();
-    rctx.strokeStyle=n.t==="gaba"?k.gaba:n.t==="in"?k.inn:k.spike; rctx.lineWidth=2.5;
+    const m=medOf(CH[cur],n); rctx.strokeStyle=n.t==="out"?k.spike:m==="gaba"?k.gaba:m==="glut"&&n.t==="in"?k.inn:k[m]||k.spike; rctx.lineWidth=run.T>1000?1.5:2.5;
     (run.spikes.get(n.id)||[]).forEach(t=>{ rctx.beginPath(); rctx.moveTo(X(t),y-7); rctx.lineTo(X(t),y+7); rctx.stroke(); }); rctx.lineWidth=1; });
 }
 
@@ -520,14 +690,14 @@ const snap=v=>Math.round(v/20)*20;
 function nodeAt(p){ const c=circ(); for(let i=c.nodes.length-1;i>=0;i--){ const n=c.nodes[i]; if(n.t==="in"? Math.abs(p.x-n.x)<=26&&Math.abs(p.y-n.y)<=19 : Math.hypot(p.x-n.x,p.y-n.y)<=R+6) return n; } return null; }
 function wireAt(p){ const c=circ(); let bestW=null, bd=Math.max(8,hitR(10)); c.wires.forEach(wr=>{ const a=nodeById(c,wr.f), b=nodeById(c,wr.to); if(!a||!b) return; const dx=b.x-a.x, dy=b.y-a.y, L=Math.hypot(dx,dy)||1, L2=L*L; let t=((p.x-a.x)*dx+(p.y-a.y)*dy)/L2; t=Math.max(0,Math.min(1,t)); let d=Math.hypot(p.x-(a.x+t*dx),p.y-(a.y+t*dy));
     const lx=(a.x+b.x)/2-dy/L*12, ly=(a.y+b.y)/2+dx/L*12; if(Math.abs(p.x-lx)<=34&&Math.abs(p.y-ly)<=10) d=Math.min(d,1); if(d<bd){bd=d;bestW=wr;} }); return bestW; }
-function addNeuron(t,p){ const c=circ(), ch=CH[cur]; if(!ch.allowed.includes(t)) return; const id="n"+(c.next++); const x=Math.min(W-40,Math.max(40,snap(p.x))), y=Math.min(H-30,Math.max(30,snap(p.y))); c.nodes.push({id,t,x,y,tau:5,th:1}); sel={kind:"node",id}; renderResults(); }
+function addNeuron(t,p){ const c=circ(), ch=CH[cur]; if(!ch.allowed.includes(t)) return; const id="n"+(c.next++); const x=Math.min(W-40,Math.max(40,snap(p.x))), y=Math.min(H-30,Math.max(30,snap(p.y))); c.nodes.push({id,t,x,y,tau:5,th:1,hz:t==="sero"?4:0,te:0.05}); sel={kind:"node",id}; renderResults(); }
 function freeSpot(){ const c=circ(); for(const y of [220,140,300,80,360]) for(const x of [380,260,500,200,560,320,440]) if(c.nodes.every(n=>Math.hypot(n.x-x,n.y-y)>=70)) return {x,y}; return {x:380,y:220}; }
 function removeSel(){ const c=circ(); if(!sel) return; if(sel.kind==="node"){ const n=nodeById(c,sel.id); if(!n||n.t==="in"||n.t==="out") return; c.nodes=c.nodes.filter(x=>x.id!==n.id); c.wires=c.wires.filter(w=>w.f!==n.id&&w.to!==n.id); } else c.wires=c.wires.filter(w=>w.id!==sel.id); sel=null; renderResults(); }
 // hit radius in board units: at least 12 CSS px so ports stay usable on a phone
 function hitR(px){ const s=board.getBoundingClientRect().width/W; return Math.max(px*0.75, px/s); }
 function inBody(n,p){ return n.t==="in"? Math.abs(p.x-n.x)<=24&&Math.abs(p.y-n.y)<=17 : Math.hypot(p.x-n.x,p.y-n.y)<=(n.t==="out"?R+5:R); }
 function portAt(p){ const c=circ(), r=hitR(14); if(c.nodes.some(n=>inBody(n,p))) return null;
-  for(let i=c.nodes.length-1;i>=0;i--){ const n=c.nodes[i], pp=portPos(n); if(Math.hypot(p.x-pp.x,p.y-pp.y)<=r) return n; } return null; }
+  for(let i=c.nodes.length-1;i>=0;i--){ const n=c.nodes[i], pp=portPos(n); if(hasPort(n)&&Math.hypot(p.x-pp.x,p.y-pp.y)<=r) return n; } return null; }
 board.addEventListener("pointerdown",e=>{ const p=pos(e), pn=portAt(p), n=pn?null:nodeAt(p), wr=(pn||n)?null:wireAt(p); board.setPointerCapture(e.pointerId);
   if(pn){ const pp=portPos(pn); drag={wireFrom:pn}; preview={x1:pp.x,y1:pp.y,x2:p.x,y2:p.y}; drawBoard(); return; }
   if(n){ sel={kind:"node",id:n.id}; drag={node:n,moved:false}; } else if(wr){ sel={kind:"wire",id:wr.id}; } else sel=null;
@@ -540,7 +710,7 @@ board.addEventListener("pointermove",e=>{ const p=pos(e);
   else if(drag.wireFrom){ preview.x2=p.x; preview.y2=p.y; const t=nodeAt(p); hover={port:drag.wireFrom.id,target:t&&t.id}; drawBoard(); } });
 board.addEventListener("pointerup",e=>{ const p=pos(e);
   if(drag&&drag.wireFrom){ const t=nodeAt(p), c=circ(), f=drag.wireFrom;
-    if(t&&t!==f&&t.t!=="in"&&!c.wires.some(w=>w.f===f.id&&w.to===t.id)){ const id="w"+(c.next++); c.wires.push({id,f:f.id,to:t.id,w:1.2,d:1}); sel={kind:"wire",id}; wired=true; } preview=null; drag=null; hover=null; renderResults(); return; }
+    if(t&&t!==f&&t.t!=="in"&&!c.wires.some(w=>w.f===f.id&&w.to===t.id)){ const id="w"+(c.next++); const v=isVol(medOf(CH[cur],f)); c.wires.push({id,f:f.id,to:t.id,w:v?1:1.2,d:v?0:1,sg:1}); sel={kind:"wire",id}; wired=true; } preview=null; drag=null; hover=null; renderResults(); return; }
   if(drag&&drag.moved){ store(); $("sharecode").value=shareLink(); board.style.cursor="grab"; } drag=null; });
 board.addEventListener("pointerleave",()=>{ if(!drag&&hover){ hover=null; drawBoard(); } });
 board.addEventListener("dblclick",e=>{ const p=pos(e); if(!nodeAt(p)&&!wireAt(p)&&!portAt(p)&&CH[cur].allowed.includes("glut")) addNeuron("glut",p); });
@@ -548,7 +718,7 @@ document.addEventListener("keydown",e=>{ if(e.target instanceof HTMLInputElement
 // palette: a click adds at a free spot, a drag onto the board places the neuron where it is dropped
 let pdrag=null;
 function paletteDown(e,t){ if(e.button!==0) return; e.preventDefault(); pdrag={t,x0:e.clientX,y0:e.clientY,moved:false,ghost:null};
-  const col=getComputedStyle(document.documentElement).getPropertyValue(t==="gaba"?"--gaba":"--glut");
+  const col=getComputedStyle(document.documentElement).getPropertyValue("--"+t);
   const mv=ev=>{ if(!pdrag.moved&&Math.hypot(ev.clientX-pdrag.x0,ev.clientY-pdrag.y0)>6){ pdrag.moved=true; const g=document.createElement("div"); g.className="ghost-part"; g.style.borderColor=col; document.body.appendChild(g); pdrag.ghost=g; }
     if(pdrag.ghost){ pdrag.ghost.style.left=ev.clientX+"px"; pdrag.ghost.style.top=ev.clientY+"px"; } };
   const up=ev=>{ document.removeEventListener("pointermove",mv); document.removeEventListener("pointerup",up); if(pdrag.ghost) pdrag.ghost.remove();
@@ -559,12 +729,10 @@ function paletteDown(e,t){ if(e.button!==0) return; e.preventDefault(); pdrag={t
 // ---------- share ----------
 function b64u(s){ return btoa(unescape(encodeURIComponent(s))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,""); }
 function unb64u(s){ s=s.replace(/-/g,"+").replace(/_/g,"/"); while(s.length%4) s+="="; return decodeURIComponent(escape(atob(s))); }
-function code(){ const c=circ(); return "bb."+b64u(JSON.stringify({c:CH[cur].id,n:c.nodes.filter(n=>n.t!=="in").map(n=>[n.id,n.t,n.x,n.y,+n.tau,+n.th]),w:c.wires.map(w=>[w.f,w.to,+w.w,+w.d])})); }
+function code(){ const c=circ(); return "bb."+b64u(JSON.stringify({c:CH[cur].id,n:c.nodes.filter(n=>n.t!=="in").map(n=>[n.id,n.t,n.x,n.y,+n.tau,+n.th,+n.hz||0,+n.te||0.05]),w:c.wires.map(w=>[w.f,w.to,+w.w,+w.d,w.sg<0?-1:1])})); }
 function shareLink(){ return location.href.split("#")[0]+"#"+code(); }
 function loadCode(str){ try{ str=(str||"").trim(); const i=str.indexOf("bb."); if(i<0) throw 0; const o=JSON.parse(unb64u(str.slice(i+3).replace(/[^A-Za-z0-9_-].*$/,""))); const ci=CH.findIndex(x=>x.id===o.c); if(ci<0) throw 0;
-    const c=fresh(CH[ci]); c.wires=[]; c.nodes=c.nodes.filter(n=>n.t==="in");
-    o.n.forEach(([id,t,x,y,tau,th])=>c.nodes.push({id,t,x,y,tau,th})); o.w.forEach(([f,to,w,d])=>c.wires.push({id:"w"+(c.next++),f,to,w,d}));
-    c.nodes.forEach(n=>{ const m=/^n(\d+)$/.exec(n.id); if(m) c.next=Math.max(c.next,+m[1]+1); });
+    const c=build(CH[ci],o.n||[],o.w||[]);
     circuits[o.c]=c; cur=ci; sel=null; selTest=0; return true; }catch(e){ return false; } }
 $("copy").onclick=()=>{ const L=S[lang], link=shareLink(), msg=$("sharemsg");
   const done=()=>{ msg.textContent=L.copied; }, fail=()=>{ const el=$("sharecode"); el.focus(); el.select(); msg.textContent=L.copyfail; };
@@ -574,6 +742,7 @@ $("reset").onclick=()=>{ circuits[CH[cur].id]=fresh(CH[cur]); delete stash[CH[cu
 $("lang-ru").onclick=()=>{ lang="ru"; renderAll(); }; $("lang-en").onclick=()=>{ lang="en"; renderAll(); };
 
 function renderAll(){ renderStatic(); renderResults(); }
+$("chdet").open=window.innerWidth>1060;
 if(location.hash.startsWith("#bb.")) loadCode(location.hash.slice(1));
 window.addEventListener("resize",()=>{ drawBoard(); drawRaster(); placePop(); });
 if(window.matchMedia) window.matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change",()=>renderAll());
@@ -583,6 +752,19 @@ if(location.hash==="#selftest"){
   const lines=[]; let ok=0;
   CH.forEach((ch,i)=>{ cur=i; circuits[ch.id]=fromSol(ch); const t0=performance.now(); const r=evaluate(); const ms=performance.now()-t0;
     if(r.solved) ok++; lines.push(`${r.solved?"PASS":"FAIL"} ${ch.id.padEnd(8)} ${r.passed}/${r.res.length} neurons=${r.neurons} record=${ch.record} ${ms.toFixed(1)}ms`+(r.solved?"":"  "+r.res.map((x,j)=>x.ok?"":"["+ch.tests[j].n.en+" got "+x.got+"]").join(""))); });
+  // every start circuit must fail, and so must the shortcuts the physics should rule out
+  const CHEATS={dash:[[[["OUT","out",670,210,5,1]],[["A","OUT",0.45,1]]]],
+    nor:[[[],[["A","OUT",1,0,1],["B","OUT",1,0,1]]],[[],[["A","OUT",0.2,0,-1],["B","OUT",0.2,0,-1]]]],
+    credit:[[[],[["A","OUT",1.2,1],["B","OUT",1.2,1]]],[[["OUT","out",670,210,5,1,0,5]],[["A","OUT",0.6,1],["B","OUT",1.2,1],["D","OUT",1,0]]],[[["OUT","out",670,210,5,1,0,1]],[["A","OUT",0.6,1],["B","OUT",1.2,1]]],[[["OUT","out",670,210,5,1,0,0.3]],[["A","OUT",0.6,1],["B","OUT",1.2,1],["D","OUT",1,0]]]],
+    gain:[[[],[["A","OUT",1.2,1]]],[[],[["A","OUT",0.5,1],["N","OUT",0.2,0]]]],
+    onset:[[[],[["A","OUT",1.2,1]]]], object:[[[],[["A1","OUT",0.6,1],["B1","OUT",0.6,1],["A2","OUT",0.6,1],["B2","OUT",0.6,1]]]], grip:[[[],[["A","OUT",1.2,1]]],[[["n1","glut",260,120,5,1],["n2","glut",260,260,5,1]],[["A","n1",1.2,1],["n1","n2",1.2,10],["n2","n1",1.2,10],["n1","OUT",1.2,1]]]],
+    divider:[[[["OUT","out",670,210,5,1]],[["A","OUT",0.6,1]]]]};
+  CH.forEach((ch,i)=>{ cur=i; circuits[ch.id]=fresh(ch); if(evaluate().solved){ lines.push(`FAIL ${ch.id}: the start circuit already solves it`); ok--; }
+    (CHEATS[ch.id]||[]).forEach(([n,w],j)=>{ circuits[ch.id]=build(ch,n,w); const r=evaluate(); if(r.solved){ lines.push(`FAIL ${ch.id}: shortcut ${j} passes`); ok--; } else lines.push(`ok   ${ch.id}: shortcut ${j} fails (${r.passed}/${r.res.length})`); }); });
+  { const ci=CH.findIndex(x=>x.id==="credit"), ch=CH[ci]; cur=ci; const pass=[]; [0.3,0.5,0.7,1,1.5,2,2.5,3,4].forEach(te=>{ circuits.credit=build(ch,[["OUT","out",670,210,5,1,0,te]],ch.sol.w); pass.push(te+(evaluate().solved?"✓":"✗")); }); lines.push("credit τ_e scan: "+pass.join(" ")); }
+  // an old share code (six-field nodes, four-field wires) still opens and still solves
+  { const old="bb."+b64u(JSON.stringify({c:"veto",n:[["OUT","out",670,210,5,1],["n1","gaba",360,300,5,1]],w:[["A","OUT",1.2,3],["B","n1",1.2,1],["n1","OUT",3,1]]}));
+    const okl=loadCode(old); lines.push(`old share code: loaded=${okl} solved=${okl&&evaluate().solved}`); }
   // UI flow: show solution with the in-page confirm, then bring the user's circuit back
   try{ cur=1; circuits={}; stash={}; solSeen={}; renderAll(); const before=JSON.stringify(circ());
     $("solbtn").click(); const asked=!!$("solyes"); $("solyes").click(); const shown=evaluate().solved;
