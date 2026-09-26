@@ -22,13 +22,21 @@
 \endfoot
 $a$ & крутизна линейной передаточной характеристики, $f(u)=au$ & \eqref{eq:feedback} \\
 $a$ & уровень \nt{АЦЕТ}: $0$ --- чтение, $1$ --- запись & \eqref{eq:acetnet} \\
-$a_i$ & усталость группы $i$ в генераторе ритма & \eqref{eq:halfcentre} \\
+$a_i$, $a$ & усталость группы: в генераторе ритма; в качелях медленного сна & \eqref{eq:halfcentre}, \eqref{eq:updown} \\
+$a_S$, $a_P$ & чувствительность ритма сердца к газу и к тормозу & \eqref{eq:gasbrake} \\
 $A(r)$, $A_0$ & ответ синапса на импульс при частоте $r$; у отдохнувшего синапса & \eqref{eq:depression} \\
 $A_1$ & ответ получателя на одну порцию медиатора & \eqref{eq:quantal} \\
+$A$ & площадь мембраны нейрона вместе с дендритами & \eqref{eq:dendriteload} \\
+$A_f$, $A_s$ & доля поправки, сохраняемая до следующего движения, у быстрого и медленного процессов & \eqref{eq:tworate} \\
 $b_i$ & собственный приток ритмоводителя & \eqref{eq:seroneuron} \\
-$b$ & как быстро работа утомляет группу в генераторе ритма & \eqref{eq:halfcentre} \\
+$b$ & как быстро работа утомляет группу в генераторе ритма или в качелях сна & \eqref{eq:halfcentre}, \eqref{eq:updown} \\
+$b$ & число бит на один отсчёт оцифровки & \eqref{eq:probedata} \\
+$B_f$, $B_s$ & сила, с которой поправка учится на ошибке, у быстрого и медленного процессов & \eqref{eq:tworate} \\
 $c$ & концентрация медиатора в объёме & \eqref{eq:seroneuron} \\
 $c$ & коэффициент корреляции шумов соседних нейронов & \eqref{eq:correlated} \\
+$c$ & коэффициент, с которым разность счётов двигает ракетку & \eqref{eq:dishreadout} \\
+$c_f$ & ответ $C$-нейрона: наибольший из $s_{f,p}$ по всем положениям & \eqref{eq:scstage} \\
+$c_m$ & удельная ёмкость мембраны & \eqref{eq:dendriteload} \\
 $C$ & цена усилия: действие за время $\tau_a$ стоит $C/\tau_a$ & \eqref{eq:vigor} \\
 $d'$ & различимость двух входов: разница, делённая на шум & \eqref{eq:gainsnr} \\
 $d$, $d_j$ & задержка на пути сигнала & \eqref{eq:glutneuron}, \eqref{eq:vstar} \\
@@ -37,10 +45,13 @@ $D$ & коэффициент диффузии & \eqref{eq:diffusionlength} \\
 $D$ & знаменатель в частотах \nt{ГЛУТ}--\nt{ГАМК}-сети & \eqref{eq:isn} \\
 $D$ & время ожидания отложенной награды & \eqref{eq:patience} \\
 $e$, $e_{ij}$ & след в синапсе & \eqref{eq:threefactor} \\
+$e$, $e_i$ & ошибка выхода или движения, приходящая по проводу ошибки & \eqref{eq:lms}, \eqref{eq:adaptivefilter}, \eqref{eq:tworate} \\
 $E_{\text{имп}}$ & энергия одного импульса вместе с работой синапсов & \eqref{eq:energy} \\
 $E$ & частота \nt{ГЛУТ}-группы & \eqref{eq:ei} \\
 $E_E$ & равновесный потенциал возбуждающего синапса & \eqref{eq:shunt} \\
 $f$, $F$ & передаточная характеристика: частота как функция входа & \eqref{eq:ratenet}, \eqref{eq:gain} \\
+$f$, $f_0$ & частота ударов сердца; собственный ритм ритмоводителя & \eqref{eq:gasbrake} \\
+$f_s$ & частота оцифровки одного электрода & \eqref{eq:probedata} \\
 $F(t)$, $F_1$ & сила мышцы; сила одного подёргивания & \eqref{eq:forcesum} \\
 $F_1$, $F_2$ & силы двух мышц, тянущих сустав в разные стороны & \eqref{eq:antagonists} \\
 $g$ & чувствительность рецептора к концентрации & \eqref{eq:seroneuron} \\
@@ -48,31 +59,47 @@ $g_L$, $g_E$, $g_I$ & проводимости утечки, возбужден�
 $g$ & коэффициент усиления, задаваемый \nt{НОРА} & \eqref{eq:gain}, \eqref{eq:machine} \\
 $g$ & общее торможение от \nt{ГАМК} в сети памяти & \eqref{eq:acetnet} \\
 $g$ & усиление ворот боли, задаваемое сверху & \eqref{eq:gate} \\
+$g$ & усиление одной ступени гормонального каскада & \eqref{eq:cascade} \\
+$g_j$ & фильтр $j$ со своей постоянной времени на входе адаптивного фильтра & \eqref{eq:adaptivefilter} \\
 $G$ & усиление петли обратной связи & \eqref{eq:feedback} \\
 $G$ & скорость исправления в петле с задержкой & \eqref{eq:delaystable} \\
 $h$, $h_I$ & внешний вход \nt{ГЛУТ}-группы и \nt{ГАМК}-группы & \eqref{eq:ei}, \eqref{eq:isn} \\
 $h(t)$ & одиночное подёргивание мышцы & \eqref{eq:twitch} \\
-$I$, $I_i$ & внешний приток к нейрону или группе & \eqref{eq:ratenet}, \eqref{eq:wta} \\
+$H(t)$ & верхний порог давления сна: дойдя до него, машина засыпает & \eqref{eq:sleeppressure} \\
+$I$, $I_i$ & внешний приток к нейрону или группе & \eqref{eq:ratenet}, \eqref{eq:wta}, \eqref{eq:updown} \\
 $I$ & частота \nt{ГАМК}-группы & \eqref{eq:ei} \\
 $I$ & яркость или интенсивность раздражителя & \eqref{eq:photonnoise}, \eqref{eq:nakarushton} \\
+$I$ & входной ток, заряжающий мембрану & \eqref{eq:dendriteload} \\
 $k$ & число импульсов в пачке & \eqref{eq:burst} \\
 $k$ & во сколько раз прибавка должна превышать шум & \eqref{eq:photonnoise} \\
+$k$ & коэффициент обратной связи гормонального каскада & \eqref{eq:cascade} \\
 $k_s$ & сила, с которой боль накачивает сенсибилизацию & \eqref{eq:sensitization} \\
 $K$ & число признаков результата & \eqref{eq:vectortd} \\
 $K$ & жёсткость сустава & \eqref{eq:antagonists} \\
+$K$ & усиление петли гормонального каскада, $K=g^3k$ & \eqref{eq:cascade}, \eqref{eq:cascadestable} \\
+$K_\varphi$ & сила подстройки суточного генератора к внешнему сигналу & \eqref{eq:pll} \\
 $L$ & длина линии задержек & \eqref{eq:itd} \\
 $L$ & длина провода от датчика боли & \eqref{eq:paintime} \\
+$L(t)$ & нижний порог давления сна: дойдя до него, машина просыпается & \eqref{eq:sleeppressure} \\
 $M$ & мера причинной связи предвестника и награды & \eqref{eq:retro} \\
 $M_k$ & ожидание признака $k$ & \eqref{eq:vectortd} \\
 $M_{ik}$ & сила торможения от \nt{ГАМК}-нейрона $k$ & \eqref{eq:machine} \\
 $M$ & вращающий момент сустава & \eqref{eq:antagonists} \\
+$M$ & число входных линий смесителей & \eqref{eq:cover} \\
 $n$, $\bar n$ & число импульсов за окно; его среднее & \eqref{eq:rateerror} \\
+$n$ & число входов порогового элемента & \eqref{eq:cover} \\
+$n_\uparrow$, $n_\downarrow$ & счёт импульсов областей «вверх» и «вниз» за окно & \eqref{eq:dishreadout} \\
 $N$ & число нейронов & \eqref{eq:correlated}, \eqref{eq:energy} \\
+$N$ & число электродов щупа & \eqref{eq:probedata} \\
 $N_s$ & число мест выброса между двумя нейронами & \eqref{eq:quantal} \\
 $p$ & вероятность выброса медиатора на импульс & \eqref{eq:burst} \\
 $p$ & доля активных нейронов в сети памяти & \eqref{eq:acetnet} \\
-$P$ & мощность, затрачиваемая на сигналы & \eqref{eq:energy} \\
+$p$ & возмущение, которое учатся компенсировать & \eqref{eq:tworate} \\
+$P$ & мощность, затрачиваемая на сигналы & \eqref{eq:energy}, \eqref{eq:dishpower} \\
 $P$ & неопределённость хранимой оценки & \eqref{eq:kalman} \\
+$P$ & активность «тормоза»: \nt{АЦЕТ}-провода к сердцу & \eqref{eq:gasbrake} \\
+$P_{\max}$ & сколько случайных образов пороговый элемент может разделить на два класса & \eqref{eq:cover} \\
+$P_{\text{пр}}$ & вероятность промаха & \eqref{eq:dishdensity} \\
 $q$ & скорость, с которой меняется мир & \eqref{eq:kalman} \\
 $q_k$ & частота \nt{ГАМК}-нейрона $k$ & \eqref{eq:machine} \\
 $q_0$ & фоновая активность тормозящего посредника & \eqref{eq:gate} \\
@@ -80,31 +107,52 @@ $q$ & частота тормозящего посредника в ворота
 $q$ & во сколько раз следующая двигательная единица сильнее предыдущей & \eqref{eq:sizeprinciple} \\
 $r$, $r_i$ & частота импульсов нейрона & \eqref{eq:ratenet} \\
 $r$, $r_t$ & награда (поток награды) & \eqref{eq:rpe}, \eqref{eq:ctd} \\
+$\mathbf r(t)$ & вектор откликов резервуара & \eqref{eq:reservoir} \\
 $R$, $\bar R$ & полученная награда; её ожидание или среднее в единицу времени & \eqref{eq:perturbation}, \eqref{eq:vigor} \\
 $R$ & дисперсия шума на входе фильтра & \eqref{eq:kalman} \\
 $R$, $r_0$ & отложенная и немедленная награды & \eqref{eq:patience} \\
 $R_{\max}$ & предельная скорость передачи, бит/с & \eqref{eq:spikeentropy} \\
 $r_{\max}$ & наибольшая частота импульсов & \eqref{eq:gain}, \eqref{eq:nakarushton} \\
+$R_{\text{сырой}}$, $R_{\text{имп}}$ & поток данных щупа: сырой и только импульсы, бит/с & \eqref{eq:probedata} \\
 $s_j$ & знак выходов нейрона $j$ & \eqref{eq:dalesign} \\
 $s_i$ & знак рецептора получателя & \eqref{eq:seroneuron} \\
 $s$, $\hat s$ & состояние мира; его оценка & \eqref{eq:rpe}, \eqref{eq:kalman} \\
+$s_{f,p}$ & ответ $S$-нейрона на признак $f$ в положении $p$ & \eqref{eq:scstage} \\
+$S$ & активность «газа»: \nt{НОРА}-провода к сердцу & \eqref{eq:gasbrake} \\
+$S$ & давление сна & \eqref{eq:sleeppressure} \\
 $t_1$ & момент первого импульса & \eqref{eq:latency} \\
+$t_k$ & момент $k$-го импульса & \eqref{eq:forcesum} \\
+$t_{f,i}$ & образец признака $f$ & \eqref{eq:scstage} \\
 $T$ & окно счёта импульсов; время накопления фотонов & \eqref{eq:rateerror}, \eqref{eq:photonnoise} \\
 $T_c$ & время нарастания подёргивания мышцы & \eqref{eq:twitch} \\
+$T_{\text{залп}}$ & интервал между залпами культуры & \eqref{eq:burstinterval} \\
 $u$ & суммарный вход нейрона & \eqref{eq:gain} \\
+$u$, $u(t)$ & команда мозга: на входе адаптивного фильтра; гормональному каскаду & \eqref{eq:adaptivefilter}, \eqref{eq:cascade} \\
+$u(t)$ & вход резервуара & \eqref{eq:reservoir} \\
 $U$ & уровень постоянного входа & \eqref{eq:latency} \\
 $U$ & доля запаса медиатора, выбрасываемая на импульс & \eqref{eq:depression} \\
 $v$ & скорость сигнала в проводе; скорость движения пятна & \eqref{eq:itd}, \eqref{eq:vstar} \\
 $V$ & напряжение на мембране & \eqref{eq:glutneuron}, \eqref{eq:shunt} \\
 $V$ & ожидание будущей награды & \eqref{eq:rpe}, \eqref{eq:ctd} \\
-$w$, $w_{ij}$, $W_{ij}$ & вес связи & \eqref{eq:glutneuron}, \eqref{eq:ratenet}, \eqref{eq:acetnet} \\
+$w$, $w_{ij}$, $W_{ij}$ & вес связи & \eqref{eq:glutneuron}, \eqref{eq:ratenet}, \eqref{eq:acetnet}, \eqref{eq:lms}, \eqref{eq:adaptivefilter} \\
+$\mathbf w_k$ & веса входов $C$-нейрона $k$ & \eqref{eq:traceinvariance} \\
 $w_{q\mu}$, $w_{q\nu}$, $w_{z\mu}$ & веса связей в воротах боли & \eqref{eq:gate} \\
+$W_{\text{вых}}$ & веса линейного считывания резервуара & \eqref{eq:reservoir} \\
 $x$, $y$ & логические входы и выход & \eqref{eq:dualrail}, \eqref{eq:veto} \\
 $x$, $y$ & активность отправителя и получателя & \eqref{eq:hebb} \\
 $x$ & место детектора на линии задержек & \eqref{eq:itd} \\
 $x_i$ & вход от органов чувств & \eqref{eq:acetnet} \\
-$z$ & частота выхода ворот боли & \eqref{eq:gate} \\
+$x_p$ & вход в положении $p$ & \eqref{eq:scstage} \\
+$\mathbf x$ & выходы $S$-нейронов, вход $C$-нейрона & \eqref{eq:traceinvariance} \\
+$x_j$ & вход $j$ адаптивного фильтра: команда после фильтра $g_j$ & \eqref{eq:lms}, \eqref{eq:adaptivefilter} \\
+$x_f$, $x_s$ & поправки быстрого и медленного процессов & \eqref{eq:tworate} \\
+$x_1$, $x_2$, $x_3$ & уровни на трёх ступенях гормонального каскада; $x_3$ --- конечный гормон & \eqref{eq:cascade} \\
+$x^*$ & доля восстановленного запаса медиатора, при которой начинается новая лавина & \eqref{eq:burstinterval} \\
 $y$ & зашумлённый вход фильтра & \eqref{eq:kalman} \\
+$y$, $\hat y$ & сигнал датчиков; его предсказание адаптивным фильтром & \eqref{eq:adaptivefilter} \\
+$y_k$, $\bar y_k$ & активность $C$-нейрона $k$; её след & \eqref{eq:traceinvariance} \\
+$y(t)$ & выход считывания резервуара & \eqref{eq:reservoir} \\
+$z$ & частота выхода ворот боли & \eqref{eq:gate} \\
 \midrule
 $\alpha_i^\pm$ & вес положительных и отрицательных ошибок & \eqref{eq:asymmetric} \\
 $\beta$ & сила взаимного торможения & \eqref{eq:wta} \\
@@ -115,40 +163,47 @@ $\delta$, $\delta_t$ & ошибка предсказания награды & \e
 $\delta t$ & разница времён прихода звука в два уха & \eqref{eq:itd} \\
 $\Delta$, $\Delta_{\max}$ & интервал между импульсами; окно совпадения & \eqref{eq:window} \\
 $\Delta t$ & точность, с которой получатель различает время & \eqref{eq:spikeentropy} \\
+$\Delta F$ & прибавка силы от очередной двигательной единицы & \eqref{eq:sizeprinciple} \\
+$\Delta I$ & различимая прибавка яркости & \eqref{eq:photonnoise} \\
+$\Delta p$ & сдвиг ракетки за окно & \eqref{eq:dishreadout} \\
 $\Delta u$ & разница входов двух групп & \eqref{eq:gainsnr} \\
+$\Delta V$ & на сколько нужно поднять напряжение мембраны & \eqref{eq:dendriteload} \\
 $\Delta x$ & расстояние между соседними датчиками & \eqref{eq:vstar} \\
 $\varepsilon$ & относительная разница входов & \eqref{eq:wtagain} \\
-$\eta$ & скорость обучения & \eqref{eq:plasticity} \\
+$\eta$ & скорость обучения & \eqref{eq:plasticity}, \eqref{eq:lms}, \eqref{eq:traceinvariance} \\
 $\eta$ & шум в сети после усилителя & \eqref{eq:softmax} \\
 $\mu$ & вход прикосновения к воротам боли & \eqref{eq:gate} \\
 $\nu$ & вход боли & \eqref{eq:gate} \\
-$\theta$ & порог срабатывания & \eqref{eq:window} \\
+$\theta$ & порог срабатывания & \eqref{eq:window}, \eqref{eq:scstage} \\
 $\kappa$ & количество медиатора на один импульс & \eqref{eq:seroneuron} \\
 $\kappa_i$ & отношение весов положительных и отрицательных ошибок & \eqref{eq:expectile} \\
 $\kappa_m$ & связь силы мышцы с её жёсткостью & \eqref{eq:antagonists} \\
 $\ell$ & расстояние, на которое расплывается медиатор & \eqref{eq:diffusionlength} \\
 $\ell$ & плечо, на котором мышца тянет сустав & \eqref{eq:antagonists} \\
 $\xi$ & случайное дрожание выхода нейрона & \eqref{eq:perturbation} \\
+$\rho(\boldsymbol\psi)$ & доля времени, проведённого в настройке $\boldsymbol\psi$ & \eqref{eq:dishdensity} \\
 $\sigma$ & разброс, масштаб шума & \eqref{eq:rateerror}, \eqref{eq:softmax} \\
 $\sigma$ & яркость, при которой ответ равен половине наибольшего & \eqref{eq:nakarushton} \\
 $\sigma_{\text{до}}$, $\sigma_{\text{после}}$ & шум до усилителя и после него & \eqref{eq:gainsnr} \\
 $\tau$ & постоянная времени мембраны & \eqref{eq:glutneuron} \\
+$\tau$ & постоянная времени ступени гормонального каскада & \eqref{eq:cascade} \\
+$\tau_{\text{эфф}}$ & постоянная времени группы, возбуждающей сама себя & \eqref{eq:perfectint} \\
 $\tau_c$ & время жизни медиатора в объёме & \eqref{eq:seroneuron} \\
 $\tau_E$, $\tau_I$ & постоянные времени \nt{ГЛУТ}- и \nt{ГАМК}-группы & \eqref{eq:ei} \\
 $\tau_e$ & время жизни следа & \eqref{eq:threefactor} \\
+$\tau_{\text{сл}}$ & время жизни следа активности $C$-нейрона & \eqref{eq:traceinvariance} \\
 $\tau_s$ & время возврата чувствительности после повреждения & \eqref{eq:sensitization} \\
+$\tau_r$, $\tau_d$ & время накопления давления сна при бодрствовании и его сброса во сне & \eqref{eq:sleeppressure} \\
 $\tau_{\text{вос}}$ & время восстановления запаса медиатора & \eqref{eq:depression} \\
 $\tau_\gamma$ & горизонт планирования & \eqref{eq:ctd} \\
 $\tau_v$ & скорость, с которой уточняется ожидание & \eqref{eq:ramp} \\
-$\tau_a$ & время усталости в генераторе ритма & \eqref{eq:halfcentre} \\
+$\tau_a$ & время усталости в генераторе ритма или в качелях сна & \eqref{eq:halfcentre}, \eqref{eq:updown} \\
 $\tau_a^*$ & лучшее время выполнения действия & \eqref{eq:vigor} \\
 $\Phi$ & правая часть правила обучения & \eqref{eq:plasticity} \\
 $\Phi$ & поток фотонов & \eqref{eq:photonnoise} \\
 $\varphi_k$ & признак $k$ полученного результата & \eqref{eq:vectortd} \\
+$\varphi$ & разность фаз суточного генератора и внешнего сигнала & \eqref{eq:pll} \\
 $\boldsymbol\psi$ & настройка сети в модели DishBrain & \eqref{eq:dishdensity} \\
-$\rho(\boldsymbol\psi)$ & доля времени, проведённого в настройке $\boldsymbol\psi$ & \eqref{eq:dishdensity} \\
-$P_{\text{пр}}$ & вероятность промаха & \eqref{eq:dishdensity} \\
-$n_\uparrow$, $n_\downarrow$ & счёт импульсов областей «вверх» и «вниз» за окно & \eqref{eq:dishreadout} \\
-$c$ & коэффициент, с которым разность счётов двигает ракетку & \eqref{eq:dishreadout} \\
+$\omega$, $\omega_0$ & частота внешнего сигнала (света); собственная частота суточного генератора & \eqref{eq:pll} \\
 \end{longtable}
 \end{center}
