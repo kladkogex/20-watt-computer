@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The 20-Watt Computer</title>
+<meta name="description" content="Компьютер на 20 ваттах / The 20-Watt Computer — how the brain computes: a quantitative approach for engineers. Free book, PDF and interactive breadboard.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root{
+  --bg:#EDF1F5; --panel:#F8FAFC; --grid:#DDE4EC; --ink:#15202B; --muted:#586677; --line:#C6D0DB;
+  --glut:#2F5DA8; --gaba:#BF3A2B; --spike:#C98A06;
+  --sans:"IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --cond:"IBM Plex Sans Condensed", "Arial Narrow", system-ui, sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root{ color-scheme:dark; --bg:#10161D; --panel:#161E27; --grid:#1C2631; --ink:#E4E9EF; --muted:#93A1B1; --line:#2E3C4B; --glut:#86ACEA; --gaba:#F08C7F; --spike:#F2C14E; }
+}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;color:var(--ink);font:16px/1.55 var(--sans);padding-inline:16px;padding-block:20px 40px;
+  background-color:var(--bg);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:24px 24px}
+.wrap{max-width:980px;margin:0 auto;display:flex;flex-direction:column;gap:28px}
+header.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.brand{font:600 12px/1 var(--cond);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.langs{display:flex;gap:6px}
+.chip{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:6px;padding:5px 10px;font:600 13px/1.2 var(--cond);letter-spacing:.04em;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.chip:focus-visible,a:focus-visible{outline:2px solid var(--spike);outline-offset:2px}
+.hero{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:28px 24px;display:flex;flex-direction:column;gap:14px}
+h1{font:700 clamp(34px,6vw,58px)/1.02 var(--cond);margin:0;text-wrap:balance}
+h1 .w{color:var(--spike)}
+.sub{font:600 clamp(17px,2.4vw,22px)/1.3 var(--cond);color:var(--muted);margin:0;text-wrap:balance}
+.lead{margin:0;max-width:62ch}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}
+.btn{display:inline-flex;flex-direction:column;gap:2px;text-decoration:none;border:1px solid var(--ink);border-radius:8px;padding:10px 14px;color:var(--ink);background:transparent;min-width:180px}
+.btn b{font:700 16px/1.2 var(--cond);letter-spacing:.02em}
+.btn span{font:12px/1.3 var(--mono);color:var(--muted)}
+.btn.primary{background:var(--ink);color:var(--bg)}
+.btn.primary span{color:var(--bg);opacity:.75}
+.facts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+@media (max-width:720px){.facts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.fact{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px 14px;display:flex;flex-direction:column;gap:2px}
+.fact b{font:500 26px/1.1 var(--mono);font-variant-numeric:tabular-nums}
+.fact span{font:600 12px/1.3 var(--cond);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+h2{font:700 24px/1.2 var(--cond);margin:0}
+.toc{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px 20px;display:flex;flex-direction:column;gap:12px}
+ol.chapters{margin:0;padding:0;list-style:none;columns:2;column-gap:28px}
+@media (max-width:720px){ol.chapters{columns:1}}
+ol.chapters li{break-inside:avoid;display:grid;grid-template-columns:2.2em 1fr;gap:6px;padding:5px 0;border-bottom:1px solid var(--line)}
+ol.chapters .n{font:500 13px/1.6 var(--mono);color:var(--muted)}
+.part{font:600 11px/1 var(--cond);letter-spacing:.12em;text-transform:uppercase;color:var(--spike);padding-top:10px;border:0!important;display:block!important}
+.note{font-size:14px;color:var(--muted)}
+footer{font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:12px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+footer a{color:var(--ink)}
+.nt{font:700 .92em var(--cond);letter-spacing:.02em}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand" data-ru="Бесплатный учебник" data-en="A free textbook">Бесплатный учебник</div>
+    <div class="langs" role="group" aria-label="Language">
+      <button class="chip" id="lang-ru" type="button">RU</button>
+      <button class="chip" id="lang-en" type="button">EN</button>
+    </div>
+  </header>
+
+  <section class="hero">
+    <h1 data-ru='Компьютер на <span class="w">20</span> ваттах' data-en='The <span class="w">20</span>-Watt Computer'>Компьютер на <span class="w">20</span> ваттах</h1>
+    <p class="sub" data-ru="Как вычисляет мозг: количественный подход для инженеров" data-en="How the Brain Computes: A Quantitative Approach for Engineers">Как вычисляет мозг: количественный подход для инженеров</p>
+    <p class="lead" data-ru="Мозг глазами инженера: схемы, сигналы, коды, правила обучения и энергия. Каждое число в книге получено из небольшой программы, которую можно запустить и изменить, а каждое главное утверждение сверено с опытом."
+       data-en="The brain as an engineer sees it: circuits, signals, codes, learning rules and energy. Every number in the book comes from a small program you can run and change, and every major claim is checked against experiments.">Мозг глазами инженера: схемы, сигналы, коды, правила обучения и энергия. Каждое число в книге получено из небольшой программы, которую можно запустить и изменить, а каждое главное утверждение сверено с опытом.</p>
+    <div class="actions">
+      <a class="btn primary" href="pdf/20-watt-computer-ru.pdf"><b data-ru="Скачать книгу" data-en="Download the book">Скачать книгу</b><span data-ru="PDF · 270 страниц · по-русски" data-en="PDF · 270 pages · Russian">PDF · 270 страниц · по-русски</span></a>
+      <a class="btn" href="pdf/20-watt-computer-ru-paperback.pdf"><b data-ru="Карманная версия" data-en="Paperback edition">Карманная версия</b><span data-ru="PDF · без формул, с рисунками · 80 страниц" data-en="PDF · no formulas, with drawings · 80 pages">PDF · без формул · 74 страницы</span></a>
+      <a class="btn" href="breadboard/"><b data-ru="Макетная плата" data-en="Neuron breadboard">Макетная плата</b><span data-ru="собери схему из нейронов" data-en="wire up neurons yourself">собери схему из нейронов</span></a>
+      <a class="btn" href="https://github.com/kladkogex/20-watt-computer"><b data-ru="Исходники" data-en="Source">Исходники</b><span>github.com/kladkogex</span></a>
+    </div>
+  </section>
+
+  <section class="facts" aria-label="In numbers">
+    <div class="fact"><b>22</b><span data-ru="главы" data-en="chapters">главы</span></div>
+    <div class="fact"><b>~160</b><span data-ru="задач с ответами" data-en="exercises with answers">задач с ответами</span></div>
+    <div class="fact"><b>~370</b><span data-ru="проверенных источников" data-en="checked references">проверенных источников</span></div>
+    <div class="fact"><b>10</b><span data-ru="моделей на Python" data-en="Python models">моделей на Python</span></div>
+  </section>
+
+  <section class="toc" aria-labelledby="toc-h">
+    <h2 id="toc-h" data-ru="Содержание" data-en="Contents">Содержание</h2>
+    <ol class="chapters" id="chapters"></ol>
+    <p class="note" data-ru="Приложения: вещества, которые не задают тип нейрона; обозначения; ответы к задачам; экспериментальное приложение с источником для каждого главного утверждения."
+       data-en="Appendices: substances that do not define a neuron type; notation; answers to exercises; an experimental supplement with a source for every major claim.">Приложения: вещества, которые не задают тип нейрона; обозначения; ответы к задачам; экспериментальное приложение с источником для каждого главного утверждения.</p>
+    <p class="note" data-ru="Английское издание и интерактивная веб-версия глав готовятся." data-en="The English edition and the interactive web version of the chapters are in progress; the PDFs are in Russian for now.">Английское издание и интерактивная веб-версия глав готовятся.</p>
+  </section>
+
+  <footer>
+    <span data-ru="К. Кладько" data-en="S. Kladko">К. Кладько</span>
+    <a href="https://github.com/kladkogex/20-watt-computer" data-ru="Исходный текст и модели на GitHub" data-en="Source text and models on GitHub">Исходный текст и модели на GitHub</a>
+  </footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  const CH=[
+    [null,"Основа","Foundations"],
+    [1,"Типы нейронов","Neuron types"],
+    [2,'Что вычисляют <span class="nt">ГЛУТ</span>-нейроны','What <span class="nt">ГЛУТ</span> neurons compute'],
+    [3,'<span class="nt">ГЛУТ</span> и <span class="nt">ГАМК</span> вместе','<span class="nt">ГЛУТ</span> and <span class="nt">ГАМК</span> together'],
+    [4,"Азбука Морзе: язык нейронов","Morse code: the language of neurons"],
+    [null,"Широковещательные каналы","Broadcast channels"],
+    [5,'Что вычисляют <span class="nt">СЕРО</span>-нейроны','What <span class="nt">СЕРО</span> neurons compute'],
+    [6,'Сети, которые учатся: добавляем <span class="nt">ДОФА</span>','Networks that learn: adding <span class="nt">ДОФА</span>'],
+    [7,"Другие теории обучения на дофамине","Alternative theories of dopamine learning"],
+    [8,'Когда искать, а когда решать: <span class="nt">НОРА</span>','When to search and when to decide: <span class="nt">НОРА</span>'],
+    [9,'Когда писать, а когда читать: <span class="nt">АЦЕТ</span>','When to write and when to read: <span class="nt">АЦЕТ</span>'],
+    [10,"Вся машина","The whole machine"],
+    [null,"Входы и выходы","Inputs and outputs"],
+    [11,"Входы: глаза, уши и другие датчики","Inputs: eyes, ears and other sensors"],
+    [12,"Распознавание изображений и видео","Image and video recognition"],
+    [13,"Выходы: как мозг управляет мышцами","Outputs: how the brain controls muscles"],
+    [14,"Боль: сигнал тревоги","Pain: the alarm signal"],
+    [15,"Как машина учится двигаться","How the machine learns to move"],
+    [16,"Второй выход: химия тела","The second output: body chemistry"],
+    [null,"Лаборатория","The lab"],
+    [17,"Отладка машины","Debugging the machine"],
+    [18,"Типы нейронов по электрической функции","Neuron types by electrical function"],
+    [19,"Нейроны по числу дендритов","Neurons by number of dendrites"],
+    [20,"Что делают нейроны во сне","What neurons do during sleep"],
+    [21,"Машина из живых нейронов","Machines made of living neurons"],
+    [22,"DishBrain","DishBrain"]
+  ];
+  let lang="ru";
+  try{ lang=localStorage.getItem("20w-lang")||((navigator.language||"").toLowerCase().startsWith("ru")?"ru":"en"); }catch(e){ lang=(navigator.language||"").toLowerCase().startsWith("ru")?"ru":"en"; }
+  function render(){
+    document.documentElement.lang=lang;
+    document.querySelectorAll("[data-ru]").forEach(el=>{ el.innerHTML=el.dataset[lang]; });
+    document.getElementById("lang-ru").setAttribute("aria-pressed",lang==="ru");
+    document.getElementById("lang-en").setAttribute("aria-pressed",lang==="en");
+    const ol=document.getElementById("chapters"); ol.innerHTML="";
+    CH.forEach(([n,ru,en])=>{ const li=document.createElement("li");
+      if(n===null){ li.className="part"; li.innerHTML=lang==="ru"?ru:en; }
+      else li.innerHTML=`<span class="n">${n}</span><span>${lang==="ru"?ru:en}</span>`;
+      ol.appendChild(li); });
+    document.title=lang==="ru"?"Компьютер на 20 ваттах":"The 20-Watt Computer";
+  }
+  function set(l){ lang=l; try{ localStorage.setItem("20w-lang",l); }catch(e){} render(); }
+  document.getElementById("lang-ru").onclick=()=>set("ru");
+  document.getElementById("lang-en").onclick=()=>set("en");
+  render();
+})();
+</script>
+</body>
+</html>
