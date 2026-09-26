@@ -10,7 +10,7 @@
 
 [![Read online](https://img.shields.io/badge/read-online-e4e9ef?style=for-the-badge)](https://kladkogex.github.io/20-watt-computer/read/00.html)
 [![Read the PDF](https://img.shields.io/badge/PDF-249_pages-f5c542?style=for-the-badge)](https://kladkogex.github.io/20-watt-computer/pdf/20-watt-computer-ru.pdf)
-[![Paperback](https://img.shields.io/badge/paperback-80_pages-8fb3ff?style=for-the-badge)](https://kladkogex.github.io/20-watt-computer/pdf/20-watt-computer-ru-paperback.pdf)
+[![Paperback](https://img.shields.io/badge/paperback-90_pages-8fb3ff?style=for-the-badge)](https://kladkogex.github.io/20-watt-computer/pdf/20-watt-computer-ru-paperback.pdf)
 [![Breadboard](https://img.shields.io/badge/play-neuron_breadboard-7ee2a8?style=for-the-badge)](https://kladkogex.github.io/20-watt-computer/breadboard/)
 [![Website](https://img.shields.io/badge/site-kladkogex.github.io-cccccc?style=for-the-badge)](https://kladkogex.github.io/20-watt-computer/)
 
