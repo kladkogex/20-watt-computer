@@ -52,7 +52,15 @@ def updown(b, w=5.0, I=2.0, theta=2.5, k=0.25, tau=0.01, tau_a=0.3, T=6.0, dt=1e
         if up and not was_up: ups.append(t)
         was_up = up
         if i % 20 == 0: rec.append((t, r))
-    late = [x for t, x in rec if t > 2.0]
+    # fraction of time UP after the transient: average over a whole number of
+    # periods (from the first UP onset after 2 s to the last onset), otherwise
+    # a partial period biases the fraction; without oscillation use all t > 2 s
+    late_ups = [t for t in ups if t > 2.0]
+    if len(late_ups) >= 2:
+        t0, t1 = late_ups[0], late_ups[-1]
+    else:
+        t0, t1 = 2.0, T
+    late = [x for t, x in rec if t0 <= t < t1]
     frac_up = sum(1 for x in late if x > 0.5) / len(late)
     periods = [y - x for x, y in zip(ups, ups[1:])]
     return rec, periods, frac_up
