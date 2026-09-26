@@ -1,0 +1,81 @@
+\chapter*{Как читать эту книгу}
+\addcontentsline{toc}{chapter}{Как читать эту книгу}
+
+Книгу не обязательно читать подряд. Главы~1--4 --- общая основа: типы нейронов, что вычисляют \nt{ГЛУТ} и \nt{ГАМК} и на каком языке они говорят. Дальше книга ветвится. Карта на рис.~\ref{fig:roadmap} показывает, какие главы на какие опираются: стрелка от главы $A$ к главе $B$ значит, что в $B$ используются понятия и формулы из $A$. На карте только главные зависимости; мелкие ссылки назад тексту не мешают.
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[>=Stealth,scale=0.95,
+  ch/.style={draw,thick,rounded corners=3pt,align=center,font=\scriptsize,text width=1.85cm,minimum height=0.62cm,inner sep=2pt},
+  base/.style={ch,fill=blue!8}, bus/.style={ch,fill=orange!14}, sum/.style={ch,fill=gray!18},
+  io/.style={ch,fill=green!10}, sort/.style={ch,fill=cyan!8}, lab/.style={ch,fill=violet!10},
+  dep/.style={->,thick,gray!60!black}]
+% foundation
+\node[base] (c1) at (0,0) {1 Типы нейронов};
+\node[base] (c2) at (2.3,0) {2 \nt{ГЛУТ}};
+\node[base] (c3) at (4.6,0) {3 \nt{ГЛУТ} и \nt{ГАМК}};
+\node[base] (c4) at (6.9,0) {4 Азбука Морзе};
+% broadcast channels and the synthesis
+\node[bus] (c5) at (4.6,-1.5) {5 \nt{СЕРО}};
+\node[bus] (c6) at (7.3,-1.5) {6 \nt{ДОФА}};
+\node[bus] (c7) at (9.2,-0.9) {7 Теории дофамина};
+\node[bus] (c8) at (9.2,-2.1) {8 \nt{НОРА}};
+\node[bus] (c9) at (11.5,-2.1) {9 \nt{АЦЕТ}};
+\node[sum] (c10) at (13.8,-0.9) {10 Вся машина};
+% inputs and outputs
+\node[io] (c12) at (2.3,-4.1) {12 Распо-\\знавание};
+\node[io] (c11) at (4.6,-4.1) {11 Входы};
+\node[io] (c13) at (6.9,-4.1) {13 Мышцы};
+\node[io] (c14) at (9.2,-3.05) {14 Боль};
+\node[io] (c15) at (9.2,-4.1) {15 Обучение\\движениям};
+\node[io] (c16) at (9.2,-5.15) {16 Химия\\тела};
+% lab, sorting, sleep
+\node[lab] (c17) at (11.5,-4.1) {17 Отладка};
+\node[lab] (c21) at (13.8,-4.1) {21 Живые машины};
+\node[lab] (c22) at (13.8,-5.15) {22 DishBrain};
+\node[sort] (c18) at (11.5,-5.15) {18 Нейроны-\\приборы};
+\node[sort] (c19) at (13.8,-6.2) {19 Число\\дендритов};
+\node[bus] (c20) at (11.5,-6.2) {20 Сон};
+% dependencies
+\draw[dep] (c1) -- (c2); \draw[dep] (c2) -- (c3); \draw[dep] (c3) -- (c4);
+\draw[dep] (c1) -- (c5); \draw[dep] (c4) -- (c6); \draw[dep] (c5) -- (c6);
+\draw[dep] (c6) -- (c7); \draw[dep] (c6) -- (c8); \draw[dep] (c8) -- (c9);
+\draw[dep] (c7) -- (c10); \draw[dep] (c9) -- (c10);
+\draw[dep] (c4) -- (c11); \draw[dep] (c11) -- (c12); \draw[dep] (c11) -- (c13); \draw[dep] (c5) -- (c13);
+\draw[dep] (c13) -- (c14); \draw[dep] (c13) -- (c15); \draw[dep] (c13) -- (c16);
+\draw[dep] (c15) -- (c17); \draw[dep] (c9) -- (c17); \draw[dep] (c17) -- (c21); \draw[dep] (c21) -- (c22);
+\draw[dep] (c16) -- (c18); \draw[dep] (c18) -- (c19); \draw[dep] (c16) -- (c20);
+% legend
+\begin{scope}[yshift=-7.25cm]
+\foreach \s/\t [count=\i] in {base/основа, bus/каналы и режимы, sum/сводка, io/входы и выходы, sort/сортировки нейронов, lab/лаборатория}{
+  \pgfmathtruncatemacro{\col}{mod(\i-1,3)}\pgfmathtruncatemacro{\row}{(\i-1)/3}
+  \node[\s,text width=0.3cm,minimum height=0.32cm] at ({\col*4.8+0.2},{-\row*0.55}) {};
+  \node[anchor=west,font=\scriptsize] at ({\col*4.8+0.55},{-\row*0.55}) {\t};}
+\end{scope}
+\end{tikzpicture}
+\caption{Карта глав. Стрелка ведёт от главы к той, что на неё опирается. Прочие ссылки между главами --- указатели, а не зависимости.}
+\label{fig:roadmap}
+\end{figure}
+
+\section*{Пути через книгу}
+
+\begin{center}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{>{\raggedright}p{3.0cm}>{\raggedright}p{3.9cm}>{\raggedright\arraybackslash}p{6.4cm}}
+\toprule
+Путь & Для кого & Главы по порядку \\
+\midrule
+курс на одну четверть & преподаватель, 10 недель & неделя 1: гл.~1--2; 2: гл.~3; 3: гл.~4; 4: гл.~5--6; 5: гл.~7--8; 6: гл.~9; 7: гл.~10; 8: гл.~11--12; 9: гл.~13 и~15; 10: гл.~17 \\
+ИИ и машинное обучение & тот, кто знает нейросети и хочет понять, как учится мозг & 1--4, 5 (бегло), 6, 7, 8, 9, 11 (бегло), 12, 13 (бегло), 15 \\
+электроника и железо & схемотехник, разработчик нейроморфных чипов & 1--4, 5, 11, 13, 16, 18, 19, 17 (главы 9 и 15 бегло) \\
+нейроинтерфейсы и живые вычислители & тот, кто строит интерфейсы мозг---компьютер и чипы с живыми нейронами & 1, 2, 4, 11, 13, 17 (главы 9 и 15 бегло), 21, 22 (главу 12 бегло) \\
+быстрый обзор & инженер, у которого есть выходные & 1, 2, 3, 6, 10; ссылки главы~6 на главы~4--5 понятны из контекста \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+«Бегло» значит: достаточно прочитать начало главы, её утверждения в жёлтых рамках и итоговую таблицу.
+
+В конце каждой главы есть задачи: оценки, выводы, моделирование и проектирование; краткие ответы собраны в приложении~\ref{sec:answers}. Все обозначения --- в приложении~\ref{sec:notation}, а опыты, на которых держатся главные утверждения каждой главы, --- в приложении~\ref{sec:supplement}. Числа в книге получены из небольших программ в папке \texttt{models/}; их можно запустить и изменить.
