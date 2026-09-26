@@ -1,0 +1,102 @@
+% Small pictograms for figures: \pic[scale=...] at (x,y) {name};
+% Each icon is about 0.5 cm across at scale 1 and is centred on its anchor.
+\tikzset{
+  % a drop of juice (the reward in the dopamine experiments)
+  juice/.pic={\tikzset{x=1cm,y=1cm}
+    \fill[orange!75!yellow,draw=orange!60!black,line width=0.5pt]
+      (0,0.28) .. controls (0.03,0.16) and (0.17,0.04) .. (0.17,-0.08)
+      arc[start angle=0,end angle=-180,radius=0.17]
+      .. controls (-0.17,0.04) and (-0.03,0.16) .. (0,0.28) -- cycle;
+    \fill[white,opacity=0.7] (-0.07,-0.07) ellipse (0.03 and 0.06);
+  },
+  % a promised drop that did not come
+  nojuice/.pic={\tikzset{x=1cm,y=1cm}
+    \draw[orange!60!black,densely dashed,line width=0.5pt]
+      (0,0.28) .. controls (0.03,0.16) and (0.17,0.04) .. (0.17,-0.08)
+      arc[start angle=0,end angle=-180,radius=0.17]
+      .. controls (-0.17,0.04) and (-0.03,0.16) .. (0,0.28) -- cycle;
+    \draw[red!75!black,line width=1.1pt] (-0.2,-0.25) -- (0.2,0.25) (-0.2,0.25) -- (0.2,-0.25);
+  },
+  % a lamp that is on
+  lamp/.pic={\tikzset{x=1cm,y=1cm}
+    \foreach \a in {30,70,110,150}{\draw[yellow!60!orange,line width=0.7pt] (\a:0.24)++(0,0.06) -- ++(\a:0.12);}
+    \fill[yellow!55,draw=orange!60!black,line width=0.5pt] (0,0.06) circle (0.17);
+    \fill[gray!55,draw=gray!30!black,line width=0.4pt] (-0.08,-0.2) rectangle (0.08,-0.09);
+  },
+  % sun: bright light
+  sun/.pic={\tikzset{x=1cm,y=1cm}
+    \foreach \a in {0,45,...,315}{\draw[orange!80!yellow,line width=0.8pt] (\a:0.2) -- (\a:0.3);}
+    \fill[yellow!60!orange,draw=orange!70!black,line width=0.5pt] (0,0) circle (0.15);
+  },
+  % moon: darkness
+  moon/.pic={\tikzset{x=1cm,y=1cm}
+    \begin{scope}\clip (0,0) circle (0.2);
+      \fill[yellow!40!gray] (0,0) circle (0.2);
+      \fill[white] (0.11,0.07) circle (0.18);
+    \end{scope}
+  },
+  % cloud: dim daylight
+  cloud/.pic={\tikzset{x=1cm,y=1cm}
+    \fill[gray!35,draw=gray!55!black,line width=0.4pt]
+      (-0.26,-0.08) arc[start angle=270,end angle=90,radius=0.1]
+      arc[start angle=180,end angle=30,radius=0.14]
+      arc[start angle=150,end angle=0,radius=0.12]
+      arc[start angle=90,end angle=-90,radius=0.09] -- cycle;
+  },
+  % loudspeaker with sound arcs to the right
+  speaker/.pic={\tikzset{x=1cm,y=1cm}
+    \fill[gray!60,draw=black,line width=0.5pt] (-0.22,-0.08) rectangle (-0.12,0.08);
+    \fill[gray!40,draw=black,line width=0.5pt] (-0.12,-0.08) -- (0.02,-0.2) -- (0.02,0.2) -- (-0.12,0.08) -- cycle;
+    \foreach \r in {0.12,0.22,0.32}{\draw[blue!60!black,line width=0.6pt] (0.02,0)++(-35:\r) arc[start angle=-35,end angle=35,radius=\r];}
+  },
+  % a molecule: three bonded atoms
+  molecule/.pic={\tikzset{x=1cm,y=1cm}
+    \draw[gray!40!black,line width=0.6pt] (-0.15,-0.08) -- (0,0.1) -- (0.16,-0.06);
+    \fill[green!55!black] (-0.15,-0.08) circle (0.08);
+    \fill[red!65!black] (0,0.1) circle (0.09);
+    \fill[blue!55!black] (0.16,-0.06) circle (0.07);
+  },
+  % pressure: a weight pressing on a surface
+  press/.pic={\tikzset{x=1cm,y=1cm}
+    \fill[gray!55,draw=black,line width=0.4pt] (-0.12,0.08) rectangle (0.12,0.26);
+    \draw[->,line width=0.8pt] (0,0.07) -- (0,-0.1);
+    \fill[brown!45,draw=brown!40!black,line width=0.4pt] (-0.25,-0.18) rectangle (0.25,-0.12);
+  },
+  % a lever the animal can press
+  lever/.pic={\tikzset{x=1cm,y=1cm}
+    \fill[gray!55,draw=black,line width=0.4pt] (-0.2,-0.2) rectangle (0.2,-0.12);
+    \draw[line width=1.2pt,gray!25!black] (0,-0.12) -- (0.13,0.16);
+    \fill[red!65!black] (0.13,0.16) circle (0.06);
+  },
+  % a short spike train
+  spikes/.pic={\tikzset{x=1cm,y=1cm}
+    \draw[line width=0.4pt] (-0.35,0) -- (0.35,0);
+    \foreach \x in {-0.28,-0.05,0.02,0.24}{\draw[red!70!black,line width=0.8pt] (\x,0) -- (\x,0.22);}
+  },
+  % a radio mast broadcasting
+  mast/.pic={\tikzset{x=1cm,y=1cm}
+    \draw[line width=0.7pt,gray!25!black] (-0.12,-0.3) -- (0,0.16) -- (0.12,-0.3) (-0.08,-0.15) -- (0.08,-0.15) (-0.05,-0.02) -- (0.05,-0.02);
+    \fill[red!70!black] (0,0.18) circle (0.035);
+    \foreach \r in {0.12,0.21}{
+      \draw[orange!85!black,line width=0.6pt] (0,0.18)++(-40:\r) arc[start angle=-40,end angle=40,radius=\r];
+      \draw[orange!85!black,line width=0.6pt] (0,0.18)++(140:\r) arc[start angle=140,end angle=220,radius=\r];}
+  },
+  % a pictogram for vision (not anatomy)
+  eyepic/.pic={\tikzset{x=1cm,y=1cm}
+    \fill[white,draw=black,line width=0.5pt] (-0.26,0) .. controls (-0.1,0.18) and (0.1,0.18) .. (0.26,0)
+      .. controls (0.1,-0.18) and (-0.1,-0.18) .. (-0.26,0) -- cycle;
+    \fill[blue!55!black] (0,0) circle (0.085);
+    \fill[white] (0.025,0.03) circle (0.022);
+  },
+  % a spring standing for a muscle
+  spring/.pic={\tikzset{x=1cm,y=1cm}
+    \draw[line width=0.7pt,red!60!black,decorate,decoration={zigzag,segment length=1.6mm,amplitude=0.8mm}] (-0.3,0) -- (0.3,0);
+    \fill[gray!55] (-0.34,-0.08) rectangle (-0.3,0.08) (0.3,-0.08) rectangle (0.34,0.08);
+  },
+  % an addressed letter (unicast)
+  letter/.pic={\tikzset{x=1cm,y=1cm}
+    \fill[white,draw=blue!50!black,line width=0.5pt] (-0.22,-0.14) rectangle (0.22,0.14);
+    \draw[blue!50!black,line width=0.5pt] (-0.22,0.14) -- (0,-0.02) -- (0.22,0.14);
+    \draw[gray!50!black,line width=0.3pt] (-0.03,-0.08) -- (0.15,-0.08) (-0.03,-0.04) -- (0.12,-0.04);
+  },
+}
