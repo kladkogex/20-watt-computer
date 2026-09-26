@@ -89,7 +89,22 @@ tr.test{cursor:pointer}
 tr.test[aria-selected="true"] td{background:var(--panel2)}
 td.mono{font-family:var(--mono)}
 .pass{color:var(--ok);font-weight:600}.fail{color:var(--bad);font-weight:600}
-.insp{display:flex;flex-direction:column;gap:8px}
+.boardbox{position:relative}
+.pop{position:absolute;z-index:2;width:236px;background:var(--panel);border:1px solid var(--ink);border-radius:8px;padding:10px 11px;display:flex;flex-direction:column;gap:7px;box-shadow:0 6px 22px rgba(0,0,0,.28)}
+.pop.dock{position:static;width:auto;border:0;border-top:1px solid var(--line);border-radius:0;box-shadow:none}
+.pop .ph{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.pop .ph b{font:700 14px/1.2 var(--cond)}
+.pop .x{border:0;background:none;color:var(--muted);font-size:18px;line-height:1;padding:0 2px}
+.pf{display:grid;grid-template-columns:1fr 64px;gap:4px 8px;align-items:center;font-size:13px}
+.pf label{grid-column:1/-1;color:var(--muted);font-size:12.5px}
+.pf input[type=range]{width:100%;accent-color:var(--spike)}
+.pf input[type=number]{width:100%;font:500 13px var(--mono);padding:3px 5px;border:1px solid var(--line);border-radius:5px;background:var(--panel2);color:var(--ink)}
+.pst{font:600 12.5px/1.2 var(--sans);padding:5px 7px;border-radius:5px}
+.pst.ok{background:var(--okbg);color:var(--ok)} .pst.bad{background:var(--badbg);color:var(--bad)}
+.pop .danger{align-self:flex-start;border:1px solid var(--line);background:transparent;color:var(--bad);border-radius:6px;padding:4px 9px;font:600 12.5px/1.2 var(--cond)}
+.palette-lbl{font:600 11px/1 var(--cond);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-right:2px}
+.tool{touch-action:none}
+.ghost-part{position:fixed;z-index:5;pointer-events:none;width:38px;height:38px;border-radius:50%;border:2.5px solid var(--glut);background:var(--panel2);opacity:.85;transform:translate(-50%,-50%)}
 .field{display:grid;grid-template-columns:1fr 92px;gap:8px;align-items:center;font-size:14px}
 .field input{width:100%;font:500 14px var(--mono);padding:5px 7px;border:1px solid var(--line);border-radius:5px;background:var(--panel2);color:var(--ink)}
 .small{font-size:13px;color:var(--muted)}
@@ -120,13 +135,11 @@ footer code{font-family:var(--mono);font-size:12px}
       <div class="eyebrow" id="chal-h" data-i="challenges"></div>
       <div class="chlist" id="chlist"></div>
       <div class="task" id="task" style="display:flex;flex-direction:column;gap:8px"></div>
-      <div class="eyebrow" data-i="parts"></div>
-      <div class="parts" id="parts"></div>
     </aside>
 
     <section class="boardcol">
-      <div class="toolbar" id="toolbar"></div>
-      <div class="canvasbox"><canvas id="board" aria-label="Breadboard"></canvas></div>
+      <div class="toolbar" id="palette" role="group"></div>
+      <div class="canvasbox boardbox" id="boardbox"><canvas id="board" aria-label="Breadboard"></canvas><div class="pop" id="pop" hidden></div></div>
       <div class="rastercap"><span id="rastercap"></span><span data-i="rasterhint"></span></div>
       <div class="canvasbox"><canvas id="raster" aria-label="Impulse raster"></canvas></div>
     </section>
@@ -144,8 +157,6 @@ footer code{font-family:var(--mono);font-size:12px}
         <thead><tr><th data-i="test"></th><th data-i="expect"></th><th data-i="got"></th><th></th></tr></thead>
         <tbody id="tests"></tbody>
       </table>
-      <div class="eyebrow" data-i="inspector"></div>
-      <div class="insp" id="insp"></div>
       <div class="eyebrow" data-i="share"></div>
       <div class="share">
         <div class="row">
@@ -179,7 +190,9 @@ const S = {
     copied:"Ссылка скопирована.", copyfail:"Не удалось скопировать: выделите ссылку в поле и скопируйте вручную.", loaded:"Схема открыта.", badcode:"Код не распознан: проверьте, что он скопирован целиком.",
     rasterhint:"Нажмите на строку теста, чтобы увидеть его импульсы",
     raster:(n)=>`Импульсы в тесте «${n}» и напряжение на выходе`,
-    tools:{move:"Двигать", glut:"ГЛУТ", gaba:"ГАМК", wire:"Провод", del:"Удалить"},
+    add:"Добавить", addtip:(p)=>`Нажмите, чтобы поставить нейрон ${p} на плату, или перетащите его на нужное место`,
+    firsthint:"Тяните от кружка ○ у нейрона к другому нейрону — получится провод. Нажмите на провод, чтобы изменить вес.",
+    delwire:"Удалить провод", delnode:"Удалить нейрон", close:"Закрыть",
     locked:{gaba:"гл. 3", pace:"гл. 5", dofa:"гл. 6", nora:"гл. 8", musc:"гл. 13"},
     partnames:{glut:"ГЛУТ", gaba:"ГАМК", pace:"Ритмоводитель", dofa:"ДОФА", nora:"НОРА", musc:"Мышца"},
     pass:(p,n)=>`Пройдено ${p} из ${n}`, solved:"Решено!", forbidden:(t)=>`Деталь ${t} в этой задаче не разрешена`,
@@ -189,7 +202,7 @@ const S = {
     best:(n,i)=>`Ваш лучший результат: ${n} ${plural(n)}, ${i} имп./ответ`,
     solbtn:"Показать решение", solask:"Решение заменит вашу схему на плате. Вашу схему можно будет вернуть одной кнопкой.", solyes:"Показать", solno:"Отмена",
     solshown:"На плате решение из книги. Нажмите на провод или нейрон, чтобы увидеть его настройки.", solback:"Вернуть мою схему", solmark:" (решение подсмотрено)",
-    noSel:"Выберите нейрон или провод на плате. Двойной щелчок по пустому месту ставит ГЛУТ-нейрон.",
+    noSel:"",
     tau:"Постоянная времени τ, мс", th:"Порог θ", w:"Вес |w|", d:"Задержка d, мс", sign:(s)=> s<0?"Провод тормозящий: отправитель — ГАМК.":"Провод возбуждающий.",
     inputnode:"Вход задачи: подаёт импульсы по тестам. Его нельзя удалить.", outnode:"Выходной ГЛУТ-нейрон: его импульсы — ответ схемы.",
     yes:"да", no:"нет",
@@ -202,7 +215,9 @@ const S = {
     copied:"Link copied.", copyfail:"Couldn't copy: select the link in the field and copy it by hand.", loaded:"Circuit opened.", badcode:"Code not recognized: check that it was copied in full.",
     rasterhint:"Click a test row to see its impulses",
     raster:(n)=>`Impulses in test “${n}” and output voltage`,
-    tools:{move:"Move", glut:"ГЛУТ", gaba:"ГАМК", wire:"Wire", del:"Delete"},
+    add:"Add", addtip:(p)=>`Click to put a ${p} neuron on the board, or drag it where you want it`,
+    firsthint:"Drag from the ○ on a neuron to another neuron to make a wire. Click a wire to change its weight.",
+    delwire:"Delete wire", delnode:"Delete neuron", close:"Close",
     locked:{gaba:"ch. 3", pace:"ch. 5", dofa:"ch. 6", nora:"ch. 8", musc:"ch. 13"},
     partnames:{glut:"ГЛУТ (glutamate)", gaba:"ГАМК (GABA)", pace:"Pacemaker", dofa:"ДОФА (dopamine)", nora:"НОРА (noradrenaline)", musc:"Muscle"},
     pass:(p,n)=>`Passed ${p} of ${n}`, solved:"Solved!", forbidden:(t)=>`Part ${t} is not allowed in this challenge`,
@@ -212,7 +227,7 @@ const S = {
     best:(n,i)=>`Your best: ${n} neuron${n>1?"s":""}, ${i} imp./answer`,
     solbtn:"Show solution", solask:"The solution will replace your circuit on the board. You can bring your circuit back with one click.", solyes:"Show", solno:"Cancel",
     solshown:"The board shows the book's solution. Click a wire or a neuron to see its settings.", solback:"Back to my circuit", solmark:" (solution viewed)",
-    noSel:"Select a neuron or a wire on the board. Double-click an empty spot to place a ГЛУТ neuron.",
+    noSel:"",
     tau:"Time constant τ, ms", th:"Threshold θ", w:"Weight |w|", d:"Delay d, ms", sign:(s)=> s<0?"Inhibitory wire: the sender is ГАМК.":"Excitatory wire.",
     inputnode:"Challenge input: fires impulses according to the tests. It can't be deleted.", outnode:"Output ГЛУТ neuron: its impulses are the circuit's answer.",
     yes:"yes", no:"no",
@@ -260,7 +275,7 @@ const FUTURE = ["pace","dofa","nora","musc"];
 
 // ---------- state ----------
 const W=760, H=420, R=19;
-let lang="en", cur=0, tool="move", sel=null, selTest=0;
+let lang="en", cur=0, sel=null, selTest=0;
 let circuits={}, best={}, hintsUsed={}, stash={}, solSeen={}, solAsk=false;
 function store(){ try{ localStorage.setItem("bb20w", JSON.stringify({lang,cur,circuits,best,hintsUsed,stash,solSeen})); }catch(e){} }
 try{ const s=JSON.parse(localStorage.getItem("bb20w")||"null"); if(s){ lang=s.lang||lang; cur=s.cur||0; circuits=s.circuits||{}; best=s.best||{}; hintsUsed=s.hintsUsed||{}; stash=s.stash||{}; solSeen=s.solSeen||{}; } else { lang=(navigator.language||"").toLowerCase().startsWith("ru")?"ru":"en"; } }catch(e){ lang=(navigator.language||"").toLowerCase().startsWith("ru")?"ru":"en"; }
@@ -337,21 +352,14 @@ function renderStatic(){
   const ch=CH[cur];
   $("task").innerHTML=`<h2>${cur+1}. ${ch.title[lang]}</h2><p>${ch.desc[lang]}</p><ol class="hints" id="hints"></ol><button class="btn ghost" id="hintbtn" type="button"></button><div class="solbox" id="solbox"></div>`;
   renderHints(); renderSol();
-  // parts
-  const k=tok(); $("parts").innerHTML="";
-  ["glut","gaba",...FUTURE].forEach(p=>{ const on=ch.allowed.includes(p); const s=document.createElement("span"); s.className="part"+(on?" on":"");
-    const col=p==="gaba"?k.gaba:p==="glut"?k.glut:k.muted;
-    s.innerHTML=`<span class="dot" style="background:${col}"></span>${L.partnames[p]}${on?"":` <span class="lock">· ${L.locked[p]||L.locked.gaba}</span>`}`; $("parts").appendChild(s); });
-  // toolbar
-  if(!ch.allowed.includes(tool)&&(tool==="glut"||tool==="gaba")) tool="move";
-  $("toolbar").innerHTML="";
-  [["move"],["glut"],["gaba"],["wire"],["del"]].forEach(([t])=>{ const b=document.createElement("button"); b.className="tool"; b.type="button"; b.id="tool-"+t;
-    const locked=(t==="glut"||t==="gaba")&&!ch.allowed.includes(t);
-    b.disabled=locked; b.setAttribute("aria-pressed",tool===t);
-    const sw=t==="glut"?`<span class="sw" style="background:${k.glut}"></span>`:t==="gaba"?`<span class="sw" style="background:${k.gaba}"></span>`:"";
-    b.innerHTML=sw+L.tools[t]+(locked?` <span class="lock">· ${L.locked[t]}</span>`:"");
-    b.onclick=()=>{ tool=t; renderStatic(); drawBoard(); }; $("toolbar").appendChild(b); });
-  if(!ch.allowed.includes(tool)&&(tool==="glut"||tool==="gaba")) tool="move";
+  // palette: click adds a neuron at a free spot, drag places it
+  const k=tok(), pal=$("palette"); pal.innerHTML=`<span class="palette-lbl">${L.add}</span>`;
+  ["glut","gaba",...FUTURE].filter(p=>ch.allowed.includes(p)).forEach(p=>{ const on=true; const b=document.createElement("button"); b.className="tool"; b.type="button"; b.id="add-"+p;
+    const col=p==="gaba"?k.gaba:p==="glut"?k.glut:k.muted; b.disabled=!on; if(on) b.title=L.addtip(L.partnames[p]);
+    b.innerHTML=`<span class="sw" style="background:${col}"></span>${on?"+ ":""}${L.partnames[p]}${on?"":` <span class="lock">· ${L.locked[p]||L.locked.gaba}</span>`}`;
+    if(on) b.addEventListener("pointerdown",e=>paletteDown(e,p));
+    b.addEventListener("click",e=>{ if(e.detail===0&&on) addNeuron(p,freeSpot()); }); // keyboard activation
+    pal.appendChild(b); });
 }
 function renderSol(){
   const L=S[lang], ch=CH[cur], box=$("solbox"); if(!box) return;
@@ -385,23 +393,49 @@ function renderResults(keepInsp){
     tb.appendChild(tr); });
   $("rastercap").textContent=L.raster(ch.tests[selTest].n[lang]);
   $("sharecode").value=shareLink();
-  if(!keepInsp) renderInspector(); drawBoard(); drawRaster();
+  if(!keepInsp) renderPop(); else popStatus(); drawBoard(); drawRaster(); placePop();
   // refresh ✓ in list
   document.querySelectorAll(".ch").forEach((el,i)=>{ const bb=best[CH[i].id]; const s=el.querySelector(".st"); s.className="st"+(bb?" done":""); s.textContent=bb?"✓ "+bb.n:""; });
 }
-function renderInspector(){
-  const L=S[lang], c=circ(), box=$("insp"); box.innerHTML="";
-  if(!sel){ box.innerHTML=`<div class="small">${L.noSel}</div>`; return; }
-  if(sel.kind==="node"){ const n=nodeById(c,sel.id); if(!n){ sel=null; return renderInspector(); }
-    if(n.t==="in"){ box.innerHTML=`<div class="small">${L.inputnode}</div>`; return; }
-    if(n.t==="out") box.insertAdjacentHTML("beforeend",`<div class="small">${L.outnode}</div>`);
-    box.insertAdjacentHTML("beforeend",field("insp-tau",L.tau,n.tau,0.5,50,0.5)+field("insp-th",L.th,n.th,0.1,5,0.1));
-    bind("insp-tau",v=>n.tau=v); bind("insp-th",v=>n.th=v);
-  } else { const w=c.wires.find(x=>x.id===sel.id); if(!w){ sel=null; return renderInspector(); }
-    const s=nodeById(c,w.f); const sg=s&&s.t==="gaba"?-1:1;
-    box.insertAdjacentHTML("beforeend",`<div class="small">${w.f} → ${w.to}. ${L.sign(sg)}</div>`+field("insp-w",L.w,w.w,0.05,5,0.05)+field("insp-d",L.d,w.d,0.1,20,0.1));
-    bind("insp-w",v=>w.w=v); bind("insp-d",v=>w.d=v);
+function renderPop(){
+  const L=S[lang], c=circ(), box=$("pop");
+  if(!sel){ box.hidden=true; box.innerHTML=""; return; }
+  let head="", body="";
+  if(sel.kind==="node"){ const n=nodeById(c,sel.id); if(!n){ sel=null; return renderPop(); }
+    head=n.t==="in"?n.id:n.t==="out"?"OUT · ГЛУТ":`${n.id} · ${n.t==="gaba"?"ГАМК":"ГЛУТ"}`;
+    if(n.t==="in") body=`<div class="small">${L.inputnode}</div>`;
+    else { body=(n.t==="out"?`<div class="small">${L.outnode}</div>`:"")+pfield("p-tau",L.tau,n.tau,0.5,50,0.5)+pfield("p-th",L.th,n.th,0.1,5,0.1)+(n.t==="out"?"":`<button class="danger" id="p-del" type="button">${L.delnode}</button>`); }
+  } else { const w=c.wires.find(x=>x.id===sel.id); if(!w){ sel=null; return renderPop(); }
+    const sn=nodeById(c,w.f); const sg=sn&&sn.t==="gaba"?-1:1;
+    head=`${w.f==="OUT"?"OUT":w.f} → ${w.to}`;
+    body=`<div class="small">${L.sign(sg)}</div>`+pfield("p-w",L.w,w.w,0.05,5,0.05)+pfield("p-d",L.d,w.d,0.1,20,0.1)+`<button class="danger" id="p-del" type="button">${L.delwire}</button>`;
   }
+  box.innerHTML=`<div class="ph"><b>${head}</b><button class="x" id="p-x" type="button" aria-label="${L.close}">×</button></div>${body}<div class="pst" id="p-st" role="status"></div>`; box.hidden=false; popStatus();
+  $("p-x").onclick=()=>{ sel=null; renderResults(); };
+  if($("p-del")) $("p-del").onclick=()=>removeSel();
+  if(sel.kind==="node"){ const n=nodeById(c,sel.id); if(n.t!=="in"){ pbind("p-tau",v=>n.tau=v); pbind("p-th",v=>n.th=v); } }
+  else { const w=c.wires.find(x=>x.id===sel.id); pbind("p-w",v=>w.w=v); pbind("p-d",v=>w.d=v); }
+  placePop();
+}
+function popStatus(){ const el=$("p-st"); if(!el||!state) return; const L=S[lang]; el.className="pst "+(state.solved?"ok":"bad"); el.textContent=(state.solved?L.solved+" ":"")+L.pass(state.passed,state.res.length); }
+function pfield(id,label,val,min,max,step){ return `<div class="pf"><label for="${id}n">${label}</label><input id="${id}r" type="range" min="${min}" max="${max}" step="${step}" value="${val}" aria-label="${label}"><input id="${id}n" type="number" min="${min}" max="${max}" step="${step}" value="${val}"></div>`; }
+function pbind(id,set){ const r=$(id+"r"), n=$(id+"n");
+  const apply=(v,from)=>{ if(!isFinite(v)) return; v=Math.min(+n.max,Math.max(+n.min,v)); set(v); if(from!==r) r.value=v; if(from!==n) n.value=+v.toFixed(2); renderResults(true); };
+  r.addEventListener("input",()=>apply(parseFloat(r.value),r)); n.addEventListener("input",()=>apply(parseFloat(n.value),n)); }
+// place the popover next to the selected element, inside the board; on narrow boards dock it under the board
+function placePop(){
+  const box=$("pop"); if(box.hidden||!sel) return; const bb=$("boardbox"), bw=bb.clientWidth, bh=bb.clientHeight, s=bw/W, c=circ();
+  if(bw<560){ box.classList.add("dock"); box.style.left=box.style.top=""; return; } box.classList.remove("dock");
+  let ax, ay;
+  if(sel.kind==="node"){ const n=nodeById(c,sel.id); if(!n) return; ax=n.x*s; ay=n.y*s; }
+  else { const w=c.wires.find(x=>x.id===sel.id); if(!w) return; const a=nodeById(c,w.f), b=nodeById(c,w.to); ax=(a.x+b.x)/2*s; ay=(a.y+b.y)/2*s; }
+  // try right, left, below, above of the anchor; keep the one that covers the fewest neurons
+  const pw=box.offsetWidth, ph=box.offsetHeight, g=30*s+12, cl=(v,lo,hi)=>Math.max(lo,Math.min(hi,v));
+  const cands=[[ax+g,ay-ph/2],[ax-g-pw,ay-ph/2],[ax-pw/2,ay+g],[ax-pw/2,ay-g-ph]].map(([x,y])=>[cl(x,8,bw-pw-8),cl(y,8,bh-ph-8)]);
+  const cover=([x,y])=>c.nodes.reduce((m,n)=>{ const r=(n.t==="in"?32:R+14)*s; const px=n.x*s+(n.t==="in"?0:0), py=n.y*s;
+    return m+(px+r>x&&px-r<x+pw&&py+r>y&&py-r<y+ph?1:0)+(Math.hypot(px-ax,py-ay)<1?0:0); },0);
+  let best=cands[0], bc=cover(best); cands.slice(1).forEach(cn=>{ const v=cover(cn); if(v<bc){ bc=v; best=cn; } });
+  box.style.left=best[0]+"px"; box.style.top=best[1]+"px";
 }
 function field(id,label,val,min,max,step){ return `<div class="field"><label for="${id}">${label}</label><input id="${id}" type="number" min="${min}" max="${max}" step="${step}" value="${val}"></div>`; }
 function bind(id,set){ const el=$(id); el.addEventListener("input",()=>{ const v=parseFloat(el.value); if(!isFinite(v)) return; set(Math.min(+el.max,Math.max(+el.min,v))); renderResults(true); }); }
@@ -424,7 +458,7 @@ function drawBoard(){
     const ox=-uy*off, oy=ux*off; const ra=a.t==="in"?24:R, rb=b.t==="in"?24:R+ (b.t==="out"?4:0);
     const x1=a.x+ux*ra+ox, y1=a.y+uy*ra+oy, x2=b.x-ux*(rb+2)+ox, y2=b.y-uy*(rb+2)+oy;
     const selected=sel&&sel.kind==="wire"&&sel.id===wr.id;
-    bctx.strokeStyle=selected?k.spike:(inh?k.gaba:k.ink); bctx.lineWidth=selected?3:2;
+    bctx.strokeStyle=inh?k.gaba:k.ink; bctx.lineWidth=selected?4:2; if(selected){ bctx.save(); bctx.globalAlpha=.25; bctx.lineWidth=10; bctx.beginPath(); bctx.moveTo(x1,y1); bctx.lineTo(x2,y2); bctx.stroke(); bctx.restore(); }
     bctx.beginPath(); bctx.moveTo(x1,y1); bctx.lineTo(x2,y2); bctx.stroke();
     bctx.fillStyle=bctx.strokeStyle;
     if(inh){ bctx.beginPath(); bctx.moveTo(x2-uy*8,y2+ux*8); bctx.lineTo(x2+uy*8,y2-ux*8); bctx.lineWidth=3; bctx.stroke(); }
@@ -437,7 +471,7 @@ function drawBoard(){
   if(preview){ bctx.setLineDash([5,5]); bctx.strokeStyle=k.spike; bctx.lineWidth=2; bctx.beginPath(); bctx.moveTo(preview.x1,preview.y1); bctx.lineTo(preview.x2,preview.y2); bctx.stroke(); bctx.setLineDash([]); }
   // nodes
   const cond=getComputedStyle(document.body).getPropertyValue("--cond")||"sans-serif";
-  c.nodes.forEach(n=>{ const col=colorOf(k,n.t); const selected=sel&&sel.kind==="node"&&sel.id===n.id;
+  c.nodes.forEach(n=>{ const col=colorOf(k,n.t); const selected=(sel&&sel.kind==="node"&&sel.id===n.id)||(hover&&hover.target===n.id&&drag&&drag.wireFrom&&n.t!=="in"&&n!==drag.wireFrom);
     bctx.lineWidth=2.5; bctx.strokeStyle=col;
     if(n.t==="in"){ roundRect(n.x-24,n.y-17,48,34,6); bctx.fillStyle=k.panel2; bctx.fill(); bctx.stroke();
       bctx.fillStyle=k.ink; bctx.font=`700 18px ${cond}`; bctx.textAlign="center"; bctx.textBaseline="middle"; bctx.fillText(n.id,n.x,n.y+1); }
@@ -445,10 +479,21 @@ function drawBoard(){
       if(n.t==="out"){ bctx.beginPath(); bctx.arc(n.x,n.y,R+5,0,Math.PI*2); bctx.stroke(); }
       bctx.fillStyle=k.ink; bctx.font=`700 12px ${cond}`; bctx.textAlign="center"; bctx.textBaseline="middle"; bctx.fillText(n.t==="out"?"OUT":n.id.replace("n",""),n.x,n.y+1);
       bctx.fillStyle=col; bctx.font=`700 10px ${cond}`; bctx.fillText(n.t==="gaba"?"ГАМК":"ГЛУТ",n.x,n.y+R+(n.t==="out"?15:11)); }
-    if(fired.has(n.id)){ bctx.fillStyle=k.spike; bctx.beginPath(); const rx=n.t==="in"?n.x+24:n.x+R*0.8, ry=n.t==="in"?n.y-17:n.y-R*0.8; bctx.arc(rx,ry,5,0,Math.PI*2); bctx.fill(); }
-    if(selected){ bctx.setLineDash([4,4]); bctx.strokeStyle=k.spike; bctx.lineWidth=2; bctx.beginPath(); if(n.t==="in") roundRect(n.x-30,n.y-23,60,46,8); else bctx.arc(n.x,n.y,R+10,0,Math.PI*2); bctx.stroke(); bctx.setLineDash([]); }
+    if(fired.has(n.id)){ bctx.save(); bctx.strokeStyle=k.spike; bctx.lineWidth=3; bctx.globalAlpha=.9; bctx.shadowColor=k.spike; bctx.shadowBlur=10; bctx.beginPath();
+      if(n.t==="in") roundRect(n.x-28,n.y-21,56,42,8); else bctx.arc(n.x,n.y,(n.t==="out"?R+5:R)+4,0,Math.PI*2); bctx.stroke(); bctx.restore(); }
+    // output port: drag from here to make a wire
+    const pp=portPos(n), hot=hover&&hover.port===n.id;
+    bctx.beginPath(); bctx.arc(pp.x,pp.y,hot?7.5:6,0,Math.PI*2); bctx.fillStyle=hot?col:k.panel2; bctx.fill(); bctx.lineWidth=2; bctx.strokeStyle=col; bctx.stroke();
+    if(selected){ bctx.setLineDash([4,4]); bctx.strokeStyle=k.ink; bctx.lineWidth=2; bctx.beginPath(); if(n.t==="in") roundRect(n.x-32,n.y-25,64,50,9); else bctx.arc(n.x,n.y,(n.t==="out"?R+5:R)+10,0,Math.PI*2); bctx.stroke(); bctx.setLineDash([]); }
   });
+  drawFirstHint(k);
 }
+function drawFirstHint(k){
+  if(circ().wires.length) return; const L=S[lang]; bctx.fillStyle=k.muted; bctx.font=`500 13px ${getComputedStyle(document.body).getPropertyValue("--sans")||"sans-serif"}`;
+  bctx.textAlign="center"; bctx.textBaseline="alphabetic"; wrapText(L.firsthint, W/2, H-38, W-160, 17);
+}
+function wrapText(t,x,y,maxw,lh){ const words=t.split(" "); let line="", lines=[]; words.forEach(w=>{ const tt=line?line+" "+w:w; if(bctx.measureText(tt).width>maxw&&line){ lines.push(line); line=w; } else line=tt; }); lines.push(line); lines.forEach((l,i)=>bctx.fillText(l,x,y+i*lh)); }
+function portPos(n){ const r=n.t==="in"?24:n.t==="out"?R+5:R; return {x:n.x+r+8, y:n.y}; }
 function roundRect(x,y,w,h,r){ bctx.beginPath(); bctx.moveTo(x+r,y); bctx.arcTo(x+w,y,x+w,y+h,r); bctx.arcTo(x+w,y+h,x,y+h,r); bctx.arcTo(x,y+h,x,y,r); bctx.arcTo(x,y,x+w,y,r); bctx.closePath(); }
 
 function drawRaster(){
@@ -477,24 +522,39 @@ function pos(e){ const r=board.getBoundingClientRect(); const s=r.width/W; retur
 const snap=v=>Math.round(v/20)*20;
 function nodeAt(p){ const c=circ(); for(let i=c.nodes.length-1;i>=0;i--){ const n=c.nodes[i]; if(n.t==="in"? Math.abs(p.x-n.x)<=26&&Math.abs(p.y-n.y)<=19 : Math.hypot(p.x-n.x,p.y-n.y)<=R+6) return n; } return null; }
 function wireAt(p){ const c=circ(); let bestW=null, bd=8; c.wires.forEach(wr=>{ const a=nodeById(c,wr.f), b=nodeById(c,wr.to); if(!a||!b) return; const dx=b.x-a.x, dy=b.y-a.y, L2=dx*dx+dy*dy||1; let t=((p.x-a.x)*dx+(p.y-a.y)*dy)/L2; t=Math.max(0,Math.min(1,t)); const d=Math.hypot(p.x-(a.x+t*dx),p.y-(a.y+t*dy)); if(d<bd){bd=d;bestW=wr;} }); return bestW; }
-function addNeuron(t,p){ const c=circ(), ch=CH[cur]; if(!ch.allowed.includes(t)) return; const id="n"+(c.next++); const x=Math.min(W-30,Math.max(30,snap(p.x))), y=Math.min(H-30,Math.max(30,snap(p.y))); c.nodes.push({id,t,x,y,tau:5,th:1}); sel={kind:"node",id}; renderResults(); }
+function addNeuron(t,p){ const c=circ(), ch=CH[cur]; if(!ch.allowed.includes(t)) return; const id="n"+(c.next++); const x=Math.min(W-40,Math.max(40,snap(p.x))), y=Math.min(H-30,Math.max(30,snap(p.y))); c.nodes.push({id,t,x,y,tau:5,th:1}); sel={kind:"node",id}; renderResults(); }
+function freeSpot(){ const c=circ(); for(const y of [220,140,300,80,360]) for(const x of [380,260,500,200,560,320,440]) if(c.nodes.every(n=>Math.hypot(n.x-x,n.y-y)>=70)) return {x,y}; return {x:380,y:220}; }
 function removeSel(){ const c=circ(); if(!sel) return; if(sel.kind==="node"){ const n=nodeById(c,sel.id); if(!n||n.t==="in"||n.t==="out") return; c.nodes=c.nodes.filter(x=>x.id!==n.id); c.wires=c.wires.filter(w=>w.f!==n.id&&w.to!==n.id); } else c.wires=c.wires.filter(w=>w.id!==sel.id); sel=null; renderResults(); }
-board.addEventListener("pointerdown",e=>{ const p=pos(e), n=nodeAt(p), wr=n?null:wireAt(p); board.setPointerCapture(e.pointerId);
-  if(tool==="glut"||tool==="gaba"){ if(n){ sel={kind:"node",id:n.id}; drag={node:n,moved:false}; renderResults(); } else addNeuron(tool,p); return; }
-  if(tool==="del"){ if(n){ sel={kind:"node",id:n.id}; removeSel(); } else if(wr){ sel={kind:"wire",id:wr.id}; removeSel(); } return; }
-  if(tool==="wire"){ if(n){ drag={wireFrom:n}; preview={x1:n.x,y1:n.y,x2:p.x,y2:p.y}; drawBoard(); } return; }
+// hit radius in board units: at least 12 CSS px so ports stay usable on a phone
+function hitR(px){ const s=board.getBoundingClientRect().width/W; return Math.max(px*0.75, px/s); }
+function portAt(p){ const c=circ(), r=hitR(14); for(let i=c.nodes.length-1;i>=0;i--){ const n=c.nodes[i], pp=portPos(n); if(Math.hypot(p.x-pp.x,p.y-pp.y)<=r) return n; } return null; }
+board.addEventListener("pointerdown",e=>{ const p=pos(e), pn=portAt(p), n=pn?null:nodeAt(p), wr=(pn||n)?null:wireAt(p); board.setPointerCapture(e.pointerId);
+  if(pn){ const pp=portPos(pn); drag={wireFrom:pn}; preview={x1:pp.x,y1:pp.y,x2:p.x,y2:p.y}; drawBoard(); return; }
   if(n){ sel={kind:"node",id:n.id}; drag={node:n,moved:false}; } else if(wr){ sel={kind:"wire",id:wr.id}; } else sel=null;
   renderResults();
 });
-board.addEventListener("pointermove",e=>{ if(!drag) return; const p=pos(e);
-  if(drag.node){ const nx=Math.min(W-30,Math.max(30,snap(p.x))), ny=Math.min(H-30,Math.max(30,snap(p.y))); if(nx!==drag.node.x||ny!==drag.node.y){ drag.node.x=nx; drag.node.y=ny; drag.moved=true; drawBoard(); } }
-  else if(drag.wireFrom){ preview.x2=p.x; preview.y2=p.y; drawBoard(); } });
+board.addEventListener("pointermove",e=>{ const p=pos(e);
+  if(!drag){ const pn=portAt(p), n=pn?null:nodeAt(p), wr=(pn||n)?null:wireAt(p); const h={port:pn&&pn.id};
+    board.style.cursor=pn?"crosshair":n?"grab":wr?"pointer":"default"; if((hover&&hover.port)!==h.port){ hover=h; drawBoard(); } else hover=h; return; }
+  if(drag.node){ const nx=Math.min(W-40,Math.max(40,snap(p.x))), ny=Math.min(H-30,Math.max(30,snap(p.y))); if(nx!==drag.node.x||ny!==drag.node.y){ drag.node.x=nx; drag.node.y=ny; drag.moved=true; board.style.cursor="grabbing"; drawBoard(); placePop(); } }
+  else if(drag.wireFrom){ preview.x2=p.x; preview.y2=p.y; const t=nodeAt(p); hover={port:drag.wireFrom.id,target:t&&t.id}; drawBoard(); } });
 board.addEventListener("pointerup",e=>{ const p=pos(e);
   if(drag&&drag.wireFrom){ const t=nodeAt(p), c=circ(), f=drag.wireFrom;
-    if(t&&t!==f&&t.t!=="in"&&!c.wires.some(w=>w.f===f.id&&w.to===t.id)){ const id="w"+(c.next++); c.wires.push({id,f:f.id,to:t.id,w:1.2,d:1}); sel={kind:"wire",id}; } preview=null; drag=null; renderResults(); return; }
+    if(t&&t!==f&&t.t!=="in"&&!c.wires.some(w=>w.f===f.id&&w.to===t.id)){ const id="w"+(c.next++); c.wires.push({id,f:f.id,to:t.id,w:1.2,d:1}); sel={kind:"wire",id}; } preview=null; drag=null; hover=null; renderResults(); return; }
   if(drag&&drag.moved){ store(); } drag=null; });
-board.addEventListener("dblclick",e=>{ const p=pos(e); if(!nodeAt(p)&&!wireAt(p)&&CH[cur].allowed.includes("glut")) addNeuron("glut",p); });
-document.addEventListener("keydown",e=>{ if((e.key==="Delete"||e.key==="Backspace")&&sel&&!(e.target instanceof HTMLInputElement)){ e.preventDefault(); removeSel(); } });
+board.addEventListener("pointerleave",()=>{ if(!drag&&hover){ hover=null; drawBoard(); } });
+board.addEventListener("dblclick",e=>{ const p=pos(e); if(!nodeAt(p)&&!wireAt(p)&&!portAt(p)&&CH[cur].allowed.includes("glut")) addNeuron("glut",p); });
+document.addEventListener("keydown",e=>{ if(e.target instanceof HTMLInputElement) return; if((e.key==="Delete"||e.key==="Backspace")&&sel){ e.preventDefault(); removeSel(); } else if(e.key==="Escape"&&sel){ sel=null; renderResults(); } });
+// palette: a click adds at a free spot, a drag onto the board places the neuron where it is dropped
+let pdrag=null;
+function paletteDown(e,t){ if(e.button!==0) return; e.preventDefault(); pdrag={t,x0:e.clientX,y0:e.clientY,moved:false,ghost:null};
+  const col=getComputedStyle(document.documentElement).getPropertyValue(t==="gaba"?"--gaba":"--glut");
+  const mv=ev=>{ if(!pdrag.moved&&Math.hypot(ev.clientX-pdrag.x0,ev.clientY-pdrag.y0)>6){ pdrag.moved=true; const g=document.createElement("div"); g.className="ghost-part"; g.style.borderColor=col; document.body.appendChild(g); pdrag.ghost=g; }
+    if(pdrag.ghost){ pdrag.ghost.style.left=ev.clientX+"px"; pdrag.ghost.style.top=ev.clientY+"px"; } };
+  const up=ev=>{ document.removeEventListener("pointermove",mv); document.removeEventListener("pointerup",up); if(pdrag.ghost) pdrag.ghost.remove();
+    const r=board.getBoundingClientRect(), inside=ev.clientX>=r.left&&ev.clientX<=r.right&&ev.clientY>=r.top&&ev.clientY<=r.bottom;
+    if(!pdrag.moved) addNeuron(pdrag.t,freeSpot()); else if(inside) addNeuron(pdrag.t,pos(ev)); pdrag=null; };
+  document.addEventListener("pointermove",mv); document.addEventListener("pointerup",up); }
 
 // ---------- share ----------
 function b64u(s){ return btoa(unescape(encodeURIComponent(s))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,""); }
@@ -515,7 +575,7 @@ $("lang-ru").onclick=()=>{ lang="ru"; renderAll(); }; $("lang-en").onclick=()=>{
 
 function renderAll(){ renderStatic(); renderResults(); }
 if(location.hash.startsWith("#bb.")) loadCode(location.hash.slice(1));
-window.addEventListener("resize",()=>{ drawBoard(); drawRaster(); });
+window.addEventListener("resize",()=>{ drawBoard(); drawRaster(); placePop(); });
 if(window.matchMedia) window.matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change",()=>renderAll());
 new MutationObserver(()=>renderAll()).observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
 if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>{ drawBoard(); drawRaster(); });
