@@ -51,7 +51,11 @@ button{font:inherit;color:inherit;cursor:pointer}
 .ch[aria-current="true"]{border-color:var(--ink);box-shadow:inset 3px 0 0 var(--spike)}
 .task h2{font:700 20px/1.2 var(--cond);margin:0;text-wrap:balance}
 .task p{margin:0;color:var(--ink)}
-.task .hint{color:var(--muted);font-size:13.5px}
+.hints{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;font-size:13.5px;color:var(--ink)}
+.hints li::marker{color:var(--spike);font:600 13px var(--mono)}
+.hints li:focus{outline:none}
+#hintbtn{align-self:flex-start}
+#hintbtn:disabled{opacity:.55;cursor:default}
 .parts{display:flex;flex-wrap:wrap;gap:6px}
 .part{font:600 12px/1 var(--cond);letter-spacing:.05em;padding:5px 7px;border-radius:4px;border:1px solid var(--line);color:var(--muted)}
 .part.on{color:var(--ink)}
@@ -178,6 +182,7 @@ const S = {
     partnames:{glut:"ГЛУТ", gaba:"ГАМК", pace:"Ритмоводитель", dofa:"ДОФА", nora:"НОРА", musc:"Мышца"},
     pass:(p,n)=>`Пройдено ${p} из ${n}`, solved:"Решено!", forbidden:(t)=>`Деталь ${t} в этой задаче не разрешена`,
     record:(r,n)=> n<r? `Меньше рекорда книги (${r}) — отличный результат!` : n===r? `Как рекорд книги: ${r} ${plural(r)}.` : `Рекорд книги: ${r} ${plural(r)}. Можно проще.`,
+    hintbtn:(k,n)=> k>=n?`Все подсказки открыты (${n}/${n})`:(k===0?`Подсказка`:`Ещё подсказка`)+` (${k}/${n})`, withhints:(h)=>` (с подсказками: ${h}).`,
     recordOnly:(r)=>`Рекорд книги: ${r} ${plural(r)}.`,
     best:(n,i)=>`Ваш лучший результат: ${n} ${plural(n)}, ${i} имп./ответ`,
     noSel:"Выберите нейрон или провод на плате. Двойной щелчок по пустому месту ставит ГЛУТ-нейрон.",
@@ -198,6 +203,7 @@ const S = {
     partnames:{glut:"ГЛУТ (glutamate)", gaba:"ГАМК (GABA)", pace:"Pacemaker", dofa:"ДОФА (dopamine)", nora:"НОРА (noradrenaline)", musc:"Muscle"},
     pass:(p,n)=>`Passed ${p} of ${n}`, solved:"Solved!", forbidden:(t)=>`Part ${t} is not allowed in this challenge`,
     record:(r,n)=> n<r? `Fewer than the book's record (${r}) — excellent!` : n===r? `Matches the book's record: ${r} neuron${r>1?"s":""}.` : `Book's record: ${r} neuron${r>1?"s":""}. It can be simpler.`,
+    hintbtn:(k,n)=> k>=n?`All hints shown (${n}/${n})`:(k===0?`Hint`:`Another hint`)+` (${k}/${n})`, withhints:(h)=>` (with ${h} hint${h>1?"s":""}).`,
     recordOnly:(r)=>`Book's record: ${r} neuron${r>1?"s":""}.`,
     best:(n,i)=>`Your best: ${n} neuron${n>1?"s":""}, ${i} imp./answer`,
     noSel:"Select a neuron or a wire on the board. Double-click an empty spot to place a ГЛУТ neuron.",
@@ -215,31 +221,31 @@ const CH = [
  {id:"or", allowed:["glut"], record:1,
   title:T("ИЛИ","OR"),
   desc:T("Выход должен выдать импульс, если импульс пришёл на A или на B.","The output must fire if an impulse arrives on A or on B."),
-  hint:T("Один импульс должен поднимать выход выше порога: w ≥ θ (гл. 2).","One impulse must lift the output above threshold: w ≥ θ (ch. 2)."),
+  hints:[T("Один импульс должен поднимать выход выше порога: w ≥ θ (гл. 2).","One impulse must lift the output above threshold: w ≥ θ (ch. 2)."),T("Нужны два провода: A → OUT и B → OUT, каждый сам по себе достаточно сильный.","You need two wires, A → OUT and B → OUT, each strong enough on its own."),T("Проведите провод B → OUT с весом 1,2: он больше порога θ = 1.","Draw a wire B → OUT with weight 1.2: that is above the threshold θ = 1.")],
   tests:[{n:T("только A","A only"),A:[5],B:[],e:1},{n:T("только B","B only"),A:[],B:[5],e:1},{n:T("A и B","A and B"),A:[5],B:[5],e:1},{n:T("тишина","silence"),A:[],B:[],e:0}],
   start:[["A","OUT",1.2,1]]},
  {id:"and", allowed:["glut"], record:1,
   title:T("Совпадение: И во времени","Coincidence: AND in time"),
   desc:T("Выход срабатывает, только если импульсы A и B пришли почти одновременно, в пределах нескольких миллисекунд.","The output fires only if impulses on A and B arrive almost together, within a few milliseconds."),
-  hint:T("Окно совпадения Δmax = τ·ln(w/(θ−w)), формула (2.2): подберите w и τ.","The coincidence window is Δmax = τ·ln(w/(θ−w)), eq. (2.2): tune w and τ."),
+  hints:[T("Окно совпадения Δmax = τ·ln(w/(θ−w)), формула (2.2): подберите w и τ.","The coincidence window is Δmax = τ·ln(w/(θ−w)), eq. (2.2): tune w and τ."),T("Один импульс не должен дотягивать до порога, а два близких должны: θ/2 < w < θ.","One impulse must stay below threshold, two close ones must reach it: θ/2 < w < θ."),T("Провода A → OUT и B → OUT с весом 0,6 каждый; при τ = 5 мс окно около 2 мс.","Wires A → OUT and B → OUT with weight 0.6 each; with τ = 5 ms the window is about 2 ms.")],
   tests:[{n:T("вместе (0,5 мс)","together (0.5 ms)"),A:[5],B:[5.5],e:1},{n:T("врозь (10 мс)","apart (10 ms)"),A:[5],B:[15],e:0},{n:T("только A","A only"),A:[5],B:[],e:0},{n:T("только B","B only"),A:[],B:[5],e:0}],
   start:[]},
  {id:"veto", allowed:["glut","gaba"], record:2,
   title:T("Запрет: A, но не при B","Veto: A but not B"),
   desc:T("Выход срабатывает на A и молчит, когда вместе с A пришёл B.","The output fires for A and stays silent when B arrives together with A."),
-  hint:T("Смена знака стоит одного ГАМК-нейрона и одной задержки (гл. 3): торможение должно успеть раньше.","A sign change costs one ГАМК neuron and one delay (ch. 3): the inhibition must arrive first."),
+  hints:[T("Смена знака стоит одного ГАМК-нейрона и одной задержки (гл. 3): торможение должно успеть раньше.","A sign change costs one ГАМК neuron and one delay (ch. 3): the inhibition must arrive first."),T("A возбуждает OUT напрямую. B возбуждает ГАМК-нейрон, а тот тормозит OUT.","A excites OUT directly. B excites a ГАМК neuron, which inhibits OUT."),T("Путь торможения на одно звено длиннее: задержите провод A → OUT до 3 мс, а вес ГАМК → OUT сделайте 3.","The inhibitory path is one link longer: delay the wire A → OUT to 3 ms and set the ГАМК → OUT weight to 3.")],
   tests:[{n:T("только A","A only"),A:[5],B:[],e:1},{n:T("только B","B only"),A:[],B:[5],e:0},{n:T("A и B вместе","A and B together"),A:[5],B:[5],e:0},{n:T("тишина","silence"),A:[],B:[],e:0}],
   start:[]},
  {id:"xor", allowed:["glut","gaba"], record:2,
   title:T("Исключающее ИЛИ","XOR"),
   desc:T("Выход срабатывает, если пришёл ровно один из импульсов, и молчит при обоих.","The output fires if exactly one impulse arrives, and stays silent for both."),
-  hint:T("В главе 3 XOR собран из пяти нейронов. Можно гораздо меньше.","Chapter 3 builds XOR from five neurons. You can do it with far fewer."),
+  hints:[T("В главе 3 XOR собран из пяти нейронов. Можно гораздо меньше.","Chapter 3 builds XOR from five neurons. You can do it with far fewer."),T("Выход — это ИЛИ от A и B, запрещённое, когда пришли оба. Запрет даёт один ГАМК-нейрон, которому нужны оба входа сразу.","The output is an OR of A and B, vetoed when both arrive. The veto is one ГАМК neuron that needs both inputs at once."),T("A и B → OUT (вес 1,2, задержка 3 мс); A и B → ГАМК (вес 0,6, задержка 1 мс); ГАМК → OUT (вес 3, задержка 1 мс).","A and B → OUT (weight 1.2, delay 3 ms); A and B → ГАМК (weight 0.6, delay 1 ms); ГАМК → OUT (weight 3, delay 1 ms).")],
   tests:[{n:T("только A","A only"),A:[5],B:[],e:1},{n:T("только B","B only"),A:[],B:[5],e:1},{n:T("A и B вместе","A and B together"),A:[5],B:[5],e:0},{n:T("тишина","silence"),A:[],B:[],e:0}],
   start:[]},
  {id:"dir", allowed:["glut","gaba"], record:2,
   title:T("Детектор направления","Direction detector"),
   desc:T("Датчики A и B стоят рядом. Выход срабатывает при движении от B к A (B раньше на 5 мс) и молчит при движении от A к B.","Sensors A and B sit side by side. The output fires for motion from B to A (B first, by 5 ms) and stays silent for motion from A to B."),
-  hint:T("Схема рис. 3.1: возбуждение от B, торможение от A с задержкой, v* = Δx/d.","The circuit of Fig. 3.1: excitation from B, delayed inhibition from A, v* = Δx/d."),
+  hints:[T("Схема рис. 3.1: возбуждение от B, торможение от A с задержкой, v* = Δx/d.","The circuit of Fig. 3.1: excitation from B, delayed inhibition from A, v* = Δx/d."),T("B возбуждает OUT. A через ГАМК-нейрон тормозит OUT, но с задержкой, чтобы торможение пришло к моменту импульса B.","B excites OUT. A inhibits OUT through a ГАМК neuron, delayed so the inhibition arrives together with B's impulse."),T("B → OUT (1,2; 1 мс), A → ГАМК (1,2; 1 мс), ГАМК → OUT (вес 3, задержка 4 мс).","B → OUT (1.2; 1 ms), A → ГАМК (1.2; 1 ms), ГАМК → OUT (weight 3, delay 4 ms).")],
   tests:[{n:T("B → A","B → A"),A:[10],B:[5],e:1},{n:T("A → B","A → B"),A:[5],B:[10],e:0},{n:T("только A","A only"),A:[5],B:[],e:0}],
   start:[]}
 ];
@@ -248,9 +254,9 @@ const FUTURE = ["pace","dofa","nora","musc"];
 // ---------- state ----------
 const W=760, H=420, R=19;
 let lang="en", cur=0, tool="move", sel=null, selTest=0;
-let circuits={}, best={};
-function store(){ try{ localStorage.setItem("bb20w", JSON.stringify({lang,cur,circuits,best})); }catch(e){} }
-try{ const s=JSON.parse(localStorage.getItem("bb20w")||"null"); if(s){ lang=s.lang||lang; cur=s.cur||0; circuits=s.circuits||{}; best=s.best||{}; } else { lang=(navigator.language||"").toLowerCase().startsWith("ru")?"ru":"en"; } }catch(e){ lang=(navigator.language||"").toLowerCase().startsWith("ru")?"ru":"en"; }
+let circuits={}, best={}, hintsUsed={};
+function store(){ try{ localStorage.setItem("bb20w", JSON.stringify({lang,cur,circuits,best,hintsUsed})); }catch(e){} }
+try{ const s=JSON.parse(localStorage.getItem("bb20w")||"null"); if(s){ lang=s.lang||lang; cur=s.cur||0; circuits=s.circuits||{}; best=s.best||{}; hintsUsed=s.hintsUsed||{}; } else { lang=(navigator.language||"").toLowerCase().startsWith("ru")?"ru":"en"; } }catch(e){ lang=(navigator.language||"").toLowerCase().startsWith("ru")?"ru":"en"; }
 if(cur<0||cur>=CH.length) cur=0;
 
 function fresh(ch){
@@ -294,7 +300,7 @@ function evaluate(){
   const neurons=c.nodes.filter(n=>n.t!=="in").length;
   const imp=total/ch.tests.length;
   const passed=res.filter(r=>r.ok).length, solved=!bad&&passed===res.length;
-  if(solved){ const b=best[ch.id]; if(!b||neurons<b.n||(neurons===b.n&&imp<b.i)) best[ch.id]={n:neurons,i:+imp.toFixed(2)}; }
+  if(solved){ const b=best[ch.id]; if(!b||neurons<b.n||(neurons===b.n&&imp<b.i)) best[ch.id]={n:neurons,i:+imp.toFixed(2),h:hintsUsed[ch.id]||0}; }
   return {runs,res,neurons,imp,passed,solved,bad};
 }
 
@@ -319,7 +325,8 @@ function renderStatic(){
     b.innerHTML=`<span class="num">${i+1}</span><span class="nm">${ch.title[lang]}</span><span class="st ${done?"done":""}">${done?"✓ "+best[ch.id].n:""}</span>`;
     b.onclick=()=>{ cur=i; sel=null; selTest=0; store(); renderAll(); }; $("chlist").appendChild(b); });
   const ch=CH[cur];
-  $("task").innerHTML=`<h2>${cur+1}. ${ch.title[lang]}</h2><p>${ch.desc[lang]}</p><p class="hint">${ch.hint[lang]}</p>`;
+  $("task").innerHTML=`<h2>${cur+1}. ${ch.title[lang]}</h2><p>${ch.desc[lang]}</p><ol class="hints" id="hints"></ol><button class="btn ghost" id="hintbtn" type="button"></button>`;
+  renderHints();
   // parts
   const k=tok(); $("parts").innerHTML="";
   ["glut","gaba",...FUTURE].forEach(p=>{ const on=ch.allowed.includes(p); const s=document.createElement("span"); s.className="part"+(on?" on":"");
@@ -336,6 +343,12 @@ function renderStatic(){
     b.onclick=()=>{ tool=t; renderStatic(); drawBoard(); }; $("toolbar").appendChild(b); });
   if(!ch.allowed.includes(tool)&&(tool==="glut"||tool==="gaba")) tool="move";
 }
+function renderHints(){
+  const L=S[lang], ch=CH[cur], k=Math.min(hintsUsed[ch.id]||0, ch.hints.length), ol=$("hints"), b=$("hintbtn");
+  ol.innerHTML=ch.hints.slice(0,k).map(h=>`<li>${h[lang]}</li>`).join(""); ol.hidden=k===0;
+  b.textContent=L.hintbtn(k,ch.hints.length); b.disabled=k>=ch.hints.length;
+  b.onclick=()=>{ hintsUsed[ch.id]=k+1; store(); renderHints(); const li=ol.lastElementChild; if(li) li.setAttribute("tabindex","-1"), li.focus(); };
+}
 function renderResults(keepInsp){
   const L=S[lang], ch=CH[cur]; state=evaluate(); store();
   $("m-neu").textContent=state.neurons; $("m-imp").textContent=state.imp.toFixed(1); $("m-en").textContent=Math.round(state.imp*100);
@@ -344,7 +357,7 @@ function renderResults(keepInsp){
   else if(state.solved){ st.className="status ok"; st.textContent=L.solved+" "+L.pass(state.passed,state.res.length); }
   else { st.className="status bad"; st.textContent=L.pass(state.passed,state.res.length); }
   const b=best[ch.id];
-  $("record").textContent=(state.solved?L.record(ch.record,state.neurons):L.recordOnly(ch.record))+(b?" "+L.best(b.n,b.i):"");
+  $("record").textContent=(state.solved?L.record(ch.record,state.neurons):L.recordOnly(ch.record))+(b?" "+L.best(b.n,b.i)+(b.h?L.withhints(b.h):""):"");
   const tb=$("tests"); tb.innerHTML="";
   ch.tests.forEach((tt,i)=>{ const r=state.res[i]; const tr=document.createElement("tr"); tr.className="test"; tr.tabIndex=0; tr.setAttribute("aria-selected",i===selTest);
     tr.innerHTML=`<td>${tt.n[lang]}</td><td class="mono">${tt.e?L.yes:L.no}</td><td class="mono">${r.got?L.yes:L.no}</td><td class="${r.ok?"pass":"fail"}">${r.ok?"✓":"✗"}</td>`;
