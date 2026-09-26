@@ -18,8 +18,8 @@
   :root{ color-scheme:dark; --bg:#10161D; --panel:#161E27; --grid:#1C2631; --ink:#E4E9EF; --muted:#93A1B1; --line:#2E3C4B; --glut:#86ACEA; --gaba:#F08C7F; --spike:#F2C14E; }
 }
 *{box-sizing:border-box}
-html{background:var(--bg)}
-body{margin:0;color:var(--ink);font:16px/1.55 var(--sans);padding-inline:16px;padding-block:20px 40px;
+html{background:var(--bg);min-height:100%}
+body{margin:0;min-height:100vh;color:var(--ink);font:16px/1.55 var(--sans);padding-inline:16px;padding-block:20px 40px;
   background-color:var(--bg);
   background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
   background-size:24px 24px}
@@ -52,7 +52,7 @@ ol.chapters{margin:0;padding:0;list-style:none;columns:2;column-gap:28px}
 @media (max-width:720px){ol.chapters{columns:1}}
 ol.chapters li{break-inside:avoid;display:grid;grid-template-columns:2.2em 1fr;gap:6px;padding:5px 0;border-bottom:1px solid var(--line)}
 ol.chapters .n{font:500 13px/1.6 var(--mono);color:var(--muted)}
-.part{font:600 11px/1 var(--cond);letter-spacing:.12em;text-transform:uppercase;color:var(--spike);padding-top:10px;border:0!important;display:block!important}
+.part{font:600 11px/1 var(--cond);letter-spacing:.12em;text-transform:uppercase;color:var(--spike);padding-top:10px;border:0!important;display:block!important;break-after:avoid-column;page-break-after:avoid}
 .note{font-size:14px;color:var(--muted)}
 footer{font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:12px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
 footer a{color:var(--ink)}
