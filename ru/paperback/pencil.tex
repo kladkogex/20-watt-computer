@@ -1,5 +1,7 @@
 % Minimal colour-pencil illustrations for the paperback edition.
 % \pencilfig{seed}{tikz drawing}{caption}: a small centred drawing (no float, no number) with an italic caption.
+% The drawings themselves live in paperback/art.tex as \pencildef{N}{...}, one per chapter N; \pencilart{N} draws one,
+% so the chapters and the cover collage (paperback/cover.tex) share a single source.
 % Lines are drawn with a slight hand wobble (random steps, fixed seed per drawing so every build is identical)
 % and a faint second stroke, fills are a light "pencil wash".
 \usepackage{tikz}
@@ -10,6 +12,7 @@
 \definecolor{pcGreen}{HTML}{5E9B63}
 \definecolor{pcGray}{HTML}{5F6368}
 \definecolor{pcViolet}{HTML}{8A6BB8}
+\definecolor{pcPaper}{HTML}{FBF7EE} % cover background
 \tikzset{
   pen/.style={draw=#1, line width=0.6pt, line cap=round, line join=round,
     decorate, decoration={random steps, segment length=1.8pt, amplitude=0.3pt},
@@ -33,3 +36,6 @@
     \begin{minipage}{0.86\linewidth}\centering\small\itshape #3\end{minipage}
   \end{center}
   \medskip}
+\newcommand{\pencildef}[2]{\expandafter\def\csname pencilart@#1\endcsname{#2}}
+\newcommand{\pencilart}[1]{\csname pencilart@#1\endcsname}
+\input{paperback/art}
