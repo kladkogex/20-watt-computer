@@ -19,6 +19,7 @@ comes from a small, runnable simulation.
 - `figures/` — shared TikZ icons and data files used by every edition
 - `models/` — Python models behind the book's figures and numbers
 - `site/` — the interactive website with a language switcher
+- `ru/solutions/` — full instructor solutions: a submodule pointing to a private repository (not needed to build the book; `git submodule update --init` works only with access)
 
 ## Build
 
