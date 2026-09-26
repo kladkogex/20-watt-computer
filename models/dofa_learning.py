@@ -35,8 +35,11 @@ def run(tau_e, baseline=True, trials=400, seed=0, eta=0.5):
     f = lambda s: sum(1 for c in s if c == 0) / len(s)
     return f(ch[:100]), f(ch[-100:]), w
 
-# Results quoted in chapter 6: eta=0.05, 500 trials, seeds 0..5 (and eta=0.5, seeds 0..2 for the lock-in case).
-for tau_e, bl in ((1.0, True), (0.05, True), (1.0, False)):
-    res = [run(tau_e, bl, trials=500, seed=s, eta=0.05) for s in range(6)]
-    print(f"tau_e={tau_e:4.2f}s baseline={bl!s:5}: " + "; ".join(
-        f"P(A) {a:.2f}->{b:.2f} w=({w[0]:.2f},{w[1]:.2f})" for a, b, w in res), flush=True)
+# Results quoted in chapter 6: eta=0.05, 500 trials, seeds 0..5,
+# and the lock-in case: no baseline, eta=0.5, 500 trials, seeds 0..2 (one seed locks onto B).
+for tau_e, bl, eta, seeds in ((1.0, True, 0.05, 6), (0.05, True, 0.05, 6), (1.0, False, 0.05, 6),
+                              (1.0, False, 0.5, 3)):
+    res = [run(tau_e, bl, trials=500, seed=s, eta=eta) for s in range(seeds)]
+    fw = lambda v: f"{v:.2f}" if abs(v) < 1e4 else f"{v:.2e}"   # lock-in weights diverge
+    print(f"tau_e={tau_e:4.2f}s baseline={bl!s:5} eta={eta}: " + "; ".join(
+        f"P(A) {a:.2f}->{b:.2f} w=({fw(w[0])},{fw(w[1])})" for a, b, w in res), flush=True)
