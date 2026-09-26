@@ -16,5 +16,15 @@ cp ru/20-watt-computer-ru.pdf ru/20-watt-computer-ru-paperback.pdf _site/pdf/
 } > _site/breadboard/index.html
 # the web edition: every chapter as a page (LaTeX -> HTML with make4ht; needs Docker)
 bash site/web/build.sh _site/read
+cp site/llms.txt _site/
+# sitemap for search engines (submit https://kladkogex.github.io/20-watt-computer/sitemap.xml in Search Console)
+base=https://kladkogex.github.io/20-watt-computer/
+{
+  printf '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+  for u in "" breadboard/ $(cd _site && ls read/*.html) pdf/20-watt-computer-ru.pdf pdf/20-watt-computer-ru-paperback.pdf; do
+    printf '  <url><loc>%s%s</loc></url>\n' "$base" "$u"
+  done
+  printf '</urlset>\n'
+} > _site/sitemap.xml
 touch _site/.nojekyll
 echo "site assembled in _site/"

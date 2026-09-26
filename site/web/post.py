@@ -187,6 +187,23 @@ for pg in pages:
     report.append(f"{pg['slug']:>4}  exercises {nex:2d}  answers {nans:2d}  "
                   f"figures {full.count('<img')}+{short.count('<img')}  short {'yes' if short else '—'}")
 
+BASE = "https://kladkogex.github.io/20-watt-computer/"
+BOOK = {"@type": "Book", "name": "Компьютер на 20 ваттах. Как вычисляет мозг: количественный подход для инженеров",
+        "alternateName": "The 20-Watt Computer: How the Brain Computes. A Quantitative Approach for Engineers",
+        "author": {"@type": "Person", "name": "Константин Кладько", "alternateName": "Konstantin Kladko"},
+        "url": BASE, "inLanguage": "ru", "isAccessibleForFree": True,
+        "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/"}
+
+def description(body):
+    """The first sentences of the text, for search results and link previews."""
+    t = re.sub(r"<math.*?</math>", " … ", body, flags=re.S)
+    t = re.sub(r"<(h3|figcaption|table|details)[^>]*>.*?</\1>", " ", t, flags=re.S)
+    t = html.unescape(re.sub(r"<[^>]+>", " ", t))
+    t = " ".join(t.split())
+    if len(t) > 180:
+        t = t[:180].rsplit(" ", 1)[0] + " …"
+    return html.escape(t, quote=True)
+
 for i, pg in enumerate(pages):
     prev = pages[i - 1] if i > 0 else None
     nxt = pages[i + 1] if i + 1 < len(pages) else None
@@ -202,6 +219,13 @@ for i, pg in enumerate(pages):
         "NEXT": f'{nxt["slug"]}.html' if nxt else "../#toc",
         "NEXT_TITLE": html.escape(re.sub(r"<[^>]+>", "", nxt["ftitle"]).strip()) if nxt else "",
         "SLUG": pg["slug"], "NAV": json.dumps(nav, ensure_ascii=False),
+        "DESC": description(pg["fullhtml"]), "CANON": f"{BASE}read/{pg['slug']}.html",
+        "JSONLD": json.dumps({"@context": "https://schema.org", "@type": "Chapter",
+                              "name": plain, "url": f"{BASE}read/{pg['slug']}.html",
+                              **({"position": pg["n"]} if "n" in pg else {}),
+                              "inLanguage": "ru", "isAccessibleForFree": True,
+                              "license": BOOK["license"], "author": BOOK["author"],
+                              "isPartOf": BOOK}, ensure_ascii=False).replace("</", "<\\/"),
     }
     page = template
     for k, v in fill.items():
