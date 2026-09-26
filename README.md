@@ -27,3 +27,8 @@ Requires Docker (uses the `texlive/texlive` image).
     make ru          # build the Russian PDF
     make ru-paperback  # build the popular pocket-size edition (one short chapter per full chapter)
     make models      # regenerate simulation data in figures/ (acet_memory.py needs numpy)
+
+## License
+
+Book text, figures, exercises and PDFs: [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/) — free to share, teach with and translate for non-commercial use, with credit and under the same license.
+Code (models, build scripts, breadboard): MIT. See [LICENSE](LICENSE).
