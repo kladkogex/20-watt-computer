@@ -1,0 +1,115 @@
+/* Web edition: page chrome and reading typography (TeX4ht's own rules are prepended by post.py). */
+:root{
+  --bg:#EDF1F5; --panel:#F8FAFC; --paper:#FBFCFD; --ink:#15202B; --muted:#586677; --line:#C6D0DB; --rule:#8795A5;
+  --spike:#C98A06; --key:#FFF4CC; --key-edge:#E0B73C; --link:#2F5DA8;
+  --sans:"IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --cond:"IBM Plex Sans Condensed", "Arial Narrow", system-ui, sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, Menlo, monospace;
+  --serif:"PT Serif", Georgia, "Times New Roman", serif;
+}
+@media (prefers-color-scheme: dark){
+  :root{ color-scheme:dark; --bg:#10161D; --panel:#161E27; --paper:#131A22; --ink:#E4E9EF; --muted:#93A1B1; --line:#2E3C4B; --rule:#5D6D7F;
+    --spike:#F2C14E; --key:#2A2412; --key-edge:#8A6D1E; --link:#86ACEA; }
+}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;color:var(--ink);background:var(--bg);font:18px/1.62 var(--serif);padding-inline:16px;padding-block:0 48px}
+
+/* top bar */
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+  max-width:980px;margin:0 auto;padding:10px 0;background:var(--bg);border-bottom:1px solid var(--line);font-family:var(--sans)}
+.home{font:600 14px/1.2 var(--cond);letter-spacing:.04em;color:var(--ink);text-decoration:none;white-space:nowrap}
+.home .w{color:var(--spike);font-weight:700}
+.jump{flex:1;min-width:0;display:flex}
+.jump select{width:100%;min-width:0;font:500 14px/1.2 var(--sans);color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:6px 8px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.langs{display:flex;gap:6px}
+.chip{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:6px;padding:5px 10px;font:600 13px/1.2 var(--cond);letter-spacing:.04em;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.chip:focus-visible,a:focus-visible,.seg:focus-visible,select:focus-visible,summary:focus-visible{outline:2px solid var(--spike);outline-offset:2px}
+
+/* page head and the Коротко / Полностью switch */
+.page{max-width:44rem;margin:0 auto}
+.pagehead{padding:32px 0 8px;display:flex;flex-direction:column;gap:12px}
+.kicker{margin:0;font:600 12px/1 var(--cond);letter-spacing:.14em;text-transform:uppercase;color:var(--spike)}
+.kicker:empty{display:none}
+h1{margin:0;font:700 clamp(30px,5vw,44px)/1.08 var(--cond);text-wrap:balance}
+body[data-mode="short"] .t-full, body:not([data-mode="short"]) .t-short{display:none}
+.mode{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--ink);border-radius:8px;overflow:hidden;max-width:30rem}
+.mode[hidden]{display:none}
+.seg{appearance:none;border:0;background:transparent;color:var(--ink);padding:9px 14px;text-align:left;cursor:pointer;display:flex;flex-direction:column;gap:1px}
+.seg + .seg{border-left:1px solid var(--ink)}
+.seg b{font:700 16px/1.2 var(--cond)}
+.seg span{font:12px/1.3 var(--mono);color:var(--muted)}
+.seg[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.seg[aria-pressed="true"] span{color:var(--bg);opacity:.75}
+.lang-note{margin:0;font:13px/1.4 var(--sans);color:var(--muted)}
+.lang-note:empty{display:none}
+
+/* reading text */
+.text{hyphens:auto;overflow-wrap:break-word}
+.text p{margin:0}
+.text p + p, .text p.indent{margin-top:.9em}
+.text a{color:var(--link);text-decoration-thickness:1px;text-underline-offset:2px}
+.text h3,.text h4{font-family:var(--cond);line-height:1.2;text-wrap:balance;margin:2em 0 .6em}
+.text h3{font-size:26px}
+.text h4{font-size:20px}
+.text .titlemark{color:var(--muted);font-weight:600;margin-right:.35em}
+.nt{font:700 .86em var(--cond);letter-spacing:.03em}
+math{font-size:1.12em}
+.text table math{font-size:1em}
+table.equation, table.equation-star{display:block;overflow-x:auto;margin:1em 0;border-collapse:collapse}
+table.equation tbody, table.equation-star tbody{display:table;width:100%}
+td.eq-no{font:14px var(--mono);color:var(--muted);white-space:nowrap;padding-left:12px}
+
+/* key formulas and key claims: the book's yellow boxes */
+.keyformula, .tcolorbox.keyblock .tcolorbox-content{background:var(--key);border-left:4px solid var(--key-edge);border-radius:4px}
+.keyformula{margin:1.2em 0;padding:4px 12px}
+.tcolorbox.keyblock{margin:1.4em 0}
+.tcolorbox.keyblock .tcolorbox-content{padding:12px 16px}
+.newtheorem{margin:1.4em 0}
+.tcolorbox .newtheorem{margin:0}
+math[display="block"]{math-style:normal}
+.newtheorem .head{font-family:var(--cond);font-size:1.02em}
+
+/* figures on a paper card, legible in both themes */
+figure.figure, div.figure{margin:1.8em 0;text-align:center}
+.text img{max-width:100%;height:auto;background:#FFFFFF;border-radius:6px;padding:10px;box-shadow:0 0 0 1px var(--line)}
+figcaption.caption{margin:.7em 0 0;text-indent:0;text-align:left;font:15px/1.5 var(--sans);color:var(--muted)}
+figcaption.caption .id{font-weight:600;color:var(--ink)}
+
+/* tables scroll inside their own box on a phone */
+div.tabular, div.longtable, .text table.tabular, .text table.longtable{max-width:100%;overflow-x:auto;display:block}
+.text table{font:14px/1.4 var(--sans)}
+.text td{vertical-align:top}
+.text .caption{font:15px/1.5 var(--sans);color:var(--muted)}
+
+/* exercises: the answer opens under the problem */
+details.answer{margin:.5em 0 0;border:1px solid var(--line);border-radius:6px;background:var(--panel)}
+details.answer summary{cursor:pointer;padding:6px 12px;font:600 14px/1.3 var(--cond);letter-spacing:.04em;color:var(--muted);list-style-position:inside}
+details.answer[open] summary{border-bottom:1px solid var(--line);color:var(--ink)}
+.answer-body{padding:10px 14px;font-size:16px}
+.answer-body p + p{margin-top:.5em}
+
+/* the short text points to the full one */
+.tofull{margin-top:1.4em}
+.tofull a{display:inline-block;font:600 15px/1.4 var(--sans);text-decoration:none;border:1px solid var(--line);border-radius:6px;padding:8px 12px;background:var(--panel);color:var(--ink)}
+
+/* references */
+.thebibliography p.bibitem{font-size:15px;line-height:1.5}
+
+/* pager and footer */
+.pager{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:48px 0 20px;font-family:var(--sans)}
+.pager a{display:flex;flex-direction:column;gap:2px;text-decoration:none;color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:10px 14px;background:var(--panel)}
+.pager a span{font:12px/1.3 var(--mono);color:var(--muted)}
+.pager a b{font:600 15px/1.3 var(--cond)}
+.pager .next{text-align:right}
+.pager a b:empty{display:none}
+footer{font:13px/1.5 var(--sans);color:var(--muted);border-top:1px solid var(--line);padding-top:12px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+footer a{color:var(--ink)}
+@media (max-width:560px){
+  body{font-size:17px}
+  .home span:not(.w){display:none}
+  .pager{grid-template-columns:1fr}
+  .pager .next{text-align:left}
+}

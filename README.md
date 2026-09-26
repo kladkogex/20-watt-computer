@@ -8,6 +8,7 @@
 
 **86 billion processors. About 20 watts. No backprop wires. No datasheet — until now.**
 
+[![Read online](https://img.shields.io/badge/read-online-e4e9ef?style=for-the-badge)](https://kladkogex.github.io/20-watt-computer/read/00.html)
 [![Read the PDF](https://img.shields.io/badge/PDF-270_pages-f5c542?style=for-the-badge)](https://kladkogex.github.io/20-watt-computer/pdf/20-watt-computer-ru.pdf)
 [![Paperback](https://img.shields.io/badge/paperback-80_pages-8fb3ff?style=for-the-badge)](https://kladkogex.github.io/20-watt-computer/pdf/20-watt-computer-ru-paperback.pdf)
 [![Breadboard](https://img.shields.io/badge/play-neuron_breadboard-7ee2a8?style=for-the-badge)](https://kladkogex.github.io/20-watt-computer/breadboard/)
@@ -43,7 +44,7 @@ A few of the book's results, each derived in the text and checked with a model:
 
 <img src="assets/breadboard.png" alt="Neuron breadboard: wire ГЛУТ and ГАМК neurons to solve logic challenges" width="100%">
 
-**[Neuron breadboard](https://kladkogex.github.io/20-watt-computer/breadboard/)** runs in the browser. Wire up leaky-integrator neurons to build OR, coincidence detection, veto, XOR and a direction detector. It scores you in neurons, spikes and picojoules per answer, and gives hints if you get stuck.
+**[Neuron breadboard](https://kladkogex.github.io/20-watt-computer/breadboard/)** runs in the browser: 13 challenges across chapters 2–18. Logic and timing from ГЛУТ/ГАМК, a СЕРО pacemaker NOR, dopamine three-factor learning, НОРА gain, an onset detector, shift-invariant object recognition, a muscle grip and a frequency divider. It scores you in neurons, spikes and picojoules per answer, gives hints, and can show the book's solution.
 
 ## What's inside
 
@@ -67,7 +68,7 @@ A few of the book's results, each derived in the text and checked with a model:
 | building brain–computer interfaces or living-neuron chips | 1, 2, 4, 11, 13, 17, 21, 22 |
 | an engineer with one weekend | 1, 2, 3, 6, 10 |
 
-There is also a **paperback edition**: 80 pocket-size pages with no formulas and one colour-pencil drawing per chapter.
+**[Read it online](https://kladkogex.github.io/20-watt-computer/read/00.html):** every chapter is a web page with a «Коротко / Полностью» switch between the short version and the full one. The short version has no formulas and has colour-pencil drawings. The full one has formulas, models and exercises, and each exercise's answer is one click away. There is also a **paperback PDF** of the short version.
 
 ## Run the models
 
@@ -92,7 +93,7 @@ Requires Docker (uses the `texlive/texlive` image).
 - `ru/`, `en/`: one folder per language, `main.tex` + `chapters/`; `ru/paperback/` holds the pocket edition
 - `figures/`: shared TikZ icons and data files used by every edition
 - `models/`: the Python models behind the book's figures and numbers
-- `site/`: the website and the breadboard
+- `site/`: the website and the breadboard; `site/web/` converts both editions to HTML with make4ht (`bash site/web/build.sh`)
 - `ru/solutions/`: full instructor solutions, a submodule pointing to a private repository. It isn't needed to build the book; instructors can ask the author for access.
 
 ## Contribute

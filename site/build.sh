@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Assemble the static website into _site/ (run from the repository root).
+# Assemble the static website into _site/ (run from the repository root; the web edition needs Docker).
 # Used by site/deploy.sh, which publishes _site/ to the gh-pages branch.
 set -euo pipefail
 rm -rf _site
@@ -14,5 +14,7 @@ cp ru/20-watt-computer-ru.pdf ru/20-watt-computer-ru-paperback.pdf _site/pdf/
   cat site/breadboard/breadboard.html
   printf '\n</body>\n</html>\n'
 } > _site/breadboard/index.html
+# the web edition: every chapter as a page (LaTeX -> HTML with make4ht; needs Docker)
+bash site/web/build.sh _site/read
 touch _site/.nojekyll
 echo "site assembled in _site/"
