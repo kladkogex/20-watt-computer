@@ -137,9 +137,7 @@ class Topology:
             in_d[s, post, slot] = rank
         self.out_post, self.in_d = out_post, in_d
         el = torch.tensor([[c * PITCH, r * PITCH] for c, r in STIM_ELECTRODES], device=d_)
-        dist = torch.cdist(pos, el.unsqueeze(0).expand(self.S, -1, -1))
-        self.near75 = (dist < P.r75).transpose(1, 2).float()          # (S, 8, N)
-        self.near150 = (dist < P.r150).transpose(1, 2).float()
+        self.el_dist = torch.cdist(pos, el.unsqueeze(0).expand(self.S, -1, -1))   # (S, N, 8), mm
         region = torch.full((self.S, N), -1, dtype=torch.int64, device=d_)
         r0, r1 = MOTOR_ROWS[0] * PITCH, (MOTOR_ROWS[1] + 1) * PITCH
         for k, (_, c0, c1) in enumerate(MOTOR_REGIONS):
@@ -208,7 +206,7 @@ def _neuron_kernel(V, I, a, ref, el75, el150, m75, m150, x, tr, yp, spk, n, N, s
 # ----------------------------------------------------------------------------------------------- per-ms control
 @torch.compile(fullgraph=True, dynamic=False)
 def _stim_logic(acc, blank_t, bx, by, pad, phase, ptime, fb_kind, sensory_on, game_on, u, rnd8,
-                blank: float, quench_p: float, quench_s: float):
+                blank, quench_p: float, quench_s: float):
     """Pulses of this ms: sensory place + rate code during play, feedback programs after outcomes.
     Updates acc and blank_t in place; returns (m75, m150), (R, 9) with a trailing zero column."""
     R = acc.shape[0]
@@ -235,7 +233,7 @@ def _stim_logic(acc, blank_t, bx, by, pad, phase, ptime, fb_kind, sensory_on, ga
     m75 = m75.clamp(max=1.0) * (el < 8)
     m150 = m150.clamp(max=1.0) * (el < 8)
     any_ = (m75.sum(1) + m150.sum(1)) > 0
-    blank_t.copy_(torch.where(any_, torch.full_like(blank_t, blank), blank_t))
+    blank_t.copy_(torch.where(any_, blank, blank_t))
     return m75, m150
 
 
@@ -283,7 +281,8 @@ class Sim:
         def col(name):
             v = pr.get(name, getattr(P, name))
             return torch.as_tensor(v, dtype=torch.float32, device=d_).expand(R).clone()
-        self.pr = {k: col(k) for k in ("mu", "mu_sd", "sigma", "J_ee", "J_ie", "J_ei", "J_ii", "U", "b_a")}
+        self.pr = {k: col(k) for k in ("mu", "mu_sd", "sigma", "J_ee", "J_ie", "J_ei", "J_ii", "U", "b_a",
+                                       "H", "r75", "r150", "kick75", "blank")}
         # weights in out-list layout, flat, with one trailing dummy row (row R*N) that absorbs padded updates
         out_post = topo.out_post[self.seed_of]
         pre_e = (torch.arange(N, device=d_) < NE).view(1, N, 1)
@@ -324,12 +323,13 @@ class Sim:
         self.aa, self.ae, self.ai = math.exp(-1 / P.tau_a), math.exp(-1 / P.tau_e), math.exp(-1 / P.tau_i)
         self.arec, self.atr = math.exp(-1 / P.tau_rec), math.exp(-1 / P.tau_tr)
         # stimulation catchments do not overlap (electrodes >= 0.4 mm apart): one electrode index per neuron
-        n75 = topo.near75[self.seed_of]; n150 = topo.near150[self.seed_of]
-        assert float(n75.sum(1).max()) <= 1 and float(n150.sum(1).max()) <= 1, "overlapping catchments"
-        self.el75 = torch.where(n75.sum(1) > 0, n75.argmax(1), 8).to(torch.int8).contiguous()
-        self.el150 = torch.where(n150.sum(1) > 0, n150.argmax(1), 8).to(torch.int8).contiguous()
+        dist = topo.el_dist[self.seed_of]                                  # (R, N, 8), mm
+        dmin, arg = dist.min(2)
+        assert float(max(self.pr["r75"].max(), self.pr["r150"].max())) < 0.24, "catchments would overlap"
+        self.el75 = torch.where(dmin < self.pr["r75"].view(R, 1), arg, 8).to(torch.int8).contiguous()
+        self.el150 = torch.where(dmin < self.pr["r150"].view(R, 1), arg, 8).to(torch.int8).contiguous()
         self.m75 = torch.zeros(R, 9, device=d_); self.m150 = torch.zeros(R, 9, device=d_)
-        del n75, n150
+        del dist, dmin, arg
         reg = topo.region[self.seed_of]                                   # (R, N), -1 outside motor regions
         nm = int((reg >= 0).sum(1).max())
         order = torch.argsort((reg < 0).to(torch.int8), dim=1, stable=True)[:, :nm]   # motor neurons first
@@ -389,7 +389,7 @@ class Sim:
         _neuron_kernel[(triton.cdiv(n, BLOCK),)](
             self.V, self.I, self.a, self.ref, self.el75, self.el150, self.m75, self.m150, self.x, self.tr,
             self.ypost, self.spk, n, N, self.seed, self.rng_offset, self.MU, self.AMP, self.BA, self.am, self.aa,
-            self.ae, self.ai, self.arec, self.atr, P.t_ref, P.kick75, TRACES=P.rule in ("gated", "stdp"), ADAPT=self.use_adapt,
+            self.ae, self.ai, self.arec, self.atr, P.t_ref, 1.0, TRACES=P.rule in ("gated", "stdp"), ADAPT=self.use_adapt,
             STD=self.use_std, BLOCK=BLOCK)
         self.rng_offset.add_(n)
         spk = self.spk.view(torch.bool)
@@ -467,7 +467,8 @@ class Sim:
         self.ema.copy_(self.ema + (10.0 / (P.ema_s * 1000.0)) * (hz - self.ema))
         g = hz * 20.0 / self.ema.clamp(min=1.0)
         up = (g * self.upmask).sum(1); dn = (g * (1 - self.upmask)).sum(1)
-        self.pad.copy_(torch.where(on, (self.pad + P.paddle_speed * 0.01 * torch.sign(up - dn)).clamp(P.H, 1 - P.H), self.pad))
+        H = self.pr["H"]
+        self.pad.copy_(torch.where(on, torch.minimum(torch.maximum(self.pad + P.paddle_speed * 0.01 * torch.sign(up - dn), H), 1 - H), self.pad))
         self.counts.zero_()
         play = on & (self.phase == 0)
         bx = self.bx + self.bvx * 10 * play; by = self.by + self.bvy * 10 * play
@@ -476,7 +477,7 @@ class Sim:
         vx = torch.where(bx < 0, -self.bvx, self.bvx)
         bx = torch.where(bx < 0, -bx, bx)
         arrive = play & (bx >= 1.0) & (vx > 0)
-        hit = arrive & ((by - self.pad).abs() < P.H)
+        hit = arrive & ((by - self.pad).abs() < H)
         miss = arrive & ~hit
         slot = self.nev.clamp(max=self.max_ev - 1)
         row = torch.stack([self.clock.expand(self.R), hit.float(), self.dsq, torch.full_like(self.dsq, float("nan"))], 1)
@@ -523,15 +524,15 @@ class Sim:
     # ------------------------------------------------------------------ 10-ms blocks
     def _block(self):
         P, R = self.P, self.R
-        qs = (P.quench_kick / P.kick75) if P.kick75 > 0 else 0.0
+        qs = P.quench_kick                              # quench pulses: absolute kick (m75 is scaled below)
         z = torch.zeros(R, 1, device=self.V.device)
         for i in range(10):
             u = torch.rand(R, 5, device=self.V.device)
             rnd8 = torch.randint(0, 8, (R,), device=self.V.device)
             m75, m150 = _stim_logic(self.acc, self.blank_t, self.bx, self.by, self.pad, self.phase, self.ptime,
                                     self.fb_kind, self.sensory_on, self.game_on, u, rnd8,
-                                    float(P.blank), P.quench_hz / 1000.0, qs)
-            self.m75.copy_(m75); self.m150.copy_(m150)
+                                    self.pr["blank"], P.quench_hz / 1000.0, qs)
+            self.m75.copy_(m75 * self.pr["kick75"].view(R, 1)); self.m150.copy_(m150)
             spk = self._neurons()
             _after_ms(self.counts, self.blank_t, self.phase, self.ptime, self.fb_stim, self.fb_pause,
                       self.fb_restart, self.ev, self.nev, self.dsq, self.clock, self.bx, self.by, self.bvx,
@@ -577,13 +578,15 @@ class Sim:
             self.rec_buf.zero_()
 
     def recorded_trains(self):
+        """Spike times (s) of the recorded units: list over runs of lists over units."""
         ev = np.concatenate(self.rec_events) if self.rec_events else np.zeros((0, 3), int)
         U = self.rec_units.shape[1]
-        out = []
-        for r in range(self.R):
-            e = ev[ev[:, 1] == r]
-            out.append([e[e[:, 2] == u, 0] / 1000.0 for u in range(U)])
-        return out
+        key = ev[:, 1] * U + ev[:, 2]
+        order = np.argsort(key, kind="stable")
+        ev, key = ev[order], key[order]
+        cuts = np.searchsorted(key, np.arange(self.R * U + 1))
+        t = ev[:, 0] / 1000.0
+        return [[t[cuts[r * U + u]:cuts[r * U + u + 1]] for u in range(U)] for r in range(self.R)]
 
     def outcomes(self):
         """Per run: array of (t_ms, hit, dsq_at_outcome, dsq_at_feedback_end)."""

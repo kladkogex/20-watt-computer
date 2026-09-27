@@ -1,4 +1,8 @@
-% Neural Computation Letter: submission format (12 pt, double spaced, line numbers, author-year references).
+% Neural Computation Letter (author-year references).
+% Two looks: the default is a clean preprint (single spacing, no line numbers). For journal submission
+% (double spacing and line numbers) change \reviewfalse to \reviewtrue on the next-but-one line.
+\newif\ifreview
+\reviewfalse
 \documentclass[12pt]{article}
 \usepackage[margin=1in]{geometry}
 \usepackage[T1]{fontenc}
@@ -27,17 +31,16 @@
 
 \begin{document}
 \maketitle
-\doublespacing
-\linenumbers
+\ifreview\doublespacing\linenumbers\fi
 
 \begin{abstract}
 \noindent
-Cultured cortical neurons improve at a simplified Pong game when a miss is followed by unpredictable stimulation and a hit by predictable stimulation, a result read as support for the free-energy principle. The stimulus after a miss, however, is also more disruptive: twice the amplitude, chosen to force action potentials, and followed by eight seconds without sensory input. We show that this difference is sufficient on its own. If a failure perturbs a network's settings by a symmetric random kick and a success does not, the network occupies each setting in inverse proportion to that setting's failure rate, and its long-run failure rate is the harmonic mean of the failure rates, below their arithmetic mean. When both outcomes perturb, learning, no learning and anti-learning are separated by the ratio $\kappa$ of the perturbation variances after a success and after a failure, at $\kappa=1$. Predictability does not enter. A closed-loop Pong model with plastic readout weights and no prediction, reward or error signal reproduces the reported ordering of the experimental conditions. We propose stimulation protocols and analyses of existing recordings on which the predictability and perturbation accounts make opposite predictions.
+\textbf{Neurons in a dish learn to play Pong---but not, we argue, because they minimize surprise. The feedback after a miss is not only unpredictable; it is also twice as strong. We prove that this alone can teach: a network kicked at random when it fails, and left alone when it succeeds, drifts to where it fails least. No prediction, no reward. A single experiment can tell which account is true.}
 \end{abstract}
 
 \section{Introduction}
 
-In the DishBrain experiment \citep{Kagan2022}, spikes recorded in two motor regions of a cortical culture on a multi-electrode array move a paddle, and the position of the ball is delivered to eight sensory electrodes as a place and rate code. After a hit the culture receives a ``predictable'' stimulus: 100~Hz for 100~ms on all eight electrodes at the sensory amplitude, 75~mV. After a miss it receives an ``unpredictable'' one: 150~mV at 5~Hz at random sites and times for 4~s, followed by 4~s without stimulation. Cultures in this condition improved within a session, and the improvement was interpreted as networks acting to make their input predictable, in line with the free-energy principle \citep{Friston2010,Kagan2022}.
+In the DishBrain experiment \citep{Kagan2022}, spikes recorded in four motor regions of a cortical culture on a high-density multi-electrode array move a paddle (two regions move it up and two down, arranged in counterbalanced pairs), and the position of the ball is delivered to eight sensory electrodes as a place and rate code. After a hit the culture receives a ``predictable'' stimulus: 100~Hz for 100~ms on all eight electrodes at the sensory amplitude, 75~mV. After a miss it receives an ``unpredictable'' one: 150~mV at 5~Hz at random sites and times for 4~s, followed by 4~s without stimulation. Cultures in this condition improved within a session, and the improvement was interpreted as networks acting to make their input predictable, in line with the free-energy principle \citep{Friston2010,Kagan2022}.
 
 The higher voltage after a miss was chosen so that it would force action potentials ``regardless of the state the cell was in, thereby being even more disruptive to the culture'' \citep{Kagan2022}. The feedback after a miss therefore differs from that after a hit in two ways at once: it is less predictable and more disruptive. The published controls do not separate the two. \emph{No feedback} removes both differences; \emph{Silent} replaces both stimuli by the same interval without stimulation, which still withdraws the sensory input for eight seconds after a miss and hardly at all after a hit. Published criticism of the work concerned mainly the terms ``intelligence'' and ``sentience'' \citep{Balci2023,Kagan2023reply}.
 
@@ -69,9 +72,27 @@ Let $\kappa=\sigma_h^2/\sigma_m^2$ and let the setting diffuse on a bounded doma
 The stationary miss rate is below the uniform average of $P$ for $\kappa<1$ (learning), equal to it for $\kappa=1$, and above it for $\kappa>1$ (anti-learning), unless $P$ is constant.
 \end{proposition}
 
-Proofs are in appendix~\ref{app:proofs}. Predictability does not enter either statement; what matters is how far each outcome moves the network. The size of the effect is set by the spread of $P$ over the reachable settings; a task in which no setting is much better than the others cannot be learned this way.
+Proofs are in appendix~\ref{app:proofs}. The mathematics is classical. For two settings and a kernel that swaps them, Proposition~\ref{prop:exact} is the ``stay with a winner, switch on a loser'' rule for the two-armed bandit \citep{Robbins1952}, and the depth-one automaton with linear tactics, whose behavior is expedient---better than random choice \citep{Tsetlin1961,Tsetlin1963}. In general it is the invariant measure of a continuous-time Markov chain whose jump chain is symmetric and whose holding rate is $P$ \citep{Norris1997}. The stationary density $1/D$ of Proposition~\ref{prop:kappa} is that of hopping with jump rates set at the departure point \citep{vanKampen1988,Schnitzer1993}, and the sign rule is Chebyshev's sum inequality \citep{Chebyshev1882}. What is new is the observation that DishBrain's feedback implements this rule and the experiments that follow from it. Predictability does not enter either statement; what matters is how far each outcome moves the network. The size of the effect is set by the spread of $P$ over the reachable settings; a task in which no setting is much better than the others cannot be learned this way.
 
-The principle has a long history. Ashby's ultrastable homeostat changes its parameters at random until its essential variables stay within bounds \citep{Ashby1952}. Woodlice gather in damp places by moving more in dry air \citep{Gunn1937}, and random walkers accumulate where they move slowly \citep{Schnitzer1993}; the scrambler is this orthokinesis in the space of network settings. Cortical cultures learn a target response when stimulation is withdrawn as soon as the response occurs, which led to the stimulus regulation principle \citep{Shahaf2001,Marom2002}, and spiking networks with spike-timing-dependent plasticity learn behaviors that stop external stimulation \citep{Sinapayen2017,Masumori2020}. None of these works analyzes DishBrain. We add the observation that DishBrain's own feedback contains this contingency, its quantitative consequences including the sign reversal at $\kappa=1$, and experiments that decide.
+The principle has a long history. Ashby's ultrastable homeostat changes its parameters at random until its essential variables stay within bounds \citep{Ashby1952}. Woodlice gather in damp places by moving more in dry air \citep{Gunn1937}, and random walkers accumulate where they move slowly \citep{Schnitzer1993}; the scrambler is this orthokinesis in the space of network settings. Cortical cultures learn a target response when stimulation is withdrawn as soon as the response occurs, which led to the stimulus regulation principle \citep{Shahaf2001,Marom2002}, and spiking networks with spike-timing-dependent plasticity learn behaviors that stop external stimulation \citep{Sinapayen2017,Masumori2020}. None of these works analyzes DishBrain.
+
+\subsection{A Schr\"odinger and a Boltzmann Picture}\label{sec:pictures}
+
+The diffusion of Proposition~\ref{prop:kappa}, $\partial_t\rho=\nabla^2(D\rho)$, becomes self-adjoint after the substitution $\rho=D^{-1/2}\phi$ \citep{Risken1989}:
+\begin{equation}
+-\partial_t\phi=H\phi,\qquad H=-\sqrt{D}\,\nabla^2\sqrt{D}\;\ge0 .
+\label{eq:H}
+\end{equation}
+With reflecting boundaries the ground state is $\phi_0\propto D^{-1/2}$, with $E_0=0$, and the normalized ground state gives the learned distribution, $\rho_\infty=\hat\phi_0^{\,2}\propto1/D$. In one dimension the change of variable $y=\int d\psi/\sqrt{D}$ brings $H$ to the standard form $-\partial_y^2+V(y)$. On a finite set of settings $H=\mathrm{diag}(\sqrt P)\,(I-K)\,\mathrm{diag}(\sqrt P)$, a tight-binding Hamiltonian whose ground state $\phi_0\propto P^{-1/2}$ reproduces Proposition~\ref{prop:exact}. The evolution is in imaginary time and reversible; nothing is quantum.
+
+Two consequences follow (appendix~\ref{app:pictures}). First, the lowest excited level $E_1$ sets the rate of learning: the distance to the learned distribution decays as $e^{-E_1t}$. When a hit perturbs nothing ($\sigma_h=0$), $D=\tfrac12\sigma_m^2P$ and $H=\sigma_m^2H_1$ with $H_1$ fixed by $P$ alone, so the strength of the post-miss perturbation sets how fast a culture learns, $E_1\propto\sigma_m^2$, but not where it ends. This is a prediction for the published conditions: a weaker disruption learns more slowly toward the same level.
+
+Second, the learned distribution is a Boltzmann distribution,
+\begin{equation}
+\rho_\infty\propto e^{-U/T},\qquad U=\ln D=\ln\bigl[\kappa+(1-\kappa)P\bigr]+\text{const},\qquad T=1,
+\label{eq:boltzmann}
+\end{equation}
+with $U=\ln P$ for $\kappa=0$, and a true equilibrium, since detailed balance holds. There is no force: the potential is induced by the state dependence of the noise. The temperature is pinned at 1, because rescaling all perturbations shifts $U$ by a constant; this is the separation of speed and endpoint again. And concentration is weak: occupancies stand in the ratio of the miss rates, not exponentially in them, which is why the gain is only the gap between the arithmetic and harmonic means. The gain can be raised by cooling: if the perturbation per approach grows as $P^\alpha$, then $\rho_\infty\propto P^{-\alpha}$, an effective temperature $1/\alpha$. A protocol that scales the post-miss stimulation with a culture's recent miss rate tests this. Finally, like any Markov process, this one lowers the free energy $F[\rho]=\langle U\rangle_\rho-S[\rho]$, the relative entropy to $\rho_\infty$ up to a constant. Here $U$ is the logarithm of the failure rate, not a sensory surprise, so a decrease of free energy during learning does not by itself indicate predictive processing.
 
 \section{A Closed-Loop Model}\label{sec:model}
 
@@ -152,9 +173,23 @@ The simulation (\texttt{scrambler.py}, standard-library Python) and the data beh
 \appendix
 \section{Proofs}\label{app:proofs}
 
-\emph{Proposition~\ref{prop:exact}.} Between approaches the setting moves from $\psi$ to $\psi'$ with probability $P(\psi)K(\psi,\psi')$. The measure $\rho\propto1/P$ satisfies detailed balance, $\rho(\psi)P(\psi)K(\psi,\psi')=\rho(\psi')P(\psi')K(\psi',\psi)$, because $K$ is symmetric; since $K$ is irreducible and $P>0$, it is the unique stationary distribution. The long-run miss rate is $\sum_\psi\rho(\psi)P(\psi)=|\Omega|/\sum_\psi1/P(\psi)$, the harmonic mean of $P$, which is at most the arithmetic mean by the inequality of the means, with equality only for constant $P$.
+\emph{Proposition~\ref{prop:exact}.} Between approaches the setting moves from $\psi$ to $\psi'$ with probability $P(\psi)K(\psi,\psi')$. The measure $\rho\propto1/P$ satisfies detailed balance, $\rho(\psi)P(\psi)K(\psi,\psi')=\rho(\psi')P(\psi')K(\psi',\psi)$, because $K$ is symmetric; since $K$ is irreducible and $P>0$, it is the unique stationary distribution. The long-run miss rate is $\sum_\psi\rho(\psi)P(\psi)=|\Omega|/\sum_\psi1/P(\psi)$, the harmonic mean of $P$, which is at most the arithmetic mean by the inequality of the means, with equality only for constant $P$. (Equivalently, the jump chain $K$ has the uniform invariant measure, and the mean holding time in $\psi$ is $1/P(\psi)$; \citealp{Norris1997}.)
 
-\emph{Proposition~\ref{prop:kappa}.} When the size of a step is set at the point of departure, the density obeys the It\^o form of the Fokker--Planck equation, $\partial_t\rho=\nabla^2(D\rho)$ \citep{Schnitzer1993}. With a reflecting boundary the stationary flux vanishes, so $D\rho$ is constant and $\rho\propto1/D\propto1/[\kappa+(1-\kappa)P]$. Write $w=1/[\kappa+(1-\kappa)P]$ and let $\mathbb{E}_u$ denote the average over the uniform measure on the domain, the stationary law of information-free kicks. The stationary miss rate is $\mathbb{E}_u[Pw]/\mathbb{E}_u[w]$. For $\kappa<1$, $w$ is a decreasing function of $P$, and Chebyshev's association inequality gives $\mathbb{E}_u[Pw]\le\mathbb{E}_u[P]\,\mathbb{E}_u[w]$, with equality only if $P$ is constant; hence the miss rate is at most $\mathbb{E}_u[P]$. For $\kappa=1$, $w$ is constant. For $\kappa>1$, $w$ increases with $P$ and the inequality reverses.
+\emph{Proposition~\ref{prop:kappa}.} When the size of a step is set at the point of departure, the density obeys the It\^o form of the Fokker--Planck equation, $\partial_t\rho=\nabla^2(D\rho)$ \citep{Schnitzer1993}. With a reflecting boundary the stationary flux vanishes, so $D\rho$ is constant and $\rho\propto1/D\propto1/[\kappa+(1-\kappa)P]$. Write $w=1/[\kappa+(1-\kappa)P]$ and let $\mathbb{E}_u$ denote the average over the uniform measure on the domain, the stationary law of information-free kicks. The stationary miss rate is $\mathbb{E}_u[Pw]/\mathbb{E}_u[w]$. For $\kappa<1$, $w$ is a decreasing function of $P$, and Chebyshev's sum (association) inequality \citep{Chebyshev1882} gives $\mathbb{E}_u[Pw]\le\mathbb{E}_u[P]\,\mathbb{E}_u[w]$, with equality only if $P$ is constant; hence the miss rate is at most $\mathbb{E}_u[P]$. For $\kappa=1$, $w$ is constant. For $\kappa>1$, $w$ increases with $P$ and the inequality reverses.
+
+\section{The Schr\"odinger and Boltzmann Pictures}\label{app:pictures}
+
+\emph{Self-adjoint form.} Put $\rho=D^{-1/2}\phi$ in $\partial_t\rho=\nabla^2(D\rho)$. Then $D^{-1/2}\partial_t\phi=\nabla^2(\sqrt D\,\phi)$, that is $\partial_t\phi=-H\phi$ with $H=-\sqrt D\,\nabla^2\sqrt D$. The flux is $J=-\nabla(D\rho)=-\nabla(\sqrt D\,\phi)$, so a reflecting boundary is the Neumann condition $\partial_n(\sqrt D\,\phi)=0$. For two such functions Green's identity gives $\langle\chi,H\phi\rangle=\int\nabla(\sqrt D\chi)\cdot\nabla(\sqrt D\phi)$, which is symmetric and non-negative: $H$ is self-adjoint and $H\ge0$. $H\phi_0=0$ requires $\nabla^2(\sqrt D\phi_0)=0$ with Neumann data, so $\sqrt D\phi_0$ is constant and $\phi_0\propto D^{-1/2}$, $E_0=0$. Expanding $\phi(t)=\sum_nc_ne^{-E_nt}\phi_n$ in the eigenfunctions of $H$, $\rho(t)-\rho_\infty$ decays as $e^{-E_1t}$. With $\hat\phi_0$ normalized, $\rho_\infty=D^{-1/2}\hat\phi_0/\|D^{-1/2}\|=\hat\phi_0^{\,2}$. For $\sigma_h=0$, $\sqrt D=\sigma_m\sqrt{P/2}$ and $H=\sigma_m^2H_1$ with $H_1=-\sqrt{P/2}\,\nabla^2\sqrt{P/2}$: every eigenvalue scales as $\sigma_m^2$, and the eigenfunctions, $\rho_\infty$ among them, do not depend on $\sigma_m$.
+
+\emph{Standard form in one dimension.} With $dy=d\psi/\sqrt D$ and $q(y)=\sqrt{D}$, the measure is $d\psi=q\,dy$; the function $\chi=q^{1/2}\phi$ has the flat norm $\int\chi^2dy=\int\phi^2d\psi$, and a direct calculation gives $q^{1/2}Hq^{-1/2}=-\partial_y^2+V(y)$ with
+\begin{equation}
+V=\tfrac34\left(\frac{q'}{q}\right)^2-\tfrac12\,\frac{q''}{q}=\frac{\chi_0''}{\chi_0},\qquad\chi_0=q^{-1/2}=D^{-1/4},
+\end{equation}
+primes denoting $d/dy$. The ground state $\chi_0$ has $E_0=0$ by construction.
+
+\emph{Finite set of settings.} Per approach the distribution changes as $\rho_{t+1}=\rho_t-(I-K)\,\mathrm{diag}(P)\,\rho_t$ (a miss, with probability $P$, moves the setting by $K$, which is symmetric). With $\phi=\mathrm{diag}(\sqrt P)\rho$ this reads $\phi_{t+1}=\phi_t-H\phi_t$, $H=\mathrm{diag}(\sqrt P)(I-K)\mathrm{diag}(\sqrt P)$, which is symmetric and non-negative because $I-K$ is. Irreducibility makes the constants the only null vectors of $I-K$, so $H\phi_0=0$ exactly for $\phi_0\propto P^{-1/2}$ and $\rho_\infty\propto P^{-1}$: Proposition~\ref{prop:exact}. For small steps the per-approach factor $1-E_1$ is $e^{-E_1}$ to leading order.
+
+\emph{Boltzmann form.} $\nabla^2(D\rho)=\nabla\cdot\bigl[D(\nabla\rho+\rho\nabla U)\bigr]$ with $U=\ln D$: gradient dynamics in the potential $U$ with mobility $D$ and temperature 1, although the It\^o drift of the underlying process is zero. The stationary flux vanishes everywhere, so $\rho_\infty\propto e^{-U}$ is an equilibrium with detailed balance in any dimension. Rescaling $\sigma_h$ and $\sigma_m$ by $c$ multiplies $D$ by $c^2$, shifting $U$ by $2\ln c$ and leaving $\rho_\infty$ unchanged. If instead the variance per approach is $D\propto P^\alpha$ (a per-miss variance growing as $P^{\alpha-1}$), then $\rho_\infty\propto P^{-\alpha}=e^{-\ln P/(1/\alpha)}$. For any Markov process with stationary law $\rho_\infty\propto e^{-U}$, $F[\rho]=\int\rho U+\int\rho\ln\rho=\mathrm{KL}(\rho\,\|\,\rho_\infty)-\ln Z$ does not increase in time. These statements are checked numerically in \texttt{theory\_check.py}.
 
 \section{Simulation Details}\label{app:sim}
 
@@ -172,6 +207,7 @@ The simulation (\texttt{scrambler.py}, standard-library Python) and the data beh
 \small\singlespacing
 \bibitem[Ashby(1952)]{Ashby1952} Ashby, W.~R. (1952). \emph{Design for a brain}. Chapman \& Hall.
 \bibitem[Balci et~al.(2023)]{Balci2023} Balci, F., Ben~Hamed, S., Boraud, T., Bouret, S., et~al. (2023). A response to claims of emergent intelligence and sentience in a dish. \emph{Neuron}, \emph{111}, 604--605.
+\bibitem[Chebyshev(1882)]{Chebyshev1882} Chebyshev, P.~L. (1882). Sur les expressions approximatives des int\'egrales d\'efinies par les autres prises entre les m\^emes limites. \emph{Proceedings of the Kharkov Mathematical Society}, \emph{2}, 93--98.
 \bibitem[Chao et~al.(2005)]{Chao2005} Chao, Z.~C., Bakkum, D.~J., Wagenaar, D.~A., \& Potter, S.~M. (2005). Effects of random external background stimulation on network synaptic stability after tetanization: A modeling study. \emph{Neuroinformatics}, \emph{3}, 263--280.
 \bibitem[Friston(2010)]{Friston2010} Friston, K. (2010). The free-energy principle: A unified brain theory? \emph{Nature Reviews Neuroscience}, \emph{11}, 127--138.
 \bibitem[Gunn(1937)]{Gunn1937} Gunn, D.~L. (1937). The humidity reactions of the wood-louse, \emph{Porcellio scaber} (Latreille). \emph{Journal of Experimental Biology}, \emph{14}, 178--186.
@@ -180,9 +216,15 @@ The simulation (\texttt{scrambler.py}, standard-library Python) and the data beh
 \bibitem[Kagan et~al.(2023)]{Kagan2023reply} Kagan, B.~J., Razi, A., Bhat, A., Kitchen, A.~C., et~al. (2023). Scientific communication and the semantics of sentience. \emph{Neuron}, \emph{111}, 606--607.
 \bibitem[Marom \& Shahaf(2002)]{Marom2002} Marom, S., \& Shahaf, G. (2002). Development, learning and memory in large random networks of cortical neurons: Lessons beyond anatomy. \emph{Quarterly Reviews of Biophysics}, \emph{35}, 63--87.
 \bibitem[Masumori et~al.(2020)]{Masumori2020} Masumori, A., Sinapayen, L., Maruyama, N., Mita, T., Bakkum, D., Frey, U., Takahashi, H., \& Ikegami, T. (2020). Neural autopoiesis: Organizing self-boundaries by stimulus avoidance in biological and artificial neural networks. \emph{Artificial Life}, \emph{26}, 130--151.
+\bibitem[Norris(1997)]{Norris1997} Norris, J.~R. (1997). \emph{Markov chains}. Cambridge University Press.
+\bibitem[Risken(1989)]{Risken1989} Risken, H. (1989). \emph{The Fokker--Planck equation: Methods of solution and applications} (2nd ed.). Springer.
+\bibitem[Robbins(1952)]{Robbins1952} Robbins, H. (1952). Some aspects of the sequential design of experiments. \emph{Bulletin of the American Mathematical Society}, \emph{58}, 527--535.
 \bibitem[Schnitzer(1993)]{Schnitzer1993} Schnitzer, M.~J. (1993). Theory of continuum random walks and application to chemotaxis. \emph{Physical Review E}, \emph{48}, 2553--2568.
 \bibitem[Shahaf \& Marom(2001)]{Shahaf2001} Shahaf, G., \& Marom, S. (2001). Learning in networks of cortical neurons. \emph{Journal of Neuroscience}, \emph{21}, 8782--8788.
 \bibitem[Sinapayen et~al.(2017)]{Sinapayen2017} Sinapayen, L., Masumori, A., \& Ikegami, T. (2017). Learning by stimulation avoidance: A principle to control spiking neural networks dynamics. \emph{PLOS ONE}, \emph{12}, e0170388.
+\bibitem[Tsetlin(1961)]{Tsetlin1961} Tsetlin, M.~L. (1961). On the behavior of finite automata in random media. \emph{Avtomatika i Telemekhanika}, \emph{22}, 1345--1354 (in Russian).
+\bibitem[Tsetlin(1963)]{Tsetlin1963} Tsetlin, M.~L. (1963). Finite automata and models of simple forms of behaviour. \emph{Russian Mathematical Surveys}, \emph{18}, 1--27.
+\bibitem[van Kampen(1988)]{vanKampen1988} van Kampen, N.~G. (1988). Diffusion in inhomogeneous media. \emph{Journal of Physics and Chemistry of Solids}, \emph{49}, 673--677.
 \bibitem[Wagenaar et~al.(2005)]{Wagenaar2005} Wagenaar, D.~A., Madhavan, R., Pine, J., \& Potter, S.~M. (2005). Controlling bursting in cortical cultures with closed-loop multi-electrode stimulation. \emph{Journal of Neuroscience}, \emph{25}, 680--688.
 \end{thebibliography}
 

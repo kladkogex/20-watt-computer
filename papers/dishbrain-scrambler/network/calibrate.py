@@ -33,12 +33,14 @@ def targets(regime):
 
 
 def sample(n, rng, center=None, scale=1.0):
+    """Uniform (log-uniform for weights) samples, or Gaussian perturbations of randomly chosen centers."""
     out = {}
+    pick = rng.integers(len(center), size=n) if center is not None else None
     for k, (lo, hi) in RANGES.items():
         if center is None:
             u = rng.random(n)
         else:
-            c = np.array([x[k] for x in center])
+            c = np.array([x[k] for x in center])[pick]
             cu = np.log(c / lo) / np.log(hi / lo) if k in LOG else (c - lo) / (hi - lo)
             u = np.clip(cu + scale * rng.normal(size=n), 0, 1)
         out[k] = lo * (hi / lo) ** u if k in LOG else lo + (hi - lo) * u
