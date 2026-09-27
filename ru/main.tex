@@ -1,8 +1,12 @@
 \documentclass[11pt,openany]{book}
 \setcounter{secnumdepth}{3}
 \usepackage[margin=1.1in]{geometry}
+\usepackage{iftex}
+% LuaLaTeX with OpenType fonts for the book (figures/booklook.tex); 8-bit fonts for the web build (TeX4ht)
+\ifLuaTeX\usepackage{fontspec}\else
 \usepackage[T2A]{fontenc}
 \usepackage[utf8]{inputenc}
+\fi
 \usepackage[english,russian]{babel}
 \usepackage{amsmath,amssymb,amsthm}
 \usepackage{graphicx}
@@ -61,7 +65,10 @@
 \newcommand{\Ca}{\ion{Ca}{2+}}
 \newcommand{\conc}[1]{[\mathrm{#1}]}
 
-% textbook look: chapter openers, headings, running heads, figure labels (figures/booklook.tex)
+% the goals under each chapter title; figures/booklook.tex sets them in a tinted box
+\newcommand{\chaptergoalsname}{В этой главе}
+\newenvironment{chaptergoals}{\par\noindent\textbf{\chaptergoalsname}\begin{itemize}}{\end{itemize}}
+% textbook design: type, chapter openers, headings, running heads, propositions, exercises (figures/booklook.tex)
 \input{figures/booklook}
 
 \title{\Huge Компьютер на 20 ваттах\\[16pt] \Large Как вычисляет мозг: количественный подход для инженеров}
