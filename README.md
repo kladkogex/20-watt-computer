@@ -14,6 +14,7 @@
 [![Breadboard](https://img.shields.io/badge/play-neuron_breadboard-7ee2a8?style=for-the-badge)](https://kladkogex.github.io/20-watt-computer/breadboard/)
 [![Website](https://img.shields.io/badge/site-kladkogex.github.io-cccccc?style=for-the-badge)](https://kladkogex.github.io/20-watt-computer/)
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22984941.svg)](https://doi.org/10.5281/zenodo.22984941)
 [![Text: CC BY-NC-SA 4.0](https://img.shields.io/badge/text-CC_BY--NC--SA_4.0-lightgrey)](LICENSE)
 [![Code: MIT](https://img.shields.io/badge/code-MIT-blue)](LICENSE)
 
@@ -107,4 +108,4 @@ Found a claim that doesn't match its source, a number that doesn't match its mod
 Book text, figures, exercises and PDFs: [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/). You're free to share, teach with and translate them for non-commercial use, with credit and under the same license.
 Code (models, build scripts, breadboard): MIT. See [LICENSE](LICENSE).
 
-© 2026 Konstantin Kladko
+© 2026 Konstantin Kladko · Cite as: Kladko, K. (2026). *The 20-Watt Computer: How the Brain Computes.* Zenodo. https://doi.org/10.5281/zenodo.22984941
