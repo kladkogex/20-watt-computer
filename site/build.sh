@@ -6,6 +6,7 @@ rm -rf _site
 mkdir -p _site/breadboard _site/pdf
 cp site/index.html _site/
 cp site/og-card.png _site/
+mkdir -p _site/author && cp site/author/index.html _site/author/
 # every edition that has been built: ru, en, zh, ja, ko, es, pt (full book and paperback)
 cp */20-watt-computer-*.pdf _site/pdf/
 # breadboard.html is a page fragment (title, styles, markup, script); wrap it into a full document
@@ -25,7 +26,7 @@ cp site/llms.txt _site/
 base=https://kladkogex.github.io/20-watt-computer/
 {
   printf '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
-  for u in "" breadboard/ $(cd _site && ls read/*.html) pdf/20-watt-computer-ru.pdf pdf/20-watt-computer-ru-paperback.pdf; do
+  for u in "" breadboard/ author/ $(cd _site && ls read/*.html) pdf/20-watt-computer-ru.pdf pdf/20-watt-computer-ru-paperback.pdf; do
     printf '  <url><loc>%s%s</loc></url>\n' "$base" "$u"
   done
   printf '</urlset>\n'

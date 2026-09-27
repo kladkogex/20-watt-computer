@@ -99,6 +99,10 @@ Requires Docker (uses the `texlive/texlive` image).
 - `site/`: the website and the breadboard; `site/web/` converts both editions to HTML with make4ht (`bash site/web/build.sh`)
 - `ru/solutions/`: full instructor solutions, a submodule pointing to a private repository. It isn't needed to build the book; instructors can ask the author for access.
 
+## About the author
+
+**Konstantin (Stan) Kladko** is a physicist and engineer, co-founder of [SKALE](https://skale.space/). He began in theoretical physics, working on the nonlinear dynamics of lattices (e.g. Flach, Kladko & MacKay, *Phys. Rev. Lett.* **78**, 1207, 1997). Papers: [Google Scholar](https://scholar.google.com/citations?user=QfrvKTMAAAAJ) · [author page](https://kladkogex.github.io/20-watt-computer/author/).
+
 ## Contribute
 
 Found a claim that doesn't match its source, a number that doesn't match its model, or an exercise that's wrong? [Open an issue](https://github.com/kladkogex/20-watt-computer/issues). Accuracy is the point of this book. Translations are welcome under the same license.
