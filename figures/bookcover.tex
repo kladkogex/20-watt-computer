@@ -1,0 +1,79 @@
+% Cover of the full book: a "salad" of the book's own figures around the title card.
+% Every panel is drawn from the same data as the figure inside the book (figures/*.dat and *.tex).
+% Each edition defines \covertitle, \coversubtitle and \coverauthor before \input{figures/bookcover}.
+\newsavebox{\coverbox}
+\newcommand{\coverfit}[1]{\sbox{\coverbox}{#1}\ifdim\wd\coverbox>\linewidth\resizebox{\linewidth}{!}{\usebox{\coverbox}}\else\usebox{\coverbox}\fi}
+\begin{titlepage}
+\thispagestyle{empty}
+\begin{tikzpicture}[remember picture,overlay,
+    panel/.style={draw=black!18,line width=0.5pt,fill=white,rounded corners=3pt},
+    trace/.style={line width=0.9pt,line join=round},
+    ax/.style={black!45,line width=0.4pt}]
+  % paper with a faint engineering grid
+  \fill[black!2] (current page.south west) rectangle (current page.north east);
+  \draw[black!6,line width=0.25pt,step=0.5cm] (current page.south west) grid (current page.north east);
+  \begin{scope}[shift={(current page.center)}]
+    % a panel: frame of 5.8 x 3.4 cm, centred at (#1,#2), turned by #3 degrees; #4 draws in a 4.8 x 2.4 box
+    \def\panel#1#2#3#4{%
+      \begin{scope}[shift={(#1,#2)},rotate=#3]
+        \draw[panel] (-2.9,-1.7) rectangle (2.9,1.7);
+        \draw[ax] (-2.45,-1.3) -- (2.5,-1.3);
+        \draw[ax] (-2.45,-1.3) -- (-2.45,1.3);
+        \begin{scope}[shift={(-2.4,-1.25)}] #4 \end{scope}
+      \end{scope}}
+    % row 1
+    \panel{-6.3}{10.4}{-3}{\begin{scope}[xscale=0.48,yscale=0.40,shift={(0,-0.19)}]\input{figures/hh_trace}\end{scope}}
+    \panel{0}{10.9}{2}{\begin{scope}[xscale=0.48,yscale=0.74]\input{figures/hh_gates}\end{scope}}
+    \panel{6.3}{10.3}{-2}{\begin{scope}[xscale=0.46,yscale=0.78]\input{figures/ei_traces}\end{scope}}
+    % row 2
+    \panel{-6.4}{6.5}{3}{%
+      \draw[trace,blue!65!black] plot[xscale=0.12,yscale=0.94] file {figures/cascade_K4.dat};
+      \draw[trace,red!70!black] plot[xscale=0.12,yscale=0.94] file {figures/cascade_K12.dat};}
+    \panel{0}{6.9}{-2}{%
+      \draw[trace,blue!65!black] plot[xscale=1.2,yscale=3.2] file {figures/halfcentre1.dat};
+      \draw[trace,red!70!black] plot[xscale=1.2,yscale=3.2] file {figures/halfcentre2.dat};}
+    \panel{6.4}{6.5}{2.5}{%
+      \draw[trace,gray!70!black] plot[xscale=8,yscale=0.44] file {figures/muscle_twitch_5.dat};
+      \draw[trace,blue!65!black] plot[xscale=8,yscale=0.44] file {figures/muscle_twitch_15.dat};
+      \draw[trace,red!70!black] plot[xscale=8,yscale=0.44] file {figures/muscle_twitch_40.dat};}
+    % title card: title and subtitle each on one line, shrunk to the card's width when longer
+    % (a minipage with \centering: TikZ's own align=center pads the lines by stretching the spaces)
+    \fill[white,draw=black!25,line width=0.6pt,rounded corners=6pt] (-8.2,-3.2) rectangle (8.2,3.4);
+    \node[inner sep=0pt] at (0,0.1) {\begin{minipage}{15cm}\centering
+      \coverfit{\fontsize{40}{48}\selectfont\bfseries \covertitle}\par
+      \vspace{16pt}
+      \coverfit{\Large\itshape \coversubtitle}\par
+      \vspace{30pt}
+      {\Large\color{black!60}\coverauthor\par}
+    \end{minipage}};
+    % row 3
+    \panel{-6.3}{-6.6}{-2.5}{%
+      \draw[trace,gray!60!black] plot[xscale=2.4,yscale=0.58] file {figures/pain_gate_notouch.dat};
+      \draw[trace,blue!65!black] plot[xscale=2.4,yscale=0.58] file {figures/pain_gate_touch.dat};
+      \draw[trace,red!70!black] plot[xscale=2.4,yscale=0.58] file {figures/pain_gate_sens.dat};}
+    \panel{0}{-7.0}{2}{%
+      \draw[trace,blue!65!black] plot[xscale=0.067,yscale=2.9] file {figures/sleep_S.dat};
+      \draw[trace,gray!60!black,densely dashed] plot[xscale=0.067,yscale=2.9] file {figures/sleep_H.dat};
+      \draw[trace,gray!60!black,densely dashed] plot[xscale=0.067,yscale=2.9] file {figures/sleep_L.dat};}
+    \panel{6.3}{-6.6}{-2}{%
+      \begin{scope}[shift={(0,1.2)}]
+        \draw[trace,orange!80!black] plot[xscale=0.0147,yscale=1.1] file {figures/tworate_fast.dat};
+        \draw[trace,blue!65!black] plot[xscale=0.0147,yscale=1.1] file {figures/tworate_slow.dat};
+        \draw[trace,black!80] plot[xscale=0.0147,yscale=1.1] file {figures/tworate_net.dat};
+      \end{scope}}
+    % row 4
+    \panel{-6.4}{-10.6}{2}{%
+      \draw[trace,gray!55,line width=0.5pt] plot[xscale=1.2,yscale=2.3] file {figures/updown_wake.dat};
+      \draw[trace,blue!65!black,line width=0.6pt] plot[xscale=1.2,yscale=2.3] file {figures/updown_sleep.dat};}
+    \panel{0}{-10.9}{-3}{% a spike raster: 8 neurons, one shared burst
+      \pgfmathsetseed{20}
+      \foreach \n in {0,...,7}{
+        \foreach \k in {1,...,9}{\pgfmathsetmacro{\x}{rnd*4.7}\draw[black!70,line width=0.6pt] (\x,0.28*\n+0.1) -- ++(0,0.2);}
+        \foreach \k in {0,1,2}{\pgfmathsetmacro{\x}{2.9+0.07*\k+0.05*rnd}\draw[red!70!black,line width=0.8pt] (\x,0.28*\n+0.1) -- ++(0,0.2);}}}
+    \panel{6.4}{-10.5}{2.5}{% the neuron codes, as in the book
+      \foreach \c/\col/\i in {GLUT/blue/0,GABA/red/1,DOPA/orange/2,SERO/teal/3,NORA/violet/4,ACET/olive/5}{
+        \pgfmathsetmacro{\xx}{0.35+1.6*mod(\i,3)}\pgfmathsetmacro{\yy}{1.65-1.15*int(\i/3)}
+        \node[draw=\col!60!black,fill=\col!12,rounded corners=2pt,minimum width=1.35cm,minimum height=0.62cm,font=\sffamily\bfseries\small,text=\col!55!black,anchor=west] at (\xx,\yy) {\c};}}
+  \end{scope}
+\end{tikzpicture}
+\end{titlepage}
