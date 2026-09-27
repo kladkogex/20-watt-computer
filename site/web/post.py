@@ -224,6 +224,11 @@ def relink(s, prefix):
     if prefix:
         s = re.sub(r'\bid="', f'id="{prefix}', s)
     s = re.sub(r'src="((?:full|short)\d+x\.svg)"', r'src="img/\1" loading="lazy"', s)
+    # ctex prints chapter numbers as Chinese numerals (十六), and TeX4ht drops them from the reference text,
+    # leaving an empty link; the source writes 第\ref{…}章 around it, so fill in the chapter's number
+    s = re.sub(r'<a href="(\d\d|[a-d])\.html(#[^"]*)?"></a>',
+               lambda m: f'<a href="{m.group(1)}.html{m.group(2) or ""}">'
+                         f'{int(m.group(1)) if m.group(1).isdigit() else m.group(1).upper()}</a>', s)
     return s
 
 # ---------------------------------------------------------------- answers under exercises
@@ -388,6 +393,8 @@ for i, pg in enumerate(pages):
     for k, v in fill.items():
         page = page.replace("{{" + k + "}}", v)
     page = page.replace("{{FULL}}", pg["fullhtml"]).replace("{{SHORT}}", pg["shorthtml"])
+    if pg["slug"].isdigit():  # an empty same-page chapter reference (see relink): this chapter's number
+        page = re.sub(r'<a href="(#[^"]*)"></a>', lambda m: f'<a href="{m.group(1)}">{int(pg["slug"])}</a>', page)
     (out / f"{pg['slug']}.html").write_text(page, encoding="utf-8")
 
 print("\n".join(report))
