@@ -1,4 +1,4 @@
-"""E-I loop traces for chapter 3 (ГЛУТ+ГАМК): writes figures/ei_traces.tex.
+"""E-I loop traces for chapter 3 (GLUT+GABA): writes figures/ei_traces.tex.
 tauE dE/dt = -E + [wEE E - wEI I + h]_+ ; tauI dI/dt = -I + [wIE E]_+ ; times in ms."""
 import os
 relu = lambda x: max(x, 0.0)

@@ -1,4 +1,4 @@
-"""СЕРО-only computer: threshold neurons whose input signs are chosen by the receiver
+"""SERO-only computer: threshold neurons whose input signs are chosen by the receiver
 (excitatory or inhibitory serotonin receptor) and which may be tonic pacemakers (bias).
 y_i(t+1) = [ sum_j w_ij y_j(t) + b_i >= theta_i ],  w_ij in Z (any sign), b_i >= 0.
 Verifies NOT/NOR, 2-neuron full adder, 3-neuron memory bit, self-starting clock, counter.

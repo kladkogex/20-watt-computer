@@ -5,7 +5,7 @@
    Sleep starts when S reaches the upper threshold H(t), waking when S falls to the
    lower threshold L(t); both thresholds move with the daily rhythm C(t).
    Writes figures/sleep_S.dat, sleep_H.dat, sleep_L.dat (t in hours, counted from the start of day 2).
-2. Slow oscillation: one ГЛУТ group with self-excitation w and fatigue a,
+2. Slow oscillation: one GLUT group with self-excitation w and fatigue a,
      tau dr/dt = -r + F(w r + I - a),  tau_a da/dt = -a + b r,
    F(x) = 1/(1 + exp(-(x - theta)/k)).  With fatigue gain b = 5 the group
    alternates UP/DOWN; with a small b (acetylcholine reduces fatigue currents) it stays UP.

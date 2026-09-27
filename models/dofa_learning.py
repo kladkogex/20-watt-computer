@@ -1,6 +1,6 @@
 """Three-factor learning of a two-choice task in continuous time (Euler, dt=1 ms), pure Python.
 
-Two ГЛУТ groups A, B compete through ГАМК (winner-take-all, beta=2), driven by a cue x (1 s)
+Two GLUT groups A, B compete through GABA (winner-take-all, beta=2), driven by a cue x (1 s)
 through weights wA, wB plus slow (OU) noise. The choice is the group winning at cue end.
 Reward arrives d=0.5 s after the cue ends: prob 0.8 for A, 0.2 for B.
 Eligibility trace: tau_e de/dt = -e + x*r_a.  Weight: dw/dt = eta*delta(t)*e.

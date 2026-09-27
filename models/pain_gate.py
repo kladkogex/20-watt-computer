@@ -1,7 +1,7 @@
 """Model behind chapter 13 (pain): the spinal gate as a steady-state rate circuit.
 
-Inhibitory interneuron (ГАМК/ГЛИЦ):  q = [gamma*mu + q0 - delta*nu]_+
-Pain output neuron (ГЛУТ):           z = [g*(nu + alpha*mu) - beta*q]_+
+Inhibitory interneuron (GABA/GLYC):  q = [gamma*mu + q0 - delta*nu]_+
+Pain output neuron (GLUT):           z = [g*(nu + alpha*mu) - beta*q]_+
 In the book (eq:gate): gamma = w_{q mu}, delta = w_{q nu}, alpha = w_{z mu}.
 nu - pain input, mu - touch input, g - gain set from above (1 = normal, 2 = sensitized).
 Writes figures/pain_gate_{notouch,touch,sens}.dat (nu, z) and prints thresholds and sample values.

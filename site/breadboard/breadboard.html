@@ -209,14 +209,14 @@ const S = {
     add:"Добавить", addtip:(p)=>`Нажмите, чтобы поставить нейрон ${p} на плату, или перетащите его на нужное место`,
     firsthint:"Тяните от кружка ○ у нейрона к другому нейрону — получится провод. Нажмите на провод, чтобы изменить вес.",
     delwire:"Удалить провод", delnode:"Удалить нейрон", close:"Закрыть",
-    partnames:{glut:"ГЛУТ", gaba:"ГАМК", sero:"СЕРО (ритмоводитель)"},
+    partnames:{glut:"GLUT", gaba:"GABA", sero:"SERO (ритмоводитель)"},
     parts4:["Основа","Широковещательные каналы","Входы и выходы","Лаборатория"], chap:(n)=>`гл. ${n}`,
     imp:(n)=>`${n} имп.`, s:"с", ms:"мс", fmin:"мин", fmax:"макс", forcelbl:"F/F₁", muscle:"мышца", rec:"рец.",
     noparts:"Новых нейронов не нужно: только провода и их настройки.",
-    inmed:{sero:"В тестах это группа СЕРО-нейронов: она выбрасывает серотонин в объём.", nora:"В тестах это НОРА-нейроны: они выбрасывают норадреналин в объём.", dofa:"Это ДОФА-нейроны: их выброс дофамина — сигнал награды."},
-    outsero:"Выходной СЕРО-ритмоводитель: сам выдаёт импульсы с частотой своего ритма, пока его не затормозят. Его импульсы — ответ схемы.",
-    outmuscle:"АЦЕТ-нейрон, управляющий мышцей: его импульсы складываются в силу мышцы (гл. 13).",
-    seropart:"СЕРО-ритмоводитель: работает сам с частотой своего ритма и выбрасывает серотонин в объём; знак действия выбирает получатель.",
+    inmed:{sero:"В тестах это группа SERO-нейронов: она выбрасывает серотонин в объём.", nora:"В тестах это NORA-нейроны: они выбрасывают норадреналин в объём.", dofa:"Это DOPA-нейроны: их выброс дофамина — сигнал награды."},
+    outsero:"Выходной SERO-ритмоводитель: сам выдаёт импульсы с частотой своего ритма, пока его не затормозят. Его импульсы — ответ схемы.",
+    outmuscle:"ACET-нейрон, управляющий мышцей: его импульсы складываются в силу мышцы (гл. 13).",
+    seropart:"SERO-ритмоводитель: работает сам с частотой своего ритма и выбрасывает серотонин в объём; знак действия выбирает получатель.",
     hz:"Собственный ритм, имп/с", te:"След τ_e, с", receptor:"Рецептор", recpos:"возбуждающий", recneg:"тормозящий", sens:"Чувствительность g",
     volwire:{sero:"Объёмная передача (гл. 5): получатель чувствует концентрацию серотонина c, сглаженную за τ_c ≈ 1 с, а не отдельные импульсы. Знак выбирает рецептор получателя.", nora:"Норадреналин меняет усиление (гл. 8): вход получателя умножается на 1 + g·c.", dofa:"Дофамин — третий множитель (гл. 6): веса возбуждающих входов получателя растут на η·g·c·e, где e — след совместной активности."},
     pass:(p,n)=>`Пройдено ${p} из ${n}`, solved:"Решено!", forbidden:(t)=>`Деталь ${t} в этой задаче не разрешена`,
@@ -227,10 +227,10 @@ const S = {
     solbtn:"Показать решение", solask:"Решение заменит вашу схему на плате. Вашу схему можно будет вернуть одной кнопкой.", solyes:"Показать", solno:"Отмена",
     solshown:"На плате решение из книги. Нажмите на провод или нейрон, чтобы увидеть его настройки.", solback:"Вернуть мою схему", solmark:" (решение подсмотрено)",
     noSel:"",
-    tau:"Постоянная времени τ, мс", th:"Порог θ", w:"Вес |w|", d:"Задержка d, мс", sign:(s)=> s<0?"Провод тормозящий: отправитель — ГАМК.":"Провод возбуждающий.",
-    inputnode:"Вход задачи: подаёт импульсы по тестам. Его нельзя удалить.", outnode:"Выходной ГЛУТ-нейрон: его импульсы — ответ схемы.",
+    tau:"Постоянная времени τ, мс", th:"Порог θ", w:"Вес |w|", d:"Задержка d, мс", sign:(s)=> s<0?"Провод тормозящий: отправитель — GABA.":"Провод возбуждающий.",
+    inputnode:"Вход задачи: подаёт импульсы по тестам. Его нельзя удалить.", outnode:"Выходной GLUT-нейрон: его импульсы — ответ схемы.",
     yes:"да", no:"нет",
-    foot:'Модель — интегрирующий нейрон с утечкой из главы 2: <code>τ dV/dt = −V + τ Σ w δ(t − t<sub>j</sub> − d<sub>j</sub>)</code>, импульс при V ≥ θ, сброс в ноль, 1 мс невосприимчивости. Знак быстрого провода задаёт отправитель (правило Дейла, гл. 1). Объёмные каналы (гл. 5): <code>τ<sub>c</sub> dc/dt = −c + κ Σ δ(t − t<sub>k</sub>)</code>, τ<sub>c</sub> = 1 с — допущение книги, а не измерение; у СЕРО знак выбирает рецептор получателя, ритмоводитель работает с частотой <code>f·[1 + s·g·c]<sub>+</sub></code>. НОРА умножает вход на <code>1 + g·c</code> (модель гл. 8). ДОФА — третий множитель: <code>dw/dt = η·δ·e</code>, <code>τ<sub>e</sub> de/dt = −e + x·y</code> (гл. 6); выброс дофамина тает за 0,2 с — допущение. Мышца: <code>F(t) = Σ h(t − t<sub>k</sub>)</code>, <code>h = (t/T<sub>c</sub>)·e<sup>1 − t/T<sub>c</sub></sup></code>, T<sub>c</sub> = 50 мс (гл. 13). Энергия: около 10⁻¹⁰ Дж = 100 пДж на импульс (гл. 4). Схема хранится в вашем браузере.'
+    foot:'Модель — интегрирующий нейрон с утечкой из главы 2: <code>τ dV/dt = −V + τ Σ w δ(t − t<sub>j</sub> − d<sub>j</sub>)</code>, импульс при V ≥ θ, сброс в ноль, 1 мс невосприимчивости. Знак быстрого провода задаёт отправитель (правило Дейла, гл. 1). Объёмные каналы (гл. 5): <code>τ<sub>c</sub> dc/dt = −c + κ Σ δ(t − t<sub>k</sub>)</code>, τ<sub>c</sub> = 1 с — допущение книги, а не измерение; у SERO знак выбирает рецептор получателя, ритмоводитель работает с частотой <code>f·[1 + s·g·c]<sub>+</sub></code>. NORA умножает вход на <code>1 + g·c</code> (модель гл. 8). DOPA — третий множитель: <code>dw/dt = η·δ·e</code>, <code>τ<sub>e</sub> de/dt = −e + x·y</code> (гл. 6); выброс дофамина тает за 0,2 с — допущение. Мышца: <code>F(t) = Σ h(t − t<sub>k</sub>)</code>, <code>h = (t/T<sub>c</sub>)·e<sup>1 − t/T<sub>c</sub></sup></code>, T<sub>c</sub> = 50 мс (гл. 13). Энергия: около 10⁻¹⁰ Дж = 100 пДж на импульс (гл. 4). Схема хранится в вашем браузере.'
   },
   en:{ brand:"The 20-Watt Computer · challenges for chapters 2–18", title:'Neuron Breadboard <span class="watt">·</span> build the machine yourself',
     challenges:"Challenges", parts:"Parts", score:"Result", neurons:"neurons", impulses:"imp./answer", energy:"pJ/answer",
@@ -242,14 +242,14 @@ const S = {
     add:"Add", addtip:(p)=>`Click to put a ${p} neuron on the board, or drag it where you want it`,
     firsthint:"Drag from the ○ on a neuron to another neuron to make a wire. Click a wire to change its weight.",
     delwire:"Delete wire", delnode:"Delete neuron", close:"Close",
-    partnames:{glut:"ГЛУТ (glutamate)", gaba:"ГАМК (GABA)", sero:"СЕРО (pacemaker)"},
+    partnames:{glut:"GLUT (glutamate)", gaba:"GABA (GABA)", sero:"SERO (pacemaker)"},
     parts4:["Foundations","Broadcast channels","Inputs and outputs","The lab"], chap:(n)=>`ch. ${n}`,
     imp:(n)=>`${n} imp.`, s:"s", ms:"ms", fmin:"min", fmax:"max", forcelbl:"F/F₁", muscle:"muscle", rec:"rec.",
     noparts:"No new neurons needed: only wires and their settings.",
-    inmed:{sero:"In the tests it is a group of СЕРО neurons releasing serotonin into the volume.", nora:"In the tests these are НОРА neurons releasing noradrenaline into the volume.", dofa:"These are ДОФА neurons: their release of dopamine is the reward signal."},
-    outsero:"Output СЕРО pacemaker: it fires by itself at its own rhythm until something inhibits it. Its impulses are the circuit's answer.",
-    outmuscle:"АЦЕТ neuron driving a muscle: its impulses add up to the muscle's force (ch. 13).",
-    seropart:"СЕРО pacemaker: fires by itself at its own rhythm and releases serotonin into the volume; the receiver chooses the sign.",
+    inmed:{sero:"In the tests it is a group of SERO neurons releasing serotonin into the volume.", nora:"In the tests these are NORA neurons releasing noradrenaline into the volume.", dofa:"These are DOPA neurons: their release of dopamine is the reward signal."},
+    outsero:"Output SERO pacemaker: it fires by itself at its own rhythm until something inhibits it. Its impulses are the circuit's answer.",
+    outmuscle:"ACET neuron driving a muscle: its impulses add up to the muscle's force (ch. 13).",
+    seropart:"SERO pacemaker: fires by itself at its own rhythm and releases serotonin into the volume; the receiver chooses the sign.",
     hz:"Own rhythm, impulses/s", te:"Trace τ_e, s", receptor:"Receptor", recpos:"excitatory", recneg:"inhibitory", sens:"Sensitivity g",
     volwire:{sero:"Volume transmission (ch. 5): the receiver feels the serotonin concentration c, smoothed over τ_c ≈ 1 s, not single impulses. The receiver's receptor chooses the sign.", nora:"Noradrenaline changes the gain (ch. 8): the receiver's input is multiplied by 1 + g·c.", dofa:"Dopamine is the third factor (ch. 6): the weights of the receiver's excitatory inputs grow by η·g·c·e, where e is the trace of joint activity."},
     pass:(p,n)=>`Passed ${p} of ${n}`, solved:"Solved!", forbidden:(t)=>`Part ${t} is not allowed in this challenge`,
@@ -260,10 +260,10 @@ const S = {
     solbtn:"Show solution", solask:"The solution will replace your circuit on the board. You can bring your circuit back with one click.", solyes:"Show", solno:"Cancel",
     solshown:"The board shows the book's solution. Click a wire or a neuron to see its settings.", solback:"Back to my circuit", solmark:" (solution viewed)",
     noSel:"",
-    tau:"Time constant τ, ms", th:"Threshold θ", w:"Weight |w|", d:"Delay d, ms", sign:(s)=> s<0?"Inhibitory wire: the sender is ГАМК.":"Excitatory wire.",
-    inputnode:"Challenge input: fires impulses according to the tests. It can't be deleted.", outnode:"Output ГЛУТ neuron: its impulses are the circuit's answer.",
+    tau:"Time constant τ, ms", th:"Threshold θ", w:"Weight |w|", d:"Delay d, ms", sign:(s)=> s<0?"Inhibitory wire: the sender is GABA.":"Excitatory wire.",
+    inputnode:"Challenge input: fires impulses according to the tests. It can't be deleted.", outnode:"Output GLUT neuron: its impulses are the circuit's answer.",
     yes:"yes", no:"no",
-    foot:'Model: the leaky integrator of chapter 2, <code>τ dV/dt = −V + τ Σ w δ(t − t<sub>j</sub> − d<sub>j</sub>)</code>, an impulse when V ≥ θ, reset to zero, 1 ms refractory. A fast wire\'s sign is set by the sender (Dale\'s rule, ch. 1). Volume channels (ch. 5): <code>τ<sub>c</sub> dc/dt = −c + κ Σ δ(t − t<sub>k</sub>)</code>, with τ<sub>c</sub> = 1 s an assumption of the book, not a measurement; for СЕРО the receiver\'s receptor sets the sign, and a pacemaker fires at <code>f·[1 + s·g·c]<sub>+</sub></code>. НОРА multiplies the input by <code>1 + g·c</code> (the model of ch. 8). ДОФА is the third factor: <code>dw/dt = η·δ·e</code>, <code>τ<sub>e</sub> de/dt = −e + x·y</code> (ch. 6); a dopamine release fades in 0.2 s — an assumption. Muscle: <code>F(t) = Σ h(t − t<sub>k</sub>)</code>, <code>h = (t/T<sub>c</sub>)·e<sup>1 − t/T<sub>c</sub></sup></code>, T<sub>c</sub> = 50 ms (ch. 13). Energy: about 10⁻¹⁰ J = 100 pJ per impulse (ch. 4). Your circuit is kept in your browser.'
+    foot:'Model: the leaky integrator of chapter 2, <code>τ dV/dt = −V + τ Σ w δ(t − t<sub>j</sub> − d<sub>j</sub>)</code>, an impulse when V ≥ θ, reset to zero, 1 ms refractory. A fast wire\'s sign is set by the sender (Dale\'s rule, ch. 1). Volume channels (ch. 5): <code>τ<sub>c</sub> dc/dt = −c + κ Σ δ(t − t<sub>k</sub>)</code>, with τ<sub>c</sub> = 1 s an assumption of the book, not a measurement; for SERO the receiver\'s receptor sets the sign, and a pacemaker fires at <code>f·[1 + s·g·c]<sub>+</sub></code>. NORA multiplies the input by <code>1 + g·c</code> (the model of ch. 8). DOPA is the third factor: <code>dw/dt = η·δ·e</code>, <code>τ<sub>e</sub> de/dt = −e + x·y</code> (ch. 6); a dopamine release fades in 0.2 s — an assumption. Muscle: <code>F(t) = Σ h(t − t<sub>k</sub>)</code>, <code>h = (t/T<sub>c</sub>)·e<sup>1 − t/T<sub>c</sub></sup></code>, T<sub>c</sub> = 50 ms (ch. 13). Energy: about 10⁻¹⁰ J = 100 pJ per impulse (ch. 4). Your circuit is kept in your browser.'
   }
 };
 function plural(n){ const m=n%10, h=n%100; if(m===1&&h!==11) return "нейрон"; if(m>=2&&m<=4&&(h<10||h>=20)) return "нейрона"; return "нейронов"; }
@@ -291,19 +291,19 @@ const CH = [
  {id:"veto", part:1, ch:3, allowed:["glut","gaba"], record:2,
   title:T("Запрет: A, но не при B","Veto: A but not B"),
   desc:T("Выход срабатывает на A и молчит, когда вместе с A пришёл B.","The output fires for A and stays silent when B arrives together with A."),
-  hints:[T("Смена знака стоит одного ГАМК-нейрона и одной задержки (гл. 3): торможение должно успеть раньше.","A sign change costs one ГАМК neuron and one delay (ch. 3): the inhibition must arrive first."),T("A возбуждает OUT напрямую. B возбуждает ГАМК-нейрон, а тот тормозит OUT.","A excites OUT directly. B excites a ГАМК neuron, which inhibits OUT."),T("Путь торможения на одно звено длиннее: задержите провод A → OUT до 3 мс, а вес ГАМК → OUT сделайте 3.","The inhibitory path is one link longer: delay the wire A → OUT to 3 ms and set the ГАМК → OUT weight to 3.")],
+  hints:[T("Смена знака стоит одного GABA-нейрона и одной задержки (гл. 3): торможение должно успеть раньше.","A sign change costs one GABA neuron and one delay (ch. 3): the inhibition must arrive first."),T("A возбуждает OUT напрямую. B возбуждает GABA-нейрон, а тот тормозит OUT.","A excites OUT directly. B excites a GABA neuron, which inhibits OUT."),T("Путь торможения на одно звено длиннее: задержите провод A → OUT до 3 мс, а вес GABA → OUT сделайте 3.","The inhibitory path is one link longer: delay the wire A → OUT to 3 ms and set the GABA → OUT weight to 3.")],
   tests:[{n:T("только A","A only"),A:[5],B:[],e:1},{n:T("только B","B only"),A:[],B:[5],e:0},{n:T("A и B вместе","A and B together"),A:[5],B:[5],e:0},{n:T("тишина","silence"),A:[],B:[],e:0}],
   start:[], sol:{n:[["n1","gaba",360,300,5,1]],w:[["A","OUT",1.2,3],["B","n1",1.2,1],["n1","OUT",3,1]]}},
  {id:"xor", part:1, ch:3, allowed:["glut","gaba"], record:2,
   title:T("Исключающее ИЛИ","XOR"),
   desc:T("Выход срабатывает, если пришёл ровно один из импульсов, и молчит при обоих.","The output fires if exactly one impulse arrives, and stays silent for both."),
-  hints:[T("В главе 3 XOR собран из пяти нейронов. Можно гораздо меньше.","Chapter 3 builds XOR from five neurons. You can do it with far fewer."),T("Выход — это ИЛИ от A и B, запрещённое, когда пришли оба. Запрет даёт один ГАМК-нейрон, которому нужны оба входа сразу.","The output is an OR of A and B, vetoed when both arrive. The veto is one ГАМК neuron that needs both inputs at once."),T("A и B → OUT (вес 1,2, задержка 3 мс); A и B → ГАМК (вес 0,6, задержка 1 мс); ГАМК → OUT (вес 3, задержка 1 мс).","A and B → OUT (weight 1.2, delay 3 ms); A and B → ГАМК (weight 0.6, delay 1 ms); ГАМК → OUT (weight 3, delay 1 ms).")],
+  hints:[T("В главе 3 XOR собран из пяти нейронов. Можно гораздо меньше.","Chapter 3 builds XOR from five neurons. You can do it with far fewer."),T("Выход — это ИЛИ от A и B, запрещённое, когда пришли оба. Запрет даёт один GABA-нейрон, которому нужны оба входа сразу.","The output is an OR of A and B, vetoed when both arrive. The veto is one GABA neuron that needs both inputs at once."),T("A и B → OUT (вес 1,2, задержка 3 мс); A и B → GABA (вес 0,6, задержка 1 мс); GABA → OUT (вес 3, задержка 1 мс).","A and B → OUT (weight 1.2, delay 3 ms); A and B → GABA (weight 0.6, delay 1 ms); GABA → OUT (weight 3, delay 1 ms).")],
   tests:[{n:T("только A","A only"),A:[5],B:[],e:1},{n:T("только B","B only"),A:[],B:[5],e:1},{n:T("A и B вместе","A and B together"),A:[5],B:[5],e:0},{n:T("тишина","silence"),A:[],B:[],e:0}],
   start:[], sol:{n:[["n1","gaba",360,340,5,1]],w:[["A","OUT",1.2,3],["B","OUT",1.2,3],["A","n1",0.6,1],["B","n1",0.6,1],["n1","OUT",3,1]]}},
  {id:"dir", part:1, ch:3, allowed:["glut","gaba"], record:2,
   title:T("Детектор направления","Direction detector"),
   desc:T("Датчики A и B стоят рядом. Выход срабатывает при движении от B к A (B раньше на 5 мс) и молчит при движении от A к B.","Sensors A and B sit side by side. The output fires for motion from B to A (B first, by 5 ms) and stays silent for motion from A to B."),
-  hints:[T("Схема рис. 3.1: возбуждение от B, торможение от A с задержкой, v* = Δx/d.","The circuit of Fig. 3.1: excitation from B, delayed inhibition from A, v* = Δx/d."),T("B возбуждает OUT. A через ГАМК-нейрон тормозит OUT, но с задержкой, чтобы торможение пришло к моменту импульса B.","B excites OUT. A inhibits OUT through a ГАМК neuron, delayed so the inhibition arrives together with B's impulse."),T("B → OUT (1,2; 1 мс), A → ГАМК (1,2; 1 мс), ГАМК → OUT (вес 3, задержка 4 мс).","B → OUT (1.2; 1 ms), A → ГАМК (1.2; 1 ms), ГАМК → OUT (weight 3, delay 4 ms).")],
+  hints:[T("Схема рис. 3.1: возбуждение от B, торможение от A с задержкой, v* = Δx/d.","The circuit of Fig. 3.1: excitation from B, delayed inhibition from A, v* = Δx/d."),T("B возбуждает OUT. A через GABA-нейрон тормозит OUT, но с задержкой, чтобы торможение пришло к моменту импульса B.","B excites OUT. A inhibits OUT through a GABA neuron, delayed so the inhibition arrives together with B's impulse."),T("B → OUT (1,2; 1 мс), A → GABA (1,2; 1 мс), GABA → OUT (вес 3, задержка 4 мс).","B → OUT (1.2; 1 ms), A → GABA (1.2; 1 ms), GABA → OUT (weight 3, delay 4 ms).")],
   tests:[{n:T("B → A","B → A"),A:[10],B:[5],e:1},{n:T("A → B","A → B"),A:[5],B:[10],e:0},{n:T("только A","A only"),A:[5],B:[],e:0}],
   start:[], sol:{n:[["n1","gaba",360,120,5,1]],w:[["B","OUT",1.2,1],["A","n1",1.2,1],["n1","OUT",3,4]]}},
  {id:"dash", part:1, ch:4, allowed:["glut"], record:1, T:80,
@@ -315,15 +315,15 @@ const CH = [
   start:[["A","OUT",1.2,1]], sol:{n:[["OUT","out",670,210,10,1]],w:[["A","OUT",0.45,1]]}},
  {id:"nor", part:2, ch:5, allowed:["sero"], record:1, T:4000, dt:0.2, outMed:"sero", outHz:4,
   title:T("ИЛИ-НЕ за один нейрон","NOR in one neuron"),
-  desc:T("OUT — СЕРО-ритмоводитель: на ровном фоновом притоке он сам выдаёт 4 импульса в секунду. A и B — группы СЕРО-нейронов: в тестах они работают с частотой 20 имп/с и выбрасывают серотонин в объём. OUT должен работать, когда A и B молчат, и замолкать, когда работает хотя бы одна группа.","OUT is a СЕРО pacemaker: on its steady background inflow it fires 4 times a second by itself. A and B are groups of СЕРО neurons: in the tests they fire at 20 impulses/s and release serotonin into the volume. OUT must keep firing while A and B are silent and fall silent when at least one group is active."),
-  hints:[T("Ритмоводитель работает, пока его не остановили: так СЕРО-сеть получает НЕ и ИЛИ-НЕ за один нейрон (гл. 5).","A pacemaker works until something stops it: that is how a СЕРО network gets NOT and NOR from one neuron (ch. 5)."),T("Знак выбирает получатель, а не отправитель: проведите провода A → OUT и B → OUT и поставьте на OUT тормозящий рецептор.","The receiver chooses the sign, not the sender: draw wires A → OUT and B → OUT and give OUT an inhibitory receptor."),T("Чувствительность 1 на каждом проводе: при 20 имп/с концентрация доходит до 2, и приток 1 − 2 < 0 останавливает ритм.","Sensitivity 1 on each wire: at 20 impulses/s the concentration reaches 2, and the inflow 1 − 2 < 0 stops the rhythm.")],
+  desc:T("OUT — SERO-ритмоводитель: на ровном фоновом притоке он сам выдаёт 4 импульса в секунду. A и B — группы SERO-нейронов: в тестах они работают с частотой 20 имп/с и выбрасывают серотонин в объём. OUT должен работать, когда A и B молчат, и замолкать, когда работает хотя бы одна группа.","OUT is a SERO pacemaker: on its steady background inflow it fires 4 times a second by itself. A and B are groups of SERO neurons: in the tests they fire at 20 impulses/s and release serotonin into the volume. OUT must keep firing while A and B are silent and fall silent when at least one group is active."),
+  hints:[T("Ритмоводитель работает, пока его не остановили: так SERO-сеть получает НЕ и ИЛИ-НЕ за один нейрон (гл. 5).","A pacemaker works until something stops it: that is how a SERO network gets NOT and NOR from one neuron (ch. 5)."),T("Знак выбирает получатель, а не отправитель: проведите провода A → OUT и B → OUT и поставьте на OUT тормозящий рецептор.","The receiver chooses the sign, not the sender: draw wires A → OUT and B → OUT and give OUT an inhibitory receptor."),T("Чувствительность 1 на каждом проводе: при 20 имп/с концентрация доходит до 2, и приток 1 − 2 < 0 останавливает ритм.","Sensitivity 1 on each wire: at 20 impulses/s the concentration reaches 2, and the inflow 1 − 2 < 0 stops the rhythm.")],
   inputs:[{id:"A",med:"sero"},{id:"B",med:"sero"}],
   tests:[{n:T("тишина","silence"),in:{},c:[{w:[2000,4000],min:5}]},{n:T("работает A","A active"),in:{A:train(0,4000,20)},c:[{w:[2000,4000],max:0}]},{n:T("работает B","B active"),in:{B:train(0,4000,20)},c:[{w:[2000,4000],max:0}]},{n:T("работают обе","both active"),in:{A:train(0,4000,20),B:train(0,4000,20)},c:[{w:[2000,4000],max:0}]}],
   start:[], sol:{n:[],w:[["A","OUT",1,0,-1],["B","OUT",1,0,-1]]}},
  {id:"credit", part:2, ch:6, allowed:[], record:1, T:17500, dt:0.2, outTe:0.05,
   title:T("Награда через полсекунды","Reward half a second later"),
   desc:T("A — сигнал, B — действие: вместе они заставляют OUT сработать. Потом приходит награда — выброс дофамина из D. Синапс A → OUT должен выучиться так, чтобы OUT потом срабатывал на одно A, если награда пришла через 0,5 с, и не учиться, если она пришла через 3 с или не пришла вовсе.","A is a cue and B an action: together they make OUT fire. Then the reward comes — a release of dopamine from D. The synapse A → OUT must learn so that afterwards A alone fires OUT if the reward came 0.5 s later, and must not learn if it came 3 s later or not at all."),
-  hints:[T("Правило трёх множителей (гл. 6): совместная активность оставляет в синапсе след, который тает за τ_e; вес меняется, только если дофамин пришёл, пока след жив.","The three-factor rule (ch. 6): joint activity leaves a trace in the synapse that fades with τ_e; the weight changes only if dopamine arrives while the trace is alive."),T("Дофамин должен дойти до OUT: проведите D → OUT. Потом задайте след τ_e у OUT: достаточно длинный, чтобы пережить 0,5 с, и достаточно короткий, чтобы забыть за 3 с.","Dopamine must reach OUT: draw D → OUT. Then set OUT's trace τ_e: long enough to survive 0.5 s and short enough to be forgotten in 3 s."),T("D → OUT с чувствительностью 1 и след τ_e = 1 с у OUT — как окно в секунду-две, измеренное на ГЛУТ-синапсах.","D → OUT with sensitivity 1 and a trace τ_e = 1 s on OUT — like the one-to-two-second window measured at ГЛУТ synapses.")],
+  hints:[T("Правило трёх множителей (гл. 6): совместная активность оставляет в синапсе след, который тает за τ_e; вес меняется, только если дофамин пришёл, пока след жив.","The three-factor rule (ch. 6): joint activity leaves a trace in the synapse that fades with τ_e; the weight changes only if dopamine arrives while the trace is alive."),T("Дофамин должен дойти до OUT: проведите D → OUT. Потом задайте след τ_e у OUT: достаточно длинный, чтобы пережить 0,5 с, и достаточно короткий, чтобы забыть за 3 с.","Dopamine must reach OUT: draw D → OUT. Then set OUT's trace τ_e: long enough to survive 0.5 s and short enough to be forgotten in 3 s."),T("D → OUT с чувствительностью 1 и след τ_e = 1 с у OUT — как окно в секунду-две, измеренное на GLUT-синапсах.","D → OUT with sensitivity 1 and a trace τ_e = 1 s on OUT — like the one-to-two-second window measured at GLUT synapses.")],
   inputs:[{id:"A"},{id:"B"},{id:"D",med:"dofa"}],
   tests:[{n:T("награда через 0,5 с","reward after 0.5 s"),in:trials([500,2500,4500,6500],500,9000),c:[{w:[9000,9030],min:1}]},
          {n:T("награда через 3 с","reward after 3 s"),in:trials([500,4500,8500,12500],3000,17000),c:[{w:[17000,17030],max:0}]},
@@ -331,15 +331,15 @@ const CH = [
   start:[["A","OUT",0.6,1],["B","OUT",1.2,1]], sol:{n:[["OUT","out",670,210,5,1,0,1]],w:[["A","OUT",0.6,1],["B","OUT",1.2,1],["D","OUT",1,0]]}},
  {id:"gain", part:2, ch:8, allowed:[], record:1, T:2000, dt:0.1,
   title:T("Усиление, а не сигнал","Gain, not signal"),
-  desc:T("A — слабый стимул: один импульс в 1,5 с. N — НОРА-нейроны: в режиме «бодрость» они работают с 20 имп/с. Выход должен ответить на стимул в бодрости, пропустить его в дремоте и молчать в бодрости без стимула.","A is a weak stimulus: one impulse at 1.5 s. N are НОРА neurons: when alert they fire at 20 impulses/s. The output must answer the stimulus when alert, miss it when drowsy, and stay silent when alert without a stimulus."),
-  hints:[T("НОРА не добавляет сигнал, а меняет коэффициент усиления (гл. 8): тот же вход даёт больший ответ.","НОРА does not add a signal, it changes the gain (ch. 8): the same input gives a bigger response."),T("Проведите N → OUT: вход OUT умножится на 1 + g·c, где c — концентрация норадреналина.","Draw N → OUT: OUT's input is multiplied by 1 + g·c, where c is the noradrenaline concentration."),T("N → OUT с чувствительностью 1: к 1,5 с концентрация около 1,5, усиление около 2,5, и вес 0,5 даёт 1,3 — выше порога.","N → OUT with sensitivity 1: by 1.5 s the concentration is about 1.5, the gain about 2.5, and the weight 0.5 gives 1.3 — above threshold.")],
+  desc:T("A — слабый стимул: один импульс в 1,5 с. N — NORA-нейроны: в режиме «бодрость» они работают с 20 имп/с. Выход должен ответить на стимул в бодрости, пропустить его в дремоте и молчать в бодрости без стимула.","A is a weak stimulus: one impulse at 1.5 s. N are NORA neurons: when alert they fire at 20 impulses/s. The output must answer the stimulus when alert, miss it when drowsy, and stay silent when alert without a stimulus."),
+  hints:[T("NORA не добавляет сигнал, а меняет коэффициент усиления (гл. 8): тот же вход даёт больший ответ.","NORA does not add a signal, it changes the gain (ch. 8): the same input gives a bigger response."),T("Проведите N → OUT: вход OUT умножится на 1 + g·c, где c — концентрация норадреналина.","Draw N → OUT: OUT's input is multiplied by 1 + g·c, where c is the noradrenaline concentration."),T("N → OUT с чувствительностью 1: к 1,5 с концентрация около 1,5, усиление около 2,5, и вес 0,5 даёт 1,3 — выше порога.","N → OUT with sensitivity 1: by 1.5 s the concentration is about 1.5, the gain about 2.5, and the weight 0.5 gives 1.3 — above threshold.")],
   inputs:[{id:"A"},{id:"N",med:"nora"}],
   tests:[{n:T("бодрость и стимул","alert, stimulus"),in:{A:[1500],N:train(0,2000,20)},c:[{w:[1500,1530],min:1},{w:[0,1500],max:0}]},{n:T("дремота и стимул","drowsy, stimulus"),in:{A:[1500]},e:0},{n:T("бодрость без стимула","alert, no stimulus"),in:{N:train(0,2000,20)},e:0}],
   start:[["A","OUT",0.5,1]], sol:{n:[],w:[["A","OUT",0.5,1],["N","OUT",1,0]]}},
  {id:"onset", part:3, ch:11, allowed:["glut","gaba"], record:2, T:200,
   title:T("Сообщи о перемене","Report the change"),
   desc:T("A — датчик: пока стимул длится, он работает с частотой 100 имп/с. Выход должен выдать один импульс в начале каждого стимула и молчать, пока стимул не меняется.","A is a sensor: while a stimulus lasts it fires at 100 impulses/s. The output must give one impulse at the start of each stimulus and stay silent while the stimulus is steady."),
-  hints:[T("Датчики передают прежде всего перемены (гл. 11); фазический нейрон отвечает на фронт и замолкает (гл. 18).","Sensors report changes first (ch. 11); a phasic neuron answers the front and falls silent (ch. 18)."),T("Возбудите OUT от A напрямую, а через ГАМК-нейрон затормозите его с задержкой: первый импульс проходит, следующие встречают торможение.","Excite OUT from A directly and inhibit it through a ГАМК neuron with a delay: the first impulse gets through, the next ones meet the inhibition."),T("A → OUT (1,2; 1 мс), A → ГАМК (1,2; 1 мс), ГАМК → OUT (вес 3, задержка 2 мс).","A → OUT (1.2; 1 ms), A → ГАМК (1.2; 1 ms), ГАМК → OUT (weight 3, delay 2 ms).")],
+  hints:[T("Датчики передают прежде всего перемены (гл. 11); фазический нейрон отвечает на фронт и замолкает (гл. 18).","Sensors report changes first (ch. 11); a phasic neuron answers the front and falls silent (ch. 18)."),T("Возбудите OUT от A напрямую, а через GABA-нейрон затормозите его с задержкой: первый импульс проходит, следующие встречают торможение.","Excite OUT from A directly and inhibit it through a GABA neuron with a delay: the first impulse gets through, the next ones meet the inhibition."),T("A → OUT (1,2; 1 мс), A → GABA (1,2; 1 мс), GABA → OUT (вес 3, задержка 2 мс).","A → OUT (1.2; 1 ms), A → GABA (1.2; 1 ms), GABA → OUT (weight 3, delay 2 ms).")],
   inputs:[{id:"A"}],
   tests:[{n:T("долгий стимул","long stimulus"),in:{A:train(10,101,100)},c:[{w:[10,25],min:1,max:1},{w:[25,200],max:0}]},{n:T("два стимула","two stimuli"),in:{A:train(10,51,100).concat(train(120,161,100))},c:[{w:[10,25],min:1,max:1},{w:[25,120],max:0},{w:[120,135],min:1,max:1},{w:[135,200],max:0}]},{n:T("один импульс","one impulse"),in:{A:[10]},c:[{w:[10,25],min:1,max:1}]},{n:T("тишина","silence"),in:{},e:0}],
   start:[["A","OUT",1.2,1]], sol:{n:[["n1","gaba",380,300,5,1]],w:[["A","OUT",1.2,1],["A","n1",1.2,1],["n1","OUT",3,2]]}},
@@ -352,8 +352,8 @@ const CH = [
   start:[], sol:{n:[["n1","glut",340,110,5,1],["n2","glut",340,310,5,1]],w:[["A1","n1",0.6,1],["B1","n1",0.6,1],["A2","n2",0.6,1],["B2","n2",0.6,1],["n1","OUT",1.2,1],["n2","OUT",1.2,1]]}},
  {id:"grip", part:3, ch:13, allowed:["glut","gaba"], record:4, T:1000, dt:0.1, outMed:"acet", muscle:true,
   title:T("Сжать и отпустить","Grip and release"),
-  desc:T("OUT — АЦЕТ-нейрон, управляющий мышцей. A — короткая команда «сжать», B — «отпустить». Мышца должна держать силу не меньше 2F₁ от 0,3 с до команды «отпустить» и расслабиться до 0,5F₁ через 0,25 с после неё.","OUT is an АЦЕТ neuron driving a muscle. A is a short command “grip”, B is “release”. The muscle must hold at least 2F₁ from 0.3 s until the release command and relax to 0.5F₁ within 0.25 s after it."),
-  hints:[T("Мышца складывает подёргивания (гл. 13): ровной силе нужен ровный поток импульсов, а команда короткая — кто-то должен держать поток.","A muscle adds twitches (ch. 13): steady force needs a steady stream of impulses, and the command is short — something must keep the stream going."),T("Два ГЛУТ-нейрона, возбуждающие друг друга, держат активность, как память главы 2; один из них возбуждает OUT. B останавливает петлю через ГАМК-нейрон.","Two ГЛУТ neurons exciting each other hold the activity, like the memory of chapter 2; one of them drives OUT. B stops the loop through a ГАМК neuron."),T("A → n1; n1 ⇄ n2 (1,2; задержка 10 мс в обе стороны); n1 → OUT; B → ГАМК → n1 и n2 (вес 5).","A → n1; n1 ⇄ n2 (1.2; delay 10 ms each way); n1 → OUT; B → ГАМК → n1 and n2 (weight 5).")],
+  desc:T("OUT — ACET-нейрон, управляющий мышцей. A — короткая команда «сжать», B — «отпустить». Мышца должна держать силу не меньше 2F₁ от 0,3 с до команды «отпустить» и расслабиться до 0,5F₁ через 0,25 с после неё.","OUT is an ACET neuron driving a muscle. A is a short command “grip”, B is “release”. The muscle must hold at least 2F₁ from 0.3 s until the release command and relax to 0.5F₁ within 0.25 s after it."),
+  hints:[T("Мышца складывает подёргивания (гл. 13): ровной силе нужен ровный поток импульсов, а команда короткая — кто-то должен держать поток.","A muscle adds twitches (ch. 13): steady force needs a steady stream of impulses, and the command is short — something must keep the stream going."),T("Два GLUT-нейрона, возбуждающие друг друга, держат активность, как память главы 2; один из них возбуждает OUT. B останавливает петлю через GABA-нейрон.","Two GLUT neurons exciting each other hold the activity, like the memory of chapter 2; one of them drives OUT. B stops the loop through a GABA neuron."),T("A → n1; n1 ⇄ n2 (1,2; задержка 10 мс в обе стороны); n1 → OUT; B → GABA → n1 и n2 (вес 5).","A → n1; n1 ⇄ n2 (1.2; delay 10 ms each way); n1 → OUT; B → GABA → n1 and n2 (weight 5).")],
   inputs:[{id:"A"},{id:"B"}],
   tests:[{n:T("сжать, потом отпустить","grip, then release"),in:{A:[100],B:[600]},c:[{f:1,w:[300,600],min:2},{f:1,w:[850,1000],max:0.5}]},{n:T("только сжать","grip only"),in:{A:[100]},c:[{f:1,w:[300,1000],min:2}]},{n:T("только отпустить","release only"),in:{B:[600]},c:[{f:1,w:[0,1000],max:0.5}]},{n:T("ничего","nothing"),in:{},c:[{f:1,w:[0,1000],max:0.5}]}],
   start:[], sol:{n:[["n1","glut",260,120,5,1],["n2","glut",420,300,5,1],["n3","gaba",240,360,5,1]],w:[["A","n1",1.2,1],["n1","n2",1.2,10],["n2","n1",1.2,10],["n1","OUT",1.2,1],["B","n3",1.2,1],["n3","n1",5,1],["n3","n2",5,1]]}},
@@ -393,11 +393,11 @@ function circ(){ const ch=CH[cur]; if(!circuits[ch.id]) circuits[ch.id]=fresh(ch
 const nodeById=(c,id)=>c.nodes.find(n=>n.id===id);
 
 // ---------- simulator ----------
-// Leaky integrate-and-fire in continuous time (Euler step dt). Point synapses (ГЛУТ +, ГАМК −, АЦЕТ +) add w to V after the delay.
-// Volume senders (СЕРО, НОРА, ДОФА) raise a concentration c that relaxes with τ_c (ch. 5):
-//   СЕРО: drive s·g·c with the receptor sign s chosen by the receiver; a pacemaker's ramp runs at f·[1 + s·g·c]_+ (ch. 5)
-//   НОРА: gain — arriving synaptic input is multiplied by 1 + g·c (ch. 8)
-//   ДОФА: third factor — dw/dt = η·g·c·e on the receiver's excitatory synapses, trace τ_e·de/dt = −e + (pre-then-post) (ch. 6)
+// Leaky integrate-and-fire in continuous time (Euler step dt). Point synapses (GLUT +, GABA −, ACET +) add w to V after the delay.
+// Volume senders (SERO, NORA, DOPA) raise a concentration c that relaxes with τ_c (ch. 5):
+//   SERO: drive s·g·c with the receptor sign s chosen by the receiver; a pacemaker's ramp runs at f·[1 + s·g·c]_+ (ch. 5)
+//   NORA: gain — arriving synaptic input is multiplied by 1 + g·c (ch. 8)
+//   DOPA: third factor — dw/dt = η·g·c·e on the receiver's excitatory synapses, trace τ_e·de/dt = −e + (pre-then-post) (ch. 6)
 const MED_TAU={sero:1000,nora:1000,dofa:200}, ETA=0.3, TC=50;
 function medOf(ch,n){ if(!n) return "glut"; if(n.t==="in"){ const d=(ch.inputs||INPUTS).find(x=>x.id===n.id); return (d&&d.med)||"glut"; } if(n.t==="out") return ch.outMed||"glut"; return n.t; }
 const isVol=m=>m==="sero"||m==="nora"||m==="dofa";
@@ -548,7 +548,7 @@ function renderResults(keepInsp){
 function renderPop(){
   const L=S[lang], ch=CH[cur], c=circ(), box=$("pop");
   if(!sel){ box.hidden=true; box.innerHTML=""; return; }
-  const MEDN={glut:"ГЛУТ",gaba:"ГАМК",sero:"СЕРО",nora:"НОРА",dofa:"ДОФА",acet:"АЦЕТ"};
+  const MEDN={glut:"GLUT",gaba:"GABA",sero:"SERO",nora:"NORA",dofa:"DOPA",acet:"ACET"};
   let head="", body="", binds=[];
   if(sel.kind==="node"){ const n=nodeById(c,sel.id); if(!n){ sel=null; return renderPop(); } const m=medOf(ch,n);
     head=(n.t==="out"?"OUT":n.id)+" · "+MEDN[m];
@@ -631,7 +631,7 @@ function drawBoard(){
   if(preview){ bctx.setLineDash([5,5]); bctx.strokeStyle=k.spike; bctx.lineWidth=2; bctx.beginPath(); bctx.moveTo(preview.x1,preview.y1); bctx.lineTo(preview.x2,preview.y2); bctx.stroke(); bctx.setLineDash([]); }
   // nodes
   const cond=getComputedStyle(document.body).getPropertyValue("--cond")||"sans-serif";
-  const ch=CH[cur], MEDN={glut:"ГЛУТ",gaba:"ГАМК",sero:"СЕРО",nora:"НОРА",dofa:"ДОФА",acet:"АЦЕТ"};
+  const ch=CH[cur], MEDN={glut:"GLUT",gaba:"GABA",sero:"SERO",nora:"NORA",dofa:"DOPA",acet:"ACET"};
   if(ch.muscle){ const o=nodeById(c,"OUT"), mx=o.x+92, my=o.y; bctx.strokeStyle=k.acet; bctx.lineWidth=2.5; bctx.beginPath(); bctx.moveTo(o.x+R+5,my); bctx.lineTo(mx-38,my); bctx.stroke();
     bctx.beginPath(); bctx.ellipse(mx,my,38,17,0,0,Math.PI*2); bctx.fillStyle=k.panel2; bctx.fill(); bctx.globalAlpha=.2; bctx.fillStyle=k.acet; bctx.fill(); bctx.globalAlpha=1; bctx.stroke();
     bctx.fillStyle=k.ink; bctx.font=`700 11px ${getComputedStyle(document.body).getPropertyValue("--cond")||"sans-serif"}`; bctx.textAlign="center"; bctx.textBaseline="middle"; bctx.fillText(S[lang].muscle,mx,my+1); }
@@ -644,7 +644,7 @@ function drawBoard(){
       if(n.t==="out"){ bctx.beginPath(); bctx.arc(n.x,n.y,R+5,0,Math.PI*2); bctx.stroke(); }
       if(+n.hz>0){ bctx.lineWidth=1.3; bctx.beginPath(); bctx.arc(n.x,n.y,R-4,0,Math.PI*2); bctx.stroke(); bctx.lineWidth=2.5; } // pacemaker: double ring, as in the book
       bctx.fillStyle=k.ink; bctx.font=`700 12px ${cond}`; bctx.textAlign="center"; bctx.textBaseline="middle"; bctx.fillText(n.t==="out"?"OUT":n.id.replace("n",""),n.x,n.y+1);
-      bctx.fillStyle=col; bctx.font=`700 10px ${cond}`; bctx.fillText(MEDN[m]||"ГЛУТ",n.x,n.y+R+(n.t==="out"?15:11)); }
+      bctx.fillStyle=col; bctx.font=`700 10px ${cond}`; bctx.fillText(MEDN[m]||"GLUT",n.x,n.y+R+(n.t==="out"?15:11)); }
     if(fired.has(n.id)){ bctx.save(); bctx.strokeStyle=k.spike; bctx.lineWidth=3; bctx.globalAlpha=.9; bctx.shadowColor=k.spike; bctx.shadowBlur=10; bctx.beginPath();
       if(n.t==="in") roundRect(n.x-28,n.y-21,56,42,8); else bctx.arc(n.x,n.y,(n.t==="out"?R+5:R)+4,0,Math.PI*2); bctx.stroke(); bctx.restore(); }
     // output port: drag from here to make a wire

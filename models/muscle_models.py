@@ -2,7 +2,7 @@
 
 1. Rate coding: muscle force as a linear sum of twitches h(t) = (t/Tc) exp(1 - t/Tc), Tc = 50 ms,
    for regular spike trains at 5, 15, 40 Hz. Writes figures/muscle_twitch_<rate>.dat (t in s, F in twitch units).
-2. Half-centre oscillator: two ГЛУТ groups with mutual inhibition (beta) and slow fatigue a_i:
+2. Half-centre oscillator: two GLUT groups with mutual inhibition (beta) and slow fatigue a_i:
      tau dr_i/dt = -r_i + [I - beta r_j - a_i]_+ ,   tau_a da_i/dt = -a_i + b r_i .
    Writes figures/halfcentre1.dat and halfcentre2.dat (t, r) and prints the period.
 3. Delayed feedback x'(t) = -G x(t-d): prints the oscillation onset G*d = pi/2 check.

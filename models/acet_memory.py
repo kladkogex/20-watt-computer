@@ -1,15 +1,15 @@
-"""Write/read switching by АЦЕТ in a clockless associative memory (chapter 9, 09_acet.tex).
+"""Write/read switching by ACET in a clockless associative memory (chapter 9, 09_acet.tex).
 Needs numpy. Numbers quoted in the chapter: 10 seeds (seeds 0..9).
 
-N ГЛУТ neurons, rates r_i in [0,1], continuous time (Euler integration, dt = 0.5 ms):
+N GLUT neurons, rates r_i in [0,1], continuous time (Euler integration, dt = 0.5 ms):
     tau dr_i/dt = -r_i + F( c_in(a) * A * x_i + c_rec(a) * sum_j W_ij r_j - g - theta ),
-    g = beta_g * max(sum_j r_j - pN, 0) / (pN)   (global ГАМК inhibition, chapter 3)
+    g = beta_g * max(sum_j r_j - pN, 0) / (pN)   (global GABA inhibition, chapter 3)
     dW_ij/dt   = eta * a * (r_i - p)(r_j - p) / (N p (1-p))        (Hebbian covariance rule)
-a in [0,1] is the АЦЕТ level:
+a in [0,1] is the ACET level:
     c_in(a) = 0.5 + 0.5 a   (input synapses boosted),
     c_rec(a) = 1 - a        (recurrent synapses suppressed),
     learning rate proportional to a (plasticity eased).
-Negative parts of W stand for inhibition through ГАМК-neurons.
+Negative parts of W stand for inhibition through GABA-neurons.
 Quality of a state r with respect to pattern xi:  m = sum (xi_i - p) r_i / (N p (1-p))  (1 = perfect).
 """
 import numpy as np
@@ -17,7 +17,7 @@ import numpy as np
 N, p = 200, 0.1
 tau, dt = 0.01, 0.0005
 theta, T = 0.35, 0.02
-beta_g = 1.0                                   # global ГАМК inhibition per extra active pattern-size
+beta_g = 1.0                                   # global GABA inhibition per extra active pattern-size
 A = 1.0
 T_pres = 0.2                                   # s per presentation
 eta = 1.0 / T_pres                             # one presentation at a=1 stores one pattern term
@@ -33,12 +33,12 @@ def hits_extras(r, xi):
     return float(r[xi == 1].mean()), float(r[xi == 0].sum())
 
 def present(W, x, a, learn, r0=None, plast=None):
-    """plast: learning-rate factor; by default = a (АЦЕТ also eases plasticity)."""
+    """plast: learning-rate factor; by default = a (ACET also eases plasticity)."""
     r = np.zeros(N) if r0 is None else r0.copy()
     cin, crec = 0.5 + 0.5 * a, 1.0 - a
     lr = a if plast is None else plast
     for _ in range(int(T_pres / dt)):
-        g = beta_g * max(r.sum() - p * N, 0.0) / (p * N)   # ГАМК: activity above the usual level
+        g = beta_g * max(r.sum() - p * N, 0.0) / (p * N)   # GABA: activity above the usual level
         h = cin * A * x + crec * (W @ r) - g
         r += dt / tau * (-r + F(h))
         if learn and lr > 0:
@@ -100,7 +100,7 @@ if __name__ == "__main__":
         R = np.array([experiment(s, aw) for s in seeds]).mean(axis=0)
         print(f"  a_write={aw:4.2f}: while writing hits={R[0]:.2f} extra={R[1]:4.1f} | "
               f"recall new hits={R[2]:.2f} extra={R[3]:4.1f} | similar old hits={R[4]:.2f} extra={R[5]:4.1f} | other old hits={R[6]:.2f}")
-    print("Same, but АЦЕТ also sets the learning rate (plasticity = a):")
+    print("Same, but ACET also sets the learning rate (plasticity = a):")
     for aw in (0.1, 0.2, 0.3, 0.5, 0.75, 0.9, 1.0):
         R = np.array([experiment(s, aw, coupled=True) for s in seeds]).mean(axis=0)
         print(f"  a_write={aw:4.2f}: recall new hits={R[2]:.2f} extra={R[3]:4.1f} | similar old hits={R[4]:.2f} extra={R[5]:4.1f}")

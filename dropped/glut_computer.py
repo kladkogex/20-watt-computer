@@ -1,4 +1,4 @@
-"""Discrete-time threshold neurons with non-negative weights only (ГЛУТ-only).
+"""Discrete-time threshold neurons with non-negative weights only (GLUT-only).
 Verifies every circuit used in chapter 2: gates, monotonicity, dual-rail full adder,
 ripple-carry adder, gated latch, clock ring and a 4-bit counter.
 Run: python3 figures/glut_computer.py"""
@@ -10,7 +10,7 @@ class Net:
     def neuron(self, name, theta, inputs=()):
         self.th[name] = theta; self.inp[name] = list(inputs); self.state[name] = 0
     def connect(self, name, src, w=1):
-        assert w >= 0, "ГЛУТ: only non-negative weights"
+        assert w >= 0, "GLUT: only non-negative weights"
         self.inp[name].append((src, w))
     def val(self, x):
         return self.state[x] if x in self.state else self.ext.get(x, 0)
@@ -38,7 +38,7 @@ for a, b, cc in itertools.product((0,1), repeat=3):
     assert (n.val(s), n.val(ns), n.val(c), n.val(nc)) == (tot % 2, 1-tot % 2, tot//2, 1-tot//2)
 print("full adder OK, neurons:", n.count())
 
-# ---------- 2. monotonicity check of a random ГЛУТ net (exhaustive over inputs)
+# ---------- 2. monotonicity check of a random GLUT net (exhaustive over inputs)
 import random
 random.seed(1)
 for trial in range(200):

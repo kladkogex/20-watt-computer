@@ -1,6 +1,7 @@
-# The 20-Watt Computer — English edition
+# The 20-Watt Computer, English edition
 
 *How the Brain Computes: A Quantitative Approach for Engineers*
 
-Translation in progress. The source will follow the same layout as `../ru/`:
-`main.tex` plus `chapters/`, sharing `../figures/` and `../models/`.
+Build with `make en` (full book) and `make en-paperback` (pocket edition) from the repository root.
+The layout matches the other editions: `main.tex`, `chapters/`, `answers/`, `supplement/`, `paperback/`,
+sharing `../figures/` and `../models/`.

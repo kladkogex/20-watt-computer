@@ -23,9 +23,9 @@
 
 A single AI accelerator draws about 700 W. The machine reading this sentence runs on 20. This free textbook explains how, in the language you already speak: **circuits, signals, codes, control loops, learning rules and energy budgets.** It has no history lessons and no anatomy tours, just the machine.
 
-Neurons are typed the way an engineer types a part, by what they put on the wire. **ГЛУТ** (glutamate) is the data bus. **ГАМК** (GABA) is flow control. **ДОФА** (dopamine), **СЕРО** (serotonin), **НОРА** (noradrenaline) and **АЦЕТ** (acetylcholine) are broadcast control registers. Every number in the book comes from a small Python program you can run and change. Every major claim is traced to the experiment behind it.
+Neurons are typed the way an engineer types a part, by what they put on the wire. **GLUT** (glutamate) is the data bus. **GABA** (GABA) is flow control. **DOPA** (dopamine), **SERO** (serotonin), **NORA** (noradrenaline) and **ACET** (acetylcholine) are broadcast control registers. Every number in the book comes from a small Python program you can run and change. Every major claim is traced to the experiment behind it.
 
-> 🌍 **Editions:** 🇷🇺 [Russian](https://kladkogex.github.io/20-watt-computer/pdf/20-watt-computer-ru.pdf) (original) · 🇬🇧 [English](https://kladkogex.github.io/20-watt-computer/pdf/20-watt-computer-en.pdf) · 🇨🇳 [中文](https://kladkogex.github.io/20-watt-computer/pdf/20-watt-computer-zh.pdf) · 🇯🇵 [日本語](https://kladkogex.github.io/20-watt-computer/pdf/20-watt-computer-ja.pdf) · 🇰🇷 [한국어](https://kladkogex.github.io/20-watt-computer/pdf/20-watt-computer-ko.pdf). Spanish and Portuguese are on the way. Each has a pocket-size paperback edition too. ⭐ Star the repo to hear when they land.
+> 🌍 **Editions:** 🇷🇺 [Russian](https://kladkogex.github.io/20-watt-computer/pdf/20-watt-computer-ru.pdf) · 🇬🇧 [English](https://kladkogex.github.io/20-watt-computer/pdf/20-watt-computer-en.pdf) · 🇨🇳 [中文](https://kladkogex.github.io/20-watt-computer/pdf/20-watt-computer-zh.pdf) · 🇯🇵 [日本語](https://kladkogex.github.io/20-watt-computer/pdf/20-watt-computer-ja.pdf) · 🇰🇷 [한국어](https://kladkogex.github.io/20-watt-computer/pdf/20-watt-computer-ko.pdf). Spanish and Portuguese are on the way. Each has a pocket-size paperback edition too. ⭐ Star the repo to hear when they land.
 
 ## Things you will be able to prove
 
@@ -42,9 +42,9 @@ A few of the book's results, each derived in the text and checked with a model:
 
 ## Play with it
 
-<img src="assets/breadboard.png" alt="Neuron breadboard: wire ГЛУТ and ГАМК neurons to solve logic challenges" width="100%">
+<img src="assets/breadboard.png" alt="Neuron breadboard: wire GLUT and GABA neurons to solve logic challenges" width="100%">
 
-**[Neuron breadboard](https://kladkogex.github.io/20-watt-computer/breadboard/)** runs in the browser: 13 challenges across chapters 2–18. Logic and timing from ГЛУТ/ГАМК, a СЕРО pacemaker NOR, dopamine three-factor learning, НОРА gain, an onset detector, shift-invariant object recognition, a muscle grip and a frequency divider. It scores you in neurons, spikes and picojoules per answer, gives hints, and can show the book's solution.
+**[Neuron breadboard](https://kladkogex.github.io/20-watt-computer/breadboard/)** runs in the browser: 13 challenges across chapters 2–18. Logic and timing from GLUT/GABA, a SERO pacemaker NOR, dopamine three-factor learning, NORA gain, an onset detector, shift-invariant object recognition, a muscle grip and a frequency divider. It scores you in neurons, spikes and picojoules per answer, gives hints, and can show the book's solution.
 
 ## What's inside
 
@@ -54,8 +54,8 @@ A few of the book's results, each derived in the text and checked with a model:
 
 | Part | Chapters |
 |---|---|
-| **Foundations** | 1 Neuron types · 2 What ГЛУТ neurons compute · 3 ГЛУТ and ГАМК together · 4 Morse code: the language of neurons |
-| **Broadcast channels** | 5 What СЕРО neurons compute · 6 Networks that learn: adding ДОФА · 7 Alternative theories of dopamine learning · 8 When to search and when to decide: НОРА · 9 When to write and when to read: АЦЕТ · 10 The whole machine |
+| **Foundations** | 1 Neuron types · 2 What GLUT neurons compute · 3 GLUT and GABA together · 4 Morse code: the language of neurons |
+| **Broadcast channels** | 5 What SERO neurons compute · 6 Networks that learn: adding DOPA · 7 Alternative theories of dopamine learning · 8 When to search and when to decide: NORA · 9 When to write and when to read: ACET · 10 The whole machine |
 | **Inputs and outputs** | 11 Eyes, ears and other sensors · 12 Image and video recognition · 13 How the brain controls muscles · 14 Pain: the alarm signal · 15 How the machine learns to move · 16 The second output: body chemistry |
 | **The lab** | 17 Debugging the machine · 18 Neuron types by electrical function · 19 Neurons by number of dendrites · 20 What neurons do during sleep · 21 Machines made of living neurons · 22 DishBrain |
 
