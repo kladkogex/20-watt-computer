@@ -1,0 +1,81 @@
+\chapter*{كيف تقرأ هذا الكتاب}
+\addcontentsline{toc}{chapter}{كيف تقرأ هذا الكتاب}
+
+لا يلزم أن يُقرأ الكتاب من أوله إلى آخره. الفصول~\babelsublr{1--4} هي الأساس المشترك: أنواع العصبونات، وما يحسبه \nt{GLUT} و\nt{GABA}، وباللغة التي يتخاطبان بها. بعد ذلك يتفرع الكتاب. تبيّن الخريطة في الشكل~\ref{fig:roadmap} أيّ الفصول يبني على أيّها: السهم من الفصل $A$ إلى الفصل $B$ يعني أن $B$ يستعمل مفاهيم $A$ وصيغه. لا تُظهر الخريطة إلا التبعيات الرئيسية؛ أما الإحالات الصغيرة إلى الوراء فلا تعيق القراءة.
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[>=Stealth,scale=0.95,
+  ch/.style={draw,thick,rounded corners=3pt,align=center,font=\scriptsize,text width=1.85cm,minimum height=0.62cm,inner sep=2pt},
+  base/.style={ch,fill=blue!8}, bus/.style={ch,fill=orange!14}, sum/.style={ch,fill=gray!18},
+  io/.style={ch,fill=green!10}, sort/.style={ch,fill=cyan!8}, lab/.style={ch,fill=violet!10},
+  dep/.style={->,thick,gray!60!black}]
+% foundation
+\node[base] (c1) at (0,0) {1 أنواع العصبونات};
+\node[base] (c2) at (2.3,0) {2 \nt{GLUT}};
+\node[base] (c3) at (4.6,0) {3 \nt{GLUT} و\nt{GABA}};
+\node[base] (c4) at (6.9,0) {4 شفرة مورس};
+% broadcast channels and the synthesis
+\node[bus] (c5) at (4.6,-1.5) {5 \nt{SERO}};
+\node[bus] (c6) at (7.3,-1.5) {6 \nt{DOPA}};
+\node[bus] (c7) at (9.2,-0.9) {7 نظريات الدوبامين};
+\node[bus] (c8) at (9.2,-2.1) {8 \nt{NORA}};
+\node[bus] (c9) at (11.5,-2.1) {9 \nt{ACET}};
+\node[sum] (c10) at (13.8,-0.9) {10 الآلة كاملة};
+% inputs and outputs
+\node[io] (c12) at (2.3,-4.1) {12 التعرّف};
+\node[io] (c11) at (4.6,-4.1) {11 المداخل};
+\node[io] (c13) at (6.9,-4.1) {13 العضلات};
+\node[io] (c14) at (9.2,-3.05) {14 الألم};
+\node[io] (c15) at (9.2,-4.1) {15 تعلّم\\الحركة};
+\node[io] (c16) at (9.2,-5.15) {16 كيمياء\\الجسم};
+% lab, sorting, sleep
+\node[lab] (c17) at (11.5,-4.1) {17 تصحيح الأخطاء};
+\node[lab] (c21) at (13.8,-4.1) {21 آلات حية};
+\node[lab] (c22) at (13.8,-5.15) {22 \foreignlanguage{english}{DishBrain}};
+\node[sort] (c18) at (11.5,-5.15) {18 عصبونات\\أجهزةَ قياس};
+\node[sort] (c19) at (13.8,-6.2) {19 عدد\\التغصنات};
+\node[bus] (c20) at (11.5,-6.2) {20 النوم};
+% dependencies
+\draw[dep] (c1) -- (c2); \draw[dep] (c2) -- (c3); \draw[dep] (c3) -- (c4);
+\draw[dep] (c1) -- (c5); \draw[dep] (c4) -- (c6); \draw[dep] (c5) -- (c6);
+\draw[dep] (c6) -- (c7); \draw[dep] (c6) -- (c8); \draw[dep] (c8) -- (c9);
+\draw[dep] (c7) -- (c10); \draw[dep] (c9) -- (c10);
+\draw[dep] (c4) -- (c11); \draw[dep] (c11) -- (c12); \draw[dep] (c11) -- (c13); \draw[dep] (c5) -- (c13);
+\draw[dep] (c13) -- (c14); \draw[dep] (c13) -- (c15); \draw[dep] (c13) -- (c16);
+\draw[dep] (c15) -- (c17); \draw[dep] (c9) -- (c17); \draw[dep] (c17) -- (c21); \draw[dep] (c21) -- (c22);
+\draw[dep] (c16) -- (c18); \draw[dep] (c18) -- (c19); \draw[dep] (c16) -- (c20);
+% legend
+\begin{scope}[yshift=-7.25cm]
+\foreach \s/\t [count=\i] in {base/الأساس, bus/القنوات والأنماط, sum/الخلاصة, io/المداخل والمخارج, sort/تصنيفات العصبونات, lab/المختبر}{
+  \pgfmathtruncatemacro{\col}{mod(\i-1,3)}\pgfmathtruncatemacro{\row}{(\i-1)/3}
+  \node[\s,text width=0.3cm,minimum height=0.32cm] at ({\col*4.8+0.2},{-\row*0.55}) {};
+  \node[anchor=west,font=\scriptsize] at ({\col*4.8+0.55},{-\row*0.55}) {\t};}
+\end{scope}
+\end{tikzpicture}
+\caption{خريطة الفصول. يتجه السهم من الفصل إلى الفصل الذي يبني عليه. أما الإحالات الأخرى بين الفصول فهي إشارات لا تبعيات.}
+\label{fig:roadmap}
+\end{figure}
+
+\section*{مسارات عبر الكتاب}
+
+\begin{center}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{>{\raggedright}p{3.0cm}>{\raggedright}p{3.9cm}>{\raggedright\arraybackslash}p{6.4cm}}
+\toprule
+المسار & لمن & الفصول بالترتيب \\
+\midrule
+مقرر ربع دراسي & المدرّس، 10 أسابيع & الأسبوع 1: الفصلان~\babelsublr{1--2}؛ 2: الفصل~3؛ 3: الفصل~4؛ 4: الفصلان~\babelsublr{5--6}؛ 5: الفصلان~\babelsublr{7--8}؛ 6: الفصل~9؛ 7: الفصل~10؛ 8: الفصلان~\babelsublr{11--12}؛ 9: الفصلان~13 و15؛ 10: الفصل~17 \\
+الذكاء الاصطناعي وتعلّم الآلة & من يعرف الشبكات العصبية ويريد أن يفهم كيف يتعلم الدماغ & \babelsublr{1--4}، 5 (قراءة سريعة)، 6، 7، 8، 9، 11 (قراءة سريعة)، 12، 13 (قراءة سريعة)، 15 \\
+الإلكترونيات والعتاد & مصمم الدوائر، ومطوّر الرقاقات العصبية الشكل & \babelsublr{1--4}، 5، 11، 13، 16، 18، 19، 17 (والفصلان 9 و15 قراءة سريعة) \\
+الواجهات العصبية والحواسيب الحية & من يبني واجهات الدماغ والحاسوب ورقاقات بعصبونات حية & 1، 2، 4، 11، 13، 17 (والفصلان 9 و15 قراءة سريعة)، 21، 22 (والفصل 12 قراءة سريعة) \\
+نظرة سريعة & مهندس لديه عطلة نهاية أسبوع & 1، 2، 3، 6، 10؛ وإحالات الفصل~6 إلى الفصلين~\babelsublr{4--5} مفهومة من السياق \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+”القراءة السريعة“ تعني أنه يكفي أن تقرأ مطلع الفصل، وقضاياه في الأطر الصفراء، وجدوله الختامي.
+
+في نهاية كل فصل تمارين: تقديرات، واشتقاقات، ونمذجة، وتصميم؛ والإجابات المختصرة مجموعة في الملحق~\ref{sec:answers}. وكل الرموز في الملحق~\ref{sec:notation}، أما التجارب التي تستند إليها القضايا الرئيسية في كل فصل ففي الملحق~\ref{sec:supplement}. الأرقام في الكتاب ناتجة عن برامج صغيرة في المجلد \texttt{models/}؛ ويمكن تشغيلها وتعديلها.

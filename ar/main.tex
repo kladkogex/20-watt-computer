@@ -4,6 +4,7 @@
 % Arabic edition: build with LuaLaTeX (see the Makefile); right-to-left text, left-to-right math
 \usepackage[bidi=basic]{babel}
 \babelprovide[import,main]{arabic}
+\setlocalecaption{arabic}{chapter}{الفصل} % modern usage; babel's default is باب
 \babelprovide[import]{english}
 \babelfont{rm}[Renderer=HarfBuzz]{Amiri}
 \babelfont{sf}[Renderer=HarfBuzz]{Amiri}
@@ -31,6 +32,13 @@
 \newtcolorbox{keyblock}{enhanced,breakable,colback=keyyellow,colframe=keyyellow,boxrule=0pt,arc=0pt,left=6pt,right=6pt,top=2pt,bottom=2pt,boxsep=0pt}
 \renewcommand{\chaptermark}[1]{\markboth{\small\chaptername~\thechapter.\ #1}{}}
 \renewcommand{\sectionmark}[1]{\markright{\small\thesection.\ #1}}
+% page numbers always set in Arabic context (otherwise they come out reversed on the English bibliography pages)
+\makeatletter
+\def\@evenhead{\foreignlanguage{arabic}{\thepage}\hfil\slshape\leftmark}
+\def\@oddhead{{\slshape\rightmark}\hfil\foreignlanguage{arabic}{\thepage}}
+\def\ps@plain{\let\@mkboth\@gobbletwo\let\@oddhead\@empty\let\@evenhead\@empty
+  \def\@oddfoot{\reset@font\hfil\hbox{\foreignlanguage{arabic}{\thepage}}\hfil}\let\@evenfoot\@oddfoot}
+\makeatother
 \renewcommand{\topfraction}{0.95}
 \renewcommand{\textfraction}{0.05}
 \renewcommand{\floatpagefraction}{0.75}
@@ -70,15 +78,19 @@
 \title{\Huge حاسوب العشرين واط\\[16pt] \Large كيف يحسب الدماغ: مقاربة كمية للمهندسين}
 \hypersetup{pdftitle={حاسوب العشرين واط. كيف يحسب الدماغ: مقاربة كمية للمهندسين},pdfauthor={Konstantin Kladko}}
 \author{\Large كونستانتين كلادكو (Konstantin Kladko)}
+% cover: a salad of the book's figures around the title card (figures/bookcover.tex)
+\newcommand{\covertitle}{حاسوب العشرين واط}
+\newcommand{\coversubtitle}{كيف يحسب الدماغ: مقاربة كمية للمهندسين}
+\newcommand{\coverauthor}{كونستانتين كلادكو (Konstantin Kladko)}
 \date{}
 
 \begin{document}
 \frontmatter
-\maketitle
+\input{figures/bookcover}
 \thispagestyle{empty}
 \vspace*{\fill}
 \noindent{\small \copyright~2026 Konstantin Kladko.\\[4pt]
-يُنشر النص والرسوم والتمارين والإجابات بموجب رخصة المشاع الإبداعي «نسب المصنف -- غير تجاري -- الترخيص بالمثل» 4.0 الدولية (CC BY-NC-SA 4.0): \url{https://creativecommons.org/licenses/by-nc-sa/4.0/deed.ar}. يجوز نسخ الكتاب واستخدامه في التدريس وترجمته وتعديله بحرية لأغراض غير تجارية، بشرط ذكر المؤلف ونشر الأعمال المشتقة بالرخصة نفسها.\\[4pt]
+يُنشر النص والرسوم والتمارين والإجابات بموجب رخصة المشاع الإبداعي ”نسب المصنف -- غير تجاري -- الترخيص بالمثل“ 4.0 الدولية (CC BY-NC-SA 4.0): \url{https://creativecommons.org/licenses/by-nc-sa/4.0/deed.ar}. يجوز نسخ الكتاب واستخدامه في التدريس وترجمته وتعديله بحرية لأغراض غير تجارية، بشرط ذكر المؤلف ونشر الأعمال المشتقة بالرخصة نفسها.\\[4pt]
 تُنشر برامج النماذج والبناء بموجب رخصة MIT.\\[4pt]
 المصادر والنماذج والإصدارات الجديدة: \url{https://github.com/kladkogex/20-watt-computer}.}
 \clearpage

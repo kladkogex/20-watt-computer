@@ -1,0 +1,68 @@
+% "The 20-Watt Computer": the popular ("take-along") version.
+% Each chapter paperback/NN.tex corresponds to the full chapter ../chapters/NN_*.tex with the same number;
+% on the website the reader switches a chapter between the "Short" and "Full" versions.
+% Arabic edition: build with LuaLaTeX; right-to-left text, left-to-right math
+\documentclass[11pt,openany]{book}
+\usepackage[paperwidth=13cm,paperheight=20cm,top=1.8cm,bottom=1.8cm,inner=1.6cm,outer=1.4cm]{geometry}
+\usepackage[bidi=basic]{babel}
+\babelprovide[import,main]{arabic}
+\setlocalecaption{arabic}{chapter}{الفصل} % modern usage; babel's default is باب
+\babelprovide[import]{english}
+\babelfont{rm}[Renderer=HarfBuzz]{Amiri}
+\babelfont{sf}[Renderer=HarfBuzz]{Amiri}
+\babelfont[english]{rm}{Latin Modern Roman}
+\babelfont[english]{sf}{Latin Modern Sans}
+\usepackage{amsmath,amssymb}
+\usepackage{xcolor}
+\usepackage[unicode,colorlinks=true,linkcolor=blue!60!black]{hyperref}
+\usepackage{microtype}
+\input{paperback/pencil} % minimal colour-pencil illustrations, one per chapter
+\setlength{\parskip}{0.3em}
+\setlength{\emergencystretch}{2em} % narrow paperback page: allow a little extra stretch
+\renewcommand{\chaptermark}[1]{\markboth{\small #1}{}}
+% neuron type code: first four letters of the primary mediator (as in the full edition)
+\newcommand{\nt}[1]{\foreignlanguage{english}{\textsf{\textbf{#1}}}}
+% pointer to the full edition at the end of each chapter
+\newcommand{\fullversion}[1]{\par\bigskip\noindent\small\emph{الصيغ والنماذج والتمارين والمصادر في النسخة الكاملة، الفصل~#1.}\normalsize}
+
+\title{\Huge حاسوب العشرين واط\\[14pt] \Large كيف يحسب الدماغ، باختصار وببساطة}
+\hypersetup{pdftitle={حاسوب العشرين واط. كيف يحسب الدماغ، باختصار وببساطة},pdfauthor={Konstantin Kladko}}
+\author{\Large كونستانتين كلادكو (\foreignlanguage{english}{Konstantin Kladko})}
+\date{}
+
+\begin{document}
+\frontmatter
+\input{paperback/cover} % cover: a collage of the chapter drawings
+% copyright page (same licence as the full edition)
+\thispagestyle{empty}
+\vspace*{\fill}
+\noindent{\footnotesize \copyright~2026 Konstantin Kladko.\\[4pt]
+يُنشر النص والرسوم بموجب رخصة المشاع الإبداعي ”نسب المصنف -- غير تجاري -- الترخيص بالمثل“ 4.0 الدولية (CC BY-NC-SA 4.0): \url{https://creativecommons.org/licenses/by-nc-sa/4.0/deed.ar}. يجوز نسخ الكتاب واستخدامه في التدريس وترجمته وتعديله بحرية لأغراض غير تجارية، بشرط ذكر المؤلف ونشر الأعمال المشتقة بالرخصة نفسها.\\[4pt]
+النسخة الكاملة والمصادر والنماذج:\\ \url{https://github.com/kladkogex/20-watt-computer}.}
+\clearpage
+\tableofcontents
+\input{paperback/00_preface}
+\mainmatter
+\input{paperback/01}
+\input{paperback/02}
+\input{paperback/03}
+\input{paperback/04}
+\input{paperback/05}
+\input{paperback/06}
+\input{paperback/07}
+\input{paperback/08}
+\input{paperback/09}
+\input{paperback/10}
+\input{paperback/11}
+\input{paperback/12}
+\input{paperback/13}
+\input{paperback/14}
+\input{paperback/15}
+\input{paperback/16}
+\input{paperback/17}
+\input{paperback/18}
+\input{paperback/19}
+\input{paperback/20}
+\input{paperback/21}
+\input{paperback/22}
+\end{document}
