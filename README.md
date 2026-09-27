@@ -19,7 +19,7 @@
 [![Code: MIT](https://img.shields.io/badge/code-MIT-blue)](LICENSE)
 
 
-**Read it in:** 🇬🇧 [English](https://kladkogex.github.io/20-watt-computer/pdf/20-watt-computer-en.pdf) · 🇨🇳 [中文](https://kladkogex.github.io/20-watt-computer/pdf/20-watt-computer-zh.pdf) · 🇯🇵 [日本語](https://kladkogex.github.io/20-watt-computer/pdf/20-watt-computer-ja.pdf) · 🇰🇷 [한국어](https://kladkogex.github.io/20-watt-computer/pdf/20-watt-computer-ko.pdf) · 🇪🇸 [Español](https://kladkogex.github.io/20-watt-computer/pdf/20-watt-computer-es.pdf) · 🇧🇷 [Português](https://kladkogex.github.io/20-watt-computer/pdf/20-watt-computer-pt.pdf) · 🇷🇺 [Русский](https://kladkogex.github.io/20-watt-computer/pdf/20-watt-computer-ru.pdf) · 🇺🇦 Українська (coming soon). Each edition also has a pocket-size paperback.
+**Read it in:** 🇬🇧 [English](https://kladkogex.github.io/20-watt-computer/pdf/20-watt-computer-en.pdf) · 🇨🇳 [中文](https://kladkogex.github.io/20-watt-computer/pdf/20-watt-computer-zh.pdf) · 🇯🇵 [日本語](https://kladkogex.github.io/20-watt-computer/pdf/20-watt-computer-ja.pdf) · 🇰🇷 [한국어](https://kladkogex.github.io/20-watt-computer/pdf/20-watt-computer-ko.pdf) · 🇪🇸 [Español](https://kladkogex.github.io/20-watt-computer/pdf/20-watt-computer-es.pdf) · 🇧🇷 [Português](https://kladkogex.github.io/20-watt-computer/pdf/20-watt-computer-pt.pdf) · 🇷🇺 [Русский](https://kladkogex.github.io/20-watt-computer/pdf/20-watt-computer-ru.pdf) · 🇺🇦 [Українська](https://kladkogex.github.io/20-watt-computer/pdf/20-watt-computer-uk.pdf). Each edition also has a pocket-size paperback.
 
 </div>
 

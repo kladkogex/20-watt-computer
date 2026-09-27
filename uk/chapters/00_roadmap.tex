@@ -1,0 +1,81 @@
+\chapter*{Як читати цю книгу}
+\addcontentsline{toc}{chapter}{Як читати цю книгу}
+
+Книгу не обов'язково читати підряд. Розділи~1--4 --- спільна основа: типи нейронів, що обчислюють \nt{GLUT} і \nt{GABA} та якою мовою вони говорять. Далі книга розгалужується. Карта на рис.~\ref{fig:roadmap} показує, які розділи на які спираються: стрілка від розділу $A$ до розділу $B$ означає, що в $B$ використано поняття й формули з $A$. На карті лише головні залежності; дрібні посилання назад читанню не заважають.
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[>=Stealth,scale=0.95,
+  ch/.style={draw,thick,rounded corners=3pt,align=center,font=\scriptsize,text width=1.85cm,minimum height=0.62cm,inner sep=2pt},
+  base/.style={ch,fill=blue!8}, bus/.style={ch,fill=orange!14}, sum/.style={ch,fill=gray!18},
+  io/.style={ch,fill=green!10}, sort/.style={ch,fill=cyan!8}, lab/.style={ch,fill=violet!10},
+  dep/.style={->,thick,gray!60!black}]
+% foundation
+\node[base] (c1) at (0,0) {1 Типи нейронів};
+\node[base] (c2) at (2.3,0) {2 \nt{GLUT}};
+\node[base] (c3) at (4.6,0) {3 \nt{GLUT} і \nt{GABA}};
+\node[base] (c4) at (6.9,0) {4 Абетка Морзе};
+% broadcast channels and the synthesis
+\node[bus] (c5) at (4.6,-1.5) {5 \nt{SERO}};
+\node[bus] (c6) at (7.3,-1.5) {6 \nt{DOPA}};
+\node[bus] (c7) at (9.2,-0.9) {7 Теорії дофаміну};
+\node[bus] (c8) at (9.2,-2.1) {8 \nt{NORA}};
+\node[bus] (c9) at (11.5,-2.1) {9 \nt{ACET}};
+\node[sum] (c10) at (13.8,-0.9) {10 Уся машина};
+% inputs and outputs
+\node[io] (c12) at (2.3,-4.1) {12 Розпі-\\знавання};
+\node[io] (c11) at (4.6,-4.1) {11 Входи};
+\node[io] (c13) at (6.9,-4.1) {13 М'язи};
+\node[io] (c14) at (9.2,-3.05) {14 Біль};
+\node[io] (c15) at (9.2,-4.1) {15 Навчання\\рухів};
+\node[io] (c16) at (9.2,-5.15) {16 Хімія\\тіла};
+% lab, sorting, sleep
+\node[lab] (c17) at (11.5,-4.1) {17 Налагодження};
+\node[lab] (c21) at (13.8,-4.1) {21 Живі машини};
+\node[lab] (c22) at (13.8,-5.15) {22 DishBrain};
+\node[sort] (c18) at (11.5,-5.15) {18 Нейрони-\\прилади};
+\node[sort] (c19) at (13.8,-6.2) {19 Кількість\\дендритів};
+\node[bus] (c20) at (11.5,-6.2) {20 Сон};
+% dependencies
+\draw[dep] (c1) -- (c2); \draw[dep] (c2) -- (c3); \draw[dep] (c3) -- (c4);
+\draw[dep] (c1) -- (c5); \draw[dep] (c4) -- (c6); \draw[dep] (c5) -- (c6);
+\draw[dep] (c6) -- (c7); \draw[dep] (c6) -- (c8); \draw[dep] (c8) -- (c9);
+\draw[dep] (c7) -- (c10); \draw[dep] (c9) -- (c10);
+\draw[dep] (c4) -- (c11); \draw[dep] (c11) -- (c12); \draw[dep] (c11) -- (c13); \draw[dep] (c5) -- (c13);
+\draw[dep] (c13) -- (c14); \draw[dep] (c13) -- (c15); \draw[dep] (c13) -- (c16);
+\draw[dep] (c15) -- (c17); \draw[dep] (c9) -- (c17); \draw[dep] (c17) -- (c21); \draw[dep] (c21) -- (c22);
+\draw[dep] (c16) -- (c18); \draw[dep] (c18) -- (c19); \draw[dep] (c16) -- (c20);
+% legend
+\begin{scope}[yshift=-7.25cm]
+\foreach \s/\t [count=\i] in {base/основа, bus/канали й режими, sum/підсумок, io/входи й виходи, sort/сортування нейронів, lab/лабораторія}{
+  \pgfmathtruncatemacro{\col}{mod(\i-1,3)}\pgfmathtruncatemacro{\row}{(\i-1)/3}
+  \node[\s,text width=0.3cm,minimum height=0.32cm] at ({\col*4.8+0.2},{-\row*0.55}) {};
+  \node[anchor=west,font=\scriptsize] at ({\col*4.8+0.55},{-\row*0.55}) {\t};}
+\end{scope}
+\end{tikzpicture}
+\caption{Карта розділів. Стрілка веде від розділу до того, що на нього спирається. Інші посилання між розділами --- вказівники, а не залежності.}
+\label{fig:roadmap}
+\end{figure}
+
+\section*{Шляхи крізь книгу}
+
+\begin{center}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{>{\raggedright}p{3.0cm}>{\raggedright}p{3.9cm}>{\raggedright\arraybackslash}p{6.4cm}}
+\toprule
+Шлях & Для кого & Розділи за порядком \\
+\midrule
+курс на одну чверть & викладач, 10 тижнів & тиждень 1: розд.~1--2; 2: розд.~3; 3: розд.~4; 4: розд.~5--6; 5: розд.~7--8; 6: розд.~9; 7: розд.~10; 8: розд.~11--12; 9: розд.~13 і~15; 10: розд.~17 \\
+ШІ та машинне навчання & той, хто знає нейромережі й хоче зрозуміти, як навчається мозок & 1--4, 5 (побіжно), 6, 7, 8, 9, 11 (побіжно), 12, 13 (побіжно), 15 \\
+електроніка й залізо & схемотехнік, розробник нейроморфних чипів & 1--4, 5, 11, 13, 16, 18, 19, 17 (розділи 9 і 15 побіжно) \\
+нейроінтерфейси й живі обчислювачі & той, хто будує інтерфейси мозок---комп'ютер і чипи з живими нейронами & 1, 2, 4, 11, 13, 17 (розділи 9 і 15 побіжно), 21, 22 (розділ 12 побіжно) \\
+швидкий огляд & інженер, який має вихідні & 1, 2, 3, 6, 10; посилання розділу~6 на розділи~4--5 зрозумілі з контексту \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+«Побіжно» означає: досить прочитати початок розділу, його твердження в жовтих рамках і підсумкову таблицю.
+
+Наприкінці кожного розділу є задачі: оцінки, виведення, моделювання й проєктування; короткі відповіді зібрано в додатку~\ref{sec:answers}. Усі позначення --- у додатку~\ref{sec:notation}, а досліди, на яких тримаються головні твердження кожного розділу, --- у додатку~\ref{sec:supplement}. Числа в книзі отримано з невеликих програм у теці \texttt{models/}; їх можна запустити й змінити.
