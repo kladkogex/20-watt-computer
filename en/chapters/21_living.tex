@@ -4,36 +4,36 @@
 
 \section{A test bench with an open schematic}
 
-In chapter~\ref{sec:debugging} we debugged a machine that has no schematic: a probe hears a thousand neurons out of eighty billion, and everything else has to be guessed. An engineer in that position would do something simple: build a small piece of the circuit on a breadboard, where every part is visible. With neurons, this can be done too.
+In Chapter~\ref{sec:debugging} we debugged a machine that has no schematic: a probe hears a thousand neurons out of eighty billion, and everything else has to be guessed. An engineer in that position would do something simple: build a small piece of the circuit on a breadboard, where every part is visible. With neurons, this can be done too.
 
-Cortical neurons are dissociated and grown on a chip with an electrode array, from a few dozen to tens of thousands of electrodes. Within a few weeks the cells sprout processes and wire up into a network of thousands or hundreds of thousands of neurons, mostly \nt{GLUT} with a smaller fraction of \nt{GABA} that depends on the preparation: in hippocampal cultures it is about $6\%$ of the neurons~\cite{Benson1994}. Every electrode can both listen, like the probe of chapter~\ref{sec:debugging}, and inject current, like a test signal. The second kind of bench uses \emph{organoids}: three-dimensional clumps of neural tissue about a millimeter across, grown from human stem cells~\cite{Lancaster2013}. On such benches living networks run for months; there are facilities where experiments on organoids can be run remotely, over the internet, for more than a hundred days in a row~\cite{Jordan2024}. The field is called \emph{biological computing} or \emph{organoid intelligence}~\cite{Smirnova2023}.
+Cortical neurons are dissociated and grown on a chip with an electrode array, from a few dozen to tens of thousands of electrodes. Within a few weeks the cells sprout processes and wire up into a network of thousands or hundreds of thousands of neurons, mostly \nt{GLUT} with a smaller fraction of \nt{GABA} that depends on the preparation: in hippocampal cultures it is about $6\%$ of the neurons~\cite{Benson1994}. Every electrode can both listen, like the probe of Chapter~\ref{sec:debugging}, and inject current, like a test signal. The second kind of bench uses \emph{organoids}: three-dimensional clumps of neural tissue about a millimeter across, grown from human stem cells~\cite{Lancaster2013}. On such benches living networks run for months; there are facilities where experiments on organoids can be run remotely, over the internet, for more than a hundred days in a row~\cite{Jordan2024}. The field is called \emph{biological computing} or \emph{organoid intelligence}~\cite{Smirnova2023}.
 
 The bench differs from the brain in two important ways. It is tiny: it has a hundred thousand times fewer neurons. And it has no broadcast channels: a cortical culture contains no \nt{DOPA}, \nt{SERO}, \nt{NORA}, or \nt{ACET} neurons. It is a machine with a data bus and flow control but no control registers. Let us see what it can do.
 
 \section{What the network does on its own}
 
-Left alone, a culture neither stays silent nor produces uniform noise. From time to time almost the whole network fires at once, in a \emph{network burst}, and then falls quiet again; the intervals between bursts range from a second to minutes, depending on the culture~\cite{Wagenaar2006}. To an engineer this is a familiar picture: an amplifier with strong positive feedback and no load turns into an oscillator.
+Left alone, a culture neither stays silent nor produces uniform noise. From time to time almost the whole network fires at once, in a \emph{network burst}, and then falls quiet again; the intervals between network bursts range from a second to minutes, depending on the culture~\cite{Wagenaar2006}. To an engineer this is a familiar picture: an amplifier with strong positive feedback and no load turns into an oscillator.
 
-We already know the mechanism. Strong mutual connections between \nt{GLUT} neurons set off an avalanche, as in chapter~\ref{sec:gaba} when the conditions of proposition~\ref{prop:ei} are violated. The avalanche quickly depletes the transmitter store in the synapses~\eqref{eq:depression}, and the network goes silent. The store recovers with time constant $\tau_{\text{rec}}$, and once the fraction $x^*$ needed for a new avalanche has recovered, a new burst follows. The interval between bursts is
+We already know the mechanism. Strong mutual connections between \nt{GLUT} neurons set off an avalanche, as in Chapter~\ref{sec:gaba} when the conditions of Proposition~\ref{prop:ei} are violated. The avalanche quickly depletes the transmitter store in the synapses~\eqref{eq:depression}, and the network goes silent. The store recovers with time constant $\tau_{\text{rec}}$, and once the fraction $x^*$ needed for a new avalanche has recovered, a new network burst follows. The interval between network bursts is
 \begin{empheq}[box=\keybox]{equation}
 T_{\text{burst}} \;\approx\; \tau_{\text{rec}}\,\ln\frac{1}{1-x^*} .
 \label{eq:burstinterval}
 \end{empheq}
-With $\tau_{\text{rec}}=0.8\,\text{s}$ from chapter~\ref{sec:code} and $x^*=0.9$ this gives about two seconds; with $x^*=0.99$, about four. This is a model estimate with the book's $\tau_{\text{rec}}$, and it lands at the short end of the measured intervals. Direct measurement in microcultures shows the transmitter store recovering over tens of seconds after a burst~\cite{CohenSegal2011}, so $\tau_{\text{rec}}$ is larger there; with such a $\tau_{\text{rec}}$, formula~\eqref{eq:burstinterval} gives tens of seconds to minutes, as in slow cultures. This is a relaxation oscillator, a relative of the rhythm generator of chapter~\ref{sec:muscles}: there it was recharged by the fatigue of neuron groups, here by the transmitter store.
+With $\tau_{\text{rec}}=0.8\,\text{s}$ from Chapter~\ref{sec:code} and $x^*=0.9$ this gives about two seconds; with $x^*=0.99$, about four. This is a model estimate with the book's $\tau_{\text{rec}}$, and it lands at the short end of the measured intervals. Direct measurement in microcultures shows the transmitter store recovering over tens of seconds after a network burst~\cite{CohenSegal2011}, so $\tau_{\text{rec}}$ is larger there; with such a $\tau_{\text{rec}}$, formula~\eqref{eq:burstinterval} gives tens of seconds to minutes, as in slow cultures. This is a relaxation oscillator, a relative of the rhythm generator of Chapter~\ref{sec:muscles}: there it was recharged by the fatigue of neuron groups, here by the transmitter store.
 
-Bursts are what the network does when it has nothing to do. In the living brain a similar picture appears in deep sleep (chapter~\ref{sec:sleep}) and in the developing brain, before real inputs arrive. The resemblance is suggestive, but that the mechanisms are the same is a hypothesis.
+Network bursts are what the network does when it has nothing to do. In the living brain a similar picture appears in deep sleep (Chapter~\ref{sec:sleep}) and in the developing brain, before real inputs arrive. The resemblance is suggestive, but that the mechanisms are the same is a hypothesis.
 
 \section{Teaching a network without a dopamine teacher}
 
 Since the culture has no \nt{DOPA}, the ``better or worse'' signal has to be supplied by us, through the electrodes. Experiments show that a network on the bench really does change its responses, and the most interesting thing about them is \emph{what} it is taught with.
 
-\emph{A teacher who falls silent.} The network is stimulated through one electrode once every one to three seconds until the desired response appears on another electrode $50\pm10\ms$ after the stimulus. As soon as it appears, stimulation is switched off for five minutes. After several such cycles the desired response appears right away~\cite{Shahaf2001}. The reward here is silence: the stimulus shakes the network, and ending the stimulus leaves it in the state that produced the right answer. This is gradient descent by random perturbation from chapter~\ref{sec:dofa} (proposition~\ref{prop:gradient}), where the shaking itself plays the role of the error: keep shaking until it comes out right.
+\emph{A teacher who falls silent.} The network is stimulated through one electrode once every one to three seconds until the desired response appears on another electrode $50\pm10\ms$ after the stimulus. As soon as it appears, stimulation is switched off for five minutes. After several such cycles the desired response appears right away~\cite{Shahaf2001}. The reward here is silence: the stimulus shakes the network, and ending the stimulus leaves it in the state that produced the right answer. This is gradient descent by random perturbation from Chapter~\ref{sec:dofa} (Proposition~\ref{prop:gradient}), where the shaking itself plays the role of the error: keep shaking until it comes out right.
 
-\emph{A network that plays tennis.} In an experiment on a bench with a dense electrode array, about a million neurons were connected to a computer game of one-paddle tennis~\cite{Kagan2022}. The ball position was delivered as current to ``sensory'' electrodes: where the ball is, by a place code; how far away, by frequency. Activity in two ``motor'' regions moved the paddle up or down. The learning rule was unusual. If the paddle hit the ball, the network got a short \emph{predictable} stimulus; if it missed, it got several seconds of \emph{unpredictable} random current. Over twenty minutes of play, runs of hits grew longer. A significant improvement within a session appeared only with full feedback; with silence in place of the stimulus the culture also played better by the end of the session than without feedback, but with a smaller effect, and there was no robust learning from session to session over several days. The experiment is analyzed in detail in chapter~\ref{sec:dishbrain}.
+\emph{A network that plays tennis.} In an experiment on a bench with a dense electrode array, about a million neurons were connected to a computer game of one-paddle tennis~\cite{Kagan2022}. The ball position was delivered as current to ``sensory'' electrodes: where the ball is, by a place code; how far away, by frequency. Activity in two ``motor'' regions moved the paddle up or down. The learning rule was unusual. If the paddle hit the ball, the network got a short \emph{predictable} stimulus; if it missed, it got several seconds of \emph{unpredictable} random current. Over twenty minutes of play, runs of hits grew longer. A significant improvement within a session appeared only with full feedback; with silence in place of the stimulus the culture also played better by the end of the session than without feedback, but with a smaller effect, and there was no robust learning from session to session over several days. The experiment is analyzed in detail in Chapter~\ref{sec:dishbrain}.
 
-The authors explained the result with the hypothesis that the network acts so as to make its input predictable~\cite{Friston2010}. This is the same idea as spike economy in chapter~\ref{sec:code} and frame prediction in chapter~\ref{sec:recognition}: the machine spends less when the input is expected. But both the experiment and, especially, the authors' talk of the culture's ``sentience'' drew sharp criticism: the effect is small, and it can be explained more simply~\cite{Balci2023}. An honest assessment is this: the culture on the bench changes its behavior under feedback, which is measured; that it learns specifically to predict its input is a hypothesis.
+The authors explained the result with the hypothesis that the network acts so as to make its input predictable~\cite{Friston2010}. This is the same idea as spike economy in Chapter~\ref{sec:code} and frame prediction in Chapter~\ref{sec:recognition}: the machine spends less when the input is expected. But both the experiment and, especially, the authors' talk of the culture's ``sentience'' drew sharp criticism: the effect is small, and it can be explained more simply~\cite{Balci2023}. An honest assessment is this: the culture on the bench changes its behavior under feedback, which is measured; that it learns specifically to predict its input is a hypothesis.
 
-\emph{A network that drives a body.} In a similar way, a culture was connected to a simple virtual ``body'' and taught to move it toward a target by choosing the spatiotemporal pattern of training stimuli~\cite{Bakkum2008}. None of these experiments involves dopamine: the teacher is a current pattern chosen by the engineer. What changes when the teacher becomes a program, or dopamine itself, is the subject of sections~\ref{sec:dishdopamine}--\ref{sec:cartpole}.
+\emph{A network that drives a body.} In a similar way, a culture was connected to a simple virtual ``body'' and taught to move it toward a target by choosing the spatiotemporal pattern of training stimuli~\cite{Bakkum2008}. None of these experiments involves dopamine: the teacher is a current pattern chosen by the engineer. What changes when the teacher becomes a program, or dopamine itself, is the subject of Sections~\ref{sec:dishdopamine}--\ref{sec:cartpole}.
 
 \begin{figure}[t]
 \centering
@@ -75,9 +75,9 @@ There is another way to use a living network: not to train it at all. In enginee
 y(t) \;=\; W_{\text{out}}\,\mathbf r(t) ,
 \label{eq:reservoir}
 \end{empheq}
-with weights fitted by the least-mean-squares rule~\eqref{eq:lms} of chapter~\ref{sec:motorlearning}. The reservoir does what the small \nt{GLUT} neurons of chapter~\ref{sec:motorlearning} did: it splits the input into a long vector in which the desired classes become separable by a plane (chapter~\ref{sec:dendrites}).
+with weights fitted by the least-mean-squares rule~\eqref{eq:lms} of Chapter~\ref{sec:motorlearning}. The reservoir does what the small \nt{GLUT} neurons of Chapter~\ref{sec:motorlearning} did: it splits the input into a long vector in which the desired classes become separable by a plane (Chapter~\ref{sec:dendrites}).
 
-An organoid on an electrode array proved suitable as such a reservoir. Speech sounds delivered to it as current patterns were classified by speaker with about $78\%$ accuracy after training a single linear readout~\cite{Cai2023}. The $78\%$ figure is the one the authors report and the press repeats. The result is useful, but it matters where the ``intelligence'' in it lies: the organoid supplies nonlinearity and fading memory, while error-driven learning happens outside, in silicon (fig.~\ref{fig:livingmachine}). The organoid does not stay unchanged, though: according to the authors, its own functional connectivity changed during training, and they call this unsupervised learning within the organoid itself~\cite{Cai2023}. How much of the accuracy comes from this change and how much from the readout has not been separated.
+An organoid on an electrode array proved suitable as such a reservoir. Speech sounds delivered to it as current patterns were classified by speaker with about $78\%$ accuracy after training a single linear readout~\cite{Cai2023}. The $78\%$ figure is the one the authors report and the press repeats. The result is useful, but it matters where the ``intelligence'' in it lies: the organoid supplies nonlinearity and fading memory, while error-driven learning happens outside, in silicon (Fig.~\ref{fig:livingmachine}). The organoid does not stay unchanged, though: according to the authors, its own functional connectivity changed during training, and they call this unsupervised learning within the organoid itself~\cite{Cai2023}. How much of the accuracy comes from this change and how much from the readout has not been separated.
 
 \section{What the bench tells us about the machine}
 
@@ -86,16 +86,16 @@ An organoid on an electrode array proved suitable as such a reservoir. Speech so
 P \;\approx\; 10^{6}\times1\,\text{s}^{-1}\times10^{-10}\,\text{J} \;=\; 10^{-4}\,\text{W},
 \label{eq:dishpower}
 \end{empheq}
-a tenth of a milliwatt. The electronics that stimulate, record, and process these spikes spend orders of magnitude more. As in chapter~\ref{sec:debugging}, the bottleneck is not the computation but the connection to it.
+a tenth of a milliwatt. The electronics that stimulate, record, and process these spikes spend orders of magnitude more. As in Chapter~\ref{sec:debugging}, the bottleneck is not the computation but the connection to it.
 
-\emph{Missing parts.} The bench shows how much a \nt{GLUT} bus with \nt{GABA} flow control can do without control registers: self-organize, generate bursts, change its responses under feedback, and serve as a good reservoir. What it cannot do without them is decide for itself what counts as success. On the bench that signal is supplied by the engineer; in the brain, as we saw in chapters~\ref{sec:dofa}--\ref{sec:acet}, by the broadcast channels.
+\emph{Missing parts.} The bench shows how much a \nt{GLUT} bus with \nt{GABA} flow control can do without control registers: self-organize, generate network bursts, change its responses under feedback, and serve as a good reservoir. What it cannot do without them is decide for itself what counts as success. On the bench that signal is supplied by the engineer; in the brain, as we saw in Chapters~\ref{sec:dofa}--\ref{sec:acet}, by the broadcast channels.
 
-\emph{Ethics.} Organoids are grown from human cells, and the more complex they become, the more serious the question of whether such tissue can feel anything. The engineering view suggests a partial answer: pain in chapter~\ref{sec:pain} is not the signal of a single sensor but a whole alarm system with gates, a volume control, and broadcast channels, none of which the bench has. But this is an argument, not a proof, and the field itself proposes carrying out ethical assessment alongside the experiments, from the very start~\cite{Smirnova2023}.
+\emph{Ethics.} Organoids are grown from human cells, and the more complex they become, the more serious the question of whether such tissue can feel anything. The engineering view suggests a partial answer: pain in Chapter~\ref{sec:pain} is not the signal of a single sensor but a whole alarm system with gates, a volume control, and broadcast channels, none of which the bench has. But this is an argument, not a proof, and the field itself proposes carrying out ethical assessment alongside the experiments, from the very start~\cite{Smirnova2023}.
 
 \begin{keyblock}
 \begin{proposition}[A living network on the bench]
 \label{prop:livingmachine}
-A network of \nt{GLUT} and \nt{GABA} neurons on an electrode array generates bursts on its own~\eqref{eq:burstinterval}, changes its responses under feedback, and can serve as a reservoir~\eqref{eq:reservoir} for a readout trained outside. All of this is measured. That such a network learns by some general rule, for example to predict its input, is a hypothesis, and most specialists do not accept loud claims about its ``sentience.''
+A network of \nt{GLUT} and \nt{GABA} neurons on an electrode array generates network bursts on its own~\eqref{eq:burstinterval}, changes its responses under feedback, and can serve as a reservoir~\eqref{eq:reservoir} for a readout trained outside. All of this is measured. That such a network learns by some general rule, for example to predict its input, is a hypothesis, and most specialists do not accept loud claims about its ``sentience.''
 \end{proposition}
 \end{keyblock}
 
@@ -112,7 +112,7 @@ A network of \nt{GLUT} and \nt{GABA} neurons on an electrode array generates bur
 \toprule
 Experiment & What the living network does & What is known \\
 \midrule
-network with no input & bursts at intervals from a second to minutes~\eqref{eq:burstinterval} & measured; the mechanism via synaptic depletion is the accepted model \\
+network with no input & network bursts at intervals from a second to minutes~\eqref{eq:burstinterval} & measured; the mechanism via synaptic depletion is the accepted model \\
 a teacher who falls silent & the desired response is locked in when stimulation is switched off & measured \\
 playing tennis & runs of hits grow longer; significant improvement within a session only with full feedback & behavior change measured; learning from session to session not robust; effect size and the input-prediction explanation disputed \\
 virtual body & movement toward a target with a chosen stimulus pattern & measured \\
@@ -124,13 +124,13 @@ energy & about $10^{-4}$~W per million neurons~\eqref{eq:dishpower} & estimate f
 \label{tab:livingmachine}
 \end{table}
 
-A machine made of living neurons (table~\ref{tab:livingmachine}) is a bench that shows what a data bus and flow control can do without control registers. They can do a lot, but they cannot decide on their own what is good. On the bench that role is played by the engineer with a chosen current pattern; in the brain, by the few broadcast wires to which the middle of the book is devoted.
+A machine made of living neurons (Table~\ref{tab:livingmachine}) is a bench that shows what a data bus and flow control can do without control registers. They can do a lot, but they cannot decide on their own what is good. On the bench that role is played by the engineer with a chosen current pattern; in the brain, by the few broadcast wires to which the middle of the book is devoted.
 
 \section{Exercises}
 
 \begin{exercise}[\lvlA]
 \label{ex:21:1}
-\emph{Interval between bursts.} A burst depletes the store to zero, then $\tau_{\text{rec}}\,\dd x/\dd t=1-x$, and a new burst starts at $x=x^*$; $\tau_{\text{rec}}=0.8$~s. (a)~Find the interval for $x^*=0.9$ and $0.99$. (b)~The threshold $x^*$ varies randomly by $\pm0.005$ around $0.99$. What range do the intervals span?
+\emph{Interval between network bursts.} A network burst depletes the store to zero, then $\tau_{\text{rec}}\,\dd x/\dd t=1-x$, and a new network burst starts at $x=x^*$; $\tau_{\text{rec}}=0.8$~s. (a)~Find the interval for $x^*=0.9$ and $0.99$. (b)~The threshold $x^*$ varies randomly by $\pm0.005$ around $0.99$. What range do the intervals span?
 \end{exercise}
 
 \begin{exercise}[\lvlA]
@@ -140,7 +140,7 @@ A machine made of living neurons (table~\ref{tab:livingmachine}) is a bench that
 
 \begin{exercise}[\lvlB]
 \label{ex:21:3}
-\emph{Design: suppressing bursts.} Sparse stimulation through many electrodes makes every synapse release transmitter at rate $r_b$; the store obeys $\tau_{\text{rec}}\,\dd x/\dd t=1-x-Ur_b\tau_{\text{rec}}x$, $U=0.5$, $\tau_{\text{rec}}=0.8$~s. What is the smallest $r_b$ at which the store never reaches $x^*=0.9$; $0.99$, and how much weaker does the synapse become?
+\emph{Design: suppressing network bursts.} Sparse stimulation through many electrodes makes every synapse release transmitter at rate $r_b$; the store obeys $\tau_{\text{rec}}\,\dd x/\dd t=1-x-Ur_b\tau_{\text{rec}}x$, $U=0.5$, $\tau_{\text{rec}}=0.8$~s. What is the smallest $r_b$ at which the store never reaches $x^*=0.9$; $0.99$, and how much weaker does the synapse become?
 \end{exercise}
 
 \begin{exercise}[\lvlB]
@@ -150,15 +150,15 @@ A machine made of living neurons (table~\ref{tab:livingmachine}) is a bench that
 
 \begin{exercise}[\lvlB]
 \label{ex:21:5}
-\emph{Simulation: a reservoir in silicon.} Reservoir $\mathbf r(t+1)=\tanh(W\mathbf r(t)+\mathbf v\,u(t)+\mathbf c)$, $N=30$, $W$ random with spectral radius $0.9$, $v_i\sim U(-0.5,0.5)$, $c_i\sim U(-0.2,0.2)$, $u\sim U(-1,1)$, readout by ridge regression. Find the memory capacity of exercise~\ref{ex:21:4} with and without $\tanh$. Which reservoir remembers more?
+\emph{Simulation: a reservoir in silicon.} Reservoir $\mathbf r(t+1)=\tanh(W\mathbf r(t)+\mathbf v\,u(t)+\mathbf c)$, $N=30$, $W$ random with spectral radius $0.9$, $v_i\sim U(-0.5,0.5)$, $c_i\sim U(-0.2,0.2)$, $u\sim U(-1,1)$, readout by ridge regression. Find the memory capacity of Exercise~\ref{ex:21:4} with and without $\tanh$. Which reservoir remembers more?
 \end{exercise}
 
 \begin{exercise}[\lvlB]
 \label{ex:21:6}
-\emph{A readout for a living reservoir.} An organoid provides $1024$ channels and $P=240$ training recordings of two classes. (a)~How many features $n$ can be kept so that, by the formula of exercise~\ref{ex:19:3}, a random labeling is separable with probability at most $1\%$? (b)~How many sigmas above chance is an accuracy of $78\%$ on $100$ test recordings?
+\emph{A readout for a living reservoir.} An organoid provides $1024$ channels and $P=240$ training recordings of two classes. (a)~How many features $n$ can be kept so that, by the formula of Exercise~\ref{ex:19:3}, a random labeling is separable with probability at most $1\%$? (b)~How many sigmas above chance is an accuracy of $78\%$ on $100$ test recordings?
 \end{exercise}
 
 \begin{exercise}[\lvlC]
 \label{ex:21:7}
-\emph{Research: a teacher without a broadcast channel.} Propose a stimulation protocol that implements the three-factor rule of chapter~\ref{sec:dofa} on the bench through $8$--$1024$ electrodes, and a frozen-readout control that distinguishes weight learning from a shift in network state. What result would refute the learning hypothesis?
+\emph{Research: a teacher without a broadcast channel.} Propose a stimulation protocol that implements the three-factor rule of Chapter~\ref{sec:dofa} on the bench through $8$--$1024$ electrodes, and a frozen-readout control that distinguishes weight learning from a shift in network state. What result would refute the learning hypothesis?
 \end{exercise}

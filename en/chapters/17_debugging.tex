@@ -36,9 +36,9 @@ The first device's task is reading. The threads are placed in the part of the co
 
 The company's second direction is writing: a vision device that feeds signals into the visual cortex of a person who has lost sight. More on it below, in the section on writing.
 
-\section{Reading: the decoder as a receiver}
+\section{Reading: the decoder as a recipient}
 
-An interface decoder is a receiver in the sense of Proposition~\ref{prop:reader}: it decides for itself which part of the message to read. Practically all interfaces read \emph{group rates}: they count the spikes of each channel in windows of a few tens of milliseconds and sum them with weights chosen so as to produce the intended movement. This is the group rate code of Section~\ref{sec:rate}, and it is chosen for a reason: with a few spikes per window the rate of a single neuron is undefined, whereas the sum over a hundred already works.
+An interface decoder is a recipient in the sense of Proposition~\ref{prop:reader}: it decides for itself which part of the message to read. Practically all interfaces read \emph{group rates}: they count the spikes of each channel in windows of a few tens of milliseconds and sum them with weights chosen so as to produce the intended movement. This is the group rate code of Section~\ref{sec:rate}, and it is chosen for a reason: with a few spikes per window the rate of a single neuron is undefined, whereas the sum over a hundred already works.
 
 How much information can be extracted? Writing with the ``mental hand'' ran at about ninety characters per minute~\cite{Willett2021}, i.e., one and a half characters per second: even at five bits per character this is less than eight bits per second. Cursor control, according to Neuralink, gives about ten bits per second. Yet the upper bound~\eqref{eq:spikeentropy} for a \emph{single} neuron is tens of bits per second, and for a hundred, thousands. An interface extracts from the neurons it eavesdrops on a small fraction of what they could carry. The bottleneck is not the wire but how many independent variables the group carries (Proposition~\ref{prop:pooling}) and how well the decoder understands the code, which, as we saw in Chapter~\ref{sec:code}, has not been fully deciphered.
 
@@ -76,7 +76,7 @@ Debugging technique & What the interface does & What the book explains & What is
 \midrule
 probe & hears hundreds to thousands of neurons & low dimensionality and correlated noise (Ch.~\ref{sec:code}) & measured \\
 compression on the probe & transmits events instead of the raw signal & capacity of the spike stream~\eqref{eq:spikeentropy} & solved in engineering \\
-reading & group rates $\to$ movement, text, speech & the decoder is a receiver; group rate code & works; a few bits per second \\
+reading & group rates $\to$ movement, text, speech & the decoder is a recipient; group rate code & works; a few bits per second \\
 joint learning & brain and decoder adapt to each other & error wire (Ch.~\ref{sec:motorlearning}) & observed; the adaptation rules are under study \\
 writing & current lights spots in the visual field & a place code can be written, a timing code cannot (Ch.~\ref{sec:sensors}) & spots measured; useful vision not yet \\
 reading registers & hardly done & broadcast channels (Ch.~\ref{sec:serocomputer}--\ref{sec:acet}) & chemical sensors exist in experiments \\

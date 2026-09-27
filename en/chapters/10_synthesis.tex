@@ -4,7 +4,7 @@
 
 \section{What we have assembled}
 
-We took the neuron types of Table~\ref{tab:types} one at a time and asked what each adds to a computing machine. The rules were the same every time: only what exists in a living organism, and no global clock. Now we put the parts together into one machine and watch how they work jointly.
+We took the neuron types of Table~\ref{tab:types} one at a time and asked what each adds to a computing machine. The rules were the same every time: only what exists in a living organism, and everything runs in continuous time. Now we put the parts together into one machine and watch how they work jointly.
 
 The picture from Chapter~\ref{sec:neurontypes} has held up and become sharper. A huge addressed network of \nt{GLUT} neurons carries the data. \nt{GABA} neurons control the flow of that data. Above the network sit four broadcast channels, each with its own knob: \nt{DOPA} says which weight changes to keep, \nt{SERO} holds the overall level and, by hypothesis, the planning horizon, \nt{NORA} chooses between searching and deciding, and \nt{ACET} chooses between writing and reading (Fig.~\ref{fig:machine}).
 
@@ -174,7 +174,7 @@ Table~\ref{tab:computer} summarizes the main differences. Each of them is not a 
 
 The most honest way to end this summary is with a list of what we do not know. Each item is a problem for an engineer.
 
-\emph{The code.} We know the capacity of the spike channel, and we know that the receiver chooses which part of the message to read (Chapter~\ref{sec:code}). But how much the cortex uses the precise timing of spikes, and whether neurons have ``words,'' is unknown.
+\emph{The code.} We know the capacity of the spike channel, and we know that the recipient chooses which part of the message to read (Chapter~\ref{sec:code}). But how much the cortex uses the precise timing of spikes, and whether neurons have ``words,'' is unknown.
 
 \emph{Learning through many layers.} A broadcast signal teaches slowly, and more slowly with each neuron that affects the result (Proposition~\ref{prop:broadcastcost}). How the cortex then tunes billions of weights in multilayer circuits is unknown; there are models in which bursts of spikes carry the error between layers~\cite{Payeur2021}. Part of the answer may lie in computation inside the branches of the neuron itself, where a single neuron behaves like a small multilayer network: to reproduce the response of a model of one cortical neuron, an artificial network needs five to eight layers~\cite{Beniaguev2021}, and the branches of human neurons can even compute exclusive OR~\cite{Gidon2020}. Another candidate is self-supervised learning: if the cortex learns to predict its own inputs, the error arises on the spot, in every layer, and no shared signal is needed for it (Chapter~\ref{sec:dofa})~\cite{Keller2018}.
 
@@ -211,7 +211,7 @@ The exercises of this chapter connect results from different chapters: each reli
 
 \begin{exercise}[\lvlB]
 \label{ex:10:4}
-\emph{Binding a sound and a flash.} A sound reaches the bus after $5\ms$, a flash after $30\ms$ plus the first-spike latency~\eqref{eq:latency} ($\tau=10\ms$, $U$ from $1.2\theta$ to $4\theta$); the background on each input is $5$ spikes per second. Choose the delay of the sound line and the smallest coincidence window that covers all contrasts. How many false bindings per second will the background produce?
+\emph{Binding a sound and a flash.} A sound reaches the bus after $5\ms$, a flash after $30\ms$ plus the first-spike latency~\eqref{eq:latency} ($\tau=10\ms$, $U$ from $1.2\theta$ to $4\theta$); the background on each input is $5$ spikes per second. Choose the delay of the sound line and the smallest coincidence window for all contrasts. How many false bindings per second will the background produce?
 \end{exercise}
 
 \begin{exercise}[\lvlB]

@@ -5,7 +5,7 @@ Morse code has two signs, the dot and the dash, and the pauses between them. A n
 
 \section*{How Much Clicks Can Say}
 
-Let us start like a communications engineer: how much information fits into such a channel at all? If the receiver can tell the arrival time of a click to within a millisecond, one click can carry about eight bits. If the receiver only counts how many clicks arrived in a second, it will extract dozens of times less from the same stream. Almost all the capacity of the channel lies in \emph{timing}.
+Let us start like a communications engineer: how much information fits into such a channel at all? If the recipient can tell the arrival time of a click to within a millisecond, one click can carry about eight bits. If the recipient only counts how many clicks arrived in a second, it will extract dozens of times less from the same stream. Almost all the capacity of the channel lies in \emph{timing}.
 
 \pencilfig{4}{\pencilart{4}}{Morse code above, a neuron below: one sign, the click; the whole message is written in the pauses.}
 
@@ -35,7 +35,7 @@ The way out is to take many neurons at once: not one listener counting clicks fo
 
 \section*{Fast: Who Comes First}
 
-The second way out is to write the number in time. A strong signal makes a neuron click early, a weak one late. A single click already carries a number. But what do we count time from? We can compare neurons with one another: who clicked first, who second. The order in which ten neurons click carries more than twenty bits. And a common volley serves as the start mark, like the long pause between words in Morse code.
+The second way out is to write the number in time. A strong signal makes a neuron click early, a weak one late. A single click already carries a number. But what do we count time from? We can compare neurons with one another: who clicked first, who second. The order in which ten neurons click carries more than twenty bits. And a common network burst serves as the start mark, like the long pause between words in Morse code.
 
 \pencilfig{121}{%
 % latency code: one click per neuron; the stronger the input, the earlier the click
@@ -53,7 +53,7 @@ The second way out is to write the number in time. A strong signal makes a neuro
 
 \section*{The Listener Chooses the Code}
 
-One and the same sequence of clicks carries the rate, the timing, and the order. Which of these gets read is up to the receiver. A neuron with a ``wide hole'' in its bucket slowly accumulates water and hears only the rate. A neuron that forgets quickly hears only coincidences. And the brakes, as we saw, can switch a neuron from one mode to the other.
+One and the same sequence of clicks carries the rate, the timing, and the order. Which of these gets read is up to the recipient. A neuron with a ``wide hole'' in its bucket slowly accumulates water and hears only the rate. A neuron that forgets quickly hears only coincidences. And the brakes, as we saw, can switch a neuron from one mode to the other.
 
 Even the connections filter the signal. Some tire quickly and so report not the rate but its \emph{change}. Others, on the contrary, pass bursts of several clicks in a row better: the neuron gains a ``dash.'' Meanwhile the braking neurons put in the punctuation: they cut the stream into windows and turn it down when it gets too loud.
 

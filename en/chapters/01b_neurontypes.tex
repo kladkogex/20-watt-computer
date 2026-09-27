@@ -1,7 +1,7 @@
 \chapter{Neuron Types}
 \label{sec:neurontypes}
 
-\section{The Neuron as a Black Box}
+\section{The neuron as a black box}
 
 Suppose you are handed a sack of eighty-six billion neurons~\cite{Azevedo2009} and asked to sort them into piles. How would you do it?
 
@@ -48,7 +48,7 @@ There is one output, but the wire branches, and every branch carries \emph{the v
 
 \emph{What}, then, travels along the output wire to the recipient? The spike runs to the end of each branch and there turns into a chemical signal: the branch releases a pinch of a particular substance, a \emph{neurotransmitter}, into the narrow gap between the cells, and it changes the recipient's input current. That gives us a sorting criterion: \emph{which transmitter does the neuron's output release?}
 
-\section{One Output, One Signal Type}
+\section{One output, one signal type}
 
 Sorting makes sense only if each neuron has a single output type. Is that so? Experiment says: almost.
 
@@ -136,7 +136,7 @@ Neurons divide into excitatory ($s_j=+1$) and inhibitory ($s_j=-1$), and this is
 
 More than a hundred transmitters are known, but almost all of the brain's work rests on half a dozen, and they fall into two completely different classes.
 
-\section{Two Buses: Address and Broadcast}
+\section{Two buses: address and broadcast}
 \label{sec:buses}
 
 Computer networks have two ways of delivering a message. The first is \emph{addressed}, unicast: a packet goes from one sender to a specific recipient, quickly, and no one else sees it. The second is \emph{broadcast}: the sender transmits one message to every node of the network at once. Neurons use both, and the transmitters divide exactly along this line (Fig.~\ref{fig:phone_radio}).
@@ -177,7 +177,7 @@ The \emph{broadcast bus} is dopamine, serotonin, noradrenaline, and partly acety
 
 If you need one picture from this chapter, here it is. The brain is a huge network with addressed data transfer, above which hang a few broadcast channels carrying control signals. A programmer will recognize a familiar design: computation plus a small set of control variables, each shared by a large part of the network.
 
-\section{\nt{GLUT}: The Positive Weight}
+\section{\nt{GLUT}: the positive weight}
 
 Glutamate is the brain's main excitatory transmitter. When a neuron's output releases glutamate, channels open in the recipient through which sodium flows in, the voltage across the recipient's membrane rises, and its chance of firing a spike of its own increases. In the language of Fig.~\ref{fig:blackbox}, this is an input with a \emph{positive} weight, $w_i>0$.
 
@@ -185,7 +185,7 @@ Who puts out glutamate? Almost everyone who transmits data over long distances: 
 
 One engineering detail. After release, the glutamate concentration in the gap shoots up a thousandfold, to about a millimolar, and decays with a time constant of about a millisecond~\cite{Clements1992}: glutamate diffuses out of the gap, and dedicated pump proteins carry it back into cells. Why? For the same reason a communication line returns the signal to zero after each symbol. If the transmitter were not cleared, the next spike would arrive on a ``busy'' line, and spikes a few milliseconds apart would merge.
 
-\section{\nt{GABA}: The Negative Weight}
+\section{\nt{GABA}: the negative weight}
 
 Imagine a network in which all weights are positive. If on average each spike gives rise to more than one next spike, activity grows exponentially and within a few steps engulfs the whole network. An electronics engineer will recognize a positive feedback loop with gain above one: the circuit saturates. To prevent this, negative weights are needed. Their main source is gamma-aminobutyric acid, GABA for short.
 
@@ -193,7 +193,7 @@ GABA opens channels in the recipient that pass chloride ions. The chloride equil
 
 Inhibition in the brain does much more than subtract. It works as negative feedback that holds the whole network at its operating point. In a normally working cortex, the excitatory and inhibitory currents arriving at a neuron are thought to balance each other almost exactly: this regime was predicted by theory~\cite{vanVreeswijk1996} and is seen in current measurements in living cortex~\cite{Haider2006}, and the neuron sits near threshold all the time. A circuit stabilized by strong negative feedback around an unstable point responds quickly and sensitively to small signals, an old engineering trick.
 
-\section{\nt{DOPA}: The Error Signal}
+\section{\nt{DOPA}: the error signal}
 
 The first broadcast channel is dopamine. Humans have on the order of half a million dopamine neurons, roughly one in a hundred seventy thousand; that is the count in the main one of their two groups~\cite{Pakkenberg1991}, so it is a lower bound. Their outputs spread to the regions that select actions.
 
@@ -240,7 +240,7 @@ It behaves exactly like the dopamine neurons. Unexpected juice: $V$ is still zer
 
 So dopamine is a broadcast of a scalar error signal $\delta$ to everyone who must learn from it. To a first approximation it is one wire for the whole brain and one number at each moment; how much of a bundle this wire really is, is taken up in Chapter~\ref{sec:dofaalt}.
 
-\section{The Other Broadcast Channels}
+\section{The other broadcast channels}
 
 For the other modulators there are only working hypotheses that translate their roles into the same language of global parameters~\cite{Doya2002}. Hold them as exactly that: hypotheses.
 
@@ -271,7 +271,7 @@ Neuron type & Fraction of neurons & Bus & Role in computation \\
 \label{tab:transmitters}
 \end{table}
 
-\section{The Recipient Sets the Sign}
+\section{The recipient sets the sign}
 \label{sec:receiver}
 
 I misled you a little when I said glutamate is a positive weight and GABA a negative one. No molecule carries a sign within it. A molecule is just a key. What happens when it is caught is decided by the \emph{lock}: the receptor on the recipient cell.
@@ -287,7 +287,7 @@ The sign and speed of a transmitter's action are set not by the transmitter itse
 
 Why, then, can one say ``glutamate excites'' at all? Because almost all the glutamate receptors met in practice are excitatory, and almost all GABA receptors are inhibitory. This is not a law of nature but a very reliable convention, and rule~\eqref{eq:dalesign} rests on it.
 
-\section{What to Take Away}
+\section{What to take away}
 
 The overwhelming majority of neurons form the addressed data bus, with weights of a single sign per neuron; a tiny minority form broadcast channels that deliver a few shared control signals to large parts of the brain. About two neurons in every hundred thousand, and on them depends how the entire rest of the network learns and in what mode it works. To an engineer this is no surprise: every computer has vastly fewer control registers than memory cells, and yet the machine does not work without them.
 
@@ -297,7 +297,7 @@ In the next chapter we will test what a network of \nt{GLUT} neurons alone, the 
 
 \begin{exercise}[\lvlA]
 \label{ex:01:1}
-\emph{Piles and wires.} From Table~\ref{tab:types} (midpoint of each range on a logarithmic scale; \nt{ACET}: $10^5$ outputs): (a)~if a neuron were a person, how many Earth populations would the \nt{GLUT} neurons make, and how big a city would all the broadcast neurons make? (b)~By what factor does the share of terminals of \nt{DOPA}, \nt{SERO}, \nt{NORA}, and \nt{ACET} exceed the share of their neurons?
+\emph{Piles and wires.} From Table~\ref{tab:types} (log-scale midpoint of each range; \nt{ACET}: $10^5$ outputs): (a)~if a neuron were a person, how many Earth populations would the \nt{GLUT} neurons make, and how big a city would all the broadcast neurons make? (b)~By what factor does the share of terminals of \nt{DOPA}, \nt{SERO}, \nt{NORA}, and \nt{ACET} exceed the share of their neurons?
 \end{exercise}
 
 \begin{exercise}[\lvlA]

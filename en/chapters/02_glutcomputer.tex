@@ -1,7 +1,7 @@
 \chapter{What \nt{GLUT} Neurons Compute}
 \label{sec:glutcomputer}
 
-\section{The Rules of the Game}
+\section{The rules of the game}
 
 In Chapter~\ref{sec:neurontypes} we saw that the overwhelming majority of the brain's neurons are \nt{GLUT}: they only excite, and their weights are only positive. Let us take as many such neurons as we like and ask: what can such a network compute if we allow ourselves only what happens in a living organism?
 
@@ -56,7 +56,7 @@ This is not a logical AND but a \emph{coincidence detector}: an AND in time (Fig
 
 Another way to get AND is through duration rather than precise timing. While a light is on, a sensory neuron fires frequently and steadily; if one such input is not enough for the threshold but two are, the neuron is active as long as both are. In this way the network computes on \emph{levels}, and the precise arrival times of spikes do not matter. Most of what follows will work this way.
 
-\section{What Cannot Be Done}
+\section{What cannot be done}
 
 Now let us try to build NOT: a neuron that is active when its input is silent. It will not work: with no input spikes, \eqref{eq:glutneuron} has not a single jump, and the voltage stays at zero, below threshold. What about a network of many neurons? No again, and this can be proved for all networks at once.
 
@@ -79,7 +79,7 @@ For individual spikes the statement is not literally true: an extra input spike 
 
 The consequences are the same as for any circuit without inverters. No NOT. No exclusive OR: adding a second input cannot turn the output off. And the most unpleasant one: \emph{activity cannot be stopped by activity}; one can only remove what sustains it.
 
-\section{Two Wires: On and Off}
+\section{Two wires: on and off}
 
 The way out is suggested by the organism itself. In many sense organs a stimulus is transmitted by two sets of neurons: in vision, some cells respond to an increase in light, others to a decrease~\cite{Schiller1992}. Let us call them \emph{on} and \emph{off} neurons. Instead of one wire $x$ the network receives a pair $(x,\bar x)$, and the absence that it cannot compute is reported to it by the sensor itself.
 
@@ -134,7 +134,7 @@ An example is exclusive OR: ``exactly one of two stimuli has changed.'' The dire
 \label{fig:dualxor}
 \end{figure}
 
-\section{Delays Instead of a Clock}
+\section{Delays instead of a clock}
 
 For computations involving time, wire delays and coincidence detectors are enough. The best example is how the brain determines where a sound came from.
 
@@ -242,7 +242,7 @@ Such a chain measures time from an event: link number $k$ has fired, which means
 
 Unlike a clock, the chain is silent until triggered, runs once, and measures time only for those connected to it. The network still has no common beat.
 
-\section{What Is Missing}
+\section{What is missing}
 
 A lot can be built from \nt{GLUT} neurons alone, without inhibition. But three things are missing, and all three because of Proposition~\ref{prop:monotone}.
 
@@ -288,5 +288,5 @@ All three troubles are cured by one remedy: a neuron that cancels a spike with a
 
 \begin{exercise}[\lvlC]
 \label{ex:02:7}
-\emph{Research: flip-flop or capacitor.} $100$ neurons hold a bit for $10$~s. Flip-flop: each fires $20$ spikes per second. Capacitor: facilitation $u$ decays with $\tau_F=1$~s, the bit is read when $u\ge u_{\max}/2$, and a refresh is a burst of three spikes from each neuron. How many times more economical is the capacitor, and what happens to the bit after the group is silenced for $200\ms$?
+\emph{Research: flip-flop or capacitor.} $100$ neurons hold a bit for $10$~s. Flip-flop: each fires $20$ spikes per second. Capacitor: facilitation $u$ decays with $\tau_F=1$~s, the bit is read when $u\ge u_{\max}/2$, and a refresh is a burst of three spikes from each neuron. How much more economical is the capacitor, and what happens to the bit if the group is silenced for $200\ms$?
 \end{exercise}

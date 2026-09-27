@@ -1,9 +1,9 @@
 \chapter{\nt{GLUT} and \nt{GABA} Together}
 \label{sec:gaba}
 
-\section{The Rules of the Game}
+\section{The rules of the game}
 
-A network of \nt{GLUT} neurons alone cannot select, cannot reset memory, and cannot keep activity from running away in an avalanche, all because of monotonicity (Proposition~\ref{prop:monotone}). Let us add the second most numerous neuron type, \nt{GABA}. The rules are as before: only what happens in a living organism, and no clock signal.
+A network of \nt{GLUT} neurons alone cannot select, cannot reset memory, and cannot keep activity from running away in an avalanche, all because of monotonicity (Proposition~\ref{prop:monotone}). Let us add the second most numerous neuron type, \nt{GABA}. The rules are as before: only what happens in a living organism, and everything runs in continuous time.
 
 The neuron model is the same as~\eqref{eq:glutneuron}, but a spike from a \nt{GABA} neuron lowers the recipient's voltage instead of raising it. Weights now come in two signs, and the sender sets the sign, rule~\eqref{eq:dalesign}.
 
@@ -13,7 +13,7 @@ So a negative connection from a \nt{GLUT} neuron $A$ to a neuron $B$ has to be m
 
 For inhibition it matters not only \emph{from whom} a connection comes but also \emph{where} it lands: the landing site largely determines what the connection does~\cite{Markram2004}. \nt{GLUT} outputs land mainly on the recipient's input branches, its \emph{dendrites}, and carry data: each such input is one term of the sum. An output onto the cell body acts on the sum as a whole: that is how many fast \nt{GABA} neurons divide the recipient's response and set when it fires. An output onto the place where the recipient's spike is born has the last word: a veto over the entire output at once. And an output onto the terminal of another neuron's wire changes the release probability $p$ of one input line without touching the others~\cite{Rudomin1999}; this is how, in particular, the pain gate of Chapter~\ref{sec:pain} works. Outside the brain, outputs land on muscle fibers (Chapter~\ref{sec:muscles}) and on organs (Chapter~\ref{sec:chemoutput}), and some land nowhere at all and release their transmitter into the volume of the tissue or into the blood (Chapters~\ref{sec:serocomputer} and~\ref{sec:chemoutput}).
 
-\section{NOT and Veto}
+\section{NOT and veto}
 
 Can we now build NOT? Almost. A neuron that is active while its input is silent has to get its excitation from somewhere. In the living brain it has it: every neuron constantly receives background activity from thousands of others. Let the background keep neuron $Y$ active, and let input $x$ inhibit it through a \nt{GABA} intermediary. That is NOT.
 
@@ -33,7 +33,7 @@ A network of \nt{GLUT} and \nt{GABA} neurons can compute any logical function of
 
 Proof: the veto~\eqref{eq:veto} together with OR is functionally complete given a constant one, because NOT $x$ is the veto ``one, but not when $x$.'' And functions that output zero when all inputs are silent are assembled from vetoes and OR even without the one.
 
-\section{Direction of Motion}
+\section{Direction of motion}
 
 A veto in time, like the AND in time of Chapter~\ref{sec:glutcomputer}, gives a detector of the direction of motion.
 
@@ -71,7 +71,7 @@ For motion from $B$ to $A$, the excitation from $B$ arrives at time $0$, and the
 
 In the retina, selectivity for the direction of motion apparently arises in just this way: from asymmetric inhibition on the side from which motion should not evoke a response~\cite{Barlow1965}.
 
-\section{Subtraction or Division}
+\section{Subtraction or division}
 
 So far our inhibition has subtracted. In fact it works more subtly.
 
@@ -148,13 +148,13 @@ We checked this on the model. With $\beta=0.5$ and inputs $1.0$ and $0.9$, both 
 
 With a hundred groups it is the same: each inhibits all the others, and one survives.
 
-\section{Resetting Memory}
+\section{Resetting memory}
 
 The memory of Chapter~\ref{sec:glutcomputer} could be switched off only by fatigue. Let us add a \nt{GABA} neuron that is excited by a ``reset'' signal and inhibits the group. The inhibition lowers the curve $f(wr+I)$ in Fig.~\ref{fig:bistable}, the upper intersection disappears, and the group goes out, and it stays in the lower state after the reset ends. Now the memory is written by one signal and erased by another, like a flip-flop with set and reset inputs.
 
 It is even more elegant to connect two such groups by mutual inhibition, as in Fig.~\ref{fig:wta}, and give each feedback onto itself. A signal at the input of one of the groups switches the cell into that group's state, and the cell remembers the last decision. This is a direct analog of a latch made of two cross-coupled NOR gates.
 
-\section{Stability and Rhythm}
+\section{Stability and rhythm}
 
 The third trouble of the \nt{GLUT} network remains: the avalanche. Take a group of \nt{GLUT} neurons with self-feedback $w_{EE}$ and a group of \nt{GABA} neurons that the first group excites with strength $w_{IE}$ and that inhibit the first group with strength $w_{EI}$. For the rates $E$ and $I$ we get
 \begin{equation}

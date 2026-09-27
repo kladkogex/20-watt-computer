@@ -2,7 +2,7 @@
 \chaptermark{Morse Code}
 \label{sec:code}
 
-\section{An Alphabet of One Symbol}
+\section{An alphabet of one symbol}
 
 Morse code has two symbols, the dot and the dash, and pauses of three lengths between them. A neuron's alphabet, as we saw in Chapter~\ref{sec:neurontypes}, is poorer still: it has one symbol. A spike lasts about a millisecond, and all the spikes of a neuron have the same height and shape. So the whole message is in the pauses, that is, in the sequence of times $t_1,t_2,t_3,\dots$ It is a code with no dashes, in which only the rhythm of the dots carries meaning (Fig.~\ref{fig:morse}).
 
@@ -41,11 +41,11 @@ What pauses are possible at all? From below they are limited by refractoriness: 
 
 In Chapters~\ref{sec:glutcomputer} and~\ref{sec:gaba} we adopted one or another way of writing numbers with spikes as we went along. Now let us ask directly: what language do \nt{GLUT} and \nt{GABA} neurons use to talk to each other? There is no complete answer; this language has not been deciphered. But some things about it are firmly known, and almost everything known can be obtained by reasoning like a communications engineer: channel capacity, noise, receiver, cost of transmission.
 
-\section{How Much Can Be Transmitted}
+\section{How much can be transmitted}
 
 Let us start with an upper bound. Suppose the recipient resolves spike times with precision $\Delta t$: shifts smaller than $\Delta t$ are indistinguishable to it. Cut time into bins of length $\Delta t$, shorter than the refractory time, so that each bin holds either one spike or none (Fig.~\ref{fig:cells}). At mean rate $r$, a spike falls into a bin with probability $p=r\Delta t$. The stream carries the most information when the bins are independent, and then each bin gives an entropy of $-p\log_2p-(1-p)\log_2(1-p)\approx p\log_2(e/p)$ bits for $p\ll1$. Dividing by $\Delta t$, we get the limiting transmission rate and its share per spike~\cite{MacKay1952}:
 \begin{empheq}[box=\keybox]{equation}
-R_{\max} \;\approx\; r\,\log_2\frac{e}{r\,\Delta t}\ \ \text{bits/s},
+R_{\max} \;\approx\; r\,\log_2\frac{e}{r\,\Delta t}\ \ \text{bit/s},
 \qquad
 \frac{R_{\max}}{r} \;\approx\; \log_2\frac{e}{r\,\Delta t}\ \ \text{bits per spike}.
 \label{eq:spikeentropy}
@@ -85,7 +85,7 @@ A spike train with mean rate $r$, read with timing precision $\Delta t$, carries
 
 This is an upper bound, not a measurement. Measurements on sensory neurons whose stimulus is known give from one to several bits per spike; in the best cases this is up to half the bound computed for their precision~\cite{Rieke1997}. So at least at the input to the nervous system, spike timing is used rather than wasted.
 
-\section{A Noisy Channel}
+\section{A noisy channel}
 
 Capacity~\eqref{eq:spikeentropy} was computed without noise. About where noise arises, three facts are firmly established.
 
@@ -97,7 +97,7 @@ Capacity~\eqref{eq:spikeentropy} was computed without noise. About where noise a
 
 How does a precise element produce a random stream? A neuron receives thousands of inputs, each unreliable, while excitation and inhibition are balanced, as in Chapter~\ref{sec:gaba}. The membrane voltage jitters near threshold, and these jitters set the spike times. Whether this is noise or a message we cannot read is largely an open question. Part of the ``noise'' has already turned out to be a message: in the visual cortex a considerable share of the variability follows the animal's own movements~\cite{Stringer2019}. The difficulty here is fundamental: to someone who does not know the code, a well-compressed message is indistinguishable from a random stream.
 
-\section{Rate: Slow but Reliable}
+\section{Rate: slow but reliable}
 \label{sec:rate}
 
 The simplest code is the \emph{rate code}: the number is written in how many spikes the neuron fires in a window $T$. Neither erasures nor timing jitter hurt such a code. But it has a price. If the stream is Poisson, the spike count $n$ in a window has mean $rT$ and spread $\sqrt{rT}$:
@@ -126,7 +126,7 @@ Not every correlation is equally harmful. What limits precision is only the part
 
 There is another way to use many neurons: write the number in \emph{which} neuron fired, as in the sound-direction finder (Fig.~\ref{fig:itd}). This is the \emph{place} code, the most reliable one known: for sensory neurons the index of the wire tells which point of the skin was touched or what pitch a sound has, and this has been established many times over. It is expensive in neurons but fast: a message takes one delay.
 
-\section{Timing: Fast, but Measured from What?}
+\section{Timing: fast, but measured from what?}
 
 The second way out is to write the number in the time of a spike. Take neuron~\eqref{eq:glutneuron} and, from time $t=0$, apply a constant input that would raise the voltage to level $U$. The voltage grows as $V=U\bigl(1-e^{-t/\tau}\bigr)$ and reaches the threshold $\theta$ at time
 \begin{empheq}[box=\keybox]{equation}
@@ -139,11 +139,11 @@ But from what moment is $t_1$ measured? There is no clock, and the recipient doe
 
 \emph{Relative latency.} Two neurons see the same stimulus, and the difference of their latencies $t_1^A-t_1^B$ depends only on their inputs, not on the moment of onset. Coincidence detectors with delays compare the times (Fig.~\ref{fig:itd}). If $N$ neurons each fire one spike, the very \emph{order} of their arrival carries up to $\log_2N!$ bits: for ten neurons about twenty-two bits, whereas the answer ``fired or not'' would give no more than ten. In the retina it has been shown that an image can be reconstructed quickly and reliably from the relative latencies of the first spikes of its output neurons~\cite{Gollisch2008}.
 
-\emph{A volley as the start of a word.} An abrupt change in the stimulus makes many neurons fire almost simultaneously. Such a volley itself serves as a start mark, like the long pause between words in Morse code, and the recipient measures latencies from it.
+\emph{A network burst as the start of a word.} An abrupt change in the stimulus makes many neurons fire almost simultaneously. Such a network burst itself serves as a start mark, like the long pause between words in Morse code, and the recipient measures latencies from it.
 
 \emph{A local rhythm.} In Chapter~\ref{sec:gaba} the \nt{GLUT}--\nt{GABA} loop generated a local rhythm with a period of $12$--$50\ms$. It is not a clock, but within its cycle a neuron with strong input manages to fire before a neuron with weak input, and~\eqref{eq:latency} turns into a \emph{phase} code: the number is written in which part of the cycle the spike arrived. Such a code has been observed: neurons responsible for a particular place in space fire earlier and earlier in the cycle of a slow local rhythm as the animal moves through ``its'' place~\cite{OKeefe1993}. How widely the brain uses phase is still unknown.
 
-\section{The Recipient Chooses the Code}
+\section{The recipient chooses the code}
 
 A spike train contains rate, timing, and order. Which of these gets read is decided by the recipient, and it decides with one parameter, its time constant $\tau$.
 
@@ -199,7 +199,7 @@ Measurements show that in active cortex the membrane conductance increases sever
 One and the same spike train carries rate for a slow recipient, timing for a fast one, and, for a volume into which transmitter is released, a concentration level smoothed over seconds (Chapter~\ref{sec:serocomputer}). Which code is used is determined not by the sender but by the recipient's time constant, and inhibition adjusts that constant.
 \end{proposition}
 \end{keyblock}
-\section{Dots and Dashes: The Synapse as a Filter}
+\section{Dots and dashes: the synapse as a filter}
 
 So far our synapse has been a wire with a weight. In fact its response depends on the preceding spikes, and this gives the language of neurons a second symbol.
 
@@ -247,7 +247,7 @@ P_{\text{loss}} \;=\; (1-p)^k ,
 \end{empheq}
 which for $p=0.2$ is $0.8$ for a single spike and $0.41$ for a burst of four; facilitation lowers it further still. So the neuron acquires a second symbol: a single spike is a dot, a burst is a dash. A depressing synapse best transmits the first spike after a pause; a facilitating one passes bursts and suppresses isolated dots. That bursts are transmitted more reliably has been measured; that the brain actually uses them as a separate symbol is a plausible hypothesis~\cite{Lisman1997}.
 
-\section{How \nt{GABA} Neurons Speak}
+\section{How \nt{GABA} neurons speak}
 
 The most numerous of them in the cortex are the fast ones~\cite{Tremblay2016}. Their spikes are shorter than those of \nt{GLUT} neurons, and they can fire them steadily for long periods at hundreds per second, with almost no fatigue. Their synapses are more reliable: the connection to each recipient consists of many release sites, and a spike is almost never lost. Their outputs land near the site where the recipient's spike is born, so they control not how the recipient sums its inputs but whether and when it fires.
 
@@ -265,7 +265,7 @@ In the language of Morse code, \nt{GABA} neurons are responsible not for the let
 There are also other, slower \nt{GABA} neurons whose outputs land on individual inputs of the recipient. They work as the veto~\eqref{eq:veto} of Chapter~\ref{sec:gaba}: they shut off one stream of \nt{GLUT} spikes without touching the others.
 
 The division into fast and slow \nt{GABA} neurons is an old picture, and it is incomplete. Today at least three large classes are distinguished in the cortex~\cite{Tremblay2016}, and the third is arranged unexpectedly: it inhibits not \nt{GLUT} neurons but other \nt{GABA} neurons, above all those that close off inputs~\cite{Pfeffer2013}. Inhibition of inhibition is a double negation. Such a neuron \emph{opens} the gates without sending the recipient a single excitatory spike. It is switched on by signals from other cortical areas and by the broadcast channels, so it works as an enable input for a whole part of the network: while it is active, the vetoes are lifted and the stream gets through~\cite{Pi2013}. In Appendix~\ref{sec:othermediators} this trick is called disinhibition.
-\section{An Economical Language}
+\section{An economical language}
 
 The last thing firmly known about the language of neurons is that it is expensive. A spike, together with the synaptic work it causes, costs about $10^9$ ATP molecules (an estimate for rodent cortex~\cite{Attwell2001}), and one molecule yields about $10^{-19}$ joules. So a spike costs on the order of $E_{\text{spk}}\sim10^{-10}$ joules. The whole brain consumes about $20$ watts, and if half of that goes to signaling, $P\sim10$ watts, the mean rate of one neuron is
 \begin{empheq}[box=\keybox]{equation}
