@@ -231,7 +231,13 @@ if __name__ == "__main__":
         rule = sys.argv[3] if len(sys.argv) > 3 else "gated"
         eta = float(sys.argv[4]) if len(sys.argv) > 4 else 0.02
         P = base_params(rule=rule, eta=eta)
-        runs, pr, out, info = play(["stimulus", "silent", "nofeedback"], n, P, per_run_extra={"H": H_fitted()})
+        extra = {"H": H_fitted()}
+        rec = os.environ.get("RECRUIT")                       # e.g. "wide near-threshold"; default: Params values
+        if rec:
+            extra.update(dict(zip(("r75", "kick75", "r150"), RECRUIT[rec])))
+        conds = ["rest", "stimulus", "silent", "nofeedback"] if os.environ.get("WITH_REST") else ["stimulus", "silent", "nofeedback"]
+        runs, pr, out, info = play(conds, n, P, per_run_extra=extra)
+        info["recruit"] = rec or "default"
         rows = table(runs, out, f"rule={rule}, eta={eta}: {n} cultures x 3 conditions, 20 min "
                                 f"(wall {info['wall_s']:.0f} s, overflow {info['overflow']}, rate {info['rate_hz']:.2f} Hz)")
         summ = {c: {k: (float(v) if np.isscalar(v) else None) for k, v in r.items() if k != "T2_values"}
@@ -342,7 +348,7 @@ def kappa_batch(rule, eta, cultures=16, minutes=5, recruits=("default", "wide", 
 if __name__ == "__main__" and sys.argv[1] == "kappa":
     rule = sys.argv[3] if len(sys.argv) > 3 else "gated"
     eta = float(sys.argv[4]) if len(sys.argv) > 4 else 0.02
-    rec = tuple(sys.argv[5].split(",")) if len(sys.argv) > 5 else ("default", "wide", "widest")
+    rec = tuple(sys.argv[5].split("|")) if len(sys.argv) > 5 else ("default", "wide", "widest")
     tag = f"_{sys.argv[6]}" if len(sys.argv) > 6 else ""
     rows = kappa_batch(rule, eta, cultures=int(sys.argv[2]) if len(sys.argv) > 2 else 16, recruits=rec)
     if tag:
