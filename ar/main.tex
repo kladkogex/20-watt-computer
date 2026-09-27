@@ -1,0 +1,120 @@
+\documentclass[11pt,openany]{book}
+\setcounter{secnumdepth}{3}
+\usepackage[margin=1.1in]{geometry}
+% Arabic edition: build with LuaLaTeX (see the Makefile); right-to-left text, left-to-right math
+\usepackage[bidi=basic]{babel}
+\babelprovide[import,main]{arabic}
+\babelprovide[import]{english}
+\babelfont{rm}[Renderer=HarfBuzz]{Amiri}
+\babelfont{sf}[Renderer=HarfBuzz]{Amiri}
+\babelfont[english]{rm}{Latin Modern Roman}
+\babelfont[english]{sf}{Latin Modern Sans}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,decorations.markings,decorations.pathmorphing,decorations.pathreplacing,calc}
+\input{figures/icons}
+\usepackage[unicode,colorlinks=true,linkcolor=blue!60!black,citecolor=blue!60!black]{hyperref}
+\usepackage{microtype}
+\setlength{\emergencystretch}{3em} % long names (licences, references) in narrow lines
+\usepackage{empheq}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{longtable}
+\usepackage{circuitikz}
+\definecolor{keyyellow}{rgb}{1.0,0.97,0.78}
+% key equations: \begin{empheq}[box=\keybox]{equation} ... \end{empheq} -- light-yellow box, number stays outside
+\newcommand{\keybox}[1]{{\setlength{\fboxsep}{7pt}\colorbox{keyyellow}{#1}}}
+\usepackage[most]{tcolorbox}
+% key statements (propositions etc.): the same light-yellow background, breakable across pages
+\newtcolorbox{keyblock}{enhanced,breakable,colback=keyyellow,colframe=keyyellow,boxrule=0pt,arc=0pt,left=6pt,right=6pt,top=2pt,bottom=2pt,boxsep=0pt}
+\renewcommand{\chaptermark}[1]{\markboth{\small\chaptername~\thechapter.\ #1}{}}
+\renewcommand{\sectionmark}[1]{\markright{\small\thesection.\ #1}}
+\renewcommand{\topfraction}{0.95}
+\renewcommand{\textfraction}{0.05}
+\renewcommand{\floatpagefraction}{0.75}
+
+% part pages: title at the top third, and text may follow on the same page (used for the part introductions)
+\makeatletter
+\renewcommand\part{\if@openright\cleardoublepage\else\clearpage\fi\thispagestyle{plain}\if@twocolumn\onecolumn\@tempswatrue\else\@tempswafalse\fi\null\vspace{0.18\textheight}\secdef\@part\@spart}
+\renewcommand\@endpart{\par\vspace{3em}\if@tempswa\twocolumn\fi}
+\makeatother
+\newtheorem{theorem}{مبرهنة}[chapter]
+\newtheorem{proposition}{قضية}[chapter]
+\newtheorem{lemma}{تمهيدية}[chapter]
+\theoremstyle{remark}
+\newtheorem{remark}{ملاحظة}[chapter]
+% exercises: \begin{exercise}[\lvlB] ... \end{exercise}, numbered "Exercise 4.3"; difficulty marks
+\theoremstyle{definition}
+\newtheorem{exercise}{تمرين}[chapter]
+\newcommand{\lvlA}{$\star$}
+\newcommand{\lvlB}{$\star\star$}
+\newcommand{\lvlC}{$\star\star\star$}
+% answer to an exercise in the Answers appendix: \answer{ex:NN:k}{text}
+\newcommand{\answer}[2]{\par\noindent\textbf{\ref{#1}.}~#2\par\smallskip}
+\newcommand{\dd}{\mathrm{d}}
+% neuron type code: first four letters of the primary mediator
+\newcommand{\nt}[1]{\foreignlanguage{english}{\textsf{\textbf{#1}}}}
+\newcommand{\mV}{\,\text{mV}}
+\newcommand{\ms}{\,\text{ms}}
+\newcommand{\mM}{\,\text{mM}}
+\newcommand{\um}{\,\text{\textmu m}}
+\newcommand{\ion}[2]{\mathrm{#1}^{#2}}
+\newcommand{\Na}{\ion{Na}{+}}
+\newcommand{\K}{\ion{K}{+}}
+\newcommand{\Cl}{\ion{Cl}{-}}
+\newcommand{\Ca}{\ion{Ca}{2+}}
+\newcommand{\conc}[1]{[\mathrm{#1}]}
+
+\title{\Huge حاسوب العشرين واط\\[16pt] \Large كيف يحسب الدماغ: مقاربة كمية للمهندسين}
+\hypersetup{pdftitle={حاسوب العشرين واط. كيف يحسب الدماغ: مقاربة كمية للمهندسين},pdfauthor={Konstantin Kladko}}
+\author{\Large كونستانتين كلادكو (Konstantin Kladko)}
+\date{}
+
+\begin{document}
+\frontmatter
+\maketitle
+\thispagestyle{empty}
+\vspace*{\fill}
+\noindent{\small \copyright~2026 Konstantin Kladko.\\[4pt]
+يُنشر النص والرسوم والتمارين والإجابات بموجب رخصة المشاع الإبداعي «نسب المصنف -- غير تجاري -- الترخيص بالمثل» 4.0 الدولية (CC BY-NC-SA 4.0): \url{https://creativecommons.org/licenses/by-nc-sa/4.0/deed.ar}. يجوز نسخ الكتاب واستخدامه في التدريس وترجمته وتعديله بحرية لأغراض غير تجارية، بشرط ذكر المؤلف ونشر الأعمال المشتقة بالرخصة نفسها.\\[4pt]
+تُنشر برامج النماذج والبناء بموجب رخصة MIT.\\[4pt]
+المصادر والنماذج والإصدارات الجديدة: \url{https://github.com/kladkogex/20-watt-computer}.}
+\clearpage
+
+\tableofcontents
+\input{chapters/00_roadmap}
+\mainmatter
+
+\input{chapters/01b_neurontypes}
+\input{chapters/02_glutcomputer}
+\input{chapters/03_gaba}
+\input{chapters/04_code}
+\input{chapters/05_serocomputer}
+\input{chapters/06_dofa}
+\input{chapters/07_dofaalt}
+\input{chapters/08_nora}
+\input{chapters/09_acet}
+\input{chapters/10_synthesis}
+\input{chapters/11_sensors}
+\input{chapters/12_recognition}
+\input{chapters/13_muscles}
+\input{chapters/14_pain}
+\input{chapters/15_motorlearning}
+\input{chapters/16_chemoutput}
+\input{chapters/17_debugging}
+\input{chapters/18_eetypes}
+\input{chapters/19_dendrites}
+\input{chapters/20_sleep}
+\input{chapters/21_living}
+\input{chapters/22_dishbrain}
+\appendix
+\renewcommand{\chaptername}{\appendixname}
+\input{chapters/appendix_othermediators}
+\input{chapters/appendix_notation}
+\input{chapters/appendix_answers}
+\input{chapters/appendix_supplement}
+\input{chapters/bibliography}
+
+\end{document}

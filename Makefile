@@ -1,14 +1,15 @@
 # Build the book in each language. Sources live in <lang>/main.tex + <lang>/chapters/;
 # figures/ (TikZ data, icons) and models/ (Python simulations) are shared by all languages.
-# Russian, English, Spanish, Portuguese and Ukrainian build with pdflatex; Chinese (ctex), Japanese (xeCJK) and Korean (kotex) with xelatex.
-ENGINE = $(if $(filter zh ja ko,$(1)),xelatex,pdflatex)
+# Russian, English, Spanish, Portuguese, Ukrainian, French and Vietnamese build with pdflatex; Chinese (ctex), Japanese (xeCJK)
+# and Korean (kotex) with xelatex; Arabic (right-to-left, babel bidi) with lualatex.
+ENGINE = $(if $(filter zh ja ko,$(1)),xelatex,$(if $(filter ar,$(1)),lualatex,pdflatex))
 DOCKER = docker run --rm -v "$(CURDIR)":/w -e TEXINPUTS=/w/$(1):/w: -w /w/$(1) texlive/texlive \
          $(call ENGINE,$(1)) -interaction=nonstopmode -jobname=20-watt-computer-$(1) main.tex
 
-.PHONY: all ru en zh ja ko es pt uk ru-paperback en-paperback zh-paperback ja-paperback ko-paperback es-paperback pt-paperback uk-paperback models clean
+.PHONY: all ru en zh ja ko es pt uk fr vi ar ru-paperback en-paperback zh-paperback ja-paperback ko-paperback es-paperback pt-paperback uk-paperback fr-paperback vi-paperback ar-paperback models clean
 all: ru
 
-ru en zh ja ko es pt uk:
+ru en zh ja ko es pt uk fr vi ar:
 	$(call DOCKER,$@) >/dev/null
 	$(call DOCKER,$@) >/dev/null
 	@grep -a 'Output written' $@/20-watt-computer-$@.log
@@ -18,7 +19,7 @@ ru en zh ja ko es pt uk:
 PAPERBACK = docker run --rm -v "$(CURDIR)":/w -e TEXINPUTS=/w/$(1):/w: -w /w/$(1) texlive/texlive \
             $(call ENGINE,$(1)) -interaction=nonstopmode -jobname=20-watt-computer-$(1)-paperback paperback/main.tex
 
-ru-paperback en-paperback zh-paperback ja-paperback ko-paperback es-paperback pt-paperback uk-paperback:
+ru-paperback en-paperback zh-paperback ja-paperback ko-paperback es-paperback pt-paperback uk-paperback fr-paperback vi-paperback ar-paperback:
 	$(call PAPERBACK,$(@:-paperback=)) >/dev/null
 	$(call PAPERBACK,$(@:-paperback=)) >/dev/null
 	@grep -a 'Output written' $(@:-paperback=)/20-watt-computer-$@.log
