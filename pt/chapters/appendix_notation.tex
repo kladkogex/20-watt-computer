@@ -1,0 +1,209 @@
+\chapter{Notação}
+\label{sec:notation}
+
+Os tipos de neurônio são designados por um código de quatro letras do neurotransmissor principal: \nt{GLUT}, glutamato; \nt{GABA}, ácido gama-aminobutírico; \nt{GLYC}, glicina; \nt{ACET}, acetilcolina; \nt{DOPA}, dopamina; \nt{SERO}, serotonina; \nt{HIST}, histamina; \nt{NORA}, noradrenalina; \nt{ADRE}, adrenalina; \nt{ASPA}, aspartato (tabela~\ref{tab:types}).
+
+Há menos letras que grandezas, e em capítulos diferentes a mesma letra às vezes significa coisas diferentes. Na tabela abaixo, cada significado tem sua linha; na coluna da direita está a fórmula em que ele é introduzido.
+
+\begin{center}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.12}
+\begin{longtable}{>{\raggedright}p{2.0cm}>{\raggedright}p{9.6cm}>{\raggedright\arraybackslash}p{2.4cm}}
+\toprule
+Símbolo & Significado & Onde é introduzido \\
+\midrule
+\endfirsthead
+\toprule
+Símbolo & Significado & Onde é introduzido \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+$a$ & inclinação da característica de transferência linear, $f(u)=au$ & \eqref{eq:feedback} \\
+$a$ & nível de \nt{ACET}: $0$, leitura; $1$, escrita & \eqref{eq:acetnet} \\
+$a_i$, $a$ & fadiga do grupo: no gerador de ritmo; na gangorra do sono de ondas lentas & \eqref{eq:halfcentre}, \eqref{eq:updown} \\
+$a_S$, $a_P$ & sensibilidade do ritmo cardíaco ao acelerador e ao freio & \eqref{eq:gasbrake} \\
+$A(r)$, $A_0$ & resposta da sinapse a um disparo na frequência $r$; numa sinapse descansada & \eqref{eq:depression} \\
+$A_1$ & resposta do destinatário a uma porção de neurotransmissor & \eqref{eq:quantal} \\
+$A$ & área da membrana do neurônio junto com os dendritos & \eqref{eq:dendriteload} \\
+$A_f$, $A_s$ & fração da correção mantida até o próximo movimento, nos processos rápido e lento & \eqref{eq:tworate} \\
+$b_i$ & aporte próprio do marca-passo & \eqref{eq:seroneuron} \\
+$b$ & rapidez com que o trabalho cansa o grupo no gerador de ritmo ou na gangorra do sono & \eqref{eq:halfcentre}, \eqref{eq:updown} \\
+$b$ & número de bits por amostra da digitalização & \eqref{eq:probedata} \\
+$B_f$, $B_s$ & intensidade com que a correção aprende com o erro, nos processos rápido e lento & \eqref{eq:tworate} \\
+$c$ & concentração do neurotransmissor no volume & \eqref{eq:seroneuron} \\
+$c$ & coeficiente de correlação dos ruídos de neurônios vizinhos & \eqref{eq:correlated} \\
+$c$ & coeficiente com que a diferença das contagens move a raquete & \eqref{eq:dishreadout} \\
+$c_f$ & resposta do neurônio $C$: o maior dos $s_{f,p}$ entre todas as posições & \eqref{eq:scstage} \\
+$c_m$ & capacitância específica da membrana & \eqref{eq:dendriteload} \\
+$C$ & custo do esforço: uma ação no tempo $\tau_a$ custa $C/\tau_a$ & \eqref{eq:vigor} \\
+$d'$ & discriminabilidade de duas entradas: a diferença dividida pelo ruído & \eqref{eq:gainsnr} \\
+$d$, $d_j$ & atraso no caminho do sinal & \eqref{eq:glutneuron}, \eqref{eq:vstar} \\
+$d$ & atraso da malha de realimentação com o músculo & \eqref{eq:delaystable} \\
+$D$ & coeficiente de difusão & \eqref{eq:diffusionlength} \\
+$D$ & denominador nas frequências da rede \nt{GLUT}--\nt{GABA} & \eqref{eq:isn} \\
+$D$ & tempo de espera por uma recompensa adiada & \eqref{eq:patience} \\
+$e$, $e_{ij}$ & traço na sinapse & \eqref{eq:threefactor} \\
+$e$, $e_i$ & erro da saída ou do movimento, que chega pelo fio de erro & \eqref{eq:lms}, \eqref{eq:adaptivefilter}, \eqref{eq:tworate} \\
+$E_{\text{disp}}$ & energia de um disparo, incluindo o trabalho das sinapses & \eqref{eq:energy} \\
+$E$ & frequência do grupo \nt{GLUT} & \eqref{eq:ei} \\
+$E_E$ & potencial de equilíbrio da sinapse excitatória & \eqref{eq:shunt} \\
+$f$, $F$ & característica de transferência: frequência em função da entrada & \eqref{eq:ratenet}, \eqref{eq:gain} \\
+$f$, $f_0$ & frequência dos batimentos cardíacos; ritmo próprio do marca-passo & \eqref{eq:gasbrake} \\
+$f_s$ & frequência de digitalização de um eletrodo & \eqref{eq:probedata} \\
+$F(t)$, $F_1$ & força do músculo; força de um abalo & \eqref{eq:forcesum} \\
+$F_1$, $F_2$ & forças de dois músculos que puxam a articulação em sentidos opostos & \eqref{eq:antagonists} \\
+$g$ & sensibilidade do receptor à concentração & \eqref{eq:seroneuron} \\
+$g_L$, $g_E$, $g_I$ & condutâncias de vazamento, excitação e inibição & \eqref{eq:shunt} \\
+$g$ & ganho definido pelo \nt{NORA} & \eqref{eq:gain}, \eqref{eq:machine} \\
+$g$ & inibição total do \nt{GABA} na rede de memória & \eqref{eq:acetnet} \\
+$g$ & ganho do portão da dor, definido de cima & \eqref{eq:gate} \\
+$g$ & ganho de um estágio da cascata hormonal & \eqref{eq:cascade} \\
+$g_j$ & filtro $j$ com sua constante de tempo na entrada do filtro adaptativo & \eqref{eq:adaptivefilter} \\
+$G$ & ganho da malha de realimentação & \eqref{eq:feedback} \\
+$G$ & velocidade de correção na malha com atraso & \eqref{eq:delaystable} \\
+$h$, $h_I$ & entrada externa do grupo \nt{GLUT} e do grupo \nt{GABA} & \eqref{eq:ei}, \eqref{eq:isn} \\
+$h(t)$ & abalo isolado do músculo & \eqref{eq:twitch} \\
+$H(t)$ & limiar superior da pressão de sono: ao atingi-lo, a máquina adormece & \eqref{eq:sleeppressure} \\
+$I$, $I_i$ & aporte externo ao neurônio ou ao grupo & \eqref{eq:ratenet}, \eqref{eq:wta}, \eqref{eq:updown} \\
+$I$ & frequência do grupo \nt{GABA} & \eqref{eq:ei} \\
+$I$ & brilho ou intensidade do estímulo & \eqref{eq:photonnoise}, \eqref{eq:nakarushton} \\
+$I$ & corrente de entrada que carrega a membrana & \eqref{eq:dendriteload} \\
+$k$ & número de disparos na rajada & \eqref{eq:burst} \\
+$k$ & quantas vezes o acréscimo deve superar o ruído & \eqref{eq:photonnoise} \\
+$k$ & coeficiente de realimentação da cascata hormonal & \eqref{eq:cascade} \\
+$k_s$ & intensidade com que a dor alimenta a sensibilização & \eqref{eq:sensitization} \\
+$K$ & número de atributos do resultado & \eqref{eq:vectortd} \\
+$K$ & rigidez da articulação & \eqref{eq:antagonists} \\
+$K$ & ganho da malha da cascata hormonal, $K=g^3k$ & \eqref{eq:cascade}, \eqref{eq:cascadestable} \\
+$K_\varphi$ & intensidade do ajuste do gerador circadiano ao sinal externo & \eqref{eq:pll} \\
+$L$ & comprimento da linha de atraso & \eqref{eq:itd} \\
+$L$ & comprimento do fio a partir do sensor de dor & \eqref{eq:paintime} \\
+$L(t)$ & limiar inferior da pressão de sono: ao atingi-lo, a máquina acorda & \eqref{eq:sleeppressure} \\
+$M$ & medida da relação causal entre o sinal antecipador e a recompensa & \eqref{eq:retro} \\
+$M_k$ & expectativa do atributo $k$ & \eqref{eq:vectortd} \\
+$M_{ik}$ & intensidade da inibição vinda do neurônio \nt{GABA} $k$ & \eqref{eq:machine} \\
+$M$ & torque da articulação & \eqref{eq:antagonists} \\
+$M$ & número de linhas de entrada dos misturadores & \eqref{eq:cover} \\
+$n$, $\bar n$ & número de disparos na janela; sua média & \eqref{eq:rateerror} \\
+$n$ & número de entradas do elemento de limiar & \eqref{eq:cover} \\
+$n_\uparrow$, $n_\downarrow$ & contagem de disparos das regiões ``sobe'' e ``desce'' na janela & \eqref{eq:dishreadout} \\
+$N$ & número de neurônios & \eqref{eq:correlated}, \eqref{eq:energy} \\
+$N$ & número de eletrodos da sonda & \eqref{eq:probedata} \\
+$N_s$ & número de locais de liberação entre dois neurônios & \eqref{eq:quantal} \\
+$p$ & probabilidade de liberação de neurotransmissor por disparo & \eqref{eq:burst} \\
+$p$ & fração de neurônios ativos na rede de memória & \eqref{eq:acetnet} \\
+$p$ & perturbação que se aprende a compensar & \eqref{eq:tworate} \\
+$P$ & potência gasta com sinais & \eqref{eq:energy}, \eqref{eq:dishpower} \\
+$P$ & incerteza da estimativa armazenada & \eqref{eq:kalman} \\
+$P$ & atividade do ``freio'': fios \nt{ACET} para o coração & \eqref{eq:gasbrake} \\
+$P_{\max}$ & quantos padrões aleatórios o elemento de limiar consegue separar em duas classes & \eqref{eq:cover} \\
+$P_{\text{erro}}$ & probabilidade de erro & \eqref{eq:dishdensity} \\
+$q$ & velocidade com que o mundo muda & \eqref{eq:kalman} \\
+$q_k$ & frequência do neurônio \nt{GABA} $k$ & \eqref{eq:machine} \\
+$q_0$ & atividade de fundo do intermediário inibitório & \eqref{eq:gate} \\
+$q$ & frequência do intermediário inibitório no portão da dor & \eqref{eq:gate} \\
+$q$ & quantas vezes a próxima unidade motora é mais forte que a anterior & \eqref{eq:sizeprinciple} \\
+$r$, $r_i$ & frequência de disparos do neurônio & \eqref{eq:ratenet} \\
+$r$, $r_t$ & recompensa (fluxo de recompensa) & \eqref{eq:rpe}, \eqref{eq:ctd} \\
+$\mathbf r(t)$ & vetor de respostas do reservatório & \eqref{eq:reservoir} \\
+$R$, $\bar R$ & recompensa obtida; sua expectativa ou média por unidade de tempo & \eqref{eq:perturbation}, \eqref{eq:vigor} \\
+$R$ & variância do ruído na entrada do filtro & \eqref{eq:kalman} \\
+$R$, $r_0$ & recompensas adiada e imediata & \eqref{eq:patience} \\
+$R_{\max}$ & taxa máxima de transmissão, bit/s & \eqref{eq:spikeentropy} \\
+$r_{\max}$ & maior frequência de disparos & \eqref{eq:gain}, \eqref{eq:nakarushton} \\
+$R_{\text{bruto}}$, $R_{\text{disp}}$ & fluxo de dados da sonda: bruto e só os disparos, bit/s & \eqref{eq:probedata} \\
+$s_j$ & sinal das saídas do neurônio $j$ & \eqref{eq:dalesign} \\
+$s_i$ & sinal do receptor do destinatário & \eqref{eq:seroneuron} \\
+$s$, $\hat s$ & estado do mundo; sua estimativa & \eqref{eq:rpe}, \eqref{eq:kalman} \\
+$s_{f,p}$ & resposta do neurônio $S$ ao atributo $f$ na posição $p$ & \eqref{eq:scstage} \\
+$S$ & atividade do ``acelerador'': fios \nt{NORA} para o coração & \eqref{eq:gasbrake} \\
+$S$ & pressão de sono & \eqref{eq:sleeppressure} \\
+$t_1$ & instante do primeiro disparo & \eqref{eq:latency} \\
+$t_k$ & instante do $k$-ésimo disparo & \eqref{eq:forcesum} \\
+$t_{f,i}$ & modelo do atributo $f$ & \eqref{eq:scstage} \\
+$T$ & janela de contagem de disparos; tempo de acumulação de fótons & \eqref{eq:rateerror}, \eqref{eq:photonnoise} \\
+$T_c$ & tempo de subida do abalo muscular & \eqref{eq:twitch} \\
+$T_{\text{salva}}$ & intervalo entre salvas da cultura & \eqref{eq:burstinterval} \\
+$u$ & entrada total do neurônio & \eqref{eq:gain} \\
+$u$, $u(t)$ & comando do cérebro: na entrada do filtro adaptativo; para a cascata hormonal & \eqref{eq:adaptivefilter}, \eqref{eq:cascade} \\
+$u(t)$ & entrada do reservatório & \eqref{eq:reservoir} \\
+$U$ & nível da entrada constante & \eqref{eq:latency} \\
+$U$ & fração do estoque de neurotransmissor liberada por disparo & \eqref{eq:depression} \\
+$v$ & velocidade do sinal no fio; velocidade de movimento da mancha & \eqref{eq:itd}, \eqref{eq:vstar} \\
+$V$ & tensão na membrana & \eqref{eq:glutneuron}, \eqref{eq:shunt} \\
+$V$ & expectativa da recompensa futura & \eqref{eq:rpe}, \eqref{eq:ctd} \\
+$w$, $w_{ij}$, $W_{ij}$ & peso da conexão & \eqref{eq:glutneuron}, \eqref{eq:ratenet}, \eqref{eq:acetnet}, \eqref{eq:lms}, \eqref{eq:adaptivefilter} \\
+$\mathbf w_k$ & pesos das entradas do neurônio $C$ $k$ & \eqref{eq:traceinvariance} \\
+$w_{q\mu}$, $w_{q\nu}$, $w_{z\mu}$ & pesos das conexões no portão da dor & \eqref{eq:gate} \\
+$W_{\text{saída}}$ & pesos da leitura linear do reservatório & \eqref{eq:reservoir} \\
+$x$, $y$ & entradas e saída lógicas & \eqref{eq:dualrail}, \eqref{eq:veto} \\
+$x$, $y$ & atividade do remetente e do destinatário & \eqref{eq:hebb} \\
+$x$ & posição do detector na linha de atraso & \eqref{eq:itd} \\
+$x_i$ & entrada vinda dos órgãos dos sentidos & \eqref{eq:acetnet} \\
+$x_p$ & entrada na posição $p$ & \eqref{eq:scstage} \\
+$\mathbf x$ & saídas dos neurônios $S$, entrada do neurônio $C$ & \eqref{eq:traceinvariance} \\
+$x_j$ & entrada $j$ do filtro adaptativo: o comando depois do filtro $g_j$ & \eqref{eq:lms}, \eqref{eq:adaptivefilter} \\
+$x_f$, $x_s$ & correções dos processos rápido e lento & \eqref{eq:tworate} \\
+$x_1$, $x_2$, $x_3$ & níveis nos três estágios da cascata hormonal; $x_3$ é o hormônio final & \eqref{eq:cascade} \\
+$x^*$ & fração recuperada do estoque de neurotransmissor com a qual começa uma nova avalanche & \eqref{eq:burstinterval} \\
+$y$ & entrada ruidosa do filtro & \eqref{eq:kalman} \\
+$y$, $\hat y$ & sinal dos sensores; sua predição pelo filtro adaptativo & \eqref{eq:adaptivefilter} \\
+$y_k$, $\bar y_k$ & atividade do neurônio $C$ $k$; seu traço & \eqref{eq:traceinvariance} \\
+$y(t)$ & saída da leitura do reservatório & \eqref{eq:reservoir} \\
+$z$ & frequência da saída do portão da dor & \eqref{eq:gate} \\
+\midrule
+$\alpha_i^\pm$ & peso dos erros positivos e negativos & \eqref{eq:asymmetric} \\
+$\beta$ & intensidade da inibição mútua & \eqref{eq:wta} \\
+$\beta$ & intensidade da inibição da saída do portão da dor & \eqref{eq:gate} \\
+$\gamma$ & fator de desconto & \eqref{eq:rpe} \\
+$\delta(\cdot)$ & função delta: salto instantâneo & \eqref{eq:glutneuron} \\
+$\delta$, $\delta_t$ & erro de predição de recompensa & \eqref{eq:rpe}, \eqref{eq:ctd} \\
+$\delta t$ & diferença entre os tempos de chegada do som aos dois ouvidos & \eqref{eq:itd} \\
+$\Delta$, $\Delta_{\max}$ & intervalo entre disparos; janela de coincidência & \eqref{eq:window} \\
+$\Delta t$ & precisão com que o destinatário distingue o tempo & \eqref{eq:spikeentropy} \\
+$\Delta F$ & acréscimo de força da próxima unidade motora & \eqref{eq:sizeprinciple} \\
+$\Delta I$ & acréscimo de brilho distinguível & \eqref{eq:photonnoise} \\
+$\Delta p$ & deslocamento da raquete na janela & \eqref{eq:dishreadout} \\
+$\Delta u$ & diferença entre as entradas de dois grupos & \eqref{eq:gainsnr} \\
+$\Delta V$ & quanto é preciso elevar a tensão da membrana & \eqref{eq:dendriteload} \\
+$\Delta x$ & distância entre sensores vizinhos & \eqref{eq:vstar} \\
+$\varepsilon$ & diferença relativa entre as entradas & \eqref{eq:wtagain} \\
+$\eta$ & taxa de aprendizado & \eqref{eq:plasticity}, \eqref{eq:lms}, \eqref{eq:traceinvariance} \\
+$\eta$ & ruído na rede depois do amplificador & \eqref{eq:softmax} \\
+$\mu$ & entrada de tato para o portão da dor & \eqref{eq:gate} \\
+$\nu$ & entrada de dor & \eqref{eq:gate} \\
+$\theta$ & limiar de disparo & \eqref{eq:window}, \eqref{eq:scstage} \\
+$\kappa$ & quantidade de neurotransmissor por disparo & \eqref{eq:seroneuron} \\
+$\kappa_i$ & razão entre os pesos dos erros positivos e negativos & \eqref{eq:expectile} \\
+$\kappa_m$ & relação entre a força do músculo e sua rigidez & \eqref{eq:antagonists} \\
+$\ell$ & distância que o neurotransmissor percorre ao se espalhar & \eqref{eq:diffusionlength} \\
+$\ell$ & braço de alavanca com que o músculo puxa a articulação & \eqref{eq:antagonists} \\
+$\xi$ & tremor aleatório da saída do neurônio & \eqref{eq:perturbation} \\
+$\rho(\boldsymbol\psi)$ & fração do tempo passado na configuração $\boldsymbol\psi$ & \eqref{eq:dishdensity} \\
+$\sigma$ & dispersão, escala do ruído & \eqref{eq:rateerror}, \eqref{eq:softmax} \\
+$\sigma$ & brilho com o qual a resposta é metade da máxima & \eqref{eq:nakarushton} \\
+$\sigma_{\text{antes}}$, $\sigma_{\text{depois}}$ & ruído antes e depois do amplificador & \eqref{eq:gainsnr} \\
+$\tau$ & constante de tempo da membrana & \eqref{eq:glutneuron} \\
+$\tau$ & constante de tempo de um estágio da cascata hormonal & \eqref{eq:cascade} \\
+$\tau_{\text{ef}}$ & constante de tempo de um grupo que excita a si mesmo & \eqref{eq:perfectint} \\
+$\tau_c$ & tempo de vida do neurotransmissor no volume & \eqref{eq:seroneuron} \\
+$\tau_E$, $\tau_I$ & constantes de tempo dos grupos \nt{GLUT} e \nt{GABA} & \eqref{eq:ei} \\
+$\tau_e$ & tempo de vida do traço & \eqref{eq:threefactor} \\
+$\tau_{\text{tr}}$ & tempo de vida do traço de atividade do neurônio $C$ & \eqref{eq:traceinvariance} \\
+$\tau_s$ & tempo de retorno da sensibilidade após uma lesão & \eqref{eq:sensitization} \\
+$\tau_r$, $\tau_d$ & tempo de acúmulo da pressão de sono na vigília e de sua descarga no sono & \eqref{eq:sleeppressure} \\
+$\tau_{\text{rec}}$ & tempo de recuperação do estoque de neurotransmissor & \eqref{eq:depression} \\
+$\tau_\gamma$ & horizonte de planejamento & \eqref{eq:ctd} \\
+$\tau_v$ & rapidez com que a expectativa é refinada & \eqref{eq:ramp} \\
+$\tau_a$ & tempo de fadiga no gerador de ritmo ou na gangorra do sono & \eqref{eq:halfcentre}, \eqref{eq:updown} \\
+$\tau_a^*$ & melhor tempo de execução da ação & \eqref{eq:vigor} \\
+$\Phi$ & lado direito da regra de aprendizado & \eqref{eq:plasticity} \\
+$\Phi$ & fluxo de fótons & \eqref{eq:photonnoise} \\
+$\varphi_k$ & atributo $k$ do resultado obtido & \eqref{eq:vectortd} \\
+$\varphi$ & diferença de fase entre o gerador circadiano e o sinal externo & \eqref{eq:pll} \\
+$\boldsymbol\psi$ & configuração da rede no modelo DishBrain & \eqref{eq:dishdensity} \\
+$\omega$, $\omega_0$ & frequência do sinal externo (luz); frequência própria do gerador circadiano & \eqref{eq:pll} \\
+\end{longtable}
+\end{center}

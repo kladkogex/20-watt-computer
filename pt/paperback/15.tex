@@ -1,0 +1,43 @@
+\chapter{Como a máquina aprende a se mover}
+% versão completa: chapters/15_motorlearning.tex
+
+Vimos duas maneiras de aprender. Sem professor --- ``juntos, logo ligados'' ---, a máquina memoriza o que aparece com frequência. Com a dopamina, ela aprende com surpresas: saiu melhor ou pior do que o esperado. Mas, quando você erra um arremesso na cesta, você não sabe só que saiu mal. Você sabe \emph{quanto} e \emph{para que lado} errou. Esse é o terceiro professor: um erro com direção, individual para cada saída.
+
+\section*{O fio do erro}
+
+O cérebro tem um circuito à parte para aprender movimentos, e ele é muito incomum. Um número enorme de pequenos neurônios \nt{GLUT}, dezenas de bilhões, decompõe os sinais de entrada numa lista muito longa de características. Os neurônios de saída desse circuito são inibitórios, \nt{GABA}; são dezenas de milhões, e cada um escuta cem mil entradas. E a cada neurônio de saída chega exatamente um fio especial --- o fio do erro. Se o erro chegou enquanto uma entrada estava ativa, essa entrada enfraquece. É a clássica regra ``diminua o erro'', com a qual os engenheiros treinam filtros adaptativos.
+
+\pencilfig{15}{\pencilart{15}}{O erro comunica não só ``mal'', mas também ``quanto e para que lado''.}
+
+Esse professor é mais rápido que o da dopamina: cada saída tem o seu próprio erro, e não é preciso pescar a sua parte num sinal comum a todos. É verdade que o erro chega com atraso, e a conexão de novo precisa de um ``adesivo'' que lembre que ela participou. Os experimentos mostram que a duração desse adesivo está ajustada ao atraso do erro.
+
+\section*{O modelo interno}
+
+O que um circuito assim aprende? Um modelo do próprio corpo: que resultado um comando vai dar. Com ele, não é preciso esperar os sensores atrasados --- o resultado pode ser previsto de antemão. Segundo uma das hipóteses, é por isso que você não consegue fazer cócegas em si mesmo: o cérebro sabe de antemão o que vai acontecer e subtrai o previsto.
+
+\section*{O aluno rápido e o lento}
+
+Ponha óculos que desviam a imagem para o lado e jogue dardos. Os primeiros arremessos saem para o lado, mas em algumas dezenas de tentativas você se adapta. Tire os óculos --- e de novo erros, agora para o outro lado. O interessante vem depois. Os experimentos são bem descritos por dois alunos ao mesmo tempo: o rápido aprende depressa e esquece depressa; o lento aprende devagar, mas lembra por muito tempo. Se, depois de uma adaptação longa, você reaprende brevemente ao contrário, a correção total volta a zero --- mas a habilidade antiga depois ressurge em parte sozinha: o aluno rápido esqueceu, e o lento lembra. Um modelo com um só aluno não consegue isso, e as pessoas conseguem.
+
+\pencilfig{115}{%
+% figures/tworate_*.dat from models/motor_learning.py: adapt 200 throws, reverse until the sum is back to zero, then no errors at all
+\begin{scope}[x=0.026cm, y=1.45cm]
+\fill[pcGray, opacity=0.08] (220,-1.1) rectangle (226,1.1);
+\draw[pen] (0,0) -- (340,0);
+\draw[pcGray, line width=0.4pt] plot file {figures/tworate_p.dat};
+\draw[penlite=pcAmber] plot file {figures/tworate_fast.dat};
+\draw[penlite=pcBlue] plot file {figures/tworate_slow.dat};
+\draw[pcGray!40!black, line width=1.1pt] plot file {figures/tworate_net.dat};
+\draw[pcGray, densely dashed, line width=0.4pt] (226,-1.1) -- (226,1.1);
+\end{scope}
+\node[lbl, anchor=south] at (3.1,1.47) {com óculos};
+\node[lbl, anchor=north west, align=left] at (6.3,-0.55) {breve\\reaprendizado};
+\node[lbl, anchor=south west] at (6.0,1.47) {sem erros};
+\node[lbl, text=pcBlue, anchor=north] at (4.4,0.8) {lento};
+\node[lbl, text=pcAmber!80!black, anchor=south west] at (1.15,0.5) {rápido};
+\node[lbl, text=pcGray!40!black, anchor=south] at (7.7,0.95) {a soma ressurge};
+}{A correção dos dois alunos no modelo. Depois do breve reaprendizado a soma está em zero, mas o lento lembra o antigo, e ele ressurge sozinho.}
+
+Por que dois alunos? Segundo a hipótese, é a mesma receita do navegador do nono capítulo: o mundo muda tanto depressa quanto devagar, e é sensato acompanhar as duas coisas.
+
+\fullversion{15}

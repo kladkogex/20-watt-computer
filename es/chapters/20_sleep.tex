@@ -1,0 +1,194 @@
+\chapter{Qué hacen las neuronas durante el sueño}
+\chaptermark{El sueño}
+\label{sec:sleep}
+
+\section{El sueño no es un apagado, sino otro modo}
+
+Un ingeniero que ve una computadora apagada dirá: no hace nada. Con el cerebro dormido eso no funciona. Las neuronas no callan durante el sueño: en el sueño profundo la corteza emite espigas, y en el sueño REM casi tantas como de día. Lo que cambia no es \emph{si} las neuronas trabajan, sino \emph{cómo} trabajan. El sueño es un conjunto de modos de la máquina, y los conmutan los mismos canales de difusión que de día.
+
+Para cada modo puede escribirse el “estado de los registros” (tabla~\ref{tab:sleepmodes}). De día, \nt{ACET}, \nt{NORA} y \nt{SERO} están activos, los sensores están conectados y los músculos obedecen. En el sueño lento, profundo, los tres canales se apagan y la entrada de los órganos de los sentidos se debilita~\cite{Hasselmo1999}: la liberación de acetilcolina en la corteza cae, y las neuronas \nt{NORA} y \nt{SERO} emiten espigas con menos frecuencia que de día~\cite{Marrosu1995,AstonJonesBloom1981,McGintyHarper1976}. En el sueño REM el cuadro es extraño: \nt{ACET} vuelve a subir al nivel diurno~\cite{Marrosu1995}, mientras que \nt{NORA} y \nt{SERO} callan casi por completo~\cite{AstonJonesBloom1981,McGintyHarper1976,JacobsAzmitia1992}. Los músculos del cuerpo están desconectados en el sueño REM: las neuronas \nt{ACET} que los controlan están fuertemente inhibidas por \nt{GABA} y \nt{GLYC}~\cite{BrooksPeever2012}, con el mismo veto del capítulo~\ref{sec:gaba}, solo que aplicado a toda la salida a la vez.
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{3.1cm}>{\raggedright}p{2.9cm}>{\raggedright}p{3.2cm}>{\raggedright\arraybackslash}p{3.4cm}}
+\toprule
+& vigilia & sueño lento & sueño REM \\
+\midrule
+\nt{ACET} (escritura, cap.~\ref{sec:acet}) & alto & bajo & alto \\
+\nt{NORA} (ganancia, cap.~\ref{sec:nora}) & medio, ráfagas & bajo & casi en silencio \\
+\nt{SERO} (cap.~\ref{sec:serocomputer}) & medio & bajo & casi en silencio \\
+entrada de los sensores & conectada & debilitada & debilitada \\
+salida a los músculos & conectada & debilitada & desconectada por inhibición \\
+actividad de la corteza & uniforme & vaivén lento: actividad --- silencio & uniforme, como de día \\
+\bottomrule
+\end{tabular}
+\caption{Estado de los registros de la máquina en tres modos. Todas las filas están medidas; los niveles de \nt{ACET}, \nt{NORA} y \nt{SERO}, con registros directos por fases del sueño~\cite{Marrosu1995,AstonJonesBloom1981,McGintyHarper1976}.}
+\label{tab:sleepmodes}
+\end{table}
+
+\section{Cuándo dormir: un relé con histéresis}
+
+¿Qué decide cuándo debe pasar la máquina al sueño? Funciona bien un esquema sencillo de dos partes~\cite{Borbely1982}. La primera es la \emph{presión de sueño} $S$, que se acumula mientras estamos despiertos y se descarga mientras dormimos. Es un condensador que se carga de día y se descarga de noche:
+\begin{empheq}[box=\keybox]{equation}
+\frac{\dd S}{\dd t} \;=\; \frac{1-S}{\tau_r}\ \ \text{(vigilia)},\qquad
+\frac{\dd S}{\dd t} \;=\; -\frac{S}{\tau_d}\ \ \text{(sueño)} .
+\label{eq:sleeppressure}
+\end{empheq}
+La segunda son dos umbrales: la máquina se duerme cuando $S$ llega al umbral superior $H(t)$ y se despierta cuando $S$ baja al inferior $L(t)$. Ambos umbrales oscilan suavemente al compás del ritmo diario del capítulo~\ref{sec:chemoutput}. El resultado es un relé con histéresis, el disparador de Schmitt de la sección~\ref{sec:bistable}, y junto con el condensador forma un oscilador de relajación cuya fase ajusta el ritmo diario~\eqref{eq:pll}.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=0.16cm,y=4.2cm]
+\foreach \a/\b in {0/4.3,21.2/29.3,45.4/53.4,69.5/72}{\fill[blue!8] (\a,0) rectangle (\b,1);}
+\draw[->,gray!70!black] (0,0) -- (75,0) node[right,font=\small,black] {$t$, h};
+\draw[->,gray!70!black] (0,0) -- (0,1.08) node[left,font=\small,black] {$S$};
+\foreach \t in {0,24,48,72}{\draw[gray!60!black] (\t,-0.02) -- (\t,0.02); \node[below,font=\scriptsize] at (\t,0) {\t};}
+\draw[thick,densely dashed,red!70!black] plot file {figures/sleep_H.dat};
+\draw[thick,densely dashed,green!45!black] plot file {figures/sleep_L.dat};
+\draw[very thick,blue!60!black] plot file {figures/sleep_S.dat};
+\node[font=\scriptsize,red!70!black,anchor=west] at (73,0.72) {$H$: dormirse};
+\node[font=\scriptsize,green!45!black,anchor=west] at (73,0.24) {$L$: despertar};
+\node[font=\scriptsize,blue!60!black] at (25.25,0.93) {sueño};
+\node[font=\scriptsize,blue!60!black] at (49.4,0.93) {sueño};
+\end{tikzpicture}
+\caption{Presión de sueño $S$~\eqref{eq:sleeppressure} con $\tau_r=18.2$~h, $\tau_d=4.2$~h. De día $S$ se carga hasta el umbral superior $H$; de noche (sombreado) se descarga hasta el inferior $L$; ambos umbrales oscilan con el ritmo diario. La máquina llega por sí sola a un régimen de unas $16$ horas de vigilia y $8$ horas de sueño.}
+\label{fig:twoprocess}
+\end{figure}
+
+En nuestro modelo, con los valores habituales $\tau_r=18.2$~h y $\tau_d=4.2$~h, la máquina llega por sí sola a $16.1$ horas de vigilia y $8.0$ horas de sueño (fig.~\ref{fig:twoprocess}). El modelo explica también algo que parece extraño: tras cuarenta horas sin dormir la presión llega a $0.90$, pero el sueño de recuperación dura en el modelo solo $8.8$ horas, no un día más de lo habitual. La descarga es exponencial, y una carga alta se va rápido; la “deuda” no se devuelve con la duración del sueño, sino con su profundidad.
+
+¿Qué desempeña físicamente el papel de $S$? Un candidato sólido es la adenosina, el “contador de carga” del apéndice~\ref{sec:othermediators}: su concentración aumenta durante la vigilia y disminuye durante el sueño~\cite{PorkkaHeiskanen1997,Dunwiddie2001}. Que la presión de sueño sea precisamente la adenosina y nada más es una hipótesis.
+
+\section{Sueño lento: toda la red como oscilador de relajación}
+
+En el sueño profundo, las neuronas de la corteza trabajan por turnos en grupo: menos de una vez por segundo se activan juntas durante unos cientos de milisegundos (\emph{estado activo}) y se callan juntas (\emph{estado de silencio}); la frecuencia de este vaivén es menor que $1$~Hz, y bajo anestesia suele ser de $0.3$--$0.4$~Hz~\cite{Steriade1993}. Este vaivén lento podemos montarlo con piezas que ya tenemos. Tomemos un grupo de neuronas \nt{GLUT} con una fuerte realimentación sobre sí mismo, la memoria del capítulo~\ref{sec:glutcomputer}, que tiene dos estados estables, y añadamos una fatiga lenta, como en el generador de ritmo del capítulo~\ref{sec:muscles}:
+\begin{empheq}[box=\keybox]{equation}
+\tau\,\frac{\dd r}{\dd t} = -r + F\bigl(w\,r + I - a\bigr),
+\qquad
+\tau_a\,\frac{\dd a}{\dd t} = -a + b\,r .
+\label{eq:updown}
+\end{empheq}
+El grupo se activa, trabaja y se fatiga; la fatiga $a$ se come el estado superior, y el grupo cae al silencio; en el silencio la fatiga se disipa, el estado inferior desaparece y el grupo vuelve a activarse. Resulta el mismo oscilador de relajación que el de la presión de sueño, solo que unas ochenta mil veces más rápido.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=2.9cm,y=1.0cm]
+\begin{scope}[yshift=1.9cm]
+\draw[->,gray!70!black] (0,0) -- (4.1,0);
+\draw[->,gray!70!black] (0,0) -- (0,1.25) node[left,font=\small,black] {$r$};
+\draw[thick,blue!60!black] plot file {figures/updown_sleep.dat};
+\node[font=\scriptsize,anchor=west] at (4.15,0.5) {sueño: $b=5$};
+\end{scope}
+\draw[->,gray!70!black] (0,0) -- (4.1,0) node[right,font=\small,black] {$t$, s};
+\draw[->,gray!70!black] (0,0) -- (0,1.25) node[left,font=\small,black] {$r$};
+\draw[thick,red!70!black] plot file {figures/updown_wake.dat};
+\node[font=\scriptsize,anchor=west] at (4.15,0.5) {día: $b=1$};
+\foreach \t in {0,1,2,3,4}{\draw[gray!60!black] (\t,-0.05) -- (\t,0.05); \node[below,font=\scriptsize] at (\t,0) {\t};}
+\end{tikzpicture}
+\caption{Un mismo grupo~\eqref{eq:updown} en dos modos: $w=5$, $I=2$, $\theta=2.5$, $\tau=10\ms$, $\tau_a=0.3$~s. Con fatiga fuerte ($b=5$, como en el sueño lento), el grupo oscila entre actividad y silencio con un periodo de $1.1$~s (valor del modelo; en la corteza el periodo supera el segundo, y bajo anestesia es de unos $3$~s). Si se debilita la fatiga ($b=1$), que es lo que hace la acetilcolina, el mismo grupo trabaja de forma uniforme.}
+\label{fig:updown}
+\end{figure}
+
+¿Y qué hace pasar a la red del vaivén al trabajo uniforme del día? La acetilcolina suprime en las neuronas las corrientes lentas que producen la fatiga~\cite{McCormick1992}. En nuestro modelo, con fatiga fuerte, $b=5$, el grupo oscila con un periodo de $1.1$~s (más rápido que el vaivén medido, pero del mismo orden) y está activo alrededor del $35\%$ del tiempo si se promedia sobre un número entero de periodos; con fatiga débil, $b=1$, el mismo grupo trabaja de forma uniforme (fig.~\ref{fig:updown}). Un solo registro, el nivel de \nt{ACET}, convierte el oscilador en amplificador. Sobre el vaivén lento del sueño aparecen también ráfagas más rápidas de un ritmo de $7$--$15$ oscilaciones por segundo; las genera el lazo \nt{GLUT}--\nt{GABA} entre la corteza y un nodo intermedio de relevo~\cite{SteriadeMcCormickSejnowski1993}, pariente del ritmo del capítulo~\ref{sec:gaba}.
+
+\section{Repeticiones: el día en avance rápido}
+
+En el capítulo~\ref{sec:acet} vimos que en el sueño lento las neuronas que trabajaron juntas durante el día vuelven a dispararse juntas y en el mismo orden. Añadamos un detalle de ingeniería: las repeticiones van \emph{en avance rápido}. Una secuencia que de día ocupaba segundos se reproduce durante el sueño en décimas de segundo~\cite{Nadasdy1999}: en el hipocampo, unas veinte veces más rápido~\cite{LeeWilson2002}; en la corteza, de seis a siete veces~\cite{Euston2007}. Y no se reproduce en cualquier momento: las breves ráfagas de repetición de un área se sincronizan con el vaivén de actividad y silencio y con las ráfagas rápidas de ritmo de la corteza. Si se refuerza artificialmente esta coordinación, la memoria mejora~\cite{Maingret2016}: esto ya es una relación causal, no una coincidencia.
+
+¿Para qué rebobina la máquina el día? Un ingeniero conoce la dificultad llamada \emph{olvido catastrófico}: una red que aprende cosas nuevas de forma secuencial, una tras otra, estropea lo antiguo. La solución es \emph{intercalar}: aprender lo nuevo mezclado con lo antiguo, en porciones pequeñas, muchas veces. La hipótesis de los dos sistemas de aprendizaje~\cite{McClelland1995} sostiene que la memoria rápida registra el día entero y que durante el sueño se lo reproduce a la corteza lenta poco a poco, intercalado y muchas veces. Es la misma pareja “búfer rápido --- almacén lento” del capítulo~\ref{sec:acet} y la misma pareja de aprendices rápido y lento del capítulo~\ref{sec:motorlearning}. Las repeticiones y su coordinación están medidas; que su función sea el aprendizaje intercalado de la memoria lenta es una hipótesis bien fundada.
+
+\section{Renormalización de los pesos}
+
+De día, las reglas de Hebb del capítulo~\ref{sec:dofa} refuerzan sobre todo las conexiones. Si solo se refuerzan, los pesos crecen, y con ellos crece el gasto de energía y cae la sensibilidad: una neurona cuyas entradas son todas fuertes deja de distinguirlas. Según la hipótesis de la \emph{homeostasis sináptica}~\cite{TononiCirelli2014}, el sueño sirve, entre otras cosas, para devolver los pesos a su nivel de trabajo: todas las conexiones se debilitan en el mismo factor, de modo que sus \emph{cocientes}, lo aprendido, se conservan. Para un ingeniero es una normalización, como en la regla~\eqref{eq:oja}, solo que no se hace sobre la marcha, sino en un tiempo aparte.
+
+Las mediciones directas no lo contradicen: en ratones, el área de contacto de las sinapsis corticales es alrededor de un $18\%$ menor después del sueño que después de la vigilia; la reducción es proporcional al tamaño, y los contactos más grandes y estables casi no cambian~\cite{deVivo2017}. El escalado de los pesos está medido; que sea la tarea principal del sueño es una hipótesis.
+
+\section{Sueño REM: una máquina desconectada de entradas y salidas}
+
+En el sueño REM la corteza trabaja casi como de día, pero la entrada de los sentidos está debilitada y la salida a los músculos está desconectada por inhibición. Para un ingeniero es un modo conocido: la \emph{prueba en banco}. El circuito funciona a plena potencia, pero sus entradas están conectadas a un generador interno y sus salidas desconectadas de los actuadores, para no romper nada. Según una de las hipótesis, los sueños son justamente esa ejecución interna del modelo del mundo construido durante el día; qué hace exactamente la red en ese momento, y si aprende, no se sabe. Aquí solo está medido lo que recoge la tabla~\ref{tab:sleepmodes}: qué canal está activo, cuál calla y que la salida está bloqueada.
+
+\section{Mantenimiento y sueño local}
+
+Durante mucho tiempo se creyó que durante el sueño los espacios intercelulares se ensanchan y el cerebro se limpia más rápido de productos del metabolismo~\cite{Xie2013}. Experimentos recientes que midieron la limpieza de otro modo obtuvieron lo contrario: durante el sueño es más lenta~\cite{Miao2024}. La cuestión está hoy abierta, y la dejaremos abierta.
+
+Hay otro hecho más sólido: el sueño es una propiedad de las redes locales, no de toda la máquina a la vez. Si a un animal se le impide dormir mucho tiempo, zonas aisladas de su corteza, mientras el animal está despierto y se mueve, caen brevemente en silencio como en el sueño lento, y en esos momentos el animal se equivoca más~\cite{Vyazovskiy2011}. Cada red se fatiga por sí misma y conmuta por sí misma; el modo global aparece cuando los canales de difusión hacen cambiar a todas las redes a la vez.
+
+\begin{keyblock}
+\begin{proposition}[El sueño como conjunto de modos]
+\label{prop:sleep}
+Durante el sueño las neuronas no se apagan: los canales de difusión llevan a la máquina a otros modos. Cuándo dormir lo decide un relé con histéresis~\eqref{eq:sleeppressure} ajustado por el ritmo diario. En el sueño lento la red se convierte en un oscilador de relajación~\eqref{eq:updown} y reproduce el día en avance rápido; en el sueño REM trabaja desconectada de entradas y salidas. Los modos, las repeticiones y el escalado de los pesos están medidos; su función, el aprendizaje intercalado y la renormalización, son hipótesis bien fundadas.
+\end{proposition}
+\end{keyblock}
+
+\section{Resumen}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{3.2cm}>{\raggedright}p{4.4cm}>{\raggedright\arraybackslash}p{5.2cm}}
+\toprule
+Qué ocurre & Cómo & Qué se sabe \\
+\midrule
+cambio de modo & registros \nt{ACET}, \nt{NORA}, \nt{SERO} (tabla~\ref{tab:sleepmodes}) & medido \\
+cuándo dormir & condensador $S$ y relé con histéresis~\eqref{eq:sleeppressure} & el modelo describe bien los experimentos; la adenosina como $S$ es una hipótesis \\
+vaivén lento & grupo con realimentación y fatiga~\eqref{eq:updown} & vaivén medido; el modelo es el esquema más simple \\
+el día en avance rápido & repeticiones de $6$ a $20$ veces más rápidas, coordinadas con el vaivén & medido; reforzar la coordinación mejora la memoria \\
+para qué las repeticiones & aprendizaje intercalado de la memoria lenta & hipótesis bien fundada \\
+renormalización de los pesos & escalado de las conexiones durante el sueño & reducción de los contactos medida; papel principal del sueño: hipótesis \\
+sueño REM & trabajo con entradas y salida desconectadas & modo medido; función desconocida \\
+limpieza & ensanchamiento de los espacios intercelulares & resultados contradictorios \\
+sueño local & zonas aisladas caen en silencio & medido \\
+\bottomrule
+\end{tabular}
+\caption{Qué hacen las neuronas durante el sueño.}
+\label{tab:sleep}
+\end{table}
+
+La tabla~\ref{tab:sleep} resume el capítulo. El sueño resultó no ser una pausa en el trabajo de la máquina, sino su mantenimiento en marcha: cambio de modos con los mismos canales de difusión, un oscilador hecho de las mismas piezas que el ritmo de los pasos, el día en avance rápido para la memoria lenta y la renormalización de los pesos. De día la máquina escribe; de noche reescribe y pone en orden lo escrito.
+
+\section{Ejercicios}
+
+\begin{exercise}[\lvlA]
+\label{ex:20:1}
+\emph{Relé sin ritmo diario.} Supongamos umbrales constantes: $H=0.67$, $L=0.17$ (los valores medios de los umbrales del modelo de la fig.~\ref{fig:twoprocess}). Deduzca de~\eqref{eq:sleeppressure} la duración de la vigilia y del sueño y el periodo del oscilador con $\tau_r=18.2$~h, $\tau_d=4.2$~h. ¿Por qué el modelo con umbrales oscilantes da aun así $16.1+8.0=24$~h? ¿A qué instrumento del capítulo~\ref{sec:chemoutput} corresponde este efecto?
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:20:2}
+\emph{Deuda de sueño.} Un sueño que empieza con presión $S_0$ dura $t_s=\tau_d\ln(S_0/L)$, con $\tau_d=4.2$~h y $L$ el umbral inferior al despertar. (a)~Tras $40$~h sin dormir, $S_0=0.90$, y el sueño duró $8.8$~h. ¿Cuánto valía $L$? ¿Cuánto duraría el sueño con el $L\approx0.092$ habitual? (b)~En una noche, el área de los contactos sinápticos disminuye un $18\%$. ¿Cuánto deben crecer los pesos durante el día?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:20:3}
+\emph{Diseño de los umbrales.} Elija umbrales constantes $H$ y $L$ con los que el relé~\eqref{eq:sleeppressure} con $\tau_r=18.2$~h y $\tau_d=4.2$~h dé exactamente $16$~h de vigilia y $8$~h de sueño. ¿En qué es peor esta máquina que la de umbrales oscilantes si una noche la despiertan a las $4$~horas?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:20:4}
+\emph{Periodo del vaivén lento.} En el modelo~\eqref{eq:updown}, $F(x)=1/\bigl(1+e^{-(x-\theta)/k}\bigr)$, $w=5$, $I=2$, $\theta=2.5$, $k=0.25$, $b=5$, $\tau\ll\tau_a=0.3$~s. (a)~Halle los puntos de retorno $a_{\text{sup}}$ y $a_{\text{inf}}$ de la curva $r=F(wr+I-a)$, donde desaparecen la actividad y el silencio. (b)~Tomando $r\approx1$ en actividad y $r\approx0$ en silencio, halle el periodo y la fracción de actividad.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:20:5}
+\emph{Cuándo se apaga el vaivén.} En el modelo del ejercicio~\ref{ex:20:4}, el punto fijo está en la intersección de la curva $a=wr+I-F^{-1}(r)$ con la recta $a=br$. Hay oscilaciones mientras la intersección esté en la rama media, entre los puntos de retorno. ¿Para qué $b$ ocurre esto? ¿Cómo convierte \nt{ACET}, cambiando $b$, el oscilador en amplificador?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:20:6}
+\emph{Simulación: ¿deuda o fase?} En \texttt{sleep\_models.py}, tome el primer despertar después de $48$~h y mantenga la máquina despierta $D=24$, $32$, $40$, $48$, $64$~h (\texttt{stay\_awake}, \texttt{days=8}). ¿Cuánto dura el sueño de recuperación para cada $D$? ¿Qué determina su duración?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:20:7}
+\emph{Simulación: olvido e intercalado.} Una neurona lineal $y=\mathbf w\cdot\mathbf x$, $n=40$, aprende con la regla $\mathbf w\leftarrow\mathbf w-0.5\,(y-y^*)\,\mathbf x$. Las tareas A y B tienen $10$ patrones cada una, $x_j\sim\mathcal N(0,1/n)$, $y^*=\pm1$. ¿Cuál es el error cuadrático medio en A tras $200$ épocas de A y luego $200$ de B? ¿Y tras $200$ épocas de A y B intercaladas?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:20:8}
+\emph{Investigación: ¿intercalado o renormalización?} La neurona del ejercicio~\ref{ex:20:7} con umbral; dos procedimientos nocturnos: (i)~todos los pesos se multiplican por $0.82$; (ii)~los patrones antiguos se repiten intercalados con los nuevos. ¿Qué hace cada uno con los cocientes de los pesos y con las respuestas de la neurona? ¿Cómo distinguir las hipótesis por el tamaño de las sinapsis tras el sueño?
+\end{exercise}

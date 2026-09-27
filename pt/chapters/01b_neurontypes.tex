@@ -1,0 +1,331 @@
+\chapter{Tipos de neurônios}
+\label{sec:neurontypes}
+
+\section{O neurônio como caixa-preta}
+
+Suponha que lhe entreguem um saco com oitenta e seis bilhões de neurônios~\cite{Azevedo2009} e peçam para separá-los em pilhas. Como você faria isso?
+
+Um engenheiro que recebe um saco de microchips desconhecidos não os separaria pelo formato do encapsulamento. Ele perguntaria: quantas entradas o componente tem, quantas saídas e o que ele entrega na saída. Vamos desenhar o neurônio da mesma forma, como um bloco num diagrama (fig.~\ref{fig:blackbox}).
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=1cm,y=1cm]
+% the box
+\node[draw,very thick,minimum width=2.6cm,minimum height=2.6cm,fill=blue!6] (N) at (0,0) {};
+\node at (0,0.55) {\small neurônio};
+\node at (0,-0.15) {$\displaystyle u=\sum_i w_i x_i$};
+\node at (0,-0.8) {\small $y=\Theta(u-\theta)$};
+% inputs
+\foreach \k/\y/\lab in {1/1.05/{x_1},2/0.55/{x_2},3/0.05/{x_3}}{
+  \draw[->,thick,blue!60!black] (-4.2,\y) -- (-1.3,\y);
+  \node[left] at (-4.2,\y) {$\lab$};
+  \node[above,blue!60!black] at (-2.1,\y-0.06) {\scriptsize $w_{\k}$};}
+\node at (-4.45,-0.4) {$\vdots$};
+\node at (-2.1,-0.4) {$\vdots$};
+\draw[->,thick,blue!60!black] (-4.2,-1.05) -- (-1.3,-1.05);
+\node[left] at (-4.2,-1.05) {$x_n$};
+\node[above,blue!60!black] at (-2.1,-1.11) {\scriptsize $w_{n}$};
+\draw[decorate,decoration={brace,amplitude=5pt},gray!60!black] (-4.9,-1.2) -- (-4.9,1.2);
+\node[left,align=right,gray!40!black] at (-5.1,0) {\small $n\sim10^3$--$10^5$\\[-2pt]\small entradas};
+% single output wire, then fan-out
+\draw[very thick,red!70!black] (1.3,0) -- (3.2,0);
+\foreach \x in {1.6,2.2,2.34,2.9}{\draw[thick,red!70!black] (\x,0) -- (\x,0.4);}
+\node[above right,font=\tiny\itshape,gray!30!black,inner sep=1pt] at (1.42,0.45) {clique\dots\ clique-clique\dots};
+\node[below,red!70!black,align=center] at (2.25,-0.05) {\scriptsize uma saída $y$};
+\fill[red!70!black] (3.2,0) circle (0.06);
+\foreach \y in {1.3,0.65,0,-0.65,-1.3}{
+  \draw[->,thick,red!70!black] (3.2,0) -- (5.0,\y);}
+\draw[decorate,decoration={brace,amplitude=5pt},gray!60!black] (5.3,1.45) -- (5.3,-1.45);
+\node[right,align=left,gray!40!black] at (5.5,0) {\small cópias de $y$\\[-2pt]\small para $10^3$--$10^4$\\[-2pt]\small outros neurônios};
+\end{tikzpicture}
+\caption{O neurônio visto por um engenheiro. Muitas entradas $x_i$, cada uma com seu peso $w_i$; dentro, a soma ponderada $u$ e a comparação com o limiar $\theta$ ($\Theta$ é o degrau: $1$ se o argumento é positivo e $0$ caso contrário); uma única saída $y$, uma sequência de disparos multiplicada por ramificação para milhares de destinatários.}
+\label{fig:blackbox}
+\end{figure}
+
+Na saída do bloco não há um número, e sim uma sequência de pulsos curtos de tensão: ``clique'', pausa, ``clique-clique'', pausa longa. Todos os pulsos têm a mesma altura, então toda a informação está em \emph{quando} eles ocorrem. Dentro do bloco, em primeira aproximação grosseira, há um somador e um comparador: as entradas são somadas com pesos e, se a soma passa do limiar, o bloco emite um disparo. No próximo capítulo vamos substituí-lo por um modelo que funciona de fato em tempo contínuo.
+
+A saída é uma só, mas o fio se ramifica, e cada ramo leva \emph{a mesma} cópia do sinal. Em eletrônica isso se chama fan-out, o leque de saída. Num neurônio do córtex ele é da ordem de alguns milhares; uma porta lógica num chip costuma alimentar poucas outras portas.
+
+\emph{O que}, então, o fio de saída transmite ao destinatário? O disparo corre até a ponta de cada ramo e ali vira um sinal químico: o ramo libera, na fenda estreita entre as células, uma pitada de uma substância específica, o \emph{neurotransmissor}, que altera a corrente de entrada do destinatário. Eis o critério de classificação: \emph{qual neurotransmissor a saída do neurônio libera}.
+
+\section{Uma saída, um tipo de sinal}
+
+A classificação só faz sentido se cada neurônio tiver um único tipo de saída. Será assim? A experiência diz que quase.
+
+\begin{keyblock}
+\begin{proposition}[Um neurônio, um tipo de saída]
+\label{prop:dale}
+Quase todo neurônio tem um neurotransmissor principal e o libera em todos os ramos de sua saída. Por isso o tipo do neurônio é definido pelo seu neurotransmissor principal~\cite{Strata1999}.
+\end{proposition}
+\end{keyblock}
+
+Vamos combinar que o tipo de um neurônio é indicado \emph{pelas quatro primeiras letras do nome de seu neurotransmissor principal}. Assim, um neurônio cujo neurotransmissor principal é o glutamato é um neurônio \nt{GLUT}. Todos os tipos estão reunidos na tabela~\ref{tab:types}.
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{1.0cm}>{\raggedright}p{2.05cm}>{\raggedright}p{1.75cm}>{\raggedright}p{1.6cm}>{\centering}p{0.7cm}>{\raggedright}p{1.55cm}>{\raggedright}p{1.8cm}>{\raggedright\arraybackslash}p{3.2cm}}
+\toprule
+Tipo & Neurotrans\-missor principal & Barramento & Velocidade & Sinal & Neurônios no cérebro & Saídas por neurônio & Papel no cálculo \\
+\midrule
+\nt{GLUT} & glutamato & de endereços & rápido e lento & $+$ & $\sim8\cdot10^{10}$ & $\sim10^4$ & principal peso positivo \\
+\nt{GABA} & GABA & de endereços & rápido e lento & $-$ & $\sim3\cdot10^{9}$ & $10^3$--$10^4$ & principal peso negativo \\
+\nt{GLYC} & glicina & de endereços & rápido & $-$ & $10^6$--$10^7$ & $10^2$--$10^3$ & peso negativo na medula espinal e no tronco encefálico; segunda chave de um dos receptores de glutamato \\
+\nt{ACET} & acetilcolina & ambos & rápido e lento & $\pm$ & $\sim10^6$ & músculo: $10$--$10^3$; cérebro: $\sim10^5$ & saída para o músculo; no cérebro, taxa de aprendizado (hipótese) \\
+\nt{DOPA} & dopamina & de difusão & lento & $\pm$ & $\sim5\cdot10^{5}$ & $10^5$--$10^6$ & erro de predição de recompensa $\delta$ \\
+\nt{SERO} & serotonina & de difusão & lento (um tipo de receptor é rápido) & $\pm$ & $\sim3\cdot10^{5}$ & $\sim10^5$ & horizonte de planejamento (hipótese) \\
+\nt{HIST} & histamina & de difusão & lento & $+$ & $\sim6\cdot10^{4}$ & sem estimativa & sinal global ``fique acordado'' \\
+\nt{NORA} & noradrenalina & de difusão & lento & $\pm$ & $\sim5\cdot10^{4}$ & $\sim10^5$ & ganho (hipótese) \\
+\nt{ADRE} & adrenalina & de difusão & lento & $\pm$ & $\sim10^4$ & sem estimativa & poucos neurônios; papel no cérebro incerto \\
+\nt{ASPA} & aspartato & de endereços & rápido & $+$ & sem estimativa & sem estimativa & peso positivo fraco; papel controverso \\
+\bottomrule
+\end{tabular}
+\caption{Tipos de neurônios, em ordem decrescente do número de neurônios no cérebro. \emph{Barramento}: de endereços, o neurotransmissor é liberado numa fenda estreita para um destinatário definido; de difusão, vai de um pequeno grupo de neurônios-fonte para grandes regiões (seção~\ref{sec:buses}). \emph{Velocidade}: rápido, por receptores ionotrópicos, milissegundos; lento, por metabotrópicos, centenas de milissegundos ou mais. \emph{Sinal}: o habitual; quem o fixa em última instância é o destinatário (seção~\ref{sec:receiver}), e $\pm$ significa que ocorrem ambos os sinais. \emph{Neurônios no cérebro}: quantos neurônios desse tipo há em todo o cérebro humano, em ordem de grandeza; no total são cerca de $8.6\cdot10^{10}$ neurônios~\cite{Azevedo2009}. Quase todos os neurônios \nt{GLUT}, cerca de $7\cdot10^{10}$, são os pequenos neurônios de entrada do cerebelo; os números de \nt{GLUT} e \nt{GABA} vêm dessa contagem e da fração de neurônios \nt{GABA} no córtex~\cite{Hendry1987}. Dos tipos pouco numerosos, só foram contados diretamente os \nt{HIST}~\cite{Airaksinen1991} e o principal dos dois grupos de neurônios \nt{DOPA}~\cite{Pakkenberg1991}, de modo que para \nt{DOPA} o valor é um limite inferior; para \nt{SERO}, é a soma de duas contagens parciais~\cite{Baker1990,Baker1991}. Os números de \nt{NORA}, \nt{GLYC}, \nt{ACET} e \nt{ADRE} são estimativas grosseiras de ordem de grandeza, sem contagem direta. \emph{Saídas por neurônio}: quantos terminais sinápticos um neurônio tem, isto é, pontos de liberação do neurotransmissor nos ramos do fio de saída (fig.~\ref{fig:blackbox}), em ordem de grandeza. Nos tipos de difusão os terminais não foram contados diretamente: para \nt{DOPA} o número foi deduzido da fração do alvo coberta pela ramificação de um único fio de saída~\cite{Matsuda2009}; para os demais, as estimativas são ainda mais grosseiras. Para \nt{ACET} há dois casos: o neurônio que comanda um músculo e o neurônio de difusão no cérebro.}
+\label{tab:types}
+\end{table}
+
+% the pie is a table-type float with a figure caption, so it can never float ahead of Table~\ref{tab:types}
+\begin{table}[tb]
+\makeatletter\def\@captype{figure}\makeatother
+\centering
+\definecolor{vizglut}{HTML}{2A78D6}
+\definecolor{vizgaba}{HTML}{E34948}
+\definecolor{vizrest}{HTML}{8A8986}
+\begin{tikzpicture}[>=Stealth]
+% pie: GLUT 96.4 %, GABA 3.6 % (13.0 degrees), the rest 0.006 % (a hairline at 0 degrees)
+\fill[vizglut] (0,0) -- (13:1.9) arc (13:360:1.9) -- cycle;
+\fill[vizgaba] (0,0) -- (0:1.9) arc (0:13:1.9) -- cycle;
+\draw[white,line width=1pt] (0,0) -- (13:1.9);
+\draw[vizrest,line width=1.2pt] (0,0) -- (0:1.9);
+\node[white,align=center,font=\small] at (190:0.95) {\nt{GLUT}\\$96.4\,\%$};
+\draw[gray!60!black] (6.5:1.75) -- (2.05,2.1);
+\node[anchor=west,font=\small] at (2.05,2.1) {\nt{GABA} $3.6\,\%$};
+% zoom box for the remaining types
+\draw[densely dashed,vizrest] (1.9,0) -- (3.1,1.65);
+\draw[densely dashed,vizrest] (1.9,0) -- (3.1,-2.2);
+\draw[vizrest,rounded corners=3pt] (3.1,-2.2) rectangle (10.1,1.65);
+\node[anchor=west,font=\scriptsize] at (3.2,1.4) {todos os demais juntos: $\approx0.006\,\%$; escala logarítmica};
+\foreach \code/\lg/\y/\val/\lx in {GLYC/6.477/1.0/{$10^6$--$10^7$}/4.05,ACET/6.0/0.6/{$\sim10^6$}/3.0,DOPA/5.699/0.2/{$\sim5\cdot10^5$}/2.699,SERO/5.477/-0.2/{$\sim3\cdot10^5$}/2.477,HIST/4.778/-0.6/{$\sim6\cdot10^4$}/1.778,NORA/4.699/-1.0/{$\sim5\cdot10^4$}/1.699,ADRE/4.0/-1.4/{$\sim10^4$}/1.0}{
+  \node[anchor=east,font=\scriptsize] at (4.35,\y) {\nt{\code}};
+  \fill[vizrest] (4.45,\y-0.13) rectangle ({4.45+\lg-3},\y+0.13);
+  \node[anchor=west,font=\scriptsize] at ({4.5+\lx},\y) {\val};}
+\draw[vizrest,thick] (7.45,1.0) -- (8.45,1.0);
+\draw[vizrest,thick] (7.45,0.92) -- (7.45,1.08);
+\draw[vizrest,thick] (8.45,0.92) -- (8.45,1.08);
+\draw[gray!60!black] (4.45,-1.72) -- (8.45,-1.72);
+\foreach \e in {3,4,5,6,7}{
+  \draw[gray!60!black] ({4.45+\e-3},-1.72) -- ({4.45+\e-3},-1.66);
+  \node[below,font=\scriptsize] at ({4.45+\e-3},-1.72) {$10^{\e}$};}
+\end{tikzpicture}
+\caption{Proporções dos tipos de neurônios no cérebro segundo as estimativas da tabela~\ref{tab:types}. O círculo é quase todo \nt{GLUT}; \nt{GABA} é um setor estreito, e todos os outros tipos juntos são um fio de cabelo na borda. À direita, esse fio de cabelo ampliado, em escala logarítmica do número de neurônios; para \nt{GLYC} a barra vai até o meio da faixa $10^6$--$10^7$, e o segmento mostra a faixa inteira. \nt{ASPA} não tem estimativa e não aparece na figura.}
+\label{fig:typepie}
+\end{table}
+
+Quão desiguais são essas pilhas se vê na fig.~\ref{fig:typepie}: de cada mil neurônios, $964$ são \nt{GLUT}, $36$ são \nt{GABA}, e todos os outros tipos juntos somam cerca de seis neurônios em cem mil.
+
+O GABA já tem um nome de quatro letras. As substâncias que quase nunca são o neurotransmissor principal (neuropeptídeos, gases, lipídios, purinas) não recebem código próprio; elas estão no apêndice~\ref{sec:othermediators}. A palavra ``quase'' na proposição~\ref{prop:dale} é importante. Muitos neurônios liberam, junto com o neurotransmissor principal, substâncias auxiliares~\cite{Yao2023}. Alguns liberam também um segundo neurotransmissor rápido, até de sinal oposto: parte dos neurônios \nt{DOPA} libera também GABA~\cite{Tritsch2012}. E em alguns neurônios neurotransmissores diferentes saem de ramos diferentes da mesma saída~\cite{Zhang2015}. Tudo isso foi medido, então ``um neurônio, um neurotransmissor'' é uma regra com exceções, não uma lei. Mas como primeira divisão ela resiste ao teste: no atlas celular do cérebro do camundongo, em que os neurônios são separados pelos genes ativos em mais de cinco mil grupos, eles continuam se dividindo em grandes classes antes de tudo pelo neurotransmissor principal~\cite{Yao2023}.
+
+Essa regra tem uma consequência que distingue de imediato o cérebro de uma rede neural artificial. Numa rede artificial, o mesmo neurônio pode ter peso positivo para um destinatário e negativo para outro: os pesos $w_{ij}$ são apenas números numa matriz. No cérebro, o sinal da ação é determinado principalmente pelo neurotransmissor, e o neurônio tem um só. Logo, se o neurônio $j$ excita um destinatário, ele excita todos os outros. Toda a \emph{coluna} da matriz de pesos que sai do neurônio $j$ tem o mesmo sinal:
+\begin{empheq}[box=\keybox]{equation}
+\operatorname{sign} w_{ij} \;=\; s_j \quad\text{para todos os destinatários } i, \qquad s_j\in\{+1,-1\}.
+\label{eq:dalesign}
+\end{empheq}
+Os neurônios se dividem em excitatórios ($s_j=+1$) e inibitórios ($s_j=-1$), e isso é propriedade do próprio neurônio, não da conexão. Se a rede precisa de uma conexão negativa a partir de um neurônio excitatório, ela tem de passar por um intermediário: o neurônio excitatório excita um inibitório, e este inibe o alvo: um peso negativo com atraso de um elo.
+
+Conhecem-se mais de cem neurotransmissores, mas quase todo o trabalho do cérebro se apoia em meia dúzia deles, e eles se dividem em duas classes completamente diferentes.
+
+\section{Dois barramentos: de endereços e de difusão}
+\label{sec:buses}
+
+Nas redes de computadores há duas maneiras de entregar uma mensagem. A primeira é a \emph{endereçada}, unicast: o pacote vai de um remetente para um destinatário definido, rápido, e ninguém mais o vê. A segunda é a \emph{de difusão}, broadcast: o remetente envia uma mensagem de uma vez a todos os nós da rede. Os neurônios usam as duas, e os neurotransmissores se dividem exatamente por esse critério (fig.~\ref{fig:phone_radio}).
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,scale=0.95]
+% ---- unicast: point-to-point wiring
+\node[above] at (2.0,3.3) {\small \textbf{De endereços}: glutamato e GABA};
+\foreach \i in {0,...,4}{
+  \fill[blue!60!black] (0.2+0.9*\i,2.5) circle (0.1);
+  \fill[blue!60!black] (0.2+0.9*\i,0.6) circle (0.1);}
+\foreach \a/\b in {0/0,0/1,1/1,1/3,2/2,3/2,3/4,4/4,2/0}{
+  \draw[->,blue!60!black] (0.2+0.9*\a,2.38) -- (0.2+0.9*\b,0.72);}
+\fill[red!70!black] (1.1,1.55) circle (0.09);
+\pic[scale=1.2] at (1.75,1.9) {letter};
+\draw[->,red!70!black,thick] (1.1,1.55) -- (0.28,0.7);
+\draw[->,red!70!black,thick] (1.1,1.55) -- (1.95,0.72);
+\node[align=center,below] at (2.0,0.2) {\small bilhões de neurônios,\\[-2pt]\small cada um com seus destinatários,\\[-2pt]\small tempo: milissegundos};
+% ---- broadcast: one small source, global targets
+\begin{scope}[xshift=7.2cm]
+\node[above] at (1.8,3.3) {\small \textbf{De difusão}: dopamina, \dots};
+\foreach \i in {0,...,8}{\fill[blue!60!black] (-0.2+0.5*\i,2.75) circle (0.08);}
+\fill[orange!85!black] (1.8,0.35) ellipse (0.35 and 0.18);
+\pic[scale=1.5] at (2.7,0.75) {mast};
+\foreach \x in {-0.2,0.3,0.8,1.3,1.8,2.3,2.8,3.3,3.8}{
+  \draw[->,orange!85!black] (1.8,0.5) .. controls (1.8,1.3) and (\x,1.6) .. (\x,2.62);}
+\node[align=center,below] at (1.8,0.1) {\small de milhares a centenas de milhares de neurônios,\\[-2pt]\small uma mensagem para todos,\\[-2pt]\small tempo: centenas de milissegundos ou mais};
+\end{scope}
+\end{tikzpicture}
+\caption{Duas maneiras de transmitir. À esquerda, o barramento de endereços, parecido com o correio com o endereço no envelope; em vermelho, um neurônio e dois de seus destinatários. À direita, o de difusão, como uma estação de rádio: um pequeno grupo de neurônios-fonte, e todos recebem a mesma mensagem.}
+\label{fig:phone_radio}
+\end{figure}
+
+O \emph{barramento de endereços} é o glutamato e o GABA. Eles são liberados pela esmagadora maioria dos neurônios. Cada saída leva a células definidas, o neurotransmissor age só na fenda estreita do contato, e age rápido: em um milissegundo abrem-se os canais iônicos do destinatário, em poucos milissegundos tudo termina. É o barramento de \emph{dados}: por ele passa aquilo que o cérebro calcula.
+
+O \emph{barramento de difusão} é a dopamina, a serotonina, a noradrenalina e em parte a acetilcolina. Eles são liberados por grupos minúsculos de neurônios, mas a saída de cada um se ramifica de forma incrivelmente ampla. Muitas vezes o neurotransmissor não é liberado numa fenda estreita, e sim no espaço extracelular, onde se espalha e age sobre todos os que estão por perto. Age devagar: não abre canais diretamente, mas dispara dentro do destinatário uma cadeia de reações químicas. Por ele não passam dados, e sim \emph{parâmetros de controle} comuns a grandes regiões da rede, que mudam seu modo de funcionamento: o ganho, a taxa de aprendizado, o sinal ``isso foi bom''. Por isso esses neurotransmissores são chamados de \emph{moduladores}. Por muito tempo se pensou que cada canal desses fosse um único número para o cérebro inteiro. As medições modernas refinaram o quadro: o canal não é um fio só, mas um pequeno feixe de linhas paralelas. Os neurônios-fonte de um mesmo neurotransmissor se dividem em subsistemas, cada um com seus destinatários e sua mensagem, e a quantidade liberada no local é ajustada também por sinais locais~\cite{Ren2018,Poe2020}. O número dessas linhas é de unidades ou dezenas, não de bilhões, então o canal continua sendo de difusão.
+
+Se você precisa de uma única imagem deste capítulo, é esta. O cérebro é uma enorme rede de transmissão endereçada de dados, sobre a qual pairam alguns canais de difusão com sinais de controle. Um programador reconhecerá a arquitetura familiar: o cálculo mais um pequeno conjunto de variáveis de controle, cada uma comum a uma grande região da rede.
+
+\section{\nt{GLUT}: peso positivo}
+
+O glutamato é o principal neurotransmissor excitatório do cérebro. Quando a saída de um neurônio libera glutamato, abrem-se no destinatário canais pelos quais o sódio entra, a tensão na membrana do destinatário sobe e aumenta a chance de ele emitir seu próprio disparo. Na linguagem da fig.~\ref{fig:blackbox}, é uma entrada com peso \emph{positivo}, $w_i>0$.
+
+Quem libera glutamato? Quase todos os que transmitem dados a longa distância: de três quartos a quatro quintos dos neurônios do córtex e a maioria dos neurônios que ligam diferentes regiões do cérebro. A rede do cérebro é antes de tudo uma rede de conexões glutamatérgicas.
+
+Um detalhe de engenharia. Após a liberação, a concentração de glutamato na fenda salta milhares de vezes, até cerca de um milimolar, e cai com constante de tempo de cerca de um milissegundo~\cite{Clements1992}: o glutamato se difunde para fora da fenda, e proteínas-bomba especiais o recolhem de volta para as células. Para quê? Pelo mesmo motivo pelo qual, numa linha de comunicação, o sinal volta a zero depois de cada símbolo. Se o neurotransmissor não for removido, o próximo disparo chegará a uma linha ``ocupada'', e disparos separados por poucos milissegundos se fundirão.
+
+\section{\nt{GABA}: peso negativo}
+
+Imagine uma rede em que todos os pesos são positivos. Se, em média, cada disparo gera mais de um disparo seguinte, a atividade cresce exponencialmente e em poucos passos toma a rede inteira. Um eletrônico reconhecerá um laço de realimentação positiva com ganho maior que um: o circuito satura. Para evitar isso, são necessários pesos negativos. Sua principal fonte é o ácido gama-aminobutírico, abreviado GABA.
+
+O GABA abre no destinatário canais que deixam passar íons cloreto. O potencial de equilíbrio do cloreto fica perto do potencial de repouso ou um pouco abaixo, por isso os canais de cloreto abertos mantêm a membrana perto do repouso e impedem que a tensão suba até o limiar. É uma entrada com peso \emph{negativo}, $w_i<0$. Os neurônios GABAérgicos são de um quinto a um quarto dos neurônios do córtex~\cite{Hendry1987}. Suas saídas são curtas, e eles inibem seus vizinhos mais próximos.
+
+A inibição no cérebro faz muito mais do que uma simples subtração. Ela funciona como uma realimentação negativa que mantém toda a rede no ponto de operação. Considera-se que, num córtex funcionando normalmente, as correntes excitatória e inibitória que chegam a um neurônio se equilibram quase exatamente: esse regime foi previsto pela teoria~\cite{vanVreeswijk1996} e aparece nas medições de correntes no córtex vivo~\cite{Haider2006}, e o neurônio fica o tempo todo perto do limiar. Um circuito estabilizado por forte realimentação negativa em torno de um ponto instável reage rápido e com sensibilidade a sinais pequenos: um velho truque de engenharia.
+
+\section{\nt{DOPA}: sinal de erro}
+
+O primeiro canal de difusão é a dopamina. Os neurônios dopaminérgicos no ser humano são da ordem de meio milhão, cerca de um em cento e setenta mil; esse é o número contado no principal de seus dois grupos~\cite{Pakkenberg1991}, então é um limite inferior. Suas saídas se espalham pelas regiões que escolhem as ações.
+
+O que esse canal transmite? A resposta vem de experimentos em que se registram os disparos de neurônios dopaminérgicos num animal que recebe uma recompensa~\cite{Schultz1997}. De vez em quando, o animal recebe inesperadamente uma gota de suco, e os neurônios dopaminérgicos respondem com uma rajada curta de disparos. Depois, antes do suco, passa-se a acender uma lâmpada, sempre um segundo antes do suco. Quando o animal aprende essa associação, os neurônios passam a responder com uma rajada à \emph{lâmpada}, e ao próprio suco, que chega na hora certa, não respondem de modo algum. E se depois da lâmpada o suco não vem, no momento em que deveria chegar os neurônios \emph{silenciam}, e sua frequência cai abaixo da habitual.
+
+A regra que explica os três casos (fig.~\ref{fig:rpe}): os neurônios não informam quão bom algo é, mas quanto \emph{melhor ou pior do que o esperado}.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=3.4cm,y=1cm]
+\foreach \y/\lab in {2.8/{suco inesperado},1.4/{suco após a lâmpada},0/{lâmpada, mas sem suco}}{
+  \draw[gray!70!black] (0,\y) -- (3,\y);
+  \draw[densely dotted,gray!60!black] (0,\y+0.3) -- (3,\y+0.3);
+  \node[left,align=right,font=\small] at (-0.03,\y+0.35) {\lab};}
+% row 1: juice without a cue -> burst at the juice
+\draw[very thick,orange!85!black] plot[domain=0:3,samples=120] (\x,{2.8+0.3+0.75*exp(-((\x-2.08)/0.07)^2)});
+\pic[scale=0.8] at (2,2.58) {juice};
+% row 2: cue then juice -> burst at the cue, nothing at the juice
+\draw[very thick,orange!85!black] plot[domain=0:3,samples=120] (\x,{1.4+0.3+0.75*exp(-((\x-1.08)/0.07)^2)});
+\pic[scale=0.85] at (1,1.15) {lamp}; \pic[scale=0.85] at (2,1.15) {juice};
+% row 3: cue, juice omitted -> burst at the cue, dip when the juice was due
+\draw[very thick,orange!85!black] plot[domain=0:3,samples=120] (\x,{0.3+0.75*exp(-((\x-1.08)/0.07)^2)-0.28*exp(-((\x-2.1)/0.12)^2)});
+\pic[scale=0.85] at (1,-0.25) {lamp}; \pic[scale=0.85] at (2,-0.25) {nojuice};
+\node[right,font=\scriptsize] at (2.36,0.1) {queda};
+\node[right,font=\scriptsize] at (2.13,3.75) {surpresa!};
+\node[left,font=\scriptsize] at (0.97,2.25) {pico na lâmpada};
+\node[above,font=\scriptsize] at (2,1.75) {nada};
+\draw[->,gray!70!black] (0,-0.75) -- (3.05,-0.75) node[right,black,font=\small] {$t$};
+\draw[gray!60!black] (1,-0.8) -- (1,-0.7) node[below=2pt,font=\scriptsize] {lâmpada, $1\,\text{s}$};
+\draw[gray!60!black] (2,-0.8) -- (2,-0.7) node[below=2pt,font=\scriptsize] {suco, $2\,\text{s}$};
+\end{tikzpicture}
+\caption{Frequência de disparos dos neurônios \nt{DOPA} em três experimentos (esquemático, segundo~\cite{Schultz1997}). O pontilhado é a frequência de fundo constante. A lâmpada é o sinal, a gota é o suco, a gota riscada é o suco prometido mas não entregue. A resposta é o erro de predição~\eqref{eq:rpe}.}
+\label{fig:rpe}
+\end{figure}
+
+Um programador que conhece o aprendizado por reforço~\cite{SuttonBarto2018} reconhece essa grandeza de imediato. Um agente que aprende a escolher ações guarda uma estimativa $V(s)$: quanta recompensa ele espera estando no estado $s$. Depois de cada passo, ele compara a expectativa com o que recebeu:
+\begin{empheq}[box=\keybox]{equation}
+\delta_t \;=\; r_t \;+\; \gamma\,V(s_{t+1}) \;-\; V(s_t) ,
+\label{eq:rpe}
+\end{empheq}
+e corrige a estimativa: $V(s_t)\leftarrow V(s_t)+\alpha\,\delta_t$. Aqui $r_t$ é a recompensa recebida, $\gamma<1$ é o fator de desconto (quanto uma recompensa futura vale menos que uma imediata), $\alpha$ é a taxa de aprendizado. A grandeza $\delta_t$ se chama \emph{erro de diferença temporal}.
+
+Ela se comporta exatamente como os neurônios dopaminérgicos. Suco inesperado: $V$ ainda é zero, $r>0$, $\delta>0$. Suco aprendido: a lâmpada previu a recompensa, $V(s_t)$ antes do suco já vale $r$, e $\delta=0$. O suco não veio: $V(s_t)=r$, mas $r_t=0$, $\delta<0$. E o pico se desloca para a lâmpada porque é justamente no momento da lâmpada que a expectativa sobe de repente: $\gamma V(s_{t+1})-V(s_t)>0$. Os passos $t,t+1,\dots$ são aqui uma convenção do algoritmo: no organismo não há um relógio que marque os passos, e a mesma grandeza em tempo contínuo será obtida no capítulo~\ref{sec:dofa}.
+
+Portanto, a dopamina é a difusão de um sinal de erro escalar $\delta$ para todos os que devem aprender com ele. Em primeira aproximação, um fio para o cérebro inteiro e um número a cada instante; o quanto esse fio é na verdade um feixe é discutido no capítulo~\ref{sec:dofaalt}.
+
+\section{Os demais canais de difusão}
+
+Para os outros moduladores há apenas hipóteses de trabalho, que traduzem seus papéis para a mesma linguagem de parâmetros globais~\cite{Doya2002}. Trate-as exatamente como hipóteses.
+
+\emph{\nt{NORA}, noradrenalina: o ganho.} Os neurônios noradrenérgicos são ainda menos numerosos que os dopaminérgicos, por estimativa grosseira algumas dezenas de milhares, e suas saídas se espalham por praticamente todo o cérebro. Eles se ativam bruscamente quando acontece algo inesperado ou importante. A noradrenalina muda a inclinação da característica de transferência dos neurônios destinatários: entradas fracas ficam mais fracas, e fortes, mais fortes. Isso se mede assim: os disparos de fundo do destinatário são suprimidos mais do que a resposta à entrada, e a relação sinal-ruído cresce~\cite{Foote1975NE}. Num modelo simples, isso se descreve por um único número: se o neurônio responde com frequência $f=F\bigl(g\cdot u\bigr)$ à corrente de entrada $u$, a noradrenalina aumenta o coeficiente $g$~\cite{AstonJones2005} (mais detalhes no capítulo~\ref{sec:nora}). Uma rede com $g$ grande trabalha com mais ``contraste'' e decide mais rápido; com $g$ pequeno, de modo ``borrado'', e testa mais alternativas, como um agente de aprendizado por reforço em modo de exploração.
+
+\emph{\nt{ACET}, acetilcolina: a taxa de aprendizado.} A acetilcolina controla quanto a rede escuta a entrada atual e quanto escuta seus próprios dados armazenados. Com nível alto de acetilcolina, as entradas dos órgãos dos sentidos são reforçadas, as conexões internas, de ``lembrança'', são enfraquecidas e, ao mesmo tempo, fica mais fácil alterar os pesos~\cite{Hasselmo2006}. Grosso modo, é uma chave ``gravação/leitura'' e, junto com ela, a taxa de aprendizado $\alpha$.
+
+\emph{\nt{SERO}, serotonina: o horizonte de planejamento.} O que a serotonina transmite é o que menos se entende. Uma das hipóteses a liga ao fator de desconto $\gamma$ de~\eqref{eq:rpe}: um nível alto de serotonina corresponde à disposição de esperar por uma recompensa grande em vez de agarrar uma pequena agora. Os neurônios serotoninérgicos trabalham de forma regular e lenta, alguns disparos por segundo na vigília, e quase silenciam numa das fases do sono~\cite{JacobsAzmitia1992}.
+
+Os seis neurotransmissores estão reunidos na tabela~\ref{tab:transmitters}.
+
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{>{\raggedright}p{2.4cm}>{\raggedright}p{3.0cm}>{\raggedright}p{2.0cm}>{\raggedright\arraybackslash}p{5.2cm}}
+\toprule
+Tipo de neurônio & Fração dos neurônios & Barramento & Papel no cálculo \\
+\midrule
+\nt{GLUT} (glutamato) & a maioria & de endereços & peso positivo, $w>0$ \\
+\nt{GABA} (GABA) & 20--25\% no córtex & de endereços & peso negativo, $w<0$; estabilização \\
+\nt{DOPA} (dopamina) & $\sim 6\cdot10^{-6}$ & de difusão & erro de predição $\delta$ \\
+\nt{NORA} (noradrenalina) & $\sim 6\cdot10^{-7}$ & de difusão & ganho $g$ (hipótese) \\
+\nt{ACET} (acetilcolina) & pequena & ambos & taxa de aprendizado $\alpha$; ``gravação/leitura'' (hipótese) \\
+\nt{SERO} (serotonina) & $\sim 3\cdot10^{-6}$ & de difusão & desconto $\gamma$ (hipótese) \\
+\bottomrule
+\end{tabular}
+\caption{Os principais neurotransmissores do cérebro na linguagem do cálculo. A coluna da direita é uma forte simplificação: confiável para glutamato, GABA e dopamina; para os demais são hipóteses.}
+\label{tab:transmitters}
+\end{table}
+
+\section{O sinal é definido pelo destinatário}
+\label{sec:receiver}
+
+Eu os enganei um pouco ao dizer: glutamato é peso positivo, GABA é negativo. Nenhuma molécula carrega um sinal em si. A molécula é apenas uma chave. O que acontece quando ela é capturada é decidido pela \emph{fechadura}: o receptor na célula destinatária.
+
+O melhor exemplo é a dopamina. Ela tem receptores de duas famílias~\cite{Beaulieu2011}. Em uns, facilita a excitação da célula; em outros, a dificulta. Na região que escolhe as ações, alguns neurônios têm receptores do primeiro tipo, outros do segundo, e o mesmo sinal de dopamina reforça um grupo e enfraquece o outro ao mesmo tempo. É como um único pacote de difusão que diferentes nós da rede interpretam de modos diferentes.
+
+\begin{keyblock}
+\begin{proposition}[O sentido da mensagem é definido pelo destinatário]
+\label{prop:receptor}
+O sinal e a velocidade de ação de um neurotransmissor não são determinados pelo próprio neurotransmissor, mas pelo receptor ao qual ele se liga. Há dois tipos de receptores. Os \emph{ionotrópicos} são eles próprios canais iônicos e se abrem em frações de milissegundo: é o controle direto da corrente, como a porta de um transistor. Os \emph{metabotrópicos} disparam dentro da célula uma cadeia de reações químicas e agem em centenas de milissegundos ou mais: é antes uma escrita num registrador de configuração, que muda o funcionamento posterior da célula. O barramento de endereços fala principalmente pelos primeiros; o de difusão, principalmente pelos segundos.
+\end{proposition}
+\end{keyblock}
+
+Por que, então, se pode dizer ``o glutamato excita''? Porque quase todos os receptores de glutamato encontrados na prática são excitatórios, e quase todos os receptores de GABA são inibitórios. Não é uma lei da natureza, mas uma convenção muito confiável, e a regra~\eqref{eq:dalesign} se apoia justamente nela.
+
+\section{O que levar deste capítulo}
+
+A esmagadora maioria dos neurônios forma o barramento de endereços de dados, com pesos de um só sinal por neurônio; uma minoria ínfima forma os canais de difusão, que transmitem a grandes regiões do cérebro alguns sinais de controle comuns. Cerca de dois neurônios em cada cem mil, e deles depende como aprende e em que modo funciona todo o resto da rede. Para um engenheiro isso não surpreende: em qualquer computador há incomparavelmente menos registradores de controle do que células de memória, e mesmo assim a máquina não funciona sem eles.
+
+No próximo capítulo vamos verificar o que pode calcular uma rede formada só por neurônios \nt{GLUT}, o tipo mais numeroso, funcionando em tempo contínuo.
+
+\section{Exercícios}
+
+\begin{exercise}[\lvlA]
+\label{ex:01:1}
+\emph{Pilhas e fios.} Pela tabela~\ref{tab:types} (meio da faixa em escala logarítmica; \nt{ACET}: $10^5$ saídas): (a)~se cada neurônio fosse uma pessoa, quantas populações da Terra formariam os neurônios \nt{GLUT} e de que tamanho seria a cidade de todos os de difusão? (b)~Quantas vezes a fração de terminais de \nt{DOPA}, \nt{SERO}, \nt{NORA}, \nt{ACET} supera a fração de seus neurônios?
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:01:2}
+\emph{Retorno a zero.} O glutamato na fenda cai como $c_0e^{-t/\tau_c}$, $c_0=1\mM$, $\tau_c=1\ms$; o destinatário percebe concentrações acima de $10$~\textmu M. (a)~Por quanto tempo a linha fica ``ocupada'' após uma liberação? (b)~As bombas estão parcialmente bloqueadas, $\tau_c=10\ms$. Até que frequência de liberações a linha ainda consegue se desocupar?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:01:3}
+\emph{Para onde vai o pico.} No experimento da fig.~\ref{fig:rpe}, depois da lâmpada vêm os estados $s_0\to\dots\to s_{K-1}$ com passo $\Delta$, $T=K\Delta$; a recompensa $r$ chega na última transição, e o momento da lâmpada é imprevisível. Encontre os $V(s_k)$ aprendidos e a resposta $\delta$ à lâmpada. Tomando $\gamma=e^{-\Delta/\tau_\gamma}$, encontre $\tau_\gamma$ para $T=1$~s, $\Delta=0.1$~s, $\gamma=0.95$.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:01:4}
+\emph{Modelagem: aprendizado pelo erro.} Simule a cadeia do exercício~\ref{ex:01:3} com $K=10$, $\gamma=0.95$, $r=1$ e a regra $V(s_t)\leftarrow V(s_t)+\alpha\delta_t$. Em que tentativa $n^*$ a resposta à lâmpada supera pela primeira vez a resposta ao suco, para $\alpha=0.05$, $0.1$, $0.2$, $0.5$? Como $n^*$ depende de $\alpha$?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:01:5}
+\emph{Projeto: difundir um número.} O número $\delta$ precisa chegar a todos os $10^{10}$ neurônios; cada destinatário, incluindo os retransmissores, deve receber $10$ terminais da camada anterior, e cada elo acrescenta $1\ms$. Quantos neurônios e elos tem a árvore de retransmissores mais econômica com $10^4$ saídas por neurônio (\nt{GLUT}) e com $10^{5.5}$ (\nt{DOPA})?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:01:6}
+\emph{Por que o equilíbrio é sensível.} Numa rede com $80\,\%$ \nt{GLUT} e $20\,\%$ \nt{GABA}, todos ligados a todos com pesos $J_E/N$ e $-J_I/N$; $\tau\dot r=-r+Wr+h$. Com $J_E=10$, o único autovalor não nulo de $W$ é $0.5$. Encontre a razão entre a corrente inibitória e a excitatória e em quantos por cento basta enfraquecer a inibição para a rede entrar em avalanche.
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:01:7}
+\emph{Pesquisa: \nt{SERO} é $\gamma$?} Pelo exercício~\ref{ex:01:3}, a resposta dos neurônios \nt{DOPA} à lâmpada é $re^{-T/\tau_\gamma}$. Atrasos $T=1,\dots,5$~s, com $n$ apresentações cada; $\ln\delta$ é medido com dispersão $0.5$. Quanto deve ser $n$ para distinguir $\tau_\gamma=2$~s de $2.4$~s (nível $0.05$, poder $0.8$)? Que mecanismo, além de $\gamma$, daria a mesma queda com $T$?
+\end{exercise}

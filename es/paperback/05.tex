@@ -1,0 +1,41 @@
+\chapter{Una conversación por el aire}
+% versión completa: chapters/05_serocomputer.tex
+
+\pencilfig{5}{\pencilart{5}}{A la izquierda, el teléfono: un cable de uno a uno. A la derecha, la radio: un mensaje para todos a la vez.}
+
+Hasta ahora las neuronas hablaban entre sí por teléfono: cable a cable, con dirección fija. Ahora encendamos la primera emisora de radio: las neuronas \nt{SERO}, que liberan serotonina. Hay apenas unos cientos de miles en todo el cerebro, pero sus cables se extienden por regiones enormes.
+
+\section*{Cuatro diferencias}
+
+Una neurona \nt{SERO} no se parece a una \nt{GLUT}. Primero, el signo de su señal lo elige el receptor: la serotonina tiene “cerraduras” de uno y otro signo. Segundo, trabaja sola: en vigilia hace clic de forma regular varias veces por segundo si recibe un aporte de fondo constante; es un metrónomo. Tercero, es lenta: su señal no actúa en milisegundos, sino en cientos de milisegundos. Cuarto, a menudo no libera la sustancia en una rendija estrecha, sino en el espacio de alrededor, donde se difunde como una gota de tinta en el agua. El receptor siente la concentración y no sabe de quién vino la molécula.
+
+\section*{Una lógica que no existe}
+
+Un metrónomo con una “cerradura” inhibidora es un “no” ya hecho: mientras no hay serotonina, la neurona trabaja; aparece y se calla. Una neurona en lugar de todo un circuito. Parece que la red de serotonina es lógicamente más potente que la red \nt{GLUT}.
+
+Pero hay un inconveniente. La sustancia liberada al espacio se mezcla. Dos señales siguen siendo distintas solo si se liberaron en lugares más alejados de lo que la sustancia alcanza a difundirse, y eso son decenas de micrómetros. Pero cada neurona de serotonina tiene muchísimos puntos de liberación repartidos por regiones grandes, y los “cables” de distintas neuronas se superponen. Por una red así no se pueden enviar bits sueltos. Solo puede transmitir unas pocas magnitudes generales, como una radio en la que todos escuchan la misma emisora.
+
+\pencilfig{123}{%
+% two release sites: far apart the clouds stay separate (two signals), close together they merge (one level)
+\foreach \x/\y in {0.9/1.55, 4.1/1.55, 1.9/0, 2.9/0}{
+  \foreach \r/\o in {0.95/0.07, 0.7/0.09, 0.45/0.12}{\fill[pcViolet, opacity=\o] (\x,\y) circle (\r);}
+  \draw[dotpen=pcViolet, fill=pcViolet] (\x,\y) circle (0.07);}
+\draw[arr] (1.95,1.55) -- (3.05,1.55); \draw[arr] (3.05,1.55) -- (1.95,1.55);
+\node[lbl, anchor=south, align=center] at (2.5,1.6) {más lejos de lo\\que se difunde};
+\node[lbl, anchor=west] at (5.25,1.55) {dos señales};
+\node[lbl, anchor=west] at (5.25,0) {una sola nube común};
+}{La serotonina se libera al espacio y se difunde como una nube. Dos fuentes dan dos señales distintas solo si están más lejos entre sí de lo que la sustancia alcanza a difundirse. Si están más cerca, las nubes se funden en un solo nivel común.}
+
+\section*{Lo que hace en realidad}
+
+Para una sola magnitud general, este sistema tiene todo lo necesario. La concentración de serotonina suaviza los clics sueltos en un nivel continuo, igual que el convertidor más simple transforma un tren de pulsos en un voltaje. Ese nivel dura segundos y se desvanece solo: no es un bit que haya que borrar, sino una huella que se apaga despacio.
+
+Además, las neuronas de serotonina tienen “cerraduras” sobre sí mismas: la serotonina liberada frena un poco a su propia fuente. Un ingeniero reconocerá aquí un amplificador con retroalimentación negativa, un termostato que mantiene el nivel. Eso sí, los experimentos muestran que esta autoinhibición es localizada y solo provoca pausas breves, así que el papel de termostato es por ahora más hipótesis que hecho.
+
+\section*{Cuánto cuesta esperar}
+
+¿Qué magnitud general conviene mantener lenta e igual para toda la red? Una buena candidata es la \emph{paciencia}. Imagine que elige entre una recompensa pequeña ahora o una grande dentro de unos segundos. Cuánto está dispuesto a esperar depende de lo rápido que para usted se “devalúa” el futuro. Según una hipótesis, esa perilla la gira la serotonina. Hay experimentos a su favor: si se activan artificialmente las neuronas de serotonina, el ratón espera más tiempo una recompensa aplazada antes de rendirse.
+
+Este capítulo presenta tres dispositivos que usarán todas las emisoras de radio del cerebro: la neurona metrónomo, el “cable” que en realidad es un volumen, y un nivel lento en lugar de clics sueltos.
+
+\fullversion{5}

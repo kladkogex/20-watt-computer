@@ -1,0 +1,292 @@
+\chapter{O que os neurônios \nt{GLUT} calculam}
+\label{sec:glutcomputer}
+
+\section{As regras do jogo}
+
+No capítulo~\ref{sec:neurontypes} vimos que a esmagadora maioria dos neurônios do cérebro é \nt{GLUT}: eles só excitam, seus pesos são só positivos. Tomemos quantos neurônios desses quisermos e perguntemos: o que essa rede pode calcular se nos permitirmos apenas o que existe num organismo vivo?
+
+Num organismo vivo não há gerador de clock que comute todos os elementos ao mesmo tempo. Cada neurônio trabalha por conta própria, em tempo contínuo: os disparos chegam e saem quando calha, com atrasos diferentes. Há \emph{entradas}, neurônios sensoriais que disparam com luz, som ou pressão, e \emph{saídas}, neurônios que comandam os músculos. Entre elas está a rede, e ninguém lhe diz quando começar e quando terminar o cálculo. Para um eletrônico, é um circuito \emph{assíncrono} com elementos cujos atrasos não são conhecidos com precisão de antemão.
+
+Tomemos o modelo de neurônio mais simples entre os que funcionam de fato em tempo contínuo. A tensão $V$ na membrana do neurônio em repouso é zero. Cada disparo que chega do neurônio $j$ a eleva de um salto $w_j\ge0$, e depois a tensão escoa sozinha de volta a zero com constante de tempo $\tau$:
+\begin{empheq}[box=\keybox]{equation}
+\tau\,\frac{\dd V}{\dd t} \;=\; -V \;+\; \tau\sum_j w_j \sum_k \delta\bigl(t-t_j^{(k)}-d_j\bigr), \qquad w_j\ge 0 .
+\label{eq:glutneuron}
+\end{empheq}
+Aqui $t_j^{(k)}$ são os instantes dos disparos do neurônio $j$, $d_j$ é o atraso no caminho a partir dele, $\delta$ é a função delta, que representa justamente o salto instantâneo. Quando $V$ atinge o limiar $\theta$, o neurônio emite um disparo, $V$ volta a zero e, por cerca de um milissegundo, o neurônio não pode disparar de novo. Números típicos: $\tau$ vai de frações de milissegundo a vinte milissegundos em diferentes neurônios; os atrasos, de frações de milissegundo a dezenas de milissegundos. É o \emph{neurônio integrador com vazamento}: um circuito RC com limiar. É uma simplificação consciente: nos neurônios do córtex, os ramos de entrada emitem eles mesmos disparos locais~\cite{Smith2013}, e um neurônio se comporta mais como uma pequena rede de várias camadas (capítulo~\ref{sec:synthesis}). Para as questões deste capítulo, um único circuito RC basta.
+
+A principal diferença em relação a uma porta lógica é o vazamento: o neurônio não lembra um disparo para sempre, mas por cerca de $\tau$, e só se soma o que chegou dentro dessa janela.
+
+\section{OU e E}
+
+Comecemos pelas portas. Se um único disparo eleva a tensão acima do limiar, $w\ge\theta$, o neurônio dispara a cada disparo de qualquer entrada. É o \emph{OU}.
+
+O E é mais interessante. Seja $w<\theta<2w$: um disparo é pouco, são necessários dois. Mas agora a pergunta ``chegaram os dois?'' não tem sentido enquanto não se diz \emph{dentro de que intervalo de tempo}. Suponha que o primeiro disparo chegou no instante $0$ e o segundo, depois de um tempo $\Delta$. Quando o segundo chega, resta do primeiro $we^{-\Delta/\tau}$, e o neurônio dispara se $we^{-\Delta/\tau}+w\ge\theta$. Daí a janela de coincidência:
+\begin{empheq}[box=\keybox]{equation}
+\Delta \;\le\; \Delta_{\max} \;=\; \tau\,\ln\frac{w}{\theta-w} .
+\label{eq:window}
+\end{empheq}
+Isto não é um E lógico, mas um \emph{detector de coincidência}: um E no tempo (fig.~\ref{fig:coincidence}). Com $\theta=1.5w$, a janela vale $\tau\ln2\approx0.7\tau$. Num neurônio do córtex com $\tau=10\ms$, são cerca de sete milissegundos. Nos neurônios do sistema auditivo, em que $\tau$ é menor que um milissegundo, a janela encolhe para frações de milissegundo.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=0.9cm,y=1.6cm]
+\foreach \dx/\lab/\c [count=\i] in {0.5/{coincidiram}/red!70!black, 2.6/{não coincidiram}/blue!60!black}{
+ \begin{scope}[xshift={(\i-1)*7.2cm}]
+  \draw[->,gray!70!black] (0,0) -- (6.3,0) node[below left,black] {\small $t$};
+  \draw[->,gray!70!black] (0,0) -- (0,1.75) node[left,black] {\small $V$};
+  \draw[densely dashed,gray!60!black] (0,1.5) -- (6.0,1.5) node[right,black] {\small $\theta$};
+  \draw[very thick,\c] (0,0) -- (1,0) -- (1,1)
+      plot[domain=1:1+\dx,samples=30] (\x,{exp(-(\x-1)/1.5)});
+  \pgfmathsetmacro{\v}{exp(-\dx/1.5)+1}
+  \draw[very thick,\c] (1+\dx,{exp(-\dx/1.5)}) -- (1+\dx,{min(\v,1.5)});
+  \ifdim\v pt<1.5pt
+    \draw[very thick,\c] plot[domain=1+\dx:6,samples=40] (\x,{\v*exp(-(\x-1-\dx)/1.5)});
+  \else
+    \draw[very thick,\c] (1+\dx,1.5) -- (1+\dx,0) -- (6,0);
+    \draw[->,thick,\c] (1+\dx,1.55) -- (1+\dx,1.72) node[above,font=\scriptsize] {disparo};
+  \fi
+  \draw[->,thick] (1,-0.35) -- (1,-0.08); \draw[->,thick] (1+\dx,-0.35) -- (1+\dx,-0.08);
+  \draw[decorate,decoration={brace,amplitude=3pt,mirror}] (1,-0.42) -- (1+\dx,-0.42) node[midway,below=3pt] {\scriptsize $\Delta$};
+  \node[\c] at (3.5,-0.95) {\small \lab};
+ \end{scope}}
+\end{tikzpicture}
+\caption{Detector de coincidência, limiar $\theta=1.5w$. À esquerda, o segundo disparo chegou após $\Delta<\Delta_{\max}$, a soma atingiu o limiar e o neurônio disparou. À direita, $\Delta>\Delta_{\max}$: do primeiro disparo quase nada restou, e o neurônio ficou calado.}
+\label{fig:coincidence}
+\end{figure}
+
+Outra maneira de obter um E é pela duração, e não pelo instante exato. Enquanto a luz está acesa, o neurônio sensorial emite disparos frequentes e regulares; se uma entrada dessas não basta para o limiar, mas duas bastam, o neurônio trabalha enquanto ambas estão ativas. Assim a rede calcula por \emph{níveis}, e o instante exato de chegada dos disparos não importa. A maior parte do que vem a seguir funciona justamente assim.
+
+\section{O que não se pode fazer}
+
+Tentemos agora fazer um NÃO: um neurônio que trabalha quando a entrada está calada. Não dá: sem disparos de entrada, em~\eqref{eq:glutneuron} não há nenhum salto, e a tensão fica em zero, abaixo do limiar. E uma rede de muitos neurônios? Também não, e isso se prova de uma vez para todas as redes.
+
+É mais cômodo falar de frequências. Seja $r_i$ a frequência de disparos do neurônio $i$, $I_i$ o aporte das entradas e $f_i$ sua característica de transferência: como a frequência depende do aporte total. No neurônio integrador, essa característica é não decrescente: mais aporte, disparos mais frequentes. As frequências numa rede que chegou ao equilíbrio satisfazem as equações
+\begin{equation}
+r_i \;=\; f_i\Bigl(\sum_j w_{ij}\,r_j + I_i\Bigr), \qquad w_{ij}\ge 0 .
+\label{eq:ratenet}
+\end{equation}
+
+\begin{keyblock}
+\begin{proposition}[Monotonicidade]
+\label{prop:monotone}
+Suponha que a rede~\eqref{eq:ratenet} seja formada só por neurônios \nt{GLUT} e parta do silêncio total. Se as entradas forem reforçadas, a frequência de regime de nenhum neurônio diminuirá. Tudo o que essa rede calcula são funções \emph{monótonas} das entradas.
+\end{proposition}
+\end{keyblock}
+
+Demonstração. Partimos do silêncio, $r^{(0)}=0$, e substituímos as frequências no lado direito de~\eqref{eq:ratenet}: $r^{(k+1)}=F\bigl(r^{(k)}\bigr)$. O lado direito $F$ não decresce em nenhum argumento, porque os pesos são não negativos e as $f_i$ não decrescem. Como $r^{(1)}\ge0=r^{(0)}$, por indução $r^{(k+1)}\ge r^{(k)}$: as frequências só crescem e convergem para a menor solução de~\eqref{eq:ratenet}. Se as entradas $I$ forem trocadas por entradas maiores $I'$, então a cada passo $r^{(k)}(I)\le r^{(k)}(I')$, e no limite também. A rede real chega ao equilíbrio não em passos, mas continuamente, e para ela vale o mesmo: com conexões positivas, uma desigualdade entre duas execuções que vale no início se mantém o tempo todo.
+
+Para disparos individuais, a proposição não vale ao pé da letra: um disparo de entrada a mais pode fazer o neurônio disparar um pouco antes e, por causa do milissegundo de refratariedade, o disparo seguinte se perde. Mas o efeito é fraco e pouco confiável, não se pode calcular com ele. Para frequências, a monotonicidade é estrita.
+
+As consequências são as mesmas de qualquer circuito sem inversores. Não há NÃO. Não há OU exclusivo: acrescentar a segunda entrada não pode apagar a saída. E o mais desagradável: \emph{atividade não pode ser detida por atividade}, só se pode retirar o que a sustenta.
+
+\section{Dois fios: ligar e desligar}
+
+A saída do impasse é sugerida pelo próprio organismo. Em muitos órgãos dos sentidos, o estímulo é transmitido por dois conjuntos de neurônios: na visão, umas células respondem ao aumento da luz, outras à sua diminuição~\cite{Schiller1992}. Vamos chamá-las de \emph{liga} e \emph{desliga}. Em vez de um fio $x$, a rede recebe um par $(x,\bar x)$, e a ausência, que ela não sabe calcular, é informada pelo próprio sensor.
+
+Com um par de fios, o NÃO sai de graça: basta trocar os fios. E e OU se fazem com dois neurônios cada:
+\begin{empheq}[box=\keybox]{equation}
+\begin{aligned}
+x\wedge y \;&\to\; \bigl(\;x\wedge y,\;\; \bar x\vee\bar y\;\bigr),\\
+x\vee y \;&\to\; \bigl(\;x\vee y,\;\; \bar x\wedge\bar y\;\bigr).
+\end{aligned}
+\label{eq:dualrail}
+\end{empheq}
+À direita todas as operações são monótonas, de modo que a proposição~\ref{prop:monotone} não é violada.
+
+Para um circuito assíncrono, o código de dois fios tem uma segunda vantagem, ainda mais importante. Um par de fios tem três estados: ``sim'', ``não'' e, quando os dois estão calados, \emph{``ainda sem resposta''}. O destinatário sabe que o cálculo terminou não por um relógio, mas pelo próprio sinal: em cada par, exatamente um fio foi ativado. Entre estímulos, os sensores ficam calados, e a rede volta ao silêncio, pronta para a próxima vez. Na eletrônica assíncrona, esse truque é a base de circuitos que funcionam corretamente com quaisquer atrasos dos elementos~\cite{Sparso2001}.
+
+\begin{keyblock}
+\begin{proposition}[Cálculo assíncrono]
+\label{prop:dualrail}
+Se cada entrada chega por um par de fios ``liga--desliga'', uma rede de neurônios \nt{GLUT} pode calcular qualquer função lógica das entradas. A resposta também chega em pares de fios, e sua prontidão se vê pelo fato de que, em cada par, um fio foi ativado. Não é preciso relógio para isso. O preço é cerca do dobro de neurônios.
+\end{proposition}
+\end{keyblock}
+
+Exemplo: o OU exclusivo, ``mudou exatamente um dos dois estímulos''. O fio direto da resposta é $(x\wedge\bar y)\vee(\bar x\wedge y)$; o inverso, $(x\wedge y)\vee(\bar x\wedge\bar y)$. São seis neurônios, e nenhum deles precisa de inibição (fig.~\ref{fig:dualxor}).
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=1cm,y=1cm,
+  nrn/.style={circle,draw,very thick,fill=blue!6,minimum size=0.75cm,inner sep=0pt,font=\small},
+  inp/.style={font=\small}]
+\node[inp] (X)  at (0,3.3) {$x$};
+\node[inp] (Xb) at (0,2.2) {$\bar x$};
+\node[inp] (Y)  at (0,1.1) {$y$};
+\node[inp] (Yb) at (0,0)   {$\bar y$};
+\node[nrn] (A1) at (3.2,3.3) {$2$};
+\node[nrn] (A2) at (3.2,2.2) {$2$};
+\node[nrn] (A3) at (3.2,1.1) {$2$};
+\node[nrn] (A4) at (3.2,0)   {$2$};
+\node[nrn] (O)  at (7.2,2.75) {$1$};
+\node[nrn] (Ob) at (7.2,0.55) {$1$};
+\foreach \s/\t in {X/A1,Yb/A1,Xb/A2,Y/A2,X/A3,Y/A3,Xb/A4,Yb/A4}{\draw[->,thick,blue!60!black] (\s) -- (\t);}
+\draw[->,thick,blue!60!black] (A1) -- node[pos=0.45,above,sloped,font=\scriptsize,black] {$x\wedge\bar y$} (O);
+\draw[->,thick,blue!60!black] (A2) -- node[pos=0.45,below,sloped,font=\scriptsize,black] {$\bar x\wedge y$} (O);
+\draw[->,thick,blue!60!black] (A3) -- node[pos=0.45,above,sloped,font=\scriptsize,black] {$x\wedge y$} (Ob);
+\draw[->,thick,blue!60!black] (A4) -- node[pos=0.45,below,sloped,font=\scriptsize,black] {$\bar x\wedge\bar y$} (Ob);
+\draw[->,very thick,red!70!black] (O) -- (8.6,2.75) node[right,black] {$x\oplus y$: ``sim''};
+\draw[->,very thick,red!70!black] (Ob) -- (8.6,0.55) node[right,black] {$\overline{x\oplus y}$: ``não''};
+\node[below,font=\small,gray!40!black] at (3.2,-0.55) {E: limiar $2$};
+\node[below,font=\small,gray!40!black] at (7.2,-0.55) {OU: limiar $1$};
+\node[below,font=\small,gray!40!black] at (0,-0.55) {pares de fios};
+\end{tikzpicture}
+\caption{OU exclusivo em código de dois fios, só com neurônios \nt{GLUT}. O número no círculo é o limiar em unidades do peso de uma entrada. Quatro neurônios E reconhecem as quatro combinações de entradas, e dois neurônios OU as reúnem no par de fios da resposta.}
+\label{fig:dualxor}
+\end{figure}
+
+\section{Atrasos em vez de relógio}
+
+Para cálculos com o tempo bastam atrasos nos fios e detectores de coincidência. O melhor exemplo é como o cérebro determina de onde veio um som.
+
+O som de uma fonte situada de lado chega ao ouvido mais próximo antes que ao mais distante. A diferença depende da direção: de zero, quando a fonte está bem à frente, a $0.22\,\text{m}/343\,\text{m/s}\approx0.6\ms$ no ser humano, quando ela está exatamente de lado. O cérebro distingue diferenças de cerca de dez \emph{microssegundos}~\cite{KlumppEady1956,Grothe2010}, embora os próprios neurônios disparem com precisão não melhor que frações de milissegundo. Como?
+
+Passemos um fio vindo do ouvido esquerdo ao longo de uma fileira de detectores de coincidência, da esquerda para a direita, e outro vindo do ouvido direito, da direita para a esquerda (fig.~\ref{fig:itd}). O sinal corre pelo fio com velocidade $v$. Até o detector situado à distância $x$ da borda esquerda de uma fileira de comprimento $L$, o sinal esquerdo leva o tempo $x/v$, o direito, $(L-x)/v$. Se o som chegou ao ouvido direito $\delta t$ mais tarde, os dois sinais se encontram ao mesmo tempo no ponto em que
+\begin{empheq}[box=\keybox]{equation}
+\frac{x}{v} \;=\; \frac{L-x}{v} + \delta t
+\quad\Longrightarrow\quad
+x \;=\; \frac{L}{2} + \frac{v\,\delta t}{2} .
+\label{eq:itd}
+\end{empheq}
+Só dispara o detector ao qual os dois sinais chegaram dentro da janela~\eqref{eq:window}. O número do detector que disparou é a direção da fonte. A diferença de tempo virou \emph{lugar}.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  nrn/.style={circle,draw,very thick,fill=blue!6,minimum size=0.7cm,inner sep=0pt}]
+\foreach \k in {0,...,6}{\node[nrn] (D\k) at (1.4*\k,0) {\scriptsize $2$};}
+\node[nrn,fill=red!15] at (D4) {\scriptsize $2$};
+\draw[->,thick,blue!60!black] (-1.4,0.9) node[left,black,align=right] {\small ouvido\\\small esquerdo} -- (9.2,0.9);
+\draw[->,thick,orange!85!black] (9.8,-0.9) node[right,black,align=left] {\small ouvido\\\small direito} -- (-0.8,-0.9);
+\foreach \k in {0,...,6}{
+  \draw[->,blue!60!black] (1.4*\k,0.9) -- (D\k.north);
+  \draw[->,orange!85!black] (1.4*\k,-0.9) -- (D\k.south);}
+\draw[->,thick,red!70!black] (D4.north east) ++(0.1,0.05) -- ++(0.5,0.45) node[above right,font=\small,black] {disparou};
+\node[font=\small,gray!40!black] at (4.2,-1.5) {o atraso cresce $\longrightarrow$ \hspace{2.2cm} $\longleftarrow$ o atraso cresce};
+\pic[scale=1.4] at (-2.3,1.75) {speaker};
+\node[font=\scriptsize,align=center] at (-2.3,2.35) {fonte à esquerda};
+\end{tikzpicture}
+\caption{Determinação da direção de um som. Os sinais dos dois ouvidos correm um ao encontro do outro; cada círculo é um detector de coincidência com limiar $2$. Se o som chegou mais tarde ao ouvido direito, os sinais se encontram à direita do meio, pela fórmula~\eqref{eq:itd}. A saída da rede é o número do neurônio que disparou. Aqui a fonte está à esquerda: o som chegou antes ao ouvido esquerdo.}
+\label{fig:itd}
+\end{figure}
+
+Aqui não há relógio, nem inibição, nem mesmo código de dois fios: a rede não responde ``sim'' ou ``não'', mas aponta para um neurônio entre muitos. Esse circuito de linhas de atraso e detectores de coincidência parece de fato funcionar no tronco auditivo das aves~\cite{Carr1990}. A precisão de microssegundos não vem da precisão de cada neurônio, mas do fato de haver muitos detectores, cada um olhando para seu próprio atraso. Nos mamíferos, essa fileira de atrasos não foi encontrada: lá a mesma tarefa parece ser resolvida por detectores de coincidência ajustados por uma inibição com tempo calculado com precisão, vinda de neurônios \nt{GLYC}~\cite{Brand2002,Grothe2010}. Como a inibição estreita a janela de coincidência veremos no capítulo~\ref{sec:gaba}, no exemplo do \nt{GABA}; a glicina inibe do mesmo modo, abrindo canais de cloreto no destinatário.
+
+\section{Memória}
+
+Um computador precisa de memória. Numa rede assim, a memória é uma atividade que se sustenta sozinha. Tomemos um grupo de neurônios \nt{GLUT} fortemente ligados entre si e vamos descrevê-lo por uma única frequência $r$ (fig.~\ref{fig:recurrentgroup}a). No equilíbrio, $r=f(wr+I)$, em que $w$ é a força da realimentação do grupo sobre si mesmo e $I$ é o aporte externo. Resolvemos essa equação graficamente, cruzando a curva $f(wr+I)$ com a reta $r$ (fig.~\ref{fig:bistable}).
+
+\begin{figure}[t]
+\centering
+% (b): tau dr/dt = -r + f(w r + I), f as in fig:bistable, w=1, I=0.6; Euler dt=0.001 tau.
+\begin{tikzpicture}[>=Stealth,
+  nrn/.style={circle,draw,thick,fill=blue!6,minimum size=0.5cm,inner sep=0pt}]
+\begin{scope}
+\node[font=\small] at (-0.5,1.55) {(a)};
+\foreach \k in {1,...,6}{\node[nrn] (n\k) at ({1.4+1.0*cos(60*\k)},{1.0*sin(60*\k)}) {};}
+\foreach \a/\b in {1/2,2/3,3/4,4/5,5/6,6/1,1/4,2/5,3/6}{\draw[<->,blue!60!black] (n\a) -- (n\b);}
+\foreach \k in {2,3,4}{\draw[->,thick,green!45!black] ($(n\k)+(-0.95,0)$) -- (n\k);}
+\node[font=\small,green!45!black] at (-0.35,-0.45) {$I$};
+\node[font=\Large] at (3.1,0) {$\approx$};
+\node[nrn,minimum size=0.85cm,font=\small] (R) at (4.35,-0.1) {$r$};
+\draw[->,thick,blue!60!black] (R) edge[loop above,looseness=6] node[above,font=\small] {$w$} (R);
+\draw[->,thick,green!45!black] (3.55,-0.95) node[left,font=\small] {$I$} -- (R);
+\end{scope}
+\begin{scope}[xshift=6.3cm,y=2.6cm,x=1.05cm]
+\node[font=\small] at (-0.6,1.25) {(b)};
+\draw[->,gray!70!black] (0,0) -- (7.3,0) node[below left,font=\small,black] {$t/\tau$};
+\draw[->,gray!70!black] (0,0) -- (0,1.12) node[left,font=\small,black] {$r$};
+\foreach \t in {0,2,4,6}{\draw[gray!60!black] (\t,-0.02) -- (\t,0.02); \node[below,font=\scriptsize] at (\t,0) {\t};}
+\draw[densely dotted,gray!60!black] (0,0.5) -- (7,0.5) node[right,font=\scriptsize,black,align=left] {limiar de\\gravação};
+\fill[green!45!black,opacity=0.25] (1,-0.2) rectangle (2,-0.13);
+\fill[gray!60!black,opacity=0.35] (1,-0.29) rectangle (1.5,-0.22);
+\draw[very thick,blue!60!black] plot coordinates {(0.0,0.002) (0.1,0.002) (0.2,0.002) (0.3,0.002) (0.4,0.002) (0.5,0.002) (0.6,0.002) (0.7,0.002) (0.8,0.002) (0.9,0.002) (1.0,0.002) (1.1,0.083) (1.2,0.165) (1.3,0.242) (1.4,0.313) (1.5,0.378) (1.6,0.437) (1.7,0.491) (1.8,0.539) (1.9,0.583) (2.0,0.623) (2.1,0.643) (2.2,0.665) (2.3,0.688) (2.4,0.71) (2.5,0.732) (2.6,0.753) (2.7,0.773) (2.8,0.792) (2.9,0.81) (3.0,0.826) (3.2,0.855) (3.4,0.88) (3.6,0.9) (3.8,0.917) (4.0,0.931) (4.4,0.953) (4.8,0.967) (5.2,0.977) (5.6,0.984) (6.0,0.988) (6.5,0.992) (7.0,0.994)};
+\draw[very thick,gray!60!black,densely dashed] plot coordinates {(0.0,0.002) (0.1,0.002) (0.2,0.002) (0.3,0.002) (0.4,0.002) (0.5,0.002) (0.6,0.002) (0.7,0.002) (0.8,0.002) (0.9,0.002) (1.0,0.002) (1.1,0.083) (1.2,0.165) (1.3,0.242) (1.4,0.313) (1.5,0.378) (1.6,0.358) (1.7,0.336) (1.8,0.313) (1.9,0.291) (2.0,0.269) (2.2,0.228) (2.4,0.191) (2.6,0.159) (2.8,0.133) (3.0,0.11) (3.2,0.091) (3.4,0.076) (3.6,0.063) (3.8,0.052) (4.0,0.043) (4.4,0.03) (4.8,0.021) (5.2,0.015) (5.6,0.011) (6.0,0.008) (6.5,0.006) (7.0,0.004)};
+\node[font=\scriptsize,blue!60!black,anchor=west] at (3.3,0.8) {aporte $1\tau$: gravado};
+\node[font=\scriptsize,gray!50!black,anchor=west] at (2.3,0.3) {aporte $0.5\tau$: apagou};
+\end{scope}
+\end{tikzpicture}
+\caption{Um grupo fortemente ligado a si mesmo. (a)~Muitos neurônios \nt{GLUT} que se excitam mutuamente se comportam como um único neurônio de frequência $r$ que excita a si mesmo com força $w$; de fora chega o aporte $I$. (b)~Frequência do grupo no tempo, com $w=1$ e a mesma curva $f$ da fig.~\ref{fig:bistable}. O aporte $I=0.6$ é aplicado durante o tempo marcado pela faixa sob o eixo. Se ele dura $1\tau$, o grupo consegue passar o ponto instável $r=0.5$, acende e continua aceso quando o aporte termina. Se dura só $0.5\tau$, não chega a esse ponto e se apaga de volta: para gravar um bit, o aporte precisa durar mais de cerca de $0.7\tau$.}
+\label{fig:recurrentgroup}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=5cm,y=3.2cm]
+\draw[->,gray!70!black] (0,0) -- (1.1,0) node[below left,black] {\small $r$};
+\draw[->,gray!70!black] (0,0) -- (0,1.1);
+\draw[thick,gray!60!black] (0,0) -- (1.05,1.05) node[right,black] {\small $r$};
+\draw[very thick,blue!60!black] plot[domain=0:1.05,samples=80] (\x,{1/(1+exp(-(\x-0.5)/0.08))});
+\draw[very thick,red!70!black,densely dashed] plot[domain=0:1.05,samples=80] (\x,{1/(1+exp(-(\x+0.3-0.5)/0.08))});
+\fill[blue!60!black] (0.002,0.002) circle (0.018);
+\draw[blue!60!black,fill=white,thick] (0.5,0.5) circle (0.018);
+\fill[blue!60!black] (0.998,0.998) circle (0.018);
+\node[below right,font=\small] at (0.02,0.0) {deslig.};
+\node[right,font=\small] at (0.52,0.46) {instável};
+\node[below,font=\small] at (0.99,0.96) {lig.};
+\node[anchor=east,font=\small,red!70!black] at (0.19,0.62) {$f(wr+I)$};
+\node[anchor=west,font=\small,blue!60!black] at (0.45,0.1) {$f(wr)$};
+\end{tikzpicture}
+\caption{Memória feita de um grupo de neurônios \nt{GLUT} com forte realimentação. Curva contínua: sem aporte externo, duas interseções estáveis com a reta $r$, ``desligado'' e ``ligado'', e uma instável entre elas. Um aporte breve $I$ (curva tracejada) deixa só a de cima.}
+\label{fig:bistable}
+\end{figure}
+
+Se a realimentação é forte, há três interseções: a de baixo é o silêncio, a de cima é o grupo aceso a todo vapor, a do meio é instável. Temos um elemento com dois estados estáveis, um flip-flop. Gravar nele um um é fácil: um aporte breve levanta a curva, a interseção de baixo some e o grupo acende, e continua aceso quando o aporte termina (fig.~\ref{fig:recurrentgroup}b). Um aporte curto demais não consegue levar o grupo até o ponto instável, e ele se apaga de volta. Essa atividade autossustentada, que dura segundos depois que o estímulo sumiu, é de fato observada no cérebro e é considerada a base da memória de curto prazo~\cite{Wang2001}. Mas essa não é a única maneira de lembrar por segundos. O registro também pode ser guardado numa variável lenta das próprias sinapses: depois de uma rajada de disparos, a facilitação, como na sinapse ``traço'' do capítulo~\ref{sec:code}, dura cerca de um segundo, e entre breves surtos a rede pode ficar quase calada: não um flip-flop, mas um capacitor carregado~\cite{Mongillo2008}. Esses intervalos ``silenciosos'' durante a retenção na memória são observados~\cite{Stokes2015}, e guardar sem disparos contínuos custa menos energia. Qual das duas maneiras o córtex usa em cada caso ainda está em discussão.
+
+E como apagar? Pela proposição~\ref{prop:monotone}, por atividade não há como; resta \emph{retirar} algo. A primeira maneira é retirar o suporte: se o grupo só fica aceso junto com o aporte vindo de outro grupo, a memória se apaga com ele. A segunda é a fadiga. Nas sinapses reais, com trabalho prolongado, o estoque de neurotransmissor se esgota~\cite{Tsodyks1997}, e nos neurônios crescem correntes lentas que reduzem a excitabilidade. A realimentação enfraquece, a interseção de cima some, e o grupo se apaga sozinho em segundos. O resultado é uma memória que se liga por um sinal e só se desliga com o tempo.
+
+\section{Sequências}
+
+Em vez de um relógio, pode-se ter um \emph{temporizador disparado por evento}. Liguemos grupos de neurônios \nt{GLUT} em cadeia: o primeiro excita o segundo, o segundo o terceiro, e assim por diante. Um sinal externo acende o primeiro grupo, e uma onda de atividade percorre a cadeia, cada elo um ou dois atrasos depois do anterior, e uma única vez: logo após o disparo os neurônios estão refratários, e a onda já foi adiante.
+
+Essa cadeia mede o tempo a partir de um evento: se disparou o elo número $k$, desde o início se passaram $k$ atrasos. Suas saídas podem ir para os músculos e produzir uma sequência de movimentos que se desenrola sozinha. Nas aves canoras, durante o canto, neurônios \nt{GLUT} individuais de uma das regiões do cérebro disparam estritamente em sequência, cada um no seu momento do canto, o que se parece muito com uma cadeia assim~\cite{Hahnloser2002}.
+
+Ao contrário de um relógio, a cadeia fica calada até ser disparada, executa uma vez e mede o tempo só para quem está ligado a ela. A rede continua sem um ciclo de clock comum.
+
+\section{O que falta}
+
+Só com neurônios \nt{GLUT}, sem inibição, obtém-se muita coisa. Mas faltam três coisas, e as três por causa da proposição~\ref{prop:monotone}.
+
+\emph{Escolha.} A rede precisa escolher uma direção, uma ação. Se dois estímulos são quase iguais, na rede da fig.~\ref{fig:itd} disparam as duas saídas, e não há com que suprimir a mais fraca em favor da mais forte.
+
+\emph{Reset.} Não se pode apagar a memória com um sinal.
+
+\emph{Estabilidade.} Numa rede em que as conexões surgem sem o plano de um engenheiro, laços de realimentação positiva são inevitáveis, e a atividade neles pode crescer em avalanche (capítulo~\ref{sec:neurontypes}). O único freio é a mesma fadiga, lenta e grosseira.
+
+Os três males têm um só remédio: um neurônio que apaga um disparo com um disparo. É o \nt{GABA}, e ele não é necessário para calcular, mas para escolher, zerar e manter o cálculo sob controle.
+
+\section{Exercícios}
+
+\begin{exercise}[\lvlA]
+\label{ex:02:1}
+\emph{Fileira de detectores para o som.} Os sinais dos ouvidos correm pelos fios da fig.~\ref{fig:itd} a $5$~m/s; a maior diferença de chegada é $0.64\ms$. Os detectores, neurônios~\eqref{eq:glutneuron} com $\tau=0.5\ms$, $\theta=1.5w$, estão dispostos de modo que vizinhos distinguem $10$~\textmu s. Quantos detectores há na fileira e quantos disparam para um som?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:02:2}
+\emph{Entradas desiguais deslocam a janela.} Um detector de coincidência~\eqref{eq:glutneuron} com $\tau=0.5\ms$, $\theta=1.5$ recebe um disparo de cada uma de duas entradas com pesos $1$ e $0.8$. Encontre a janela de coincidência e seu centro. Em quantos microssegundos erra a fileira da fig.~\ref{fig:itd} se a entrada de um ouvido for $20\,\%$ mais fraca que a do outro?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:02:3}
+\emph{Que redes não oscilam.} A rede $\tau\dot r_i=-r_i+f_i\bigl(\textstyle\sum_jw_{ij}r_j+I_i\bigr)$ com $f_i$ não decrescentes e $w_{ij}\ge0$ para $i\ne j$ é monótona e, estavelmente, não oscila. Prove: pela troca $r_i\to\pm r_i$, a ela se reduz uma rede com número par de conexões inibitórias em cada ciclo. A inibição mútua de dois grupos pode oscilar? E o laço \nt{GLUT}--\nt{GABA}?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:02:4}
+\emph{Projeto: somador de dois fios.} Cada bit é transmitido por um par de fios $(x,\bar x)$. Construa um somador completo de três bits, que entregue os pares $(S,\bar S)$ da soma e $(C,\bar C)$ do vai-um, com neurônios \nt{GLUT}, indicando pesos e limiares. Use no máximo oito neurônios. Quantos exigiria um circuito de elementos E e OU, como na fig.~\ref{fig:dualxor}?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:02:5}
+\emph{Modelagem: quanto dura a gravação.} O grupo da fig.~\ref{fig:recurrentgroup}: $\tau\dot r=-r+f(r+I)$, $f(u)=1/\bigl(1+e^{-(u-0.5)/0.08}\bigr)$, antes da gravação no estado de baixo; o aporte $I$ é aplicado durante o tempo $T$. Encontre numericamente o menor $T$ que grava o bit com $I=0.6$ e o limiar $I_c$ abaixo do qual o bit não é gravado para nenhum $T$.
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:02:6}
+\emph{A cadeia como temporizador.} Um elo da cadeia tem $100$ neurônios \nt{GLUT}, atraso de $2\ms$ com dispersão independente de $0.2\ms$. (a)~Quantos neurônios são necessários para medir $1$~s, e qual é o erro relativo? Como ele depende do intervalo? (b)~Num temporizador real, o erro é de $5\,\%$ para qualquer intervalo. Que fonte de dispersão produz isso?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:02:7}
+\emph{Pesquisa: flip-flop ou capacitor.} $100$ neurônios guardam um bit por $10$~s. Flip-flop: cada um dá $20$ disparos por segundo. Capacitor: a facilitação $u$ decai com $\tau_F=1$~s, o bit é lido se $u\ge u_{\max}/2$; renovação: rajada de três disparos por neurônio. Quantas vezes o capacitor é mais econômico, e o que acontece com o bit se o grupo for silenciado por $200\ms$?
+\end{exercise}

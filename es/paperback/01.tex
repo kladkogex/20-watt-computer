@@ -1,0 +1,67 @@
+\chapter{Una bolsa de piezas}
+% versión completa: chapters/01b_neurontypes.tex
+
+\pencilfig{1}{\pencilart{1}}{Una bolsa de piezas: casi todas azules, algunas rojas y un puñado de otras.}
+
+Imagine que le dan una bolsa con ochenta y seis mil millones de piezas de aspecto idéntico y le piden averiguar cómo se arma con ellas una computadora. ¿Por dónde empezaría? Un ingeniero no se pondría a estudiar la forma de las piezas. Preguntaría: cuántas entradas tiene cada pieza, cuántas salidas y qué entrega a la salida.
+
+La neurona, que así se llama esa pieza, es sorprendentemente sencilla. Entradas tiene miles: le llegan cables de otras neuronas. Salida tiene una sola. Pero esa salida se ramifica como un árbol, y la misma copia de la señal llega a miles de destinatarios. Imagine a alguien que escucha a mil interlocutores a la vez y responde con una sola frase, pero de modo que la oyen otras mil personas.
+
+¿Qué señal es esa? Un clic breve. De vez en cuando la neurona emite una espiga: un pico de voltaje de alrededor de una milésima de segundo. Todos los clics de una neurona son iguales, como los golpes de un mismo tambor. Por eso todo lo que una neurona puede decir no está en el volumen del clic, sino en \emph{cuándo} hace clic: más a menudo, más de tarde en tarde, enseguida o con retraso.
+
+Por dentro, la neurona hace el cálculo más simple que se pueda imaginar: suma las señales que le llegan y, si la suma supera el umbral, hace clic ella misma. Unas entradas empujan la suma hacia arriba; otras, hacia abajo.
+
+\section*{Cómo clasificar la bolsa}
+
+La punta del cable de salida, al llegar a la vecina, no la toca. Entre ambas queda una rendija estrecha, y la señal la cruza por vía química: el cable suelta una pizca de una sustancia especial, el neurotransmisor, y la vecina la atrapa. Y aquí viene la suerte: casi todas las neuronas sueltan la misma sustancia en todas las puntas de su cable. Así que las neuronas se pueden clasificar según \emph{qué} sueltan.
+
+Llamaremos a cada tipo de neurona con las primeras cuatro letras de su sustancia. La neurona que suelta glutamato es \nt{GLUT}. La que suelta ácido gamma-aminobutírico es \nt{GABA}. Luego vendrán \nt{DOPA} (dopamina), \nt{SERO} (serotonina), \nt{NORA} (noradrenalina), \nt{ACET} (acetilcolina) y algunas más.
+
+Una vez clasificada la bolsa, el reparto resulta muy desigual. De cada mil neuronas, unas novecientas sesenta son \nt{GLUT}. Su señal empuja al destinatario hacia el clic: es un “más”. Otras treinta y seis son \nt{GABA}; su señal lo aleja del umbral: es un “menos”. En la corteza hay más, entre una quinta parte y una cuarta. Y todos los demás tipos juntos suman unas pocas neuronas por cada cien mil. Una gota en el mar.
+
+\section*{Teléfono y radio}
+
+Pero esa gota funciona de un modo muy distinto. El cable de una neurona \nt{GLUT} o \nt{GABA} va a vecinas concretas, como una línea telefónica: la señal solo la reciben aquellas a quienes se llama. En cambio, los diminutos grupos \nt{DOPA}, \nt{SERO}, \nt{NORA} y \nt{ACET} funcionan como emisoras de radio. Sus cables se extienden por regiones enormes del cerebro, la sustancia a menudo no se vierte en la rendija sino en el espacio de alrededor, y el mismo mensaje lo oyen a la vez millones de células.
+
+Por las líneas telefónicas viajan los datos: aquí hay una línea en la imagen, aquí un sonido de cierto tono. Por la radio viajan los ajustes generales: qué tan alto va todo, si conviene aprender, si es hora de dormir. En cualquier computadora pasa lo mismo: celdas de memoria hay miles de millones, y registros de control, un puñado. Sin ellos la máquina no funciona.
+
+\section*{El significado lo elige el receptor}
+
+Hay un detalle sutil. La sustancia misma no sabe si es un “más” o un “menos”. La molécula es una llave. Qué pasa cuando se mete la llave lo decide la cerradura: una proteína especial del lado del receptor. La misma dopamina anima a unos destinatarios y apaga a otros, según la cerradura que tengan. Es como una misma emisión de radio que distintos oyentes entienden de distinta manera.
+
+\section*{La señal “mejor de lo esperado”}
+
+El canal de radio más famoso es la dopamina. ¿Qué transmite? Veamos un experimento. A un animal se le da, de improviso, una gota de jugo, y las neuronas de dopamina responden con un estallido de clics. Luego, antes del jugo, se enciende cada vez una lamparita. El animal aprende que la lamparita promete jugo, y ahora el estallido llega con la lamparita, no con el jugo. Y si tras la lamparita no se da el jugo, las neuronas de dopamina \emph{se callan} en el momento de la espera.
+
+\pencilfig{101}{%
+% three rows: a spike raster of a DOPA neuron; lamp (amber) and juice (blue drop) above the axis
+\foreach \row/\y in {1/0,2/-1.05,3/-2.1}{
+  \draw[pen] (0,\y) -- (6.2,\y);
+  \foreach \s in {0.3,0.75,1.1,2.15,2.6,3.05,3.45,3.9,4.45,4.95,5.4,5.85}{
+    \pgfmathtruncatemacro{\gap}{(\row==3)&&(\s>3.6)&&(\s<4.7)}
+    \ifnum\gap=0 \draw[pcGray, line width=0.7pt] (\s,\y) -- (\s,\y+0.3);\fi}}
+% row 1: juice without a lamp -> burst at the juice
+\foreach \s in {4.0,4.08,4.16,4.24,4.33}{\draw[pcAmber, line width=0.8pt] (\s,0) -- (\s,0.45);}
+\draw[dotpen=pcBlue, wash=pcBlue] (4.15,0.72) circle (0.09); \draw[pcBlue, line width=0.6pt] (4.07,0.76) -- (4.15,0.92) -- (4.23,0.76);
+% row 2: lamp -> burst at the lamp, nothing at the promised juice
+\foreach \y in {-1.05,-2.1}{
+  \foreach \s in {1.5,1.58,1.66,1.74,1.83}{\draw[pcAmber, line width=0.8pt] (\s,\y) -- (\s,\y+0.45);}
+  \draw[dotpen=pcAmber, wash=pcAmber] (1.65,\y+0.72) circle (0.1);
+  \foreach \a in {30,90,150}{\draw[pcAmber, line width=0.5pt] ($(1.65,\y+0.72)+(\a:0.14)$) -- ($(1.65,\y+0.72)+(\a:0.24)$);}}
+\draw[dotpen=pcBlue, wash=pcBlue] (4.15,-0.33) circle (0.09); \draw[pcBlue, line width=0.6pt] (4.07,-0.29) -- (4.15,-0.13) -- (4.23,-0.29);
+% row 3: lamp, no juice -> a gap where the juice was expected
+\draw[pcBlue, line width=0.6pt, densely dotted] (4.15,-1.38) circle (0.09); \draw[pcBlue, line width=0.6pt, densely dotted] (4.07,-1.34) -- (4.15,-1.18) -- (4.23,-1.34);
+\draw[penlite=pcRed] (3.65,-2.22) -- (3.65,-2.28) -- (4.65,-2.28) -- (4.65,-2.22);
+\node[lbl, text=pcRed, anchor=north] at (4.15,-2.3) {silencio};
+\node[lbl, anchor=east, align=right] at (-0.1,0.15) {jugo\\sin lamparita};
+\node[lbl, anchor=east, align=right] at (-0.1,-0.9) {lamparita,\\luego jugo};
+\node[lbl, anchor=east, align=right] at (-0.1,-1.95) {lamparita,\\sin jugo};
+}{Un estallido ante el jugo inesperado; otro ante la lamparita que lo promete; y un silencio justo cuando el jugo prometido no llega.}
+
+La regla que explica los tres casos: la dopamina no comunica “bien”, sino “mejor de lo que esperaba”. El jugo inesperado es una sorpresa agradable. El prometido no es ninguna sorpresa. El prometido que no llega es una sorpresa desagradable. Exactamente esa magnitud usan los programas que aprenden de sus errores. Volveremos a ella.
+
+\section*{Para llevar}
+
+El cerebro es una red enorme de piezas de aspecto idéntico. Casi todas son los “más” y los “menos” de una red telefónica de datos. Y muy pocas son emisoras de radio que ajustan toda la red a la vez. En el próximo capítulo veremos qué se puede construir solo con “más”.
+
+\fullversion{1}

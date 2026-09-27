@@ -1,0 +1,214 @@
+\chapter{Las salidas de la máquina: cómo controla el cerebro los músculos}
+\chaptermark{Las salidas de la máquina}
+\label{sec:muscles}
+
+\section{La salida rápida}
+
+Todo lo que la máquina hace rápido en el mundo lo hace con los músculos. Una palabra, una mirada, un paso, una sonrisa son contracciones musculares. La segunda salida, la lenta, la química del cuerpo, se analiza en el capítulo~\ref{sec:chemoutput}. En la fig.~\ref{fig:machine} la salida era una flecha, “músculos”; veamos ahora qué hay detrás de esa flecha.
+
+El último eslabón de la cadena son las neuronas \nt{ACET}, las mismas que en la tabla~\ref{tab:types} tienen anotado “salida al músculo”. Cada fibra muscular recibe entrada de exactamente una de estas neuronas, y una neurona controla un grupo de fibras: de unos cientos a un par de miles~\cite{Feinstein1955mu}. En los músculos que necesitan un ajuste fino las unidades son más pequeñas; en los grandes músculos de las piernas, más grandes. A la neurona junto con sus fibras se la llama \emph{unidad motora}: es el trozo de músculo más pequeño que el cerebro puede activar por separado.
+
+La sinapsis de la neurona sobre el músculo no se parece en nada a las sinapsis corticales del capítulo~\ref{sec:code}. Allí se perdía la mayoría de las espigas. Aquí cada espiga libera varias veces más acetilcolina de la necesaria para que la fibra se active~\cite{WoodSlater2001}. Es una sinapsis con \emph{margen de seguridad}: una espiga de la neurona, exactamente una contracción de las fibras. Dentro de la máquina pueden permitirse conexiones poco fiables y corregir los errores con redundancia; a la salida, un error cuesta un movimiento, y la fiabilidad se compra directamente en el hardware.
+
+\section{La fuerza: frecuencia y número de unidades}
+
+Una espiga produce una contracción aislada, una sacudida: la fuerza sube en unas decenas de milisegundos y luego baja. Una buena aproximación es~\cite{Fuglevand1993}
+\begin{equation}
+h(t) \;=\; F_1\,\frac{t}{T_c}\,e^{\,1-t/T_c},
+\label{eq:twitch}
+\end{equation}
+donde $T_c$ es el tiempo de subida, del orden de $50\ms$, y $F_1$ es la fuerza de una sacudida. Si las espigas llegan más seguido, las sacudidas se suman:
+\begin{empheq}[box=\keybox]{equation}
+F(t) \;=\; \sum_k h\bigl(t-t_k\bigr) .
+\label{eq:forcesum}
+\end{empheq}
+Es el mismo filtro pasabajos que convertía las espigas en concentración en el capítulo~\ref{sec:serocomputer}, solo que ahora la salida no es una concentración, sino una fuerza. El músculo es un convertidor digital-analógico de espigas a fuerza (fig.~\ref{fig:tetanus}). En nuestro modelo, con cinco espigas por segundo las sacudidas casi no se solapan y la fuerza salta de $0.2F_1$ a $1.1F_1$; con quince ya se mantiene entre $1.8F_1$ y $2.2F_1$; con cuarenta se vuelve casi constante, cerca de $5.4F_1$. Un músculo real se satura con espigas frecuentes, así que la suma lineal~\eqref{eq:forcesum} solo vale hasta unas decenas de espigas por segundo.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=20cm,y=0.55cm]
+\draw[->,gray!70!black] (0,0) -- (0.66,0) node[right,font=\small,black] {$t$, s};
+\draw[->,gray!70!black] (0,0) -- (0,6.4) node[left,font=\small,black] {$F/F_1$};
+\foreach \t in {0,0.2,0.4,0.6}{\draw[gray!60!black] (\t,-0.1) -- (\t,0.1); \node[below,font=\scriptsize] at (\t,0) {\t};}
+\foreach \f in {1,3,5}{\draw[gray!60!black] (-0.004,\f) -- (0.004,\f); \node[left,font=\scriptsize] at (0,\f) {\f};}
+\draw[thick,blue!60!black] plot file {figures/muscle_twitch_5.dat};
+\draw[thick,green!45!black] plot file {figures/muscle_twitch_15.dat};
+\draw[thick,red!70!black] plot file {figures/muscle_twitch_40.dat};
+\node[font=\scriptsize,blue!60!black,anchor=west] at (0.605,0.9) {5 esp./s};
+\node[font=\scriptsize,green!45!black,anchor=west] at (0.605,2.1) {15 esp./s};
+\node[font=\scriptsize,red!70!black,anchor=west] at (0.605,5.4) {40 esp./s};
+\end{tikzpicture}
+\caption{El músculo como convertidor digital-analógico: la fuerza~\eqref{eq:forcesum} con espigas regulares de una unidad motora, $T_c=50\ms$. Las espigas espaciadas dan sacudidas separadas; las frecuentes se funden en una fuerza constante, igual que las espigas frecuentes se funden en una concentración constante en la fig.~\ref{fig:lowpass}.}
+\label{fig:tetanus}
+\end{figure}
+
+El cerebro tiene dos perillas de fuerza: la frecuencia de espigas de cada unidad y el número de unidades activadas. Y la segunda perilla es muy ingeniosa. Las unidades de un músculo son distintas: las más débiles son cien veces más débiles que las más fuertes. Cuando se necesita cada vez más fuerza, las unidades se activan \emph{por orden de tamaño}, de las pequeñas a las grandes~\cite{Henneman1957}. Nadie calcula ese orden: las neuronas pequeñas simplemente se excitan con más facilidad con la misma entrada común, de modo que el orden de activación lo fija el propio hardware.
+
+¿Qué se gana con esto? Supongamos que cada unidad siguiente en el orden es $q$ veces más fuerte que la anterior, con $q$ algo mayor que uno. La fuerza de todas las unidades activas es la suma de una progresión geométrica, y casi toda corresponde a las últimas unidades. Entonces cada unidad nueva que se activa añade
+\begin{empheq}[box=\keybox]{equation}
+\frac{\Delta F}{F} \;\approx\; q-1 \;=\; \text{const} ,
+\label{eq:sizeprinciple}
+\end{empheq}
+es decir, el paso de fuerza es proporcional a la propia fuerza. Con un esfuerzo débil, el cerebro lo dosifica en porciones pequeñas; con uno fuerte, en porciones grandes. Es un \emph{número de punto flotante}: el exponente lo fija cuántas unidades están activas, y la mantisa, la frecuencia de sus espigas. Es la misma escala logarítmica que la de los sensores del capítulo~\ref{sec:sensors}: la entrada y la salida de la máquina miden el mundo en proporciones relativas.
+
+El punto flotante tiene su lado negativo. La dispersión de la fuerza también crece en proporción a ella: un movimiento fuerte es inevitablemente menos preciso que uno débil. Según una hipótesis influyente, justamente este ruido dependiente de la señal explica por qué nuestros movimientos son suaves: una orden suave da la menor dispersión en el punto final~\cite{HarrisWolpert1998}.
+
+\section{Tirar, pero no empujar: dos cables por articulación}
+
+El músculo solo sabe tirar. No puede empujar, igual que una neurona \nt{GLUT} no puede emitir una señal negativa. La solución es conocida del capítulo~\ref{sec:glutcomputer}: \emph{dos cables}. Cada articulación la atiende un par de músculos que tiran en sentidos opuestos (fig.~\ref{fig:antagonists}). Si sus fuerzas son $F_1$ y $F_2$, y el brazo de palanca es $\ell$, el momento de giro y la rigidez de la articulación son
+\begin{empheq}[box=\keybox]{equation}
+M \;=\; \ell\,(F_1-F_2), \qquad K \;\approx\; \kappa_m\,(F_1+F_2),
+\label{eq:antagonists}
+\end{empheq}
+donde $\kappa_m$ es el coeficiente que relaciona la fuerza del músculo con su rigidez: un músculo tenso es más elástico que uno relajado. La diferencia de fuerzas fija el momento; la suma, la rigidez~\cite{Hogan1984}. Con dos cables el cerebro controla dos magnitudes independientes: hacia dónde girar la articulación y con qué firmeza sostenerla. Cuando hay que sostener una taza sin derramarla, tensamos ambos músculos a la vez: el momento es el mismo, la rigidez es mayor, y un empujón casual desvía menos la mano.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  nrn/.style={circle,draw,very thick,minimum size=0.95cm,inner sep=0pt,font=\scriptsize},
+  inh/.style={-{Bar[width=7pt]},thick,red!70!black}]
+% the joint: a bar on a pivot, two springs pulling down on either side
+\fill[gray!30] (4.6,-0.25) -- (5.4,-0.25) -- (5,0.15) -- cycle;
+\draw[line width=3pt,gray!50!black] (2.4,0.2) -- (7.6,0.2);
+\fill[black] (5,0.2) circle (0.08);
+\draw[decorate,decoration={coil,segment length=5pt,amplitude=4pt},very thick,blue!60!black] (3.0,0.2) -- (3.0,-1.6);
+\draw[decorate,decoration={coil,segment length=5pt,amplitude=4pt},very thick,orange!85!black] (7.0,0.2) -- (7.0,-1.6);
+\draw[very thick] (2.5,-1.6) -- (3.5,-1.6); \draw[very thick] (6.5,-1.6) -- (7.5,-1.6);
+\node[font=\small,blue!60!black] at (2.35,-0.75) {$F_1$};
+\node[font=\small,orange!85!black] at (7.65,-0.75) {$F_2$};
+\draw[->,thick] (5.9,0.75) arc (60:120:1.8) node[above,font=\scriptsize,pos=0.5] {$M=\ell(F_1-F_2)$};
+% motor neurons and reflex circuit
+\node[nrn,fill=green!12] (M1) at (1.6,-3.0) {\nt{ACET}};
+\node[nrn,fill=green!12] (M2) at (8.4,-3.0) {\nt{ACET}};
+\node[nrn,fill=red!10] (G) at (5.0,-3.0) {\nt{GLYC}};
+\node[nrn,fill=blue!6] (S) at (1.6,-5.0) {\nt{GLUT}};
+\draw[->,very thick] (M1) -- (3.0,-1.7);
+\draw[->,very thick] (M2) -- (7.0,-1.7);
+\draw[->,thick] (S) -- (M1);
+\draw[->,thick] (S) -- (G);
+\draw[inh] (G) -- (M2);
+\draw[->,thick,densely dashed,gray!60!black] (3.15,-1.2) to[bend left=25] node[pos=0.35,right,font=\scriptsize,black] {estiramiento} (S.north east);
+\draw[->,thick,blue!60!black] (-0.3,-3.0) node[left,font=\scriptsize,black,align=right] {orden\\del cerebro} -- (M1);
+\draw[->,thick,blue!60!black] (10.3,-3.0) node[right,font=\scriptsize,black,align=left] {orden\\del cerebro} -- (M2);
+\end{tikzpicture}
+\caption{Dos músculos para una articulación y el lazo de realimentación más rápido. Las neuronas \nt{ACET} reciben órdenes del cerebro y tiran de la articulación en sentidos opuestos; la diferencia de fuerzas la hace girar, la suma la vuelve más rígida. El sensor de estiramiento (\nt{GLUT}) del músculo izquierdo excita su propia neurona \nt{ACET} y, a través de una intermediaria \nt{GLYC}, inhibe la neurona del músculo antagonista: el veto del capítulo~\ref{sec:gaba}.}
+\label{fig:antagonists}
+\end{figure}
+
+\section{Realimentación con retardo}
+
+Los músculos no trabajan a ciegas. En cada uno hay sensores de estiramiento, de los que se habló en la tabla~\ref{tab:sensors}, y el lazo más corto se cierra directamente en la médula espinal (fig.~\ref{fig:antagonists}). Si el músculo se estira de repente, el sensor de estiramiento excita su propia neurona \nt{ACET}, el músculo se contrae y devuelve la articulación a su sitio. Al mismo tiempo, a través de una neurona intermediaria inhibidora, se apaga el músculo antagonista para que no estorbe. Esa intermediaria es \nt{GLYC}, el tipo de la tabla~\ref{tab:types} que no tuvo capítulo propio: su lugar está precisamente aquí, en los lazos rápidos de la médula espinal.
+
+Cada lazo tiene un retardo $d$: el espinal, unos $25$--$30\ms$ para el brazo; el lazo a través de la corteza, entre una vez y media y tres veces más; el lazo a través del ojo, $100$--$200\ms$. Y una realimentación retardada, como vimos en la proposición~\ref{prop:ei}, hace oscilar el sistema. Para el regulador más simple, que corrige una desviación $x$ con velocidad $G$ según información de hace $d$ segundos, $\dd x/\dd t=-G\,x(t-d)$, la condición de estabilidad es~\cite{Hayes1950}
+\begin{empheq}[box=\keybox]{equation}
+G\,d \;<\; \frac{\pi}{2} ,
+\label{eq:delaystable}
+\end{empheq}
+y en el límite el sistema oscila con frecuencia $1/(4d)$. Lo comprobamos en un modelo: con $d=30\ms$, la desviación se amortigua con $G=40$ por segundo, y con $G=55$ por segundo, un poco por encima del límite de $52$, oscila cada vez más.
+
+De aquí salen dos consecuencias. La primera: cuanto más largo es el lazo, más despacio debe corregir. A través del ojo, con un retardo de ciento cincuenta milisegundos, no se puede corregir la mano más rápido que en una décima de segundo, aproximadamente; si no, temblará. La segunda: el límite de estabilidad del lazo espinal, $1/(4\cdot30\ms)\approx8$ oscilaciones por segundo, está cerca de la frecuencia del temblor fino que tiene toda persona sana, de ocho a doce oscilaciones por segundo. El lazo de estiramiento es una de las fuentes probables de ese temblor~\cite{McAuleyMarsden2000}.
+
+¿Cómo se mueve entonces el cerebro rápido y con precisión si la realimentación llega tarde? Según una hipótesis extendida, \emph{predice}: mantiene un modelo interno del cuerpo y calcula cuál será el resultado de una orden sin esperar a los sensores~\cite{WolpertGhahramani2000}. Los sensores sirven para corregir el modelo, no cada movimiento. Un ingeniero lo llamaría control prealimentado con observador de estado.
+
+\section{Generadores del ritmo de los movimientos}
+
+Caminar, respirar, masticar son movimientos rítmicos. ¿Necesitan un reloj? No. En la médula espinal y el tronco encefálico hay pequeñas redes que generan el ritmo por sí mismas, aunque no les llegue nada rítmico~\cite{MarderBucher2001}. La red más simple de este tipo está hecha con piezas que ya tenemos: dos grupos de neuronas \nt{GLUT} que se inhiben mutuamente a través de intermediarias \nt{GABA} o \nt{GLYC}, como en la fig.~\ref{fig:wta}, y que se fatigan lentamente, como la memoria del capítulo~\ref{sec:glutcomputer}:
+\begin{empheq}[box=\keybox]{equation}
+\tau\,\frac{\dd r_i}{\dd t} = -r_i + \bigl[I - \beta\,r_j - a_i\bigr]_+ ,
+\qquad
+\tau_a\,\frac{\dd a_i}{\dd t} = -a_i + b\,r_i ,
+\label{eq:halfcentre}
+\end{empheq}
+donde $a_i$ es la fatiga del grupo $i$ y $j$ es el otro grupo. La inhibición mutua con $\beta>1$ elige un ganador (proposición~\ref{prop:wta}). El ganador trabaja y se fatiga; cuando la fatiga se come su entrada, el perdedor, ya descansado, toma la delantera y empieza a su vez a fatigarse. Los grupos trabajan por turnos, y cada uno controla su músculo del par (fig.~\ref{fig:halfcentre}).
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=3.2cm,y=2.4cm]
+\draw[->,gray!70!black] (0,0) -- (4.2,0) node[right,font=\small,black] {$t$, s};
+\draw[->,gray!70!black] (0,0) -- (0,1.2) node[left,font=\small,black] {$r$};
+\foreach \t in {0,1,2,3,4}{\draw[gray!60!black] (\t,-0.03) -- (\t,0.03); \node[below,font=\scriptsize] at (\t,0) {\t};}
+\draw[thick,blue!60!black] plot file {figures/halfcentre1.dat};
+\draw[thick,orange!85!black] plot file {figures/halfcentre2.dat};
+\node[font=\scriptsize,blue!60!black,anchor=west] at (1.6,1.28) {grupo 1: “adelante”};
+\node[font=\scriptsize,orange!85!black,anchor=west] at (2.7,1.28) {grupo 2: “atrás”};
+\end{tikzpicture}
+\caption{Generador de ritmo según el modelo~\eqref{eq:halfcentre}: $I=1$, $\beta=2$, $b=2$, $\tau=20\ms$, $\tau_a=0.4\,\text{s}$. Dos grupos con inhibición mutua y fatiga trabajan por turnos con un período de $0.84\,\text{s}$, aunque la entrada es una señal constante.}
+\label{fig:halfcentre}
+\end{figure}
+
+En nuestro modelo, con entrada constante, los grupos se relevan con un período de $0.84\,\text{s}$, aproximadamente el doble del tiempo de fatiga $\tau_a$. Una orden constante desde arriba, “camina”, se convierte localmente en ritmo. Es otro ritmo local, como el ritmo del lazo \nt{GLUT}--\nt{GABA} del capítulo~\ref{sec:gaba}: surge solo cuando la red trabaja y marca el compás únicamente a los músculos que controla.
+
+\begin{keyblock}
+\begin{proposition}[La salida de la máquina]
+\label{prop:muscles}
+El cerebro controla los músculos como una jerarquía de reguladores. Arriba se elige la acción (capítulo~\ref{sec:dofa}); más abajo, generadores locales convierten órdenes constantes en ritmo, y los lazos rápidos de la médula espinal sostienen las articulaciones. La fuerza se fija en punto flotante: el exponente, con el número de unidades activadas por tamaño; la mantisa, con la frecuencia de espigas. Cada articulación se controla con un par de músculos que tiran, cuya diferencia de fuerzas fija el momento y cuya suma fija la rigidez. Estos dispositivos están medidos; que el cerebro se apoye en un modelo interno del cuerpo es una hipótesis bien fundada.
+\end{proposition}
+\end{keyblock}
+
+\section{Resumen}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{3.0cm}>{\raggedright}p{4.6cm}>{\raggedright\arraybackslash}p{5.2cm}}
+\toprule
+Qué hace la salida & Cómo & Qué se sabe \\
+\midrule
+convierte espigas en fuerza & suma de sacudidas~\eqref{eq:forcesum}, filtro pasabajos & medido; la suma lineal es una simplificación \\
+dosifica la fuerza & activación de unidades por tamaño, punto flotante~\eqref{eq:sizeprinciple} & orden de activación medido \\
+empuja sabiendo solo tirar & par de músculos: momento, la diferencia; rigidez, la suma~\eqref{eq:antagonists} & medido \\
+sostiene la articulación & lazo de estiramiento, veto del antagonista mediante \nt{GLYC} & medido \\
+no tiembla & $Gd<\pi/2$~\eqref{eq:delaystable} & se deduce de la teoría de control; aporte al temblor: causa probable \\
+se mueve rápido & predicción con un modelo interno & hipótesis bien fundada \\
+camina y respira con ritmo & generador de ritmo~\eqref{eq:halfcentre} & generadores medidos; el esquema más simple es un modelo \\
+\bottomrule
+\end{tabular}
+\caption{Cómo controla la máquina los músculos.}
+\label{tab:muscles}
+\end{table}
+
+La salida de la máquina está hecha con los mismos trucos que todo lo demás (tabla~\ref{tab:muscles}): dos cables en lugar de un signo, un filtro pasabajos en lugar de un DAC, una escala logarítmica en lugar de una lineal, inhibición mutua y fatiga en lugar de un generador de reloj. La entrada (capítulo~\ref{sec:sensors}) y la salida miden el mundo en proporciones relativas, y entre ellas trabaja la máquina a la que está dedicado este libro.
+
+\section{Ejercicios}
+
+\begin{exercise}[\lvlA]
+\label{ex:13:1}
+\emph{El punto flotante en cifras.} Un músculo tiene $N=100$ unidades motoras con fuerzas $f_n=f_1q^{\,n-1}$; la más fuerte es $100$ veces más fuerte que la más débil. (a)~Halle $q$, el paso relativo~\eqref{eq:sizeprinciple} y el rango dinámico en decibeles. (b)~¿Qué paso tiene, con fuerza $10f_1$, un “DAC lineal” de $100$ unidades iguales con la misma fuerza total?
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:13:2}
+\emph{El precio del margen de seguridad.} Por cada espiga, la sinapsis sobre la fibra muscular libera un número de cuantos de Poisson con media $m$, y la fibra se activa con $n_{\text{um}}=20$ cuantos o más; el margen de seguridad es $S=m/n_{\text{um}}$. ¿Cuántos fallos por día da una unidad que trabaja a $20$ espigas por segundo con $S=2$ y con $S=4$?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:13:3}
+\emph{El músculo como filtro.} La sacudida~\eqref{eq:twitch} con $T_c=50\ms$ es la respuesta al impulso de un sistema lineal. (a)~Halle su función de transferencia $H(s)$ y su frecuencia de corte. (b)~¿Con qué frecuencia de espigas regulares la amplitud de las pulsaciones de fuerza es el $10\%$ de la fuerza media?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:13:4}
+\emph{Más rápido que el retardo no se corrige.} Regulador $\dd x/\dd t=-G\,x(t-d)$. (a)~Muestre que la desviación se amortigua sin oscilaciones lo más rápido posible con $Gd=1/e$, a una tasa de $1/d$. (b)~Halle ese $G$ y la constante de tiempo de amortiguamiento para el lazo espinal, $d=30\ms$, y para el lazo a través del ojo, $d=150\ms$.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:13:5}
+\emph{El período del generador de ritmo.} Con $\tau\ll\tau_a$, el período $T$ del modelo~\eqref{eq:halfcentre} viene dado por $(\beta-1)(1-E^{2+b})/(\beta-E)=b\,(1-E^{1+b})/(1+b)$, donde $E=e^{-T/(2\tau_a)}$. (a)~Halle $T$ con $\beta=b=2$, $\tau_a=0.4$~s. (b)~Muestre que $T$ no depende de la entrada $I$, y que el ritmo solo es posible con $b>\beta-1$.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:13:6}
+\emph{Simulación del generador.} Importe la función \texttt{halfcentre} de \texttt{models/\allowbreak muscle\_models.py} (no ejecute el archivo en sí) y mida el período, descartando los dos primeros ciclos, con $b=0.8$, $1.05$, $1.2$, $1.5$, $2$, $4$ y con $I=0.5$, $1$, $2$. ¿Puede la orden “camina más rápido” cambiar el ritmo a través de $I$?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:13:7}
+\emph{Rigidez contra reflejo.} Una articulación está bajo un lazo de estiramiento: $\dd\theta/\dd t=-a\theta(t)-G\theta(t-d)$, $a=K/B$, $d=30\ms$. Redúzcalo al ejercicio~\ref{ex:13:4} y halle el menor $a$ con el que la desviación se amortigua sin oscilaciones con constante de tiempo de $15\ms$, y el $G$ necesario. ¿Cómo debe cambiar $G$ al aumentar la cocontracción de los músculos?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:13:8}
+\emph{Una perilla de ritmo.} Según los ejercicios~\ref{ex:13:5} y~\ref{ex:13:6}, la entrada $I$ del generador~\eqref{eq:halfcentre} solo cambia la amplitud, no el ritmo. Proponga el cambio mínimo del modelo, con piezas del libro, con el que por debajo de cierto $I_{\min}$ no haya ritmo y por encima el período decrezca al crecer $I$, al menos a la mitad al triplicar $I$. Halle $I_{\min}$ con $\tau\ll\tau_a$ y compruébelo simulando.
+\end{exercise}

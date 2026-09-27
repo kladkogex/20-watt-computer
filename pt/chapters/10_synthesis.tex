@@ -1,0 +1,230 @@
+\chapter{A máquina inteira}
+\chaptermark{A máquina inteira}
+\label{sec:synthesis}
+
+\section{O que montamos}
+
+Pegamos um tipo de neurônio de cada vez da tabela~\ref{tab:types} e perguntamos o que ele acrescenta à máquina de calcular. As regras foram sempre as mesmas: só o que existe num organismo vivo, e nenhum relógio comum. Agora vamos juntar as peças numa só máquina e ver como elas funcionam em conjunto.
+
+O quadro do capítulo~\ref{sec:neurontypes} se confirmou e ficou mais preciso. Uma enorme rede endereçada de neurônios \nt{GLUT} transporta os dados. Os neurônios \nt{GABA} controlam o fluxo desses dados. E sobre a rede pairam quatro canais de difusão, cada um com o seu botão: \nt{DOPA} diz quais mudanças de peso manter, \nt{SERO} mantém o nível geral e, por hipótese, o horizonte de planejamento, \nt{NORA} escolhe entre explorar e decidir, \nt{ACET} escolhe entre escrita e leitura (fig.~\ref{fig:machine}).
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  blk/.style={draw,very thick,rounded corners=3pt,align=center,font=\small},
+  reg/.style={draw,very thick,double,double distance=1.2pt,circle,minimum size=1.25cm,inner sep=0pt,font=\scriptsize,fill=orange!15},
+  bc/.style={->,thick,densely dashed,orange!85!black}]
+% sensors, bus, actions
+\node[blk,fill=green!8,text width=1.7cm] (S) at (0.9,0) {sensores\\\scriptsize liga/desliga};
+\draw[very thick,rounded corners=4pt,fill=blue!5] (2.6,-1.35) rectangle (9.0,1.35);
+\node[font=\small] at (5.8,0.95) {barramento \nt{GLUT}: dados};
+\node[font=\scriptsize,align=center] at (4.3,0.25) {coincidências, atrasos,\\lógica (cap.~\ref{sec:glutcomputer})};
+\node[font=\scriptsize,align=center] at (7.4,0.25) {memória, código\\(cap.~\ref{sec:code}, \ref{sec:acet})};
+\draw[thick,red!70!black,fill=red!8,rounded corners=2pt] (2.8,-1.15) rectangle (8.8,-0.55);
+\node[font=\scriptsize,red!60!black] at (5.8,-0.85) {\nt{GABA} (cap.~\ref{sec:gaba}): veto, escolha, divisão, ritmo};
+\node[blk,fill=blue!5,text width=2.0cm] (A) at (10.9,0) {escolha\\da ação};
+\draw[->,very thick] (S) -- (2.6,0);
+\draw[->,very thick] (9.0,0) -- (A);
+\draw[->,very thick] (A) -- (12.6,0) node[right,font=\small] {músculos};
+\pic[scale=1.1] at (13.2,-0.5) {spring};
+\pic[scale=1.15] at (0.4,0.85) {eyepic};
+\pic[scale=1.05] at (1.35,0.85) {speaker};
+% registers
+\node[reg] (D) at (3.4,3.2) {\nt{DOPA}};
+\node[reg] (C) at (5.6,3.2) {\nt{SERO}};
+\node[reg] (N) at (7.8,3.2) {\nt{NORA}};
+\node[reg] (H) at (10.0,3.2) {\nt{ACET}};
+\node[font=\scriptsize,align=center,above=1pt] at (D.north) {erro $\delta$};
+\node[font=\scriptsize,align=center,above=1pt] at (C.north) {nível, $\tau_\gamma$};
+\node[font=\scriptsize,align=center,above=1pt] at (N.north) {ganho $g$};
+\node[font=\scriptsize,align=center,above=1pt] at (H.north) {escrita $a$};
+\draw[bc] (D.south) -- (3.4,1.35);
+\draw[bc] (C.south) -- (5.6,1.35);
+\draw[bc] (N.south) -- (7.8,1.35);
+\draw[bc] (H.south) -- (10.0,2.1) -- (8.8,1.35);
+\draw[bc] (H.south east) to[bend left=20] (A.north east);
+\draw[->,thick] (2.85,1.35) -- (2.85,2.75) -- (D.west) node[pos=0.25,left,font=\scriptsize] {$V$};
+\draw[->,thick,green!45!black] (0.4,3.2) node[left,black,font=\small] {prêmio $r$} -- (2.2,3.2) -- (D.west);
+\pic[scale=0.9] at (-0.45,3.7) {juice};
+\draw[->,thick,densely dotted,gray!50!black] ([yshift=0.45cm]D.north) to[bend left=18] node[above,font=\scriptsize,black] {surpresa} ([yshift=0.45cm]N.north);
+\end{tikzpicture}
+\caption{A máquina inteira. O barramento \nt{GLUT} leva os dados dos sensores à escolha da ação; \nt{GABA} controla o fluxo dentro dele. Os círculos duplos são os canais de difusão; as setas tracejadas, a difusão dos seus sinais para toda a rede, cada um com o seu botão. \nt{DOPA} recebe a recompensa $r$ e a expectativa $V$ do crítico dentro do barramento (cap.~\ref{sec:dofa}); a seta pontilhada é a hipótese de que \nt{NORA} fica sabendo da surpresa por erros anormalmente grandes (cap.~\ref{sec:nora}).}
+\label{fig:machine}
+\end{figure}
+
+\section{Uma fórmula para todos os botões}
+
+Os botões podem ser reunidos numa só fórmula esquemática. Não é um modelo novo, e sim um resumo dos modelos dos capítulos~\ref{sec:glutcomputer}--\ref{sec:acet}: cada símbolo vem do seu capítulo.
+\begin{empheq}[box=\keybox]{equation}
+\begin{aligned}
+\tau\,\frac{\dd r_i}{\dd t} \;&=\; -r_i + F\Bigl(g\,\Bigl[\tfrac{1+a}{2}\,x_i + (1-a)\sum_j W_{ij}\,r_j - \sum_k M_{ik}\,q_k - \theta\Bigr]\Bigr),\\
+\frac{\dd W_{ij}}{\dd t} \;&=\; \eta\,a\,\delta(t)\,e_{ij}(t),
+\qquad \tau_e\,\frac{\dd e_{ij}}{\dd t} = -e_{ij} + r_i\,r_j,
+\qquad \delta = r + \frac{\dd V}{\dd t} - \frac{V}{\tau_\gamma} .
+\end{aligned}
+\label{eq:machine}
+\end{empheq}
+Aqui $r_i$ são as taxas de disparo dos neurônios \nt{GLUT}, $x_i$ é a entrada vinda dos sensores, $W_{ij}\ge0$ são os pesos entre eles (capítulo~\ref{sec:glutcomputer}); $q_k$ são as taxas dos neurônios \nt{GABA}, $M_{ik}\ge0$ é a força da sua inibição (capítulo~\ref{sec:gaba}); $e_{ij}$ é o traço de elegibilidade, $\delta$ é o erro de \nt{DOPA} (capítulo~\ref{sec:dofa}); $\tau_\gamma$ é o horizonte, por hipótese definido por \nt{SERO}; $g$ é o ganho de \nt{NORA} (capítulo~\ref{sec:nora}); $a$ é o nível de \nt{ACET} (capítulo~\ref{sec:acet}).
+
+Veja o que não está em~\eqref{eq:machine}. Não há ciclo de relógio: tudo está escrito em equações diferenciais, e cada neurônio muda por conta própria. Não há memória separada: quem lembra são os mesmos $W_{ij}$ pelos quais passa o cálculo, e a mesma atividade $r_i$. Não há correções individuais para a imensa maioria das sinapses: o seu aprendizado é o produto de um traço local por um único número comum; um fio de erro próprio para cada saída só existe no circuito que ensina os movimentos (capítulo~\ref{sec:motorlearning}). E há só quatro tipos de sinais de controle, $\delta$, $\tau_\gamma$, $g$, $a$, para oitenta bilhões de neurônios. Na verdade cada um deles não é um número só, mas um pequeno feixe de linhas paralelas (proposição~\ref{prop:bundle}); só que as linhas num feixe são poucas.
+
+\begin{keyblock}
+\begin{proposition}[Arquitetura]
+\label{prop:architecture}
+A máquina do cérebro, até onde a entendemos hoje, pode ser descrita em três camadas. Os dados correm pelo barramento de endereços \nt{GLUT}. O fluxo de dados é dirigido, limitado e normalizado pelos neurônios \nt{GABA} endereçados. O modo de funcionamento é definido por alguns canais de difusão, cada um sendo um pequeno feixe de linhas paralelas, comuns a grandes regiões da rede. As duas primeiras camadas estão firmemente estabelecidas; a divisão de papéis entre os canais de difusão é, em grande parte, hipótese.
+\end{proposition}
+\end{keyblock}
+
+\section{Todos os tipos numa tabela}
+
+A tabela~\ref{tab:synthesis} reúne todos os tipos de neurônios do livro. Os quatro tipos que não ganharam capítulo próprio ocupam nela uma linha cada; dois deles encontraram um papel nos capítulos sobre as saídas da máquina: \nt{GLYC} nos circuitos da medula espinhal (capítulo~\ref{sec:muscles}) e \nt{ADRE} na saída química (capítulo~\ref{sec:chemoutput}). O papel dos outros dois no cálculo é simples ou desconhecido. As substâncias que não definem um tipo de neurônio estão reunidas no apêndice~\ref{sec:othermediators}.
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{1.3cm}>{\raggedright}p{1.0cm}>{\raggedright}p{3.9cm}>{\raggedright}p{1.5cm}>{\raggedright}p{1.8cm}>{\raggedright\arraybackslash}p{3.8cm}}
+\toprule
+Tipo & Cap. & O que calcula & Tempo & Barramento & O que se sabe \\
+\midrule
+\nt{GLUT} & \ref{sec:glutcomputer}, \ref{sec:code}, \ref{sec:sensors}, \ref{sec:motorlearning}, \ref{sec:dendrites} & dados: coincidências, atrasos, lógica, memória, sequências & ms & de endereços & estabelecido \\
+\nt{GABA} & \ref{sec:gaba}, \ref{sec:code}, \ref{sec:pain}, \ref{sec:motorlearning} & controle de fluxo: veto, escolha, divisão, estabilidade, ritmo; porta da dor & ms & de endereços & estabelecido; divisão da taxa só junto com o ruído de fundo \\
+\nt{SERO} & \ref{sec:serocomputer}, \ref{sec:pain}, \ref{sec:sleep} & regulador de nível, suavização; horizonte $\tau_\gamma$; volume da dor; modos do sono & segundos & volume & autoinibição medida; horizonte é hipótese \\
+\nt{DOPA} & \ref{sec:dofa}, \ref{sec:dofaalt} & erro de predição $\delta$; nível lento é o preço do tempo & $0.1$\,s e minutos & difusão & $\delta$ medido; extensões no cap.~\ref{sec:dofaalt} \\
+\nt{NORA} & \ref{sec:nora}, \ref{sec:pain}, \ref{sec:chemoutput}, \ref{sec:sleep} & ganho $g$: explorar ou decidir; surpresa; ``acelerador'' dos órgãos & segundos & difusão & aumento da relação sinal-ruído medido; papel na exploração é hipótese \\
+\nt{ACET} & \ref{sec:acet}, \ref{sec:muscles}, \ref{sec:chemoutput}, \ref{sec:sleep} & escrita ou leitura; taxa de aprendizado; saída para o músculo; ``freio'' dos órgãos & segundos & ambos & três efeitos medidos; troca de modos é hipótese \\
+\nt{GLYC} & \ref{sec:muscles}, \ref{sec:pain} & peso negativo na medula e no tronco: veto do músculo antagonista & ms & de endereços & estabelecido \\
+\nt{HIST} & --- & sinal global ``fique acordado'' & lento & difusão & papel no cálculo não estudado \\
+\nt{ADRE} & \ref{sec:chemoutput} & ``acelerador'' do corpo todo pelo sangue; no cérebro, desconhecido & lento & difusão & estabelecido fora do cérebro; papel no cérebro incerto \\
+\nt{ASPA} & --- & peso positivo fraco & ms & de endereços & papel controverso \\
+\bottomrule
+\end{tabular}
+\caption{Todos os tipos de neurônios do livro: o que cada um calcula e quão bem isso é conhecido.}
+\label{tab:synthesis}
+\end{table}
+
+\section{Como os botões trabalham juntos}
+
+Até aqui cada capítulo girou um botão. Vamos agora acompanhar um evento através da máquina inteira (fig.~\ref{fig:timeline}). O animal aprendeu há muito tempo que a ação $A$ dá suco. Num certo momento o mundo muda: $A$ deixa de dar suco, e quem passa a dá-lo é a ação $B$, que o animal quase não experimenta.
+
+\emph{Erro.} O suco depois de $A$ não veio, e os neurônios \nt{DOPA} respondem com uma queda, $\delta<0$ pela fórmula do erro~\eqref{eq:ctd}. As sinapses que acabaram de escolher $A$ carregam o traço e enfraquecem.
+
+\emph{Surpresa.} Uma queda é um acaso comum. Mas as quedas se repetem, e os erros ficam maiores que o normal. Pela hipótese do capítulo~\ref{sec:nora}, é justamente esse o sinal de \nt{NORA}: o mundo mudou. O ganho $g$ cai, a escolha fica suave, e o ruído leva com mais frequência a experimentar $B$.
+
+\emph{Escrita.} Pela hipótese do capítulo~\ref{sec:acet}, depois da mudança \nt{ACET} sobe e põe a rede em modo de escrita: as conexões internas, que guardam o hábito antigo, ficam enfraquecidas, a entrada dos sensores é reforçada, e os pesos mudam com facilidade.
+
+\emph{Hábito novo.} Experimentar $B$ dá um suco que ninguém esperava: um pico, $\delta>0$, e as sinapses que escolheram $B$ se fortalecem. Algumas tentativas assim, e a expectativa $V$ alcança o mundo novo; os erros voltam a ser pequenos.
+
+\emph{Retorno.} A surpresa passou, \nt{NORA} devolve o ganho alto, a escolha volta a ser rígida; \nt{ACET} baixa, e a rede, em modo de leitura, usa o que aprendeu. Durante todo esse tempo \nt{SERO}, por hipótese, define o horizonte $\tau_\gamma$: até que ponto ainda vale a pena esperar por um suco distante.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=1.1cm,y=0.95cm]
+\foreach \y/\lab in {4/{$\delta$ (\nt{DOPA})},3/{$g$ (\nt{NORA})},2/{$a$ (\nt{ACET})},1/{escolha de $B$}}{
+  \draw[gray!60!black] (0,\y-0.35) -- (10,\y-0.35);
+  \node[left,font=\scriptsize] at (0,\y) {\lab};}
+\draw[densely dashed,gray!60!black] (2,0.4) -- (2,4.55) node[above,font=\scriptsize,black] {o mundo mudou};
+\draw[densely dashed,gray!60!black] (5,0.4) -- (5,4.55) node[above,font=\scriptsize,black] {primeiro suco por $B$};
+\pic[scale=0.85] at (2,5.25) {nojuice};
+\pic[scale=0.85] at (5,5.25) {juice};
+% delta: dips after the change, burst at the first juice for B, then back to zero
+\draw[thick,red!70!black] (0,3.65) -- (2.3,3.65) -- (2.3,3.3) -- (2.5,3.3) -- (2.5,3.65) -- (3.2,3.65) -- (3.2,3.3) -- (3.4,3.3) -- (3.4,3.65) -- (4.1,3.65) -- (4.1,3.35) -- (4.3,3.35) -- (4.3,3.65) -- (5.0,3.65) -- (5.0,4.35) -- (5.2,4.35) -- (5.2,3.65) -- (5.8,3.65) -- (5.8,4.1) -- (6.0,4.1) -- (6.0,3.65) -- (6.6,3.65) -- (6.6,3.85) -- (6.8,3.85) -- (6.8,3.65) -- (10,3.65);
+% gain: high, drops after surprise, recovers
+\draw[thick,blue!60!black] (0,3.2) -- (3.0,3.2) -- (3.4,2.75) -- (5.8,2.75) -- (7.2,3.2) -- (10,3.2);
+% ACh: low, rises after the change, falls after learning
+\draw[thick,green!45!black] (0,1.75) -- (2.8,1.75) -- (3.3,2.25) -- (6.8,2.25) -- (7.8,1.75) -- (10,1.75);
+% choice of B
+\draw[thick,black] (0,0.7) -- (3.0,0.7) plot[domain=3:10,samples=40] (\x,{0.7+0.6/(1+exp(-(\x-5.3)*1.8))});
+\draw[->,gray!70!black] (0,0.2) -- (10.2,0.2) node[below left,font=\scriptsize,black] {tempo};
+\end{tikzpicture}
+\caption{Um evento acompanhado através da máquina inteira. É um esquema qualitativo, baseado nos modelos e hipóteses dos capítulos~\ref{sec:dofa}--\ref{sec:acet}, e não o resultado de um cálculo. Depois da mudança \nt{DOPA} responde com quedas; as quedas repetidas, por hipótese, elevam o sinal de surpresa, \nt{NORA} reduz o ganho, \nt{ACET} liga a escrita; o primeiro suco por $B$ dá um pico, a escolha passa para $B$, e os botões voltam ao lugar.}
+\label{fig:timeline}
+\end{figure}
+
+Note que nenhum botão sabe o que os outros fazem. Cada um responde aos seus próprios indícios (o erro, o seu tamanho fora do comum, a incerteza), e a ordem das ações se forma sozinha, como num circuito assíncrono, em que cada bloco dispara quando as suas entradas estão prontas. Esse trabalho coordenado como um todo, até onde sabemos, ainda não foi testado: os botões foram medidos um a um, e o seu funcionamento conjunto é hipótese.
+
+\section{Em que esta máquina difere de um computador}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{2.2cm}>{\raggedright}p{4.2cm}>{\raggedright\arraybackslash}p{6.6cm}}
+\toprule
+& Computador comum & Cérebro \\
+\midrule
+tempo & relógio comum, cerca de um gigahertz & não há relógio comum; cada neurônio muda por conta própria, as janelas são definidas por eventos e ritmos locais (cap.~\ref{sec:glutcomputer}, \ref{sec:gaba}, \ref{sec:code}) \\
+elementos & portas binárias confiáveis & elementos analógicos de limiar; a sinapse perde a maior parte dos disparos (cap.~\ref{sec:code}) \\
+sinal da conexão & qualquer & definido pelo neurônio emissor (cap.~\ref{sec:neurontypes}) \\
+memória & separada do processador & nas mesmas conexões que o cálculo e na atividade autossustentada (cap.~\ref{sec:glutcomputer}, \ref{sec:acet}) \\
+aprendizado & retropropagação do erro & regras locais, um único número de difusão $\delta$ (cap.~\ref{sec:dofa}) e fios de erro para as saídas do circuito motor (cap.~\ref{sec:motorlearning}) \\
+controle & registradores e barramento de instruções & quatro canais de difusão, cada um um feixe de algumas linhas (cap.~\ref{sec:serocomputer}, \ref{sec:dofa}--\ref{sec:acet}) \\
+energia & dezenas a centenas de watts por processador & cerca de $20$ watts para o cérebro inteiro, em média cerca de um disparo por segundo por neurônio (cap.~\ref{sec:code}) \\
+\bottomrule
+\end{tabular}
+\caption{O cérebro e um computador comum.}
+\label{tab:computer}
+\end{table}
+
+A tabela~\ref{tab:computer} resume as principais diferenças. Nenhuma delas é um defeito que a natureza não teve tempo de corrigir: todas fazem parte de uma mesma solução. Sem um relógio comum, são necessários sensores de ``liga--desliga'' e detectores de coincidência. Elementos pouco confiáveis precisam da redundância de muitos neurônios. A memória que coincide com o cálculo precisa de \nt{ACET}, para que a escrita não estrague a leitura. O aprendizado sem fios de retorno precisa de \nt{DOPA} e de ruído. E o limite de energia de um disparo por segundo obriga toda a linguagem a ser econômica e a gastar disparos com novidades.
+
+\section{O que não sabemos}
+
+O mais honesto é terminar este resumo com a lista do que não sabemos. Cada item é um problema para um engenheiro.
+
+\emph{O código.} Conhecemos a capacidade do canal de disparos e sabemos que o receptor escolhe que parte da mensagem ler (capítulo~\ref{sec:code}). Mas não se sabe o quanto o córtex usa o instante exato dos disparos, nem se os neurônios têm ``palavras''.
+
+\emph{Aprendizado através de muitas camadas.} Um sinal de difusão ensina devagar, e mais devagar a cada neurônio que influi no resultado (proposição~\ref{prop:broadcastcost}). Então não se sabe como o córtex ajusta bilhões de pesos em circuitos de muitas camadas; há modelos em que o erro entre camadas é levado por rajadas de disparos~\cite{Payeur2021}. Talvez parte da resposta esteja nos cálculos dentro dos ramos do próprio neurônio, onde um neurônio se comporta como uma pequena rede de várias camadas: para reproduzir a resposta do modelo de um único neurônio cortical, uma rede artificial precisa de cinco a oito camadas~\cite{Beniaguev2021}, e os ramos dos neurônios humanos conseguem calcular até o OU exclusivo~\cite{Gidon2020}. Outro candidato é o autoaprendizado: se o córtex aprende a prever as suas próprias entradas, o erro surge no local, em cada camada, e nenhum sinal comum é necessário (capítulo~\ref{sec:dofa})~\cite{Keller2018}.
+
+\emph{O que os canais de difusão transmitem de fato.} Para \nt{DOPA} há um quadro padrão e seis extensões dele (capítulo~\ref{sec:dofaalt}); para \nt{NORA} e \nt{ACET}, hipóteses plausíveis (capítulos~\ref{sec:nora}, \ref{sec:acet}); para \nt{SERO}, sobretudo palpites.
+
+\emph{Coordenação no tempo.} Vimos como calcular uma função, medir o tempo a partir de um evento e cortar o fluxo em janelas com um ritmo local. Mas como uma rede enorme sem relógio comum coordena o trabalho de regiões distantes, só se entende em parte.
+
+\emph{Energia.} Vinte watts para tudo. Entendemos por que o código deve ser esparso (proposição~\ref{prop:economy}), mas construir uma máquina que faça o mesmo com a mesma potência ninguém ainda sabe~\cite{MehonicKenyon2022}.
+
+O cérebro é uma máquina de calcular montada sem engenheiro, mas segundo leis que qualquer engenheiro reconhece: circuitos RC, limiares, realimentações, filtros, barramentos e registradores de difusão. Lemos o seu esquema só em parte. Quem vai terminar de lê-lo são os que sabem ler esquemas.
+
+\section{O que vem a seguir no livro}
+
+Este capítulo reuniu o núcleo de cálculo da máquina. Os demais capítulos vão além dele. Os capítulos~\ref{sec:sensors} e~\ref{sec:recognition} tratam das entradas: como os sensores transformam luz, som e moléculas em disparos e como a máquina reconhece objetos neles. Os capítulos~\ref{sec:muscles}--\ref{sec:chemoutput} tratam das saídas e do que as atende: os músculos, a dor como sinal de alarme, o aprendizado de movimentos por fios de erro separados e a lenta saída química para o corpo. O capítulo~\ref{sec:debugging} trata de como a máquina é depurada de fora, inclusive com interfaces cérebro-computador. Os capítulos~\ref{sec:eetypes} e~\ref{sec:dendrites} classificam os neurônios mais uma vez, agora pela função elétrica e pelo número de entradas. O capítulo~\ref{sec:sleep} trata do que a máquina faz quando está desligada do mundo, e os capítulos~\ref{sec:livingmachine} e~\ref{sec:dishbrain}, de máquinas montadas com neurônios vivos num chip.
+
+\section{Exercícios}
+
+Os exercícios deste capítulo juntam resultados de capítulos diferentes: cada um se apoia em pelo menos dois deles.
+
+\begin{exercise}[\lvlA]
+\label{ex:10:1}
+\emph{Barramento e registradores.} Os quatro canais de difusão são feixes de cerca de cinco linhas (proposição~\ref{prop:bundle}); cada linha muda uma vez por segundo e tem quatro níveis distinguíveis. Quantos anos o controle levaria para transmitir o que o barramento \nt{GLUT} ($8.6\cdot10^{10}$ neurônios com a taxa~\eqref{eq:energy}, precisão de $1\ms$ por~\eqref{eq:spikeentropy}) transmite num segundo?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:10:2}
+\emph{Dois botões no mesmo laço.} No laço~\eqref{eq:ei} os botões de~\eqref{eq:machine} atuam na excitação: $\tau_E\dot E=-E+g[(1-a)w_{EE}E-w_{EI}I+h]$, e não controlam \nt{GABA}. Com os números da fig.~\ref{fig:ei}, uma rajada de \nt{NORA} eleva $g$ até $6$. Qual o menor $a$ com que o laço é estável? Os botões de \nt{NORA} e \nt{ACET} podem ser girados independentemente?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:10:3}
+\emph{De onde vem o preço da difusão.} As saídas de $N$ neurônios são $y_k=f(u_k)+\xi_k$, com ruído gaussiano independente de variância $\sigma^2$; $R\approx R_0+\sum_kR'_k\xi_k$ com $R'_k$ iguais, e \nt{DOPA} difunde $\delta=R-R_0$. Ache a relação sinal-ruído da correção $\delta\,\xi_jx_j$ numa tentativa. Como o número de tentativas cresce com $N$?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:10:4}
+\emph{Ligar o som ao clarão.} O som chega ao barramento em $5\ms$, o clarão em $30\ms$ mais a latência do primeiro disparo~\eqref{eq:latency} ($\tau=10\ms$, $U$ de $1.2\theta$ a $4\theta$); o fundo em cada entrada é de $5$ disparos por segundo. Escolha o atraso da linha do som e a menor janela de coincidência para todos os contrastes. Quantas ligações falsas por segundo o fundo produz?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:10:5}
+\emph{Simulação: quem percebe a mudança.} O crítico vê $y=s+\text{ruído}$ ($R=1$); com probabilidade $1/200$, $s$ salta para um novo valor com variância $J^2=4$. Simule um filtro de Kalman com $q=0$ que eleva $P$ até $J^2$ quando $E\leftarrow0.9E+\delta^2/(P+R)$ passa de $20$. Quanto o seu erro é menor que com o melhor $\alpha$ constante?
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:10:6}
+\emph{Quantas tentativas para trocar de hábito.} A rede aprendeu $Q_A=0.8$, $Q_B=0.2$ e escolhe por~\eqref{eq:softmax}, $\sigma=1$, $g=8$. Agora $A$ dá suco com probabilidade $0.2$; $Q_A\leftarrow Q_A+\alpha(r-Q_A)$, $Q_B$ não muda. Após quantas escolhas de $A$ a probabilidade de escolher $A$ cai para $0.6$, com $\alpha=0.1$ e $0.5$? E se \nt{NORA} baixar $g$ para $2$?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:10:7}
+\emph{Um feixe em vez de um fio.} Saídas $y_k=w_k+\xi_k$, recompensa $R=-\sum_ky_k^2$; cada linha do feixe difunde para um grupo de $G$ neurônios o erro das saídas dele, $w_k\leftarrow w_k+\eta\,\delta_l\xi_k$. Mostre que, com o melhor $\eta$, chegar a $\sum w_k^2=\varepsilon\sum w_k^2(0)$ exige $\approx(G+2)\ln(1/\varepsilon)$ tentativas. Quanto tempo leva, com $\varepsilon=0.01$, para aprender um circuito de $10^6$ neurônios com cinco linhas, uma tentativa a cada três segundos?
+\end{exercise}

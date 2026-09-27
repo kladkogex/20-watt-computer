@@ -1,0 +1,352 @@
+\chapter{Código Morse: o que sabemos sobre a linguagem dos neurônios \nt{GLUT} e \nt{GABA}}
+\chaptermark{Código Morse}
+\label{sec:code}
+
+\section{Um alfabeto de um só sinal}
+
+O código Morse tem dois sinais, ponto e traço, e pausas de três durações entre eles. O neurônio, como vimos no capítulo~\ref{sec:neurontypes}, tem um alfabeto ainda mais pobre: um único sinal. O disparo dura cerca de um milissegundo, e todos os disparos de um neurônio têm a mesma altura e a mesma forma. Por isso a mensagem inteira está nas pausas, isto é, na sequência de instantes $t_1,t_2,t_3,\dots$ É um código sem traços, em que só o ritmo dos pontos carrega sentido (fig.~\ref{fig:morse}).
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=0.08cm,y=1cm]
+% Morse letter: dot, dash, dot
+\node[left,font=\small] at (-6,2.55) {Morse:};
+\fill[black] (0,2.45) rectangle (6,2.65);
+\fill[black] (14,2.45) rectangle (32,2.65);
+\fill[black] (40,2.45) rectangle (46,2.65);
+\node[right,font=\small,gray!40!black] at (52,2.55) {ponto, traço, ponto: o sentido está nas durações e pausas};
+% stimulus onset
+\node[left,font=\small] at (-6,0.4) {neurônio:};
+\draw[->,thick,green!45!black] (0,-0.55) -- (0,-0.05);
+\node[below,font=\scriptsize,green!45!black] at (0,-0.55) {estímulo};
+\draw[gray!70!black] (0,0) -- (152,0) node[right,black] {\small $t$};
+% spikes: single ones blue, the burst red
+\foreach \s in {14,26,41,88,112,131}{\draw[very thick,blue!60!black] (\s,0) -- (\s,0.8);}
+\foreach \s in {60,63,66,69}{\draw[very thick,red!70!black] (\s,0) -- (\s,0.8);}
+% latency
+\draw[<->,thick] (0,1.1) -- node[above,font=\scriptsize] {$t_1$: tempo do primeiro disparo} (14,1.1);
+% burst
+\draw[decorate,decoration={brace,amplitude=4pt},red!70!black] (58,0.95) -- (71,0.95) node[midway,above=4pt,font=\scriptsize] {rajada: ``traço''};
+% counting windows
+\foreach \a/\b/\n in {0/50/3,50/100/5,100/150/2}{
+  \draw[decorate,decoration={brace,amplitude=4pt,mirror},gray!50!black] (\a+1,-0.2) -- (\b-1,-0.2) node[midway,below=4pt,font=\small] {$n=\n$};}
+\node[font=\scriptsize,gray!40!black] at (75,-1.05) {código de taxa: número de disparos $n$ em cada janela};
+\foreach \x in {0,50,100,150}{\draw[gray!60!black] (\x,-0.06) -- (\x,0.06);}
+\end{tikzpicture}
+\caption{O código Morse e o código do neurônio. A mesma sequência de disparos pode ser lida de maneiras diferentes: contando os disparos em janelas de $50\ms$ (seção~\ref{sec:rate}), medindo a latência $t_1$~\eqref{eq:latency} ou notando a rajada, o ``traço''~\eqref{eq:burst}.}
+\label{fig:morse}
+\end{figure}
+
+Que pausas são possíveis? Por baixo, elas são limitadas pela refratariedade: depois de um disparo, o neurônio não pode disparar de novo por cerca de um milissegundo, então não passa de algumas centenas de disparos por segundo. Por cima, nada as limita: um neurônio pode ficar calado por minutos. Nos neurônios \nt{GLUT} do córtex, as frequências vão de frações de disparo a algumas dezenas de disparos por segundo, e a maioria dos neurônios passa a maior parte do tempo perto do limite inferior.
+
+Nos capítulos~\ref{sec:glutcomputer} e~\ref{sec:gaba}, de passagem, adotamos ora uma, ora outra maneira de escrever números com disparos. Agora perguntemos diretamente: em que linguagem os neurônios \nt{GLUT} e \nt{GABA} falam entre si? Não há resposta completa; essa linguagem não foi decifrada. Mas algumas coisas sobre ela são sabidas com segurança, e quase tudo o que se sabe pode ser obtido raciocinando como um engenheiro de comunicações: capacidade do canal, ruído, receptor, custo da transmissão.
+
+\section{Quanto se pode transmitir}
+
+Comecemos pelo limite superior. Suponha que o destinatário distinga os instantes dos disparos com precisão $\Delta t$: deslocamentos menores que $\Delta t$ são indistinguíveis para ele. Cortemos o tempo em células de comprimento $\Delta t$, menores que o tempo de refratariedade, de modo que em cada célula haja um disparo ou nenhum (fig.~\ref{fig:cells}). Com frequência média $r$, um disparo cai numa célula com probabilidade $p=r\Delta t$. O fluxo carrega o máximo de informação quando as células são independentes, e então cada célula dá a entropia $-p\log_2p-(1-p)\log_2(1-p)\approx p\log_2(e/p)$ bits para $p\ll1$. Dividindo por $\Delta t$, obtemos a taxa de transmissão máxima e sua parcela por disparo~\cite{MacKay1952}:
+\begin{empheq}[box=\keybox]{equation}
+R_{\max} \;\approx\; r\,\log_2\frac{e}{r\,\Delta t}\ \ \text{bits/s},
+\qquad
+\frac{R_{\max}}{r} \;\approx\; \log_2\frac{e}{r\,\Delta t}\ \ \text{bits por disparo}.
+\label{eq:spikeentropy}
+\end{empheq}
+Com $r=10$ disparos por segundo e $\Delta t=1\ms$, são cerca de oito bits por disparo e oitenta bits por segundo.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=0.5cm,y=1cm]
+% time cut into cells of width Delta t; a cell holds one impulse or none
+\foreach \k in {0,...,23}{\draw[gray!55] (\k,0) rectangle (\k+1,0.7);}
+\foreach \k in {2,7,8,15,21}{
+  \fill[red!10] (\k,0) rectangle (\k+1,0.7);
+  \draw[very thick,red!70!black] (\k+0.5,0.05) -- (\k+0.5,0.65);}
+\foreach \k in {0,...,23}{
+  \pgfmathtruncatemacro{\bit}{(\k==2)||(\k==7)||(\k==8)||(\k==15)||(\k==21)}
+  \ifnum\bit=1 \def\bitcol{red!70!black}\else \def\bitcol{gray!60!black}\fi
+  \node[font=\scriptsize,text=\bitcol] at (\k+0.5,-0.25) {\bit};}
+\draw[<->,gray!60!black] (0,0.95) -- (1,0.95) node[midway,above,font=\scriptsize,black] {$\Delta t$};
+\node[font=\small,anchor=east] at (-0.3,0.35) {disparos};
+\node[font=\small,anchor=east] at (-0.3,-0.25) {bits};
+\draw[decorate,decoration={brace,amplitude=5pt,mirror},gray!60!black] (0,-0.55) -- (24,-0.55)
+  node[midway,below=6pt,font=\scriptsize,black,align=center] {destinatário que só conta: ``$n=5$'';\\ destinatário que vê as células: quais $5$ de $24$, isto é, $\log_2\binom{24}{5}\approx15$ bits};
+\end{tikzpicture}
+\caption{De onde vem a capacidade~\eqref{eq:spikeentropy}. O tempo é cortado em células de comprimento $\Delta t$; em cada célula há um disparo ($1$) ou não ($0$): o fluxo de disparos é uma cadeia binária. Um disparo cai numa célula com probabilidade $p=r\Delta t$. Quanto menores as células, mais longa a cadeia e mais bits; um contador de disparos perde quase tudo o que está escrito em \emph{onde} ficam os uns.}
+\label{fig:cells}
+\end{figure}
+
+Os bits por disparo dependem da precisão temporal só logaritmicamente: com precisão de $10\ms$ restam cerca de cinco bits por disparo. Mas se o destinatário só conta os disparos num segundo, com $r=10$ ele recebe menos de dois bits no segundo inteiro (seção~\ref{sec:rate}).
+
+\begin{keyblock}
+\begin{proposition}[Capacidade do canal de disparos]
+\label{prop:capacity}
+Um fluxo de disparos com frequência média $r$, lido com precisão temporal $\Delta t$, não carrega mais que~\eqref{eq:spikeentropy}. Quase toda essa capacidade está no \emph{tempo} dos disparos: um destinatário que só conta disparos extrai do mesmo fluxo dezenas de vezes menos do que um que distingue seus instantes com precisão de milissegundo.
+\end{proposition}
+\end{keyblock}
+
+Isto é um limite superior, não uma medição. As medições em neurônios sensoriais, para os quais o estímulo é conhecido, dão de um a alguns bits por disparo; nos melhores casos, até metade do limite calculado para sua precisão~\cite{Rieke1997}. Logo, pelo menos na entrada do sistema nervoso, o tempo dos disparos é usado, e não se perde.
+
+\section{Um canal ruidoso}
+
+A capacidade~\eqref{eq:spikeentropy} foi calculada sem ruído. Sobre onde ele surge, três fatos são sabidos com segurança.
+
+\emph{O gerador de disparos em si é preciso.} Se num neurônio do córtex, retirado do cérebro com um pedaço de tecido, se injeta muitas vezes a mesma corrente, que varia rápido no tempo, os disparos se repetem com precisão de cerca de um milissegundo~\cite{Mainen1995}. Se a corrente é constante, os instantes dos disparos se espalham de uma vez para outra: o tempo preciso é gerado pelas variações rápidas da entrada, não pelo próprio neurônio.
+
+\emph{A sinapse não é confiável.} Um disparo que chega a uma sinapse \nt{GLUT} libera uma porção de neurotransmissor apenas com certa probabilidade $p$. Nas sinapses do hipocampo, mais da metade dos disparos simplesmente não chega ao destinatário, e a causa é justamente o acaso da liberação, não falhas de condução~\cite{AllenStevens1994}. Para um engenheiro de comunicações, é um canal com apagamentos; várias sinapses entre dois neurônios salvam em parte a situação.
+
+\emph{No córtex vivo, o fluxo de disparos parece aleatório.} Os intervalos entre disparos se espalham mais ou menos como num fluxo aleatório de Poisson, e, quando o mesmo estímulo é repetido, o número de disparos numa janela varia de modo que sua variância fica próxima da média~\cite{Softky1993}.
+
+Como um elemento preciso gera um fluxo aleatório? O neurônio recebe milhares de entradas, cada uma pouco confiável, e a excitação e a inibição estão equilibradas, como no capítulo~\ref{sec:gaba}. A tensão da membrana treme perto do limiar, e os instantes dos disparos são definidos por esses tremores. Se isso é ruído ou uma mensagem que não sabemos ler, é em grande parte uma questão em aberto. Parte do ``ruído'' já se revelou mensagem: no córtex visual, uma parcela considerável da variação acompanha os movimentos do próprio animal~\cite{Stringer2019}. A dificuldade aqui é de princípio: uma mensagem bem comprimida é indistinguível de um fluxo aleatório para quem não conhece o código.
+
+\section{Taxa: lento, mas confiável}
+\label{sec:rate}
+
+O código mais simples é o \emph{código de taxa}: o número está escrito em quantos disparos o neurônio emite numa janela $T$. Nem apagamentos nem tremores dos instantes afetam esse código. Mas ele tem um preço. Se o fluxo é de Poisson, o número de disparos $n$ numa janela tem média $rT$ e dispersão $\sqrt{rT}$:
+\begin{empheq}[box=\keybox]{equation}
+\frac{\sigma_n}{\bar n} \;=\; \frac{1}{\sqrt{r\,T}} .
+\label{eq:rateerror}
+\end{empheq}
+Para conhecer a frequência com precisão de dez por cento, são necessários cem disparos; a vinte disparos por segundo, cinco segundos. Níveis vizinhos são distinguíveis se estão a um par de dispersões um do outro, por isso, até a frequência $r$, no tempo $T$ distinguem-se cerca de $\sqrt{rT}$ níveis: com $r=10$ e $T=1\,\text{s}$, são três ou quatro níveis, menos de dois bits.
+O cérebro não trabalha tão devagar. Uma pessoa reconhece um animal numa imagem mostrada por um instante, e a resposta no cérebro aparece após cerca de $150\ms$~\cite{Thorpe1996}. Por estimativa grosseira, nesse tempo o sinal passa por cerca de uma dezena de estágios sucessivos de processamento, $10$--$20\ms$ por estágio. Com as frequências habituais do córtex, cada neurônio consegue emitir zero ou um disparo por estágio, e sua frequência numa janela dessas não está definida. Há duas saídas: usar muitos neurônios ou olhar para o tempo.
+
+\emph{Muitos neurônios.} Suponha que $N$ neurônios levem o mesmo número e que o destinatário some seus disparos. Se seus ruídos são independentes, em~\eqref{eq:rateerror} entra $NrT$ no lugar de $rT$: cem neurônios com $r=20$ em $15\ms$ dão trinta disparos e precisão de cerca de vinte por cento. O espaço substitui o tempo. Porém, os ruídos de neurônios vizinhos do córtex não são independentes: o coeficiente de correlação dos números de disparos de um par de vizinhos costuma ser cerca de $0.1$~\cite{Zohary1994}. Se ele vale $c$, a variância da média de $N$ neurônios é
+\begin{empheq}[box=\keybox]{equation}
+\sigma^2_N \;=\; \sigma^2_1\,\frac{1+(N-1)\,c}{N}
+\;\xrightarrow[N\to\infty]{}\; c\,\sigma^2_1 .
+\label{eq:correlated}
+\end{empheq}
+
+\begin{keyblock}
+\begin{proposition}[Limite da média]
+\label{prop:pooling}
+Com ruído correlacionado, a média sobre um grupo reduz o erro no máximo $1/\sqrt{c}$ vezes. Com $c=0.1$, são três vezes, e esse ganho já é alcançado com algumas dezenas de neurônios; acrescentar mais é inútil.
+\end{proposition}
+\end{keyblock}
+
+Nem toda correlação é igualmente nociva. Só limita a precisão a parte do ruído comum que \emph{se parece com o próprio sinal}, isto é, que desloca o grupo inteiro do mesmo modo que o deslocaria uma mudança da grandeza medida~\cite{MorenoBote2014}. Quanto desse ruído existe de fato no cérebro ainda está sendo investigado.
+
+Há também outra maneira de usar muitos neurônios: escrever o número em \emph{qual} neurônio disparou, como no detector da direção do som (fig.~\ref{fig:itd}). É o código de \emph{lugar}, o mais confiável que se conhece: nos neurônios sensoriais, o número do fio diz qual ponto da pele foi tocado ou qual a altura do som, e isso foi estabelecido muitas vezes. Ele é caro em número de neurônios, mas rápido: uma mensagem leva um atraso.
+
+\section{Tempo: rápido, mas contado a partir de quê}
+
+A segunda saída é escrever o número no instante do disparo. Tomemos o neurônio~\eqref{eq:glutneuron} e apliquemos a ele, a partir de $t=0$, uma entrada constante que elevaria a tensão até o nível $U$. A tensão cresce como $V=U\bigl(1-e^{-t/\tau}\bigr)$ e atinge o limiar $\theta$ no instante
+\begin{empheq}[box=\keybox]{equation}
+t_1 \;=\; \tau\,\ln\frac{U}{U-\theta}, \qquad U>\theta .
+\label{eq:latency}
+\end{empheq}
+Entrada forte, disparo cedo; fraca, disparo tarde; sublimiar, nenhum. Com $\tau=10\ms$, a entrada $U=4\theta$ dá o primeiro disparo após $2.9\ms$; $U=2\theta$, após $6.9\ms$; $U=1.2\theta$, após $17.9\ms$. Um único disparo carrega um número.
+
+Mas a partir de que instante contar $t_1$? Não há relógio, e o destinatário não sabe quando o estímulo começou. Há três respostas.
+
+\emph{Latência relativa.} Dois neurônios veem o mesmo estímulo, e a diferença de suas latências $t_1^A-t_1^B$ depende só de suas entradas, não do instante de início. Os instantes são comparados por detectores de coincidência com atrasos (fig.~\ref{fig:itd}). Se $N$ neurônios emitiram um disparo cada, a própria \emph{ordem} de chegada carrega até $\log_2N!$ bits: para dez neurônios, cerca de vinte e dois bits, enquanto a resposta ``disparou ou não'' daria no máximo dez. Na retina, mostrou-se que a imagem pode ser reconstruída de forma rápida e confiável a partir das latências relativas dos primeiros disparos de seus neurônios de saída~\cite{Gollisch2008}.
+
+\emph{Uma salva como início de palavra.} Uma mudança brusca do estímulo faz disparar quase ao mesmo tempo uma multidão de neurônios. Essa salva serve ela mesma de marca de início, como a pausa longa entre palavras no código Morse, e o destinatário conta as latências a partir dela.
+
+\emph{Ritmo local.} No capítulo~\ref{sec:gaba}, o laço \nt{GLUT}--\nt{GABA} gerava um ritmo local com período de $12$--$50\ms$. Não é um relógio, mas dentro de seu ciclo um neurônio com entrada forte consegue disparar antes de um com entrada fraca, e~\eqref{eq:latency} vira um código de \emph{fase}: o número está escrito na parte do ciclo em que o disparo chegou. Esse código foi observado: neurônios responsáveis por um lugar definido no espaço disparam cada vez mais cedo no ciclo de um ritmo local lento à medida que o animal atravessa o ``seu'' lugar~\cite{OKeefe1993}. Quanto o cérebro usa a fase de modo geral ainda não se sabe.
+
+\section{Quem escolhe o código é o destinatário}
+
+Numa sequência de disparos há frequência, instantes e ordem. O que será lido é decidido pelo destinatário, e ele decide com um único parâmetro: sua constante de tempo $\tau$.
+
+Tomemos a média da equação~\eqref{eq:glutneuron} no tempo. Se ao neurônio chegam fluxos independentes com frequências $r_j$, a tensão média e seu tremor relativo são
+\begin{empheq}[box=\keybox]{equation}
+\bar V \;=\; \tau\sum_j w_j\,r_j ,
+\qquad
+\frac{\sigma_V}{\bar V} \;\approx\; \frac{1}{\sqrt{2\,r_{\text{ent}}\,\tau}} ,
+\label{eq:reader}
+\end{empheq}
+em que a segunda igualdade vale para pesos iguais, e $r_{\text{ent}}$ é a frequência total de todas as entradas. Quando $\tau$ é grande, a tensão quase não treme e acompanha a soma ponderada das frequências: o destinatário é um \emph{integrador}, lê frequências e esquece instantes. Quando $\tau$ é pequeno, a tensão tem tempo de cair entre disparos, e o limiar só é atingido quando vários disparos chegam dentro da janela~\eqref{eq:window}: o destinatário é um \emph{detector de coincidência}, lê instantes (fig.~\ref{fig:reader}). Mil entradas a cinco disparos por segundo com $\tau=10\ms$ dão um tremor de cerca de dez por cento, uma integração quase pura. Se a inibição, como no capítulo~\ref{sec:gaba}, encurtou $\tau$ para $2\ms$, o tremor passa de vinte por cento, e o neurônio começa a notar coincidências.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=0.115cm,y=1cm]
+% common input: the same spike train for both receivers
+\foreach \s in {6,21,22,38,52,55.5,59,62.5,66,69.5,73,76.5,80,83.5,87,90.5,94,97.5}{\draw[thick,gray!40!black] (\s,5.25) -- (\s,5.65);}
+\draw[gray!70!black] (0,5.25) -- (105,5.25);
+\node[left,font=\small] at (-1,5.45) {entrada};
+\node[above,font=\scriptsize,gray!40!black] at (13.5,5.65) {raro};
+\node[above,font=\scriptsize,gray!40!black] at (21.5,6.0) {par};
+\node[above,font=\scriptsize,gray!40!black] at (75,5.65) {frequente};
+% axes and thresholds
+\foreach \y/\th in {2.7/2.5,0/1.5}{
+  \draw[gray!70!black] (0,\y) -- (106,\y) node[right,black] {\small $t$};
+  \draw[densely dashed,gray!60!black] (0,\y+0.6*\th) -- (104,\y+0.6*\th) node[right,black,font=\small] {$\theta$};
+}
+\node[anchor=south west,font=\small] at (0,4.3) {$\tau=10\ms$: integrador};
+\node[anchor=south east,font=\small] at (104,1.0) {$\tau=2\ms$: detector de coincidência};
+% integrator: tau=10 ms, theta=2.5w
+\begin{scope}[yshift=2.7cm]
+\foreach \a/\b/\v in {0/6/0.000,6/21/1.000,21/22/1.223,22/38/2.107,38/52/1.425,52/55.5/1.351,55.5/59/1.952,59/62.5/2.376,62.5/66/0.000,66/69.5/1.000,69.5/73/1.705,73/76.5/2.201,76.5/80/0.000,80/83.5/1.000,83.5/87/1.705,87/90.5/2.201,90.5/94/0.000,94/97.5/1.000,97.5/104/1.705}{\draw[very thick,blue!60!black] plot[domain=\a:\b,samples=14] (\x,{0.6*\v*exp(-(\x-\a)/10)});}
+\foreach \s/\p/\q in {6/0.000/1.000,21/0.223/1.223,22/1.107/2.107,38/0.425/1.425,52/0.351/1.351,55.5/0.952/1.952,59/1.376/2.376,62.5/1.674/2.500,62.5/2.500/0.000,66/0.000/1.000,69.5/0.705/1.705,73/1.201/2.201,76.5/1.551/2.500,76.5/2.500/0.000,80/0.000/1.000,83.5/0.705/1.705,87/1.201/2.201,90.5/1.551/2.500,90.5/2.500/0.000,94/0.000/1.000,97.5/0.705/1.705}{\draw[very thick,blue!60!black] (\s,0.6*\p) -- (\s,0.6*\q);}
+\foreach \s in {62.5,76.5,90.5}{\draw[->,thick,red!70!black] (\s,1.58) -- (\s,1.95);}
+\end{scope}
+% coincidence: tau=2 ms, theta=1.5w
+\begin{scope}[yshift=0cm]
+\foreach \a/\b/\v in {0/6/0.000,6/21/1.000,21/22/1.001,22/38/0.000,38/52/1.000,52/55.5/1.001,55.5/59/1.174,59/62.5/1.204,62.5/66/1.209,66/69.5/1.210,69.5/73/1.210,73/76.5/1.210,76.5/80/1.210,80/83.5/1.210,83.5/87/1.210,87/90.5/1.210,90.5/94/1.210,94/97.5/1.210,97.5/104/1.210}{\draw[very thick,blue!60!black] plot[domain=\a:\b,samples=14] (\x,{0.6*\v*exp(-(\x-\a)/2)});}
+\foreach \s/\p/\q in {6/0.000/1.000,21/0.001/1.001,22/0.607/1.500,22/1.500/0.000,38/0.000/1.000,52/0.001/1.001,55.5/0.174/1.174,59/0.204/1.204,62.5/0.209/1.209,66/0.210/1.210,69.5/0.210/1.210,73/0.210/1.210,76.5/0.210/1.210,80/0.210/1.210,83.5/0.210/1.210,87/0.210/1.210,90.5/0.210/1.210,94/0.210/1.210,97.5/0.210/1.210}{\draw[very thick,blue!60!black] (\s,0.6*\p) -- (\s,0.6*\q);}
+\foreach \s in {22}{\draw[->,thick,red!70!black] (\s,0.98) -- (\s,1.35);}
+\end{scope}
+\foreach \x in {0,50,100}{\draw[gray!60!black] (\x,-0.06) -- (\x,0.06) node[below,font=\scriptsize] {\x\,ms};}
+\end{tikzpicture}
+\caption{A mesma entrada, dois destinatários diferentes. Cada disparo eleva a tensão em $w$, e depois ela escoa, como no modelo de neurônio~\eqref{eq:glutneuron}; as setas vermelhas são os disparos do destinatário. O destinatário lento ($\tau=10\ms$, $\theta=2.5w$) dispara onde há \emph{muitos} disparos e não nota o par. O rápido ($\tau=2\ms$, $\theta=1.5w$) dispara só com o par dentro da janela~\eqref{eq:window} e deixa passar o fluxo frequente, mas não coincidente.}
+\label{fig:reader}
+\end{figure}
+
+As medições mostram que, no córtex ativo, a condutância da membrana aumenta várias vezes em relação ao repouso~\cite{Destexhe2003}. Logo, lá $\tau$ é mais curto, e os neurônios do córtex em regime de trabalho estão mais perto de detectores de coincidência do que de integradores.
+
+\begin{keyblock}
+\begin{proposition}[O código é definido pelo destinatário]
+\label{prop:reader}
+A mesma sequência de disparos carrega, para um destinatário lento, a frequência; para um rápido, os instantes; para o volume em que o neurotransmissor é liberado, um nível de concentração suavizado ao longo de segundos (capítulo~\ref{sec:serocomputer}). Qual código é usado não é determinado pelo remetente, mas pela constante de tempo do destinatário, e ela é ajustada pela inibição.
+\end{proposition}
+\end{keyblock}
+\section{Pontos e traços: a sinapse como filtro}
+
+Até agora, para nós, a sinapse era um fio com peso. Na verdade, sua resposta depende dos disparos anteriores, e isso dá à linguagem dos neurônios um segundo sinal.
+
+\emph{Depressão: a sinapse transmite mudanças.} Cada liberação gasta uma fração $U$ do estoque de neurotransmissor pronto para liberação~\cite{Tsodyks1997}, e o estoque se recupera com constante de tempo $\tau_{\text{rec}}$ da ordem de centenas de milissegundos. Com frequência $r$, a amplitude da resposta a um disparo se estabiliza aproximadamente no nível $A(r)=A_0/(1+U r\tau_{\text{rec}})$, em que $A_0$ é a resposta da sinapse descansada. A corrente que o destinatário recebe por unidade de tempo é
+\begin{empheq}[box=\keybox]{equation}
+r\,A(r) \;=\; \frac{A_0\,r}{1+U r\,\tau_{\text{rec}}}
+\;\xrightarrow[r\to\infty]{}\; \frac{A_0}{U\tau_{\text{rec}}} .
+\label{eq:depression}
+\end{empheq}
+Com $U=0.5$ e $\tau_{\text{rec}}=0.8\,\text{s}$, a saturação começa já em $1/(U\tau_{\text{rec}})=2.5$ disparos por segundo. Se a frequência subiu de cinco para vinte, a corrente de regime cresce só um terço. Em compensação, os primeiros disparos na nova frequência chegam enquanto o estoque ainda é o antigo, e a corrente salta momentaneamente quatro vezes e depois cai em $\tau_{\text{rec}}/(1+Ur\tau_{\text{rec}})\approx90\ms$ (fig.~\ref{fig:depression}).
+
+Essa sinapse não transmite a frequência, mas sua \emph{mudança}, essencialmente a mudança relativa $\Delta r/r$~\cite{Abbott1997depression}. Para um eletrônico, é um filtro passa-altas instalado no próprio fio.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=12.5cm,y=1cm]
+% input rate
+\draw[->,gray!70!black] (0,2.6) -- (0.9,2.6) node[right,black] {\small $t$};
+\draw[->,gray!70!black] (0,2.6) -- (0,4.3) node[above,black] {\small $r$};
+\draw[very thick,blue!60!black] (0,2.9) -- (0.2,2.9) -- (0.2,3.8) -- (0.8,3.8);
+\node[left,font=\scriptsize] at (0,2.9) {$5$};
+\node[left,font=\scriptsize] at (0,3.8) {$20$};
+\node[right,font=\small,blue!60!black] at (0.4,4.1) {frequência na entrada da sinapse};
+% output current
+\draw[->,gray!70!black] (0,0) -- (0.9,0) node[right,black] {\small $t$};
+\draw[->,gray!70!black] (0,0) -- (0,2.45) node[left,black] {\small $rA$};
+\draw[densely dashed,gray!60!black] (0,0.667) -- (0.8,0.667);
+\draw[very thick,red!70!black] (0,0.5) -- (0.2,0.5) -- (0.2,2.0)
+   plot[domain=0.2:0.8,samples=60] (\x,{0.667+(2.0-0.667)*exp(-(\x-0.2)/0.089)});
+\node[left,font=\scriptsize] at (0,0.5) {$1.7$};
+\node[left,font=\scriptsize] at (0,2.0) {$6.7$};
+\node[right,font=\scriptsize] at (0.8,0.667) {$2.2$};
+\node[right,font=\small,red!70!black] at (0.28,1.6) {corrente ao destinatário: salto e queda em $\approx90\ms$};
+\draw[gray!60!black] (0.2,-0.08) -- (0.2,0.08); \node[below,font=\scriptsize] at (0.2,0) {$0.2\,\text{s}$};
+\draw[gray!60!black] (0.8,-0.08) -- (0.8,0.08); \node[below,font=\scriptsize] at (0.8,0) {$0.8\,\text{s}$};
+\end{tikzpicture}
+\caption{Sinapse com depressão pela fórmula~\eqref{eq:depression}, com $U=0.5$, $\tau_{\text{rec}}=0.8\,\text{s}$; corrente em unidades de $A_0$ por segundo; a linha tracejada é a corrente de regime: ela subiu só de $1.7$ para $2.2$, e no instante do salto, até $6.7$. A sinapse informa ao destinatário que a frequência mudou, não qual ela é.}
+\label{fig:depression}
+\end{figure}
+
+\emph{Facilitação: a rajada como traço.} Em outras sinapses, a probabilidade de liberação é pequena, mas após cada disparo cresce por dezenas de milissegundos. Um disparo isolado por uma sinapse dessas se perde na maioria das vezes. Já uma \emph{rajada}, vários disparos seguidos com intervalos de poucos milissegundos, passa quase com certeza. Mesmo sem facilitação, a probabilidade de que se percam todos os $k$ disparos da rajada é
+\begin{empheq}[box=\keybox]{equation}
+P_{\text{perda}} \;=\; (1-p)^k ,
+\label{eq:burst}
+\end{empheq}
+com $p=0.2$, isso dá $0.8$ para um disparo isolado e $0.41$ para uma rajada de quatro; a facilitação a reduz ainda mais. Assim o neurônio ganha um segundo sinal: disparo isolado, ponto; rajada, traço. A sinapse com depressão transmite melhor o primeiro disparo após uma pausa; a facilitadora deixa passar rajadas e abafa pontos isolados. Que as rajadas são transmitidas de forma mais confiável foi medido; que o cérebro as usa de fato como um sinal à parte é uma hipótese plausível~\cite{Lisman1997}.
+
+\section{Como falam os neurônios \nt{GABA}}
+
+Os mais numerosos deles no córtex são os rápidos~\cite{Tremblay2016}. Seus disparos são mais curtos que os dos neurônios \nt{GLUT}, e eles podem emiti-los de forma regular e por muito tempo, a centenas por segundo, quase sem se cansar. Suas sinapses são mais confiáveis: a conexão com cada destinatário consiste em muitos pontos de liberação, e um disparo quase nunca se perde. Suas saídas se instalam perto do local onde nasce o disparo do destinatário, de modo que controlam não como o destinatário soma as entradas, mas se ele vai disparar e quando.
+
+Eles mesmos recebem excitação de muitos neurônios \nt{GLUT} vizinhos e informam a atividade total ao redor: exatamente o que é preciso para a divisão do capítulo~\ref{sec:gaba}. Por fim, os neurônios \nt{GABA} rápidos são ligados entre si e disparam juntos com facilidade; são eles que definem o ritmo local de que se falou acima~\cite{Cardin2009}.
+
+Na linguagem do código Morse, os neurônios \nt{GABA} não respondem pelas letras, mas pelas \emph{pausas}. Eles cortam o fluxo contínuo de disparos \nt{GLUT} em janelas dentro das quais o destinatário pode disparar, estreitam as janelas de coincidência e abafam o fluxo inteiro quando ele fica alto demais.
+
+\begin{keyblock}
+\begin{proposition}[Divisão de papéis]
+\label{prop:punctuation}
+Os neurônios \nt{GLUT} levam o conteúdo da mensagem: \emph{o quê} e \emph{quanto}. Os neurônios \nt{GABA} rápidos levam sua marcação: \emph{quando} se pode falar e \emph{com que volume}; mais uma classe, inibindo os inibidores, decide \emph{para quem} o portão está aberto. Partes isoladas dessa divisão foram medidas; como regra geral, é uma hipótese de trabalho.
+\end{proposition}
+\end{keyblock}
+
+Há também outros neurônios \nt{GABA}, mais lentos, cujas saídas se instalam em entradas individuais do destinatário. Eles funcionam como o veto~\eqref{eq:veto} do capítulo~\ref{sec:gaba}: fecham um fluxo de disparos \nt{GLUT} sem tocar nos demais.
+
+A divisão em neurônios \nt{GABA} rápidos e lentos é um quadro antigo, e incompleto. Hoje se distinguem no córtex pelo menos três grandes classes~\cite{Tremblay2016}, e a terceira é organizada de modo inesperado: ela não inibe neurônios \nt{GLUT}, mas outros neurônios \nt{GABA}, sobretudo os que fecham entradas~\cite{Pfeffer2013}. Inibição da inibição é uma dupla negação. Um neurônio desses \emph{abre} o portão sem enviar ao destinatário um único disparo excitatório. Ele é ligado por sinais de outras áreas do córtex e por canais de difusão, e assim funciona como a entrada de habilitação de toda uma região da rede: enquanto está ativo, os vetos são suspensos e o fluxo passa~\cite{Pi2013}. No apêndice~\ref{sec:othermediators}, esse truque é chamado de desinibição.
+\section{Uma linguagem econômica}
+
+A última coisa que se sabe com segurança sobre a linguagem dos neurônios é que ela é cara. Um disparo, junto com o trabalho sináptico que provoca, custa cerca de $10^9$ moléculas de ATP (estimativa para o córtex de roedores~\cite{Attwell2001}), e uma molécula dá cerca de $10^{-19}$ joule. Logo, um disparo custa da ordem de $E_{\text{disp}}\sim10^{-10}$ joule. O cérebro inteiro consome cerca de $20$ watts, e, se metade vai para a transmissão de sinais, $P\sim10$ watts, a frequência média de um neurônio é
+\begin{empheq}[box=\keybox]{equation}
+\bar r \;\approx\; \frac{P}{N\,E_{\text{disp}}}
+\;\sim\; \frac{10\ \text{W}}{8.6\cdot10^{10}\cdot10^{-10}\ \text{J}}
+\;\approx\; 1\ \text{disparo por segundo}.
+\label{eq:energy}
+\end{empheq}
+Estimativas mais detalhadas para o córtex dão ainda menos~\cite{Lennie2003}. O código do cérebro tem de ser \emph{esparso}: só uma pequena fração dos neurônios pode trabalhar rápido.
+
+De~\eqref{eq:spikeentropy} se vê que isso não é tão ruim. Com precisão de $1\ms$, o disparo de um neurônio que trabalha a $100$ por segundo carrega no máximo cinco bits, e o de um neurônio que trabalha uma vez por segundo, até onze. Se é preciso pagar pelos disparos, vale a pena falar pouco. O córtex de fato troca precisão por energia: quando falta alimento, os neurônios mantêm a frequência de disparos, mas gastam menos com correntes sinápticas, e suas respostas ficam menos precisas~\cite{Padamsey2022}.
+
+No código Morse, as letras frequentes são curtas: a letra mais frequente do texto inglês, o E, é um único ponto. O código dos neurônios, até onde se sabe, segue a mesma regra de outra forma: o que é esperado custa poucos disparos~\cite{Barlow1961}. Com um estímulo constante, o neurônio reduz aos poucos a frequência; os sensores do capítulo~\ref{sec:glutcomputer} respondem a mudanças, não a níveis; e os neurônios \nt{DOPA} do capítulo~\ref{sec:neurontypes} informam só o erro de predição de recompensa.
+
+\begin{keyblock}
+\begin{proposition}[Economia]
+\label{prop:economy}
+A energia limita a frequência média de um neurônio a algo da ordem de um disparo por segundo. Por isso a linguagem dos neurônios \nt{GLUT} é esparsa e gasta disparos com notícias: com o que mudou ou não foi previsto. O limite energético foi medido; que o código do cérebro esteja ajustado para o máximo de bits por joule é uma hipótese bem fundamentada.
+\end{proposition}
+\end{keyblock}
+
+\section{Resumo}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{2.6cm}>{\raggedright}p{2.3cm}>{\raggedright}p{3.0cm}>{\raggedright}p{2.0cm}>{\raggedright\arraybackslash}p{3.6cm}}
+\toprule
+Modo de escrita & O que carrega & Quem lê & Tempo por mensagem & O que se sabe \\
+\midrule
+número do neurônio que disparou (código de lugar) & qual valor & qualquer destinatário; detectores de coincidência & um atraso & estabelecido nos neurônios sensoriais e na determinação da direção do som \\
+frequência de um neurônio & uma grandeza & integrador com $\tau$ grande; volume (cap.~\ref{sec:serocomputer}) & centenas de ms a segundos & estabelecido; lento demais para um estágio de processamento de $10$--$20\ms$ \\
+frequência de um grupo & uma grandeza & neurônio com milhares de entradas & $10$--$50\ms$ & estabelecido; o ganho é limitado pelas correlações~\eqref{eq:correlated} \\
+tempo do primeiro disparo, ordem & grandeza, ordem & detectores de coincidência com atrasos & um atraso & estabelecido na entrada do sistema nervoso; no córtex, em discussão \\
+fase no ritmo local & grandeza, posição & neurônios com ritmo comum & ciclo de $12$--$50\ms$ ou mais lento & observado em algumas áreas; papel geral é hipótese \\
+rajada (``traço'') & ``importante'': entrega confiável & sinapse facilitadora & $\sim10\ms$ & confiabilidade medida; sinal à parte é hipótese \\
+mudança de frequência & notícia & sinapse com depressão & $\sim0.1\,\text{s}$ & estabelecido \\
+disparos dos neurônios \nt{GABA} rápidos & quando e com que volume & todos os neurônios \nt{GLUT} vizinhos & $1$--$30\ms$ & ritmo e divisão medidos; ``pontuação'' como regra é hipótese \\
+\bottomrule
+\end{tabular}
+\caption{Modos pelos quais os neurônios \nt{GLUT} e \nt{GABA} escrevem mensagens com disparos. A coluna da direita separa o medido do suposto.}
+\label{tab:code}
+\end{table}
+
+A tabela~\ref{tab:code} reúne o que sabemos; dela se vê também o que não sabemos. Não sabemos quanto o córtex usa o tempo exato dos disparos, e não só as frequências dos grupos. Não sabemos se os neurônios têm ``palavras'': combinações estáveis de disparos de muitos neurônios, lidas como um todo. E não sabemos se a linguagem é a mesma em diferentes partes do cérebro. O código Morse se aprende numa noite, porque sua tabela é conhecida. A tabela da linguagem dos neurônios ainda está por ser montada, e quem vai montá-la, muito provavelmente, são engenheiros de comunicações.
+
+\section{Exercícios}
+
+\begin{exercise}[\lvlA]
+\label{ex:04:1}
+\emph{A capacidade em números.} $\Delta t=1\ms$. (a)~Quantos bits por joule dá um neurônio com frequência de $1$ disparo por segundo, com o custo do disparo de~\eqref{eq:energy}? (b)~Com $r=10$, quantas vezes menos que o limite~\eqref{eq:spikeentropy} extrai um destinatário que só conta os disparos num segundo?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:04:2}
+\emph{Frequência ótima.} Um neurônio gasta a potência $P_0+rE_{\text{disp}}$, em que $P_0$ é a outra metade dos $20$~W dividida por todos os neurônios, $E_{\text{disp}}=10^{-10}$~J. Com que frequência $r$ o número de bits por joule $R_{\max}(r)/(P_0+rE_{\text{disp}})$ por~\eqref{eq:spikeentropy}, com $\Delta t=1\ms$, é máximo?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:04:3}
+\emph{Que correlação é nociva.} $N=1000$ neurônios, variância $\sigma^2=1$, correlação par a par $c=0.1$. Calcule a informação de Fisher $\mathcal I=f'^{\mathsf T}\Sigma^{-1}f'$ ($\Sigma$ é a matriz de covariâncias) para inclinações iguais $f'=\mathbf 1$ e para inclinações $\pm1$ com $\mathbf 1^{\mathsf T}f'=0$. Quantas vezes elas diferem?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:04:4}
+\emph{Modelagem: detector de coincidência.} O neurônio~\eqref{eq:glutneuron} recebe $1000$ entradas de Poisson a $5$ disparos por segundo cada, $w=1$; o limiar $\theta$ é tal que a tensão livre o cruza uma vez por segundo. Por simulação, encontre quantas entradas simultâneas $m$ acendem o neurônio com probabilidade $1/2$ para $\tau=10$ e $2\ms$.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:04:5}
+\emph{Projeto: detector de mudanças relativas.} Ajuste a sinapse~\eqref{eq:depression}: a corrente de regime a $40$ disparos por segundo não mais que $10\,\%$ acima da corrente a $10$, e, após um salto para $40$, a corrente chega ao novo nível com constante de tempo de no máximo $50\ms$. Qual é o menor $\tau_{\text{rec}}$, e com que $U$?
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:04:6}
+\emph{Tempo do primeiro disparo e rajadas.} (a)~Por~\eqref{eq:latency}, encontre a entrada com a qual o primeiro disparo chega exatamente após uma constante de tempo. De que ela depende? (b)~Com probabilidade de liberação $p=0.2$, quantos disparos a rajada precisa ter para que se percam todos com probabilidade abaixo de $5\,\%$?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:04:7}
+\emph{Pesquisa: quantos bits há na disposição.} O neurônio é feito de células independentes~\eqref{eq:spikeentropy}, $r=10$, $\Delta t=1\ms$. (a)~Decomponha a entropia de uma ``palavra'' de $20$ células na entropia do número de disparos e no resto. (b)~Simule a estimativa da entropia pelas frequências das palavras a partir de $N=30$ e $10^4$ registros. Quanto ela é subestimada?
+\end{exercise}

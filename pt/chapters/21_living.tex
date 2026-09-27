@@ -1,0 +1,164 @@
+\chapter{A máquina de neurônios vivos}
+\chaptermark{A máquina de neurônios vivos}
+\label{sec:livingmachine}
+
+\section{Uma bancada com o circuito à vista}
+
+No capítulo~\ref{sec:debugging} depuramos uma máquina sem esquema: a sonda ouve mil neurônios de oitenta bilhões, e todo o resto tem de ser adivinhado. Nessa situação, um engenheiro faria algo simples: montaria um pedaço pequeno do circuito numa protoboard, onde cada componente fica à vista. Com neurônios isso também é possível.
+
+Neurônios do córtex são dissociados e cultivados sobre um chip com uma matriz de eletrodos, de algumas dezenas a dezenas de milhares. Em poucas semanas as células emitem prolongamentos e se ligam numa rede de milhares ou centenas de milhares de neurônios, em sua maioria \nt{GLUT}, com uma fração menor de \nt{GABA} que depende da preparação: em culturas de hipocampo, cerca de $6\%$ dos neurônios~\cite{Benson1994}. Cada eletrodo sabe tanto ouvir, como a sonda do capítulo~\ref{sec:debugging}, quanto injetar corrente, como um sinal de teste. A segunda variante da bancada são os \emph{organoides}: bolinhas tridimensionais de tecido nervoso com cerca de um milímetro, cultivadas a partir de células-tronco humanas~\cite{Lancaster2013}. Nessas bancadas as redes vivas funcionam por meses; há plataformas em que se podem fazer experimentos com organoides remotamente, pela internet, por mais de cem dias seguidos~\cite{Jordan2024}. Essa área se chama \emph{computação biológica} ou \emph{inteligência organoide}~\cite{Smirnova2023}.
+
+A bancada difere do cérebro em dois pontos importantes. Ela é minúscula: tem cem mil vezes menos neurônios. E não tem canais de difusão: numa cultura de córtex não há neurônios \nt{DOPA}, \nt{SERO}, \nt{NORA} nem \nt{ACET}. É uma máquina com barramento de dados e controle de fluxo, mas sem registradores de controle. Vejamos do que ela é capaz.
+
+\section{O que a rede faz sozinha}
+
+Deixada em paz, a cultura não fica calada nem produz um ruído uniforme. De tempos em tempos quase toda a rede dispara de uma vez, numa \emph{salva}, e volta a se aquietar; os intervalos entre salvas vão de um segundo a minutos, conforme a cultura~\cite{Wagenaar2006}. Para um engenheiro o quadro é familiar: um amplificador com forte realimentação positiva e sem carga vira oscilador.
+
+O mecanismo nós já conhecemos. As fortes conexões mútuas dos neurônios \nt{GLUT} disparam uma avalanche, como no capítulo~\ref{sec:gaba} quando se violam as condições da proposição~\ref{prop:ei}. A avalanche esgota rapidamente o estoque de neurotransmissor nas sinapses~\eqref{eq:depression}, e a rede se cala. O estoque se recupera com constante de tempo $\tau_{\text{rec}}$, e quando se recupera a fração $x^*$ suficiente para uma nova avalanche, vem nova salva. O intervalo entre salvas é
+\begin{empheq}[box=\keybox]{equation}
+T_{\text{salva}} \;\approx\; \tau_{\text{rec}}\,\ln\frac{1}{1-x^*} .
+\label{eq:burstinterval}
+\end{empheq}
+Com $\tau_{\text{rec}}=0.8\,\text{s}$ do capítulo~\ref{sec:code} e $x^*=0.9$, dá cerca de dois segundos; com $x^*=0.99$, cerca de quatro. É uma estimativa do modelo com o $\tau_{\text{rec}}$ do livro, e ela cai na ponta curta dos intervalos medidos. A medição direta em microculturas mostra que o estoque de neurotransmissor se recupera depois de uma salva em dezenas de segundos~\cite{CohenSegal2011}, isto é, lá $\tau_{\text{rec}}$ é maior; com esse $\tau_{\text{rec}}$ a fórmula~\eqref{eq:burstinterval} dá dezenas de segundos e minutos, como nas culturas lentas. É um oscilador de relaxação, parente do gerador de ritmo do capítulo~\ref{sec:muscles}: lá quem o recarregava era a fadiga dos grupos, aqui é o estoque de neurotransmissor.
+
+As salvas são o que a rede faz quando não tem nada para fazer. No cérebro vivo, um quadro parecido aparece no sono profundo (capítulo~\ref{sec:sleep}) e no cérebro em desenvolvimento, antes de chegarem as entradas de verdade. A semelhança é sugestiva, mas a identidade dos mecanismos é uma hipótese.
+
+\section{Como ensinar a rede sem o professor dopamina}
+
+Como não há \nt{DOPA} na cultura, o sinal de ``melhor ou pior'' tem de ser dado por nós mesmos, pelos eletrodos. Os experimentos mostram que a rede na bancada de fato muda suas respostas, e o mais interessante neles é \emph{com o que} ela é ensinada.
+
+\emph{O professor que se cala.} A rede é estimulada por um eletrodo uma vez a cada um a três segundos, até que em outro eletrodo apareça a resposta desejada $50\pm10\ms$ depois do estímulo. Assim que ela aparece, a estimulação é desligada por cinco minutos. Depois de alguns ciclos assim, a resposta desejada surge logo ao estímulo~\cite{Shahaf2001}. A recompensa aqui é o silêncio: o estímulo sacode a rede, e parar o estímulo a deixa no estado que deu a resposta certa. É a descida de gradiente por perturbações aleatórias do capítulo~\ref{sec:dofa} (proposição~\ref{prop:gradient}), em que o papel do erro é feito pelo próprio fato de sacudir: sacode-se até ficar certo.
+
+\emph{A rede que joga tênis.} Num experimento com uma bancada de matriz densa de eletrodos, cerca de um milhão de neurônios foram ligados a um jogo de computador de tênis com uma só raquete~\cite{Kagan2022}. A posição da bola era aplicada como corrente nos eletrodos ``sensoriais'': onde está a bola, por código de lugar; a que distância, por frequência. A atividade em duas regiões ``motoras'' movia a raquete para cima ou para baixo. A regra de aprendizado era incomum. Se a raquete rebatia a bola, a rede recebia um estímulo curto e \emph{previsível}; se errava, alguns segundos de corrente aleatória \emph{imprevisível}. Em vinte minutos de jogo as sequências de bolas rebatidas ficavam mais longas. Um aumento significativo dentro da sessão só ocorreu com a realimentação completa; com silêncio no lugar do estímulo, a cultura também jogava melhor no fim da sessão do que sem realimentação, mas com efeito menor, e não houve aprendizado estável de uma sessão para outra ao longo de vários dias. A análise detalhada desse experimento está no capítulo~\ref{sec:dishbrain}.
+
+Os autores explicaram o resultado com a hipótese de que a rede age de modo a tornar sua entrada previsível~\cite{Friston2010}. É a mesma ideia da economia de disparos no capítulo~\ref{sec:code} e da predição do quadro no capítulo~\ref{sec:recognition}: a máquina gasta menos quando a entrada é esperada. Mas tanto o experimento quanto, sobretudo, as palavras dos autores sobre a ``inteligência'' da cultura provocaram críticas duras: o efeito é pequeno e pode ser explicado de forma mais simples~\cite{Balci2023}. A avaliação honesta é esta: a cultura na bancada muda de comportamento sob realimentação, isso está medido; que ela aprenda justamente a prever sua entrada é hipótese.
+
+\emph{A rede que conduz um corpo.} De modo parecido, uma cultura foi ligada a um ``corpo'' virtual simples e ensinada a movê-lo até um alvo, escolhendo-se o padrão espaço-temporal dos estímulos de treino~\cite{Bakkum2008}. Em nenhum desses experimentos há dopamina: o professor é um padrão de corrente escolhido pelo engenheiro. O que muda quando o professor passa a ser um programa ou a própria dopamina está nas seções~\ref{sec:dishdopamine}--\ref{sec:cartpole}.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  blk/.style={draw,very thick,rounded corners=2pt,align=center,font=\footnotesize,minimum height=0.8cm,fill=blue!5}]
+% (a) closed loop
+\node[font=\small] at (1.5,4.3) {(a) malha fechada};
+\node[blk,text width=2.6cm] (G) at (1.5,3.3) {jogo: bola e raquete};
+\draw[very thick,fill=orange!10,rounded corners=3pt] (0.5,0.2) rectangle (2.5,1.6);
+\foreach \x in {0.7,1.0,...,2.35}{\foreach \y in {0.4,0.7,1.0,1.3}{\fill[gray!60] (\x,\y) circle (0.04);}}
+\draw[->,thick,blue!60!black] (G.west) -| (-0.5,0.9) -- (0.5,0.9);
+\node[font=\scriptsize,blue!60!black,anchor=east] at (-0.6,2.1) {\shortstack{bola\\$\to$ corrente}};
+\draw[->,thick,red!70!black] (2.5,0.9) -- (3.5,0.9) |- (G.east);
+\node[font=\scriptsize,red!70!black,anchor=west] at (3.6,2.1) {disparos $\to$ raquete};
+\node[font=\scriptsize] at (1.5,-0.2) {neurônios na matriz de eletrodos};
+\node[font=\scriptsize,align=center] at (1.5,-0.85) {acerto: estímulo previsível\\erro: corrente aleatória};
+% (b) reservoir
+\begin{scope}[xshift=7.9cm]
+\node[font=\small] at (1.6,4.3) {(b) reservatório};
+\node[blk,text width=1.1cm] (X) at (-0.4,1.0) {entrada\\$u(t)$};
+\draw[very thick,fill=orange!10] (1.6,1.0) circle (0.8);
+\foreach \a/\r in {20/0.35,80/0.5,150/0.3,210/0.55,280/0.4,330/0.2,110/0.15}{\fill[red!60!black] ({1.6+\r*cos(\a)},{1.0+\r*sin(\a)}) circle (0.05);}
+\node[font=\scriptsize] at (1.6,-0.2) {organoide: sem professor};
+\node[blk,text width=1.8cm,fill=green!8] (W) at (4.0,1.0) {leitura\\$W_{\text{saída}}$};
+\draw[->,thick] (X) -- (0.8,1.0);
+\draw[->,thick] (2.4,1.0) -- node[above,font=\scriptsize] {$\mathbf r(t)$} (W);
+\draw[->,thick] (W) -- (4.0,2.3) node[above,font=\scriptsize] {$y(t)$};
+\node[font=\scriptsize,green!40!black] at (4.0,0.3) {aprende com professor};
+\end{scope}
+\end{tikzpicture}
+\caption{Duas maneiras de fazer uma rede viva calcular. (a) Malha fechada: a posição da bola é aplicada como corrente, os disparos das regiões motoras movem a raquete, e um estímulo previsível ou aleatório depois da jogada serve de professor. (b) Reservatório~\eqref{eq:reservoir}: o organoide não recebe sinal de ensino; ele decompõe a entrada em muitas respostas não lineares com memória, e só uma leitura linear externa aprende pelo erro. As conexões do próprio organoide também mudam nesse processo, sem professor.}
+\label{fig:livingmachine}
+\end{figure}
+
+\section{O reservatório vivo}
+
+Há outro jeito de usar uma rede viva: não ensiná-la de modo algum. Em engenharia isso se chama \emph{computação de reservatório}~\cite{Maass2002,JaegerHaas2004}. Toma-se um sistema não linear pronto e com memória, qualquer um, desde que sua resposta à entrada seja rica e dependa do passado recente. A entrada $u(t)$ o excita, obtém-se um vetor de respostas $\mathbf r(t)$, e só se treina a leitura linear
+\begin{empheq}[box=\keybox]{equation}
+y(t) \;=\; W_{\text{saída}}\,\mathbf r(t) ,
+\label{eq:reservoir}
+\end{empheq}
+cujos pesos são ajustados pela regra dos mínimos quadrados~\eqref{eq:lms} do capítulo~\ref{sec:motorlearning}. O reservatório faz o que faziam os pequenos neurônios \nt{GLUT} do capítulo~\ref{sec:motorlearning}: decompõe a entrada num vetor longo, em que as classes desejadas passam a ser separáveis por um plano (capítulo~\ref{sec:dendrites}).
+
+Um organoide sobre uma matriz de eletrodos serviu bem como esse reservatório. Sons de fala aplicados a ele como padrões de corrente foram distinguidos pelo falante, depois de treinada uma única leitura linear, com acurácia de cerca de $78\%$~\cite{Cai2023}. A acurácia de $78\%$ é o número que os próprios autores relatam e que a imprensa repete. O resultado é útil, mas é importante entender onde está a ``inteligência'' nele: o organoide fornece não linearidade e memória que se apaga, e o aprendizado pelo erro é feito fora, no silício (fig.~\ref{fig:livingmachine}). Ao mesmo tempo, o organoide não fica inalterado: segundo os autores, durante o treino mudou sua própria conectividade funcional, e eles chamam isso de aprendizado não supervisionado no próprio organoide~\cite{Cai2023}. Que parte da acurácia vem dessa mudança e que parte vem da leitura não foi separado.
+
+\section{O que a bancada diz sobre a máquina}
+
+\emph{Energia.} Pela estimativa~\eqref{eq:energy}, um disparo custa cerca de $10^{-10}$~J. Uma cultura de um milhão de neurônios, a um disparo por segundo, gasta na transmissão de sinais
+\begin{empheq}[box=\keybox]{equation}
+P \;\approx\; 10^{6}\times1\,\text{s}^{-1}\times10^{-10}\,\text{J} \;=\; 10^{-4}\,\text{W},
+\label{eq:dishpower}
+\end{empheq}
+um décimo de miliwatt. A eletrônica que estimula, registra e processa esses disparos gasta ordens de grandeza a mais. Como no capítulo~\ref{sec:debugging}, o gargalo não é o cálculo, e sim a comunicação com ele.
+
+\emph{As peças que faltam.} A bancada mostra o quanto sabe o barramento \nt{GLUT} com controle de fluxo \nt{GABA} sem registradores de controle: auto-organizar-se, gerar salvas, mudar as respostas sob realimentação e servir como um bom reservatório. O que ele não sabe fazer sem eles é decidir sozinho o que conta como sucesso. Na bancada esse sinal é dado pelo engenheiro; no cérebro, como vimos nos capítulos~\ref{sec:dofa}--\ref{sec:acet}, pelos canais de difusão.
+
+\emph{Ética.} Os organoides são cultivados a partir de células humanas, e quanto mais complexos ficam, mais séria é a questão de se esse tecido pode sentir algo. O olhar de engenheiro sugere uma resposta parcial: a dor, no capítulo~\ref{sec:pain}, não é o sinal de um único sensor, e sim todo um sistema de alarme com portões, controle de volume e canais de difusão, que a bancada não tem. Mas isso é um argumento, não uma prova, e a própria área propõe conduzir a avaliação ética junto com os experimentos, desde o início~\cite{Smirnova2023}.
+
+\begin{keyblock}
+\begin{proposition}[A rede viva na bancada]
+\label{prop:livingmachine}
+Uma rede de neurônios \nt{GLUT} e \nt{GABA} sobre uma matriz de eletrodos gera salvas sozinha~\eqref{eq:burstinterval}, muda as respostas sob realimentação e pode servir de reservatório~\eqref{eq:reservoir} para uma leitura treinada fora dela. Tudo isso está medido. Que essa rede aprenda por alguma regra geral, por exemplo prever sua entrada, é hipótese, e as palavras fortes sobre sua ``inteligência'' não são aceitas pela maioria dos especialistas.
+\end{proposition}
+\end{keyblock}
+
+\input{chapters/21_living_dopamine}
+
+\section{Resumo}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{2.8cm}>{\raggedright}p{4.2cm}>{\raggedright\arraybackslash}p{5.8cm}}
+\toprule
+Experimento & O que a rede viva faz & O que se sabe \\
+\midrule
+rede sem entrada & salvas com intervalos de um segundo a minutos~\eqref{eq:burstinterval} & medido; o mecanismo por esgotamento das sinapses é o modelo aceito \\
+professor que se cala & a resposta desejada se fixa quando a estimulação é desligada & medido \\
+jogo de tênis & as sequências de bolas rebatidas ficam mais longas; aumento significativo na sessão só com realimentação completa & a mudança de comportamento está medida; o aprendizado de uma sessão para outra é instável; o tamanho do efeito e a explicação pela predição da entrada são discutíveis \\
+corpo virtual & movimento até o alvo com um padrão de estímulos escolhido & medido \\
+reservatório & não linearidade e memória para a leitura~\eqref{eq:reservoir} & medido; o aprendizado pelo erro é externo, no silício; as conexões do organoide também mudam \\
+energia & cerca de $10^{-4}$~W por milhão de neurônios~\eqref{eq:dishpower} & estimativa por~\eqref{eq:energy} \\
+\bottomrule
+\end{tabular}
+\caption{O que as máquinas de neurônios vivos mostraram.}
+\label{tab:livingmachine}
+\end{table}
+
+A máquina de neurônios vivos (tabela~\ref{tab:livingmachine}) é uma bancada em que se vê o que sabem fazer o barramento de dados e o controle de fluxo sem registradores de controle. Sabem muita coisa, mas não sabem decidir sozinhos o que é bom. Na bancada esse papel é do engenheiro com seu padrão de corrente; no cérebro, dos poucos fios de difusão a que é dedicado o meio do livro.
+
+\section{Exercícios}
+
+\begin{exercise}[\lvlA]
+\label{ex:21:1}
+\emph{Intervalo entre salvas.} Uma salva esgota o estoque até zero; depois $\tau_{\text{rec}}\,\dd x/\dd t=1-x$, e nova salva começa em $x=x^*$; $\tau_{\text{rec}}=0.8$~s. (a)~Ache o intervalo para $x^*=0.9$ e $0.99$. (b)~O limiar $x^*$ varia ao acaso $\pm0.005$ em torno de $0.99$. Em que faixa ficam os intervalos?
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:21:2}
+\emph{Energia da bancada.} (a)~Que potência a estimativa~\eqref{eq:dishpower} dá para o cérebro inteiro ($8.6\cdot10^{10}$ neurônios)? (b)~A bancada registra $1024$ eletrodos a $20$~kHz, com $10$~bits por amostra. Quantas vezes transmitir esse fluxo a $1$~nJ por bit custa mais que a potência da própria cultura?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:21:3}
+\emph{Projeto: suprimir as salvas.} Uma estimulação esparsa por muitos eletrodos faz cada sinapse liberar neurotransmissor à taxa $r_b$; o estoque segue $\tau_{\text{rec}}\,\dd x/\dd t=1-x-Ur_b\tau_{\text{rec}}x$, $U=0.5$, $\tau_{\text{rec}}=0.8$~s. Qual a menor $r_b$ com que o estoque não chega a $x^*=0.9$; $0.99$, e quanto a sinapse enfraquece com isso?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:21:4}
+\emph{A memória do reservatório não passa do número de neurônios.} Um reservatório com $N$ saídas $\mathbf r(t)$ recebe uma entrada branca $u(t)$ de média zero e variância unitária; $m_k$ é o maior quadrado da correlação da leitura $\mathbf w_k\cdot\mathbf r(t)$ com $u(t-k)$. Prove que a capacidade de memória $\mathrm{MC}=\sum_{k\ge0}m_k\le N$.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:21:5}
+\emph{Simulação: um reservatório em silício.} Reservatório $\mathbf r(t+1)=\tanh(W\mathbf r(t)+\mathbf v\,u(t)+\mathbf c)$, $N=30$, $W$ aleatória com raio espectral $0.9$, $v_i\sim U(-0.5,0.5)$, $c_i\sim U(-0.2,0.2)$, $u\sim U(-1,1)$, leitura por regressão ridge. Ache a capacidade de memória do exercício~\ref{ex:21:4} com e sem $\tanh$. Qual reservatório lembra mais?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:21:6}
+\emph{A leitura de um reservatório vivo.} Um organoide fornece $1024$ canais e $P=240$ registros de treino de duas classes. (a)~Quantos atributos $n$ se podem manter para que, pela fórmula do exercício~\ref{ex:19:3}, uma rotulagem aleatória seja separável com probabilidade de no máximo $1\%$? (b)~Quantos sigmas acima do acaso está a acurácia de $78\%$ em $100$ registros de teste?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:21:7}
+\emph{Pesquisa: um professor sem canal de difusão.} Proponha um protocolo de estimulação que implemente na bancada a regra de três fatores do capítulo~\ref{sec:dofa} por $8$--$1024$ eletrodos, e um controle com leitura congelada que distinga o aprendizado dos pesos de um deslocamento do estado da rede. Que resultado refutaria a hipótese de aprendizado?
+\end{exercise}

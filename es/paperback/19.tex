@@ -1,0 +1,47 @@
+\chapter{Cuántas entradas hacen falta}
+% versión completa: chapters/19_dendrites.tex
+
+La neurona tiene prolongaciones de entrada ramificadas: las dendritas. En unas neuronas son todo un árbol con miles de contactos; en otras, una o dos ramas, o ninguna. Para un ingeniero, el número de entradas es un parámetro del circuito, y está elegido según la tarea.
+
+\section*{De cero a cien mil}
+
+Los sensores del tacto y del dolor no tienen dendritas en absoluto: el cable simplemente va de la piel a la médula espinal, y el sensor está en su extremo. Es una línea con un sensor en el extremo lejano.
+
+\pencilfig{19}{\pencilart{19}}{Muchas entradas: un sumador. Una sola entrada enorme: un repetidor rápido y preciso.}
+
+Las neuronas del olfato y las que transmiten la señal de los sensores del ojo y del oído tienen una sola dendrita. Una entrada, una salida: un repetidor, un búfer.
+
+Los detectores de la dirección del sonido tienen dos dendritas que apuntan en sentidos opuestos, una para cada oído. Al separar las dos entradas en ramas distintas, la neurona hace más estricto el “y”: dos porciones de corriente en una misma rama se estorbarían.
+
+Las pequeñas neuronas del circuito de aprendizaje motor tienen unas cuatro dendritas cortas, y cada una atrapa su propia entrada. Hay decenas de miles de millones de estas neuronas, y cada una suma solo cuatro señales. Pero juntas despliegan la entrada en millones de combinaciones, y una gran neurona de salida con cien mil entradas elige entre ellas las necesarias.
+
+Y por último, las neuronas con árboles enormes y miles de entradas son sumadores y clasificadores, en los que cada rama funciona casi como un pequeño circuito independiente.
+
+\section*{Por qué es así}
+
+Todo lo decide la carga. Una neurona pequeña con pocas entradas se carga con una sola conexión grande en fracciones de milisegundo: esa neurona es precisa en el tiempo y transmite la señal con fiabilidad. A un árbol grande, una sola conexión nunca lo cargará: la carga se escapará antes. Necesita decenas de señales que lleguen juntas, pero a cambio puede sumarlas y compararlas. Pocas entradas y conexiones grandes, para el tiempo preciso. Muchas entradas, para contar.
+
+\pencilfig{128}{%
+% charging: a small neuron reaches threshold from one large synapse at once; a big tree barely moves
+% from one input and needs many inputs arriving together
+\foreach \dx/\t in {0/{pocas entradas}, 4.3/{árbol grande}}{
+  \draw[pen] (\dx,0) -- (\dx+3.6,0);
+  \draw[pcGray, densely dashed, line width=0.5pt] (\dx,0.9) -- (\dx+3.6,0.9);
+  \node[font=\small\itshape, text=pcGray, anchor=south] at (\dx+1.8,1.75) {\t};}
+\node[lbl, anchor=east] at (-0.05,0.9) {umbral};
+% small neuron
+\draw[pcBlue, line width=2pt] (0.6,-0.15) -- (0.6,-0.6);
+\draw[penlite=pcBlue] (0,0) -- (0.6,0) -- plot[domain=0.6:0.8, samples=12] (\x,{1.3*(1-exp(-(\x-0.6)/0.18))}) -- (0.8,1.6) -- (0.84,0) -- (3.5,0);
+\node[lbl, text=pcRed, anchor=west] at (0.85,1.45) {clic inmediato};
+\node[lbl, text=pcBlue, anchor=north] at (0.6,-0.62) {una entrada grande};
+% big tree
+\draw[pcBlue, line width=0.6pt] (4.8,-0.15) -- (4.8,-0.45);
+\foreach \s in {6.15,6.2,6.25,6.3,6.35,6.4,6.45,6.5}{\draw[pcBlue, line width=0.6pt] (\s,-0.15) -- (\s,-0.45);}
+\draw[penlite=pcBlue] (4.3,0) -- (4.8,0) -- plot[domain=4.8:6.15, samples=20] (\x,{0.16*((\x-4.8)/0.15)*exp(1-(\x-4.8)/0.15)}) -- plot[domain=6.15:6.62, samples=14] (\x,{1.25*(1-exp(-(\x-6.15)/0.4))}) -- (6.62,1.6) -- (6.66,0) -- (7.9,0);
+\node[lbl, anchor=south] at (4.95,0.2) {casi nada};
+\node[lbl, text=pcBlue, anchor=north] at (6.33,-0.47) {muchas a la vez};
+}{Una neurona pequeña se carga con una sola conexión grande en fracciones de milisegundo y hace clic de inmediato. Un árbol grande casi no cambia con una sola entrada: necesita decenas de señales que lleguen juntas.}
+
+Así obtuvimos una tercera clasificación de las neuronas: por la sustancia, por el dispositivo y por el número de entradas. Cada una ve la misma máquina desde un ángulo nuevo.
+
+\fullversion{19}

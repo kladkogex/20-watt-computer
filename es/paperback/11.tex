@@ -1,0 +1,46 @@
+\chapter{Cómo entra el mundo}
+% versión completa: chapters/11_sensors.tex
+
+Todo órgano de los sentidos es un transductor, como un micrófono o una fotocelda. La luz, el sonido o una molécula actúan sobre una proteína especial de la célula sensora; la proteína abre una “llave”, fluye una corriente, y al final de la cadena salen clics que van a la red. Casi todos los sensores liberan glutamato, así que las entradas de la máquina se conectan directamente a su red telefónica.
+
+\section*{Al límite de la física}
+
+Los sensores del cerebro trabajan en el límite mismo de lo posible. Un sensor de luz, en la oscuridad, responde a una única partícula de luz. Un sensor de sonido detecta un desplazamiento menor que un nanómetro, menor que el tamaño de unos pocos átomos. En la penumbra, lo que limita la precisión ya no es el ojo sino la propia luz: las partículas llegan al azar, y para distinguir un matiz hay que acumular más. Por eso al anochecer vemos más despacio: el ojo acumula luz más tiempo, como una cámara con exposición larga.
+
+\section*{Exposición automática}
+
+La iluminación, de una noche estrellada a la nieve al sol, cambia miles de millones de veces; el volumen del sonido, todavía más. Y la frecuencia de clics va de cero a unos cientos por segundo. Meter lo uno en lo otro de forma directa es imposible. La solución es la misma que en una cámara: exposición automática. El sensor ajusta todo el tiempo su sensibilidad al nivel medio del entorno y no informa del brillo, sino del brillo \emph{comparado con el fondo}. Lo constante deja con el tiempo de provocar respuesta, y cada cambio la provoca. Desde el principio, las entradas de la máquina hablan de cambios.
+
+\pencilfig{125}{%
+% light rises in two tenfold steps, then drops a hundredfold; sensor rate = baseline + gain * (log light - adapted level),
+% the adapted level follows log light with a 0.7 s time constant; rate clipped at zero
+\draw[penlite=pcAmber] (0,1.75) -- (1.4,1.75) -- (1.4,2.1) -- (4.2,2.1) -- (4.2,2.45) -- (6.3,2.45) -- (6.3,1.75) -- (8.4,1.75);
+\node[lbl, text=pcAmber!70!black, anchor=east] at (-0.05,2.0) {luz};
+\node[lbl, anchor=south] at (2.8,2.12) {10 veces más}; \node[lbl, anchor=south] at (5.25,2.47) {otras 10};
+\node[lbl, anchor=south] at (7.35,1.77) {oscuro otra vez};
+\draw[pen] (0,0) -- (8.4,0);
+\draw[pcGray, densely dashed, line width=0.5pt] (0,0.32) -- (8.4,0.32);
+\draw[penlite=pcBlue] plot coordinates {(0.00,0.32) (1.26,0.32) (1.40,1.02) (1.54,0.85) (1.68,0.72) (1.82,0.62) (1.96,0.54) (2.10,0.49) (2.24,0.45) (2.38,0.41) (2.52,0.39) (2.66,0.37) (2.80,0.36) (3.08,0.34) (3.50,0.33) (4.06,0.32) (4.20,1.03) (4.34,0.85) (4.48,0.72) (4.62,0.62) (4.76,0.54) (4.90,0.49) (5.04,0.45) (5.18,0.41) (5.32,0.39) (5.46,0.37) (5.60,0.36) (5.88,0.34) (6.16,0.33) (6.30,0.00) (7.00,0.00) (7.14,0.07) (7.28,0.13) (7.42,0.18) (7.56,0.22) (7.70,0.24) (7.84,0.26) (7.98,0.28) (8.12,0.29) (8.40,0.30)};
+\node[lbl, text=pcBlue, anchor=east] at (-0.05,0.32) {respuesta};
+\node[lbl, anchor=north] at (6.65,-0.02) {calla};
+}{La luz sube en escalones, cada uno diez veces más brillante. El sensor responde a cada cambio con un estallido y vuelve rápido a su nivel anterior. Cuando vuelve a oscurecer, se calla un rato.}
+
+Los ingenieros copiaron este truco en las cámaras de eventos. Una cámara así no toma fotogramas a ritmo de reloj: cada píxel avisa por su cuenta “hay más luz” o “hay menos luz” cuando algo cambió. Es el mismo par de cables “sí” y “no” del segundo capítulo, solo que en silicio.
+
+\section*{El ojo comprime la imagen}
+
+En el ojo hay unos cien millones de sensores de luz, y los cables que llevan la imagen al cerebro son alrededor de un millón. Antes de que la imagen salga del ojo, se comprime unas cien veces. Las zonas uniformes casi no cuestan nada; se transmiten los bordes y los cambios. Según una estimación hecha en ojos de animales y trasladada al ser humano, el ojo envía al cerebro del orden de diez millones de bits por segundo, como un cable de red antiguo.
+
+\section*{El oído es un piano}
+
+El oído descompone el sonido en frecuencias, igual que un ingeniero pondría un banco de filtros. Una membrana elástica del oído responde en distintos lugares a distintas frecuencias, y los sensores de cada tramo escuchan su propia “tecla”. El número del sensor activado es la altura del tono.
+
+\pencilfig{11}{\pencilart{11}}{El oído es un piano al revés: cada tecla escucha su propia nota.}
+
+Más aún, el oído no es pasivo. Parte de sus células hace vibrar la membrana al compás del sonido y amplifica los sonidos débiles miles de veces, y los fuertes casi nada. Es un amplificador al borde mismo de la autoexcitación: ahí es especialmente sensible. Y en las frecuencias bajas, las neuronas además hacen clic al compás de la onda y conservan el momento exacto del sonido; con él, el cerebro encuentra la dirección de la fuente. Cuanto más alta la frecuencia, peor la siguen las neuronas, y solo queda el código de lugar.
+
+\section*{Los demás sentidos}
+
+En casi cada sentido se reconoce un truco de los capítulos anteriores. La temperatura la transmiten dos cables, uno para el calor y otro para el frío. El tacto usa sensores que responden al contacto y enseguida se callan, y sensores que mantienen la respuesta mientras dura la presión. Y el olfato funciona como un código de barras: el ser humano tiene unos cuatrocientos tipos de sensores olfativos, y un olor es el conjunto de tipos activados. El número de esos conjuntos es astronómico.
+
+\fullversion{11}

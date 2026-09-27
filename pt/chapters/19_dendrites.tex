@@ -1,0 +1,167 @@
+\chapter{Neurônios pelo número de dendritos}
+\chaptermark{Número de dendritos}
+\label{sec:dendrites}
+
+\section{O número de entradas como parâmetro do circuito}
+
+No capítulo~\ref{sec:neurontypes} classificamos os neurônios pelo que sua saída libera, e no capítulo~\ref{sec:eetypes}, pelo componente com que funcionam. Há um terceiro critério, que o engenheiro nota logo: \emph{quantas entradas o neurônio tem}. As entradas são coletadas pelos dendritos, os ramos em que se apoiam axônios alheios (capítulo~\ref{sec:dofa}, seção~\ref{sec:weightstore}). Alguns neurônios não têm dendrito nenhum, outros têm um ou dois, e outros têm uma árvore que coleta cem mil entradas. Para o eletrônico, isso é a capacidade de carga na entrada, o fan-in, e ela quase sempre corresponde à tarefa.
+
+Por que o número e o tamanho dos dendritos são tão importantes fica claro por uma estimativa simples. A membrana é um capacitor com capacitância específica $c_m\approx1$~\textmu F/cm$^2$, e quanto maior a área $A$ do neurônio junto com seus dendritos, mais carga é preciso trazer para elevar a tensão em $\Delta V$. O tempo que uma corrente de entrada $I$ leva para isso, sem contar o vazamento, é
+\begin{empheq}[box=\keybox]{equation}
+t \;\approx\; \frac{c_m\,A\,\Delta V}{I} .
+\label{eq:dendriteload}
+\end{empheq}
+Um neurônio pequeno, com alguns dendritos curtos, tem área da ordem de $2\cdot10^{-5}$~cm$^2$ e capacitância de cerca de $20$~pF. Uma única sinapse grande, com corrente de alguns nanoampères, o eleva em $20\mV$ em menos de um décimo de milissegundo. Num neurônio com árvore grande, a área é umas quinze vezes maior e a capacitância, cerca de $300$~pF; uma sinapse comum, com corrente de cerca de $0.1$~nA, o carregaria em $60\ms$, muito mais que a constante de tempo do vazamento, ou seja, nunca o carregaria. Esse neurônio precisa de dezenas de entradas simultâneas. Os números aqui são ordens de grandeza, mas a conclusão não depende deles: \emph{poucas entradas, rápido e preciso; muitas entradas, lento e pela soma}.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  soma/.style={circle,draw,very thick,fill=blue!6,minimum size=0.55cm,inner sep=0pt},
+  ax/.style={->,very thick,red!70!black},
+  den/.style={very thick,blue!60!black}]
+% 0 dendrites: sensor on a line
+\begin{scope}[xshift=0cm]
+\draw[den,decorate,decoration={snake,amplitude=1pt,segment length=4pt}] (-0.9,0) -- (0,0);
+\node[font=\scriptsize] at (-0.9,0.3) {sensor};
+\draw[ax] (0,0) -- (1.0,0);
+\draw[thick] (0.1,0) -- (0.1,0.45);
+\node[soma,minimum size=0.4cm] at (0.1,0.65) {};
+\node[font=\scriptsize,align=center] at (0.05,-0.75) {$0$\\linha com sensor};
+\end{scope}
+% 1 dendrite
+\begin{scope}[xshift=3.3cm]
+\draw[den] (-0.9,0) -- (-0.28,0);
+\node[soma] at (0,0) {};
+\draw[ax] (0.28,0) -- (0.9,0);
+\node[font=\scriptsize,align=center] at (0,-0.75) {$1$\\buffer, repetidor};
+\end{scope}
+% 2 dendrites: one per ear
+\begin{scope}[xshift=6.2cm]
+\draw[den] (-0.28,0) -- (-0.9,0); \draw[den] (0.28,0) -- (0.9,0);
+\node[soma] at (0,0) {};
+\draw[ax] (0,-0.28) -- (0,-0.6);
+\node[font=\scriptsize] at (-0.9,0.25) {esq.}; \node[font=\scriptsize] at (0.9,0.25) {dir.};
+\node[font=\scriptsize,align=center] at (0,-1.0) {$2$\\``E'' no tempo};
+\end{scope}
+% ~4 short dendrites: mixer
+\begin{scope}[xshift=9.0cm]
+\foreach \a in {45,135,225,315}{\draw[den] (\a:0.28) -- (\a:0.7); \fill[blue!60!black] (\a:0.72) circle (0.06);}
+\node[soma] at (0,0) {};
+\draw[ax] (0.28,0) -- (1.0,0);
+\node[font=\scriptsize,align=center] at (0,-1.0) {$\sim4$\\misturador};
+\end{scope}
+% many: summing tree
+\begin{scope}[xshift=12.0cm]
+\foreach \a in {60,90,120}{\draw[den] (0,0.28) -- ++(\a:0.55) coordinate (b); \foreach \d in {-20,20}{\draw[den] (b) -- ++(\a+\d:0.35);}}
+\foreach \a in {-120,-60}{\draw[den] (0,-0.28) -- ++(\a:0.45);}
+\node[soma] at (0,0) {};
+\draw[ax] (0.28,0) -- (1.0,0);
+\node[font=\scriptsize,align=center] at (0,-1.0) {$10^4$--$10^5$\\somador};
+\end{scope}
+\end{tikzpicture}
+\caption{Cinco classes pelo número de entradas. Em azul, os dendritos (entradas); em vermelho, o axônio (saída). Quanto menos entradas, mais rápido e preciso o neurônio transmite um sinal isolado; quanto mais, melhor ele soma e classifica. É um esquema, não um desenho da forma das células.}
+\label{fig:dendriteclasses}
+\end{figure}
+
+\section{Zero dendritos: sensor na ponta da linha}
+
+Os neurônios sensoriais do tato, da dor e do estiramento muscular (capítulos~\ref{sec:sensors}, \ref{sec:pain}, \ref{sec:muscles}) não têm nenhum dendrito no corpo celular. O axônio sai do corpo como um só galho e logo se divide em dois: um ramo vai à pele ou ao músculo, e sua ponta serve ela mesma de sensor; o outro vai à medula espinhal. O disparo corre do sensor direto à medula, sem passar pelo corpo celular. Para o engenheiro, é uma linha de comunicação com o sensor na ponta distante e o corpo celular pendurado ao lado, como uma fonte de alimentação: ele abastece a linha, mas não participa da transmissão. A vantagem é velocidade e confiabilidade: no caminho não há nenhum ponto em que o sinal tenha de ser somado para decidir de novo se será transmitido.
+
+Os sensores de luz e de som são um caso ainda mais extremo: não são neurônios coletores, mas os próprios transdutores, cuja entrada não é uma sinapse, e sim uma proteína receptora (fig.~\ref{fig:transducer}).
+
+\section{Um dendrito: o buffer}
+
+Um neurônio com um dendrito e um axônio recebe uma linha de entrada e a passa adiante. Assim são os neurônios olfatórios: o único dendrito sai à superfície do nariz e carrega um único tipo de receptor~\cite{Mombaerts2004}; assim são as células de transmissão da retina, entre os sensores de luz e os neurônios de saída do olho; assim são os neurônios que ligam os sensores do ouvido ao cérebro. O engenheiro os chamaria de buffer ou repetidor: eles não calculam, entregam um sinal, às vezes mudando sua forma, por exemplo convertendo a tensão contínua do sensor em disparos, como no capítulo~\ref{sec:sensors}.
+
+\section{Dois dendritos: ``E'' no tempo}
+
+Os detectores de coincidência que determinam a direção do som (fig.~\ref{fig:itd}) muitas vezes têm, nos mamíferos, exatamente dois dendritos voltados para lados opostos: num chegam as entradas do ouvido esquerdo, no outro, as do direito~\cite{Grothe2010}. Por que separar as entradas? Lembremos a fórmula~\eqref{eq:shunt}: quando muitos canais excitatórios estão abertos num trecho da membrana, a tensão ali se aproxima do potencial de equilíbrio, e cada nova entrada acrescenta cada vez menos. Por isso muitas entradas de um só ouvido, reunidas num dendrito, o saturam e não conseguem sozinhas levar o neurônio ao limiar. Já uma entrada de cada dendrito se soma de forma quase linear. Dois dendritos tornam o neurônio uma porta ``E'' mais estrita: dispare só se os sinais vieram dos dois lados e juntos. Modelos mostram que essa separação de fato melhora a detecção de coincidências~\cite{AgmonSnir1998}.
+
+\section{Alguns dendritos curtos: misturador e retransmissor}
+
+\emph{Misturadores.} No circuito de aprendizado motor do capítulo~\ref{sec:motorlearning}, cerca de setenta bilhões de pequenos neurônios \nt{GLUT} expandem a entrada num vetor muito longo. Cada um deles tem só uns quatro dendritos curtos, e cada dendrito termina numa ``garra'' que abraça o terminal de uma entrada. Assim, cada misturador vê só umas quatro entradas entre muitas e funciona como uma pequena porta ``E'' sobre a sua quadra. De $M$ linhas de entrada podem-se escolher $\binom{M}{4}$ quadras diferentes: com $M=100$, são quase quatro milhões. Para que tantas? Um elemento de limiar com $n$ entradas consegue separar corretamente em duas classes no máximo
+\begin{empheq}[box=\keybox]{equation}
+P_{\max} \;\approx\; 2n
+\label{eq:cover}
+\end{empheq}
+padrões aleatórios~\cite{Cover1965}. O neurônio de saída do mesmo circuito recebe cerca de $10^5$ entradas dos misturadores, e por~\eqref{eq:cover} o limite superior para ele é da ordem de $2\cdot10^5$ associações diferentes. É o limite de um elemento ideal: se todos os pesos são positivos, como nas sinapses excitatórias, e é preciso margem para o ruído, a estimativa para esse mesmo neurônio é de cerca de $4\cdot10^4$ associações~\cite{Brunel2004}. Os misturadores de poucas entradas existem justamente para que o grande somador tenha muitas entradas diferentes e quase independentes~\cite{Marr1969,Albus1971}.
+
+\emph{Retransmissores.} No caminho do ouvido até os detectores de direção há neurônios com poucos dendritos curtos que recebem só algumas sinapses enormes, e alguns, essencialmente uma. Por~\eqref{eq:dendriteload}, é exatamente o necessário: capacitância pequena e corrente grande, e o neurônio dispara frações de milissegundo depois de cada disparo de entrada, quase sem perder precisão temporal. Um desses retransmissores recebe \nt{GLUT} e emite \nt{GLYC}: é um inversor com precisão de dezenas de microssegundos, que fornece inibição rápida aos detectores de direção~\cite{BorstSoria2012}.
+
+\section{Milhares de entradas: somador e classificador}
+
+Na outra ponta da escala estão os neurônios \nt{GLUT} do córtex, com uma dezena de milhares de entradas, e os neurônios \nt{GABA} de saída do circuito de aprendizado motor, com uma centena de milhares. Por~\eqref{eq:dendriteload}, esse neurônio é lento e não consegue responder a uma entrada isolada: ele soma. É o neurônio integrador do capítulo~\ref{sec:glutcomputer} e o somador com que se constroem os classificadores. A árvore grande acrescenta também algo novo: seus ramos funcionam como subcircuitos separados, com limiares próprios, de modo que um neurônio se comporta como uma pequena rede de várias camadas~\cite{Beniaguev2021,Gidon2020}.
+
+\section{Dendritos que também são saída}
+
+Há neurônios sem axônio nenhum, cujos dendritos servem de entrada e de saída: recebem sinais e eles mesmos liberam neurotransmissor. O exemplo mais estudado são os neurônios \nt{GABA} da retina que participam da detecção da direção do movimento (capítulo~\ref{sec:gaba}, fig.~\ref{fig:direction}). Nesse neurônio, cada ramo, por conta própria, responde ao movimento do corpo celular para a sua ponta e emite inibição por essa ponta~\cite{Euler2002}. Um neurônio são vários detectores de direção independentes, um por ramo. Para o engenheiro, não é um elemento, e sim um chip com vários canais num só encapsulamento.
+
+\section{Resumo}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{1.9cm}>{\raggedright}p{3.4cm}>{\raggedright}p{2.6cm}>{\raggedright}p{1.8cm}>{\raggedright\arraybackslash}p{3.8cm}}
+\toprule
+Dendritos & Exemplo & Componente & Entradas & O que se sabe \\
+\midrule
+$0$ & sensores de tato, dor, estiramento & linha com sensor na ponta & --- & estabelecido \\
+$1$ & neurônios olfatórios, células de transmissão da retina, neurônios do ouvido & buffer, repetidor & $1$--poucas & estabelecido \\
+$2$ & detectores de direção do som & ``E'' no tempo & dois feixes & estrutura estabelecida; ganho da separação das entradas mostrado em modelos \\
+$\sim4$ & misturadores do circuito de aprendizado motor & pequena porta ``E'' & $\sim4$ & estabelecido; papel de expansão da entrada: hipótese bem fundamentada \\
+poucos, curtos & retransmissores no caminho do ouvido & retransmissor, inversor & $1$--algumas enormes & estabelecido \\
+milhares & neurônios \nt{GLUT} do córtex, neurônios de saída do aprendizado motor & somador, classificador & $10^4$--$10^5$ & estabelecido; ramos como subcircuitos medidos em exemplos isolados \\
+dendritos-saída & neurônios \nt{GABA} de direção na retina & chip multicanal & muitas & medido \\
+\bottomrule
+\end{tabular}
+\caption{Neurônios pelo número de dendritos.}
+\label{tab:dendrites}
+\end{table}
+
+\begin{keyblock}
+\begin{proposition}[O número de entradas segue a tarefa]
+\label{prop:dendrites}
+Onde é preciso velocidade e precisão para um sinal isolado (nos sensores, retransmissores e detectores de coincidência), os neurônios têm poucos dendritos, poucas entradas e sinapses grandes: a capacitância pequena~\eqref{eq:dendriteload} carrega depressa. Onde é preciso somar e classificar, os neurônios têm árvores grandes com milhares de entradas. A estrutura das classes foi medida; a explicação computacional é bem fundamentada, mas para muitas classes continua sendo hipótese.
+\end{proposition}
+\end{keyblock}
+
+A tabela~\ref{tab:dendrites} completa as duas classificações anteriores: pelo neurotransmissor (tabela~\ref{tab:types}) e pelo componente (tabela~\ref{tab:eetypes}). As três olham o mesmo elemento de lados diferentes: o que ele emite, o que ele calcula e quanto ele escuta.
+
+\section{Exercícios}
+
+\begin{exercise}[\lvlA]
+\label{ex:19:1}
+\emph{Quantas entradas um neurônio grande precisa.} Um neurônio com $C=300$~pF e $\tau_m=20\ms$ recebe sinapses que são fontes de corrente de $0.1$~nA cada, com limiar $20\mV$ acima do repouso. (a)~Quantas sinapses precisam agir ao mesmo tempo para chegar ao limiar; em $10\ms$; em $5\ms$? (b)~Em quanto tempo chega ao limiar um neurônio com $C=20$~pF a partir de uma sinapse de $4$~nA?
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:19:2}
+\emph{Por que quatro.} O misturador é um ``E'' sobre $k$ linhas de $M=100$; num padrão, metade das linhas está ativa; há $7\cdot10^{10}$ misturadores. (a)~Quantos respondem ao padrão com $k=2$; $4$; $40$? (b)~Quantas vezes os misturadores aumentam o número de associações~\eqref{eq:cover} do neurônio de saída com $10^5$ entradas em relação a $M=100$ linhas diretas?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:19:3}
+\emph{De onde vem o $2n$.} Um hiperplano pela origem divide $P$ pontos em posição geral no espaço $n$-dimensional em duas classes de $C(P,n)=2\sum_{k=0}^{n-1}\binom{P-1}{k}$ modos. (a)~Prove que, com $P=2n$, exatamente metade das $2^P$ partições é separável. (b)~Que fração é separável com $n=100$ e $P=180$; $220$?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:19:4}
+\emph{Dois dendritos como ``E'' estrito.} O dendrito é um trecho com vazamento $g_L$; cada entrada abre nele uma condutância $g_0=0.5\,g_L$ com potencial $E_E$; o corpo vê $\kappa(V_1+V_2)$; limiar $\theta=1.1\,\kappa E_E$. Por que nenhum número de entradas num só dendrito dispara o neurônio, e quantas entradas são necessárias em cada um?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:19:5}
+\emph{Projeto de um retransmissor.} O jitter do disparo é $\sigma_t=\sigma_V/\dot V$, onde $\dot V$ é a inclinação da tensão no limiar. Quer-se $\sigma_t\le20$~\textmu s com ruído $\sigma_V=1\mV$; despreze o vazamento. Quantas sinapses síncronas de $0.1$~nA são necessárias para isso num neurônio com $C=300$~pF, e qual é o jitter de um neurônio com $C=20$~pF e uma sinapse de $4$~nA?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:19:6}
+\emph{Simulação: carga de um dendrito longo.} Simule o cabo passivo $\tau_m\partial_tV=\lambda^2\partial_x^2V-V+i/g$ de comprimento $L=\ell/\lambda$ com extremidades fechadas ($40$ segmentos, Euler). Um pulso curto de corrente é aplicado na ponta distante: quando e até que fração da tensão produzida pela mesma carga espalhada por todo o dendrito sobe a ponta próxima, com $L=0.2$; $1$; $2$?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:19:7}
+\emph{Pesquisa: o número ótimo de entradas.} Capacitância $C=C_0+nc_s$; $m$ entradas agem ao mesmo tempo com corrente $I_s$; o neurônio memoriza $P\approx2n$ associações~\eqref{eq:cover}. Como o tempo de resposta depende de $P$ com $m$ constante e com fração constante $m=\varphi n$? Proponha um critério de custo e ache o $n$ ótimo para um retransmissor e para um classificador.
+\end{exercise}

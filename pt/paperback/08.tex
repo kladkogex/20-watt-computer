@@ -1,0 +1,45 @@
+\chapter{O botão da ousadia}
+% versão completa: chapters/08_nora.tex
+
+Você está escolhendo onde almoçar. Vai ao café de sempre ou experimenta um novo? Se for sempre ao de sempre, nunca vai saber que na esquina há um melhor. Se ficar sempre experimentando, vai almoçar mal muitas vezes. Onde está o meio-termo? Esse problema --- explorar ou aproveitar o que já encontrou --- se apresenta a qualquer ser que aprende. No cérebro, ao que parece, quem cuida dele é a estação de rádio \nt{NORA}, a noradrenalina.
+
+\section*{O botão de contraste}
+
+A noradrenalina muda a nitidez com que o neurônio responde a um sinal. Com efeito fraco, o neurônio parece um dimmer suave: um pouco mais de sinal, uma resposta um pouco mais forte. Com efeito forte, ele parece um interruptor: abaixo do limiar, silêncio; acima, resposta total. Para ser mais exato, os experimentos mostram que a noradrenalina suprime a conversa de fundo dos neurônios mais do que a resposta deles a um sinal de verdade; o ``botão de contraste'' é um modelo cômodo desse efeito.
+
+\pencilfig{8}{\pencilart{8}}{O botão da ousadia: girado para a esquerda, a máquina experimenta o novo; para a direita, escolhe com decisão o já testado.}
+
+\section*{Pensar ou decidir}
+
+Lembre dos dois grupos do terceiro capítulo que se inibem mutuamente. Quando o contraste é baixo, os dois trabalham, o mais fraco um pouco mais baixo: a rede ainda ``pensa'', pesa as opções. Quando o contraste passa de um certo limiar, a rede muda de repente para o modo ``decidi'': um grupo vence, o outro se cala. Um único botão alterna a máquina entre ponderar e decidir.
+
+\section*{Quanto explorar}
+
+Vamos acrescentar ruído. Com contraste baixo, o ruído supera com facilidade a pequena diferença entre as opções, e a máquina muitas vezes experimenta uma opção que não é a melhor: explora. Com contraste alto, o ruído não decide nada, e a máquina sempre pega o que considera melhor: aproveita.
+
+No nosso modelo, o mundo muda de tempos em tempos: a melhor opção vira a pior. O retorno depende do botão como uma letra U de cabeça para baixo. Contraste de menos: a máquina vaga às cegas. Contraste demais: ela não percebe que o mundo mudou e continua teimosamente indo ao café que piorou. E quanto mais o mundo muda, mais baixo fica o melhor ajuste: num mundo instável, compensa explorar.
+
+\pencilfig{108}{%
+% points: models/nora_explore.py, reward as a share of the best possible, gain 0.5 ... 64 (doubling); the y axis starts at 0.70, hence the break mark
+\draw[pen] (0,0) -- (6.3,0); \draw[pen] (0,0) -- (0,0.18); \draw[pen] (0,0.34) -- (0,2.4);
+\draw[pcGray, line width=0.6pt] (-0.1,0.14) -- (0.1,0.22); \draw[pcGray, line width=0.6pt] (-0.1,0.3) -- (0.1,0.38);
+\node[lbl, anchor=north] at (3.0,-0.05) {botão de contraste};
+\node[lbl, anchor=south, rotate=90] at (-0.1,1.3) {retorno};
+\draw[penlite=pcBlue] plot[smooth] coordinates {(0.00,0.55) (0.85,0.79) (1.70,1.19) (2.55,1.68) (3.40,2.00) (4.25,2.07) (5.10,2.01) (5.95,1.91)};
+\draw[penlite=pcRed] plot[smooth] coordinates {(0.00,0.55) (0.85,0.69) (1.70,0.93) (2.55,1.24) (3.40,1.40) (4.25,1.28) (5.10,1.06) (5.95,0.89)};
+\draw[dotpen=pcBlue, wash=pcBlue] (4.25,2.07) circle (0.07);
+\draw[dotpen=pcRed, wash=pcRed] (3.40,1.40) circle (0.07);
+\node[lbl, text=pcBlue, anchor=south] at (4.25,2.15) {o mundo muda pouco};
+\node[lbl, text=pcRed, anchor=north] at (3.40,1.30) {muito};
+\node[lbl, anchor=north west, align=left] at (0.05,-0.35) {vaga\\às cegas}; \node[lbl, anchor=north east, align=right] at (6.3,-0.35) {não nota\\mudanças};
+}{O retorno do modelo em diferentes posições do botão. Cada curva tem um pico; quando o mundo muda muito, ele fica mais baixo e mais à esquerda.}
+
+\section*{Quem gira o botão}
+
+O sinal natural de mudança é o inesperado: os erros ficaram maiores que o normal. Segundo uma hipótese, é justamente essa mudança inesperada que a noradrenalina comunica. Aqui há um detalhe importante: o nível constante, de fundo, de noradrenalina está ligado mais à exploração e à distração, e as rajadas curtas diante de um evento importante, à concentração e à decisão. Talvez a rajada funcione como uma interrupção no computador: ``largue o que está fazendo, o mundo mudou, refaça o plano''.
+
+Um sinal indireto desse sistema se vê de fora: a pupila se dilata quando algo muda inesperadamente e as pessoas começam a aprender mais depressa. É verdade que a pupila não acompanha só a noradrenalina, então isso é uma pista, não um instrumento de medida.
+
+E uma confissão honesta: no nosso modelo, ajustar o botão pelo inesperado rendeu bem pouco em comparação com o melhor ajuste fixo. Onde exatamente esse ajuste compensa ainda está por entender.
+
+\fullversion{8}

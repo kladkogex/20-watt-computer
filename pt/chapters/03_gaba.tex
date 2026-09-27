@@ -1,0 +1,280 @@
+\chapter{\nt{GLUT} e \nt{GABA} juntos}
+\label{sec:gaba}
+
+\section{As regras do jogo}
+
+Uma rede só de neurônios \nt{GLUT} não sabe escolher, zerar a memória nem impedir que a atividade vire avalanche, e tudo por causa da monotonicidade (proposição~\ref{prop:monotone}). Vamos acrescentar a ela o segundo tipo de neurônio mais numeroso, o \nt{GABA}. As regras são as mesmas: só o que existe num organismo vivo, e nenhum sinal de clock.
+
+O modelo de neurônio é o mesmo de~\eqref{eq:glutneuron}, mas o disparo de um neurônio \nt{GABA} não eleva a tensão do destinatário, e sim a abaixa. Agora os pesos têm dois sinais, e o sinal é definido pelo remetente, regra~\eqref{eq:dalesign}.
+
+Alguns parâmetros do circuito. Os neurônios \nt{GABA} são de um quinto a um quarto dos neurônios do córtex~\cite{Hendry1987}. Suas saídas são curtas: eles inibem os vizinhos, não regiões distantes. A inibição chega em um milissegundo e dura alguns milissegundos. Sem entrada, o neurônio \nt{GABA} fica calado: para inibir alguém, ele mesmo precisa ser excitado, em geral por neurônios \nt{GLUT} da mesma rede.
+
+Por isso, uma conexão negativa de um neurônio \nt{GLUT} $A$ para um neurônio $B$ tem de passar por um intermediário: $A$ excita um neurônio \nt{GABA}, e este inibe $B$. A troca de sinal custa um neurônio e um atraso, cerca de um milissegundo.
+
+Na inibição importa não só \emph{de quem} vem a conexão, mas também \emph{onde} ela se instala: o local de contato determina em grande parte o que a conexão faz~\cite{Markram2004}. As saídas \nt{GLUT} se instalam principalmente nos ramos de entrada do destinatário, seus \emph{dendritos}, e levam dados: cada entrada dessas é uma parcela da soma. Uma saída no corpo do neurônio age sobre a soma inteira: assim muitos neurônios \nt{GABA} rápidos dividem a resposta do destinatário e definem quando ele vai disparar. Uma saída no local onde nasce o disparo do destinatário é a última palavra, um veto à saída inteira de uma vez. E uma saída no terminal do fio de outro neurônio muda a probabilidade de liberação $p$ de uma única linha de entrada, sem tocar nas demais~\cite{Rudomin1999}; é assim, em particular, que funciona o portão da dor no capítulo~\ref{sec:pain}. Fora do cérebro, as saídas se instalam em fibras musculares (capítulo~\ref{sec:muscles}) e em órgãos (capítulo~\ref{sec:chemoutput}), e algumas não se instalam em lugar nenhum e liberam o neurotransmissor no volume do tecido ou no sangue (capítulos~\ref{sec:serocomputer} e~\ref{sec:chemoutput}).
+
+\section{NÃO e veto}
+
+Dá para fazer um NÃO agora? Quase. Um neurônio que trabalha com a entrada calada precisa tirar excitação de algum lugar. No cérebro vivo ela existe: a cada neurônio chega o tempo todo uma atividade de fundo de milhares de outros. Suponha que o fundo mantenha o neurônio $Y$ ativo, e que a entrada $x$ o iniba por meio de um intermediário \nt{GABA}. Isso é um NÃO.
+
+Mais útil, porém, é o \emph{veto}: ``$a$, mas não com $b$'':
+\begin{empheq}[box=\keybox]{equation}
+y \;=\; a \wedge \bar b .
+\label{eq:veto}
+\end{empheq}
+O neurônio $Y$ recebe excitação de $a$ e inibição de um neurônio \nt{GABA} excitado por $b$. Aqui não é preciso fundo: a excitação vem do próprio $a$. Com vetos e OU monta-se tudo. Por exemplo, o OU exclusivo: $x\oplus y=(x\wedge\bar y)\vee(\bar x\wedge y)$, dois neurônios de veto, dois intermediários \nt{GABA} e um neurônio OU.
+
+\begin{keyblock}
+\begin{proposition}[Completude de \nt{GLUT}+\nt{GABA}]
+\label{prop:gabacomplete}
+Uma rede de neurônios \nt{GLUT} e \nt{GABA} pode calcular qualquer função lógica das entradas, e cada bit é transmitido por um único fio. Os sensores ``liga--desliga'' do capítulo~\ref{sec:glutcomputer} não são mais necessários para isso. Se a função deve dar um com todas as entradas caladas, é preciso uma fonte de atividade de fundo.
+\end{proposition}
+\end{keyblock}
+
+Demonstração: o veto~\eqref{eq:veto} junto com o OU é funcionalmente completo se houver uma constante um, porque NÃO $x$ é o veto ``um, mas não com $x$''. E as funções que dão zero com todas as entradas caladas se montam com vetos e OU mesmo sem a constante um.
+
+\section{Direção do movimento}
+
+O veto no tempo, assim como o E no tempo no capítulo~\ref{sec:glutcomputer}, dá um detector de direção do movimento.
+
+Sejam dois sensores vizinhos, $A$ e $B$, a uma distância $\Delta x$ um do outro. O neurônio de saída $Y$ recebe excitação de $B$ e inibição de $A$ por meio de um intermediário \nt{GABA}, com atraso $d$ (fig.~\ref{fig:direction}). Uma mancha de luz que corre com velocidade $v$ de $A$ para $B$ passa por $A$ no instante $0$, e a inibição chega a $Y$ no instante $d$; passa por $B$ no instante $\Delta x/v$, e nesse mesmo momento chega a excitação. Se esses instantes coincidem dentro da janela~\eqref{eq:window}, a inibição anula a excitação, e $Y$ fica calado. Isso acontece a uma velocidade de cerca de
+\begin{empheq}[box=\keybox]{equation}
+v^* \;=\; \frac{\Delta x}{d} .
+\label{eq:vstar}
+\end{empheq}
+No movimento de $B$ para $A$, a excitação de $B$ chega no instante $0$, e a inibição de $A$ só no instante $\Delta x/v+d$, quando $Y$ já disparou.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  nrn/.style={circle,draw,very thick,fill=blue!6,minimum size=0.9cm,inner sep=0pt},
+  gab/.style={nrn,fill=red!10},
+  inh/.style={-{Bar[width=7pt]},thick,red!70!black}]
+\node[nrn] (A) at (0,2) {$A$};
+\node[nrn] (B) at (3,2) {$B$};
+\node[gab] (G) at (0.9,0.6) {\small \nt{GABA}};
+\node[nrn] (Y) at (3,-0.6) {$Y$};
+\draw[->,thick] (A) -- (G);
+\draw[inh] (G) -- node[below left=-2pt] {\scriptsize atraso $d$} (Y);
+\draw[->,thick] (B) -- (Y);
+\draw[->,very thick,red!70!black] (Y) -- (4.6,-0.6) node[right,black] {\small saída};
+\draw[->,thick,orange!85!black] (-0.6,2.9) -- (3.6,2.9) node[right,black] {\small calado};
+\draw[<-,thick,orange!85!black] (-0.6,3.4) -- (3.6,3.4) node[right,black] {\small responde};
+\foreach \yy/\dd in {2.9/-1,3.4/1}{
+  \foreach \k in {1,2,3}{\draw[orange!70!yellow,line width=0.8pt] (1.5+\dd*0.12+\dd*0.13*\k,\yy+0.1-0.1*\k+0.1) -- ++(\dd*0.25,0);}
+  \fill[yellow!70!orange,draw=orange!70!black] (1.5,\yy) circle (0.14);}
+\node[font=\scriptsize,align=center] at (1.5,3.95) {mancha de luz};
+\end{tikzpicture}
+\caption{Detector de direção do movimento. $B$ excita $Y$, $A$ o inibe por meio de um intermediário \nt{GABA} com atraso $d$. No movimento de $A$ para $B$ com velocidade de cerca de $\Delta x/d$, a inibição anula a excitação; no movimento contrário, ela chega atrasada. A mancha amarela com tracinhos é a luz que corre sobre os sensores.}
+\label{fig:direction}
+\end{figure}
+
+Na retina, a seletividade à direção do movimento parece ser criada exatamente assim: por uma inibição assimétrica vinda do lado de onde o movimento não deve provocar resposta~\cite{Barlow1965}.
+
+\section{Subtração ou divisão}
+
+Até agora, nossa inibição subtraía. Na verdade, ela é mais sutil.
+
+Uma sinapse abre um canal, isto é, liga uma condutância. Numa sinapse excitatória, o potencial de equilíbrio fica muito acima do limiar, cerca de $70\mV$ acima do repouso: o canal aberto puxa a tensão para cima. Numa sinapse \nt{GABA} inibitória, o canal deixa passar cloreto, cujo potencial de equilíbrio fica perto do repouso, e o canal aberto puxa a tensão não para baixo, mas \emph{para o repouso}. Contando a tensão a partir do repouso, a tensão de regime de uma membrana com condutância de vazamento $g_L$, excitatória $g_E$ e inibitória $g_I$ é
+\begin{empheq}[box=\keybox]{equation}
+V_\infty \;=\; \frac{g_E\,E_E}{g_L+g_E+g_I} ,
+\label{eq:shunt}
+\end{empheq}
+em que $E_E\approx70\mV$ é o potencial de equilíbrio da sinapse excitatória. É a lei de Ohm para um divisor de tensão: $g_E$ puxa para $E_E$, e $g_L$ e $g_I$, para zero.
+
+$g_I$ não aparece no numerador com sinal de menos, e sim no denominador: a inibição não \emph{subtrai} da excitação, ela a \emph{divide} (fig.~\ref{fig:shunt}). Essa inibição se chama inibição por derivação: os canais de cloreto abertos curto-circuitam a membrana. Para a rede, é um controle de ganho. Se $g_I$ é proporcional à atividade total dos vizinhos, cada neurônio responde não à força absoluta de sua entrada, mas à sua fração na atividade total. Essa divisão pela atividade total aparece em muitas regiões do cérebro e é considerada uma de suas operações padrão~\cite{Carandini2012}: a mesma rede funciona tanto com entrada fraca quanto com entrada forte.
+
+Uma ressalva: a fórmula~\eqref{eq:shunt} trata de um neurônio que não emite disparos. Num neurônio que dispara, a tensão fica o tempo todo perto do limiar, a corrente pela condutância inibitória é quase constante, e sobre a \emph{frequência} de disparos a derivação age principalmente por subtração~\cite{HoltKoch1997}. A frequência é dividida se ao neurônio forem acrescentadas ao mesmo tempo condutâncias de fundo excitatória e inibitória equilibradas, como no regime trêmulo e equilibrado do córtex vivo~\cite{Chance2002}. Assim, o cérebro obtém a divisão não de uma derivação isolada, mas da inibição junto com o ruído de fundo~\cite{Carandini2012}.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=1.25cm,y=0.05cm]
+\draw[->,gray!70!black] (0,0) -- (5.4,0) node[right,black] {\small $g_E/g_L$};
+\draw[->,gray!70!black] (0,0) -- (0,68) node[above,black] {\small $V_\infty$, mV};
+\foreach \v in {20,40,60}{\draw[gray!60!black] (-0.05,\v) -- (0.05,\v) node[left=3pt,font=\scriptsize] {\v};}
+\foreach \x in {1,2,3,4,5}{\draw[gray!60!black] (\x,-1.5) -- (\x,1.5) node[below=5pt,font=\scriptsize] {\x};}
+\draw[very thick,blue!60!black] plot[domain=0:5,samples=60] (\x,{70*\x/(1+\x)});
+\draw[very thick,red!70!black] plot[domain=0:5,samples=60] (\x,{70*\x/(3+\x)});
+\draw[thick,densely dashed,gray!50!black] plot[domain=0.56:5,samples=60] (\x,{70*\x/(1+\x)-25});
+\node[right,font=\small,blue!60!black] at (5.02,58.3) {sem inibição};
+\node[right,font=\small,red!70!black] at (5.02,45.5) {divide: $g_I=2g_L$};
+\node[right,font=\small,gray!40!black] at (5.02,32.5) {subtrai $25\mV$};
+\end{tikzpicture}
+\caption{A inibição por derivação divide a tensão em vez de subtrair dela. A curva azul é a tensão de regime~\eqref{eq:shunt} sem inibição; a vermelha, com condutância inibitória $g_I=2g_L$. A vermelha é a mesma azul esticada três vezes na horizontal: como se a entrada fosse dividida por $1+g_I/g_L=3$. A tracejada é uma inibição que subtrai $25\mV$ constantes: a curva desce inteira, e a inclinação não muda.}
+\label{fig:shunt}
+\end{figure}
+
+Há também uma segunda consequência. A constante de tempo da membrana é $\tau_{\text{ef}}=C/(g_L+g_E+g_I)$, e a inibição a encurta. Como a janela de coincidência~\eqref{eq:window} é proporcional a $\tau$, uma inibição que chega junto com a excitação \emph{estreita a janela}. O circuito em que a entrada excita o neurônio diretamente e, ao mesmo tempo, com atraso de um milissegundo, o inibe por meio de um intermediário \nt{GABA} é um dos mais comuns no cérebro: o neurônio só tem tempo de responder ao que chegou no primeiro ou segundo milissegundo~\cite{Pouille2001}.
+
+\section{Escolha}
+
+Agora o principal que faltava à rede \nt{GLUT}: escolher uma entre várias opções. Tomemos dois grupos de neurônios \nt{GLUT} com entradas $I_1$ e $I_2$. Cada um, por meio de seus intermediários \nt{GABA}, inibe o outro com força $\beta$ (fig.~\ref{fig:wta}). Para as frequências $r_1,r_2$ obtemos
+\begin{equation}
+\tau\,\frac{\dd r_1}{\dd t} = -r_1 + \bigl[I_1-\beta r_2\bigr]_+ ,\qquad
+\tau\,\frac{\dd r_2}{\dd t} = -r_2 + \bigl[I_2-\beta r_1\bigr]_+ ,
+\label{eq:wta}
+\end{equation}
+em que $[u]_+=\max(u,0)$: a frequência não pode ser negativa.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  nrn/.style={circle,draw,very thick,fill=blue!6,minimum size=0.9cm,inner sep=0pt},
+  gab/.style={nrn,fill=red!10,minimum size=0.75cm},
+  inh/.style={-{Bar[width=7pt]},thick,red!70!black}]
+\node[nrn] (E1) at (0,0) {$r_1$};
+\node[nrn] (E2) at (4,0) {$r_2$};
+\node[gab] (G1) at (1.4,1.1) {};
+\node[gab] (G2) at (2.6,-1.1) {};
+\draw[->,thick] (E1) -- (G1); \draw[inh] (G1) -- (E2);
+\draw[->,thick] (E2) -- (G2); \draw[inh] (G2) -- (E1);
+\draw[->,thick,blue!60!black] (-1.6,0) node[left,black] {$I_1$} -- (E1);
+\draw[->,thick,blue!60!black] (5.6,0) node[right,black] {$I_2$} -- (E2);
+\end{tikzpicture}
+\caption{Escolha entre dois. Dois grupos de neurônios \nt{GLUT} (azuis) inibem um ao outro por meio de intermediários \nt{GABA} (vermelhos).}
+\label{fig:wta}
+\end{figure}
+
+Enquanto os dois neurônios estão ativos, o sistema~\eqref{eq:wta} é linear, e seu comportamento é dado por dois autovalores: $-(1+\beta)/\tau$ para desvios iguais das duas frequências e $-(1-\beta)/\tau$ para desvios opostos. Com inibição fraca, $\beta<1$, os dois autovalores são negativos: os dois neurônios trabalham, e a inibição apenas abafa o mais fraco. Com inibição forte, $\beta>1$, o segundo autovalor fica positivo: qualquer diferença entre $r_1$ e $r_2$ cresce até que um neurônio se cale por completo.
+
+\begin{keyblock}
+\begin{proposition}[O vencedor leva tudo]
+\label{prop:wta}
+Se a inibição mútua é maior que um, $\beta>1$, o estado em que os dois grupos trabalham é instável. A rede chega a um estado em que um grupo trabalha e o outro fica calado. O vencedor, com frequência $r_1=I_1$, mantém a vitória enquanto $I_2<\beta I_1$.
+\end{proposition}
+\end{keyblock}
+
+Verificamos isso num modelo. Com $\beta=0.5$ e entradas $1.0$ e $0.9$, os dois grupos trabalham, com frequências $0.73$ e $0.53$. Com $\beta=2$ e as mesmas entradas, o segundo grupo fica totalmente calado. Essa escolha tem memória: se depois as entradas forem trocadas, o vencedor anterior continua vencedor, porque $1.0<2\cdot0.9$.
+
+Com cem grupos é igual: cada um inibe os demais, e sobrevive um.
+
+\section{Reset da memória}
+
+A memória do capítulo~\ref{sec:glutcomputer} só se desligava pela fadiga. Vamos acrescentar a ela um neurônio \nt{GABA} que é excitado por um sinal de ``reset'' e inibe o grupo. A inibição abaixa a curva $f(wr+I)$ da fig.~\ref{fig:bistable}, a interseção de cima some e o grupo se apaga, e fica no estado de baixo quando o reset termina. Agora a memória é gravada por um sinal e apagada por outro, como num flip-flop com entradas de set e reset.
+
+Mais elegante ainda é ligar dois desses grupos por inibição mútua, como na fig.~\ref{fig:wta}, e dar a cada um realimentação sobre si mesmo. Um sinal na entrada de um dos grupos leva a célula ao estado dele, e a célula lembra a última decisão. É o análogo direto de um latch de dois elementos NOU acoplados em cruz.
+
+\section{Estabilidade e ritmo}
+
+Resta o terceiro mal da rede \nt{GLUT}: a avalanche. Tomemos um grupo de neurônios \nt{GLUT} com realimentação sobre si mesmo $w_{EE}$ e um grupo de neurônios \nt{GABA} que o primeiro excita com força $w_{IE}$ e que inibem o primeiro com força $w_{EI}$. Para as frequências $E$ e $I$ obtemos
+\begin{equation}
+\tau_E\frac{\dd E}{\dd t} = -E + w_{EE}E - w_{EI}I + h, \qquad
+\tau_I\frac{\dd I}{\dd t} = -I + w_{IE}E ,
+\label{eq:ei}
+\end{equation}
+em que $h$ é a entrada externa~\cite{WilsonCowan1972}. Sem inibição, com $w_{EE}>1$, a atividade cresce sem limite: cada disparo gera mais de um disparo seguinte. Com inibição, a frequência de regime
+\begin{equation}
+E^* \;=\; \frac{h}{1-w_{EE}+w_{EI}w_{IE}}
+\label{eq:eistar}
+\end{equation}
+é finita se o denominador for positivo. Mas isso não basta: o equilíbrio ainda precisa atrair. Da análise linear de~\eqref{eq:ei} saem duas condições.
+
+\begin{keyblock}
+\begin{proposition}[Condições de estabilidade]
+\label{prop:ei}
+O equilíbrio~\eqref{eq:eistar} é estável se a inibição for
+\begin{enumerate}
+\item[(i)] \emph{forte o bastante}: $w_{EI}\,w_{IE} > w_{EE}-1$;
+\item[(ii)] \emph{rápida o bastante}: $\tau_I < \tau_E/(w_{EE}-1)$.
+\end{enumerate}
+Se (i) é violada, a atividade cresce em avalanche. Se (i) vale mas (ii) é violada, a inibição chega atrasada, e a atividade começa a oscilar.
+\end{proposition}
+\end{keyblock}
+
+A condição~(i) é o determinante da matriz do sistema~\eqref{eq:ei}; a condição~(ii), o seu traço. O sentido da segunda é claro para quem já ajustou um controlador: uma realimentação atrasada não amortece o desvio, mas o amplifica.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth]
+\draw[->,gray!70!black] (0,0) -- (10.9,0) node[below left,black] {\small $t$, ms};
+\draw[->,gray!70!black] (0,0) -- (0,3.3) node[left,black] {\small $E$};
+\foreach \t in {0,50,100,150}{\draw[gray!70!black] (\t*0.07,0.06) -- (\t*0.07,-0.06) node[below,font=\scriptsize] {\t};}
+\input{figures/ei_traces}
+\node[font=\small,gray!40!black,anchor=west] at (0.9,3.15) {sem inibição: avalanche};
+\node[font=\small,blue!60!black,anchor=west] at (7.4,1.25) {inibição rápida};
+\node[font=\small,red!70!black,anchor=west] at (7.4,2.55) {inibição lenta};
+\end{tikzpicture}
+\caption{Frequência de um grupo \nt{GLUT} com realimentação $w_{EE}=1.5$, $\tau_E=10\ms$, após a entrada ser ligada. Sem inibição (tracejado), a atividade cresce sem limite. Com inibição de força $w_{EI}w_{IE}=2$ e $\tau_I=2\ms$ (curva azul), ela se estabiliza no nível $E^*=h/(1-1.5+2)=0.67h$. Com a mesma inibição, mas lenta, $\tau_I=30\ms$ (curva vermelha), a atividade oscila.}
+\label{fig:ei}
+\end{figure}
+
+Considera-se que o córtex trabalha exatamente nesse regime: sua própria realimentação é forte o bastante para cair em avalanche sem inibição, e só a inibição rápida o mantém no ponto de operação~\cite{Tsodyks1997isn}.
+
+Esse regime tem uma assinatura paradoxal pela qual pode ser reconhecido de fora~\cite{Tsodyks1997isn}. Acrescentemos em~\eqref{eq:ei} uma entrada externa $h_I$ diretamente ao grupo \nt{GABA}. As frequências de regime passam a ser
+\begin{equation}
+E^* \;=\; \frac{h-w_{EI}\,h_I}{D},\qquad
+I^* \;=\; \frac{w_{IE}\,h+(1-w_{EE})\,h_I}{D},\qquad
+D \;=\; 1-w_{EE}+w_{EI}w_{IE} .
+\label{eq:isn}
+\end{equation}
+Se $w_{EE}>1$, o coeficiente de $h_I$ na segunda fórmula é negativo: empurre os neurônios \nt{GABA}, e sua frequência \emph{cai}. A causa está no laço. A inibição extra abafa o grupo \nt{GLUT}, este excita menos os neurônios \nt{GABA}, e eles perdem mais do que ganharam. Com os números da fig.~\ref{fig:ei} ($w_{EE}=1.5$, $w_{EI}w_{IE}=2$, $D=1.5$), cada unidade de entrada acrescentada reduz $I^*$ em um terço de unidade. Essa assinatura foi encontrada no córtex: quando a resposta de neurônios do córtex visual é suprimida por um estímulo ao redor, a corrente inibitória que eles recebem não cresce, mas cai junto com a excitatória~\cite{Ozeki2009}. Mais tarde a mesma assinatura foi encontrada em diferentes áreas e camadas do córtex~\cite{Sanzeni2020}.
+
+Oscilações quando a condição~(ii) é violada também ocorrem no cérebro. O laço ``\nt{GLUT} excita \nt{GABA}, \nt{GABA} inibe \nt{GLUT}'' com atraso de alguns milissegundos gera um ritmo com período da ordem de $12$--$50\ms$ (frequência de $20$--$80$\,Hz), e esses ritmos rápidos no córtex são bem conhecidos~\cite{Cardin2009,Buzsaki2012}. Não é o clock de um computador: o ritmo é local e só surge quando a rede está ativa. Mas, ao longo de alguns ciclos, ele divide o tempo em janelas nas quais os neurônios podem disparar.
+
+\section{Resumo}
+
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{>{\raggedright}p{3.3cm}>{\raggedright}p{4.4cm}>{\raggedright\arraybackslash}p{4.4cm}}
+\toprule
+& só \nt{GLUT} & \nt{GLUT} + \nt{GABA} \\
+\midrule
+NÃO & só por sensores ``liga--desliga'' & veto $a\wedge\bar b$; NÃO com atividade de fundo \\
+fios por bit & dois & um \\
+direção do movimento & não & veto com atraso \\
+controle de ganho & não & divisão: derivação junto com ruído de fundo \\
+janela de coincidência & $\sim\tau$ & estreitada pela inibição \\
+escolha de um entre muitos & não & inibição mútua, $\beta>1$ \\
+reset da memória & só por fadiga & por sinal via \nt{GABA} \\
+estabilidade & só por fadiga & realimentação negativa rápida \\
+ritmo & desnecessário & surge com inibição lenta \\
+\bottomrule
+\end{tabular}
+\caption{O que o \nt{GABA} acrescenta a uma rede de neurônios \nt{GLUT}.}
+\label{tab:gaba}
+\end{table}
+
+O \nt{GABA} quase não acrescenta à rede novos \emph{cálculos} (tudo isso também podia ser calculado com sensores de dois fios), mas acrescenta \emph{controle} (tabela~\ref{tab:gaba}): escolha, reset, controle de ganho e estabilidade. No cérebro, a excitação leva os dados, e a inibição decide quais dados passam, quando e com que volume. Para um em cada quatro ou cinco neurônios do córtex, é uma divisão de trabalho muito sensata.
+
+\section{Exercícios}
+
+\begin{exercise}[\lvlA]
+\label{ex:03:1}
+\emph{A derivação em números.} $E_E=70\mV$. Por~\eqref{eq:shunt}, encontre $V_\infty$ para $g_E=g_L$ e $4g_L$, sem inibição e com derivação $g_I=2g_L$. Que $V_\infty$ em $g_E=4g_L$ daria uma subtração que, em $g_E=g_L$, retira tanto quanto a derivação? Quantas vezes a derivação estreita a janela de coincidência?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:03:2}
+\emph{Dedução das condições de estabilidade.} Encontre o traço e o determinante da matriz do sistema linear~\eqref{eq:ei} e deduza deles as duas condições da proposição~\ref{prop:ei}. Na fronteira da condição~(ii), o equilíbrio perde estabilidade de forma oscilatória. Encontre o período dessas oscilações com os números da fig.~\ref{fig:ei}.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:03:3}
+\emph{Ritmo a partir do atraso.} Troquemos a inibição lenta do modelo~\eqref{eq:ei} por uma rápida com atraso $d$: $\tau_E\dot E=-E(t)-GE(t-d)+h$. Com $\tau_E=10\ms$, encontre o menor atraso $d_c$ que produz oscilações e seu período para $G=2$ e $G=5$. Eles caem nos ritmos rápidos do córtex, $12$--$50\ms$, ao contrário do exercício~\ref{ex:03:2}?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:03:4}
+\emph{Modelagem: escolha com memória.} Integre~\eqref{eq:wta} com $\beta=2$, $\tau=1$. (a)~Com $I_1=1$, suba $I_2$ lentamente de $0$ a $3$ e desça de volta: em que valores de $I_2$ a rede comuta? (b)~Quanto cresce o tempo de decisão a partir do silêncio quando a diferença das entradas $\varepsilon$ diminui dez vezes?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:03:5}
+\emph{Projeto: detector para uma faixa de velocidades.} O detector da fig.~\ref{fig:direction} deve ficar calado no movimento de $A$ para $B$ com tempo de percurso de $5$--$20\ms$. Um intermediário \nt{GABA} com atraso $d_k$ veta $Y$ no intervalo $[d_k,\,d_k+5\ms]$ após o disparo de $A$; a excitação de $B$ chega de imediato. Quantos intermediários são necessários, e com que atrasos?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:03:6}
+\emph{Vetos e fundo.} Quantos neurônios exige a paridade $x\oplus y\oplus z$ no esquema geral ``intermediário \nt{GABA} por entrada, veto para cada combinação com $f=1$, OU comum''? Construa-a com dois neurônios, \nt{GABA} e \nt{GLUT}, que recebem as entradas diretamente, indicando pesos e limiares.
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:03:7}
+\emph{Projeto: escolha entre cem.} Cada um de $100$ grupos \nt{GLUT} deve inibir igualmente todos os outros, mas não a si mesmo. Intermediários \nt{GABA} lineares são excitados pelos grupos e os inibem; os grupos podem excitar uns aos outros, mas não a si mesmos. Qual é o menor número de intermediários? E se não houver nenhuma conexão excitatória direta?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:03:8}
+\emph{Pesquisa: quando a inibição é paradoxal.} No modelo da fig.~\ref{fig:ei} ($w_{EI}=2$, $w_{IE}=1$), o grupo \nt{GLUT} recebeu a função de transferência $f(u)=[u]_+^2$, e o grupo \nt{GABA} continuou linear. Acima de que entrada $h_c$ um acréscimo ao grupo \nt{GABA} reduz a própria frequência dele? Verifique por simulação.
+\end{exercise}

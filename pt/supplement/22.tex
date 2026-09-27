@@ -1,0 +1,29 @@
+\section{Capítulo~\ref{sec:dishbrain}. DishBrain}
+
+A montagem da bancada e os resultados do jogo vêm de um único trabalho experimental e de sua continuação; as fórmulas do ruído e da deriva para boas configurações são deduzidas no capítulo e verificadas com o modelo do livro, e o mecanismo de aprendizado na placa não está estabelecido.
+
+{\footnotesize
+\setlength{\tabcolsep}{3pt}\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{>{\raggedright}p{0.5cm}>{\raggedright}p{4.0cm}>{\raggedright}p{5.6cm}>{\raggedright}p{2.3cm}>{\raggedright\arraybackslash}p{1.7cm}}
+\toprule
+N.º & Proposição & Experimento e o que foi medido & Fonte & Status \\
+\midrule\endfirsthead
+\toprule
+N.º & Proposição & Experimento e o que foi medido & Fonte & Status \\
+\midrule\endhead
+1 & Bancada: cerca de $800\,000$ células de córtex de camundongo ou cerca de $10^6$ células humanas por chip; $26\,000$ eletrodos em $8$~mm$^2$, registro de até $1024$, estimulação por $8$ & Métodos do trabalho: chip MaxOne, $26\,000$ eletrodos de platina em $8$~mm$^2$, registro de $1024$ canais a $20\,000$ amostras por segundo; tecnicamente é possível estimular até $32$ eletrodos, de modo independente conseguiram $8$; as culturas de camundongo foram usadas a partir de cerca de $10$~dias & \cite{Kagan2022} & medido \\
+2 & Malha com ciclo de $10$~ms: os disparos das regiões motoras movem a raquete (fig.~\ref{fig:dishloop}) & Os disparos são contados em janelas de $10$~ms; o atraso entre o disparo e o estímulo de resposta é de cerca de $5$~ms, definido pelo buffer do equipamento & \cite{Kagan2022} & medido \\
+3 & Entrada: código de lugar (qual dos $8$ eletrodos) e de taxa, $4$--$40$~disparos/s & No experimento principal, a frequência de estimulação cresce linearmente de $4$~Hz, com a bola junto à parede do fundo, até $40$~Hz junto à raquete; a amplitude dos pulsos da bola é de $75$~mV; os pulsos são retangulares bifásicos & \cite{Kagan2022} & medido \\
+4 & Saída $\Delta p=c\,(n_\uparrow-n_\downarrow)$~\eqref{eq:dishreadout}, ruído da contagem por janela $1/\sqrt{RT}$ & A regra da diferença entre duas regiões é descrita no trabalho (com pesos das regiões pela atividade), a fórmula exata não é dada. A estimativa do ruído é consequência da contagem de Poisson, deduzida no capítulo & \cite{Kagan2022}; dedução no capítulo & teoria \\
+5 & Professor: após o acerto, estímulo previsível de $75$~mV, $100$~disparos/s, $0.1$~s; após o erro, imprevisível, $150$~mV, $5$~disparos/s, $4$~s em lugares e momentos aleatórios, depois $4$~s de pausa & Métodos: após o acerto, $75$~mV, $100$~Hz, $100$~ms em todos os $8$ eletrodos de uma vez; após o erro, $150$~mV, $5$~Hz em eletrodos aleatórios e momentos aleatórios durante $4$~s, depois $4$~s sem estimulação. Não há dopamina na cultura & \cite{Kagan2022} & medido \\
+6 & A rede age de modo a tornar sua entrada previsível & O princípio da energia livre é uma proposta teórica da qual os autores derivaram o protocolo; o experimento é compatível com ele, mas não o distingue de mecanismos mais simples (linhas~7--8) & \cite{Friston2010,Kagan2022} & hipótese \\
+7 & Se o fracasso sacode a rede e o sucesso não, o tempo numa configuração é $\rho\propto1/P_{\text{erro}}$~\eqref{eq:dishdensity} (proposição~\ref{prop:dishscramble}) & Decorre do balanço de fluxos numa cadeia de Markov com empurrões simétricos, deduzido no capítulo. Não há teste direto numa cultura & dedução no capítulo & teoria \\
+8 & O modelo ``embaralhar no erro'' aprende: fração de acertos $0.21\to0.38$; com empurrão após cada rali $\approx0.12$, sem empurrões $0.19$ (fig.~\ref{fig:dishmodel}) & Cálculo, script \texttt{models/dishbrain\_model.py}, $40$ culturas-modelo com $2000$ ralis cada: $0.21\to0.38$; $0.13\to0.11$; $0.19\to0.19$ & --- & modelo \\
+9 & As sequências de bolas rebatidas se alongam só nas culturas vivas na malha completa; os controles não aprendem & $399$ sessões de $20$~min: $9$ culturas de camundongo ($101$ sessões), $11$ humanas ($138$), $6$ chips com meio ($80$), $20$ culturas em repouso ($42$), $3$ simulações ($38$). A duração média do rali nos últimos $15$~min é maior que nos primeiros $5$ só nas culturas vivas; nas células que não são neurônios (HEK293T) e nos chips com meio não há efeito & \cite{Kagan2022} & medido \\
+10 & Aumento significativo na sessão só com realimentação completa; com silêncio no lugar do estímulo, o jogo no fim da sessão é melhor que sem realimentação, mas o efeito é menor & $486$ sessões em $3$ dias: ``estímulo'' ($n=27$), ``silêncio'' ($17$), ``sem realimentação'' ($15$). O aumento ao longo do tempo só é significativo na condição ``estímulo''; no fim da sessão, ``silêncio'' superava ``sem realimentação'' com efeito menor & \cite{Kagan2022} & medido \\
+11 & O efeito é pequeno; se a rede aprende de forma duradoura é questão em aberto & Dentro da sessão a melhora é sólida, mas, segundo os próprios autores, um aprendizado estável entre sessões ao longo de vários dias não foi observado & \cite{Kagan2022} & medido \\
+12 & Durante o jogo a rede se aproxima do regime crítico, e quanto mais perto, melhor o jogo & Análise de avalanches de atividade nas mesmas culturas: a entrada estruturada aproxima a rede do regime crítico, e a qualidade do jogo se correlaciona com essa proximidade; mas a criticidade sozinha, sem informação sobre as consequências das ações, não basta para aprender & \cite{Habibollahi2023} & medido \\
+13 & A ``senciência'' da cultura não foi demonstrada & Artigo de resposta de trinta pesquisadores: a mudança de comportamento numa malha fechada não prova nem inteligência nem sensações; não há experimento que o mostre & \cite{Balci2023} & hipótese \\
+14 & Quarto controle proposto: estímulo previsível após o erro, com a mesma duração e energia (seção~\ref{sec:dishspec}) & Esse experimento não foi feito; é uma proposta do livro & --- & hipótese \\
+\bottomrule
+\end{longtable}}

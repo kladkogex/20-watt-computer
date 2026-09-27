@@ -1,0 +1,175 @@
+\chapter{La segunda salida: cómo controla el cerebro la química del cuerpo}
+\chaptermark{La salida química}
+\label{sec:chemoutput}
+
+\section{Salida rápida y salida lenta}
+
+En el capítulo~\ref{sec:muscles} vimos la salida rápida de la máquina: los músculos. Pero la máquina tiene también una segunda salida, lenta. El cerebro mantiene dentro de los límites adecuados la temperatura del cuerpo, la frecuencia cardiaca y la cantidad de agua y de azúcar, y prepara el cuerpo para correr o para dormir. Para ello no mueve articulaciones, sino que libera señales químicas. Hay dos vías. La primera son los nervios que van directamente a los órganos internos: al corazón, a los vasos, al intestino, a las glándulas. La segunda es la sangre: algunas neuronas y glándulas no liberan la sustancia en la hendidura hacia la vecina, sino directamente en el torrente sanguíneo.
+
+La sangre es el bus de difusión más amplio de todos los que han aparecido en el libro. Los canales de difusión de los capítulos~\ref{sec:serocomputer}--\ref{sec:acet} enviaban la señal a grandes regiones del cerebro; la sangre la envía a cada célula del cuerpo. La sangre recorre el cuerpo en un tiempo del orden de un minuto, así que el mensaje llega a todos en decenas de segundos y persiste minutos u horas, hasta que la sustancia se degrada. Este envío no tiene dirección alguna. Como en la proposición~\ref{prop:receptor}, el significado del mensaje lo elige el receptor: solo responden las células que tienen un receptor para esa sustancia.
+
+\section{Acelerador y freno: dos cables hacia los órganos}
+
+El mejor ejemplo es el corazón. El corazón tiene su propio marcapasos, como la neurona \nt{SERO} del capítulo~\ref{sec:serocomputer}: marca el ritmo por sí solo, y si se desconectan todos los nervios, el corazón late unas cien veces por minuto. El cerebro no genera el ritmo; solo lo ajusta, y lo hace con dos cables de signo opuesto (fig.~\ref{fig:gasbrake}). Por uno va \nt{NORA}: es el \emph{acelerador}, que acelera el ritmo. Por el otro va \nt{ACET}: es el \emph{freno}, que lo frena. A grandes rasgos,
+\begin{empheq}[box=\keybox]{equation}
+f \;\approx\; f_0 \;+\; a_S\,S \;-\; a_P\,P ,
+\label{eq:gasbrake}
+\end{empheq}
+donde $f_0\approx100$ latidos por minuto es el ritmo propio del marcapasos, y $S$ y $P$ son la actividad del acelerador y del freno. En reposo el freno está pisado, y el corazón suele latir unas sesenta o setenta veces por minuto; durante el esfuerzo se suelta el freno y se pisa el acelerador.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  blk/.style={draw,very thick,rounded corners=2pt,align=center,font=\small},
+  pace/.style={circle,draw,very thick,double,double distance=1.2pt,minimum size=1.8cm,inner sep=0pt,font=\scriptsize,fill=red!8,align=center},
+  inh/.style={-{Bar[width=7pt]},thick,red!70!black}]
+\node[blk,fill=blue!5,text width=1.6cm] (B) at (0,0) {orden del\\cerebro};
+\node[pace] (H) at (6.2,0) {marca-\\pasos};
+\draw[->,very thick,orange!85!black] (B.north east) to[bend left=20] node[above,font=\scriptsize,black,align=center] {\nt{NORA}: acelerador, segundos} (H.north west);
+\draw[inh,very thick,blue!60!black] (B.south east) to[bend right=20] node[below,font=\scriptsize,black,align=center] {\nt{ACET}: freno, fracciones de segundo} (H.south west);
+\draw[->,very thick] (H) -- (8.4,0) node[right,font=\small] {frecuencia $f$};
+\node[blk,fill=orange!10,text width=1.6cm] (A) at (0,-2.6) {\nt{ADRE}\\a la sangre};
+\draw[->,thick,orange!85!black] (B) -- (A);
+\foreach \y/\lab in {-2.0/{corazón},-2.6/{vasos},-3.2/{hígado, músculos}}{
+  \draw[->,thick,densely dashed,orange!85!black] (A.east) -- (4.3,\y) node[right,font=\scriptsize,black] {\lab};}
+\end{tikzpicture}
+\caption{Dos cables de signo opuesto hacia el marcapasos del corazón: el acelerador \nt{NORA} es lento, el freno \nt{ACET} es rápido. Abajo, el mismo acelerador por el bus de difusión: las células \nt{ADRE} liberan adrenalina a la sangre, y la señal la reciben todos los órganos con el receptor adecuado (flechas discontinuas).}
+\label{fig:gasbrake}
+\end{figure}
+
+Es el código de dos cables del capítulo~\ref{sec:glutcomputer} y el par de músculos del capítulo~\ref{sec:muscles}, solo que ahora los cables no controlan una articulación, sino el ritmo del marcapasos. Y los cables tienen velocidades distintas. Ambos funcionan como filtros pasa bajos, pero el freno deja pasar los cambios varias veces más rápido que el acelerador~\cite{Berger1989}: \nt{ACET} tiene una vía corta, pues la proteína unida al receptor abre ella misma un canal de potasio, sin segundo mensajero dentro de la célula~\cite{Logothetis1987gbg}, mientras que \nt{NORA} actúa mediante una cadena de reacciones intracelulares. Un ingeniero reconocerá aquí el recurso de dos actuadores de velocidad distinta: el rápido hace el ajuste fino instantáneo, y el lento, los cambios grandes y duraderos.
+
+Aquí encuentra también su papel \nt{ADRE}, del que la tabla~\ref{tab:types} decía que su función en el cerebro no está clara. Fuera del cerebro sí lo está. Parte de las células de la vía del acelerador no envía un cable a un órgano, sino que libera adrenalina directamente a la sangre. Es el mismo acelerador, pero por el bus de difusión: en decenas de segundos llega a la vez al corazón, los vasos, el hígado y los músculos, y persiste durante minutos. El acelerador direccionado \nt{NORA} ajusta un solo órgano; el acelerador de difusión \nt{ADRE} pone todo el cuerpo en modo de carrera.
+
+\section{Una cascada con realimentación}
+
+Muchas hormonas no las libera una sola glándula, sino una cascada. Un pequeño grupo de neuronas de la base del cerebro libera a la sangre una primera señal; esta hace que una glándula intermedia libere una segunda; y esta, que la glándula final libere la hormona que actúa sobre el cuerpo. La hormona final vuelve a las primeras etapas y las inhibe. El resultado es un amplificador de tres etapas envuelto en una realimentación negativa: un regulador de nivel, como el del sistema \nt{SERO} en la fórmula~\eqref{eq:feedback}.
+
+Describamos cada etapa con un circuito RC de constante de tiempo $\tau$ y ganancia $g$, y la realimentación con un coeficiente $k$:
+\begin{equation}
+\tau\,\frac{\dd x_1}{\dd t} = -x_1 + g\bigl[u - k\,x_3\bigr]_+ ,\qquad
+\tau\,\frac{\dd x_2}{\dd t} = -x_2 + g\,x_1 ,\qquad
+\tau\,\frac{\dd x_3}{\dd t} = -x_3 + g\,x_2 ,
+\label{eq:cascade}
+\end{equation}
+donde $u$ es la orden del cerebro y $x_3$ el nivel de la hormona final. La ganancia de lazo es $K=g^3k$. En equilibrio $x_3=g^3u/(1+K)$ y, como en todo regulador con realimentación, un lazo grande hace que el nivel sea insensible a la dispersión de las ganancias de las etapas. Pero cada etapa desfasa: a la frecuencia $\omega=\sqrt3/\tau$ las tres etapas iguales dan juntas un desfase de media vuelta y una atenuación de ocho veces. De ahí el resultado clásico de la teoría de control:
+\begin{empheq}[box=\keybox]{equation}
+K \;<\; 8 ,
+\label{eq:cascadestable}
+\end{empheq}
+de lo contrario, el regulador empieza a oscilar con un periodo de unos $2\pi\tau/\sqrt3\approx3.6\,\tau$.
+
+\begin{keyblock}
+\begin{proposition}[Precisión frente a estabilidad]
+\label{prop:cascade}
+En una cascada de tres etapas con realimentación proporcional, el error de nivel es $1/(1+K)$, y la cascada solo es estable si $K<8$. Por eso un regulador así no mantiene el nivel con una precisión mejor que un diez por ciento aproximadamente; intentar subir la ganancia lo convierte en un generador de oscilaciones.
+\end{proposition}
+\end{keyblock}
+
+Lo comprobamos con el modelo~\eqref{eq:cascade} (fig.~\ref{fig:cascade}). Con $K=4$ el nivel oscila un poco tras el encendido y se estabiliza. Con $K=7$ también se estabiliza, pero despacio. Con $K=12$ las oscilaciones ni se amortiguan ni crecen sin límite: una etapa no puede dar una señal negativa, y la cascada llega a pulsaciones regulares entre $0.83$ y $1.24$ del nivel medio, con un periodo de $3.7$--$3.9\,\tau$.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=0.3cm,y=1.2cm]
+\draw[->,gray!70!black] (0,0) -- (41.5,0) node[right,font=\small,black] {$t/\tau$};
+\draw[->,gray!70!black] (0,0) -- (0,2.8) node[left,font=\small,black] {$x_3/x_3^*$};
+\foreach \t in {0,10,20,30,40}{\draw[gray!60!black] (\t,-0.05) -- (\t,0.05); \node[below,font=\scriptsize] at (\t,0) {\t};}
+\foreach \f in {1,2}{\draw[gray!60!black] (-0.3,\f) -- (0.3,\f); \node[left,font=\scriptsize] at (0,\f) {\f};}
+\draw[densely dashed,gray!60!black] (0,1) -- (40,1);
+\draw[thick,blue!60!black] plot file {figures/cascade_K4.dat};
+\draw[thick,red!70!black] plot file {figures/cascade_K12.dat};
+\node[font=\scriptsize,blue!60!black,anchor=west] at (16,0.55) {$K=4$: se estabiliza};
+\node[font=\scriptsize,red!70!black,anchor=west] at (16,1.75) {$K=12$: pulsa};
+\end{tikzpicture}
+\caption{Cascada de tres etapas con realimentación según~\eqref{eq:cascade}; nivel de la hormona final como fracción del nivel de equilibrio $x_3^*$. Con una ganancia de lazo menor que ocho el nivel se estabiliza; por encima, la cascada genera por sí misma pulsaciones regulares.}
+\label{fig:cascade}
+\end{figure}
+
+Las hormonas reales de las cascadas se liberan, en efecto, en pulsos: el nivel de la hormona del estrés, por ejemplo, oscila con un periodo de alrededor de una hora. Según una hipótesis, estas pulsaciones las genera la propia realimentación retardada entre las etapas, y no hace falta un generador de ritmo aparte~\cite{Walker2010}. Es la misma causa de oscilación que la del lazo \nt{GLUT}--\nt{GABA} de la proposición~\ref{prop:ei} y la del lazo de estiramiento muscular de la condición~\eqref{eq:delaystable}: una realimentación negativa que llega con retardo.
+
+\section{El código de pulsos de las hormonas}
+
+Los pulsos no son solo un efecto secundario: también pueden ser un código. Las neuronas que controlan la reproducción liberan su señal a la sangre en porciones breves, más o menos una vez por hora. Si a la glándula receptora se le da la misma señal de forma continua en vez de en porciones, no trabaja a pleno rendimiento como con los pulsos, sino que se silencia; si se vuelve a dar en porciones una vez por hora, el funcionamiento se restablece~\cite{Belchetz1978}. Es decir, el receptor no lee el nivel, sino la \emph{frecuencia} de las porciones.
+
+Para un ingeniero no hay misterio. Un receptor que se fatiga y deja de responder ante la acción prolongada de una sustancia es un filtro pasa altos, como la sinapsis que se agota~\eqref{eq:depression} del capítulo~\ref{sec:code}. Suprime la señal continua y deja pasar los cambios. A un receptor así solo se le puede comunicar algo mediante pulsos, y la información pasa del nivel a la frecuencia y la forma de las porciones. Además, distintas frecuencias de porciones actúan de manera diferente sobre distintas células de una misma glándula, de modo que por una sola línea química puede transmitirse más de una magnitud, igual que por el único cable \nt{DOPA} del capítulo~\ref{sec:dofaalt} viajaban una componente rápida y otra lenta.
+
+\section{El ritmo diario: un generador lento de modos}
+
+El ritmo más lento del cuerpo es el diario. Lo genera una realimentación negativa con retardo dentro de las células: los genes producen proteínas que, con un retraso de varias horas, suprimen su propia producción~\cite{TakahashiJS2017}. Otra vez realimentación negativa con retardo, por cuarta vez en este libro, y otra vez un ritmo, ahora con un periodo de alrededor de un día. El generador principal es un pequeño grupo de decenas de miles de neuronas de la base del cerebro, cuyo ritmo sincroniza al resto de las células del cuerpo.
+
+El periodo propio de este generador en el ser humano no es exactamente un día, sino $24.18$ horas en promedio~\cite{Czeisler1999}. Cada día lo corrige la luz que llega de los sensores del ojo (capítulo~\ref{sec:sensors}). Para un electrónico, esto es un \emph{lazo de enganche de fase} (PLL): un generador con frecuencia propia $\omega_0$ se ajusta a una señal externa de frecuencia $\omega$, y la diferencia de fase $\varphi$ obedece la ecuación
+\begin{empheq}[box=\keybox]{equation}
+\frac{\dd\varphi}{\dd t} \;=\; (\omega-\omega_0) \;-\; K_\varphi\,\sin\varphi .
+\label{eq:pll}
+\end{empheq}
+El enganche se mantiene si $|\omega-\omega_0|<K_\varphi$. Un generador con periodo de $24.18$ horas necesita desplazarse cada día unos once minutos; para ello suele bastar la luz de la mañana. En la noche polar o en una cueva sin luz no hay enganche, y el ritmo deriva hacia su periodo propio.
+
+El generador diario no es el reloj de una computadora. No cuenta pasos de cálculo ni sincroniza las espigas de las neuronas. Conmuta \emph{modos}: sueño y vigilia, niveles hormonales, temperatura corporal, disposición a comer. Es un registro de difusión lento del mismo tipo que los registros de los capítulos~\ref{sec:serocomputer}--\ref{sec:acet}, solo que su valor cambia según un horario ajustado al sol.
+
+\begin{keyblock}
+\begin{proposition}[La salida química]
+\label{prop:chemoutput}
+La salida lenta de la máquina está hecha de las mismas piezas que la rápida. Los órganos reciben dos cables de signo opuesto y velocidad distinta, el acelerador \nt{NORA} y el freno \nt{ACET}, y el organismo entero recibe a la vez señales de difusión por la sangre, entre ellas la adrenalina \nt{ADRE}. Los niveles hormonales los mantienen cascadas con realimentación negativa, cuya precisión está limitada por la estabilidad; parte de las hormonas se codifica con la frecuencia de las porciones; el ritmo diario es un generador lento con enganche de fase a la luz. La organización de las vías y los experimentos con las porciones y con el periodo están medidos; la explicación de las pulsaciones de la cascada por la propia realimentación es una hipótesis.
+\end{proposition}
+\end{keyblock}
+
+\section{Resumen}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{3.1cm}>{\raggedright}p{4.8cm}>{\raggedright\arraybackslash}p{4.9cm}}
+\toprule
+Qué hace la salida química & Cómo & Qué se sabe \\
+\midrule
+ajusta los órganos & acelerador \nt{NORA} y freno \nt{ACET}~\eqref{eq:gasbrake} & medido; el freno es más rápido que el acelerador \\
+pone todo el cuerpo en modo de carrera & adrenalina \nt{ADRE} a la sangre & medido \\
+mantiene los niveles hormonales & cascada con realimentación, $K<8$~\eqref{eq:cascadestable} & cascadas y realimentación medidas; pulsaciones generadas por el propio lazo: hipótesis \\
+transmite con la frecuencia de las porciones & receptor fatigado como filtro pasa altos & dependencia de las porciones medida \\
+conmuta modos a lo largo del día & generador con enganche de fase a la luz~\eqref{eq:pll} & periodo y ajuste por la luz medidos \\
+\bottomrule
+\end{tabular}
+\caption{Cómo controla la máquina la química del cuerpo.}
+\label{tab:chemoutput}
+\end{table}
+
+La máquina tiene dos salidas (tabla~\ref{tab:chemoutput}). La rápida son los músculos: milisegundos, direccionada, a cada articulación. La lenta es la química del cuerpo: segundos, minutos y días, por dos cables hacia los órganos y por la sangre hacia todos a la vez. Las piezas de ambas salidas son las mismas (dos cables de signo opuesto, marcapasos, realimentación y su retardo) y son las mismas con las que está construida la máquina por dentro.
+
+\section{Ejercicios}
+
+\begin{exercise}[\lvlA]
+\label{ex:16:1}
+\emph{La sangre como filtro.} Una hormona se elimina de la sangre con una semivida $t_{1/2}=10$~min y se libera en porciones breves cada $T=60$~min. ¿Cuántas veces supera el máximo de concentración al mínimo y cuánto se atenúa el armónico fundamental de las porciones? ¿Con qué $t_{1/2}$ el máximo supera al mínimo solo el doble?
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:16:2}
+\emph{Enganche diario.} El periodo propio del generador~\eqref{eq:pll} es de $24.18$~h, y la luz desplaza la fase como mucho una hora al día: $K_\varphi=2\pi/24$~rad/día. Halle la diferencia de fase estacionaria $\varphi^*$ en minutos y el tiempo de relajación. ¿En cuántos días el desajuste tras un salto de la señal externa de $\pm6$~h bajará de una hora?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:16:3}
+\emph{Precisión frente a estabilidad.} La cascada linealizada~\eqref{eq:cascade} se alarga a $n$ etapas iguales. Halle la ganancia crítica $K_c(n)$ y el menor error alcanzable $1/(1+K_c)$ para $n=3$ y $n=6$. ¿A qué tiende este error cuando $n\to\infty$?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:16:4}
+\emph{Acelerador y freno.} En~\eqref{eq:gasbrake} las contribuciones del acelerador y del freno son salidas de circuitos RC con $\tau_S=2$~s y $\tau_P=0.4$~s; las órdenes no pasan de $80$ y $60$ latidos por minuto. Ritmo $f_0=100$; en reposo, freno $35$, acelerador $0$, $f=65$. ¿En cuánto tiempo se puede llegar a $f=120$? ¿Y si no se suelta el freno y se usa solo el acelerador?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:16:5}
+\emph{Simulación: cascada con retardo.} En la realimentación de la función \texttt{cascade} de \texttt{models/\allowbreak chem\_models.py} (cópiela; no ejecute el archivo) añada un retardo $d$: la primera etapa ve $x_3(t-d)$. Halle $K_c$ y el periodo en la frontera para $d/\tau=0$, $0.5$, $1$, $2$ y compruébelo simulando con $0.9K_c$ y $1.1K_c$.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:16:6}
+\emph{Un receptor que lee porciones.} El receptor se fatiga: $y=[c-a]_+$, $\tau_a\,\dd a/\dd t=c-a$, $\tau_a=30$~min. La hormona llega en porciones de $6$~min con periodo $T$ y la misma dosis media $\bar c$. Halle la respuesta media para $T=15$, $60$, $120$~min y $T\to\infty$. ¿Cuál es con una concentración constante $\bar c$?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:16:7}
+\emph{¿Generador o realimentación?} Proponga un experimento que distinga las pulsaciones generadas por la realimentación retardada de la cascada~\eqref{eq:cascade} de las de un marcapasos independiente. ¿Se pueden distinguir las hipótesis por el cambio del periodo si $K$ solo puede variarse en un factor de $1.5$ y el periodo se mide con una precisión del $5\%$?
+\end{exercise}

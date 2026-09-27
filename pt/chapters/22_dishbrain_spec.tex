@@ -1,0 +1,101 @@
+\section{Especificação da bancada: como reproduzi-la}
+\label{sec:dishspec}
+
+Abaixo está reunido tudo o que é preciso para montar essa bancada de novo: equipamento, malha, codificação da entrada, leitura da saída, realimentação e protocolo do experimento. Cada parâmetro traz sua fonte. ``Artigo'': o valor foi tirado do texto do trabalho~\cite{Kagan2022}. ``Escolha'': o artigo não o traz, e para reproduzir será preciso defini-lo por conta própria; propomos um valor padrão e dizemos como verificá-lo.
+
+\subsection*{Equipamento e cultura}
+
+\begin{center}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{4.0cm}>{\raggedright}p{6.9cm}>{\raggedright\arraybackslash}p{1.6cm}}
+\toprule
+Parâmetro & Valor & Fonte \\
+\midrule
+chip & matriz MaxOne: $26\,000$ eletrodos de platina numa área de $8$~mm$^2$ & artigo \\
+registro & até $1024$ canais simultâneos, $20\,000$ amostras por segundo & artigo \\
+estimulação & até $32$ eletrodos tecnicamente, no experimento $8$ independentes & artigo \\
+células & córtex de embrião de camundongo; neurônios humanos de células-tronco (dois métodos de cultivo); células HEK293T (não neurônios) como controle & artigo \\
+semeadura & cerca de $10^6$ células por chip & artigo \\
+idade da cultura no experimento & camundongo: a partir de $\sim10$ dias; humana: $14$--$24$ dias ou $\sim80$ dias, conforme o método de cultivo & artigo \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection*{Malha e tempo}
+
+A malha funciona em janelas de $10\ms$ ($200$ amostras): em cada janela contam-se os disparos nos eletrodos das regiões motoras, o jogo é atualizado, e sai a estimulação seguinte. O atraso entre um disparo na cultura e o estímulo de resposta é de cerca de $5\ms$. Durante o jogo, o sinal de cada eletrodo passa por um filtro passa-altas Bessel de 2.ª ordem com frequência de corte de $100$~Hz; o módulo do sinal é suavizado por um filtro passa-baixas Bessel de 1.ª ordem de $1$~Hz, e o limiar de disparo é proporcional a esse módulo suavizado. O limiar de seis desvios-padrão do fundo o artigo indica para medições isoladas de atividade, não para o jogo. Para que a estimulação não seja contada como resposta da cultura, todos os sinais são suprimidos quando chegam ao mesmo tempo mais de $15$ pulsos grandes, acima de $75$~mV. Tudo isso é do artigo.
+
+\subsection*{Codificação da bola}
+
+\begin{center}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{3.4cm}>{\raggedright}p{7.5cm}>{\raggedright\arraybackslash}p{1.6cm}}
+\toprule
+Parâmetro & Valor & Fonte \\
+\midrule
+região sensorial & $8$ eletrodos dispostos de modo que eletrodos vizinhos signifiquem posições vizinhas da bola & artigo \\
+código de lugar & o número do eletrodo $k=1,\dots,8$ dá a posição da bola em relação ao centro da raquete & artigo \\
+qual coordenada & a posição vertical da bola; para reproduzir, em relação à raquete, $k=\lceil 8(y-p+\tfrac12)\rceil$ com $y-p\in[-\tfrac12,\tfrac12]$ & artigo; fórmula: escolha \\
+código de taxa & a frequência de estimulação, de $4$ a $40$~disparos/s, codifica a distância até a raquete & artigo \\
+sentido da escala & $4$~disparos/s com a bola junto à parede oposta, e linearmente até $40$~disparos/s junto à parede da raquete: $f=4+36\,(1-x/L)$, $x$ é a distância até a parede da raquete, $L$ a largura da quadra & artigo \\
+forma do pulso & curto, retangular, bifásico: primeiro a fase positiva, depois a negativa & artigo \\
+amplitude & $75$~mV; escolhida para não forçar o disparo de células inibidas & artigo \\
+duração das fases & não indicada; usar o ajuste padrão do sistema de estimulação e não mudá-lo durante o experimento & escolha \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection*{Leitura da raquete}
+
+No artigo há duas regiões motoras: os disparos na primeira movem a raquete para cima, na segunda, para baixo; a contribuição das regiões é ponderada para levar em conta a diferente densidade de células e a diferente atividade~\cite{Kagan2022}. A fórmula exata não é dada. Para reproduzir, usamos a regra~\eqref{eq:dishreadout}, $\Delta p=c\,(n_\uparrow-n_\downarrow)$ a cada janela de $10\ms$, com um peso que iguala as regiões pela atividade média em repouso (escolha): $n_\uparrow$ e $n_\downarrow$ são divididos pela contagem média da respectiva região por janela, medida antes do jogo. O coeficiente $c$ é escolhido de modo que uma diferença de uma contagem média desloque a raquete $1\%$ da altura da quadra por janela (escolha); assim, uma vantagem constante de uma região leva a raquete de um lado a outro da quadra em $1$~s.
+
+A posição das regiões no chip não é dada em coordenadas no texto do artigo; há apenas um esquema. Para reproduzir bastam três grupos de eletrodos disjuntos: os oito sensoriais no centro e um grupo de eletrodos de registro de cada lado, um ``sobe'' e outro ``desce'' (escolha).
+
+\subsection*{O jogo}
+
+As dimensões da quadra, o comprimento da raquete e a velocidade da bola não constam do artigo; diz-se apenas que a bola se move com velocidade constante e é refletida pelas paredes. Para reproduzir (escolha): quadra $1\times1$, raquete na parede direita com comprimento $0.2$ (acerto se $|y-p|<0.1$, como no modelo~\texttt{models/dishbrain\_model.py}), a bola atravessa a quadra em $1$~s. Um erro sem nenhuma bola rebatida no rali conta como ``ace''; um rali com mais de três acertos seguidos, como ``longo'' (artigo).
+
+\subsection*{Realimentação}
+
+\begin{center}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{2.6cm}>{\raggedright}p{8.3cm}>{\raggedright\arraybackslash}p{1.6cm}}
+\toprule
+Evento & O que é aplicado & Fonte \\
+\midrule
+acerto & estímulo previsível: os $8$ eletrodos sensoriais ao mesmo tempo, $75$~mV, $100$~disparos/s, $100\ms$; a estimulação normal da bola é interrompida durante esse tempo & artigo \\
+erro & estímulo imprevisível: $150$~mV, $5$~disparos/s, $4$~s, em momentos aleatórios e em eletrodos sorteados entre os $8$; depois, $4$~s sem estimulação, e a bola parte numa direção aleatória & artigo \\
+lei do acaso & não indicada; para reproduzir, os instantes dos pulsos como fluxo de Poisson com frequência média de $5$~disparos/s & escolha \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection*{Protocolo e controles}
+
+Uma sessão dura $20$~min; comparam-se os primeiros $5$ e os últimos $15$~min (artigo). Três medidas de resultado: duração média do rali, fração de aces e fração de ralis longos. Condições do experimento (artigo):
+\begin{itemize}
+\item \emph{estímulo}: a malha completa, como descrito acima;
+\item \emph{silêncio}: no lugar do estímulo de acerto ou de erro, o mesmo tempo sem nenhuma estimulação; depois a bola parte numa direção aleatória;
+\item \emph{sem realimentação}: depois de um erro a bola simplesmente é refletida e segue em frente; a estimulação da posição da bola continua;
+\item \emph{repouso}: o jogo corre e a raquete se move conforme a atividade, mas não há estimulação alguma;
+\item \emph{controles}: chip só com meio de cultura; células HEK293T; ``cultura no computador'', uma simulação no lugar das células.
+\end{itemize}
+Tamanho da amostra na série principal: $9$ culturas de camundongo ($101$ sessões), $11$ culturas humanas ($138$), $6$ chips com meio ($80$), $20$ culturas em repouso ($42$), $3$ simulações ($38$), $399$ sessões ao todo. Na série sobre realimentação: $486$ sessões em $3$ dias, $3$ sessões por dia, condições ``estímulo'', ``silêncio'' e ``sem realimentação'' ($n=27$, $17$ e $15$). O aumento da duração média do rali dos primeiros $5$ minutos para os últimos $15$ só foi obtido nas culturas vivas. Na série sobre realimentação, o aumento significativo ao longo do tempo só ocorreu na condição ``estímulo''; no fim da sessão, a condição ``silêncio'' ainda superava ``sem realimentação'', mas com efeito menor, e não houve aprendizado estável de uma sessão para outra ao longo dos três dias~\cite{Kagan2022}.
+
+\subsection*{O ciclo da bancada passo a passo}
+
+A cada $10\ms$ o computador da bancada faz o seguinte.
+\begin{enumerate}
+\item Lê os números de disparos $n_\uparrow$, $n_\downarrow$ nas duas regiões motoras na janela anterior e os normaliza pela contagem média da região em repouso.
+\item Desloca a raquete de $\Delta p=c\,(n_\uparrow-n_\downarrow)$ e a limita às bordas da quadra.
+\item Avança a bola um passo; reflete-a nas paredes superior, inferior e esquerda.
+\item Se a bola chegou à parede direita: com $|y-p|<0.1$, acerto, a contagem do rali aumenta em um e aplica-se o estímulo de acerto ($100\ms$); senão, erro, o rali é registrado, aplica-se o estímulo de erro ($4$~s), depois $4$~s de pausa, e a bola parte de novo.
+\item Senão, escolhe o eletrodo $k$ pela posição vertical da bola e a frequência $f$ pela distância até a parede da raquete, e aplica ao eletrodo $k$ pulsos bifásicos de $75$~mV com frequência $f$ até a janela seguinte.
+\end{enumerate}
+Isso basta para montar uma bancada compatível com a publicada e testar a questão principal do capítulo: o que ensina a cultura é a previsibilidade ou a simples diferença entre a resposta ao acerto e ao erro. Para isso, vale acrescentar às três condições do artigo uma quarta, que ele não tem: depois do erro, um estímulo \emph{previsível} com a mesma duração e energia do imprevisível. Se a cultura aprender também assim, o que conta é a diferença, e não a previsibilidade.

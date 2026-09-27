@@ -1,0 +1,218 @@
+\chapter{Teorias alternativas modernas do aprendizado baseado em dopamina}
+\chaptermark{Outras teorias do \nt{DOPA}}
+\label{sec:dofaalt}
+
+\section{O que realmente passa pelo fio}
+
+No capítulo~\ref{sec:dofa}, o sistema \nt{DOPA} era para nós um único fio pelo qual passa um único número: o erro de predição de recompensa $\delta$~\eqref{eq:ctd}. Esse quadro explica muito, mas quanto mais precisamente se mede a dopamina, mais se encontra o que não cabe nele. Alguns neurônios respondem ao desagradável como a uma recompensa; a concentração de dopamina sobe enquanto o animal corre para o alvo, embora nada de inesperado aconteça; neurônios \nt{DOPA} diferentes se comportam de modo diferente.
+
+Para o engenheiro, todas essas descobertas se resumem a uma pergunta: \emph{qual é o formato do sinal no barramento de difusão?} Um número ou um vetor? Um sinal no fio ou vários, separados em frequência? Ele fala do futuro, como $\delta$, ou do passado? A seguir, seis respostas modernas; para cada uma, vamos separar o medido do suposto.
+
+\section{Não um número, mas uma distribuição}
+
+O erro~\eqref{eq:ctd} ensina ao crítico a expectativa \emph{média} de recompensa. Mas meia gota de suco garantida e uma gota com probabilidade de um meio têm a mesma média. Para distingui-las, é preciso a distribuição inteira da recompensa.
+
+Tomemos o problema mais simples: depois de um sinal antecipador chega uma recompensa de tamanho aleatório $r$. Suponha que há muitos neurônios \nt{DOPA} e cada um, o $i$-ésimo, cuida de sua própria estimativa $V_i$, de modo que no instante da recompensa seu erro é $\delta_i=r-V_i$. E suponha que cada um conta o erro positivo com peso $\alpha_i^+$ e o negativo com peso $\alpha_i^-$. Depois de cada recompensa, a estimativa se desloca em
+\begin{equation}
+\Delta V_i \;=\; \eta\,\bigl(\alpha_i^+\,[\delta_i]_+ \;-\; \alpha_i^-\,[-\delta_i]_+\bigr).
+\label{eq:asymmetric}
+\end{equation}
+A estimativa deixa de mudar quando, em média, as correções positivas equilibram as negativas:
+\begin{empheq}[box=\keybox]{equation}
+\alpha_i^+\,\bigl\langle[r-V_i]_+\bigr\rangle \;=\; \alpha_i^-\,\bigl\langle[V_i-r]_+\bigr\rangle ,
+\qquad
+\kappa_i \;=\; \frac{\alpha_i^+}{\alpha_i^++\alpha_i^-} .
+\label{eq:expectile}
+\end{empheq}
+Com $\kappa_i=1/2$, é a média comum. Com $\kappa_i>1/2$, o neurônio é ``otimista'': sua estimativa fica deslocada para o extremo superior da distribuição; com $\kappa_i<1/2$, é ``pessimista''.
+
+Exemplo: o suco chega com probabilidade $1/2$, gota de tamanho $1$. Então~\eqref{eq:expectile} dá $\kappa_i\cdot\tfrac12(1-V_i)=(1-\kappa_i)\cdot\tfrac12V_i$, isto é, $V_i=\kappa_i$ (fig.~\ref{fig:expectiles}). Um conjunto de neurônios com $\kappa_i$ diferentes registra a distribuição da recompensa assim como um conjunto de quantis registra uma distribuição em estatística.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=7cm,y=3cm]
+\draw[->,gray!70!black] (-0.08,0) -- (1.15,0) node[right,black] {\small recompensa};
+\draw[->,gray!70!black] (-0.08,0) -- (-0.08,0.75) node[left,black] {\small probabilidade};
+\fill[blue!25] (-0.03,0) rectangle (0.03,0.5);
+\fill[blue!25] (0.97,0) rectangle (1.03,0.5);
+\node[below,font=\small] at (0,0) {$0$};
+\node[below,font=\small] at (1,0) {$1$};
+\node[left,font=\scriptsize] at (-0.08,0.5) {$1/2$};
+\foreach \k/\c/\lab/\h in {0.2/blue!60!black/{pessimista, $\kappa=0.2$}/0.62, 0.5/gray!50!black/{média, $\kappa=0.5$}/0.42, 0.8/red!70!black/{otimista, $\kappa=0.8$}/0.22}{
+  \draw[very thick,\c] (\k,0) -- (\k,\h);
+  \node[above,font=\scriptsize,\c] at (\k,\h) {\lab};}
+\end{tikzpicture}
+\caption{A distribuição da recompensa registrada por um conjunto de neurônios \nt{DOPA}. Recompensa $0$ ou $1$ com probabilidade $1/2$ (barras azuis); o neurônio com fração $\kappa$ chega à estimativa $V=\kappa$~\eqref{eq:expectile}.}
+\label{fig:expectiles}
+\end{figure}
+
+O que foi medido: neurônios \nt{DOPA} diferentes têm ``pontos de reversão'' diferentes (o tamanho de recompensa em que a resposta passa de pico a queda), e os neurônios com maior assimetria entre as respostas a erros positivos e negativos se invertem em recompensas maiores, como exige~\eqref{eq:expectile}~\cite{Dabney2020}. A partir das respostas de um grupo de neurônios é possível reconstruir a forma da distribuição. Que essa seja a função principal da dispersão, e não um efeito colateral, é uma hipótese.
+
+\begin{keyblock}
+\begin{proposition}[Distribuição a partir da assimetria]
+\label{prop:expectile}
+Se os neurônios \nt{DOPA} diferem na fração $\kappa_i$ com que contam os erros positivos, suas estimativas convergem para pontos diferentes~\eqref{eq:expectile} da distribuição da recompensa. O grupo de neurônios transmite não a média, mas a distribuição e, com ela, o risco.
+\end{proposition}
+\end{keyblock}
+
+\section{Não só o erro, mas também a importância}
+
+Pela fórmula do erro~\eqref{eq:ctd}, um evento desagradável (um choque, um gosto amargo) deveria provocar uma queda: saiu pior que o esperado. Parte dos neurônios \nt{DOPA} faz isso, mas outra parte responde ao desagradável com um \emph{pico}, como a uma recompensa~\cite{Matsumoto2009}. Esses neurônios não informam o sinal do erro, mas que aconteceu algo \emph{importante}: inesperado, forte, que exige atenção~\cite{BrombergMartin2010}.
+
+Ao engenheiro convém pensar nisso como dois sinais. O primeiro é o erro com sinal $\delta$: para onde mudar os pesos. O segundo é seu módulo $|\delta|$ ou a novidade do evento: \emph{quanto} mudá-los, isto é, a taxa de aprendizado; depois de um evento inesperado é preciso aprender mais depressa. Pelo sentido, ele se aproxima do ganho noradrenérgico do capítulo~\ref{sec:neurontypes}.
+
+Há ainda uma terceira variante: um fio separado para um eixo separado. Os neurônios \nt{DOPA} que vão para uma das regiões de escolha de ações não respondem à recompensa, mas à novidade e à intensidade do estímulo, e são necessários para que o animal aprenda a evitar o perigoso~\cite{Menegas2018}: pelo fio não passa ``melhor ou pior'', mas ``perigoso ou não''.
+
+O que foi medido: grupos diferentes de neurônios \nt{DOPA} respondem de modo diferente ao desagradável e ao novo, e saídas diferentes ensinam coisas diferentes. Como exatamente o cérebro usa o sinal de importância (como taxa de aprendizado, como sinal de atenção ou como erro separado no eixo do perigo) está em discussão.
+
+\section{Não só ensinar, mas também apressar}
+
+A dopamina tem também um efeito imediato: quanto mais dela, mais disposto e mais rápido o animal age. Como conciliar isso com o aprendizado?
+
+A resposta de engenharia é a \emph{separação em frequência}. Picos e quedas rápidos, com duração de centenas de milissegundos, levam $\delta$ e ensinam. O nível lento, que muda em minutos, leva outra grandeza: a recompensa média por unidade de tempo $\bar R$~\cite{Niv2007}. Suponha que uma ação executada no tempo $\tau_a$ exige um esforço $C/\tau_a$: quanto mais rápida, mais cara. Em compensação, cada segundo de demora custa $\bar R$, a recompensa que se poderia obter nele. O custo total $C/\tau_a+\bar R\,\tau_a$ é mínimo em
+\begin{empheq}[box=\keybox]{equation}
+\tau_a^{*} \;=\; \sqrt{\frac{C}{\bar R}} .
+\label{eq:vigor}
+\end{empheq}
+Quanto mais rico o ambiente, mais caro o tempo e mais vale a pena agir depressa: se $\bar R$ dobrou, o tempo de ação cai $\sqrt2\approx1.4$ vezes. Note que $\bar R$ é a mesma recompensa esperada que subtraímos no capítulo~\ref{sec:dofa}.
+
+A liberação de dopamina no destino pode mudar mesmo sem mudança na taxa de disparos: ela é ajustada por sinais locais nas próprias saídas~\cite{Mohebi2019}. Mas há componentes lentos também nos próprios disparos: nos experimentos da próxima seção, o crescimento suave ao se aproximar da recompensa aparece também na taxa dos neurônios \nt{DOPA}~\cite{Kim2020}. Logo, o nível lento se compõe de duas fontes, a taxa de disparos e o ajuste local da liberação, e qual delas é a principal parece depender da saída e da tarefa.
+
+\begin{keyblock}
+\begin{proposition}[Dois sinais num só fio]
+\label{prop:multiplex}
+O sistema \nt{DOPA} transmite pelo menos duas grandezas separadas no tempo: o erro rápido $\delta$, que ensina, e o nível lento, que define o preço do tempo~\eqref{eq:vigor} e, com isso, a velocidade das ações. Foi medido que os componentes rápido e lento se comportam de modo diferente; que o lento seja exatamente $\bar R$ é uma hipótese.
+\end{proposition}
+\end{keyblock}
+
+\section{Crescimento na aproximação}
+
+Se o animal corre por um corredor rumo a uma recompensa distante, a concentração de dopamina na região de escolha de ações sobe suavemente durante segundos, enquanto o alvo se aproxima~\cite{Hamid2016}. Pelo capítulo~\ref{sec:dofa}, isso não deveria acontecer: tudo corre conforme o plano, e $\delta$ deveria ser zero.
+
+Primeira explicação: esse crescimento não é $\delta$, mas a própria expectativa $V$, o sinal ``o alvo está perto, vale a pena se esforçar'' da seção anterior~\cite{Hamid2016}. A segunda explicação preserva $\delta$~\cite{Kim2020}. Se a expectativa está correta, com horizonte $\tau_\gamma$ ela cresce no caminho até a recompensa $R$ como $V=Re^{-(T-t)/\tau_\gamma}$, e pela fórmula do erro~\eqref{eq:ctd} $\dd V/\dd t-V/\tau_\gamma=0$. Mas suponha que de longe a expectativa esteja subestimada e que a estimativa se refine com a aproximação. Então a expectativa cresce mais íngreme, digamos como $V=Re^{-(T-t)/\tau_v}$ com $\tau_v<\tau_\gamma$, e
+\begin{empheq}[box=\keybox]{equation}
+\delta(t) \;=\; \frac{\dd V}{\dd t}-\frac{V}{\tau_\gamma} \;=\; V\Bigl(\frac{1}{\tau_v}-\frac{1}{\tau_\gamma}\Bigr) \;>\; 0 .
+\label{eq:ramp}
+\end{empheq}
+O erro é positivo e cresce junto com $V$: é o crescimento suave (fig.~\ref{fig:ramp}). Com $\tau_\gamma=4\,\text{s}$ e $\tau_v=1\,\text{s}$, obtém-se $\delta=0.75\,V$ por segundo. Essa versão foi testada num corredor virtual, transportando o animal instantaneamente para mais perto do alvo: a dopamina respondeu com um pico, como convém a uma derivada, e não com um nível suave~\cite{Kim2020}.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=1.6cm,y=2.6cm]
+\draw[->,gray!70!black] (-4.2,0) -- (0.5,0) node[below left,black] {\small $t$};
+\draw[->,gray!70!black] (-4.2,0) -- (-4.2,1.2);
+\foreach \x/\l in {-4/{$T-4$},-2/{$T-2$},0/{$T$}}{\draw[gray!60!black] (\x,-0.03) -- (\x,0.03); \node[below,font=\scriptsize] at (\x,0) {\l\,s};}
+\draw[thick,densely dashed,gray!60!black] plot[domain=-4:0,samples=40] (\x,{exp(\x/4)});
+\draw[very thick,blue!60!black] plot[domain=-4:0,samples=60] (\x,{exp(\x)});
+\draw[very thick,red!70!black] plot[domain=-4:0,samples=60] (\x,{0.75*exp(\x)});
+\node[anchor=south east,font=\small,gray!50!black] at (-1.3,0.77) {$V$ com $\tau_v=\tau_\gamma$: $\delta=0$};
+\node[right,font=\small,blue!60!black] at (0.05,1.0) {$V$ com $\tau_v=1\,\text{s}$};
+\node[right,font=\small,red!70!black] at (0.05,0.72) {$\delta$ por~\eqref{eq:ramp}};
+\end{tikzpicture}
+\caption{O crescimento da dopamina ao se aproximar da recompensa como erro de predição, $\tau_\gamma=4\,\text{s}$. Linha tracejada: expectativa que cresce exatamente como o horizonte exige ($\delta=0$); azul: expectativa que cresce mais íngreme; vermelha: o erro~\eqref{eq:ramp}.}
+\label{fig:ramp}
+\end{figure}
+
+O que foi medido: o crescimento suave existe, tanto na concentração de dopamina quanto na taxa de disparos dos neurônios \nt{DOPA}~\cite{Kim2020}, e saltos instantâneos do ambiente causam saltos de dopamina. Qual das duas explicações é a correta, ou se ambas valem em saídas diferentes, está em discussão.
+
+\section{Olhar para trás}
+
+Todas as teorias acima olham \emph{para a frente}. Uma das teorias modernas inverte a direção~\cite{Jeong2022}. Suponha que o cérebro não aprenda a prever a recompensa pelo sinal antecipador, mas que, ao receber a recompensa, \emph{olhe para trás}: que evento a precedeu com mais frequência que os outros? A medida dessa ligação é a diferença de duas probabilidades:
+\begin{empheq}[box=\keybox]{equation}
+M \;=\; P(\text{sinal antes da recompensa}) \;-\; P(\text{sinal numa janela aleatória}) .
+\label{eq:retro}
+\end{empheq}
+Se o sinal antecipador aparece muitas vezes sem recompensa, o segundo termo é grande, e a ligação é fraca. Nessa teoria, a dopamina não informa o erro de predição, mas o quanto um dado evento é uma provável \emph{causa} da recompensa.
+
+O mecanismo do olhar para trás exige o mesmo que a regra de três fatores do capítulo~\ref{sec:dofa}: cada evento deve deixar um traço que se desfaz, para que no instante da recompensa se possa ler o que veio antes dela. A diferença não está na sinapse, mas no que o \nt{DOPA} transmite.
+
+Em experimentos em que a teoria~\eqref{eq:retro} e o erro~\eqref{eq:ctd} preveem coisas diferentes, a liberação de dopamina seguiu, em vários casos, a primeira~\cite{Jeong2022}. Mas em outros experimentos a resposta da dopamina durante o aprendizado se deslocou gradualmente do instante da recompensa para o instante do sinal antecipador, como exige o aprendizado pelo erro~\eqref{eq:ctd}~\cite{Amo2022}. Qual teoria descreve o cérebro ainda não se sabe.
+
+\section{Um erro não só na recompensa}
+
+A última extensão é sobre \emph{do que} é o erro. Se o suco esperado é trocado por outro, igualmente valioso mas de outro sabor, o valor não mudou, e o erro~\eqref{eq:ctd} é zero. Mas os neurônios \nt{DOPA} respondem a essa troca~\cite{Takahashi2017}. E picos de dopamina provocados artificialmente podem ensinar ao animal uma ligação entre dois estímulos neutros, sem nenhuma recompensa~\cite{Sharpe2017}. Parece que o \nt{DOPA} informa o erro de predição não só da recompensa, mas também de \emph{o que} vai acontecer.
+
+Formalmente, é uma generalização simples de~\eqref{eq:ctd}: no lugar de um único fluxo de recompensa $r$, toma-se um conjunto de características do que acontece $\varphi_k$ (sabor, lugar, som) e, para cada uma, sua expectativa $M_k$ e seu erro~\cite{Gardner2018}:
+\begin{empheq}[box=\keybox]{equation}
+\delta_k(t) \;=\; \varphi_k(t) \;+\; \frac{\dd M_k}{\dd t} \;-\; \frac{M_k}{\tau_\gamma} ,
+\qquad k=1,\dots,K .
+\label{eq:vectortd}
+\end{empheq}
+A recompensa é só uma das características, e o vetor de erros ensina não só o que é bom, mas também o que segue o quê: um modelo do mundo.
+
+Isso concorda com a heterogeneidade dos neurônios \nt{DOPA}: numa mesma tarefa, neurônios diferentes levam grandezas diferentes, uns ligados à recompensa, outros ao movimento, outros ainda à direção da atenção~\cite{Engelhard2019}.
+
+\begin{keyblock}
+\begin{proposition}[Um chicote em vez de um fio]
+\label{prop:bundle}
+O sinal do sistema \nt{DOPA} não é um único número. Ele é distribuído entre os neurônios (a distribuição~\eqref{eq:expectile}, características diferentes~\eqref{eq:vectortd}, um eixo separado de perigo) e no tempo (erro rápido e nível lento~\eqref{eq:vigor}). O erro escalar~\eqref{eq:ctd} é uma primeira aproximação desse sinal, assim como o somador com limiar é uma primeira aproximação do neurônio.
+\end{proposition}
+\end{keyblock}
+
+\section{Resumo}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{2.5cm}>{\raggedright}p{3.2cm}>{\raggedright}p{3.6cm}>{\raggedright\arraybackslash}p{4.2cm}}
+\toprule
+Teoria & O que passa pelo fio & Medição principal & O que se sabe \\
+\midrule
+erro de predição (cap.~\ref{sec:dofa}) & escalar $\delta$~\eqref{eq:ctd} & pico, transferência para o sinal antecipador, queda & medido; primeira aproximação \\
+distribuição & conjunto de $\delta_i$ com assimetrias diferentes & pontos de reversão diferentes em neurônios diferentes & há concordância com o experimento; o papel da dispersão é hipótese \\
+importância & $|\delta|$, novidade; eixo do perigo & picos ao desagradável em parte dos neurônios & medido; como é usado está em discussão \\
+preço do tempo & nível lento $\bar R$ & a dopamina acelera as ações; componente lento na liberação nas saídas e na taxa de disparos & separação entre rápido e lento medida; $\bar R$ é hipótese \\
+crescimento na aproximação & $V$ ou $\delta$ com refinamento da estimativa~\eqref{eq:ramp} & crescimento suave, saltos ao transportar no corredor & crescimento medido; explicação em discussão \\
+olhar para trás & medida de ligação causal~\eqref{eq:retro} & experimentos em que as previsões das duas teorias divergem & resultados contraditórios \\
+vetor de erros & $\delta_k$ por característica~\eqref{eq:vectortd} & resposta à troca de sabor; aprendizado sem recompensa & medido; a forma vetorial é hipótese \\
+\bottomrule
+\end{tabular}
+\caption{O que o sistema \nt{DOPA} transmite: o quadro padrão do capítulo~\ref{sec:dofa} e suas extensões modernas.}
+\label{tab:dofaalt}
+\end{table}
+
+As teorias da tabela~\ref{tab:dofaalt} não se excluem: quase todas mantêm o erro de predição como base e ampliam seu formato. Só o olhar para trás compete seriamente com ele, e essa disputa será decidida por experimentos. Para o engenheiro, a conclusão é simples: o preço da difusão da proposição~\ref{prop:broadcastcost} cai se o fio for, na verdade, muitos fios com destinatários diferentes.
+
+\section{Exercícios}
+
+\begin{exercise}[\lvlA]
+\label{ex:07:1}
+\emph{Pontos da distribuição para uma gota.} Um suco de tamanho $1$ chega com probabilidade $p=0.2$; caso contrário, a recompensa é $0$. Encontre por~\eqref{eq:expectile} $V_i$ para $\kappa_i=0.2$, $0.5$, $0.8$. Qual é a mediana dessa recompensa, e em que o ponto~\eqref{eq:expectile} difere de um quantil?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:07:2}
+\emph{Distribuição a partir de dois neurônios.} A recompensa é $0$ ou $x$, e a probabilidade de $x$ é $p$. Dois neurônios com a regra~\eqref{eq:asymmetric} informaram $V(1/2)=0.25$ e $V(0.8)=0.5$. Reconstrua $p$, $x$ e o desvio padrão da recompensa. O que informará um neurônio com $\kappa=0.2$?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:07:3}
+\emph{Simulação: distribuição a partir da assimetria.} Simule nove neurônios \nt{DOPA} com $\kappa_i=0.1,\dots,0.9$ e a regra~\eqref{eq:asymmetric}, $\alpha_i^+=2\kappa_i$, $\alpha_i^-=2(1-\kappa_i)$, com recompensa uniforme em $[0,1]$. Como a dispersão de $V_i$ depende de $\eta$, e que $\eta$ é preciso para distinguir essa distribuição de duas gotas equiprováveis $0.25$ e $0.75$?
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:07:4}
+\emph{O preço do tempo.} (a)~Deduza~\eqref{eq:vigor} e encontre o custo total no ótimo. (b)~O cérebro estimou $\bar R$ com erro de um fator $k$. Encontre o custo excedente relativo para $k=2$ e $k=4$. Com que precisão o nível lento de dopamina deve informar $\bar R$?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:07:5}
+\emph{Pico no transporte.} A expectativa cresce por~\eqref{eq:ramp} com $\tau_v=1\,\text{s}$, $\tau_\gamma=4\,\text{s}$; o animal é transportado instantaneamente do ponto $T-2\,\text{s}$ para $T-1\,\text{s}$. Encontre a área do pico de $\delta$ em frações de $R$ e quantos segundos de rampa antes do transporte ele substitui. O que o transporte mostrará se a dopamina informar o próprio $V$?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:07:6}
+\emph{Projeto: dois sinais no fio.} Pelo fio \nt{DOPA} passam um nível que cresce até $s=1/60$ disparo por segundo a cada segundo e eventos de $A=3$ disparos. Uma sinapse com traço $\tau_e=1\,\text{s}$ subtrai da taxa uma cópia dela suavizada com $\tau_f$. Com que $\tau_f$ se perde no máximo $10\,\%$ do evento e a contribuição do nível no tempo do traço fica abaixo de $10\,\%$ da do evento?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:07:7}
+\emph{Projeto de experimento: olhar para trás contra erro.} Numa janela, o sinal antecipador ocorre com probabilidade $0.1$, e depois dele a recompensa com probabilidade $0.8$. Compare $\Delta P=P(\text{recomp.}\mid\text{sinal})-P(\text{recomp.}\mid\text{sem})$ e $M$ de~\eqref{eq:retro} se (a)~forem acrescentadas recompensas sem sinal, $0.08$ por janela; (b)~a frequência do sinal sem recompensas for dobrada.
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:07:8}
+\emph{O chicote e o preço da difusão.} No modelo do exercício~\ref{ex:06:8}, $N$ neurônios são divididos em $K$ grupos com fios próprios, e em cada fio vaza uma fração $\rho$ dos erros alheios. Mostre que a constante de aprendizado é $N/K+2+\rho^2N(1-1/K)$. Quantas tentativas ela dá com $K\to\infty$, $N=10^{10}$ e $\rho=0.01$?
+\end{exercise}

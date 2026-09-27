@@ -1,0 +1,76 @@
+\chapter{Los frenos}
+% versión completa: chapters/03_gaba.tex
+
+Agreguemos a la máquina el segundo tipo de neurona más numeroso: \nt{GABA}. Su señal no empuja a la vecina hacia el clic, sino que la aleja. Son los frenos. No son muchas, en la corteza entre una quinta parte y una cuarta de todas las neuronas, pero sin ellas la máquina no anda.
+
+Hay una limitación: una neurona “más” no puede frenar por sí misma a su vecina. Si hace falta una conexión negativa, hay que construirla con un intermediario: el “más” despierta a una neurona inhibidora, y esta frena al objetivo. Cambiar el signo cuesta una neurona y un pequeño retardo.
+
+\section*{“Pero no si”}
+
+La operación más útil con frenos es la prohibición: “actúa ante A, pero no si llegó B”. La neurona recibe un empujón de A y un freno del intermediario al que despierta B. Con prohibiciones y “o” se puede armar cualquier lógica.
+
+\pencilfig{3}{\pencilart{3}}{“A, pero no si B”: la neurona roja le cierra el paso a la azul.}
+
+La prohibición en el tiempo da un detector de movimiento, y usted lo tiene en el ojo. Dos sensores vecinos: uno excita a la neurona de salida, el otro la frena con retardo. Si una mancha de luz corre en un sentido con la velocidad adecuada, la inhibición llega justo a la vez que la excitación y la apaga. Si corre en el otro sentido, la inhibición llega tarde y la neurona alcanza a hacer clic. Resulta una neurona que ve el movimiento solo en un sentido.
+
+\pencilfig{103}{%
+% sensors on top; the left one excites the output, the right one inhibits it through a GABA go-between and a delay
+\draw[dotpen=pcAmber, wash=pcAmber] (0,1.6) circle (0.16); \draw[dotpen=pcAmber, wash=pcAmber] (1.6,1.6) circle (0.16);
+\node[lbl, anchor=south] at (0.8,1.8) {dos sensores};
+\draw[pen=pcBlue, wash=pcBlue] (0.4,0) circle (0.24);
+\draw[arr=pcBlue] (0,1.44) -- (0.3,0.25);
+\draw[pen=pcBlue] (1.6,1.44) -- (1.6,1.18);
+\draw[penlite, fill=white] (0.95,0.9) rectangle (2.25,1.18); \node[font=\tiny\itshape, text=pcGray] at (1.6,1.04) {retardo};
+\draw[pen=pcBlue] (1.6,0.9) -- (1.6,0.72);
+\draw[pen=pcRed, wash=pcRed] (1.6,0.55) circle (0.17);
+\draw[pcRed, line width=0.7pt, -{Bar[width=5pt]}] (1.45,0.45) -- (0.66,0.08);
+\draw[arr] (0.4,-0.24) -- (0.4,-0.6); \node[lbl, anchor=north] at (0.4,-0.6) {salida};
+% outcomes
+\begin{scope}[xshift=3.1cm]
+  \draw[dotpen=pcAmber, wash=pcAmber] (0,1.25) circle (0.1); \draw[arr=pcAmber] (0.18,1.25) -- (1.1,1.25);
+  \node[lbl, anchor=west] at (1.25,1.25) {hacia la derecha: clic};
+  \draw[dotpen=pcAmber, wash=pcAmber] (1.1,0.45) circle (0.1); \draw[arr=pcAmber] (0.92,0.45) -- (0,0.45);
+  \node[lbl, anchor=west] at (1.25,0.45) {hacia la izquierda: silencio};
+  \node[lbl, anchor=west, align=left] at (0,-0.35) {la inhibición llega\\justo con la excitación};
+\end{scope}
+}{Detector de movimiento: la inhibición llega con retardo y apaga la respuesta solo si la mancha corre de derecha a izquierda.}
+
+
+\section*{Restar o dividir}
+
+La inhibición no solo sabe restar. Un canal inhibidor abierto no tira del voltaje hacia abajo: lo tira \emph{hacia el reposo}, como si al balde le hicieran otro agujero. Por eso cualquier chorro de agua la sube menos. La inhibición no le quita a la señal una porción fija, sino que la \emph{divide}: es un control de volumen. Si la fuerza de la inhibición crece junto con la actividad general del entorno, cada neurona no responde a lo fuerte que es su señal, sino a lo fuerte que es \emph{comparada con la de sus vecinas}. Por eso la misma red funciona en la penumbra y bajo un sol radiante. Eso sí, sobre la frecuencia de espigas este “divisor” actúa de forma limpia solo junto con un ruido de fondo constante, que en el cerebro vivo siempre existe.
+
+\pencilfig{104}{%
+\foreach \dx/\t in {0/resta,4.6/división}{
+  \begin{scope}[xshift=\dx cm]
+  \draw[pen] (0,0) -- (3.6,0); \draw[pen] (0,0) -- (0,1.9);
+  \node[lbl, anchor=north] at (1.8,-0.05) {señal}; \node[lbl, anchor=south, rotate=90] at (-0.05,0.95) {respuesta};
+  \draw[pen=pcBlue] (0.4,0) -- (3.3,1.75);
+  \node[font=\small\itshape, text=pcGray, anchor=south] at (1.8,1.95) {\t};
+  \end{scope}}
+\draw[pen=pcRed, line width=0.9pt] (1.3,0) -- (3.4,1.27);
+\node[lbl, text=pcRed, anchor=west] at (2.25,0.35) {corrimiento};
+\begin{scope}[xshift=4.6cm]
+\draw[pen=pcRed, line width=0.9pt] (0.4,0) -- (3.3,0.8);
+\node[lbl, text=pcRed, anchor=west] at (2.0,0.25) {menos pendiente};
+\end{scope}
+\node[lbl, text=pcBlue, anchor=east] at (2.25,1.45) {sin freno};
+}{En azul, la respuesta de la neurona sin inhibición; en rojo, con ella. La resta desplaza el umbral; la división baja el volumen, como una perilla.}
+
+Hay una segunda consecuencia: el agujero extra hace que el balde olvide más rápido. Se estrecha la ventana en la que dos señales tienen que caer para sumarse. La inhibición vuelve más estrictos a los detectores de coincidencias.
+
+\section*{Elegir}
+
+Ahora, lo principal que faltaba: elegir uno entre muchos. Dos grupos de neuronas se frenan mutuamente. Mientras la inhibición es débil, funcionan los dos, solo que más bajito. Pero si es lo bastante fuerte, cualquier pequeña diferencia crece, como en un columpio, hasta que un grupo se calla del todo. El ganador se lo lleva todo. Y la victoria se mantiene: para que la red cambie de opinión, el nuevo argumento tiene que ser claramente más fuerte que el anterior. La máquina no da un respingo con cada crujido.
+
+Los frenos también borran la memoria: una neurona inhibidora, ante la señal de “reinicio”, apaga la fogata del capítulo anterior. Dos de esas celdas que se frenan entre sí son el análogo de un cerrojo (latch), la base de toda memoria de computadora.
+
+\section*{La vida al borde}
+
+Una red solo de “más” puede desbocarse en avalancha: cada espiga engendra más de una siguiente. Los frenos la mantienen en su punto de trabajo, como un termostato mantiene la temperatura del horno. Hay dos condiciones: la inhibición tiene que ser lo bastante fuerte y lo bastante rápida. Si es fuerte pero lenta, el regulador empieza a pasarse, como quien gira la llave de la ducha sin esperar a que llegue el agua caliente. La temperatura oscila de un lado a otro. En el cerebro, un lazo así de “más” y “menos” genera un ritmo rápido: varias decenas de oscilaciones por segundo.
+
+La corteza, al parecer, vive justo al borde: su propia retroalimentación es lo bastante fuerte como para desbocarse en avalancha sin frenos. Solo la sujetan los frenos rápidos, y por eso responde con tanta sensibilidad a señales débiles.
+
+La conclusión del capítulo es inesperada: los frenos casi no le agregan a la máquina cálculos nuevos. Le agregan \emph{control}: elección, reinicio, ajuste de volumen, estabilidad. La excitación lleva los datos; la inhibición decide qué datos pasan, cuándo y con qué volumen.
+
+\fullversion{3}

@@ -1,0 +1,191 @@
+\chapter{Quando escrever e quando ler: acrescentamos o \nt{ACET}}
+\chaptermark{Acrescentamos o \nt{ACET}}
+\label{sec:acet}
+
+\section{O que falta}
+
+Um chip de memória, além dos fios de endereço e de dados, tem mais uma linha: a habilitação de escrita. Enquanto ela está desligada, a memória só é lida; quando está ligada, o que estiver nas linhas de dados é gravado. Sem essa linha a memória não funciona: se cada leitura grava algo ao mesmo tempo, o que foi lido, inclusive o que foi lido com erro, é imediatamente gravado de volta.
+
+No cérebro, esse problema é mais agudo que no chip. No capítulo~\ref{sec:glutcomputer}, a memória era um grupo de neurônios \nt{GLUT} mantido ligado por suas próprias conexões (fig.~\ref{fig:bistable}). No capítulo~\ref{sec:dofa}, vimos que essas conexões aprendem pela regra de Hebb durante o próprio funcionamento. Logo, as mesmas sinapses guardam o antigo e recebem o novo, e não há uma fase separada de escrita, assim como não há relógio. Como a rede distingue o momento em que é preciso memorizar o que se vê do momento em que é preciso lembrar o que se sabe? No capítulo~\ref{sec:neurontypes}, supusemos que essa linha é mantida pelo \nt{ACET}. Neste capítulo, vamos verificar como essa linha deve funcionar e por que não se pode passar sem ela.
+
+\section{Três ações de um só fio}
+
+Os neurônios colinérgicos que atuam dentro do cérebro são poucos e estão reunidos em alguns grupos pequenos, e suas saídas se espalham por todo o córtex. É um canal de difusão, como o \nt{DOPA} e o \nt{NORA}. O nível de acetilcolina no córtex é alto na vigília atenta e baixo no sono de ondas lentas~\cite{Hasselmo1999}. Como na dopamina, o sentido do sinal é definido pelo receptor do destinatário (proposição~\ref{prop:receptor}): a acetilcolina tem tanto receptores rápidos, que abrem um canal, quanto lentos, que disparam reações dentro da célula. Para nós, importam três ações.
+
+\emph{Primeira: enfraquecer as conexões internas.} Experimentos em fatias do córtex olfativo mostraram que a acetilcolina suprime fortemente a transmissão pelas conexões entre neurônios de uma mesma região e quase não afeta as entradas que chegam de fora~\cite{HasselmoBower1992}.
+
+\emph{Segunda: reforçar as entradas.} A acetilcolina aumenta a excitabilidade dos neurônios e facilita a transmissão por algumas vias de entrada; o sinal dos órgãos dos sentidos fica mais alto que a atividade própria da rede~\cite{Hasselmo2006}.
+
+\emph{Terceira: facilitar a mudança dos pesos.} Com nível alto de acetilcolina, as conexões mudam com mais facilidade~\cite{Hasselmo2006}.
+
+Para o engenheiro, as três ações são uma única operação: passar do modo ``ler'' para o modo ``escrever''. A rede deixa de ouvir a si mesma, passa a ouvir a entrada e memoriza o que ouve.
+
+\section{Uma rede que completa}
+
+Tomemos $N$ neurônios \nt{GLUT} ligados entre si. Guardemos em suas conexões alguns padrões (conjuntos de $pN$ neurônios ativos ao mesmo tempo) pela regra de Hebb~\cite{Hebb1949}. Se aplicarmos a essa rede metade de um padrão, as conexões excitarão a metade que falta: a rede \emph{completa} o padrão a partir de uma parte, assim como o grupo da fig.~\ref{fig:bistable} se sustentava sozinho. É uma memória associativa: o endereço é uma parte do conteúdo. O \nt{GABA}, como no capítulo~\ref{sec:gaba}, mantém o número total de neurônios ativos em torno de $pN$, para que dois padrões não possam acender juntos.
+
+Denotemos o nível de acetilcolina por $a$, de $0$ a $1$, e escrevamos suas três ações diretamente no modelo:
+\begin{empheq}[box=\keybox]{equation}
+\tau\frac{\dd r_i}{\dd t} = -r_i + F\Bigl(\tfrac{1+a}{2}\,x_i + (1-a)\sum_j W_{ij}\,r_j - g\Bigr),
+\qquad
+\frac{\dd W_{ij}}{\dd t} = \eta\,a\,(r_i-p)(r_j-p) .
+\label{eq:acetnet}
+\end{empheq}
+Aqui $r_i$ é a taxa do neurônio $i$, $x_i$ é sua entrada vinda dos órgãos dos sentidos, $F$ é uma característica de transferência com limiar, e $g$ é a inibição geral do \nt{GABA}, que cresce quando há mais de $pN$ neurônios ativos. O fator $\frac{1+a}{2}$ é o reforço da entrada, $1-a$ é o enfraquecimento das conexões internas, e $\eta a$ é a taxa de aprendizado. A segunda equação é a regra de Hebb~\eqref{eq:hebb} numa forma conveniente para padrões esparsos~\cite{Tsodyks1988}: o peso cresce quando os dois neurônios estão mais ativos que o habitual e diminui quando só um está ativo. A parte negativa dos pesos, como sempre, fica a cargo de intermediários \nt{GABA}. Não há relógio: tanto os neurônios quanto os pesos mudam continuamente.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  nrn/.style={circle,draw,very thick,fill=blue!6,minimum size=0.8cm,inner sep=0pt,font=\small},
+  acet/.style={circle,draw,very thick,double,double distance=1.2pt,fill=orange!15,minimum size=1.35cm,inner sep=0pt,font=\scriptsize},
+  bc/.style={->,thick,densely dashed,orange!85!black}]
+\foreach \i/\y in {1/2.4,2/1.2,3/0}{
+  \node[nrn] (N\i) at (3,\y) {$r_\i$};
+  \draw[->,thick,blue!60!black] (0,\y) node[left,black] {\small $x_\i$} -- (N\i);}
+\node[left,align=right,font=\small] at (-0.5,1.2) {dos órgãos\\dos sentidos};
+\draw[->,thick,gray!60!black] (N1) to[bend left=30] (N2);
+\draw[->,thick,gray!60!black] (N2) to[bend left=30] (N1);
+\draw[->,thick,gray!60!black] (N2) to[bend left=30] (N3);
+\draw[->,thick,gray!60!black] (N3) to[bend left=30] (N2);
+\draw[->,thick,gray!60!black] (N1.east) .. controls (4.6,2.0) and (4.6,0.4) .. (N3.east);
+\node[right,font=\small,gray!40!black,align=left] at (4.7,1.2) {conexões\\internas $W$};
+\node[acet] (A) at (1.2,-1.9) {\nt{ACET}};
+\draw[bc] (A) -- (1.6,-0.15);
+\node[font=\small,orange!60!black,anchor=east] at (0.95,-0.9) {$+$ entrada};
+\draw[bc] (A) -- (4.3,0.6);
+\node[font=\small,orange!60!black,anchor=west] at (4.3,0.1) {$-$ conexões internas, $+$ taxa de aprendizado};
+\node[right,font=\small,align=left] at (2.2,-1.9) {nível alto: ``escrever''\\nível baixo: ``ler''};
+\end{tikzpicture}
+\caption{O \nt{ACET} como linha de habilitação de escrita. Os neurônios $r_i$ recebem a entrada $x_i$ dos órgãos dos sentidos (setas azuis) e se excitam mutuamente pelas conexões internas $W$ (cinza), nas quais os padrões ficam guardados. A acetilcolina (setas tracejadas) reforça a entrada, enfraquece as conexões internas e facilita a mudança dos pesos, como em~\eqref{eq:acetnet}.}
+\label{fig:acetnet}
+\end{figure}
+
+\section{Escrita e leitura atrapalham uma à outra}
+
+Vamos testar o modelo~\eqref{eq:acetnet} num problema em que escrita e leitura realmente entram em conflito. Uma rede de $200$ neurônios já guarda cinco padrões de $20$ neurônios ativos. Agora é preciso memorizar um sexto, que coincide pela metade com um dos antigos: dez neurônios são comuns aos dois. Isso acontece o tempo todo: um quarto novo parece um conhecido, um rosto novo parece um antigo.
+
+\emph{Escrita com $a$ baixo.} Primeiro, separemos as duas primeiras ações da acetilcolina da terceira: deixemos a taxa de aprendizado plena, e só o reforço da entrada e o enfraquecimento das conexões internas vão variar. Com $a=0$, a entrada acende os dez neurônios comuns, e eles, pelas conexões internas, acendem a metade restante do padrão \emph{antigo}. O \nt{GABA} não deixa os dois acesos ao mesmo tempo, e o padrão antigo, sustentado por suas próprias conexões, expulsa o novo, que só se apoia na entrada. A rede não vê o que está diante dela, mas o que lembra, e a regra de Hebb grava diligentemente o que foi visto.
+
+No fim, o padrão novo não foi memorizado de modo algum: a partir de sua metade distintiva, a rede não lembra nada. E o antigo ficou corrompido: evocado por sua metade distintiva, ele arrasta em média seis neurônios alheios de dez. Com $a=0.1$, o padrão novo já é memorizado, mas se funde com o antigo, e a corrupção é até maior: cada um dos dois, evocado por sua metade, arrasta cerca de oito neurônios alheios; a partir de $a=0.2$ a escrita é limpa: menos de um neurônio a mais na lembrança (média de dez execuções).
+
+\emph{Escrita com a taxa de aprendizado real.} Agora deixemos a acetilcolina, como em~\eqref{eq:acetnet}, definir também a taxa de aprendizado. Numa única apresentação, o padrão novo é memorizado por inteiro só com $a\ge0.9$; com $a=0.75$, em oito décimos; com $a\le0.5$, nada.
+
+\emph{Leitura.} Aplicamos à rede com cinco padrões escritos de forma limpa metade de um padrão e depois a retiramos. Com $a\le0.2$, a rede completa o padrão inteiro e o mantém sozinha; com $a=0.3$, quase inteiro; com $a\ge0.4$, as conexões internas estão enfraquecidas demais e, depois que a dica some, a atividade se apaga (fig.~\ref{fig:acetsim}).
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=9cm,y=3.2cm]
+\draw[->,gray!70!black] (0,0) -- (1.1,0) node[right,black] {\small $a$};
+\draw[->,gray!70!black] (0,0) -- (0,1.2);
+\foreach \x in {0,0.2,0.4,0.6,0.8,1.0}{\draw[gray!60!black] (\x,-0.02) -- (\x,0.02); \node[below,font=\scriptsize] at (\x,0) {$\x$};}
+\foreach \y in {0,0.5,1}{\draw[gray!60!black] (-0.01,\y) -- (0.01,\y); \node[left,font=\scriptsize] at (0,\y) {$\y$};}
+\node[rotate=90,font=\small] at (-0.1,0.6) {fração do padrão recuperada};
+\draw[very thick,blue!60!black] plot[mark=*,mark size=1.6pt] coordinates {(0,1.00) (0.1,1.00) (0.2,1.00) (0.3,0.96) (0.4,0.04) (0.5,0.00) (0.75,0.00) (1.0,0.00)};
+\draw[very thick,red!70!black] plot[mark=*,mark size=1.6pt] coordinates {(0.1,0.00) (0.2,0.00) (0.3,0.00) (0.5,0.00) (0.75,0.80) (0.9,1.00) (1.0,1.00)};
+\node[font=\small,blue!60!black,anchor=west,align=left] at (0.03,0.5) {leitura:\\padrão\\pela metade};
+\node[font=\small,red!70!black,anchor=east,align=right] at (1.0,0.35) {escrita:\\padrão novo\\de uma vez};
+\end{tikzpicture}
+\caption{Modelo~\eqref{eq:acetnet}: $200$ neurônios, padrões de $20$ ativos, média de dez execuções. Pontos azuis, leitura: que fração do padrão é recuperada a partir de sua metade depois que a dica é retirada. Pontos vermelhos, escrita: que fração de um padrão novo, parecido pela metade com um antigo, é lembrada após uma apresentação, se a acetilcolina define também a taxa de aprendizado. A leitura funciona com $a\le0.3$, a escrita com $a\ge0.9$.}
+\label{fig:acetsim}
+\end{figure}
+
+\begin{keyblock}
+\begin{proposition}[Escrita e leitura exigem modos diferentes]
+\label{prop:writeread}
+No modelo~\eqref{eq:acetnet}, em que as mesmas conexões guardam o antigo e aprendem o novo e a acetilcolina define também a taxa de aprendizado, não há nível $a$ em que escrita e leitura funcionem igualmente bem. Para escrever, é preciso enfraquecer as conexões internas, senão a rede grava não a entrada, mas o que lembrou; para ler, é preciso reforçá-las, senão ela não completa o padrão a partir de uma parte. É necessário um comutador, e um único fio de difusão pode servir como tal.
+\end{proposition}
+\end{keyblock}
+
+Se a acetilcolina não mudasse a taxa de aprendizado, uma faixa estreita $0.2\le a\le0.3$ serviria para as duas tarefas. Mas então a rede aprenderia também a cada leitura, isto é, regravaria o que leu junto com seus erros. A própria ideia de suprimir as conexões internas durante o aprendizado vem de modelos construídos a partir de medições em fatias~\cite{HasselmoAndersonBower1992}. Os números acima se referem ao nosso modelo simplificado; onde exatamente ficam as fronteiras dos modos no cérebro não se sabe.
+
+\section{Quanto acreditar nos olhos}
+
+O comutador ``escrever/ler'' é um caso extremo de uma questão mais geral: quanto acreditar na entrada e quanto na memória? Para essa questão os engenheiros têm uma resposta exata, e ela ajuda a entender por que um único fio controla ao mesmo tempo o modo e a taxa de aprendizado.
+
+Suponha que a rede acompanha uma grandeza $s(t)$ que vagueia lentamente: a cada segundo sua variância cresce $q$. Os órgãos dos sentidos informam $y(t)=s(t)+$ruído com intensidade $R$. A melhor estimativa $\hat s$ em tempo contínuo é dada pelo filtro de Kalman--Bucy~\cite{KalmanBucy1961}:
+\begin{empheq}[box=\keybox]{equation}
+\frac{\dd\hat s}{\dd t} \;=\; \frac{P}{R}\,\bigl(y-\hat s\bigr),
+\qquad
+\frac{\dd P}{\dd t} \;=\; q-\frac{P^2}{R} ,
+\label{eq:kalman}
+\end{empheq}
+em que $P$ é a variância do erro da estimativa, isto é, o quanto a própria rede está insegura do que sabe. A primeira equação é o mesmo circuito RC da membrana no modelo de neurônio~\eqref{eq:glutneuron}, mas com uma constante de tempo $R/P$ que varia. Quando a rede está insegura, $P$ é grande, a constante de tempo é pequena, e a estimativa acompanha depressa a entrada: é ``escrever''. Quando está segura, $P$ é pequeno, e a estimativa quase não ouve a entrada, apegando-se à memória: é ``ler''.
+
+Em regime estacionário, $P=\sqrt{qR}$, e a constante de tempo da memória é $\sqrt{R/q}$: se o mundo se desloca uma unidade em cem segundos, $q=0.01$, e o ruído dos órgãos dos sentidos é $R=1$, a memória deve lembrar cerca de dez segundos.
+
+O principal aqui é que um único número, $P/R$, define duas coisas ao mesmo tempo: o peso da entrada em relação à memória e a velocidade com que a estimativa guardada muda. É exatamente o que a acetilcolina faz em~\eqref{eq:acetnet}. Pela hipótese~\cite{YuDayan2005}, a acetilcolina informa à rede uma grandeza semelhante a $P$: a incerteza \emph{esperada}, aquela que a rede conhece de antemão. Esse canal nem sempre é lento: parte dos neurônios \nt{ACET} responde à recompensa e à punição em duas dezenas de milissegundos, tanto mais forte quanto mais inesperado o reforço~\cite{Hangya2015}.
+
+\begin{keyblock}
+\begin{proposition}[Um único botão para o peso da entrada e a taxa de aprendizado]
+\label{prop:kalman}
+No filtro ótimo~\eqref{eq:kalman}, o peso com que a entrada se mistura à memória e a taxa de aprendizado são a mesma grandeza $P/R$. Por isso é razoável controlá-los com um único sinal. Com propriedades do mundo inalteradas, esse sinal se estabiliza num nível constante $\sqrt{q/R}$, e só é preciso ajustá-lo quando as propriedades do mundo mudam.
+\end{proposition}
+\end{keyblock}
+
+A segunda frase da proposição explica o resultado do capítulo~\ref{sec:nora}, em que o ajuste da taxa de aprendizado pela surpresa não superou a melhor taxa constante: num mundo com propriedades de mudança inalteradas, a melhor taxa de aprendizado é justamente constante. O ganho aparece quando o mundo de repente fica diferente. Então a estimativa se vê subitamente longe da entrada, e $P$ não sabe disso. A ação correta é elevar $P$ bruscamente e, com isso, passar ao modo de escrita. Pela hipótese que discutimos no capítulo~\ref{sec:nora}, quem informa essa mudança \emph{inesperada} é o \nt{NORA}~\cite{YuDayan2005}. A divisão de trabalho resulta natural: o \nt{NORA} percebe que o mundo mudou, e o \nt{ACET} mantém a rede no modo de escrita até que a nova situação seja aprendida.
+
+\section{O sono como modo de leitura}
+
+Se o nível alto de acetilcolina é o modo de escrita, o que a rede faz com nível baixo? No sono de ondas lentas, o nível de acetilcolina cai, as conexões internas se livram da supressão, e quase não há entrada dos órgãos dos sentidos. A rede em modo de leitura, sem dica, reproduz o que está gravado nela. O registro da atividade mostra que neurônios que funcionavam juntos durante o dia voltam a disparar juntos no sono de ondas lentas~\cite{WilsonMcNaughton1994}, e até na mesma ordem~\cite{Skaggs1996}. Pela hipótese~\cite{Hasselmo1999}, essas repetições transcrevem o que foi aprendido depressa durante o dia para a memória de longo prazo (prolongar artificialmente os surtos curtos de repetição melhora a memória~\cite{FernandezRuiz2019}): de dia, escrita a partir da entrada; à noite, regravação a partir de dentro. Para o engenheiro, isso lembra gravar num buffer rápido durante o dia e descarregá-lo numa memória permanente lenta à noite.
+
+\section{Resumo}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{3.2cm}>{\raggedright}p{4.2cm}>{\raggedright\arraybackslash}p{6.0cm}}
+\toprule
+O que o \nt{ACET} faz & Como & O que se sabe \\
+\midrule
+enfraquece as conexões internas & fator $1-a$ em~\eqref{eq:acetnet} & medido em fatias \\
+reforça a entrada & fator $\frac{1+a}{2}$ & aumento da excitabilidade e da transmissão pelas vias de entrada medido \\
+facilita o aprendizado & taxa $\eta a$ & medido \\
+comuta ``escrever/ler'' & proposição~\ref{prop:writeread} & decorre dos modelos; não há medição direta dos modos \\
+informa a incerteza esperada & $P$ em~\eqref{eq:kalman} & hipótese \\
+libera a rede para repetições no sono & $a$ baixo no sono de ondas lentas & nível baixo no sono e repetições medidos; a regravação na memória de longo prazo é hipótese \\
+\bottomrule
+\end{tabular}
+\caption{O que o \nt{ACET} acrescenta à rede de \nt{GLUT}, \nt{GABA}, \nt{DOPA} e \nt{NORA}.}
+\label{tab:acet}
+\end{table}
+
+O \nt{DOPA} diz à rede para onde mudar os pesos; o \nt{NORA}, com que decisão usar o que ela sabe; e o \nt{ACET}, se ela deve ouvir o mundo ou a si mesma (tabela~\ref{tab:acet}). É a última linha de controle por difusão da tabela~\ref{tab:types}: a habilitação de escrita, sem a qual uma memória que guarda padrões nas mesmas conexões com que os lê se corromperia a cada leitura.
+
+\section{Exercícios}
+
+\begin{exercise}[\lvlA]
+\label{ex:09:1}
+\emph{Quanto lembrar.} O filtro~\eqref{eq:kalman} com $q=0.01$, $R=1$ lembra cerca de $10$~s. Encontre $P_\infty$ e a memória $\sqrt{R/q}$ se (a)~o ruído do sensor dobrou em amplitude; (b)~o mundo passou a vaguear cem vezes mais depressa. (c)~Quantas vezes o ruído deve crescer para a rede lembrar um minuto?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:09:2}
+\emph{Modo de escrita após uma mudança.} O mundo mudou, e a incerteza do filtro~\eqref{eq:kalman} com $q=0.01$, $R=1$ saltou para $P_0\to\infty$. (a)~Com que constante de tempo $P$ volta a $P_\infty$? (b)~Depois de quantos segundos a taxa de aprendizado passa a exceder a estacionária em no máximo $10\,\%$?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:09:3}
+\emph{Taxa de aprendizado constante.} A rede aprende como $\dd\hat s/\dd t=(y-\hat s)/T$; o mundo vagueia, $\dd s/\dd t=w$, $y=s+n$, em que $w$ e $n$ são ruídos brancos de intensidades $q$ e $R$. Encontre o melhor $T$ e a variância do erro com ele. Quantas vezes ela cresce se $T$ estiver errado por um fator $2$ e $10$?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:09:4}
+\emph{Onde fica a fronteira da escrita.} Em \texttt{models/\allowbreak acet\_memory.py}, o limiar é $\theta=0.35$, e o peso dentro de um padrão, $w=0.041$ (idealmente $0.045$). Um padrão novo compartilha $m=10$ neurônios com um antigo. Com que $a$ em~\eqref{eq:acetnet} os demais neurônios do padrão antigo não se acendem a partir desses $m$ (limiar abrupto)?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:09:5}
+\emph{Simulação: capacidade da memória.} Modifique em \texttt{models/\allowbreak acet\_memory.py} a função \texttt{read\_sweep}: com $a=1$, grave $M$ padrões ($M$ de $5$ a $100$) e depois, com $a=0$, leia os dez primeiros pela metade. Com que $M$ surgem erros, e como o $M_{\max}$ limite depende de $N$ e $p$?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:09:6}
+\emph{Projeto: escrita sem vazamento.} Com taxa de aprendizado $\eta a$, a rede aprende também durante a leitura. Proponha uma $\eta(a)\le\eta$ monótona, nula para $a\le0.3$ e não pior que $\eta a$ para $a\ge0.9$. Verifique: após $20$ leituras com $a=0.2$ e uma dica com três neurônios alheios, quantos deles entraram no padrão?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:09:7}
+\emph{Como regravar o buffer à noite.} (a)~No sono, $a=0.05$, e uma repetição dura $0.1\,\text{s}$, contra $0.2\,\text{s}$ de dia com $a=1$. Quantas repetições acumulam a mudança de pesos de uma apresentação diurna com taxa $\eta a$ e com a $\eta(a)$ do exercício~\ref{ex:09:6}? (b)~O armazenamento aprende $100$ vezes mais devagar que o buffer e ouve o padrão $20$ vezes por noite, $0.1\,\text{s}$ de cada vez. Quantas noites são necessárias?
+\end{exercise}

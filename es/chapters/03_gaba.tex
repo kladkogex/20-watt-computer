@@ -1,0 +1,280 @@
+\chapter{\nt{GLUT} y \nt{GABA} juntos}
+\label{sec:gaba}
+
+\section{Las reglas del juego}
+
+Una red formada solo por neuronas \nt{GLUT} no sabe elegir, reiniciar la memoria ni contener la actividad antes de que se desborde en avalancha, y todo por la monotonía (proposición~\ref{prop:monotone}). Añadamos el segundo tipo de neurona más numeroso: \nt{GABA}. Las reglas son las de antes: solo lo que existe en un organismo vivo, y ninguna señal de reloj.
+
+El modelo de neurona es el mismo que~\eqref{eq:glutneuron}, pero una espiga de una neurona \nt{GABA} no eleva el voltaje del receptor, sino que lo baja. Ahora los pesos tienen dos signos, y el signo lo fija el emisor, según la regla~\eqref{eq:dalesign}.
+
+Algunos parámetros del circuito. Las neuronas \nt{GABA} son entre una quinta y una cuarta parte de las de la corteza~\cite{Hendry1987}. Sus salidas son cortas: inhiben a sus vecinas, no a regiones lejanas. La inhibición llega al cabo de un milisegundo y dura unos pocos milisegundos. Sin entrada, una neurona \nt{GABA} calla: para inhibir a alguien, ella misma debe recibir excitación, normalmente de las neuronas \nt{GLUT} de la misma red.
+
+Por eso una conexión negativa de una neurona \nt{GLUT} $A$ a una neurona $B$ hay que hacerla a través de un intermediario: $A$ excita a una neurona \nt{GABA}, y esta inhibe a $B$. El cambio de signo cuesta una neurona y un retardo, alrededor de un milisegundo.
+
+Para la inhibición no solo importa \emph{de quién} viene la conexión, sino también \emph{dónde} se asienta: el lugar de llegada determina en gran medida lo que hace la conexión~\cite{Markram2004}. Las salidas \nt{GLUT} llegan sobre todo a las ramas de entrada del receptor, sus \emph{dendritas}, y llevan datos: cada una de esas entradas es un sumando de la suma. Una salida sobre el cuerpo de la neurona actúa sobre la suma entera: así muchas neuronas \nt{GABA} rápidas dividen la respuesta del receptor y fijan cuándo debe dispararse. Una salida sobre el lugar donde nace la espiga del receptor es la última palabra, un veto sobre toda la salida a la vez. Y una salida sobre la terminal del cable de otra neurona cambia la probabilidad de liberación $p$ de una sola línea de entrada, sin tocar las demás~\cite{Rudomin1999}; así funcionan, en particular, las compuertas del dolor del capítulo~\ref{sec:pain}. Fuera del cerebro, las salidas llegan a las fibras musculares (capítulo~\ref{sec:muscles}) y a los órganos (capítulo~\ref{sec:chemoutput}), y algunas no llegan a ninguna parte y liberan el neurotransmisor en el volumen del tejido o en la sangre (capítulos~\ref{sec:serocomputer} y~\ref{sec:chemoutput}).
+
+\section{NOT y veto}
+
+¿Se puede hacer ahora un NOT? Casi. Una neurona que trabaja con la entrada en silencio debe sacar la excitación de algún sitio. En el cerebro vivo la hay: a cada neurona le llega constantemente actividad de fondo de miles de otras. Supongamos que el fondo mantiene activa a la neurona $Y$, y que la entrada $x$ la inhibe a través de un intermediario \nt{GABA}. Eso es un NOT.
+
+Más útil, sin embargo, es el \emph{veto}: “$a$, pero no si $b$”:
+\begin{empheq}[box=\keybox]{equation}
+y \;=\; a \wedge \bar b .
+\label{eq:veto}
+\end{empheq}
+La neurona $Y$ recibe excitación de $a$ e inhibición de una neurona \nt{GABA} excitada por $b$. Aquí el fondo no hace falta: la excitación la aporta el propio $a$. Con vetos y OR se construye todo. Por ejemplo, el OR exclusivo: $x\oplus y=(x\wedge\bar y)\vee(\bar x\wedge y)$: dos neuronas de veto, dos intermediarios \nt{GABA} y una neurona OR.
+
+\begin{keyblock}
+\begin{proposition}[Completitud de \nt{GLUT}+\nt{GABA}]
+\label{prop:gabacomplete}
+Una red de neuronas \nt{GLUT} y \nt{GABA} puede calcular cualquier función lógica de las entradas, y cada bit viaja por un solo cable. Los sensores de “encendido-apagado” del capítulo~\ref{sec:glutcomputer} ya no hacen falta. Si la función debe dar uno con todas las entradas en silencio, se necesita una fuente de actividad de fondo.
+\end{proposition}
+\end{keyblock}
+
+Demostración: el veto~\eqref{eq:veto} junto con el OR es funcionalmente completo si se dispone de una constante uno, porque NOT $x$ es el veto “uno, pero no si $x$”. Y las funciones que dan cero con todas las entradas en silencio se construyen con vetos y OR incluso sin el uno.
+
+\section{Dirección del movimiento}
+
+El veto en el tiempo, como el AND en el tiempo del capítulo~\ref{sec:glutcomputer}, da un detector de la dirección del movimiento.
+
+Supongamos que dos sensores vecinos, $A$ y $B$, están a una distancia $\Delta x$ entre sí. La neurona de salida $Y$ recibe excitación de $B$ e inhibición de $A$ a través de un intermediario \nt{GABA}, con un retardo $d$ (fig.~\ref{fig:direction}). Una mancha de luz que corre a velocidad $v$ de $A$ hacia $B$ pasa por $A$ en el instante $0$, y la inhibición llega a $Y$ en el instante $d$; por $B$ pasa en el instante $\Delta x/v$, y en ese momento llega también la excitación. Si estos instantes coinciden dentro de la ventana~\eqref{eq:window}, la inhibición apaga la excitación, e $Y$ calla. Esto ocurre a una velocidad cercana a
+\begin{empheq}[box=\keybox]{equation}
+v^* \;=\; \frac{\Delta x}{d} .
+\label{eq:vstar}
+\end{empheq}
+En el movimiento de $B$ hacia $A$, la excitación de $B$ llega en el instante $0$, y la inhibición de $A$ solo en el instante $\Delta x/v+d$, cuando $Y$ ya se ha disparado.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  nrn/.style={circle,draw,very thick,fill=blue!6,minimum size=0.9cm,inner sep=0pt},
+  gab/.style={nrn,fill=red!10},
+  inh/.style={-{Bar[width=7pt]},thick,red!70!black}]
+\node[nrn] (A) at (0,2) {$A$};
+\node[nrn] (B) at (3,2) {$B$};
+\node[gab] (G) at (0.9,0.6) {\small \nt{GABA}};
+\node[nrn] (Y) at (3,-0.6) {$Y$};
+\draw[->,thick] (A) -- (G);
+\draw[inh] (G) -- node[below left=-2pt] {\scriptsize retardo $d$} (Y);
+\draw[->,thick] (B) -- (Y);
+\draw[->,very thick,red!70!black] (Y) -- (4.6,-0.6) node[right,black] {\small salida};
+\draw[->,thick,orange!85!black] (-0.6,2.9) -- (3.6,2.9) node[right,black] {\small calla};
+\draw[<-,thick,orange!85!black] (-0.6,3.4) -- (3.6,3.4) node[right,black] {\small responde};
+\foreach \yy/\dd in {2.9/-1,3.4/1}{
+  \foreach \k in {1,2,3}{\draw[orange!70!yellow,line width=0.8pt] (1.5+\dd*0.12+\dd*0.13*\k,\yy+0.1-0.1*\k+0.1) -- ++(\dd*0.25,0);}
+  \fill[yellow!70!orange,draw=orange!70!black] (1.5,\yy) circle (0.14);}
+\node[font=\scriptsize,align=center] at (1.5,3.95) {mancha de luz};
+\end{tikzpicture}
+\caption{Detector de la dirección del movimiento. $B$ excita a $Y$; $A$ lo inhibe a través de un intermediario \nt{GABA} con retardo $d$. En el movimiento de $A$ hacia $B$ a una velocidad cercana a $\Delta x/d$, la inhibición apaga la excitación; en el movimiento contrario, llega tarde. La mancha amarilla con rayitas es la luz que corre sobre los sensores.}
+\label{fig:direction}
+\end{figure}
+
+En la retina, la selectividad a la dirección del movimiento parece crearse precisamente así: con una inhibición asimétrica desde el lado del que el movimiento no debe provocar respuesta~\cite{Barlow1965}.
+
+\section{Resta o división}
+
+Hasta ahora nuestra inhibición restaba. En realidad funciona de manera más sutil.
+
+Una sinapsis abre un canal, es decir, activa una conductancia. En una sinapsis excitadora, el potencial de equilibrio está muy por encima del umbral, unos $70\mV$ sobre el reposo: el canal abierto tira del voltaje hacia arriba. En una sinapsis inhibidora \nt{GABA}, el canal deja pasar cloro, cuyo potencial de equilibrio está cerca del reposo, y el canal abierto no tira del voltaje hacia abajo, sino \emph{hacia el reposo}. Si el voltaje se mide desde el reposo, el voltaje estacionario de una membrana con conductancia de fuga $g_L$, excitadora $g_E$ e inhibidora $g_I$ es
+\begin{empheq}[box=\keybox]{equation}
+V_\infty \;=\; \frac{g_E\,E_E}{g_L+g_E+g_I} ,
+\label{eq:shunt}
+\end{empheq}
+donde $E_E\approx70\mV$ es el potencial de equilibrio de la sinapsis excitadora. Es la ley de Ohm para un divisor de voltaje: $g_E$ tira hacia $E_E$, y $g_L$ y $g_I$, hacia cero.
+
+$g_I$ no está en el numerador con signo menos, sino en el denominador: la inhibición no \emph{resta} de la excitación, sino que la \emph{divide} (fig.~\ref{fig:shunt}). Esta inhibición se llama de derivación: los canales de cloro abiertos cortocircuitan la membrana. Para la red es un control de ganancia. Si $g_I$ es proporcional a la actividad total de las vecinas, cada neurona no responde a la intensidad absoluta de su entrada, sino a su fracción de la actividad total. Esta división por la actividad total se encuentra en muchas regiones del cerebro y se considera una de sus operaciones estándar~\cite{Carandini2012}: una misma red funciona tanto con entradas débiles como con entradas fuertes.
+
+Una salvedad: la fórmula~\eqref{eq:shunt} se refiere a una neurona que no emite espigas. En una neurona que se dispara, el voltaje se mantiene todo el tiempo cerca del umbral, la corriente por la conductancia inhibidora es casi constante, y sobre la \emph{frecuencia} de espigas la derivación actúa sobre todo como resta~\cite{HoltKoch1997}. La frecuencia se divide si a la neurona se le añaden a la vez conductancias de fondo excitadora e inhibidora equilibradas, como en el régimen fluctuante y equilibrado de la corteza viva~\cite{Chance2002}. Así que el cerebro no obtiene la división de una sola derivación, sino de la inhibición junto con el ruido de fondo~\cite{Carandini2012}.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=1.25cm,y=0.05cm]
+\draw[->,gray!70!black] (0,0) -- (5.4,0) node[right,black] {\small $g_E/g_L$};
+\draw[->,gray!70!black] (0,0) -- (0,68) node[above,black] {\small $V_\infty$, mV};
+\foreach \v in {20,40,60}{\draw[gray!60!black] (-0.05,\v) -- (0.05,\v) node[left=3pt,font=\scriptsize] {\v};}
+\foreach \x in {1,2,3,4,5}{\draw[gray!60!black] (\x,-1.5) -- (\x,1.5) node[below=5pt,font=\scriptsize] {\x};}
+\draw[very thick,blue!60!black] plot[domain=0:5,samples=60] (\x,{70*\x/(1+\x)});
+\draw[very thick,red!70!black] plot[domain=0:5,samples=60] (\x,{70*\x/(3+\x)});
+\draw[thick,densely dashed,gray!50!black] plot[domain=0.56:5,samples=60] (\x,{70*\x/(1+\x)-25});
+\node[right,font=\small,blue!60!black] at (5.02,58.3) {sin inhibición};
+\node[right,font=\small,red!70!black] at (5.02,45.5) {divide: $g_I=2g_L$};
+\node[right,font=\small,gray!40!black] at (5.02,32.5) {resta $25\mV$};
+\end{tikzpicture}
+\caption{La inhibición de derivación divide el voltaje, no le resta. La curva azul es el voltaje estacionario~\eqref{eq:shunt} sin inhibición; la roja, con conductancia inhibidora $g_I=2g_L$. La roja es la misma azul estirada tres veces en horizontal: como si la entrada se dividiera por $1+g_I/g_L=3$. La discontinua es una inhibición que resta $25\mV$ constantes: la curva baja entera y la pendiente no cambia.}
+\label{fig:shunt}
+\end{figure}
+
+Hay también una segunda consecuencia. La constante de tiempo de la membrana es $\tau_{\text{ef}}=C/(g_L+g_E+g_I)$, y la inhibición la acorta. Y la ventana de coincidencia~\eqref{eq:window} es proporcional a $\tau$, así que una inhibición que llega junto con la excitación \emph{estrecha la ventana}. El circuito en el que una entrada excita directamente a una neurona y a la vez, con un milisegundo de retardo, la inhibe a través de un intermediario \nt{GABA} es uno de los más comunes del cerebro: la neurona solo alcanza a responder a lo que llegó en el primer milisegundo o dos~\cite{Pouille2001}.
+
+\section{Elección}
+
+Ahora lo principal que le faltaba a la red \nt{GLUT}: elegir una opción entre varias. Tomemos dos grupos de neuronas \nt{GLUT} con entradas $I_1$ e $I_2$. Cada uno, a través de sus intermediarios \nt{GABA}, inhibe al otro con fuerza $\beta$ (fig.~\ref{fig:wta}). Para las frecuencias $r_1,r_2$ obtenemos
+\begin{equation}
+\tau\,\frac{\dd r_1}{\dd t} = -r_1 + \bigl[I_1-\beta r_2\bigr]_+ ,\qquad
+\tau\,\frac{\dd r_2}{\dd t} = -r_2 + \bigl[I_2-\beta r_1\bigr]_+ ,
+\label{eq:wta}
+\end{equation}
+donde $[u]_+=\max(u,0)$: la frecuencia no puede ser negativa.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  nrn/.style={circle,draw,very thick,fill=blue!6,minimum size=0.9cm,inner sep=0pt},
+  gab/.style={nrn,fill=red!10,minimum size=0.75cm},
+  inh/.style={-{Bar[width=7pt]},thick,red!70!black}]
+\node[nrn] (E1) at (0,0) {$r_1$};
+\node[nrn] (E2) at (4,0) {$r_2$};
+\node[gab] (G1) at (1.4,1.1) {};
+\node[gab] (G2) at (2.6,-1.1) {};
+\draw[->,thick] (E1) -- (G1); \draw[inh] (G1) -- (E2);
+\draw[->,thick] (E2) -- (G2); \draw[inh] (G2) -- (E1);
+\draw[->,thick,blue!60!black] (-1.6,0) node[left,black] {$I_1$} -- (E1);
+\draw[->,thick,blue!60!black] (5.6,0) node[right,black] {$I_2$} -- (E2);
+\end{tikzpicture}
+\caption{Elección entre dos. Dos grupos de neuronas \nt{GLUT} (azules) se inhiben mutuamente a través de intermediarios \nt{GABA} (rojos).}
+\label{fig:wta}
+\end{figure}
+
+Mientras ambas neuronas están activas, el sistema~\eqref{eq:wta} es lineal, y su comportamiento lo fijan dos valores propios: $-(1+\beta)/\tau$ para desviaciones iguales de ambas frecuencias y $-(1-\beta)/\tau$ para desviaciones opuestas. Con inhibición débil, $\beta<1$, ambos valores son negativos: las dos neuronas trabajan, y la inhibición solo atenúa a la débil. Con inhibición fuerte, $\beta>1$, el segundo valor se vuelve positivo: cualquier diferencia entre $r_1$ y $r_2$ crece hasta que una de las neuronas calla del todo.
+
+\begin{keyblock}
+\begin{proposition}[El ganador se lo lleva todo]
+\label{prop:wta}
+Si la inhibición mutua es mayor que uno, $\beta>1$, el estado en que ambos grupos están activos es inestable. La red llega a un estado en que un grupo trabaja y el otro calla. El ganador, con frecuencia $r_1=I_1$, conserva la victoria mientras $I_2<\beta I_1$.
+\end{proposition}
+\end{keyblock}
+
+Lo comprobamos con el modelo. Con $\beta=0.5$ y entradas $1.0$ y $0.9$, ambos grupos trabajan, con frecuencias $0.73$ y $0.53$. Con $\beta=2$ y las mismas entradas, el segundo grupo calla del todo. Esta elección tiene memoria: si después se intercambian las entradas, el ganador anterior sigue ganando, porque $1.0<2\cdot0.9$.
+
+Con cien grupos ocurre lo mismo: cada uno inhibe a los demás, y sobrevive uno.
+
+\section{Reinicio de la memoria}
+
+La memoria del capítulo~\ref{sec:glutcomputer} solo se apagaba por fatiga. Añadámosle una neurona \nt{GABA} que se excita con una señal de “reinicio” e inhibe al grupo. La inhibición baja la curva $f(wr+I)$ de la fig.~\ref{fig:bistable}, el corte superior desaparece y el grupo se apaga, y se queda en el estado inferior cuando el reinicio termina. Ahora la memoria se escribe con una señal y se borra con otra, como un biestable con entradas de puesta a uno y de puesta a cero.
+
+Aún más elegante es unir dos de estos grupos con inhibición mutua, como en la fig.~\ref{fig:wta}, y dar a cada uno realimentación sobre sí mismo. Una señal en la entrada de uno de los grupos lleva la celda a su estado, y la celda recuerda la última decisión. Es el análogo directo de un cerrojo (latch) de dos elementos NOR conectados en cruz.
+
+\section{Estabilidad y ritmo}
+
+Queda el tercer mal de la red \nt{GLUT}: la avalancha. Tomemos un grupo de neuronas \nt{GLUT} con realimentación sobre sí mismo $w_{EE}$ y un grupo de neuronas \nt{GABA} a las que el primero excita con fuerza $w_{IE}$ y que inhiben al primero con fuerza $w_{EI}$. Para las frecuencias $E$ e $I$ obtenemos
+\begin{equation}
+\tau_E\frac{\dd E}{\dd t} = -E + w_{EE}E - w_{EI}I + h, \qquad
+\tau_I\frac{\dd I}{\dd t} = -I + w_{IE}E ,
+\label{eq:ei}
+\end{equation}
+donde $h$ es la entrada externa~\cite{WilsonCowan1972}. Sin inhibición, con $w_{EE}>1$, la actividad crece sin límite: cada espiga genera más de una espiga siguiente. Con inhibición, la frecuencia estacionaria
+\begin{equation}
+E^* \;=\; \frac{h}{1-w_{EE}+w_{EI}w_{IE}}
+\label{eq:eistar}
+\end{equation}
+es finita si el denominador es positivo. Pero no basta: el equilibrio además debe atraer. Del análisis lineal de~\eqref{eq:ei} salen dos condiciones.
+
+\begin{keyblock}
+\begin{proposition}[Condiciones de estabilidad]
+\label{prop:ei}
+El equilibrio~\eqref{eq:eistar} es estable si la inhibición es
+\begin{enumerate}
+\item[(i)] \emph{suficientemente fuerte}: $w_{EI}\,w_{IE} > w_{EE}-1$;
+\item[(ii)] \emph{suficientemente rápida}: $\tau_I < \tau_E/(w_{EE}-1)$.
+\end{enumerate}
+Si se viola (i), la actividad crece en avalancha. Si se cumple (i) pero se viola (ii), la inhibición llega tarde y la actividad empieza a oscilar.
+\end{proposition}
+\end{keyblock}
+
+La condición~(i) es el determinante de la matriz del sistema~\eqref{eq:ei}; la condición~(ii), su traza. El sentido de la segunda lo entiende cualquiera que haya ajustado un regulador: una realimentación retrasada no amortigua la desviación, sino que la amplifica.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth]
+\draw[->,gray!70!black] (0,0) -- (10.9,0) node[below left,black] {\small $t$, ms};
+\draw[->,gray!70!black] (0,0) -- (0,3.3) node[left,black] {\small $E$};
+\foreach \t in {0,50,100,150}{\draw[gray!70!black] (\t*0.07,0.06) -- (\t*0.07,-0.06) node[below,font=\scriptsize] {\t};}
+\input{figures/ei_traces}
+\node[font=\small,gray!40!black,anchor=west] at (0.9,3.15) {sin inhibición: avalancha};
+\node[font=\small,blue!60!black,anchor=west] at (7.4,1.25) {inhibición rápida};
+\node[font=\small,red!70!black,anchor=west] at (7.4,2.55) {inhibición lenta};
+\end{tikzpicture}
+\caption{Frecuencia de un grupo \nt{GLUT} con realimentación $w_{EE}=1.5$, $\tau_E=10\ms$, tras conectar la entrada. Sin inhibición (discontinua), la actividad crece sin límite. Con una inhibición de fuerza $w_{EI}w_{IE}=2$ y $\tau_I=2\ms$ (curva azul), se estabiliza en el nivel $E^*=h/(1-1.5+2)=0.67h$. Con la misma inhibición, pero lenta, $\tau_I=30\ms$ (curva roja), la actividad oscila.}
+\label{fig:ei}
+\end{figure}
+
+Se considera que la corteza funciona precisamente en este régimen: su propia realimentación es lo bastante fuerte como para caer en avalancha sin inhibición, y solo una inhibición rápida la mantiene en su punto de trabajo~\cite{Tsodyks1997isn}.
+
+Este régimen tiene una firma paradójica por la que se lo puede reconocer desde fuera~\cite{Tsodyks1997isn}. Añadamos a~\eqref{eq:ei} una entrada externa $h_I$ directamente al grupo \nt{GABA}. Las frecuencias estacionarias pasan a ser
+\begin{equation}
+E^* \;=\; \frac{h-w_{EI}\,h_I}{D},\qquad
+I^* \;=\; \frac{w_{IE}\,h+(1-w_{EE})\,h_I}{D},\qquad
+D \;=\; 1-w_{EE}+w_{EI}w_{IE} .
+\label{eq:isn}
+\end{equation}
+Si $w_{EE}>1$, el coeficiente de $h_I$ en la segunda fórmula es negativo: si se empuja a las neuronas \nt{GABA}, su frecuencia \emph{baja}. La causa está en el lazo. La inhibición adicional atenúa al grupo \nt{GLUT}, este excita menos a las neuronas \nt{GABA}, y ellas pierden más de lo que recibieron. Con los números de la fig.~\ref{fig:ei} ($w_{EE}=1.5$, $w_{EI}w_{IE}=2$, $D=1.5$), cada unidad de entrada añadida reduce $I^*$ en un tercio de unidad. Esta firma se encontró en la corteza: cuando la respuesta de las neuronas de la corteza visual se suprime con un estímulo circundante, la corriente inhibidora que reciben no crece, sino que cae junto con la excitadora~\cite{Ozeki2009}. Más tarde se encontró la misma firma en distintas áreas y capas de la corteza~\cite{Sanzeni2020}.
+
+Las oscilaciones cuando se viola la condición~(ii) también se dan en el cerebro. El lazo “\nt{GLUT} excita a \nt{GABA}, \nt{GABA} inhibe a \nt{GLUT}” con un retardo de unos pocos milisegundos genera un ritmo con un período del orden de $12$--$50\ms$ (frecuencia de $20$--$80$\,Hz), y estos ritmos rápidos de la corteza son bien conocidos~\cite{Cardin2009,Buzsaki2012}. No es el reloj de una computadora: el ritmo es local y solo surge cuando la red está activa. Pero durante unos cuantos ciclos divide el tiempo en ventanas en las que las neuronas pueden dispararse.
+
+\section{Balance}
+
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{>{\raggedright}p{3.3cm}>{\raggedright}p{4.4cm}>{\raggedright\arraybackslash}p{4.4cm}}
+\toprule
+& solo \nt{GLUT} & \nt{GLUT} + \nt{GABA} \\
+\midrule
+NOT & solo mediante sensores de “encendido-apagado” & veto $a\wedge\bar b$; NOT con actividad de fondo \\
+cables por bit & dos & uno \\
+dirección del movimiento & no & veto con retardo \\
+control de ganancia & no & división: derivación junto con ruido de fondo \\
+ventana de coincidencia & $\sim\tau$ & la estrecha la inhibición \\
+elegir uno entre muchos & no & inhibición mutua, $\beta>1$ \\
+reinicio de la memoria & solo por fatiga & con una señal a través de \nt{GABA} \\
+estabilidad & solo por fatiga & realimentación negativa rápida \\
+ritmo & no hace falta & surge con inhibición lenta \\
+\bottomrule
+\end{tabular}
+\caption{Lo que \nt{GABA} añade a una red de neuronas \nt{GLUT}.}
+\label{tab:gaba}
+\end{table}
+
+\nt{GABA} casi no añade a la red \emph{cálculos} nuevos (todo esto podía calcularse también con sensores de dos cables), sino \emph{control} (tabla~\ref{tab:gaba}): elección, reinicio, control de ganancia y estabilidad. En el cerebro, la excitación lleva los datos, y la inhibición decide qué datos pasan, cuándo y con qué volumen. Para una de cada cuatro o cinco neuronas de la corteza, es una división del trabajo muy razonable.
+
+\section{Ejercicios}
+
+\begin{exercise}[\lvlA]
+\label{ex:03:1}
+\emph{La derivación en números.} $E_E=70\mV$. Con~\eqref{eq:shunt}, halle $V_\infty$ para $g_E=g_L$ y $4g_L$, sin inhibición y con derivación $g_I=2g_L$. ¿Qué $V_\infty$ con $g_E=4g_L$ daría una resta que con $g_E=g_L$ quitara lo mismo que la derivación? ¿Cuántas veces estrecha la derivación la ventana de coincidencia?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:03:2}
+\emph{Deducción de las condiciones de estabilidad.} Halle la traza y el determinante de la matriz del sistema lineal~\eqref{eq:ei} y deduzca de ellos las dos condiciones de la proposición~\ref{prop:ei}. En el límite de la condición~(ii), el equilibrio pierde la estabilidad de forma oscilatoria. Halle el período de estas oscilaciones con los números de la fig.~\ref{fig:ei}.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:03:3}
+\emph{Ritmo a partir de un retardo.} Sustituyamos la inhibición lenta del modelo~\eqref{eq:ei} por una rápida con retardo $d$: $\tau_E\dot E=-E(t)-GE(t-d)+h$. Con $\tau_E=10\ms$, halle el menor retardo $d_c$ que produce oscilaciones y su período para $G=2$ y $G=5$. ¿Caen en los ritmos rápidos de la corteza, $12$--$50\ms$, a diferencia del ejercicio~\ref{ex:03:2}?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:03:4}
+\emph{Simulación: elección con memoria.} Integre~\eqref{eq:wta} con $\beta=2$, $\tau=1$. (a)~Con $I_1=1$, suba lentamente $I_2$ de $0$ a $3$ y bájela de nuevo: ¿con qué $I_2$ conmuta la red? (b)~¿Cuánto crece el tiempo de decisión desde el silencio cuando la diferencia de entradas $\varepsilon$ se reduce diez veces?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:03:5}
+\emph{Diseño: detector para una banda de velocidades.} El detector de la fig.~\ref{fig:direction} debe callar en el movimiento de $A$ hacia $B$ con tiempos de recorrido de $5$--$20\ms$. Un intermediario \nt{GABA} con retardo $d_k$ veta a $Y$ en el intervalo $[d_k,\,d_k+5\ms]$ tras una espiga de $A$; la excitación de $B$ llega de inmediato. ¿Cuántos intermediarios hacen falta y con qué retardos?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:03:6}
+\emph{Vetos y fondo.} ¿Cuántas neuronas requiere la paridad $x\oplus y\oplus z$ en el esquema general “intermediario \nt{GABA} por entrada, veto por cada combinación con $f=1$, OR común”? Constrúyala con dos neuronas, \nt{GABA} y \nt{GLUT}, que reciben las entradas directamente, indicando pesos y umbrales.
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:03:7}
+\emph{Diseño: elegir entre cien.} Cada uno de $100$ grupos \nt{GLUT} debe inhibir por igual a todos los demás, pero no a sí mismo. Intermediarios \nt{GABA} lineales se excitan con los grupos y los inhiben; los grupos pueden excitarse entre sí, pero no a sí mismos. ¿Cuál es el menor número de intermediarios? ¿Y si no hay ninguna conexión excitadora directa?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:03:8}
+\emph{Investigación: cuándo la inhibición es paradójica.} En el modelo de la fig.~\ref{fig:ei} ($w_{EI}=2$, $w_{IE}=1$), el grupo \nt{GLUT} recibe la función de transferencia $f(u)=[u]_+^2$, y el grupo \nt{GABA} sigue siendo lineal. ¿Por encima de qué entrada $h_c$ un aporte adicional al grupo \nt{GABA} reduce su propia frecuencia? Compruébelo con una simulación.
+\end{exercise}

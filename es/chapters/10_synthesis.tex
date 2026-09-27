@@ -1,0 +1,230 @@
+\chapter{La máquina completa}
+\chaptermark{La máquina completa}
+\label{sec:synthesis}
+
+\section{Lo que hemos ensamblado}
+
+Tomamos uno por uno los tipos de neuronas de la tabla~\ref{tab:types} y nos preguntamos qué aporta cada uno a la máquina de cálculo. Las reglas fueron siempre las mismas: solo lo que existe en un organismo vivo y ningún reloj común. Ahora juntamos las piezas en una sola máquina y vemos cómo trabajan juntas.
+
+La imagen del capítulo~\ref{sec:neurontypes} se confirmó y se volvió más precisa. Una enorme red direccionada de neuronas \nt{GLUT} transporta los datos. Las neuronas \nt{GABA} controlan el flujo de esos datos. Y por encima de la red hay cuatro canales de difusión, cada uno con su propia perilla: \nt{DOPA} indica qué cambios de peso conservar, \nt{SERO} mantiene el nivel general y, según una hipótesis, el horizonte de planificación, \nt{NORA} elige entre buscar y decidir, y \nt{ACET}, entre escribir y leer (fig.~\ref{fig:machine}).
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  blk/.style={draw,very thick,rounded corners=3pt,align=center,font=\small},
+  reg/.style={draw,very thick,double,double distance=1.2pt,circle,minimum size=1.25cm,inner sep=0pt,font=\scriptsize,fill=orange!15},
+  bc/.style={->,thick,densely dashed,orange!85!black}]
+% sensors, bus, actions
+\node[blk,fill=green!8,text width=1.7cm] (S) at (0.9,0) {sensores\\\scriptsize enc./apag.};
+\draw[very thick,rounded corners=4pt,fill=blue!5] (2.6,-1.35) rectangle (9.0,1.35);
+\node[font=\small] at (5.8,0.95) {bus \nt{GLUT}: datos};
+\node[font=\scriptsize,align=center] at (4.3,0.25) {coincidencias, retardos,\\lógica (cap.~\ref{sec:glutcomputer})};
+\node[font=\scriptsize,align=center] at (7.4,0.25) {memoria, código\\(caps.~\ref{sec:code}, \ref{sec:acet})};
+\draw[thick,red!70!black,fill=red!8,rounded corners=2pt] (2.8,-1.15) rectangle (8.8,-0.55);
+\node[font=\scriptsize,red!60!black] at (5.8,-0.85) {\nt{GABA} (cap.~\ref{sec:gaba}): veto, elegir, dividir, ritmo};
+\node[blk,fill=blue!5,text width=2.0cm] (A) at (10.9,0) {elección\\de acción};
+\draw[->,very thick] (S) -- (2.6,0);
+\draw[->,very thick] (9.0,0) -- (A);
+\draw[->,very thick] (A) -- (12.6,0) node[right,font=\small] {músculos};
+\pic[scale=1.1] at (13.2,-0.5) {spring};
+\pic[scale=1.15] at (0.4,0.85) {eyepic};
+\pic[scale=1.05] at (1.35,0.85) {speaker};
+% registers
+\node[reg] (D) at (3.4,3.2) {\nt{DOPA}};
+\node[reg] (C) at (5.6,3.2) {\nt{SERO}};
+\node[reg] (N) at (7.8,3.2) {\nt{NORA}};
+\node[reg] (H) at (10.0,3.2) {\nt{ACET}};
+\node[font=\scriptsize,align=center,above=1pt] at (D.north) {error $\delta$};
+\node[font=\scriptsize,align=center,above=1pt] at (C.north) {nivel, $\tau_\gamma$};
+\node[font=\scriptsize,align=center,above=1pt] at (N.north) {ganancia $g$};
+\node[font=\scriptsize,align=center,above=1pt] at (H.north) {escritura $a$};
+\draw[bc] (D.south) -- (3.4,1.35);
+\draw[bc] (C.south) -- (5.6,1.35);
+\draw[bc] (N.south) -- (7.8,1.35);
+\draw[bc] (H.south) -- (10.0,2.1) -- (8.8,1.35);
+\draw[bc] (H.south east) to[bend left=20] (A.north east);
+\draw[->,thick] (2.85,1.35) -- (2.85,2.75) -- (D.west) node[pos=0.25,left,font=\scriptsize] {$V$};
+\draw[->,thick,green!45!black] (0.4,3.2) node[left,black,font=\small] {premio $r$} -- (2.2,3.2) -- (D.west);
+\pic[scale=0.9] at (-0.45,3.7) {juice};
+\draw[->,thick,densely dotted,gray!50!black] ([yshift=0.45cm]D.north) to[bend left=18] node[above,font=\scriptsize,black] {sorpresa} ([yshift=0.45cm]N.north);
+\end{tikzpicture}
+\caption{La máquina completa. El bus \nt{GLUT} lleva los datos de los sensores a la elección de la acción; \nt{GABA} controla el flujo dentro de él. Los círculos dobles son los canales de difusión; las flechas discontinuas, el envío de sus señales a toda la red, cada uno con su perilla. \nt{DOPA} recibe la recompensa $r$ y la expectativa $V$ del crítico que está dentro del bus (cap.~\ref{sec:dofa}); la flecha punteada es la hipótesis de que \nt{NORA} detecta la sorpresa por errores inusualmente grandes (cap.~\ref{sec:nora}).}
+\label{fig:machine}
+\end{figure}
+
+\section{Una fórmula para todas las perillas}
+
+Las perillas pueden reunirse en una sola fórmula esquemática. No es un modelo nuevo, sino un resumen de los modelos de los capítulos~\ref{sec:glutcomputer}--\ref{sec:acet}: cada símbolo viene de su capítulo.
+\begin{empheq}[box=\keybox]{equation}
+\begin{aligned}
+\tau\,\frac{\dd r_i}{\dd t} \;&=\; -r_i + F\Bigl(g\,\Bigl[\tfrac{1+a}{2}\,x_i + (1-a)\sum_j W_{ij}\,r_j - \sum_k M_{ik}\,q_k - \theta\Bigr]\Bigr),\\
+\frac{\dd W_{ij}}{\dd t} \;&=\; \eta\,a\,\delta(t)\,e_{ij}(t),
+\qquad \tau_e\,\frac{\dd e_{ij}}{\dd t} = -e_{ij} + r_i\,r_j,
+\qquad \delta = r + \frac{\dd V}{\dd t} - \frac{V}{\tau_\gamma} .
+\end{aligned}
+\label{eq:machine}
+\end{empheq}
+Aquí $r_i$ son las frecuencias de las neuronas \nt{GLUT}, $x_i$ es la entrada de los sensores, $W_{ij}\ge0$ son sus pesos mutuos (capítulo~\ref{sec:glutcomputer}); $q_k$ son las frecuencias de las neuronas \nt{GABA} y $M_{ik}\ge0$, la fuerza de su inhibición (capítulo~\ref{sec:gaba}); $e_{ij}$ es la traza de elegibilidad y $\delta$, el error de \nt{DOPA} (capítulo~\ref{sec:dofa}); $\tau_\gamma$ es el horizonte, fijado según la hipótesis por \nt{SERO}; $g$ es la ganancia de \nt{NORA} (capítulo~\ref{sec:nora}); $a$ es el nivel de \nt{ACET} (capítulo~\ref{sec:acet}).
+
+Observe lo que \emph{no} hay en~\eqref{eq:machine}. No hay ciclo de reloj: todo está escrito con ecuaciones diferenciales, y cada neurona cambia por sí sola. No hay una memoria aparte: recuerdan los mismos $W_{ij}$ por los que pasa el cálculo y la misma actividad $r_i$. No hay correcciones personales para la inmensa mayoría de las sinapsis: su aprendizaje es el producto de una traza local por un único número común; un cable de error propio para cada salida existe solo en el circuito que enseña los movimientos (capítulo~\ref{sec:motorlearning}). Y las señales de control son apenas de cuatro clases, $\delta$, $\tau_\gamma$, $g$ y $a$, para ochenta mil millones de neuronas. Cada una de ellas no es en realidad un solo número, sino un pequeño haz de líneas paralelas (proposición~\ref{prop:bundle}), pero las líneas de un haz se cuentan con los dedos.
+
+\begin{keyblock}
+\begin{proposition}[Arquitectura]
+\label{prop:architecture}
+La máquina del cerebro, hasta donde hoy la entendemos, puede describirse con tres capas. Los datos viajan por el bus de direcciones \nt{GLUT}. Las neuronas \nt{GABA} direccionadas guían, limitan y normalizan el flujo de datos. El modo de trabajo lo fijan unos pocos canales de difusión, cada uno un pequeño haz de líneas paralelas comunes a grandes zonas de la red. Las dos primeras capas están firmemente establecidas; el reparto de papeles entre los canales de difusión es sobre todo una hipótesis.
+\end{proposition}
+\end{keyblock}
+
+\section{Todos los tipos en una tabla}
+
+La tabla~\ref{tab:synthesis} reúne todos los tipos de neuronas del libro. Los cuatro tipos que no tuvieron capítulo propio ocupan en ella una fila cada uno; dos de ellos encontraron su papel en los capítulos sobre las salidas de la máquina: \nt{GLYC} en los lazos de la médula espinal (capítulo~\ref{sec:muscles}) y \nt{ADRE} en la salida química (capítulo~\ref{sec:chemoutput}). El papel de los otros dos en el cálculo es simple o desconocido. Las sustancias que no definen un tipo de neurona están reunidas en el apéndice~\ref{sec:othermediators}.
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{1.3cm}>{\raggedright}p{1.0cm}>{\raggedright}p{3.9cm}>{\raggedright}p{1.5cm}>{\raggedright}p{1.8cm}>{\raggedright\arraybackslash}p{3.8cm}}
+\toprule
+Tipo & Cap. & Qué calcula & Tiempo & Bus & Qué se sabe \\
+\midrule
+\nt{GLUT} & \ref{sec:glutcomputer}, \ref{sec:code}, \ref{sec:sensors}, \ref{sec:motorlearning}, \ref{sec:dendrites} & datos: coincidencias, retardos, lógica, memoria, secuencias & ms & de direcciones & establecido \\
+\nt{GABA} & \ref{sec:gaba}, \ref{sec:code}, \ref{sec:pain}, \ref{sec:motorlearning} & control del flujo: veto, selección, división, estabilidad, ritmo; compuerta del dolor & ms & de direcciones & establecido; la división de la frecuencia, junto con el ruido de fondo \\
+\nt{SERO} & \ref{sec:serocomputer}, \ref{sec:pain}, \ref{sec:sleep} & regulador de nivel, suavizado; horizonte $\tau_\gamma$; volumen del dolor; modos del sueño & segundos & volumen & autoinhibición medida; horizonte: hipótesis \\
+\nt{DOPA} & \ref{sec:dofa}, \ref{sec:dofaalt} & error de predicción $\delta$; nivel lento: precio del tiempo & $0.1$\,s y minutos & difusión & $\delta$ medido; extensiones: cap.~\ref{sec:dofaalt} \\
+\nt{NORA} & \ref{sec:nora}, \ref{sec:pain}, \ref{sec:chemoutput}, \ref{sec:sleep} & ganancia $g$: buscar o decidir; sorpresa; “acelerador” de los órganos & segundos & difusión & aumento de la relación señal/ruido medido; papel en la búsqueda: hipótesis \\
+\nt{ACET} & \ref{sec:acet}, \ref{sec:muscles}, \ref{sec:chemoutput}, \ref{sec:sleep} & escritura o lectura; velocidad de aprendizaje; salida al músculo; “freno” de los órganos & segundos & ambos & tres efectos medidos; cambio de modo: hipótesis \\
+\nt{GLYC} & \ref{sec:muscles}, \ref{sec:pain} & peso negativo en la médula espinal y el tronco: veto del músculo antagonista & ms & de direcciones & establecido \\
+\nt{HIST} & --- & señal global de “mantente despierto” & lento & difusión & papel en el cálculo no estudiado \\
+\nt{ADRE} & \ref{sec:chemoutput} & “acelerador” de todo el cuerpo a través de la sangre; en el cerebro, desconocido & lento & difusión & establecido fuera del cerebro; papel en el cerebro incierto \\
+\nt{ASPA} & --- & peso positivo débil & ms & de direcciones & papel discutido \\
+\bottomrule
+\end{tabular}
+\caption{Todos los tipos de neuronas del libro: qué calcula cada uno y cuánto se sabe de ello.}
+\label{tab:synthesis}
+\end{table}
+
+\section{Cómo trabajan juntas las perillas}
+
+Hasta ahora cada capítulo giraba una sola perilla. Sigamos ahora un solo suceso a través de toda la máquina (fig.~\ref{fig:timeline}). El animal aprendió hace tiempo que la acción $A$ trae jugo. En algún momento el mundo cambia: $A$ deja de traer jugo, y ahora lo trae la acción $B$, que el animal casi nunca prueba.
+
+\emph{Error.} El jugo tras $A$ no llegó, y las neuronas \nt{DOPA} responden con una caída, $\delta<0$ según la fórmula del error~\eqref{eq:ctd}. Las sinapsis que acaban de elegir $A$ llevan una traza y se debilitan.
+
+\emph{Sorpresa.} Una caída es un accidente corriente. Pero las caídas se repiten, y los errores se vuelven mayores de lo habitual. Según la hipótesis del capítulo~\ref{sec:nora}, esta es precisamente la señal de \nt{NORA}: el mundo ha cambiado. La ganancia $g$ baja, la elección se vuelve blanda y el ruido lleva más a menudo a probar $B$.
+
+\emph{Escritura.} Según la hipótesis del capítulo~\ref{sec:acet}, tras el cambio \nt{ACET} sube y pone la red en modo de escritura: las conexiones internas que guardan el viejo hábito se debilitan, la entrada de los sensores se refuerza y los pesos cambian con facilidad.
+
+\emph{Nuevo hábito.} Probar $B$ trae un jugo que nadie esperaba: un pico, $\delta>0$, y las sinapsis que eligieron $B$ se refuerzan. Unos cuantos intentos así, y la expectativa $V$ alcanza al nuevo mundo: los errores vuelven a ser pequeños.
+
+\emph{Regreso.} La sorpresa pasó, \nt{NORA} devuelve la ganancia alta y la elección vuelve a ser firme; \nt{ACET} baja y la red, en modo de lectura, usa lo aprendido. Durante todo este tiempo \nt{SERO}, según la hipótesis, fija el horizonte $\tau_\gamma$: hasta qué punto vale la pena esperar un jugo lejano.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=1.1cm,y=0.95cm]
+\foreach \y/\lab in {4/{$\delta$ (\nt{DOPA})},3/{$g$ (\nt{NORA})},2/{$a$ (\nt{ACET})},1/{elección de $B$}}{
+  \draw[gray!60!black] (0,\y-0.35) -- (10,\y-0.35);
+  \node[left,font=\scriptsize] at (0,\y) {\lab};}
+\draw[densely dashed,gray!60!black] (2,0.4) -- (2,4.55) node[above,font=\scriptsize,black] {el mundo cambió};
+\draw[densely dashed,gray!60!black] (5,0.4) -- (5,4.55) node[above,font=\scriptsize,black] {primer jugo por $B$};
+\pic[scale=0.85] at (2,5.25) {nojuice};
+\pic[scale=0.85] at (5,5.25) {juice};
+% delta: dips after the change, burst at the first juice for B, then back to zero
+\draw[thick,red!70!black] (0,3.65) -- (2.3,3.65) -- (2.3,3.3) -- (2.5,3.3) -- (2.5,3.65) -- (3.2,3.65) -- (3.2,3.3) -- (3.4,3.3) -- (3.4,3.65) -- (4.1,3.65) -- (4.1,3.35) -- (4.3,3.35) -- (4.3,3.65) -- (5.0,3.65) -- (5.0,4.35) -- (5.2,4.35) -- (5.2,3.65) -- (5.8,3.65) -- (5.8,4.1) -- (6.0,4.1) -- (6.0,3.65) -- (6.6,3.65) -- (6.6,3.85) -- (6.8,3.85) -- (6.8,3.65) -- (10,3.65);
+% gain: high, drops after surprise, recovers
+\draw[thick,blue!60!black] (0,3.2) -- (3.0,3.2) -- (3.4,2.75) -- (5.8,2.75) -- (7.2,3.2) -- (10,3.2);
+% ACh: low, rises after the change, falls after learning
+\draw[thick,green!45!black] (0,1.75) -- (2.8,1.75) -- (3.3,2.25) -- (6.8,2.25) -- (7.8,1.75) -- (10,1.75);
+% choice of B
+\draw[thick,black] (0,0.7) -- (3.0,0.7) plot[domain=3:10,samples=40] (\x,{0.7+0.6/(1+exp(-(\x-5.3)*1.8))});
+\draw[->,gray!70!black] (0,0.2) -- (10.2,0.2) node[below left,font=\scriptsize,black] {tiempo};
+\end{tikzpicture}
+\caption{Un solo suceso seguido a través de toda la máquina. Es un esquema cualitativo basado en los modelos e hipótesis de los capítulos~\ref{sec:dofa}--\ref{sec:acet}, no el resultado de un cálculo. Tras el cambio, \nt{DOPA} responde con caídas; según la hipótesis, las caídas repetidas elevan la señal de sorpresa, \nt{NORA} reduce la ganancia y \nt{ACET} activa la escritura; el primer jugo por $B$ produce un pico, la elección pasa a $B$ y las perillas vuelven a su sitio.}
+\label{fig:timeline}
+\end{figure}
+
+Note que ninguna perilla sabe lo que hacen las demás. Cada una responde a sus propias señales (el error, su tamaño inusual, la incertidumbre) y el orden de las acciones surge por sí solo, como en un circuito asíncrono en el que cada bloque se dispara cuando sus entradas están listas. Hasta donde sabemos, este trabajo coordinado en su conjunto todavía no se ha comprobado: las perillas se han medido por separado, pero su trabajo conjunto es una hipótesis.
+
+\section{En qué se diferencia esta máquina de una computadora}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{2.2cm}>{\raggedright}p{4.2cm}>{\raggedright\arraybackslash}p{6.6cm}}
+\toprule
+& Computadora común & Cerebro \\
+\midrule
+tiempo & un reloj común, cerca de un gigahercio & no hay reloj; cada neurona cambia por sí sola, las ventanas las fijan los sucesos y los ritmos locales (caps.~\ref{sec:glutcomputer}, \ref{sec:gaba}, \ref{sec:code}) \\
+elementos & compuertas binarias fiables & elementos analógicos de umbral; la sinapsis pierde la mayoría de las espigas (cap.~\ref{sec:code}) \\
+signo de la conexión & cualquiera & lo fija la neurona emisora (cap.~\ref{sec:neurontypes}) \\
+memoria & separada del procesador & en las mismas conexiones que el cálculo y en la actividad autosostenida (caps.~\ref{sec:glutcomputer}, \ref{sec:acet}) \\
+aprendizaje & retropropagación del error & reglas locales, un único número de difusión $\delta$ (cap.~\ref{sec:dofa}) y cables de error hacia las salidas del circuito de movimientos (cap.~\ref{sec:motorlearning}) \\
+control & registros y bus de instrucciones & cuatro canales de difusión, cada uno un haz de unas pocas líneas (caps.~\ref{sec:serocomputer}, \ref{sec:dofa}--\ref{sec:acet}) \\
+energía & decenas a cientos de vatios por procesador & unos $20$ vatios para todo el cerebro, en promedio cerca de una espiga por segundo por neurona (cap.~\ref{sec:code}) \\
+\bottomrule
+\end{tabular}
+\caption{El cerebro y una computadora común.}
+\label{tab:computer}
+\end{table}
+
+La tabla~\ref{tab:computer} resume las diferencias principales. Ninguna de ellas es un defecto que la naturaleza no alcanzó a corregir, sino parte de una misma solución. Sin un reloj común hacen falta sensores de “encendido y apagado” y detectores de coincidencias. Los elementos poco fiables necesitan la redundancia de muchas neuronas. La memoria combinada con el cálculo necesita \nt{ACET}, para que la escritura no estropee la lectura. El aprendizaje sin cables de retorno necesita \nt{DOPA} y ruido. Y el límite energético de una espiga por segundo obliga a que todo el lenguaje sea austero y gaste las espigas en noticias.
+
+\section{Lo que no sabemos}
+
+Lo más honesto es cerrar este resumen con una lista de lo que no sabemos. Cada punto es un problema para un ingeniero.
+
+\emph{El código.} Conocemos la capacidad del canal de espigas y sabemos que el receptor elige qué parte del mensaje leer (capítulo~\ref{sec:code}). Pero no se sabe cuánto aprovecha la corteza el tiempo exacto de las espigas ni si las neuronas tienen “palabras”.
+
+\emph{Aprendizaje a través de muchas capas.} Una señal de difusión enseña despacio, y más despacio con cada neurona que influye en el resultado (proposición~\ref{prop:broadcastcost}). No se sabe entonces cómo ajusta la corteza miles de millones de pesos en circuitos de muchas capas; hay modelos en los que el error entre capas lo reparten las ráfagas de espigas~\cite{Payeur2021}. Quizá parte de la respuesta esté en los cálculos dentro de las ramas de la propia neurona, donde una neurona se comporta como una pequeña red de muchas capas: para reproducir la respuesta del modelo de una sola neurona cortical, una red artificial necesita de cinco a ocho capas~\cite{Beniaguev2021}, y las ramas de las neuronas humanas llegan a calcular incluso el O exclusivo~\cite{Gidon2020}. Otro candidato es el autoaprendizaje: si la corteza aprende a predecir sus propias entradas, el error surge en el lugar, en cada capa, y no hace falta una señal común (capítulo~\ref{sec:dofa})~\cite{Keller2018}.
+
+\emph{Qué transmiten en realidad los canales de difusión.} Para \nt{DOPA} hay una imagen estándar y seis extensiones (capítulo~\ref{sec:dofaalt}); para \nt{NORA} y \nt{ACET}, hipótesis verosímiles (capítulos~\ref{sec:nora}, \ref{sec:acet}); para \nt{SERO}, sobre todo conjeturas.
+
+\emph{Coordinación en el tiempo.} Vimos cómo calcular una función, medir el tiempo desde un suceso y cortar el flujo en ventanas con un ritmo local. Pero cómo una red enorme sin reloj común coordina el trabajo de regiones lejanas se entiende solo en parte.
+
+\emph{Energía.} Veinte vatios para todo. Entendemos por qué el código debe ser disperso (proposición~\ref{prop:economy}), pero nadie sabe aún construir una máquina que haga lo mismo con la misma potencia~\cite{MehonicKenyon2022}.
+
+El cerebro es una máquina de cálculo que no armó un ingeniero, pero sí según leyes que cualquier ingeniero reconoce: circuitos RC, umbrales, realimentación, filtros, buses y registros de difusión. Su esquema lo hemos leído solo en parte. Terminarán de leerlo quienes saben leer esquemas.
+
+\section{Qué sigue en el libro}
+
+Este capítulo reunió el núcleo de cálculo de la máquina. Los demás capítulos van más allá. Los capítulos~\ref{sec:sensors} y~\ref{sec:recognition} tratan de las entradas: cómo los sensores convierten la luz, el sonido y las moléculas en espigas y cómo la máquina reconoce objetos en ellas. Los capítulos~\ref{sec:muscles}--\ref{sec:chemoutput} tratan de las salidas y de lo que las sostiene: los músculos, el dolor como señal de alarma, el aprendizaje de movimientos con cables de error propios y la lenta salida química al cuerpo. El capítulo~\ref{sec:debugging} trata de cómo se depura la máquina desde fuera, incluso con interfaces cerebro-computadora. Los capítulos~\ref{sec:eetypes} y~\ref{sec:dendrites} vuelven a clasificar las neuronas, ahora por su función eléctrica y por el número de entradas. El capítulo~\ref{sec:sleep} trata de lo que hace la máquina cuando está desconectada del mundo, y los capítulos~\ref{sec:livingmachine} y~\ref{sec:dishbrain}, de máquinas armadas con neuronas vivas sobre un chip.
+
+\section{Ejercicios}
+
+Los ejercicios de este capítulo combinan resultados de distintos capítulos: cada uno se apoya en al menos dos de ellos.
+
+\begin{exercise}[\lvlA]
+\label{ex:10:1}
+\emph{Bus y registros.} Los cuatro canales de difusión son haces de unas cinco líneas (proposición~\ref{prop:bundle}); cada línea cambia una vez por segundo y se distingue en cuatro niveles. ¿Cuántos años necesitaría el control para transmitir lo que el bus \nt{GLUT} ($8.6\cdot10^{10}$ neuronas con la frecuencia~\eqref{eq:energy}, precisión de $1\ms$ según~\eqref{eq:spikeentropy}) transmite en un segundo?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:10:2}
+\emph{Dos perillas en un mismo lazo.} En el lazo~\eqref{eq:ei} las perillas de~\eqref{eq:machine} actúan sobre la excitación: $\tau_E\dot E=-E+g[(1-a)w_{EE}E-w_{EI}I+h]$; sobre \nt{GABA} no actúan. Con los números de la fig.~\ref{fig:ei}, una ráfaga de \nt{NORA} sube $g$ a $6$. ¿Con qué $a$ mínimo el lazo es estable? ¿Se pueden girar las perillas de \nt{NORA} y \nt{ACET} de forma independiente?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:10:3}
+\emph{De dónde sale el costo de la difusión.} Las salidas de $N$ neuronas son $y_k=f(u_k)+\xi_k$ con ruido gaussiano independiente de varianza $\sigma^2$; $R\approx R_0+\sum_kR'_k\xi_k$ con $R'_k$ iguales, y \nt{DOPA} difunde $\delta=R-R_0$. Halle la relación señal/ruido de la corrección $\delta\,\xi_jx_j$ en un intento. ¿Cómo crece con $N$ el número de intentos?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:10:4}
+\emph{Asociar un sonido y un destello.} El sonido llega al bus a los $5\ms$; el destello, a los $30\ms$ más la latencia de la primera espiga~\eqref{eq:latency} ($\tau=10\ms$, $U$ de $1.2\theta$ a $4\theta$); el fondo en cada entrada es de $5$ espigas por segundo. Elija el retardo de la línea auditiva y la ventana de coincidencia mínima para todos los contrastes. ¿Cuántas asociaciones falsas por segundo dará el fondo?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:10:5}
+\emph{Simulación: quién nota el cambio.} El crítico ve $y=s+\text{ruido}$ ($R=1$); con probabilidad $1/200$, $s$ salta a un nuevo valor de varianza $J^2=4$. Simule un filtro de Kalman con $q=0$ que eleva $P$ a $J^2$ cuando $E\leftarrow0.9E+\delta^2/(P+R)$ supera $20$. ¿Cuánto menor es su error que con el mejor $\alpha$ constante?
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:10:6}
+\emph{Cuántos intentos para cambiar un hábito.} La red aprendió $Q_A=0.8$, $Q_B=0.2$ y elige según~\eqref{eq:softmax}, $\sigma=1$, $g=8$. Ahora $A$ da jugo con probabilidad $0.2$; $Q_A\leftarrow Q_A+\alpha(r-Q_A)$, y $Q_B$ no cambia. ¿Tras cuántas elecciones de $A$ la probabilidad de elegir $A$ bajará a $0.6$ con $\alpha=0.1$ y con $0.5$? ¿Y si \nt{NORA} baja $g$ a $2$?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:10:7}
+\emph{Un haz en lugar de un cable.} Las salidas son $y_k=w_k+\xi_k$, la recompensa $R=-\sum_ky_k^2$; una línea del haz envía a un grupo de $G$ neuronas el error de sus salidas, $w_k\leftarrow w_k+\eta\,\delta_l\xi_k$. Muestre que con el mejor $\eta$ se necesitan $\approx(G+2)\ln(1/\varepsilon)$ intentos para llegar a $\sum w_k^2=\varepsilon\sum w_k^2(0)$. ¿Cuánto tarda en aprender, con $\varepsilon=0.01$, un circuito de $10^6$ neuronas con cinco líneas y un intento cada tres segundos?
+\end{exercise}

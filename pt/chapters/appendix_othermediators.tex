@@ -1,0 +1,46 @@
+\chapter{Substâncias que não definem o tipo do neurônio}
+\label{sec:othermediators}
+
+No capítulo~\ref{sec:neurontypes} classificamos os neurônios pelo neurotransmissor principal e obtivemos dez tipos (tabela~\ref{tab:types}). Agora é hora de acrescentar as complicações. O neurônio não libera só o neurotransmissor principal, e no cérebro, além dos neurotransmissores principais, atuam outras substâncias. Elas mudam a forma como a rede transmite e armazena sinais.
+
+Além do barramento de endereços e do de difusão (seção~\ref{sec:buses}), há um terceiro: o \emph{canal reverso}. Algumas substâncias não são liberadas pelo remetente, e sim pelo \emph{destinatário}; elas atravessam a fenda de volta, até a saída do remetente, e mudam quanto neurotransmissor ele liberará da próxima vez. Em redes de comunicação, isso lembra a confirmação de recebimento que o remetente usa para ajustar sua transmissão. É justamente esse canal que os neurônios usam quando mudam os pesos de suas conexões: por ele a saída do remetente fica sabendo da atividade do destinatário, isto é, do segundo fator das regras de aprendizado do capítulo~\ref{sec:dofa}.
+
+A lista completa de neurotransmissores conhecidos é longa: mais de cem substâncias, a maioria cadeias curtas de proteína, os neuropeptídeos. Mas todas cabem em poucas classes, e dentro de cada classe as substâncias se comportam de modo parecido. As substâncias que nunca são o neurotransmissor principal estão reunidas na tabela~\ref{tab:othermediators}, com as mesmas três perguntas que um engenheiro faria: por qual barramento o sinal passa, se age rápido e qual é seu sinal habitual. Elas não definem o tipo do neurônio: são liberadas junto com o neurotransmissor principal, ou são liberadas por células que não são neurônios, ou seguem no sentido inverso.
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.12}
+\begin{tabular}{>{\raggedright}p{2.25cm}>{\raggedright}p{2.8cm}>{\raggedright}p{1.8cm}>{\raggedright}p{1.5cm}>{\centering}p{0.8cm}>{\raggedright\arraybackslash}p{4.3cm}}
+\toprule
+Classe & Substância & Barramento & Velocidade & Sinal & Papel no cálculo \\
+\midrule
+Aminoácidos & D-serina & local & lenta & E & segunda chave do receptor de glutamato: condição ``E'' \\
+\midrule
+Monoaminas & aminas-traço & difusão & lenta & $\pm$ & ajuste fino dos canais monoaminérgicos \\
+\midrule
+\multirow{2}{2.25cm}{Purinas}
+ & ATP & de endereços & rápida e lenta & $+$ & cotransmissor; sinal entre neurônios e glia \\
+ & adenosina & por volume & lenta & $-$ & acumula-se com a atividade: contador de carga~\cite{Dunwiddie2001} \\
+\midrule
+\multirow{8}{2.25cm}{Neuropeptídeos (mais de cem)}
+ & encefalinas, endorfinas, dinorfina & por volume & lenta & $-$ & supressão da transmissão \\
+ & substância P & por volume & lenta & $+$ & reforço lento \\
+ & neuropeptídeo Y & por volume & lenta & $-$ & inibição lenta \\
+ & somatostatina & por volume & lenta & $-$ & inibição lenta, acompanha o GABA \\
+ & peptídeo intestinal vasoativo (VIP) & por volume & lenta & $+$ & desinibição: inibição dos neurônios inibitórios \\
+ & colecistocinina & por volume & lenta & $\pm$ & acompanha o GABA em parte dos neurônios inibitórios \\
+ & orexina & difusão & lenta & $+$ & estabilizador do modo de vigília \\
+ & ocitocina, vasopressina & difusão & lenta & $\pm$ & ajustes globais do comportamento \\
+\midrule
+\multirow{2}{2.25cm}{Gases}
+ & óxido nítrico NO & reverso, por volume & lenta & $\pm$ & atravessa membranas; sinal reverso na mudança de pesos~\cite{Garthwaite2008} \\
+ & CO, H$_2$S & por volume & lenta & $\pm$ & papel pouco estudado \\
+\midrule
+Lipídios & endocanabinoides (anandamida, 2-AG) & reverso & lenta & $-$ & o destinatário reduz a liberação do remetente: realimentação sobre o peso~\cite{WilsonNicoll2001} \\
+\bottomrule
+\end{tabular}
+\caption{Substâncias que não definem o tipo do neurônio. \emph{Barramento}, \emph{velocidade} e \emph{sinal} como na tabela~\ref{tab:types}; além disso, barramento por volume: o neurotransmissor se espalha no espaço extracelular em torno do local de liberação; reverso: vai do destinatário de volta ao remetente; local: age perto do local de liberação. ``E'' é um sinal habilitador: sozinho não gera corrente, mas sem ele outra entrada não dispara, como a segunda entrada de uma porta lógica ``E''. Os neuropeptídeos quase sempre são liberados junto com o neurotransmissor principal e sobretudo em alta frequência de disparos~\cite{vandenPol2012}.}
+\label{tab:othermediators}
+\end{table}

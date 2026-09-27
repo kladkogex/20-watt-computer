@@ -1,0 +1,167 @@
+\chapter{Neuronas según el número de dendritas}
+\chaptermark{Número de dendritas}
+\label{sec:dendrites}
+
+\section{El número de entradas como parámetro del circuito}
+
+En el capítulo~\ref{sec:neurontypes} clasificamos las neuronas según lo que libera su salida, y en el capítulo~\ref{sec:eetypes}, según el instrumento que son. Hay un tercer rasgo que un ingeniero notará enseguida: \emph{cuántas entradas tiene la neurona}. Las entradas las recogen las dendritas, las ramas en las que se posan los axones ajenos (capítulo~\ref{sec:dofa}, sección~\ref{sec:weightstore}). Algunas neuronas no tienen ninguna dendrita, otras tienen una o dos, y otras un árbol que recoge cien mil entradas. Para un electrónico es el abanico de entrada, el fan-in, y casi siempre se corresponde con la tarea.
+
+Por qué importan tanto el número y el tamaño de las dendritas se ve con una estimación sencilla. La membrana es un condensador con una capacidad específica $c_m\approx1$~\textmu F/cm$^2$, y cuanto mayor es el área $A$ de la neurona junto con sus dendritas, más carga hay que aportar para subir la tensión en $\Delta V$. El tiempo que tarda en hacerlo una corriente de entrada $I$, sin contar la fuga, es
+\begin{empheq}[box=\keybox]{equation}
+t \;\approx\; \frac{c_m\,A\,\Delta V}{I} .
+\label{eq:dendriteload}
+\end{empheq}
+Una neurona pequeña con unas pocas dendritas cortas tiene un área del orden de $2\cdot10^{-5}$~cm$^2$ y una capacidad de unos $20$~pF. Una sola sinapsis grande con una corriente de varios nanoamperios la sube $20\mV$ en menos de una décima de milisegundo. Una neurona con un árbol grande tiene un área unas quince veces mayor y una capacidad de unos $300$~pF; una sinapsis corriente, con unos $0.1$~nA, la cargaría en $60\ms$, mucho más que la constante de tiempo de la fuga, es decir, no la cargaría nunca. Una neurona así necesita decenas de entradas simultáneas. Estos números son órdenes de magnitud, pero la conclusión no depende de ellos: \emph{pocas entradas, rápido y preciso; muchas entradas, lento y por suma}.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  soma/.style={circle,draw,very thick,fill=blue!6,minimum size=0.55cm,inner sep=0pt},
+  ax/.style={->,very thick,red!70!black},
+  den/.style={very thick,blue!60!black}]
+% 0 dendrites: sensor on a line
+\begin{scope}[xshift=0cm]
+\draw[den,decorate,decoration={snake,amplitude=1pt,segment length=4pt}] (-0.9,0) -- (0,0);
+\node[font=\scriptsize] at (-0.9,0.3) {sensor};
+\draw[ax] (0,0) -- (1.0,0);
+\draw[thick] (0.1,0) -- (0.1,0.45);
+\node[soma,minimum size=0.4cm] at (0.1,0.65) {};
+\node[font=\scriptsize,align=center] at (0.05,-0.75) {$0$\\línea con sensor};
+\end{scope}
+% 1 dendrite
+\begin{scope}[xshift=3.3cm]
+\draw[den] (-0.9,0) -- (-0.28,0);
+\node[soma] at (0,0) {};
+\draw[ax] (0.28,0) -- (0.9,0);
+\node[font=\scriptsize,align=center] at (0,-0.75) {$1$\\búfer, repetidor};
+\end{scope}
+% 2 dendrites: one per ear
+\begin{scope}[xshift=6.2cm]
+\draw[den] (-0.28,0) -- (-0.9,0); \draw[den] (0.28,0) -- (0.9,0);
+\node[soma] at (0,0) {};
+\draw[ax] (0,-0.28) -- (0,-0.6);
+\node[font=\scriptsize] at (-0.9,0.25) {izq.}; \node[font=\scriptsize] at (0.9,0.25) {der.};
+\node[font=\scriptsize,align=center] at (0,-1.0) {$2$\\AND temporal};
+\end{scope}
+% ~4 short dendrites: mixer
+\begin{scope}[xshift=9.0cm]
+\foreach \a in {45,135,225,315}{\draw[den] (\a:0.28) -- (\a:0.7); \fill[blue!60!black] (\a:0.72) circle (0.06);}
+\node[soma] at (0,0) {};
+\draw[ax] (0.28,0) -- (1.0,0);
+\node[font=\scriptsize,align=center] at (0,-1.0) {$\sim4$\\mezclador};
+\end{scope}
+% many: summing tree
+\begin{scope}[xshift=12.0cm]
+\foreach \a in {60,90,120}{\draw[den] (0,0.28) -- ++(\a:0.55) coordinate (b); \foreach \d in {-20,20}{\draw[den] (b) -- ++(\a+\d:0.35);}}
+\foreach \a in {-120,-60}{\draw[den] (0,-0.28) -- ++(\a:0.45);}
+\node[soma] at (0,0) {};
+\draw[ax] (0.28,0) -- (1.0,0);
+\node[font=\scriptsize,align=center] at (0,-1.0) {$10^4$--$10^5$\\sumador};
+\end{scope}
+\end{tikzpicture}
+\caption{Cinco clases según el número de entradas. En azul, las dendritas (entradas); en rojo, el axón (salida). Cuantas menos entradas, más rápido y con más precisión transmite la neurona una señal aislada; cuantas más, mejor suma y clasifica. Es un esquema, no un dibujo de la forma de las células.}
+\label{fig:dendriteclasses}
+\end{figure}
+
+\section{Cero dendritas: un sensor al final de la línea}
+
+Las neuronas sensoriales del tacto, del dolor y del estiramiento muscular (capítulos~\ref{sec:sensors}, \ref{sec:pain}, \ref{sec:muscles}) no tienen ni una dendrita en el cuerpo celular. El axón sale del cuerpo como una sola rama y enseguida se divide en dos: una rama va a la piel o al músculo, y su extremo es el propio sensor; la otra va a la médula espinal. La espiga corre del sensor directamente a la médula, sin pasar por el cuerpo celular. Para un ingeniero es una línea de comunicación con el sensor en el extremo lejano, y el cuerpo celular cuelga a un lado como una fuente de alimentación: abastece la línea, pero no participa en la transmisión. La ventaja es la velocidad y la fiabilidad: en el camino no hay ni un punto donde haya que sumar la señal y volver a decidir si se transmite.
+
+Los sensores de luz y de sonido son un caso aún más extremo: no son neuronas colectoras, sino los propios transductores, cuya entrada no es una sinapsis, sino una proteína receptora (fig.~\ref{fig:transducer}).
+
+\section{Una dendrita: el búfer}
+
+Una neurona con una dendrita y un axón recibe una línea de entrada y la transmite. Así son las neuronas olfativas: su única dendrita sale a la superficie de la nariz y lleva un único tipo de receptor~\cite{Mombaerts2004}; así son las células de relevo de la retina entre los sensores de luz y las neuronas de salida del ojo; así son las neuronas que conectan los sensores del oído con el cerebro. Un ingeniero las llamaría búferes o repetidores: no calculan, sino que entregan una señal, a veces cambiando su forma, por ejemplo convirtiendo la tensión continua del sensor en espigas, como en el capítulo~\ref{sec:sensors}.
+
+\section{Dos dendritas: AND temporal}
+
+Los detectores de coincidencias que determinan la dirección de un sonido (fig.~\ref{fig:itd}) tienen a menudo, en los mamíferos, exactamente dos dendritas orientadas en sentidos opuestos: a una llegan las entradas del oído izquierdo y a la otra las del derecho~\cite{Grothe2010}. ¿Para qué separar las entradas? Recordemos la fórmula~\eqref{eq:shunt}: cuando en un tramo de membrana hay muchos canales excitadores abiertos, la tensión allí se acerca al potencial de equilibrio, y cada entrada adicional aporta cada vez menos. Por eso muchas entradas de un mismo oído, reunidas en una dendrita, la saturan y no pueden llevar por sí solas la neurona al umbral. En cambio, una entrada de cada dendrita se suma de forma casi lineal. Las dos dendritas convierten la neurona en un AND más estricto: dispara solo si las señales llegan de ambos lados y a la vez. Los modelos muestran que esta separación mejora de verdad la detección de coincidencias~\cite{AgmonSnir1998}.
+
+\section{Varias dendritas cortas: el mezclador y el relevo}
+
+\emph{Mezcladores.} En el circuito de aprendizaje motor del capítulo~\ref{sec:motorlearning}, unos setenta mil millones de pequeñas neuronas \nt{GLUT} expanden la entrada a un vector muy largo. Cada una tiene solo unas cuatro dendritas cortas, y cada dendrita termina en una “garra” que abraza la terminal de una sola entrada. Así, cada mezclador ve solo unas cuatro entradas entre muchas y funciona como un pequeño elemento AND sobre su cuarteto. De $M$ líneas de entrada se pueden elegir $\binom{M}{4}$ cuartetos distintos: con $M=100$ son casi cuatro millones. ¿Para qué tantos? Un elemento de umbral con $n$ entradas puede separar correctamente en dos clases como máximo
+\begin{empheq}[box=\keybox]{equation}
+P_{\max} \;\approx\; 2n
+\label{eq:cover}
+\end{empheq}
+patrones aleatorios~\cite{Cover1965}. La neurona de salida de ese mismo circuito recibe unas $10^5$ entradas de los mezcladores, y según~\eqref{eq:cover} su cota superior es del orden de $2\cdot10^5$ asociaciones distintas. Es el límite para un elemento ideal: si todos los pesos son positivos, como en las sinapsis excitadoras, y hace falta margen frente al ruido, la estimación para esa misma neurona es de unas $4\cdot10^4$ asociaciones~\cite{Brunel2004}. Los mezcladores con pocas entradas sirven justamente para que el gran sumador tenga muchas entradas distintas y casi independientes~\cite{Marr1969,Albus1971}.
+
+\emph{Relevos.} En el camino del oído a los detectores de dirección hay neuronas con pocas dendritas cortas que reciben solo unas cuantas sinapsis enormes, y algunas, en esencia, una sola. Según~\eqref{eq:dendriteload}, es justo lo que hace falta: capacidad pequeña y corriente grande, de modo que la neurona dispara fracciones de milisegundo después de cada espiga de entrada, casi sin perder precisión temporal. Uno de estos relevos recibe \nt{GLUT} y emite \nt{GLYC}: es un inversor con una precisión de decenas de microsegundos que suministra inhibición rápida a los detectores de dirección~\cite{BorstSoria2012}.
+
+\section{Miles de entradas: sumador y clasificador}
+
+En el otro extremo de la escala están las neuronas \nt{GLUT} de la corteza, con una decena de miles de entradas, y las neuronas \nt{GABA} de salida del circuito de aprendizaje motor, con cien mil. Según~\eqref{eq:dendriteload}, una neurona así es lenta y no puede responder a una entrada aislada: suma. Es la neurona integradora del capítulo~\ref{sec:glutcomputer} y el sumador con el que se construyen los clasificadores. Un árbol grande añade además algo nuevo: sus ramas funcionan como subcircuitos independientes con sus propios umbrales, de modo que una sola neurona se comporta como una pequeña red de varias capas~\cite{Beniaguev2021,Gidon2020}.
+
+\section{Dendritas que también son salida}
+
+Hay neuronas sin axón, cuyas dendritas son a la vez entrada y salida: reciben señales y liberan ellas mismas el neurotransmisor. El ejemplo más estudiado son las neuronas \nt{GABA} de la retina que participan en la detección de la dirección del movimiento (capítulo~\ref{sec:gaba}, fig.~\ref{fig:direction}). En una neurona así, cada rama responde por sí sola al movimiento que va del cuerpo celular hacia su punta y emite inhibición desde esa punta~\cite{Euler2002}. Una neurona son varios detectores de dirección independientes, uno por rama. Para un ingeniero no es un elemento, sino un circuito integrado con varios canales en un solo encapsulado.
+
+\section{Resumen}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{1.9cm}>{\raggedright}p{3.4cm}>{\raggedright}p{2.6cm}>{\raggedright}p{1.8cm}>{\raggedright\arraybackslash}p{3.8cm}}
+\toprule
+Dendritas & Ejemplo & Instrumento & Entradas & Qué se sabe \\
+\midrule
+$0$ & sensores de tacto, dolor, estiramiento & línea con sensor en el extremo & --- & establecido \\
+$1$ & neuronas olfativas, células de relevo de la retina, neuronas del oído & búfer, repetidor & $1$--pocas & establecido \\
+$2$ & detectores de la dirección del sonido & AND temporal & dos haces & estructura establecida; la ventaja de separar las entradas se muestra en modelos \\
+$\sim4$ & mezcladores del circuito de aprendizaje motor & pequeño elemento AND & $\sim4$ & establecido; el papel de expansión de la entrada es una hipótesis bien fundada \\
+pocas, cortas & relevos en el camino del oído & relevo, inversor & $1$--unas pocas enormes & establecido \\
+miles & neuronas \nt{GLUT} de la corteza, neuronas de salida del aprendizaje motor & sumador, clasificador & $10^4$--$10^5$ & establecido; ramas como subcircuitos medidas en ejemplos concretos \\
+dendritas-salida & neuronas \nt{GABA} de dirección en la retina & circuito integrado multicanal & muchas & medido \\
+\bottomrule
+\end{tabular}
+\caption{Neuronas según el número de dendritas.}
+\label{tab:dendrites}
+\end{table}
+
+\begin{keyblock}
+\begin{proposition}[El número de entradas sigue a la tarea]
+\label{prop:dendrites}
+Donde hace falta velocidad y precisión en una señal aislada (en sensores, relevos y detectores de coincidencias), las neuronas tienen pocas dendritas, pocas entradas y sinapsis grandes: una capacidad pequeña~\eqref{eq:dendriteload} se carga rápido. Donde hay que sumar y clasificar, las neuronas tienen árboles grandes con miles de entradas. La estructura de las clases está medida; la explicación computacional está bien fundada, pero para muchas clases sigue siendo una hipótesis.
+\end{proposition}
+\end{keyblock}
+
+La tabla~\ref{tab:dendrites} completa las dos clasificaciones anteriores: por neurotransmisor (tabla~\ref{tab:types}) y por instrumento (tabla~\ref{tab:eetypes}). Las tres miran el mismo elemento desde lados distintos: qué emite, qué calcula y a cuántos escucha.
+
+\section{Ejercicios}
+
+\begin{exercise}[\lvlA]
+\label{ex:19:1}
+\emph{Cuántas entradas necesita una neurona grande.} Una neurona con $C=300$~pF y $\tau_m=20\ms$ recibe sinapsis que son fuentes de corriente de $0.1$~nA; el umbral está $20\mV$ por encima del reposo. (a)~¿Cuántas sinapsis deben actuar a la vez para llegar al umbral en absoluto, en $10\ms$, en $5\ms$? (b)~¿En cuánto tiempo llega al umbral una neurona con $C=20$~pF por una sinapsis de $4$~nA?
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:19:2}
+\emph{Por qué cuatro.} Un mezclador es un AND sobre $k$ líneas de $M=100$; en un patrón está activa la mitad de las líneas; hay $7\cdot10^{10}$ mezcladores. (a)~¿Cuántos responden a un patrón con $k=2$, $4$, $40$? (b)~¿Cuántas veces aumentan los mezcladores el número de asociaciones~\eqref{eq:cover} de una neurona de salida con $10^5$ entradas frente a $M=100$ líneas directas?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:19:3}
+\emph{De dónde sale $2n$.} Un hiperplano por el origen divide $P$ puntos en posición general en el espacio $n$-dimensional en dos clases de $C(P,n)=2\sum_{k=0}^{n-1}\binom{P-1}{k}$ maneras. (a)~Demuestre que con $P=2n$ es separable exactamente la mitad de las $2^P$ particiones. (b)~¿Qué fracción es separable con $n=100$ y $P=180$, $220$?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:19:4}
+\emph{Dos dendritas como AND estricto.} Una dendrita es un tramo con fuga $g_L$; cada entrada abre en él una conductancia $g_0=0.5\,g_L$ con potencial $E_E$; el cuerpo ve $\kappa(V_1+V_2)$; umbral $\theta=1.1\,\kappa E_E$. ¿Por qué ningún número de entradas en una sola dendrita dispara la neurona, y cuántas entradas hacen falta en cada una?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:19:5}
+\emph{Diseño de un relevo.} La fluctuación temporal de la espiga es $\sigma_t=\sigma_V/\dot V$, donde $\dot V$ es la pendiente de la tensión en el umbral. Se requiere $\sigma_t\le20$~\textmu s con un ruido $\sigma_V=1\mV$; desprecie la fuga. ¿Cuántas sinapsis síncronas de $0.1$~nA necesita para ello una neurona con $C=300$~pF, y cuál es la fluctuación de una neurona con $C=20$~pF y una sinapsis de $4$~nA?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:19:6}
+\emph{Simulación: carga de una dendrita larga.} Simule un cable pasivo $\tau_m\partial_tV=\lambda^2\partial_x^2V-V+i/g$ de longitud $L=\ell/\lambda$ con extremos cerrados ($40$ tramos, Euler). En el extremo lejano se aplica un pulso breve de corriente: ¿cuándo y hasta qué fracción de la tensión que daría la misma carga repartida por toda la dendrita sube el extremo cercano con $L=0.2$, $1$, $2$?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:19:7}
+\emph{Investigación: número óptimo de entradas.} Capacidad $C=C_0+nc_s$; actúan a la vez $m$ entradas de corriente $I_s$; la neurona memoriza $P\approx2n$ asociaciones~\eqref{eq:cover}. ¿Cómo depende el tiempo de respuesta de $P$ con $m$ constante y con una fracción constante $m=\varphi n$? Proponga un criterio de coste y halle el $n$ óptimo para un relevo y para un clasificador.
+\end{exercise}

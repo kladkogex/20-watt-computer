@@ -1,0 +1,50 @@
+\chapter{Cómo aprende la máquina}
+% versión completa: chapters/06_dofa.tex
+
+En todos los circuitos hasta ahora, la fuerza de las conexiones la ajustaba un ingeniero. En el cerebro vivo no hay ingeniero. Las conexiones tienen que ajustarse solas, sobre la marcha, y de modo que la máquina haga algo útil. Eso es el aprendizaje.
+
+La restricción principal es muy estricta. Cada conexión se modifica a sí misma, y solo puede saber lo que pasa a su lado: si trabaja el emisor, si trabaja el receptor y qué sustancias le llegan. Nadie puede enviarle a una conexión una corrección personal. Eso descarta el método principal para entrenar redes neuronales artificiales, en el que el error recorre la red en sentido inverso y cada conexión recibe su propia corrección.
+
+\section*{Juntas, luego conectadas}
+
+La regla más sencilla: si el emisor y el receptor trabajan juntos, la conexión entre ellos se refuerza. Es local y no necesita reloj. Si se le añade un poco de olvido, esta regla encuentra en el flujo de señales lo más importante: lo que más varía. Hay también una versión que mira el momento de los clics: la conexión se refuerza si el emisor hizo clic \emph{antes} que el receptor, es decir, pudo ser la causa, y se debilita si lo hizo después.
+
+Pero estas reglas tienen un límite: enseñan lo \emph{frecuente}, no lo \emph{útil}. Una conexión que solo ve a sus vecinas no sabe si la acción trajo jugo o dolor.
+
+\section*{La tercera señal}
+
+La trae la dopamina, la emisora “mejor de lo esperado”. Que la conexión cambie solo cuando coinciden tres cosas: trabajó el emisor, trabajó el receptor y llegó dopamina.
+
+\pencilfig{6}{\pencilart{6}}{La conexión se refuerza cuando las dos neuronas trabajaron juntas y llegó una tercera señal: “salió mejor de lo esperado”.}
+
+Pero hay una dificultad: la recompensa no llega enseguida, sino al cabo de un segundo o dos. Para entonces, emisor y receptor ya callaron hace rato. La conexión necesita recordar que participó. Y lo recuerda: el trabajo conjunto deja en la conexión una marca, como una etiqueta adhesiva que se despega sola en uno o dos segundos. Si llega dopamina mientras la etiqueta sigue pegada, la conexión cambia. Si no llega, la marca desaparece sin dejar rastro. Esto resuelve el problema del direccionamiento: la dopamina es una sola para todas, pero solo cambian las conexiones que llevan la etiqueta.
+
+\pencilfig{106}{%
+\foreach \y/\d/\t in {0/0.9/{a tiempo: se refuerza},-1.3/3.3/{tarde: nada}}{
+  \draw[pen] (0,\y) -- (4.6,\y);
+  \foreach \s in {0.25,0.33}{\draw[pcBlue, line width=0.8pt] (\s,\y) -- (\s,\y+0.3);}
+  \fill[pcAmber, opacity=0.25] (0.35,\y) -- plot[domain=0.35:4.5, samples=30] (\x,{\y+0.8*exp(-(\x-0.35)/0.8)}) -- (4.5,\y) -- cycle;
+  \draw[penlite=pcAmber] plot[domain=0.35:4.5, samples=30] (\x,{\y+0.8*exp(-(\x-0.35)/0.8)});
+  \draw[pcAmber!80!black, line width=0.9pt] (\d-0.1,\y+0.95) -- (\d+0.07,\y+0.62) -- (\d-0.07,\y+0.6) -- (\d+0.1,\y+0.22);
+  \draw[arr=pcAmber!80!black] (\d+0.09,\y+0.27) -- (\d+0.11,\y+0.12);
+  \node[lbl, anchor=west] at (4.7,\y+0.3) {\t};}
+\node[lbl, text=pcBlue, anchor=south west] at (0.1,0.85) {trabajaron juntas};
+\node[lbl, text=pcAmber!80!black, anchor=south] at (2.3,0.35) {la marca se borra};
+\foreach \x/\l in {0.35/0,1.95/1,3.55/2}{\draw[pcGray, line width=0.5pt] (\x,-1.3) -- (\x,-1.38); \node[lbl, anchor=north] at (\x,-1.38) {\l~s};}
+}{El trabajo conjunto deja en la conexión una marca que se borra en uno o dos segundos. La dopamina solo cambia las conexiones marcadas.}
+
+\section*{El ruido como búsqueda}
+
+¿Por qué esta regla lleva a algo mejor y no a cualquier parte? Imagine que busca la cima de una colina con los ojos vendados. Da un paso al azar y alguien le grita “¡más alto!” o “¡más bajo!”. Si es “más alto”, afianza el paso. Paso a paso, sube sin haber mirado nunca un mapa. El cerebro hace lo mismo: las neuronas tiemblan un poco al azar, la dopamina avisa si las cosas mejoraron, y las conexiones que participaron se desplazan en la dirección favorable. El ruido que estorbaba al transmitir mensajes aquí se convierte en búsqueda.
+
+Ahora se entiende por qué la dopamina no informa de la recompensa, sino de la \emph{sorpresa}. Si simplemente gritara “¡jugo!” tras cada acierto, reforzaría de paso todo lo que hacía la red, lo correcto y lo incorrecto. En nuestro modelo, una red así de verdad dispara sus conexiones miles de veces y a veces se queda atascada para siempre en la peor opción. Restar la expectativa vuelve honesto el aprendizaje.
+
+\section*{El precio de un solo cable}
+
+El aprendizaje por difusión tiene un precio. Hay una sola señal para todas, y en ella se mezcla el ruido de todas las neuronas que influyen en el resultado. Cuanto mayor es la red, más le cuesta a cada conexión separar su parte. Por eso la dopamina, al parecer, solo enseña a circuitos relativamente pequeños que eligen acciones, mientras que la enorme corteza aprende sobre todo con reglas locales.
+
+\section*{Quién calcula la sorpresa}
+
+Queda una pregunta: ¿cómo calculan las neuronas de dopamina el “mejor de lo esperado”? Hace falta un crítico: un grupo de neuronas que estima todo el tiempo cuánto bien queda por delante. La sorpresa es la recompensa recibida más lo que saltó la expectativa. Se enciende la lamparita: la expectativa da un salto, estallido. Llega el jugo prometido: hay recompensa, pero la expectativa se agota en ese mismo instante, no hay sorpresa. No llega el jugo: la expectativa se desploma en vano, silencio. Los tres casos del primer capítulo salen solos. Que la dopamina se comporta así está medido. Cómo calcula exactamente el cerebro esa sorpresa es, por ahora, una hipótesis.
+
+\fullversion{6}

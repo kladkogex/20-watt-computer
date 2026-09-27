@@ -1,0 +1,214 @@
+\chapter{As saídas da máquina: como o cérebro controla os músculos}
+\chaptermark{As saídas da máquina}
+\label{sec:muscles}
+
+\section{A saída rápida}
+
+Tudo o que a máquina faz rápido no mundo, ela faz com os músculos. Uma palavra, um olhar, um passo, um sorriso são contrações musculares. A segunda saída, a lenta, a química do corpo, é tratada no capítulo~\ref{sec:chemoutput}. Na fig.~\ref{fig:machine} a saída era a seta ``músculos''; agora vamos ver o que há por trás dessa seta.
+
+O último elo da cadeia são os neurônios \nt{ACET}, justamente aqueles que na tabela~\ref{tab:types} têm a anotação ``saída para o músculo''. Cada fibra muscular recebe entrada de exatamente um desses neurônios, e um neurônio controla um grupo de fibras, de algumas centenas a um par de milhares~\cite{Feinstein1955mu}. Nos músculos que precisam de ajuste fino, as unidades são menores; nos grandes músculos das pernas, maiores. O neurônio com as suas fibras se chama \emph{unidade motora}: é o menor pedaço de músculo que o cérebro pode ligar separadamente.
+
+A sinapse do neurônio no músculo é construída de um jeito bem diferente das sinapses do córtex do capítulo~\ref{sec:code}. Lá a maior parte dos disparos se perdia. Aqui cada disparo libera várias vezes mais acetilcolina do que o necessário para a fibra responder~\cite{WoodSlater2001}. É uma sinapse com \emph{margem de segurança}: um disparo do neurônio, exatamente uma contração das fibras. Dentro da máquina é possível se dar ao luxo de conexões pouco confiáveis e corrigir os erros com redundância; na saída, um erro custa um movimento, e a confiabilidade é comprada diretamente no hardware.
+
+\section{A força: taxa e número de unidades}
+
+Um disparo dá uma contração isolada, um abalo: a força cresce em algumas dezenas de milissegundos e decai. Uma boa aproximação para ele é~\cite{Fuglevand1993}
+\begin{equation}
+h(t) \;=\; F_1\,\frac{t}{T_c}\,e^{\,1-t/T_c},
+\label{eq:twitch}
+\end{equation}
+em que $T_c$ é o tempo de subida, da ordem de $50\ms$, e $F_1$ é a força de um abalo. Se os disparos vêm com mais frequência, os abalos se somam:
+\begin{empheq}[box=\keybox]{equation}
+F(t) \;=\; \sum_k h\bigl(t-t_k\bigr) .
+\label{eq:forcesum}
+\end{empheq}
+É o mesmo filtro passa-baixas que transformava disparos em concentração no capítulo~\ref{sec:serocomputer}, só que agora a saída não é concentração, e sim força. O músculo é um conversor digital-analógico de disparos em força (fig.~\ref{fig:tetanus}). No nosso modelo, com cinco disparos por segundo os abalos quase não se sobrepõem, e a força salta de $0.2F_1$ a $1.1F_1$; com quinze, ela já se mantém entre $1.8F_1$ e $2.2F_1$; com quarenta, fica quase uniforme, em torno de $5.4F_1$. O músculo real satura com disparos frequentes, de modo que a soma linear~\eqref{eq:forcesum} só vale até algumas dezenas de disparos por segundo.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=20cm,y=0.55cm]
+\draw[->,gray!70!black] (0,0) -- (0.66,0) node[right,font=\small,black] {$t$, s};
+\draw[->,gray!70!black] (0,0) -- (0,6.4) node[left,font=\small,black] {$F/F_1$};
+\foreach \t in {0,0.2,0.4,0.6}{\draw[gray!60!black] (\t,-0.1) -- (\t,0.1); \node[below,font=\scriptsize] at (\t,0) {\t};}
+\foreach \f in {1,3,5}{\draw[gray!60!black] (-0.004,\f) -- (0.004,\f); \node[left,font=\scriptsize] at (0,\f) {\f};}
+\draw[thick,blue!60!black] plot file {figures/muscle_twitch_5.dat};
+\draw[thick,green!45!black] plot file {figures/muscle_twitch_15.dat};
+\draw[thick,red!70!black] plot file {figures/muscle_twitch_40.dat};
+\node[font=\scriptsize,blue!60!black,anchor=west] at (0.605,0.9) {5 disp./s};
+\node[font=\scriptsize,green!45!black,anchor=west] at (0.605,2.1) {15 disp./s};
+\node[font=\scriptsize,red!70!black,anchor=west] at (0.605,5.4) {40 disp./s};
+\end{tikzpicture}
+\caption{O músculo como conversor digital-analógico: a força~\eqref{eq:forcesum} com disparos regulares de uma unidade motora, $T_c=50\ms$. Disparos raros dão abalos separados, frequentes se fundem numa força uniforme, assim como disparos frequentes se fundem numa concentração uniforme na fig.~\ref{fig:lowpass}.}
+\label{fig:tetanus}
+\end{figure}
+
+O cérebro tem dois botões de força: a taxa de disparos de cada unidade e o número de unidades ligadas. E o segundo botão é muito engenhoso. As unidades de um músculo são diferentes: as mais fracas são cem vezes mais fracas que as mais fortes. Quando é preciso cada vez mais força, as unidades são ligadas \emph{em ordem de tamanho}, das pequenas para as grandes~\cite{Henneman1957}. Ninguém calcula essa ordem: os neurônios pequenos simplesmente se excitam com mais facilidade pela mesma entrada comum, de modo que a ordem de ativação é definida pelo próprio hardware.
+
+O que isso dá? Suponha que cada unidade seguinte na ordem seja $q$ vezes mais forte que a anterior, com $q$ um pouco maior que um. A força de todas as unidades ligadas é a soma de uma progressão geométrica, e quase toda ela cabe às últimas unidades. Então a próxima unidade ligada acrescenta
+\begin{empheq}[box=\keybox]{equation}
+\frac{\Delta F}{F} \;\approx\; q-1 \;=\; \text{const} ,
+\label{eq:sizeprinciple}
+\end{empheq}
+ou seja, o passo de força é proporcional à própria força. Num esforço fraco, o cérebro o dosa em porções pequenas; num forte, em porções grandes. É um \emph{número de ponto flutuante}: o expoente é dado por quantas unidades estão ligadas, e a mantissa, pela taxa dos seus disparos. É a mesma escala logarítmica dos sensores do capítulo~\ref{sec:sensors}: a entrada e a saída da máquina medem o mundo em frações relativas.
+
+O ponto flutuante tem um outro lado. A dispersão da força também cresce proporcionalmente a ela: um movimento forte é inevitavelmente menos preciso que um fraco. Segundo uma hipótese influente, é justamente esse ruído dependente do sinal que explica por que os nossos movimentos são suaves: um comando suave dá a menor dispersão no ponto final~\cite{HarrisWolpert1998}.
+
+\section{Puxar, mas não empurrar: dois fios por articulação}
+
+O músculo só sabe puxar. Empurrar ele não pode, assim como um neurônio \nt{GLUT} não pode emitir um sinal negativo. A solução é conhecida do capítulo~\ref{sec:glutcomputer}: \emph{dois fios}. Cada articulação é atendida por um par de músculos que puxam em sentidos opostos (fig.~\ref{fig:antagonists}). Se as suas forças são $F_1$ e $F_2$ e o braço de alavanca é $\ell$, o torque e a rigidez da articulação são
+\begin{empheq}[box=\keybox]{equation}
+M \;=\; \ell\,(F_1-F_2), \qquad K \;\approx\; \kappa_m\,(F_1+F_2),
+\label{eq:antagonists}
+\end{empheq}
+em que $\kappa_m$ é o coeficiente que liga a força do músculo à sua rigidez: um músculo tenso é mais elástico que um relaxado. A diferença das forças dá o torque, a soma dá a rigidez~\cite{Hogan1984}. Com dois fios o cérebro controla duas grandezas independentes: para onde girar a articulação e com que firmeza segurá-la. Quando é preciso segurar uma xícara sem derramar, contraímos os dois músculos ao mesmo tempo: o torque é o mesmo, a rigidez é maior, e um empurrão ao acaso desvia menos a mão.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  nrn/.style={circle,draw,very thick,minimum size=0.95cm,inner sep=0pt,font=\scriptsize},
+  inh/.style={-{Bar[width=7pt]},thick,red!70!black}]
+% the joint: a bar on a pivot, two springs pulling down on either side
+\fill[gray!30] (4.6,-0.25) -- (5.4,-0.25) -- (5,0.15) -- cycle;
+\draw[line width=3pt,gray!50!black] (2.4,0.2) -- (7.6,0.2);
+\fill[black] (5,0.2) circle (0.08);
+\draw[decorate,decoration={coil,segment length=5pt,amplitude=4pt},very thick,blue!60!black] (3.0,0.2) -- (3.0,-1.6);
+\draw[decorate,decoration={coil,segment length=5pt,amplitude=4pt},very thick,orange!85!black] (7.0,0.2) -- (7.0,-1.6);
+\draw[very thick] (2.5,-1.6) -- (3.5,-1.6); \draw[very thick] (6.5,-1.6) -- (7.5,-1.6);
+\node[font=\small,blue!60!black] at (2.35,-0.75) {$F_1$};
+\node[font=\small,orange!85!black] at (7.65,-0.75) {$F_2$};
+\draw[->,thick] (5.9,0.75) arc (60:120:1.8) node[above,font=\scriptsize,pos=0.5] {$M=\ell(F_1-F_2)$};
+% motor neurons and reflex circuit
+\node[nrn,fill=green!12] (M1) at (1.6,-3.0) {\nt{ACET}};
+\node[nrn,fill=green!12] (M2) at (8.4,-3.0) {\nt{ACET}};
+\node[nrn,fill=red!10] (G) at (5.0,-3.0) {\nt{GLYC}};
+\node[nrn,fill=blue!6] (S) at (1.6,-5.0) {\nt{GLUT}};
+\draw[->,very thick] (M1) -- (3.0,-1.7);
+\draw[->,very thick] (M2) -- (7.0,-1.7);
+\draw[->,thick] (S) -- (M1);
+\draw[->,thick] (S) -- (G);
+\draw[inh] (G) -- (M2);
+\draw[->,thick,densely dashed,gray!60!black] (3.15,-1.2) to[bend left=25] node[pos=0.35,right,font=\scriptsize,black] {estiramento} (S.north east);
+\draw[->,thick,blue!60!black] (-0.3,-3.0) node[left,font=\scriptsize,black,align=right] {comando\\do cérebro} -- (M1);
+\draw[->,thick,blue!60!black] (10.3,-3.0) node[right,font=\scriptsize,black,align=left] {comando\\do cérebro} -- (M2);
+\end{tikzpicture}
+\caption{Dois músculos numa articulação e o laço de realimentação mais rápido. Os neurônios \nt{ACET} recebem os comandos do cérebro e puxam a articulação em sentidos opostos; a diferença das forças a gira, a soma a torna mais rígida. O sensor de estiramento (\nt{GLUT}) do músculo esquerdo excita o seu próprio neurônio \nt{ACET} e, por meio de um intermediário \nt{GLYC}, inibe o neurônio do músculo antagonista: o veto do capítulo~\ref{sec:gaba}.}
+\label{fig:antagonists}
+\end{figure}
+
+\section{Realimentação com atraso}
+
+Os músculos não trabalham às cegas. Em cada um há sensores de estiramento, mencionados na tabela~\ref{tab:sensors}, e o laço mais curto se fecha diretamente na medula espinhal (fig.~\ref{fig:antagonists}). O músculo foi estirado de repente: o sensor de estiramento excita o seu próprio neurônio \nt{ACET}, o músculo se contrai e devolve a articulação. Ao mesmo tempo, por um neurônio intermediário inibitório, o músculo antagonista é desligado para não atrapalhar. Esse intermediário é \nt{GLYC}, justamente o tipo da tabela~\ref{tab:types} que não ganhou capítulo próprio: o seu lugar é exatamente aqui, nos laços rápidos da medula.
+
+Cada laço tem um atraso $d$: no espinhal, cerca de $25$--$30\ms$ para o braço; no laço pelo córtex, uma vez e meia a três vezes mais; no laço pelo olho, $100$--$200\ms$. E a realimentação atrasada, como vimos na proposição~\ref{prop:ei}, faz o sistema oscilar. Para o regulador mais simples, que corrige o desvio $x$ com velocidade $G$ usando informação de $d$ segundos atrás, $\dd x/\dd t=-G\,x(t-d)$, a condição de estabilidade é~\cite{Hayes1950}:
+\begin{empheq}[box=\keybox]{equation}
+G\,d \;<\; \frac{\pi}{2} ,
+\label{eq:delaystable}
+\end{empheq}
+e no limite o sistema oscila com frequência $1/(4d)$. Verificamos isso num modelo: com $d=30\ms$, o desvio se amortece com $G=40$ por segundo e, com $G=55$ por segundo, um pouco acima do limite de $52$, oscila cada vez mais.
+
+Daí duas consequências. Primeira: quanto mais longo o laço, mais devagar ele é obrigado a corrigir. Pelo olho, com um atraso de cento e cinquenta milissegundos, não se pode corrigir a mão mais rápido que em cerca de um décimo de segundo, senão ela vai tremer. Segunda: o limite de estabilidade do laço espinhal, $1/(4\cdot30\ms)\approx8$ oscilações por segundo, é próximo da frequência do tremor fino que toda pessoa saudável tem: de oito a doze oscilações por segundo. O laço de estiramento é uma das fontes prováveis desse tremor~\cite{McAuleyMarsden2000}.
+
+Então como o cérebro se move rápido e com precisão, se a realimentação chega atrasada? Segundo uma hipótese difundida, ele \emph{prevê}: mantém um modelo interno do corpo e calcula qual será o resultado do comando sem esperar pelos sensores~\cite{WolpertGhahramani2000}. Os sensores servem para corrigir o modelo, e não cada movimento. Um engenheiro chamaria isso de controle antecipativo com observador de estado.
+
+\section{Geradores de ritmo dos movimentos}
+
+Andar, respirar, mastigar são movimentos rítmicos. Eles precisam de um relógio? Não. Na medula e no tronco há pequenas redes que geram ritmo sozinhas, mesmo que nada rítmico chegue a elas~\cite{MarderBucher2001}. A rede mais simples desse tipo é montada com peças que já temos: dois grupos de neurônios \nt{GLUT} que se inibem mutuamente por intermediários \nt{GABA} ou \nt{GLYC}, como na fig.~\ref{fig:wta}, e se cansam lentamente, como a memória do capítulo~\ref{sec:glutcomputer}:
+\begin{empheq}[box=\keybox]{equation}
+\tau\,\frac{\dd r_i}{\dd t} = -r_i + \bigl[I - \beta\,r_j - a_i\bigr]_+ ,
+\qquad
+\tau_a\,\frac{\dd a_i}{\dd t} = -a_i + b\,r_i ,
+\label{eq:halfcentre}
+\end{empheq}
+em que $a_i$ é a fadiga do grupo $i$, e $j$ é o outro grupo. A inibição mútua com $\beta>1$ escolhe um vencedor (proposição~\ref{prop:wta}). O vencedor trabalha e se cansa; quando a fadiga consome a sua entrada, o perdedor, já descansado, toma a frente e começa ele próprio a se cansar. Os grupos trabalham alternadamente, e cada um controla o seu músculo do par (fig.~\ref{fig:halfcentre}).
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=3.2cm,y=2.4cm]
+\draw[->,gray!70!black] (0,0) -- (4.2,0) node[right,font=\small,black] {$t$, s};
+\draw[->,gray!70!black] (0,0) -- (0,1.2) node[left,font=\small,black] {$r$};
+\foreach \t in {0,1,2,3,4}{\draw[gray!60!black] (\t,-0.03) -- (\t,0.03); \node[below,font=\scriptsize] at (\t,0) {\t};}
+\draw[thick,blue!60!black] plot file {figures/halfcentre1.dat};
+\draw[thick,orange!85!black] plot file {figures/halfcentre2.dat};
+\node[font=\scriptsize,blue!60!black,anchor=west] at (1.6,1.28) {grupo 1: ``para a frente''};
+\node[font=\scriptsize,orange!85!black,anchor=west] at (2.7,1.28) {grupo 2: ``para trás''};
+\end{tikzpicture}
+\caption{Gerador de ritmo segundo o modelo~\eqref{eq:halfcentre}: $I=1$, $\beta=2$, $b=2$, $\tau=20\ms$, $\tau_a=0.4\,\text{s}$. Dois grupos com inibição mútua e fadiga trabalham alternadamente com período de $0.84\,\text{s}$, embora a entrada receba um sinal constante.}
+\label{fig:halfcentre}
+\end{figure}
+
+No nosso modelo, com entrada constante, os grupos se revezam com período de $0.84\,\text{s}$, cerca do dobro do tempo de fadiga $\tau_a$. Um comando constante vindo de cima, ``ande'', vira um ritmo no local. É mais um ritmo local, como o ritmo do laço \nt{GLUT}--\nt{GABA} no capítulo~\ref{sec:gaba}: ele surge só quando a rede trabalha e marca o compasso apenas dos músculos que controla.
+
+\begin{keyblock}
+\begin{proposition}[A saída da máquina]
+\label{prop:muscles}
+O cérebro controla os músculos como uma hierarquia de reguladores. No topo, escolhe-se a ação (capítulo~\ref{sec:dofa}); abaixo, geradores locais transformam comandos constantes em ritmo, e os laços rápidos da medula seguram as articulações. A força é dada em ponto flutuante: o expoente, pelo número de unidades ligadas por ordem de tamanho; a mantissa, pela taxa de disparos. Cada articulação é controlada por um par de músculos que puxam, cuja diferença de forças dá o torque e cuja soma dá a rigidez. Esses dispositivos foram medidos; que o cérebro se apoie num modelo interno do corpo é uma hipótese bem fundamentada.
+\end{proposition}
+\end{keyblock}
+
+\section{Resumo}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{3.0cm}>{\raggedright}p{4.6cm}>{\raggedright\arraybackslash}p{5.2cm}}
+\toprule
+O que a saída faz & Como & O que se sabe \\
+\midrule
+transforma disparos em força & soma de abalos~\eqref{eq:forcesum}, filtro passa-baixas & medido; a soma linear é uma simplificação \\
+dosa a força & ativação das unidades por tamanho, ponto flutuante~\eqref{eq:sizeprinciple} & ordem de ativação medida \\
+empurra sabendo só puxar & par de músculos: torque é a diferença, rigidez é a soma~\eqref{eq:antagonists} & medido \\
+segura a articulação & laço de estiramento, veto do antagonista via \nt{GLYC} & medido \\
+não treme & $Gd<\pi/2$~\eqref{eq:delaystable} & decorre da teoria de controle; contribuição ao tremor é causa provável \\
+move-se rápido & predição por um modelo interno & hipótese bem fundamentada \\
+anda e respira com ritmo & gerador de ritmo~\eqref{eq:halfcentre} & geradores medidos; o esquema mais simples é modelo \\
+\bottomrule
+\end{tabular}
+\caption{Como a máquina controla os músculos.}
+\label{tab:muscles}
+\end{table}
+
+A saída da máquina é construída com os mesmos truques de todo o resto (tabela~\ref{tab:muscles}): dois fios em vez de sinal, um filtro passa-baixas em vez de DAC, escala logarítmica em vez de linear, inibição mútua e fadiga em vez de um gerador de relógio. A entrada (capítulo~\ref{sec:sensors}) e a saída medem o mundo em frações relativas, e entre elas trabalha a máquina a que este livro é dedicado.
+
+\section{Exercícios}
+
+\begin{exercise}[\lvlA]
+\label{ex:13:1}
+\emph{Ponto flutuante em números.} Um músculo tem $N=100$ unidades motoras com forças $f_n=f_1q^{\,n-1}$; a mais forte é $100$ vezes mais forte que a mais fraca. (a)~Ache $q$, o passo relativo~\eqref{eq:sizeprinciple} e a faixa dinâmica em decibéis. (b)~Qual é o passo com força $10f_1$ num ``DAC linear'' de $100$ unidades iguais com a mesma força total?
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:13:2}
+\emph{O preço da margem de segurança.} A cada disparo, a sinapse numa fibra muscular libera um número de Poisson de quanta com média $m$, e a fibra responde com $n_{\text{th}}=20$ quanta ou mais; a margem de segurança é $S=m/n_{\text{th}}$. Quantas falhas por dia dá uma unidade que trabalha a $20$ disparos por segundo, com $S=2$ e com $S=4$?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:13:3}
+\emph{O músculo como filtro.} O abalo~\eqref{eq:twitch} com $T_c=50\ms$ é a resposta ao impulso de um sistema linear. (a)~Ache a sua função de transferência $H(s)$ e a frequência de corte. (b)~Com que taxa de disparos regulares a amplitude das pulsações de força é $10\%$ da força média?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:13:4}
+\emph{Mais rápido que o atraso não se corrige.} Regulador $\dd x/\dd t=-G\,x(t-d)$. (a)~Mostre que o desvio se amortece mais rápido sem oscilar com $Gd=1/e$, com taxa $1/d$. (b)~Ache esse $G$ e a constante de tempo do amortecimento para o laço espinhal, $d=30\ms$, e para o laço pelo olho, $d=150\ms$.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:13:5}
+\emph{O período do gerador de ritmo.} Com $\tau\ll\tau_a$, o período $T$ do modelo~\eqref{eq:halfcentre} é dado pela equação $(\beta-1)(1-E^{2+b})/(\beta-E)=b\,(1-E^{1+b})/(1+b)$, com $E=e^{-T/(2\tau_a)}$. (a)~Ache $T$ com $\beta=b=2$, $\tau_a=0.4$~s. (b)~Mostre que $T$ não depende da entrada $I$ e que o ritmo só é possível com $b>\beta-1$.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:13:6}
+\emph{Simulação do gerador.} Importe a função \texttt{halfcentre} de \texttt{models/\allowbreak muscle\_models.py} (não execute o próprio arquivo) e meça o período, descartando os dois primeiros ciclos, com $b=0.8$, $1.05$, $1.2$, $1.5$, $2$, $4$ e com $I=0.5$, $1$, $2$. O comando ``ande mais rápido'' pode mudar o passo através de $I$?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:13:7}
+\emph{Rigidez contra reflexo.} Uma articulação está num laço de estiramento: $\dd\theta/\dd t=-a\theta(t)-G\theta(t-d)$, $a=K/B$, $d=30\ms$. Reduza-o ao exercício~\ref{ex:13:4} e ache o menor $a$ com que o desvio se amortece sem oscilar com constante de tempo de $15\ms$, e o $G$ necessário. Como mudar $G$ ao aumentar a co-contração dos músculos?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:13:8}
+\emph{O botão do andamento.} Pelos exercícios~\ref{ex:13:5} e~\ref{ex:13:6}, a entrada $I$ do gerador~\eqref{eq:halfcentre} muda só a amplitude, e não o andamento. Proponha a menor mudança do modelo, com peças do livro, em que abaixo de um certo $I_{\min}$ não há ritmo e acima dele o período diminui com $I$, pelo menos à metade quando $I$ triplica. Ache $I_{\min}$ com $\tau\ll\tau_a$ e verifique por simulação.
+\end{exercise}

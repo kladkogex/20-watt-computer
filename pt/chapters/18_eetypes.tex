@@ -1,0 +1,123 @@
+\chapter{Tipos de neurônios pela função elétrica}
+\chaptermark{Neurônios como componentes}
+\label{sec:eetypes}
+
+No capítulo~\ref{sec:neurontypes} classificamos os neurônios pelo neurotransmissor que sua saída libera. Um engenheiro eletrônico os classificaria de outro modo: pelo que o neurônio faz com seu sinal, isto é, como que componente ele funciona. O componente principal do livro nós conhecemos desde o capítulo~\ref{sec:glutcomputer}: o neurônio integrador com vazamento~\eqref{eq:glutneuron}, um circuito RC com comparador. Mas no cérebro há outros. Na tabela~\ref{tab:eetypes} eles estão reunidos em quatro grupos, e quase todos já apareceram no livro.
+
+\begin{center}
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{>{\raggedright}p{3.1cm}>{\raggedright}p{3.3cm}>{\raggedright}p{4.7cm}>{\raggedright\arraybackslash}p{2.4cm}}
+\caption{Neurônios como componentes: nome, análogo eletrônico, o que o componente faz e onde aparece no livro.}\label{tab:eetypes}\\
+\toprule
+Neurônio & Componente & O que faz & Onde no livro \\
+\midrule
+\endfirsthead
+\toprule
+Neurônio & Componente & O que faz & Onde no livro \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+\multicolumn{4}{l}{\emph{Filtros e integradores}} \\
+neurônio integrador com vazamento & integrador RC com comparador & soma as entradas numa janela $\tau$ e dispara no limiar & cap.~\ref{sec:glutcomputer}, \eqref{eq:glutneuron} \\
+detector de coincidência & porta E com janela temporal & dispara só se as entradas chegam quase juntas; $\tau$ muito pequeno & cap.~\ref{sec:glutcomputer}, \ref{sec:code}, \eqref{eq:window} \\
+neurônio fásico & filtro passa-altas, detector de borda & responde à mudança da entrada e se cala & cap.~\ref{sec:sensors} \\
+neurônio adaptativo & filtro passa-altas com controle automático de ganho & a taxa cai com entrada constante & cap.~\ref{sec:sensors}, \eqref{eq:nakarushton} \\
+ressonador & circuito LC, filtro passa-faixa & responde melhor à entrada de sua própria frequência & seção~\ref{sec:resonator} \\
+integrador sem vazamento & integrador com amplificador operacional & converte velocidade em posição e a mantém & seção~\ref{sec:perfectint} \\
+\midrule
+\multicolumn{4}{l}{\emph{Conversores}} \\
+neurônio tônico & conversor tensão--frequência & a taxa segue a entrada linearmente e quase não se cansa & cap.~\ref{sec:code} \\
+neurônio graduado (sem disparos) & amplificador analógico, buffer & transmite uma tensão contínua a curta distância & cap.~\ref{sec:sensors} \\
+neurônio retificador & retificador de meia onda & a taxa nunca é negativa, $[u]_+$ & cap.~\ref{sec:glutcomputer}, \ref{sec:gaba} \\
+par ``liga--desliga'' & par de retificadores, código de dois fios & um responde a ``mais'', o outro a ``menos'' & cap.~\ref{sec:glutcomputer}, \eqref{eq:dualrail} \\
+neurônio com inibição por derivação & divisor analógico, controle de ganho & divide a entrada em vez de subtrair dela & cap.~\ref{sec:gaba}, \eqref{eq:shunt} \\
+\midrule
+\multicolumn{4}{l}{\emph{Geradores e tempo}} \\
+marca-passo & oscilador de relaxação, multivibrador & emite sozinho disparos com frequência constante & cap.~\ref{sec:serocomputer}, \ref{sec:dofa} \\
+marca-passo com entrada & oscilador controlado por tensão & ritmo próprio, que a entrada acelera ou desacelera & cap.~\ref{sec:chemoutput} \\
+neurônio de rajadas & gerador de rajadas com porta & emite rajadas de disparos rápidos, os ``traços'' & cap.~\ref{sec:code}, \eqref{eq:burst} \\
+neurônio travado em fase & detector de fase, malha de captura de fase & dispara numa fase definida da onda de entrada & cap.~\ref{sec:sensors}, \ref{sec:chemoutput} \\
+axônio com atraso & linha de atraso & atrasa o sinal por um tempo dado & cap.~\ref{sec:glutcomputer}, fig.~\ref{fig:itd} \\
+\midrule
+\multicolumn{4}{l}{\emph{Memória e comutação}} \\
+neurônio biestável & disparador Schmitt, latch & uma entrada curta o leva a um estado duradouro & seção~\ref{sec:bistable} \\
+neurônio com ramos dendríticos & multiplexador, pequena rede de várias camadas & o ramo só deixa passar a entrada se houver uma entrada de habilitação & cap.~\ref{sec:synthesis} \\
+\end{longtable}
+\end{center}
+
+Uma ressalva é mais importante que a tabela inteira: não são células diferentes, e sim \emph{modos} diferentes. O mesmo neurônio pode ser um integrador com entrada lenta e um detector de coincidência quando a inibição encurta seu $\tau$ (capítulo~\ref{sec:code}); um marca-passo na vigília e um receptor silencioso no sono. Que componente resulta é decidido pelos canais iônicos da membrana e pelos canais de difusão que os ajustam.
+
+\section{Quatro componentes que ainda não apareceram no livro}
+
+\subsection{O ressonador}
+\label{sec:resonator}
+
+Alguns neurônios têm uma corrente lenta que se opõe a qualquer mudança de tensão: se a tensão sobe, a corrente a puxa para baixo; se cai, puxa para cima, mas com atraso. Para o eletrônico, essa corrente se comporta como uma indutância, e junto com a capacitância da membrana forma um circuito ressonante. O neurônio responde mais forte à entrada de uma certa frequência, em geral de alguns hertz a uma ou duas dezenas de hertz, e mais fraco a entradas mais lentas e mais rápidas~\cite{HutcheonYarom2000}. É um filtro passa-faixa numa só célula: de uma entrada ruidosa ele escolhe o ritmo da sua frequência, por exemplo o ritmo local do capítulo~\ref{sec:gaba}.
+
+\subsection{O integrador sem vazamento}
+\label{sec:perfectint}
+
+Um integrador com vazamento lembra a entrada apenas pelo tempo $\tau$: dezenas de milissegundos. Mas o olho, para ficar parado, precisa lembrar sua posição por segundos: o comando ``girar'' chega como uma velocidade breve, e o olho precisa ser mantido na nova posição. A rede resolve isso com a mesma realimentação da memória do capítulo~\ref{sec:glutcomputer}. Se um grupo de neurônios com constante de tempo $\tau$ excita a si mesmo com peso $w$, então $\tau\,\dd r/\dd t=-r+w\,r+I$, e a constante de tempo do grupo é
+\begin{empheq}[box=\keybox]{equation}
+\tau_{\text{ef}} \;=\; \frac{\tau}{1-w} .
+\label{eq:perfectint}
+\end{empheq}
+Com $\tau=0.1\,\text{s}$ e $w=0.995$ obtém-se $20\,\text{s}$: um integrador quase ideal feito de neurônios que, cada um sozinho, esquecem em um décimo de segundo~\cite{Seung1996}. O preço é o ajuste fino: com $w$ um pouco acima de um, o integrador satura; um pouco abaixo, esquece depressa. Por isso esse integrador precisa de ajuste contínuo por aprendizado, como o descrito no capítulo~\ref{sec:motorlearning}.
+
+\subsection{O neurônio biestável}
+\label{sec:bistable}
+
+Nos capítulos~\ref{sec:glutcomputer} e~\ref{sec:gaba}, o flip-flop era montado com um grupo de neurônios. Mas também existe flip-flop numa única célula. Alguns neurônios têm uma corrente que, uma vez ligada, sustenta sozinha a excitação: uma entrada curta leva o neurônio a um funcionamento prolongado, o \emph{platô}, e a inibição o devolve ao repouso. É um disparador Schmitt: o neurônio tem dois estados estáveis e histerese entre eles. É assim que se comportam, por exemplo, os neurônios \nt{ACET} que controlam os músculos, e essa propriedade é ligada por um canal de difusão: o platô aparece quando a serotonina chega ao neurônio~\cite{Hounsgaard1988}. A mesma célula, com \nt{SERO}, é um latch; sem ele, um integrador comum.
+
+\subsection{Integradores e ressonadores}
+
+A teoria divide as células excitáveis em duas classes~\cite{Izhikevich2007}. Os \emph{integradores} se parecem com um oscilador controlado por tensão que parte do zero: logo acima do limiar, o neurônio funciona tão devagar quanto se queira, e a taxa cresce suavemente com a entrada. Esse neurônio soma tudo o que chegou e transmite bem, pela taxa, a grandeza da entrada. Os \emph{ressonadores} se parecem com um oscilador de frequência mínima: não sabem funcionar devagar, com entrada no limiar já emitem disparos a uma frequência finita e preferem entradas da sua frequência. Os primeiros são os componentes naturais do código de taxa do capítulo~\ref{sec:code}; os segundos, do código temporal.
+
+\begin{keyblock}
+\begin{proposition}[Um neurônio, muitos componentes]
+\label{prop:eetypes}
+Pela função elétrica, os neurônios funcionam como integradores com e sem vazamento, detectores de coincidência, filtros passa-altas e passa-faixa, conversores tensão--frequência, retificadores, divisores, osciladores, linhas de atraso e flip-flops. Que componente uma dada célula se torna é definido por seus canais iônicos e pelos canais de difusão que os ajustam. Os modos em si foram medidos; o quanto o cérebro usa essa reconfiguração para calcular é, em grande parte, uma hipótese.
+\end{proposition}
+\end{keyblock}
+
+Para o engenheiro, isso lembra um arranjo lógico programável: o hardware é um só, e o componente é definido pela configuração. Só que aqui a configuração não muda na gravação do firmware, mas em operação, pelos canais de difusão lentos de que tratamos nos capítulos~\ref{sec:serocomputer}--\ref{sec:acet}.
+
+\section{Exercícios}
+
+\begin{exercise}[\lvlA]
+\label{ex:18:1}
+\emph{Tolerância do integrador sem vazamento.} Neurônios com $\tau=0.1$~s mantêm a posição do olho segundo~\eqref{eq:perfectint} por $T=1$~s com erro de no máximo $5\%$ para qualquer lado. (a)~Ache a faixa admissível de $w$. (b)~$w$ é a soma dos pesos de $K$ sinapses, cada uma com erro independente de $10\%$. Com que $K$ a dispersão da soma cabe na tolerância?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:18:2}
+\emph{O ressonador como circuito.} Descrevemos a corrente lenta da seção~\ref{sec:resonator} pela variável $W$: $C\,\dd V/\dd t=-g_LV-g_wW+I$, $\tau_w\,\dd W/\dd t=V-W$. Mostre que isso é um circuito $RC$ com um ramo paralelo $R_w=1/g_w$, $L_w=\tau_w/g_w$ e, com $C/g_L=10\ms$, $\tau_w=100\ms$, $\alpha=g_w/g_L=4$, ache a frequência de ressonância e o ganho de $|Z|$ nela sobre $|Z(0)|$.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:18:3}
+\emph{Como o integrador começa a funcionar.} (a)~Neurônio $\tau\,\dd V/\dd t=-V+\mu$, $\tau=10\ms$, com limiar $\theta$ e reinício em zero. Com que $\mu/\theta-1$ a taxa é $1$~Hz? (b)~Que taxa dá o modelo $\tau\,\dd v/\dd t=v^2+\mu$ (disparo: $v$ vai a $+\infty$, reinício em $-\infty$) com $\mu=0.01$?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:18:4}
+\emph{Simulação: integrador e ressonador.} O modelo do exercício~\ref{ex:18:2} com $g_L=1$, $\tau_m=10\ms$, $\tau_w=100\ms$, limiar $1$ e reinício $V\to0$ ($W$ não muda) recebe $\mu=1.5\sin2\pi ft$, $f=1$--$40$~Hz. Em que faixa de frequências o neurônio emite disparos com $\alpha=0$ e com $\alpha=4$? Compare com a condição $1.5\,|Z(f)|>1$.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:18:5}
+\emph{Um latch de uma só célula.} Neurônio com corrente de platô: $\tau\,\dd r/\dd t=-r+F(wr+I)$, $F(x)=\min(1,\max(0,x))$, $\tau=10\ms$, $w=1.5$, fundo $I=-0.2$. (a)~Qual a menor duração de um pulso $I=0.3$ que leva o neurônio de $r=0$ ao platô? (b)~Qual a menor amplitude $B$ de um pulso longo $I=-0.2-B$ que o devolve ao repouso?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:18:6}
+\emph{Autoajuste do integrador.} Na fixação do olhar, a entrada é $I=0$, um sensor de deslizamento dá a velocidade de deriva $e=\dd r/\dd t$, e $\dd w/\dd t=-\eta\,e\,r$. Com $w=0.95$, $\tau=0.1$~s, $\langle r^2\rangle=1$, ache o $\eta$ com que, em $60$~s de fixações, $|1-w|$ entra na tolerância do exercício~\ref{ex:18:1}. O que quebra se aprender também durante os giros do olho?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:18:7}
+\emph{Por que reconfigurar o componente?} Um canal de difusão comuta o $\alpha$ do modelo do exercício~\ref{ex:18:2} entre $0$ e $4$. Quantas vezes o ressonador supera o integrador na relação sinal-ruído para uma senoide fraca em ruído branco de corrente a $11$~Hz e a $1$~Hz? Invente uma tarefa em que compense justamente a troca de modo.
+\end{exercise}

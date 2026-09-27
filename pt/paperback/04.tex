@@ -1,0 +1,66 @@
+\chapter{O código Morse}
+% versão completa: chapters/04_code.tex
+
+O código Morse tem dois sinais --- o ponto e o traço --- e as pausas entre eles. O alfabeto do neurônio é ainda mais pobre: um único sinal, o clique curto. Então a mensagem inteira está escrita nas pausas. Em que língua conversam os neurônios?
+
+\section*{Quanto se pode dizer com cliques}
+
+Vamos começar como um engenheiro de comunicações: quanta informação cabe, afinal, num canal assim? Se o receptor distingue o instante de chegada do clique com precisão de um milissegundo, um clique pode carregar cerca de oito bits. Se o receptor só conta quantos cliques chegaram em um segundo, ele tira do mesmo fluxo dezenas de vezes menos. Quase toda a capacidade do canal está no \emph{tempo}.
+
+\pencilfig{4}{\pencilart{4}}{Em cima, o código Morse; embaixo, o neurônio: um único sinal, o clique; a mensagem inteira está nas pausas.}
+
+Mas o canal é ruidoso. O neurônio em si, por estranho que pareça, é preciso: se aplicarmos a ele muitas vezes a mesma corrente variável, ele vai clicar nos mesmos instantes, com precisão de um milissegundo. O ruído vem das conexões: mais da metade dos cliques que chegam ao fim do fio simplesmente se perde --- a substância não é liberada toda vez. No córtex vivo, o fluxo de cliques parece quase aleatório. Isso é ruído --- ou uma mensagem que ainda não sabemos ler? Uma mensagem bem comprimida é indistinguível do acaso para quem está de fora, então a questão está em aberto.
+
+\section*{Devagar, mas com segurança}
+
+O código mais simples é contar os cliques: quanto mais frequentes, maior o número. Esse código não teme nem perdas nem tremores. Mas é lento. Para conhecer a frequência com precisão de dez por cento, são precisos uns cem cliques, e isso leva segundos. Enquanto isso, você reconhece um animal numa imagem mostrada por um instante em cerca de quinze centésimos de segundo, e nesse tempo o sinal passa por uma dezena de estágios de processamento. Em cada estágio, cada neurônio consegue clicar no máximo uma vez.
+
+A saída é usar muitos neurônios de uma vez: em vez de um ouvinte contar cliques por um minuto, cem ouvintes contam por um instante. Só que aqui também há uma armadilha: os ruídos de neurônios vizinhos são um pouco parecidos, como boatos numa multidão. Fazer a média sobre algumas dezenas de vizinhos ajuda; depois disso, quase para de ajudar.
+
+\pencilfig{122}{%
+% error of the group-average rate relative to one neuron, sqrt(c + (1-c)/N): c = 0.1 (neighbours' noise
+% is slightly alike; full edition, chapter 4) and c = 0 (independent noise). x = 0.8 log2 N, y = 2.2 * error
+\draw[pen] (0,0) -- (5.9,0); \draw[pen] (0,0) -- (0,2.45);
+\foreach \x/\n in {0/1, 2.66/10, 5.31/100}{\draw[pcGray, line width=0.5pt] (\x,0) -- (\x,-0.08); \node[lbl, anchor=north] at (\x,-0.08) {\n};}
+\node[lbl, anchor=north] at (2.95,-0.38) {quantos neurônios na média};
+\node[lbl, anchor=south, rotate=90] at (-0.1,1.2) {erro};
+\draw[pcGray, densely dashed, line width=0.5pt] (0,0.70) -- (5.6,0.70);
+\draw[penlite=pcBlue] plot[smooth] coordinates {(0.00,2.20) (0.47,1.80) (0.80,1.56) (1.27,1.27) (1.60,1.10) (2.07,0.90) (2.40,0.78) (2.87,0.64) (3.20,0.55) (3.67,0.45) (4.00,0.39) (4.47,0.32) (4.80,0.28) (5.27,0.22) (5.60,0.19)};
+\draw[penlite=pcRed] plot[smooth] coordinates {(0.00,2.20) (0.47,1.84) (0.80,1.63) (1.27,1.39) (1.60,1.25) (2.07,1.10) (2.40,1.01) (2.87,0.92) (3.20,0.87) (3.67,0.82) (4.00,0.79) (4.47,0.76) (4.80,0.74) (5.27,0.73) (5.60,0.72)};
+\node[lbl, text=pcRed, anchor=west, align=left] at (5.7,0.74) {ruído parecido,\\como no córtex};
+\node[lbl, text=pcBlue, anchor=west] at (5.7,0.19) {ruído independente};
+\node[lbl, anchor=west] at (0.9,2.15) {um neurônio};
+\node[lbl, anchor=north west] at (0.05,0.66) {três vezes menor};
+}{O erro da frequência média de um grupo de neurônios. Se os ruídos fossem independentes, ele continuaria caindo. Os ruídos parecidos dos vizinhos o param em cerca de um terço, e esse limite já é atingido com algumas dezenas de neurônios.}
+
+\section*{Depressa: quem chega primeiro}
+
+A segunda saída é escrever o número no tempo. Um sinal forte faz o neurônio clicar cedo; um fraco, tarde. Um único clique já carrega um número. Mas a partir de quando contar o tempo, se não há relógio? Dá para comparar os neurônios entre si: quem clicou primeiro, quem clicou em segundo. A ordem de chegada dos cliques de dez neurônios carrega mais de vinte bits. E uma salva geral serve de marca de início --- como a pausa longa entre as palavras no código Morse.
+
+\pencilfig{121}{%
+% latency code: one click per neuron; the stronger the input, the earlier the click
+\foreach \y/\t/\l/\k in {1.5/1.1/{entrada forte}/1, 0.95/2.4/{média}/2, 0.4/4.2/{fraca}/3}{
+  \draw[pen] (0.4,\y) -- (5.1,\y);
+  \draw[pcBlue, line width=0.9pt] (\t,\y) -- (\t,\y+0.42);
+  \node[lbl, anchor=east] at (0.3,\y+0.1) {\l};
+  \draw[dotpen=pcAmber, wash=pcAmber] (5.6,\y+0.16) circle (0.17);
+  \node[font=\scriptsize, text=pcAmber!60!black] at (5.6,\y+0.16) {\k};}
+\draw[pcGray, densely dashed, line width=0.5pt] (0.55,0.25) -- (0.55,2.1);
+\node[lbl, anchor=south] at (0.55,2.1) {estímulo};
+\node[lbl, text=pcAmber!70!black, anchor=south] at (5.6,2.1) {ordem};
+\draw[arr] (0.7,0.05) -- (4.9,0.05); \node[lbl, anchor=north] at (2.8,0.02) {tempo};
+}{Entrada forte, clique cedo; fraca, clique tarde. A ordem dos cliques diz qual entrada é mais forte, mesmo que o instante inicial seja desconhecido.}
+
+\section*{Quem escolhe o código é o ouvinte}
+
+A mesma sequência de cliques carrega a frequência, os instantes e a ordem. O que disso será lido é o destinatário quem decide. Um neurônio com um ``furo largo'' no balde acumula água devagar e só ouve a frequência. Um neurônio que esquece depressa só ouve coincidências. E os freios, como vimos, sabem mudar o neurônio de um modo para o outro.
+
+Até as conexões filtram o sinal. Algumas se cansam depressa e por isso comunicam não a frequência, mas a sua \emph{mudança}. Outras, ao contrário, deixam passar melhor rajadas de vários cliques seguidos: o neurônio ganha um ``traço''. Enquanto isso, os neurônios inibitórios põem a pontuação --- cortam o fluxo em janelas e o abafam quando ele está alto demais.
+
+\section*{Uma língua econômica}
+
+E por último: essa língua é cara. Cada clique custa energia, e o cérebro inteiro consome cerca de vinte watts. Dividindo esses watts por todos os neurônios, dá em média algo da ordem de um clique por segundo por neurônio. A maioria dos neurônios passa a maior parte do tempo calada. O código do cérebro é obrigado a ser avarento.
+
+No código Morse, a letra mais frequente do inglês, o E, é um único ponto: o que é frequente se codifica curto. Nos neurônios é parecido: o que é esperado custa poucos cliques. Um estímulo constante aos poucos deixa de provocar resposta, os sensores comunicam mudanças, e a dopamina, só surpresas. O cérebro gasta os seus cliques com novidades.
+
+\fullversion{4}

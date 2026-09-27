@@ -1,0 +1,43 @@
+\chapter{Cómo aprende la máquina a moverse}
+% versión completa: chapters/15_motorlearning.tex
+
+Vimos dos maneras de aprender. Sin maestro, con “juntas, luego conectadas”, la máquina memoriza lo que aparece a menudo. Con dopamina, aprende de las sorpresas: salió mejor o peor de lo esperado. Pero cuando usted falla al lanzar una pelota al aro, no solo sabe que salió mal. Sabe \emph{cuánto} y \emph{hacia qué lado} falló. Es el tercer maestro: un error con dirección, personal para cada salida.
+
+\section*{El cable del error}
+
+En el cerebro hay un circuito aparte para aprender movimientos, y está construido de una forma muy inusual. Un número enorme de pequeñas neuronas \nt{GLUT}, decenas de miles de millones, despliega las señales de entrada en una lista muy larga de rasgos. Las neuronas de salida de este circuito son inhibidoras, \nt{GABA}; hay decenas de millones, y cada una escucha cien mil entradas. Y a cada neurona de salida llega exactamente un cable especial: el cable del error. Si el error llegó mientras una entrada estaba activa, esa entrada se debilita. Es la clásica regla de “reduce el error” con la que los ingenieros entrenan los filtros adaptativos.
+
+\pencilfig{15}{\pencilart{15}}{Un fallo no solo dice “mal”, sino también “cuánto y hacia qué lado”.}
+
+Este maestro es más rápido que el de la dopamina: cada salida tiene su propio error, y no hace falta pescar la parte propia en una señal común para todas. Eso sí, el error llega con retraso, y la conexión vuelve a necesitar una “etiqueta” que recuerde que participó. Los experimentos muestran que la duración de esa etiqueta está ajustada al retraso del error.
+
+\section*{El modelo interno}
+
+¿Qué aprende un circuito así? Un modelo del propio cuerpo: qué resultado dará una orden. Con él no hace falta esperar a los sensores atrasados: el resultado se puede predecir de antemano. Según una hipótesis, por eso usted no puede hacerse cosquillas a sí mismo: el cerebro sabe de antemano lo que va a pasar y resta lo predicho.
+
+\section*{El alumno rápido y el lento}
+
+Póngase unos lentes que desplacen la imagen hacia un lado y lance dardos. Los primeros tiros se desvían, pero en unas decenas de intentos se adaptará. Quítese los lentes y otra vez falla, ahora hacia el otro lado. Lo interesante viene después. Los experimentos se describen bien con dos alumnos a la vez: el rápido aprende rápido y olvida rápido; el lento aprende despacio pero recuerda mucho tiempo. Si tras una adaptación larga se reaprende brevemente al revés, la corrección total vuelve a cero, pero luego la habilidad vieja reaparece en parte por sí sola: el alumno rápido olvidó, y el lento recuerda. Un modelo con un solo alumno no puede hacer esto, y las personas sí.
+
+\pencilfig{115}{%
+% figures/tworate_*.dat from models/motor_learning.py: adapt 200 throws, reverse until the sum is back to zero, then no errors at all
+\begin{scope}[x=0.026cm, y=1.45cm]
+\fill[pcGray, opacity=0.08] (220,-1.1) rectangle (226,1.1);
+\draw[pen] (0,0) -- (340,0);
+\draw[pcGray, line width=0.4pt] plot file {figures/tworate_p.dat};
+\draw[penlite=pcAmber] plot file {figures/tworate_fast.dat};
+\draw[penlite=pcBlue] plot file {figures/tworate_slow.dat};
+\draw[pcGray!40!black, line width=1.1pt] plot file {figures/tworate_net.dat};
+\draw[pcGray, densely dashed, line width=0.4pt] (226,-1.1) -- (226,1.1);
+\end{scope}
+\node[lbl, anchor=south] at (3.1,1.47) {con lentes};
+\node[lbl, anchor=north west, align=left] at (6.3,-0.55) {breve\\reaprendizaje};
+\node[lbl, anchor=south west] at (6.0,1.47) {sin errores};
+\node[lbl, text=pcBlue, anchor=north] at (4.4,0.8) {lento};
+\node[lbl, text=pcAmber!80!black, anchor=south west] at (1.15,0.5) {rápido};
+\node[lbl, text=pcGray!40!black, anchor=south] at (7.7,0.95) {la suma reaparece};
+}{La corrección de los dos alumnos en el modelo. Tras el reaprendizaje breve, la suma está en cero, pero el lento recuerda lo viejo, y reaparece solo.}
+
+¿Para qué dos alumnos? Según una hipótesis, es la misma receta que la del navegante del capítulo nueve: el mundo cambia rápido y despacio, y conviene seguir ambas cosas.
+
+\fullversion{15}

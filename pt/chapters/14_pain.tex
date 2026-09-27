@@ -1,0 +1,168 @@
+\chapter{A dor: um sinal de alarme}
+\chaptermark{A dor}
+\label{sec:pain}
+
+\section{Alarme, e não medição}
+
+Todos os sensores do capítulo~\ref{sec:sensors} mediam o mundo: quanta luz, que altura tem o som, que pressão. A dor funciona de outro modo. Ela não informa ``o que há lá'', e sim ``perigo, largue tudo''. Para o engenheiro, não é um canal de medição, mas um \emph{sinal de alarme}: uma linha de prioridade máxima, que precisa atravessar qualquer trabalho em curso da máquina.
+
+Um alarme difere de um canal de medição em três propriedades, e a dor tem as três. Primeiro, é difícil abafá-la por adaptação: os sensores de dor se adaptam muito menos que os sensores de toque, e depois de uma lesão leve ficam até mais sensíveis~\cite{LaMotte1982hyper}; o enfraquecimento da resposta após um aquecimento forte foi medido em apenas um dos seus tipos~\cite{Treede1995heat}. O sensor de luz se cala sobre um fundo constante (fig.~\ref{fig:adaptation}), e um alarme que se cala depois de um minuto é inútil. Segundo, ela tem limiar alto: os sensores de dor só disparam quando o estímulo está perto de ser perigoso; para o calor, por exemplo, os limiares dos diferentes sensores vão de $41^\circ$ a $46$--$48^\circ$, conforme o tipo~\cite{Treede1995heat, Weidner1999cfib}. Terceiro, e isso é o principal para este capítulo, o volume do alarme não é decidido só pelo sensor, mas pela própria máquina. A mesma ferida dói de modo diferente em situações diferentes. Vejamos com que peças já conhecidas isso é montado.
+
+Os sensores de dor são neurônios \nt{GLUT}, como os demais neurônios sensoriais do capítulo~\ref{sec:sensors}. Parte deles libera, junto com o glutamato, a substância~P do apêndice~\ref{sec:othermediators}, que reforça lentamente a transmissão.
+
+\section{Dois fios: a dor rápida e a lenta}
+
+Bata o dedo, e você sentirá a dor duas vezes: primeiro curta e aguda, depois de um segundo, surda e longa. São dois fios diferentes. O fio rápido é isolado e conduz disparos com velocidade $v$ de $5$ a $30$ metros por segundo; o lento é fino e nu, $0.5$--$2$ metros por segundo. O sinal do pé percorre cerca de um metro, e o tempo de chegada
+\begin{empheq}[box=\keybox]{equation}
+t \;=\; \frac{L}{v}
+\label{eq:paintime}
+\end{empheq}
+é de dezenas de milissegundos para o fio rápido e de cerca de um segundo para o lento. Os dois fios levam duas mensagens. O rápido diz \emph{onde} e \emph{quando}: os seus disparos chegam antes e com mais precisão, como no código temporal do capítulo~\ref{sec:code}. O lento diz \emph{quão ruim é}, e a sua dor longa e surda mantém a máquina em modo de alarme enquanto a lesão não passa.
+
+\section{A porta na medula espinhal}
+
+O primeiro lugar aonde chega o sinal de dor é a medula espinhal, e lá ele passa por uma \emph{porta}~\cite{MelzackWall1965}; os neurônios concretos dessa porta foram encontrados relativamente há pouco tempo~\cite{Duan2014}. No neurônio \nt{GLUT} de saída, que transmite a dor adiante para o cérebro, convergem o fio da dor e o fio do toque. E ao lado fica um neurônio intermediário inibitório, \nt{GABA} ou \nt{GLYC}, que o toque excita (fig.~\ref{fig:gate}). O toque fecha a porta. Na teoria original da porta~\cite{MelzackWall1965}, a dor, ao contrário, desliga esse intermediário, e uma dor forte abre a porta; isso é uma suposição da teoria e não foi mostrado diretamente nos neurônios da porta já encontrados.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  nrn/.style={circle,draw,very thick,minimum size=1.0cm,inner sep=0pt,font=\scriptsize},
+  inh/.style={-{Bar[width=7pt]},thick,red!70!black},
+  bc/.style={->,thick,densely dashed,orange!85!black}]
+\node[nrn,fill=blue!6] (Z) at (6,0) {\nt{GLUT}};
+\node[nrn,fill=red!10] (Q) at (3.6,-1.6) {\nt{GABA}};
+\draw[->,very thick,red!70!black] (0,0.6) node[left,font=\small,black,align=right] {dor $\nu$} -- (5.45,0.15);
+\draw[->,very thick,blue!60!black] (0,-2.6) node[left,font=\small,black,align=right] {toque $\mu$} -- (2.9,-2.0);
+\draw[->,thick,blue!60!black] (1.8,-2.35) -- (5.5,-0.35) node[pos=0.8,below right=-2pt,font=\scriptsize] {$w_{z\mu}$};
+\draw[inh] (1.6,0.5) -- (3.35,-1.1) node[pos=0.5,left=1pt,font=\scriptsize] {$w_{q\nu}$};
+\draw[inh] (Q) -- (Z) node[pos=0.5,above left=-1pt,font=\scriptsize] {$\beta$};
+\draw[->,very thick] (Z) -- (8.2,0) node[right,font=\small,align=left] {ao cérebro: $z$};
+\draw[bc] (6,2.1) node[above,font=\scriptsize,black,align=center] {de cima: \nt{SERO}, \nt{NORA}, opioides} -- (Z.north) node[pos=0.45,right,font=\scriptsize,black] {ganho $g$};
+\end{tikzpicture}
+\caption{A porta da dor na medula espinhal segundo o modelo~\eqref{eq:gate}. O neurônio \nt{GLUT} de saída recebe a dor $\nu$ e uma excitação fraca do toque $\mu$. O intermediário inibitório (\nt{GABA} ou \nt{GLYC}) é excitado pelo toque e, pela suposição da teoria da porta, desligado pela dor. De cima, pelos canais de difusão, chega o ganho $g$.}
+\label{fig:gate}
+\end{figure}
+
+Vamos escrever isso para taxas, como no capítulo~\ref{sec:gaba}. A taxa do intermediário $q$ e a taxa de saída $z$ são
+\begin{empheq}[box=\keybox]{equation}
+q \;=\; \bigl[w_{q\mu}\,\mu + q_0 - w_{q\nu}\,\nu\bigr]_+ ,
+\qquad
+z \;=\; \bigl[\,g\,(\nu + w_{z\mu}\,\mu) - \beta\,q\,\bigr]_+ ,
+\label{eq:gate}
+\end{empheq}
+em que $\nu$ é a entrada de dor, $\mu$ é a entrada de toque, $w$ são os pesos das conexões (o primeiro índice é o destino, o segundo, a origem), $\beta$ é a força da inibição, $q_0$ é a atividade de fundo própria do intermediário, e $g$ é o ganho definido de cima (falaremos dele adiante). É o veto~\eqref{eq:veto} do capítulo~\ref{sec:gaba}: ``dor, mas não com toque'', com uma correção tomada da teoria da porta como suposição: uma dor forte desliga ela mesma o neurônio que veta.
+
+Calculamos o modelo com $w_{q\mu}=1$, $q_0=0.2$, $w_{q\nu}=0.5$, $w_{z\mu}=0.3$, $\beta=1.5$ (fig.~\ref{fig:gatecurves}). Sem toque, a dor começa a passar a partir de $\nu\approx0.18$. Com toque, o limiar sobe para $0.86$, e com $\nu=1$ a saída cai a um quarto, de $1$ para $0.25$. Já com uma dor forte, $\nu=2$, o toque não muda mais nada: a porta está escancarada. Assim é também na vida: esfregar uma pancada ajuda, mas numa lesão grave, não. O toque sozinho, sem dor, não passa pela porta: o alarme não dispara com um simples contato.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=5.2cm,y=1.35cm]
+\draw[->,gray!70!black] (0,0) -- (2.12,0) node[right,font=\small,black] {dor $\nu$};
+\draw[->,gray!70!black] (0,0) -- (0,4.3) node[left,font=\small,black] {$z$};
+\foreach \t in {0,0.5,1,1.5,2}{\draw[gray!60!black] (\t,-0.05) -- (\t,0.05); \node[below,font=\scriptsize] at (\t,0) {\t};}
+\foreach \f in {1,2,3,4}{\draw[gray!60!black] (-0.01,\f) -- (0.01,\f); \node[left,font=\scriptsize] at (0,\f) {\f};}
+\draw[very thick,red!70!black] plot file {figures/pain_gate_notouch.dat};
+\draw[very thick,blue!60!black] plot file {figures/pain_gate_touch.dat};
+\draw[very thick,orange!85!black,densely dashed] plot file {figures/pain_gate_sens.dat};
+\draw[very thick,red!70!black] (0.08,3.9) -- (0.2,3.9) node[right,font=\scriptsize,black] {sem toque};
+\draw[very thick,blue!60!black] (0.08,3.45) -- (0.2,3.45) node[right,font=\scriptsize,black] {com toque};
+\draw[very thick,orange!85!black,densely dashed] (0.08,3.0) -- (0.2,3.0) node[right,font=\scriptsize,black] {após sensibilização, $g=2$};
+\end{tikzpicture}
+\caption{A saída da porta~\eqref{eq:gate} em função da força da dor. O toque eleva o limiar e abafa a dor fraca e média, mas não a forte. A sensibilização (linha tracejada) dobra o ganho: a mesma dor é transmitida com o dobro do volume, e o limiar desce.}
+\label{fig:gatecurves}
+\end{figure}
+
+\section{O botão de volume vindo de cima}
+
+A porta não é controlada só por baixo. Do tronco encefálico descem até ela vias que mudam o ganho $g$ em~\eqref{eq:gate}: \nt{SERO}, \nt{NORA} e os peptídeos opioides do apêndice~\ref{sec:othermediators}~\cite{Fields2004}. São os mesmos canais de difusão dos capítulos~\ref{sec:serocomputer}--\ref{sec:acet}, só que aqui o seu botão é o volume do alarme. Eles sabem girá-lo nos dois sentidos: os mesmos circuitos descendentes podem tanto abafar a dor quanto amplificá-la.
+
+Por que a máquina baixaria o alarme? Porque o alarme é uma interrupção, e uma interrupção nem sempre é oportuna. Um animal que foge de um predador não deve parar por causa de uma pata ferida: primeiro correr, depois lamber a ferida. A expectativa de alívio também abafa a dor, e parte desse efeito some se os receptores opioides forem bloqueados~\cite{Levine1978}: a expectativa calculada no cérebro desce pelo canal opioide até a porta. Esse quadro em si foi medido; como exatamente o cérebro decide qual deve ser o volume é hipótese.
+
+\section{Sensibilização: o alarme que aprende}
+
+Depois de uma lesão, os neurônios de saída da porta ficam mais sensíveis: a mesma entrada provoca uma saída maior, e o limiar desce~\cite{Woolf1983}. No modelo~\eqref{eq:gate} isso é um aumento do ganho $g$, e a descrição mais simples dele é um circuito RC lento carregado pela própria dor:
+\begin{empheq}[box=\keybox]{equation}
+\tau_s\,\frac{\dd g}{\dd t} \;=\; -(g-1) + k_s\,z ,
+\label{eq:sensitization}
+\end{empheq}
+em que $\tau_s$ é o tempo para a sensibilidade voltar ao normal; ele é maior que a duração da própria dor, porque a sensibilização persiste depois que o estímulo lesivo cessou~\cite{Woolf1983}; e $k_s$ é a força da carga. Enquanto o tecido está lesado, a saída da porta mantém $g$ acima de um, e tudo o que acontece perto da ferida é transmitido mais alto (linha tracejada na fig.~\ref{fig:gatecurves}: com $g=2$, o limiar desce para $0.11$ e a saída dobra). É um ajuste razoável do alarme: enquanto a lesão não sarou, é melhor pecar pelo excesso de cautela.
+
+Para o engenheiro, é uma realimentação positiva com fuga lenta: a dor aumenta o ganho, o ganho aumenta a dor. Enquanto o laço é fraco, $g$ volta ao normal quando a ferida sara. Mas se o laço é forte, o alarme pode travar no estado ligado mesmo depois que a lesão não existe mais, como o grupo com realimentação forte da fig.~\ref{fig:bistable}. O modelo~\eqref{eq:sensitization} é uma simplificação; a existência da sensibilização central foi medida.
+
+\section{A dor como professor e como interrupção}
+
+Na máquina, a dor tem dois trabalhos além do alarme.
+
+\emph{Professor.} A dor é uma recompensa negativa: na fórmula do erro~\eqref{eq:ctd}, ela entra como $r<0$. Tudo o que foi dito no capítulo~\ref{sec:dofa} vale aqui também: um prenúncio da dor passa a provocar o erro com antecedência, e a rede aprende a evitar o que leva à dor. Experimentos em humanos mostram que a atividade cerebral no aprendizado com dor segue justamente o erro de diferença temporal~\cite{Seymour2004}, e parte dos neurônios \nt{DOPA} responde também a eventos desagradáveis (capítulo~\ref{sec:dofaalt}).
+
+\emph{Interrupção.} A dor arranca a atenção da tarefa em curso: essa é a sua função, e não um efeito colateral~\cite{EcclestonCrombez1999}. No capítulo~\ref{sec:nora}, o mesmo papel de ``interrupção'' foi discutido para a rajada fásica de \nt{NORA}. E a resposta mais rápida nem chega ao cérebro: retirar a mão de algo quente se fecha diretamente na medula, com o mesmo par de músculos e o mesmo veto do antagonista da fig.~\ref{fig:antagonists}.
+
+\begin{keyblock}
+\begin{proposition}[Sinal de alarme]
+\label{prop:pain}
+A dor não é uma medição, e sim um sinal de alarme de alta prioridade. Ela se adapta muito menos que os canais de medição, segue por dois fios (o rápido, ``onde''; o lento, ``quão ruim''), passa por uma porta que o toque fecha (e que uma dor forte, pela suposição da teoria da porta, abre), e o seu volume é definido de cima pelos canais de difusão. Esses dispositivos foram medidos, exceto a abertura da porta pela dor; os modelos simples~\eqref{eq:gate} e~\eqref{eq:sensitization} são simplificações.
+\end{proposition}
+\end{keyblock}
+
+\section{Resumo}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{3.0cm}>{\raggedright}p{4.9cm}>{\raggedright\arraybackslash}p{4.9cm}}
+\toprule
+O que a dor faz & Como & O que se sabe \\
+\midrule
+dispara o alarme & limiar alto, adaptação menor que a do toque & limiar medido; a comparação da adaptação é estimativa \\
+informa ``onde'' e ``quão ruim'' & dois fios de velocidades diferentes~\eqref{eq:paintime} & medido \\
+passa pela porta & veto via \nt{GABA}/\nt{GLYC}~\eqref{eq:gate} & porta medida; abertura pela dor é suposição da teoria; o modelo é simplificação \\
+muda o volume & \nt{SERO}, \nt{NORA}, opioides descendentes & medido; a regra de escolha do volume é hipótese \\
+aprende após a lesão & aumento do ganho~\eqref{eq:sensitization} & sensibilização medida; o modelo é simplificação \\
+ensina a evitar & recompensa negativa em~\eqref{eq:ctd} & semelhança com o erro de diferença temporal medida \\
+interrompe o trabalho & captura da atenção; reflexo de retirada & medido \\
+\bottomrule
+\end{tabular}
+\caption{A dor como sinal de alarme.}
+\label{tab:pain}
+\end{table}
+
+A dor é montada com peças que já vimos (tabela~\ref{tab:pain}): sensores \nt{GLUT}, dois fios, veto por um intermediário inibitório, um botão de volume por difusão, um circuito RC lento, o erro de predição e a interrupção. Só uma coisa nela é nova: é a única entrada da máquina cujo volume a própria máquina define, um alarme que o dono pode tanto abafar quanto reconfigurar.
+
+\section{Exercícios}
+
+\begin{exercise}[\lvlA]
+\label{ex:14:1}
+\emph{Dois fios.} O sinal vem do pé, $L=1$~m. (a)~Uma salva percorre um feixe de fios de um só tipo, cujas velocidades preenchem a faixa~\eqref{eq:paintime}. Quanto ela se espalha até chegar à medula, para o tipo rápido e o lento? (b)~As ondas de dor pelos fios de $15$ e $1$~m/s se distinguem com diferença a partir de $0.1$~s. A partir de que distância elas se fundem?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:14:2}
+\emph{Quando o toque dói.} Porta~\eqref{eq:gate} com os parâmetros do texto; o ganho $g$ cresce com a sensibilização. Até que $g$ o toque sem dor não passa pela porta com nenhuma força $\mu$? Com que $g$ o toque $\mu=1$ começa a passar?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:14:3}
+\emph{Estabilidade da sensibilização.} As entradas são constantes, e a saída da porta é linear em $g$: $z=gA-C$, $A=\nu+w_{z\mu}\mu$, $C=\beta q\ge0$. (a)~Ache o equilíbrio $g^*$ do modelo~\eqref{eq:sensitization} e a condição da sua estabilidade. (b)~Com $k_s=0.5$, ache a força da dor acima da qual o modelo dispara, sem toque e com toque $\mu=1$.
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:14:4}
+\emph{O prenúncio da dor.} Um sinal no instante $0$ prediz dor no instante $T=2$~s; em~\eqref{eq:ctd}, $r(t)=-P\,\delta(t-T)$, $\tau_\gamma=2$~s. (a)~Ache a área do pico de $\delta$ no instante do sinal. (b)~Uma ação no instante $t_e=1$~s cancela a dor. Qual é o pico de $\delta$ nesse instante e o que ele ensinará à rede?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:14:5}
+\emph{O alarme que trava.} Complete a porta de \texttt{models/\allowbreak pain\_gate.py} com a dinâmica~\eqref{eq:sensitization} e a saturação $z\le4$. O toque $\mu=1$ está sempre presente, a lesão $\nu=2$ dura um tempo $T$, depois $\nu=0$. Por simulação, ache o menor $T$ (em unidades de $\tau_s$) depois do qual o alarme continua ligado, com $k_s=4$, $4.6$, $5$, $6$, $8$.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:14:6}
+\emph{Projeto da porta.} Com $\beta=1.5$, $w_{z\mu}=0.3$, $g=1$, escolha em~\eqref{eq:gate} $q_0$, $w_{q\nu}$, $w_{q\mu}$ de modo que o limiar de dor seja $0.2$ sem toque e $1.0$ com toque $\mu=1$, e que o toque deixe de abafar a dor em $\nu_\times=2.5$. Até que ganho $g$ o toque sem dor não passa pela porta?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:14:7}
+\emph{O botão de volume.} O trabalho rende um valor $V$ por unidade de tempo, trabalhar com a lesão $\nu$ custa $c\nu$, de modo que interromper compensa com $\nu>V/c$; a dor interrompe com $z>\theta=0.5$. (a)~Que ganho $g^*$ da porta~\eqref{eq:gate} sem toque dá esse limiar com $V/c=0.25$, $0.5$, $2$? (b)~A partir de que sinais do livro a máquina poderia estimar $V$ e $c$?
+\end{exercise}

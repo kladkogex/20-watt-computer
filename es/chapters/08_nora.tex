@@ -1,0 +1,199 @@
+\chapter{Cuándo explorar y cuándo decidir: añadimos \nt{NORA}}
+\chaptermark{Añadimos \nt{NORA}}
+\label{sec:nora}
+
+\section{Qué falta}
+
+En el capítulo~\ref{sec:dofa} la red aprendía gracias al ruido: las desviaciones aleatorias de la actividad eran la búsqueda, y \nt{DOPA} informaba de si con ellas mejoraba el resultado. Pero allí quedó sin fijar un parámetro: \emph{cuánto} explorar. Si el ruido es demasiado fuerte, la red da tumbos y no aprovecha lo que ya sabe. Si es demasiado débil, elige una y otra vez lo mismo y no nota que cerca de ahí algo ha mejorado. En el aprendizaje por refuerzo esto se llama el dilema entre explotación y exploración, y cada algoritmo tiene una perilla para ello. En el capítulo~\ref{sec:neurontypes} supusimos que en el cerebro esa perilla la gira \nt{NORA}.
+
+En el ser humano hay unas decenas de miles de neuronas noradrenérgicas (tabla~\ref{tab:types}); casi todas están reunidas en un solo grupo pequeño, y sus salidas se extienden prácticamente por todo el cerebro, aunque distintas partes de ese grupo, según se ha visto, atienden en parte a regiones distintas~\cite{Poe2020}. Es un canal de difusión aún más estrecho que \nt{DOPA}. Funciona en dos modos~\cite{AstonJones2005}. En el modo \emph{de fondo}, las neuronas emiten espigas de forma regular, con una frecuencia de fracciones de espiga a unas pocas espigas por segundo, y esa frecuencia cambia lentamente con el grado de vigilia. En el modo \emph{fásico}, responden con una ráfaga breve a un suceso importante para la tarea en curso, aproximadamente en el momento de tomar la decisión. Un punto de control cómodo pero impreciso es el diámetro de la pupila: cambia con la actividad de estas neuronas, pero también con la de otras regiones~\cite{Joshi2016} y la de las salidas colinérgicas en la corteza~\cite{Reimer2016}. La pupila muestra el nivel general de activación, no solo \nt{NORA}.
+
+\section{La ganancia}
+
+Lo medido es esto: la noradrenalina suprime la actividad de fondo de las neuronas más que su respuesta al estímulo, y la relación señal/fondo crece~\cite{Foote1975NE}. Que la pendiente de la característica de una neurona se multiplique literalmente por un coeficiente no se desprende del experimento. Como en el capítulo~\ref{sec:neurontypes}, tomemos un modelo sencillo que reproduce este efecto: la noradrenalina cambia la pendiente de la característica de transferencia del destinatario~\cite{ServanSchreiber1990}. Así, las entradas débiles, subumbrales (el fondo), dan aún menos, y las fuertes, aún más. Supongamos que la neurona responde con la frecuencia
+\begin{empheq}[box=\keybox]{equation}
+r \;=\; F\bigl(g\,(u-\theta)\bigr), \qquad F(z)=\frac{r_{\max}}{1+e^{-z}} ,
+\label{eq:gain}
+\end{empheq}
+donde $u$ es la corriente de entrada, $\theta$ el umbral y $g$ la ganancia, que en el modelo controla \nt{NORA}. Con $g$ pequeña, la frecuencia sigue suavemente a la entrada en un rango amplio: la neurona es un \emph{amplificador analógico}. Con $g$ grande, casi cualquier entrada por encima del umbral da la frecuencia máxima, y por debajo, cero: la neurona es un \emph{comparador}, un elemento casi digital (fig.~\ref{fig:gaincurves}). Una sola perilla conmuta la misma neurona entre dos modos que en electrónica requieren circuitos distintos.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=1.1cm,y=2.4cm]
+\draw[->,gray!70!black] (-3.3,0) -- (3.4,0) node[below left,black] {\small $u$};
+\draw[->,gray!70!black] (-3.3,0) -- (-3.3,1.2) node[left,black] {\small $r$};
+\draw[densely dashed,gray!60!black] (0,0) -- (0,1.1);
+\node[below,font=\small] at (0,0) {$\theta$};
+\draw[densely dotted,gray!60!black] (-3.3,1) -- (3.2,1) node[right,black,font=\small] {$r_{\max}$};
+\draw[very thick,blue!60!black] plot[domain=-3.2:3.2,samples=60] (\x,{1/(1+exp(-0.8*\x))});
+\draw[very thick,orange!85!black] plot[domain=-3.2:3.2,samples=60] (\x,{1/(1+exp(-2*\x))});
+\draw[very thick,red!70!black] plot[domain=-3.2:3.2,samples=120] (\x,{1/(1+exp(min(-8*\x,9)))});
+\node[blue!60!black,font=\small,anchor=west] at (0.5,0.12) {$g$ pequeña: amplificador};
+\node[red!70!black,font=\small,anchor=east] at (-0.3,0.85) {$g$ grande: comparador};
+\end{tikzpicture}
+\caption{La característica de transferencia~\eqref{eq:gain} con tres valores de la ganancia $g$.}
+\label{fig:gaincurves}
+\end{figure}
+
+¿Ayuda una ganancia grande contra el ruido? No siempre. Supongamos que dos entradas difieren en $\Delta u$ y hay que decir cuál es mayor. Si el ruido $\sigma_{\text{antes}}$ se suma a la entrada \emph{antes} del amplificador, se amplifican tanto la señal como el ruido, y su relación no cambia. Pero si el ruido $\sigma_{\text{después}}$ se suma \emph{después} del amplificador (por las sinapsis poco fiables y las espigas aleatorias de la propia red, como en el capítulo~\ref{sec:code}), la relación señal-ruido
+\begin{empheq}[box=\keybox]{equation}
+d' \;=\; \frac{g\,\Delta u}{\sqrt{g^2\sigma_{\text{antes}}^2+\sigma_{\text{después}}^2}}
+\label{eq:gainsnr}
+\end{empheq}
+crece con $g$ hasta que $g\sigma_{\text{antes}}$ iguala a $\sigma_{\text{después}}$~\cite{ServanSchreiber1990}.
+
+\begin{keyblock}
+\begin{proposition}[Cuándo ayuda la ganancia]
+\label{prop:gainnoise}
+Al aumentar la ganancia, \nt{NORA} mejora la discriminación de las entradas solo frente al ruido que surge \emph{después} del amplificador, en la propia red. El ruido que llega con la entrada no lo elimina la ganancia.
+\end{proposition}
+\end{keyblock}
+
+\section{La ganancia en la elección entre dos}
+
+Volvamos a la elección del capítulo~\ref{sec:gaba}: dos grupos de neuronas \nt{GLUT} con entradas $I_1$, $I_2$ se inhiben mutuamente con fuerza $\beta$. Ahora cada grupo tiene una ganancia $g$: en las ecuaciones de elección~\eqref{eq:wta} la expresión entre corchetes se multiplica por $g$. Mientras funcionan ambos grupos, las frecuencias estacionarias se obtienen de $r_1=g(I_1-\beta r_2)$, $r_2=g(I_2-\beta r_1)$. Sumando y restando estas igualdades obtenemos la suma $r_1+r_2=g(I_1+I_2)/(1+g\beta)$ y la diferencia $r_1-r_2=g(I_1-I_2)/(1-g\beta)$. Su cociente mide con qué nitidez prefiere la red una entrada a la otra:
+\begin{empheq}[box=\keybox]{equation}
+\frac{r_1-r_2}{r_1+r_2} \;=\; \varepsilon\,\frac{1+g\beta}{1-g\beta}, \qquad \varepsilon=\frac{I_1-I_2}{I_1+I_2}, \quad g\beta<1 .
+\label{eq:wtagain}
+\end{empheq}
+Una diferencia pequeña de las entradas $\varepsilon$ se amplifica $(1+g\beta)/(1-g\beta)$ veces, y este factor crece sin límite cuando $g\beta$ se acerca a uno. Con $g\beta>1$, el estado en que funcionan ambos grupos es inestable, como en la proposición~\ref{prop:wta}: gana uno y el otro calla (fig.~\ref{fig:pitchfork}).
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=3.2cm,y=1.5cm]
+\draw[->,gray!70!black] (0,0) -- (2.15,0) node[below left,black] {\small $g\beta$};
+\draw[->,gray!70!black] (0,-1.25) -- (0,1.35) node[above,black] {\small $(r_1-r_2)/(r_1+r_2)$};
+\draw[gray!60!black] (1,-0.04) -- (1,0.04); \node[below right,font=\small] at (1,0) {$1$};
+\node[left,font=\scriptsize] at (0,1) {$1$}; \node[left,font=\scriptsize] at (0,-1) {$-1$};
+\draw[very thick,blue!60!black] plot[domain=0:0.905,samples=60] (\x,{0.05*(1+\x)/(1-\x)}) -- (1,1) -- (2.05,1);
+\draw[very thick,blue!60!black] (1.105,-1) -- (2.05,-1);
+\draw[thick,densely dashed,gray!60!black] (1,0) -- (2.05,0);
+\node[font=\small,align=center] at (0.45,-0.62) {delibera:\\ambos grupos\\funcionan};
+\node[font=\small,align=center] at (1.55,0.45) {decidió:\\funciona uno};
+\node[font=\small,blue!60!black,anchor=south west] at (1.05,-0.97) {la entrada débil ganó antes: se mantiene};
+\end{tikzpicture}
+\caption{Elección entre dos con distinta ganancia; las entradas difieren en $\varepsilon=0.05$. Con $g\beta>1$ ambas decisiones son estables (líneas continuas; la victoria de la entrada débil, con $g\beta>(1+\varepsilon)/(1-\varepsilon)\approx1.1$), y la red mantiene la que ya tomó; el estado simétrico (línea discontinua) es inestable.}
+\label{fig:pitchfork}
+\end{figure}
+
+\begin{keyblock}
+\begin{proposition}[La ganancia conmuta el modo de elección]
+\label{prop:gainwta}
+En una red de elección con inhibición mutua $\beta$, la ganancia $g$ lleva la red a través de la frontera $g\beta=1$. Por debajo, la red “delibera”: ambos grupos funcionan y la diferencia de las entradas se amplifica según~\eqref{eq:wtagain}. Por encima, la red “ha decidido”: funciona un grupo y la decisión se mantiene. Cambiando $g$, \nt{NORA} puede conmutar la red entre estos modos sin tocar un solo peso.
+\end{proposition}
+\end{keyblock}
+
+\section{La ganancia como temperatura}
+
+Añadamos ahora a la elección un ruido que surge en la propia red, después del amplificador. Qué grupo gana lo decide el signo de la magnitud $g(u_A-u_B)+\eta$, donde $u_A-u_B$ es la diferencia de las entradas, es decir, la diferencia de los pesos aprendidos del capítulo~\ref{sec:dofa}, y $\eta$ es un ruido de escala $\sigma$. Si el ruido sigue una distribución logística (para la gaussiana la curva es casi la misma), la probabilidad de elegir $A$ es
+\begin{empheq}[box=\keybox]{equation}
+P(A) \;=\; \frac{1}{1+e^{-g\,(u_A-u_B)/\sigma}} .
+\label{eq:softmax}
+\end{empheq}
+Un programador reconocerá aquí la elección softmax con temperatura $T=\sigma/g$. La ganancia es la temperatura inversa. Con $g$ pequeña, incluso una opción claramente mejor se elige apenas algo más a menudo que la peor: la red explora mucho. Con $g$ grande, la mejor opción conocida se elige casi siempre: la red explota lo que sabe.
+
+Precisemos qué es $g$ en~\eqref{eq:wtagain} y~\eqref{eq:softmax}: es la ganancia \emph{efectiva} de la diferencia de las entradas de la tarea en curso en el momento de elegir. Los dos modos de \nt{NORA} actúan sobre ella en sentidos opuestos. La ráfaga fásica en el momento de la decisión la aumenta, y la red afianza la elección. Una actividad de fondo alta, en cambio, va de la mano de la exploración: en humanos, antes de una elección al azar la pupila basal es más ancha~\cite{JepmaNieuwenhuis2011}, y en ratas la entrada de \nt{NORA} a la corteza cingulada anterior pasa la elección a un modo aleatorio~\cite{Tervo2014stochastic}. Así, a una \nt{NORA} de fondo alta le corresponde una $g$ efectiva \emph{pequeña}, y a la ráfaga, una grande.
+
+\section{Cuánto explorar}
+
+¿Qué ganancia es mejor? Lo comprobamos en un modelo. La red elige una de dos acciones según~\eqref{eq:softmax}; cada una trae recompensa con cierta probabilidad, y la red la estima a partir de las recompensas de la acción elegida, como en el capítulo~\ref{sec:dofa}. De vez en cuando el mundo cambia: ambas probabilidades se sortean de nuevo. Puede cambiar tanto la acción elegida como la que la red lleva tiempo sin probar; de lo segundo la red solo puede enterarse explorando. La fig.~\ref{fig:invertedU} muestra qué fracción de la mejor recompensa posible obtiene la red con distintas $g$ constantes.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=1.2cm,y=1cm]
+\draw[->,gray!70!black] (0,0) -- (7.6,0) node[below left,black] {\small $g$};
+\draw[->,gray!70!black] (0,0) -- (0,4.4) node[above,black,font=\small] {fracción de la mejor recompensa};
+\foreach \x/\l in {0/0.5,1/1,2/2,3/4,4/8,5/16,6/32,7/64}{\draw[gray!60!black] (\x,-0.06) -- (\x,0.06); \node[below,font=\scriptsize] at (\x,0) {\l};}
+\foreach \v/\y in {0.8/0.8,0.9/2.4,1.0/4.0}{\draw[gray!60!black] (-0.06,\y) -- (0.06,\y); \node[left,font=\scriptsize] at (0,\y) {\v};}
+\draw[very thick,blue!60!black] plot[mark=*,mark size=1.3pt] coordinates {(0,0.368) (1,0.880) (2,1.728) (3,2.784) (4,3.456) (5,3.616) (6,3.488) (7,3.264)};
+\draw[very thick,red!70!black] plot[mark=*,mark size=1.3pt] coordinates {(0,0.368) (1,0.672) (2,1.184) (3,1.840) (4,2.176) (5,1.920) (6,1.456) (7,1.104)};
+\node[blue!60!black,font=\small,anchor=south] at (5,3.7) {mundo tranquilo};
+\node[red!70!black,font=\small,anchor=north] at (5.1,1.25) {mundo que cambia deprisa};
+\draw[->,thick,blue!60!black] (5,3.25) -- (5,3.55);
+\draw[->,thick,red!70!black] (4,1.8) -- (4,2.1);
+\node[font=\small\itshape,gray!35!black,anchor=west] at (0.15,2.3) {explora a ciegas};
+\node[font=\small\itshape,gray!35!black] at (6.45,2.55) {no nota los cambios};
+\end{tikzpicture}
+\caption{Fracción de la mejor recompensa posible con ganancia $g$ constante (escala logarítmica en $g$). Curva azul: el mundo cambia en promedio una vez cada mil intentos; roja: una vez cada veinte. Las flechas marcan la mejor $g$: en el mundo que cambia deprisa es la mitad. Promedio de 60 ejecuciones de 4000 intentos.}
+\label{fig:invertedU}
+\end{figure}
+
+Con $g=0.5$ la red casi no aprovecha lo que sabe y obtiene cerca de tres cuartas partes de lo posible; con $g$ muy grande se le escapan los cambios. El mejor valor: $g=16$ cuando el mundo cambia una vez cada mil intentos (fracción $0.976$) y $g=8$ cuando cambia una vez cada veinte ($0.886$).
+
+\begin{keyblock}
+\begin{proposition}[La U invertida]
+\label{prop:explore}
+La recompensa que recoge la red depende de la ganancia como una U invertida: una $g$ demasiado pequeña gasta intentos en explorar, y una demasiado grande no nota los cambios. La mejor $g$ es tanto menor cuanto más deprisa cambia el mundo.
+\end{proposition}
+\end{keyblock}
+
+La U invertida se observa también en los experimentos: los animales resuelven mejor la tarea con una actividad de fondo moderada de las neuronas \nt{NORA} y respuestas fásicas nítidas, y con actividad de fondo alta se distraen y saltan de una tarea a otra~\cite{AstonJones2005}. Esto concuerda con la diferencia de modos de la sección anterior: la ráfaga fásica en el momento de la decisión da una $g$ efectiva grande justo cuando hay que elegir, mientras que una actividad de fondo alta sin ráfagas amplifica todo por igual, incluidas las entradas ajenas, de modo que la $g$ efectiva para la tarea en curso cae: eso es exploración.
+
+\section{Quién gira la perilla}
+
+Como la mejor ganancia depende de lo deprisa que cambia el mundo, convendría ajustarla. Pero ¿cómo saben las neuronas \nt{NORA} que el mundo ha cambiado? El indicio natural es la \emph{sorpresa}: los errores de predicción se han hecho mayores de lo habitual. Importa distinguir dos clases de incertidumbre. Si la recompensa es simplemente aleatoria, los errores son siempre grandes, y eso es lo esperado. Pero si los errores crecen de pronto respecto a su tamaño habitual, algo ha cambiado. Según una hipótesis, es justo esta incertidumbre inesperada la que comunica \nt{NORA}, y la esperada la comunica \nt{ACET}~\cite{YuDayan2005}.
+
+¿Qué hacer con esta señal? Se puede bajar la ganancia y explorar más. Se puede subir la tasa de aprendizaje para olvidar antes las estimaciones caducas: los experimentos muestran que tras un cambio brusco las personas aprenden más deprisa, y la pupila se dilata~\cite{Nassar2012}; recordemos que la pupila no indica solo \nt{NORA}, sino también \nt{ACET}~\cite{Reimer2016}. Y se pueden hacer ambas cosas a la vez: según otra hipótesis, la ráfaga fásica de \nt{NORA} funciona como una \emph{interrupción}, una señal con la que la red borra su estado actual y se reconfigura para la nueva situación~\cite{BouretSara2005}, como la línea de interrupción general de un procesador.
+
+Digamos con franqueza qué no encontramos. En el modelo probamos las dos formas sencillas de ajuste: bajar $g$ o subir la tasa de aprendizaje cuando el error suavizado supera su media a largo plazo. En un mundo que tan pronto se queda quieto largo tiempo como cambia a menudo, los mejores ajustes de ambas formas dieron $0.926$--$0.927$ de la mejor recompensa, casi lo mismo que la mejor $g$ constante ($0.925$ con $g=8$) o que una tasa de aprendizaje constante pero suficientemente grande ($0.928$), y los ajustes desafortunados, menos. Las curvas de la fig.~\ref{fig:invertedU} son planas cerca de la cima, y en un mundo así casi no hay nada que ajustar. El ajuste debería compensar allí donde los distintos regímenes exigen ajustes muy distintos. Qué ley de control implementa exactamente \nt{NORA} aún no se ha establecido.
+
+\section{Resumen}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{3.0cm}>{\raggedright}p{4.4cm}>{\raggedright\arraybackslash}p{6.0cm}}
+\toprule
+Qué hace \nt{NORA} & Cómo & Qué se sabe \\
+\midrule
+cambia la pendiente de la respuesta de las neuronas & la ganancia $g$ en~\eqref{eq:gain} & el aumento de la relación señal-ruido está medido; el modelo multiplicativo es una simplificación \\
+conmuta la elección & lleva la red a través de $g\beta=1$ & se sigue del modelo~\eqref{eq:wtagain}; no hay medidas directas del umbral \\
+fija cuánto explorar & $g$ es la temperatura inversa~\eqref{eq:softmax}; el fondo es una $g$ efectiva pequeña (exploración), la ráfaga, una grande (decisión) & la U invertida y los dos modos de funcionamiento están medidos; el vínculo con la exploración es una hipótesis bien fundada \\
+informa de los cambios & incertidumbre inesperada & la pupila y la tasa de aprendizaje crecen tras los cambios: medido; que sea una señal de \nt{NORA}, hipótesis \\
+interrumpe y reinicia & ráfaga fásica ante un suceso inesperado & las ráfagas ante sucesos importantes están medidas; la “interrupción” es una hipótesis \\
+\bottomrule
+\end{tabular}
+\caption{Qué añade \nt{NORA} a la red de \nt{GLUT}, \nt{GABA} y \nt{DOPA}.}
+\label{tab:nora}
+\end{table}
+
+\nt{DOPA} le dice a la red \emph{hacia dónde} cambiar los pesos. \nt{NORA} no cambia ni un solo peso, pero decide \emph{cómo} usa la red lo que ya sabe (tabla~\ref{tab:nora}): una sola perilla, la ganancia, convierte la neurona de amplificador en comparador, la red de elección de “deliberante” en “decidida” y la elección de exploración en explotación. Cómo sabe \nt{NORA} lo deprisa que cambia el mundo es una pregunta abierta.
+
+\section{Ejercicios}
+
+\begin{exercise}[\lvlA]
+\label{ex:08:1}
+\emph{Una perilla para todo el cerebro.} (a)~Con la tabla~\ref{tab:types}, estime cuántas neuronas del cerebro corresponden a cada neurona \nt{NORA}. (b)~El ruido antes del amplificador es $\sigma_{\text{antes}}=0.5$, y después, $\sigma_{\text{después}}=4$. ¿Con qué $g$ alcanza $d'$ de~\eqref{eq:gainsnr} el $90\%$ de su límite?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:08:2}
+\emph{Elección con ganancia.} $\tau\,\dd r_1/\dd t=-r_1+g[I_1-\beta r_2]_+$, $\tau\,\dd r_2/\dd t=-r_2+g[I_2-\beta r_1]_+$, $\tau=20\ms$. (a)~¿En qué tiempo se amortigua $r_1-r_2$ con $g\beta=0.5$ y $0.9$? (b)~Con $\varepsilon=0.05$, halle el $g\beta$ por debajo del cual funcionan ambos grupos y por encima del cual es estable la victoria de la entrada débil.
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:08:3}
+\emph{Softmax a partir del ruido.} Cada uno de $K$ grupos recibe su propio ruido de Gumbel, $P(\eta_k<z)=\exp(-e^{-z/\sigma})$, y gana el mayor $gu_k+\eta_k$. Halle $P(k)$. ¿Con qué $g$ se elige la mejor de dos opciones con $u_A-u_B=0.1$, $\sigma=1$, en el $90\%$ de los casos?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:08:4}
+\emph{Estimación de la mejor ganancia.} En el modelo de la fig.~\ref{fig:invertedU}, las probabilidades de recompensa tras un cambio son uniformes en $[0,1]$. La red prueba la acción peor una vez cada $e^{g\Delta}$ intentos; igualándolo a $1/h$, se obtiene $g^*\approx\ln(1/h)/\bar\Delta$. Halle $\bar\Delta=\langle|p_A-p_B|\rangle$ y $g^*$ con $h=0.001$, $0.01$, $0.05$.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:08:5}
+\emph{Simulación: ganancia y ritmo de cambio.} Halle $g^*(h)$ con $h$ de $0.001$ a $0.2$ usando una copia de \texttt{models/\allowbreak nora\_explore.py} (escribe archivos en la carpeta actual). ¿Dónde es válida la estimación del ejercicio~\ref{ex:08:4}, y por qué con cambios rápidos $g^*$ deja de disminuir?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:08:6}
+\emph{Diseño: una interrupción para la red de elección.} La red del ejercicio~\ref{ex:08:2} con $\beta=2$, $\tau=20\ms$, $g=1$ mantiene $r_1=0.9$, $r_2=0$, aunque las entradas son ahora $I_1=0.9$, $I_2=1.0$. \nt{NORA} baja $g$ a $g_{\text{lo}}$ durante un tiempo $T_p$. Halle el menor $T_p$ con $g_{\text{lo}}=0$ analíticamente, y con $g_{\text{lo}}=0.25$ por simulación.
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:08:7}
+\emph{Cuándo compensa el ajuste.} Un oráculo sabe si la época es tranquila o cambiante y pone en cada una su propia $g$. (a)~Por simulación, halle su ventaja sobre la mejor $g$ constante en el mundo del capítulo (épocas de $1000$ intentos, $h=0.001$ y $0.05$). (b)~Construya un mundo donde la ventaja sea mayor, y halle qué parte de ella obtiene el ajuste por sorpresa.
+\end{exercise}

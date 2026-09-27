@@ -1,0 +1,76 @@
+\chapter{Os freios}
+% versão completa: chapters/03_gaba.tex
+
+Vamos pôr na máquina o segundo tipo de neurônio mais numeroso: \nt{GABA}. O sinal deles não empurra o vizinho em direção ao clique, e sim o afasta. São os freios. Eles são poucos, no córtex de um quinto a um quarto de todos os neurônios, mas sem eles a máquina não anda.
+
+Há uma restrição: um neurônio ``mais'' não consegue frear o vizinho sozinho. Se é preciso uma ligação negativa, ela tem de ser montada por um intermediário: o ``mais'' acorda um neurônio inibitório, e este freia o alvo. A troca de sinal custa um neurônio e um pequeno atraso.
+
+\section*{``Mas não se''}
+
+A operação mais útil com freios é a proibição: ``dispare com A, mas não se chegou B''. O neurônio recebe um empurrão de A e uma freada do intermediário que B acorda. Com proibições e ``ou'' dá para montar qualquer lógica.
+
+\pencilfig{3}{\pencilart{3}}{``A, mas não se B'': o neurônio vermelho fecha o caminho do azul.}
+
+A proibição no tempo dá o detector de movimento que existe no seu olho. Dois sensores vizinhos: um excita o neurônio de saída, o outro o inibe com atraso. Se uma mancha de luz corre num sentido com a velocidade certa, a inibição chega exatamente junto com a excitação --- e a apaga. Se corre no outro sentido, a inibição se atrasa, e o neurônio tem tempo de clicar. O resultado é um neurônio que vê movimento só num sentido.
+
+\pencilfig{103}{%
+% sensors on top; the left one excites the output, the right one inhibits it through a GABA go-between and a delay
+\draw[dotpen=pcAmber, wash=pcAmber] (0,1.6) circle (0.16); \draw[dotpen=pcAmber, wash=pcAmber] (1.6,1.6) circle (0.16);
+\node[lbl, anchor=south] at (0.8,1.8) {dois sensores};
+\draw[pen=pcBlue, wash=pcBlue] (0.4,0) circle (0.24);
+\draw[arr=pcBlue] (0,1.44) -- (0.3,0.25);
+\draw[pen=pcBlue] (1.6,1.44) -- (1.6,1.18);
+\draw[penlite, fill=white] (0.95,0.9) rectangle (2.25,1.18); \node[font=\tiny\itshape, text=pcGray] at (1.6,1.04) {atraso};
+\draw[pen=pcBlue] (1.6,0.9) -- (1.6,0.72);
+\draw[pen=pcRed, wash=pcRed] (1.6,0.55) circle (0.17);
+\draw[pcRed, line width=0.7pt, -{Bar[width=5pt]}] (1.45,0.45) -- (0.66,0.08);
+\draw[arr] (0.4,-0.24) -- (0.4,-0.6); \node[lbl, anchor=north] at (0.4,-0.6) {saída};
+% outcomes
+\begin{scope}[xshift=3.1cm]
+  \draw[dotpen=pcAmber, wash=pcAmber] (0,1.25) circle (0.1); \draw[arr=pcAmber] (0.18,1.25) -- (1.1,1.25);
+  \node[lbl, anchor=west] at (1.25,1.25) {para a direita: clique};
+  \draw[dotpen=pcAmber, wash=pcAmber] (1.1,0.45) circle (0.1); \draw[arr=pcAmber] (0.92,0.45) -- (0,0.45);
+  \node[lbl, anchor=west] at (1.25,0.45) {para a esquerda: silêncio};
+  \node[lbl, anchor=west, align=left] at (0,-0.35) {a inibição chega\\junto com a excitação};
+\end{scope}
+}{Detector de movimento: a inibição chega com atraso e apaga a resposta só quando a mancha corre da direita para a esquerda.}
+
+
+\section*{Subtração ou divisão}
+
+A inibição não sabe só subtrair. Um canal inibitório aberto não puxa a tensão para baixo, ele a puxa \emph{para o repouso} --- como se o balde ganhasse mais um furo. Com isso, qualquer entrada de água a faz subir menos. A inibição não tira do sinal uma porção fixa, ela o \emph{divide}: é um controle de volume. Se a força da inibição cresce junto com a atividade geral ao redor, cada neurônio responde não a quão forte é o seu sinal, mas a quão forte ele é \emph{em comparação com os vizinhos}. Por isso a mesma rede funciona na penumbra e sob sol forte. É verdade que, sobre a taxa de disparos, esse ``divisor'' só age de forma limpa junto com um ruído de fundo constante, que no cérebro vivo sempre existe.
+
+\pencilfig{104}{%
+\foreach \dx/\t in {0/subtração,4.6/divisão}{
+  \begin{scope}[xshift=\dx cm]
+  \draw[pen] (0,0) -- (3.6,0); \draw[pen] (0,0) -- (0,1.9);
+  \node[lbl, anchor=north] at (1.8,-0.05) {sinal}; \node[lbl, anchor=south, rotate=90] at (-0.05,0.95) {resposta};
+  \draw[pen=pcBlue] (0.4,0) -- (3.3,1.75);
+  \node[font=\small\itshape, text=pcGray, anchor=south] at (1.8,1.95) {\t};
+  \end{scope}}
+\draw[pen=pcRed, line width=0.9pt] (1.3,0) -- (3.4,1.27);
+\node[lbl, text=pcRed, anchor=west] at (2.25,0.35) {desvio};
+\begin{scope}[xshift=4.6cm]
+\draw[pen=pcRed, line width=0.9pt] (0.4,0) -- (3.3,0.8);
+\node[lbl, text=pcRed, anchor=west] at (2.0,0.25) {menos inclinada};
+\end{scope}
+\node[lbl, text=pcBlue, anchor=east] at (2.25,1.45) {sem freio};
+}{Em azul, a resposta do neurônio sem inibição; em vermelho, com ela. A subtração desloca o limiar; a divisão abaixa o volume, como o botão de um controle.}
+
+Há uma segunda consequência: o furo extra faz o balde esquecer mais depressa. A janela em que dois sinais precisam cair para se somar fica mais estreita. A inibição torna os detectores de coincidência mais rigorosos.
+
+\section*{A escolha}
+
+Agora o principal, que estava faltando: escolher um entre muitos. Dois grupos de neurônios se inibem mutuamente. Enquanto a inibição é fraca, os dois trabalham, só que mais baixo. Mas, se ela é forte o bastante, qualquer pequena diferença cresce, como num balanço, até que um dos grupos se cale por completo. O vencedor leva tudo. E a vitória se mantém: para a rede mudar de ideia, o novo argumento precisa ser bem mais forte que o antigo. A máquina não se sobressalta a cada ruído.
+
+Os freios também apagam a memória: um neurônio inibitório, ao sinal de ``reset'', apaga a fogueira do capítulo anterior. Duas dessas células que se inibem mutuamente são o análogo de um latch, a base de toda memória de computador.
+
+\section*{Vida no limite}
+
+Uma rede feita só de ``mais'' pode virar uma avalanche: cada disparo gera mais de um seguinte. Os freios a mantêm no ponto de operação, como o termostato mantém a temperatura do forno. Há duas condições: a inibição tem de ser forte o bastante e rápida o bastante. Se ela é forte mas lenta, o regulador começa a exagerar --- como alguém que mexe na torneira do chuveiro sem esperar a água quente chegar. A temperatura oscila para lá e para cá. No cérebro, um laço assim de ``mais'' e ``menos'' gera um ritmo rápido: algumas dezenas de oscilações por segundo.
+
+O córtex, ao que tudo indica, vive justamente no limite: sua própria realimentação é forte o bastante para virar avalanche sem os freios. Quem o segura são só os freios rápidos, e é por isso que ele responde com tanta sensibilidade a sinais fracos.
+
+A conclusão do capítulo é inesperada: os freios quase não acrescentam cálculos novos à máquina. Eles acrescentam \emph{controle}: escolha, reset, ajuste de volume, estabilidade. A excitação carrega os dados; a inibição decide que dados passam, quando e com que volume.
+
+\fullversion{3}

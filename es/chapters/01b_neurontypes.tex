@@ -1,0 +1,331 @@
+\chapter{Tipos de neuronas}
+\label{sec:neurontypes}
+
+\section{La neurona como caja negra}
+
+Supongamos que le entregan un saco con ochenta y seis mil millones de neuronas~\cite{Azevedo2009} y le piden que las reparta en montones. ¿Cómo lo haría?
+
+Un ingeniero al que le dan un saco de circuitos integrados desconocidos no los clasificaría por la forma del encapsulado. Preguntaría cuántas entradas tiene la pieza, cuántas salidas y qué entrega en la salida. Dibujemos la neurona de la misma manera: como un bloque de un esquema (fig.~\ref{fig:blackbox}).
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=1cm,y=1cm]
+% the box
+\node[draw,very thick,minimum width=2.6cm,minimum height=2.6cm,fill=blue!6] (N) at (0,0) {};
+\node at (0,0.55) {\small neurona};
+\node at (0,-0.15) {$\displaystyle u=\sum_i w_i x_i$};
+\node at (0,-0.8) {\small $y=\Theta(u-\theta)$};
+% inputs
+\foreach \k/\y/\lab in {1/1.05/{x_1},2/0.55/{x_2},3/0.05/{x_3}}{
+  \draw[->,thick,blue!60!black] (-4.2,\y) -- (-1.3,\y);
+  \node[left] at (-4.2,\y) {$\lab$};
+  \node[above,blue!60!black] at (-2.1,\y-0.06) {\scriptsize $w_{\k}$};}
+\node at (-4.45,-0.4) {$\vdots$};
+\node at (-2.1,-0.4) {$\vdots$};
+\draw[->,thick,blue!60!black] (-4.2,-1.05) -- (-1.3,-1.05);
+\node[left] at (-4.2,-1.05) {$x_n$};
+\node[above,blue!60!black] at (-2.1,-1.11) {\scriptsize $w_{n}$};
+\draw[decorate,decoration={brace,amplitude=5pt},gray!60!black] (-4.9,-1.2) -- (-4.9,1.2);
+\node[left,align=right,gray!40!black] at (-5.1,0) {\small $n\sim10^3$--$10^5$\\[-2pt]\small entradas};
+% single output wire, then fan-out
+\draw[very thick,red!70!black] (1.3,0) -- (3.2,0);
+\foreach \x in {1.6,2.2,2.34,2.9}{\draw[thick,red!70!black] (\x,0) -- (\x,0.4);}
+\node[above right,font=\tiny\itshape,gray!30!black,inner sep=1pt] at (1.42,0.45) {clic\dots\ clic-clic\dots};
+\node[below,red!70!black,align=center] at (2.25,-0.05) {\scriptsize una salida $y$};
+\fill[red!70!black] (3.2,0) circle (0.06);
+\foreach \y in {1.3,0.65,0,-0.65,-1.3}{
+  \draw[->,thick,red!70!black] (3.2,0) -- (5.0,\y);}
+\draw[decorate,decoration={brace,amplitude=5pt},gray!60!black] (5.3,1.45) -- (5.3,-1.45);
+\node[right,align=left,gray!40!black] at (5.5,0) {\small copias de $y$\\[-2pt]\small a $10^3$--$10^4$\\[-2pt]\small neuronas más};
+\end{tikzpicture}
+\caption{La neurona vista por un ingeniero. Muchas entradas $x_i$, cada una con su peso $w_i$; dentro, la suma ponderada $u$ y la comparación con el umbral $\theta$ ($\Theta$ es el escalón: $1$ si el argumento es positivo y $0$ en otro caso); una sola salida $y$: un tren de espigas que la ramificación replica hacia miles de receptores.}
+\label{fig:blackbox}
+\end{figure}
+
+La salida del bloque no es un número, sino un tren de breves espigas de voltaje: “clic”, pausa, “clic-clic”, pausa larga. Todas las espigas tienen la misma altura, así que toda la información está en \emph{cuándo} ocurren. Dentro del bloque, en una primera aproximación burda, hay un sumador y un comparador: las entradas se suman con sus pesos y, si la suma supera el umbral, el bloque emite una espiga. En el capítulo siguiente lo sustituiremos por un modelo que funciona de verdad en tiempo continuo.
+
+La salida es una sola, pero el cable se ramifica, y cada rama lleva \emph{la misma} copia de la señal. En electrónica esto se llama abanico de salida, fan-out. En una neurona de la corteza es del orden de varios miles; una compuerta lógica de un chip suele cargar solo unas pocas compuertas más.
+
+¿\emph{Qué} viaja entonces por el cable de salida hasta el receptor? La espiga llega al final de cada rama y allí se convierte en una señal química: la rama libera en la estrecha hendidura entre las células una pizca de una sustancia determinada, el \emph{neurotransmisor}, que modifica la corriente de entrada del receptor. Ahí está el criterio de clasificación: \emph{qué neurotransmisor libera la salida de la neurona}.
+
+\section{Una salida, un tipo de señal}
+
+La clasificación solo tiene sentido si cada neurona tiene un único tipo de salida. ¿Es así? Los experimentos dicen que casi.
+
+\begin{keyblock}
+\begin{proposition}[Una neurona, un tipo de salida]
+\label{prop:dale}
+Casi toda neurona tiene un neurotransmisor principal y lo libera en todas las ramas de su salida. Por eso el tipo de una neurona lo define su neurotransmisor principal~\cite{Strata1999}.
+\end{proposition}
+\end{keyblock}
+
+Convengamos en designar el tipo de neurona con \emph{un código de cuatro letras tomado del nombre de su neurotransmisor principal}. Así, una neurona cuyo neurotransmisor principal es el glutamato es una neurona \nt{GLUT}. Todos los tipos están reunidos en la tabla~\ref{tab:types}.
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{1.0cm}>{\raggedright}p{2.05cm}>{\raggedright}p{1.75cm}>{\raggedright}p{1.6cm}>{\centering}p{0.7cm}>{\raggedright}p{1.55cm}>{\raggedright}p{1.8cm}>{\raggedright\arraybackslash}p{3.2cm}}
+\toprule
+Tipo & Neuro\-transmisor principal & Bus & Velocidad & Signo & Neuronas en el cerebro & Salidas por neurona & Papel en el cálculo \\
+\midrule
+\nt{GLUT} & glutamato & direcciones & rápida y lenta & $+$ & $\sim8\cdot10^{10}$ & $\sim10^4$ & principal peso positivo \\
+\nt{GABA} & GABA & direcciones & rápida y lenta & $-$ & $\sim3\cdot10^{9}$ & $10^3$--$10^4$ & principal peso negativo \\
+\nt{GLYC} & glicina & direcciones & rápida & $-$ & $10^6$--$10^7$ & $10^2$--$10^3$ & peso negativo en la médula espinal y el tronco; segunda llave de un receptor de glutamato \\
+\nt{ACET} & acetilcolina & ambos & rápida y lenta & $\pm$ & $\sim10^6$ & músculo: $10$--$10^3$; cerebro: $\sim10^5$ & salida al músculo; en el cerebro, velocidad de aprendizaje (hipótesis) \\
+\nt{DOPA} & dopamina & difusión & lenta & $\pm$ & $\sim5\cdot10^{5}$ & $10^5$--$10^6$ & error de predicción de la recompensa $\delta$ \\
+\nt{SERO} & serotonina & difusión & lenta (un tipo de receptor es rápido) & $\pm$ & $\sim3\cdot10^{5}$ & $\sim10^5$ & horizonte de planificación (hipótesis) \\
+\nt{HIST} & histamina & difusión & lenta & $+$ & $\sim6\cdot10^{4}$ & sin datos & señal global de “mantente despierto” \\
+\nt{NORA} & noradrenalina & difusión & lenta & $\pm$ & $\sim5\cdot10^{4}$ & $\sim10^5$ & ganancia (hipótesis) \\
+\nt{ADRE} & adrenalina & difusión & lenta & $\pm$ & $\sim10^4$ & sin datos & pocas neuronas; papel en el cerebro poco claro \\
+\nt{ASPA} & aspartato & direcciones & rápida & $+$ & sin datos & sin datos & peso positivo débil; papel discutido \\
+\bottomrule
+\end{tabular}
+\caption{Tipos de neuronas, en orden decreciente de su número en el cerebro. \emph{Bus}: de direcciones, el neurotransmisor se libera en una hendidura estrecha hacia un receptor concreto; de difusión, se libera desde un pequeño grupo de neuronas fuente hacia regiones extensas (sección~\ref{sec:buses}). \emph{Velocidad}: rápida, a través de receptores ionotrópicos, milisegundos; lenta, a través de metabotrópicos, cientos de milisegundos o más. \emph{Signo}: el habitual; en última instancia lo fija el receptor (sección~\ref{sec:receiver}), y $\pm$ indica que se dan ambos signos. \emph{Neuronas en el cerebro}: cuántas neuronas de este tipo hay en todo el cerebro humano, en orden de magnitud; en total hay unas $8.6\cdot10^{10}$ neuronas~\cite{Azevedo2009}. Casi todas las neuronas \nt{GLUT}, unas $7\cdot10^{10}$, son las pequeñas neuronas de entrada del cerebelo; las cifras de \nt{GLUT} y \nt{GABA} se obtienen de este recuento y de la fracción de neuronas \nt{GABA} en la corteza~\cite{Hendry1987}. De los tipos escasos, solo se han contado directamente \nt{HIST}~\cite{Airaksinen1991} y el principal de los dos grupos de neuronas \nt{DOPA}~\cite{Pakkenberg1991}, por lo que para \nt{DOPA} es una cota inferior; para \nt{SERO} es la suma de dos recuentos parciales~\cite{Baker1990,Baker1991}. Las cifras de \nt{NORA}, \nt{GLYC}, \nt{ACET} y \nt{ADRE} son estimaciones burdas del orden de magnitud, sin recuento directo. \emph{Salidas por neurona}: cuántas terminales sinápticas tiene una neurona, es decir, puntos de liberación del neurotransmisor en las ramas del cable de salida (fig.~\ref{fig:blackbox}), en orden de magnitud. En los tipos de difusión las terminales no se han contado directamente: en \nt{DOPA} el número se deduce de la fracción de su diana que cubre la ramificación de un solo cable de salida~\cite{Matsuda2009}; en los demás, las estimaciones son aún más burdas. \nt{ACET} tiene dos casos: la neurona que controla un músculo y la neurona de difusión del cerebro.}
+\label{tab:types}
+\end{table}
+
+% the pie is a table-type float with a figure caption, so it can never float ahead of Table~\ref{tab:types}
+\begin{table}[tb]
+\makeatletter\def\@captype{figure}\makeatother
+\centering
+\definecolor{vizglut}{HTML}{2A78D6}
+\definecolor{vizgaba}{HTML}{E34948}
+\definecolor{vizrest}{HTML}{8A8986}
+\begin{tikzpicture}[>=Stealth]
+% pie: GLUT 96.4 %, GABA 3.6 % (13.0 degrees), the rest 0.006 % (a hairline at 0 degrees)
+\fill[vizglut] (0,0) -- (13:1.9) arc (13:360:1.9) -- cycle;
+\fill[vizgaba] (0,0) -- (0:1.9) arc (0:13:1.9) -- cycle;
+\draw[white,line width=1pt] (0,0) -- (13:1.9);
+\draw[vizrest,line width=1.2pt] (0,0) -- (0:1.9);
+\node[white,align=center,font=\small] at (190:0.95) {\nt{GLUT}\\$96.4\%$};
+\draw[gray!60!black] (6.5:1.75) -- (2.05,2.1);
+\node[anchor=west,font=\small] at (2.05,2.1) {\nt{GABA} $3.6\%$};
+% zoom box for the remaining types
+\draw[densely dashed,vizrest] (1.9,0) -- (3.1,1.65);
+\draw[densely dashed,vizrest] (1.9,0) -- (3.1,-2.2);
+\draw[vizrest,rounded corners=3pt] (3.1,-2.2) rectangle (10.1,1.65);
+\node[anchor=west,font=\scriptsize] at (3.2,1.4) {todos los demás: $\approx0.006\%$; escala logarítmica};
+\foreach \code/\lg/\y/\val/\lx in {GLYC/6.477/1.0/{$10^6$--$10^7$}/4.05,ACET/6.0/0.6/{$\sim10^6$}/3.0,DOPA/5.699/0.2/{$\sim5\cdot10^5$}/2.699,SERO/5.477/-0.2/{$\sim3\cdot10^5$}/2.477,HIST/4.778/-0.6/{$\sim6\cdot10^4$}/1.778,NORA/4.699/-1.0/{$\sim5\cdot10^4$}/1.699,ADRE/4.0/-1.4/{$\sim10^4$}/1.0}{
+  \node[anchor=east,font=\scriptsize] at (4.35,\y) {\nt{\code}};
+  \fill[vizrest] (4.45,\y-0.13) rectangle ({4.45+\lg-3},\y+0.13);
+  \node[anchor=west,font=\scriptsize] at ({4.5+\lx},\y) {\val};}
+\draw[vizrest,thick] (7.45,1.0) -- (8.45,1.0);
+\draw[vizrest,thick] (7.45,0.92) -- (7.45,1.08);
+\draw[vizrest,thick] (8.45,0.92) -- (8.45,1.08);
+\draw[gray!60!black] (4.45,-1.72) -- (8.45,-1.72);
+\foreach \e in {3,4,5,6,7}{
+  \draw[gray!60!black] ({4.45+\e-3},-1.72) -- ({4.45+\e-3},-1.66);
+  \node[below,font=\scriptsize] at ({4.45+\e-3},-1.72) {$10^{\e}$};}
+\end{tikzpicture}
+\caption{Proporción de cada tipo de neurona en el cerebro según las estimaciones de la tabla~\ref{tab:types}. El círculo lo ocupa casi entero \nt{GLUT}; \nt{GABA} es un sector estrecho, y todos los demás tipos juntos son un pelo en el borde. A la derecha, ese pelo ampliado, en escala logarítmica del número de neuronas; para \nt{GLYC} la barra llega al centro del intervalo $10^6$--$10^7$, y el segmento muestra el intervalo completo. \nt{ASPA} no tiene estimación y no aparece en la figura.}
+\label{fig:typepie}
+\end{table}
+
+Lo desiguales que son estos montones se ve en la fig.~\ref{fig:typepie}: de cada mil neuronas, $964$ son \nt{GLUT} y $36$ son \nt{GABA}, mientras que todos los demás tipos juntos suman unas seis neuronas de cada cien mil.
+
+El nombre GABA ya tiene cuatro letras. Las sustancias que casi nunca son el neurotransmisor principal (neuropéptidos, gases, lípidos, purinas) no reciben código propio; de ellas se habla en el apéndice~\ref{sec:othermediators}. La palabra “casi” de la proposición~\ref{prop:dale} es importante. Muchas neuronas liberan, junto con el neurotransmisor principal, sustancias auxiliares~\cite{Yao2023}. Algunas liberan también un segundo neurotransmisor rápido, incluso de signo opuesto: parte de las neuronas \nt{DOPA} libera además GABA~\cite{Tritsch2012}. Y en algunas neuronas distintos neurotransmisores salen de distintas ramas de una misma salida~\cite{Zhang2015}. Todo esto está medido, así que “una neurona, un neurotransmisor” es una regla con excepciones, no una ley. Pero como primera división resiste la prueba: en el atlas celular del cerebro del ratón, donde las neuronas se reparten en más de cinco mil grupos según los genes que expresan, las grandes clases siguen separándose ante todo por el neurotransmisor principal~\cite{Yao2023}.
+
+Esta regla tiene una consecuencia que distingue de inmediato al cerebro de una red neuronal artificial. En una red artificial, una misma neurona puede tener un peso positivo hacia un receptor y uno negativo hacia otro: los pesos $w_{ij}$ son simples números de una matriz. En el cerebro, el signo del efecto lo determina sobre todo el neurotransmisor, y la neurona tiene uno solo. Por tanto, si la neurona $j$ excita a un receptor, excita también a todos los demás. Toda la \emph{columna} de la matriz de pesos que sale de la neurona $j$ tiene un solo signo:
+\begin{empheq}[box=\keybox]{equation}
+\operatorname{sign} w_{ij} \;=\; s_j \quad\text{para todo receptor } i, \qquad s_j\in\{+1,-1\}.
+\label{eq:dalesign}
+\end{empheq}
+Las neuronas se dividen en excitadoras ($s_j=+1$) e inhibidoras ($s_j=-1$), y esta es una propiedad de la neurona misma, no de la conexión. Si la red necesita una conexión negativa desde una neurona excitadora, tiene que hacerla a través de un intermediario: la neurona excitadora excita a una inhibidora, y esta inhibe al objetivo: un peso negativo con un eslabón de retardo.
+
+Se conocen más de cien neurotransmisores, pero casi todo el trabajo del cerebro descansa en media docena, y estos se dividen en dos clases completamente distintas.
+
+\section{Dos buses: de direcciones y de difusión}
+\label{sec:buses}
+
+En las redes de computadoras hay dos maneras de entregar un mensaje. La primera es \emph{dirigida}, unicast: el paquete va de un remitente a un destinatario concreto, rápido, y nadie más lo ve. La segunda es \emph{de difusión}, broadcast: el remitente envía un mismo mensaje a todos los nodos de la red a la vez. Las neuronas usan ambas, y los neurotransmisores se dividen exactamente según este criterio (fig.~\ref{fig:phone_radio}).
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,scale=0.95]
+% ---- unicast: point-to-point wiring
+\node[above] at (2.0,3.3) {\small \textbf{De direcciones}: glutamato y GABA};
+\foreach \i in {0,...,4}{
+  \fill[blue!60!black] (0.2+0.9*\i,2.5) circle (0.1);
+  \fill[blue!60!black] (0.2+0.9*\i,0.6) circle (0.1);}
+\foreach \a/\b in {0/0,0/1,1/1,1/3,2/2,3/2,3/4,4/4,2/0}{
+  \draw[->,blue!60!black] (0.2+0.9*\a,2.38) -- (0.2+0.9*\b,0.72);}
+\fill[red!70!black] (1.1,1.55) circle (0.09);
+\pic[scale=1.2] at (1.75,1.9) {letter};
+\draw[->,red!70!black,thick] (1.1,1.55) -- (0.28,0.7);
+\draw[->,red!70!black,thick] (1.1,1.55) -- (1.95,0.72);
+\node[align=center,below] at (2.0,0.2) {\small miles de millones de neuronas,\\[-2pt]\small cada una con sus destinatarios,\\[-2pt]\small tiempo: milisegundos};
+% ---- broadcast: one small source, global targets
+\begin{scope}[xshift=7.2cm]
+\node[above] at (1.8,3.3) {\small \textbf{De difusión}: dopamina, \dots};
+\foreach \i in {0,...,8}{\fill[blue!60!black] (-0.2+0.5*\i,2.75) circle (0.08);}
+\fill[orange!85!black] (1.8,0.35) ellipse (0.35 and 0.18);
+\pic[scale=1.5] at (2.7,0.75) {mast};
+\foreach \x in {-0.2,0.3,0.8,1.3,1.8,2.3,2.8,3.3,3.8}{
+  \draw[->,orange!85!black] (1.8,0.5) .. controls (1.8,1.3) and (\x,1.6) .. (\x,2.62);}
+\node[align=center,below] at (1.8,0.1) {\small de miles a cientos de miles de neuronas,\\[-2pt]\small un mensaje para todos,\\[-2pt]\small tiempo: cientos de milisegundos o más};
+\end{scope}
+\end{tikzpicture}
+\caption{Dos modos de transmisión. A la izquierda, el bus de direcciones, parecido al correo con la dirección en el sobre; en rojo, una neurona y dos de sus receptores. A la derecha, el de difusión, como una emisora de radio: un pequeño grupo de neuronas fuente, y todos reciben el mismo mensaje.}
+\label{fig:phone_radio}
+\end{figure}
+
+El \emph{bus de direcciones} son el glutamato y el GABA. Los libera la inmensa mayoría de las neuronas. Cada salida lleva a células concretas, el neurotransmisor actúa solo en la estrecha hendidura del contacto, y actúa rápido: en un milisegundo se abren los canales iónicos del receptor, y en unos pocos milisegundos todo termina. Es el bus de \emph{datos}: por él viaja lo que el cerebro calcula.
+
+El \emph{bus de difusión} son la dopamina, la serotonina, la noradrenalina y en parte la acetilcolina. Los liberan grupos diminutos de neuronas, pero la salida de cada una se ramifica de forma increíblemente amplia. A menudo el neurotransmisor no se libera en una hendidura estrecha, sino en el espacio extracelular, donde se dispersa y actúa sobre todo lo que tiene cerca. Actúa lentamente: no abre canales directamente, sino que desencadena dentro del receptor una cadena de reacciones químicas. Por este bus no viajan datos, sino \emph{parámetros de control} comunes a grandes regiones de la red, que cambian su modo de funcionamiento: la ganancia, la velocidad de aprendizaje, la señal de “esto salió bien”. Por eso estos neurotransmisores se llaman \emph{moduladores}. Durante mucho tiempo se pensó que cada uno de estos canales era un solo número para todo el cerebro. Las mediciones modernas han precisado el cuadro: el canal no es un solo cable, sino un pequeño mazo de líneas paralelas. Las neuronas fuente de un mismo neurotransmisor se dividen en subsistemas con sus propios receptores y su propio mensaje, y la cantidad de neurotransmisor que se libera en cada lugar la ajustan además señales locales~\cite{Ren2018,Poe2020}. El número de estas líneas es de unidades o decenas, no de miles de millones, así que el canal sigue siendo de difusión.
+
+Si necesita una sola imagen de este capítulo, es esta. El cerebro es una enorme red con transmisión dirigida de datos, sobre la que penden unos pocos canales de difusión con señales de control. Un programador reconocerá una arquitectura familiar: cómputo más un pequeño conjunto de variables de control, cada una compartida por una gran región de la red.
+
+\section{\nt{GLUT}: peso positivo}
+
+El glutamato es el principal neurotransmisor excitador del cerebro. Cuando la salida de una neurona libera glutamato, en el receptor se abren canales por los que entra sodio, el voltaje de la membrana del receptor sube y aumenta su probabilidad de emitir una espiga propia. En el lenguaje de la fig.~\ref{fig:blackbox}, es una entrada con peso \emph{positivo}, $w_i>0$.
+
+¿Quién libera glutamato? Casi todas las neuronas que transmiten datos a larga distancia: entre tres cuartas y cuatro quintas partes de las neuronas de la corteza y la mayoría de las neuronas que conectan distintas regiones del cerebro. La red del cerebro es, ante todo, una red de conexiones glutamatérgicas.
+
+Un detalle de ingeniería. Tras la liberación, la concentración de glutamato en la hendidura se dispara miles de veces, hasta cerca de un milimolar, y decae con una constante de tiempo de alrededor de un milisegundo~\cite{Clements1992}: el glutamato se difunde fuera de la hendidura, y unas proteínas bomba especiales lo recaptan hacia las células. ¿Para qué? Por la misma razón por la que en una línea de comunicación la señal vuelve a cero tras cada símbolo. Si el neurotransmisor no se retira, la siguiente espiga llegará a una línea “ocupada”, y las espigas separadas por unos pocos milisegundos se fundirán.
+
+\section{\nt{GABA}: peso negativo}
+
+Imagine una red en la que todos los pesos son positivos. Si en promedio cada espiga genera más de una espiga siguiente, la actividad crece exponencialmente y en pocos pasos abarca toda la red. Un electrónico reconocerá un lazo de realimentación positiva con ganancia mayor que uno: el circuito se satura. Para evitarlo hacen falta pesos negativos. Su fuente principal es el ácido gamma-aminobutírico, abreviado GABA.
+
+El GABA abre en el receptor canales que dejan pasar iones de cloro. El potencial de equilibrio del cloro está cerca del potencial de reposo o un poco por debajo, así que los canales de cloro abiertos mantienen la membrana cerca del reposo e impiden que el voltaje suba hasta el umbral. Es una entrada con peso \emph{negativo}, $w_i<0$. Las neuronas GABAérgicas son entre una quinta y una cuarta parte de las neuronas de la corteza~\cite{Hendry1987}. Sus salidas son cortas, e inhiben a sus vecinas más cercanas.
+
+La inhibición en el cerebro hace mucho más que restar. Funciona como una realimentación negativa que mantiene a toda la red en su punto de trabajo. Se considera que en una corteza que funciona con normalidad las corrientes excitadora e inhibidora que llegan a una neurona se equilibran casi exactamente: este régimen lo predice la teoría~\cite{vanVreeswijk1996} y se observa en las mediciones de corrientes en la corteza viva~\cite{Haider2006}, y la neurona se mantiene todo el tiempo cerca del umbral. Un circuito estabilizado por una fuerte realimentación negativa cerca de un punto inestable responde rápido y con sensibilidad a señales pequeñas: un viejo recurso de ingeniería.
+
+\section{\nt{DOPA}: la señal de error}
+
+El primer canal de difusión es la dopamina. En el ser humano hay del orden de medio millón de neuronas dopaminérgicas, aproximadamente una de cada ciento setenta mil; esa es la cifra contada en el principal de sus dos grupos~\cite{Pakkenberg1991}, así que es una cota inferior. Sus salidas se dirigen a las regiones que eligen las acciones.
+
+¿Qué transmite este canal? La respuesta la dan experimentos en los que se registran las espigas de las neuronas dopaminérgicas de un animal que recibe una recompensa~\cite{Schultz1997}. De vez en cuando, sin aviso, se le da al animal una gota de jugo, y las neuronas dopaminérgicas responden con una breve ráfaga de espigas. Después, antes del jugo se empieza a encender una lámpara, siempre un segundo antes. Cuando el animal aprende esta asociación, las neuronas empiezan a responder con una ráfaga a la \emph{lámpara}, y al jugo mismo, que llega justo a tiempo, no responden en absoluto. Y si tras la lámpara no se da el jugo, en el momento en que debía llegar las neuronas \emph{se callan}, y su frecuencia cae por debajo de la habitual.
+
+La regla que explica los tres casos (fig.~\ref{fig:rpe}): las neuronas no informan de lo bueno que es algo, sino de cuánto \emph{mejor o peor de lo esperado} resultó.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=3.4cm,y=1cm]
+\foreach \y/\lab in {2.8/{jugo inesperado},1.4/{jugo tras la lámpara},0/{lámpara, pero sin jugo}}{
+  \draw[gray!70!black] (0,\y) -- (3,\y);
+  \draw[densely dotted,gray!60!black] (0,\y+0.3) -- (3,\y+0.3);
+  \node[left,align=right,font=\small] at (-0.03,\y+0.35) {\lab};}
+% row 1: juice without a cue -> burst at the juice
+\draw[very thick,orange!85!black] plot[domain=0:3,samples=120] (\x,{2.8+0.3+0.75*exp(-((\x-2.08)/0.07)^2)});
+\pic[scale=0.8] at (2,2.58) {juice};
+% row 2: cue then juice -> burst at the cue, nothing at the juice
+\draw[very thick,orange!85!black] plot[domain=0:3,samples=120] (\x,{1.4+0.3+0.75*exp(-((\x-1.08)/0.07)^2)});
+\pic[scale=0.85] at (1,1.15) {lamp}; \pic[scale=0.85] at (2,1.15) {juice};
+% row 3: cue, juice omitted -> burst at the cue, dip when the juice was due
+\draw[very thick,orange!85!black] plot[domain=0:3,samples=120] (\x,{0.3+0.75*exp(-((\x-1.08)/0.07)^2)-0.28*exp(-((\x-2.1)/0.12)^2)});
+\pic[scale=0.85] at (1,-0.25) {lamp}; \pic[scale=0.85] at (2,-0.25) {nojuice};
+\node[right,font=\scriptsize] at (2.36,0.1) {caída};
+\node[right,font=\scriptsize] at (2.13,3.75) {¡sorpresa!};
+\node[left,font=\scriptsize] at (0.97,2.25) {pico ante la lámpara};
+\node[above,font=\scriptsize] at (2,1.75) {nada};
+\draw[->,gray!70!black] (0,-0.75) -- (3.05,-0.75) node[right,black,font=\small] {$t$};
+\draw[gray!60!black] (1,-0.8) -- (1,-0.7) node[below=2pt,font=\scriptsize] {lámpara, $1\,\text{s}$};
+\draw[gray!60!black] (2,-0.8) -- (2,-0.7) node[below=2pt,font=\scriptsize] {jugo, $2\,\text{s}$};
+\end{tikzpicture}
+\caption{Frecuencia de espigas de las neuronas \nt{DOPA} en tres experimentos (esquema, según~\cite{Schultz1997}). La línea punteada es la frecuencia de fondo constante. La lámpara es la señal, la gota es el jugo, la gota tachada es el jugo prometido que no se dio. La respuesta es el error de predicción~\eqref{eq:rpe}.}
+\label{fig:rpe}
+\end{figure}
+
+Un programador que conozca el aprendizaje por refuerzo~\cite{SuttonBarto2018} reconocerá esta magnitud de inmediato. Un agente que aprende a elegir acciones guarda una estimación $V(s)$: cuánta recompensa espera estando en el estado $s$. Tras cada paso compara lo esperado con lo que obtuvo:
+\begin{empheq}[box=\keybox]{equation}
+\delta_t \;=\; r_t \;+\; \gamma\,V(s_{t+1}) \;-\; V(s_t) ,
+\label{eq:rpe}
+\end{empheq}
+y corrige la estimación: $V(s_t)\leftarrow V(s_t)+\alpha\,\delta_t$. Aquí $r_t$ es la recompensa obtenida, $\gamma<1$ es el factor de descuento (cuánto menos vale una recompensa futura que una inmediata) y $\alpha$ es la velocidad de aprendizaje. La magnitud $\delta_t$ se llama \emph{error de diferencia temporal}.
+
+Se comporta exactamente como las neuronas dopaminérgicas. Jugo inesperado: $V$ aún es cero, $r>0$, $\delta>0$. Jugo aprendido: la lámpara predijo la recompensa, $V(s_t)$ antes del jugo ya vale $r$, y $\delta=0$. El jugo no llegó: $V(s_t)=r$, pero $r_t=0$, $\delta<0$. Y el pico se traslada a la lámpara porque es justo en el momento de la lámpara cuando la expectativa sube de golpe: $\gamma V(s_{t+1})-V(s_t)>0$. Los pasos $t,t+1,\dots$ son aquí una convención del algoritmo: en el organismo no hay un reloj que marque los pasos, y la misma magnitud en tiempo continuo la obtendremos en el capítulo~\ref{sec:dofa}.
+
+Así pues, la dopamina es la difusión de una señal escalar de error $\delta$ a todos los que deben aprender de ella. En primera aproximación, un solo cable para todo el cerebro y un solo número en cada instante; hasta qué punto ese cable es en realidad un mazo se analiza en el capítulo~\ref{sec:dofaalt}.
+
+\section{Los demás canales de difusión}
+
+Para los demás moduladores solo hay hipótesis de trabajo, que traducen sus papeles al mismo lenguaje de parámetros globales~\cite{Doya2002}. Tómelas justamente como hipótesis.
+
+\emph{\nt{NORA}, noradrenalina: la ganancia.} Las neuronas noradrenérgicas son aún menos que las dopaminérgicas, según una estimación burda unas decenas de miles, y sus salidas se extienden prácticamente por todo el cerebro. Se activan bruscamente cuando ocurre algo inesperado o importante. La noradrenalina cambia la pendiente de la característica de transferencia de las neuronas receptoras: las entradas débiles se vuelven más débiles y las fuertes, más fuertes. Esto se mide así: las espigas de fondo del receptor se suprimen más que la respuesta a la entrada, y la relación señal-ruido aumenta~\cite{Foote1975NE}. En un modelo sencillo se describe con un solo número: si la neurona responde con una frecuencia $f=F\bigl(g\cdot u\bigr)$ a la corriente de entrada $u$, la noradrenalina aumenta la ganancia $g$~\cite{AstonJones2005} (más detalles en el capítulo~\ref{sec:nora}). Una red con $g$ grande funciona con “más contraste” y decide más rápido; con $g$ pequeña funciona de forma “difusa” y explora más opciones, como un agente de aprendizaje por refuerzo en modo de exploración.
+
+\emph{\nt{ACET}, acetilcolina: la velocidad de aprendizaje.} La acetilcolina regula cuánto escucha la red la entrada actual y cuánto sus propios datos almacenados. Con un nivel alto de acetilcolina, las entradas de los órganos de los sentidos se refuerzan y las conexiones internas, las que “recuerdan”, se debilitan; al mismo tiempo se facilita el cambio de los pesos~\cite{Hasselmo2006}. A grandes rasgos, es un conmutador de “escritura/lectura” y, con él, la velocidad de aprendizaje $\alpha$.
+
+\emph{\nt{SERO}, serotonina: el horizonte de planificación.} Lo que transmite la serotonina es lo que peor se entiende. Una de las hipótesis la relaciona con el factor de descuento $\gamma$ de~\eqref{eq:rpe}: un nivel alto de serotonina corresponde a la disposición a esperar una recompensa grande en lugar de tomar una pequeña ahora. Las neuronas serotoninérgicas trabajan de forma regular y lenta, unas pocas espigas por segundo en la vigilia, y casi se callan en una de las fases del sueño~\cite{JacobsAzmitia1992}.
+
+Los seis neurotransmisores se reúnen en la tabla~\ref{tab:transmitters}.
+
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{>{\raggedright}p{2.4cm}>{\raggedright}p{3.0cm}>{\raggedright}p{2.0cm}>{\raggedright\arraybackslash}p{5.2cm}}
+\toprule
+Tipo de neurona & Fracción de neuronas & Bus & Papel en el cálculo \\
+\midrule
+\nt{GLUT} (glutamato) & la mayoría & de direcciones & peso positivo, $w>0$ \\
+\nt{GABA} (GABA) & 20--25\% en la corteza & de direcciones & peso negativo, $w<0$; estabilización \\
+\nt{DOPA} (dopamina) & $\sim 6\cdot10^{-6}$ & de difusión & error de predicción $\delta$ \\
+\nt{NORA} (noradrenalina) & $\sim 6\cdot10^{-7}$ & de difusión & ganancia $g$ (hipótesis) \\
+\nt{ACET} (acetilcolina) & pequeña & ambos & velocidad de aprendizaje $\alpha$; “escritura/lectura” (hipótesis) \\
+\nt{SERO} (serotonina) & $\sim 3\cdot10^{-6}$ & de difusión & descuento $\gamma$ (hipótesis) \\
+\bottomrule
+\end{tabular}
+\caption{Los principales neurotransmisores del cerebro en el lenguaje del cálculo. La columna derecha es una fuerte simplificación: fiable para el glutamato, el GABA y la dopamina; para los demás son hipótesis.}
+\label{tab:transmitters}
+\end{table}
+
+\section{El signo lo fija el receptor}
+\label{sec:receiver}
+
+Lo engañé un poco al decir que el glutamato es un peso positivo y el GABA uno negativo. Ninguna molécula lleva un signo en sí misma. La molécula es solo una llave. Qué ocurre cuando la capturan lo decide la \emph{cerradura}: el receptor de la célula receptora.
+
+El mejor ejemplo es la dopamina. Tiene receptores de dos familias~\cite{Beaulieu2011}. En unos facilita la excitación de la célula; en otros, la dificulta. En la región que elige las acciones, unas neuronas llevan receptores del primer tipo y otras del segundo, y una misma señal dopaminérgica refuerza a la vez a un grupo y debilita al otro. Es como un paquete de difusión que distintos nodos de la red interpretan de manera diferente.
+
+\begin{keyblock}
+\begin{proposition}[El sentido del mensaje lo fija el receptor]
+\label{prop:receptor}
+El signo y la velocidad de acción de un neurotransmisor no los determina el neurotransmisor mismo, sino el receptor al que se une. Los receptores son de dos clases. Los \emph{ionotrópicos} son ellos mismos canales iónicos y se abren en fracciones de milisegundo: es control directo de la corriente, como la compuerta de un transistor. Los \emph{metabotrópicos} desencadenan dentro de la célula una cadena de reacciones químicas y actúan en cientos de milisegundos o más: es más bien una escritura en un registro de configuración que cambia el trabajo posterior de la célula. El bus de direcciones habla sobre todo a través de los primeros; el de difusión, sobre todo a través de los segundos.
+\end{proposition}
+\end{keyblock}
+
+¿Por qué se puede decir entonces que “el glutamato excita”? Porque casi todos los receptores de glutamato que se encuentran en la práctica son excitadores, y casi todos los receptores de GABA son inhibidores. No es una ley de la naturaleza, sino una convención muy fiable, y la regla~\eqref{eq:dalesign} se apoya precisamente en ella.
+
+\section{Qué llevarse}
+
+La inmensa mayoría de las neuronas forman el bus de datos de direcciones, con pesos de un solo signo por neurona; una minoría ínfima forma los canales de difusión, que transmiten a grandes regiones del cerebro unas pocas señales de control comunes. Unas dos neuronas de cada cien mil, y de ellas depende cómo aprende y en qué modo funciona todo el resto de la red. Para un ingeniero no es sorprendente: en cualquier computadora hay incomparablemente menos registros de control que celdas de memoria, y aun así la máquina no funciona sin ellos.
+
+En el capítulo siguiente comprobaremos qué puede calcular una red formada solo por neuronas \nt{GLUT}, el tipo más numeroso, funcionando en tiempo continuo.
+
+\section{Ejercicios}
+
+\begin{exercise}[\lvlA]
+\label{ex:01:1}
+\emph{Montones y cables.} Con la tabla~\ref{tab:types} (centro del intervalo en escala logarítmica; \nt{ACET}: $10^5$ salidas): (a)~si cada neurona fuera una persona, ¿cuántas poblaciones de la Tierra formarían las neuronas \nt{GLUT} y qué tamaño de ciudad todas las de difusión? (b)~¿Cuántas veces mayor es la fracción de terminales de \nt{DOPA}, \nt{SERO}, \nt{NORA}, \nt{ACET} que la de sus neuronas?
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:01:2}
+\emph{Retorno a cero.} El glutamato en la hendidura decae como $c_0e^{-t/\tau_c}$, $c_0=1\mM$, $\tau_c=1\ms$; el receptor detecta concentraciones por encima de $10$~\textmu M. (a)~¿Cuánto tiempo queda la línea “ocupada” tras una liberación? (b)~Las bombas están parcialmente bloqueadas, $\tau_c=10\ms$. ¿Hasta qué frecuencia de liberaciones alcanza aún la línea a liberarse?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:01:3}
+\emph{Adónde se traslada el pico.} En el experimento de la fig.~\ref{fig:rpe}, tras la lámpara vienen los estados $s_0\to\dots\to s_{K-1}$ con paso $\Delta$, $T=K\Delta$; la recompensa $r$ llega en la última transición y el momento de la lámpara es impredecible. Halle los $V(s_k)$ aprendidos y la respuesta $\delta$ a la lámpara. Con $\gamma=e^{-\Delta/\tau_\gamma}$, halle $\tau_\gamma$ para $T=1$~s, $\Delta=0.1$~s, $\gamma=0.95$.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:01:4}
+\emph{Simulación: aprender del error.} Simule la cadena del ejercicio~\ref{ex:01:3} con $K=10$, $\gamma=0.95$, $r=1$ y la regla $V(s_t)\leftarrow V(s_t)+\alpha\delta_t$. ¿En qué ensayo $n^*$ la respuesta a la lámpara supera por primera vez a la respuesta al jugo para $\alpha=0.05$, $0.1$, $0.2$, $0.5$? ¿Cómo depende $n^*$ de $\alpha$?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:01:5}
+\emph{Diseño: difundir un número.} Hay que entregar el número $\delta$ a las $10^{10}$ neuronas; cada receptor, incluidos los repetidores, debe recibir $10$ terminales de la capa anterior, y cada eslabón añade $1\ms$. ¿Cuántas neuronas y eslabones tiene el árbol de repetidores más económico con $10^4$ salidas por neurona (\nt{GLUT}) y con $10^{5.5}$ (\nt{DOPA})?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:01:6}
+\emph{Por qué el equilibrio es sensible.} Una red tiene $80\%$ de \nt{GLUT} y $20\%$ de \nt{GABA}, todas conectadas con todas con pesos $J_E/N$ y $-J_I/N$; $\tau\dot r=-r+Wr+h$. Con $J_E=10$, el único valor propio no nulo de $W$ vale $0.5$. Halle la razón entre la corriente inhibidora y la excitadora, y en qué porcentaje basta debilitar la inhibición para que la red entre en avalancha.
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:01:7}
+\emph{Investigación: ¿\nt{SERO} es $\gamma$?} Según el ejercicio~\ref{ex:01:3}, la respuesta de las neuronas \nt{DOPA} a la lámpara es $re^{-T/\tau_\gamma}$. Retardos $T=1,\dots,5$~s con $n$ presentaciones cada uno; $\ln\delta$ se mide con una dispersión de $0.5$. ¿Qué $n$ hace falta para distinguir $\tau_\gamma=2$~s de $2.4$~s (nivel $0.05$, potencia $0.8$)? ¿Qué mecanismo, aparte de $\gamma$, daría la misma caída con $T$?
+\end{exercise}

@@ -1,0 +1,53 @@
+\chapter{La única salida rápida}
+% versión completa: chapters/13_muscles.tex
+
+Todo lo que usted hace rápido en el mundo, una palabra, una mirada, un paso, es una contracción muscular. La máquina tiene también una segunda salida, lenta y química; de ella trata el capítulo dieciséis. Aquí, los músculos.
+
+El último eslabón de la cadena son las neuronas \nt{ACET}. Cada fibra muscular escucha exactamente a una de esas neuronas, y una neurona controla un grupo de fibras, de cientos a un par de miles. Curiosamente, la unión del nervio con el músculo es la conexión más fiable del cuerpo. Dentro del cerebro las conexiones pierden más de la mitad de las señales, pero aquí cada clic libera varias veces más sustancia de la necesaria. A la salida, un error cuesta un movimiento, y la fiabilidad se compró con margen.
+
+\section*{El redoble se vuelve empuje}
+
+Un clic, una breve sacudida del músculo. Si los clics llegan espaciados, el músculo se sacude a tirones sueltos. Si llegan seguidos, las sacudidas se funden en un esfuerzo continuo, como un redoble de tambor se funde en un zumbido. El músculo convierte un tren de pulsos en fuerza, como el convertidor digital-analógico más simple.
+
+\pencilfig{113}{%
+% twitch = alpha function; the sum of twitches for spikes 1 s and 0.16 s apart (arbitrary units of time)
+\begin{scope}[x=0.95cm, y=0.36cm]
+\foreach \dx/\t in {0/espaciados,4.6/seguidos}{
+  \begin{scope}[xshift=\dx cm]
+  \draw[pen] (0,0) -- (4,0); \node[font=\small\itshape, text=pcGray, anchor=south] at (2,5.4) {\t};
+  \end{scope}}
+\draw[penlite=pcRed] plot[smooth] coordinates {(0.00,0.00) (0.05,0.00) (0.10,0.00) (0.15,0.00) (0.20,0.00) (0.25,0.45) (0.30,0.73) (0.35,0.90) (0.40,0.98) (0.45,1.00) (0.50,0.98) (0.55,0.94) (0.60,0.88) (0.65,0.81) (0.70,0.74) (0.75,0.66) (0.80,0.59) (0.85,0.52) (0.90,0.46) (0.95,0.41) (1.00,0.35) (1.05,0.31) (1.10,0.27) (1.15,0.23) (1.20,0.20) (1.25,0.62) (1.30,0.88) (1.35,1.02) (1.40,1.08) (1.45,1.09) (1.50,1.06) (1.55,1.00) (1.60,0.93) (1.65,0.86) (1.70,0.78) (1.75,0.70) (1.80,0.62) (1.85,0.55) (1.90,0.48) (1.95,0.42) (2.00,0.37) (2.05,0.32) (2.10,0.28) (2.15,0.24) (2.20,0.21) (2.25,0.62) (2.30,0.88) (2.35,1.03) (2.40,1.09) (2.45,1.09) (2.50,1.06) (2.55,1.01) (2.60,0.94) (2.65,0.86) (2.70,0.78) (2.75,0.70) (2.80,0.62) (2.85,0.55) (2.90,0.48) (2.95,0.42) (3.00,0.37) (3.05,0.32) (3.10,0.28) (3.15,0.24) (3.20,0.21) (3.25,0.62) (3.30,0.88) (3.35,1.03) (3.40,1.09) (3.45,1.09) (3.50,1.06) (3.55,1.01) (3.60,0.94) (3.65,0.86) (3.70,0.78) (3.75,0.70) (3.80,0.62) (3.85,0.55) (3.90,0.48) (3.95,0.42) (4.00,0.37)};
+\foreach \s in {0.20,1.20,2.20,3.20}{\draw[pcBlue, line width=0.8pt] (\s,-0.35) -- (\s,-1.2);}
+\begin{scope}[xshift=4.6cm]
+\draw[penlite=pcRed] plot[smooth] coordinates {(0.00,0.00) (0.05,0.00) (0.10,0.00) (0.15,0.00) (0.20,0.00) (0.25,0.45) (0.30,0.73) (0.35,0.90) (0.40,1.35) (0.45,1.68) (0.50,1.85) (0.55,2.19) (0.60,2.51) (0.65,2.64) (0.70,2.84) (0.75,3.13) (0.80,3.22) (0.85,3.27) (0.90,3.55) (0.95,3.62) (1.00,3.54) (1.05,3.82) (1.10,3.88) (1.15,3.80) (1.20,3.98) (1.25,4.06) (1.30,3.97) (1.35,4.07) (1.40,4.16) (1.45,4.09) (1.50,4.10) (1.55,4.23) (1.60,4.17) (1.65,4.10) (1.70,4.26) (1.75,4.23) (1.80,4.07) (1.85,4.27) (1.90,4.27) (1.95,4.12) (2.00,4.26) (2.05,4.29) (2.10,4.17) (2.15,4.24) (2.20,4.31) (2.25,4.21) (2.30,4.21) (2.35,4.31) (2.40,4.24) (2.45,4.16) (2.50,4.31) (2.55,4.27) (2.60,4.10) (2.65,4.30) (2.70,4.29) (2.75,4.15) (2.80,4.28) (2.85,4.31) (2.90,4.18) (2.95,4.25) (3.00,4.32) (3.05,4.22) (3.10,4.21) (3.15,4.32) (3.20,4.25) (3.25,4.17) (3.30,4.31) (3.35,4.27) (3.40,4.11) (3.45,3.86) (3.50,3.56) (3.55,3.25) (3.60,2.93) (3.65,2.63) (3.70,2.33) (3.75,2.06) (3.80,1.81) (3.85,1.58) (3.90,1.38) (3.95,1.19) (4.00,1.03)};
+\foreach \s in {0.20,0.36,0.52,0.68,0.84,1.00,1.16,1.32,1.48,1.64,1.80,1.96,2.12,2.28,2.44,2.60,2.76,2.92,3.08,3.24}{\draw[pcBlue, line width=0.8pt] (\s,-0.35) -- (\s,-1.2);}
+\end{scope}
+\node[lbl, text=pcRed, anchor=west] at (1.2,1.9) {sacudidas};
+\node[lbl, text=pcRed, anchor=south] at (6.6,4.55) {esfuerzo continuo};
+\node[lbl, text=pcBlue, anchor=north] at (4.3,-1.35) {clics de la neurona};
+\end{scope}
+}{Los clics espaciados dan sacudidas sueltas del músculo; los seguidos se funden en una fuerza continua y mucho mayor.}
+
+\section*{Fuerza en coma flotante}
+
+El cerebro tiene dos perillas de fuerza: con qué frecuencia hacen clic las neuronas y cuántos grupos de fibras están activados. Los grupos se activan en orden, de los más débiles a los más fuertes, y nadie calcula ese orden: las neuronas pequeñas simplemente se excitan con más facilidad. Al final, cada grupo nuevo agrega más o menos la misma \emph{proporción} a la fuerza que ya hay. Cuando usted toma un huevo, la fuerza se dosifica en porciones diminutas; cuando levanta una maleta, en porciones grandes. Un ingeniero reconocerá aquí un número en coma flotante: el orden de magnitud lo da el número de grupos activados, y el valor exacto, la frecuencia de clics. La otra cara: cuanto más fuerte el movimiento, menos preciso. Según una hipótesis influyente, por eso nuestros movimientos son tan suaves: una orden suave da la menor dispersión.
+
+\section*{Tirar, pero no empujar}
+
+El músculo solo sabe tirar. Por eso cada articulación la atiende un par de músculos que tiran en sentidos opuestos: otra vez dos cables en lugar de un signo. La diferencia de sus fuerzas gira la articulación, y la suma la vuelve más rígida. Cuando usted lleva una taza llena, tensa los dos músculos a la vez: el giro es el mismo, pero la mano aguanta mejor un golpe.
+
+\pencilfig{13}{\pencilart{13}}{El músculo solo sabe tirar, por eso son dos: la diferencia de fuerzas gira la articulación; la suma la vuelve más firme.}
+
+\section*{Retroalimentación con retraso}
+
+En los músculos hay sensores de estiramiento, y el lazo más corto se cierra en la propia médula espinal: si se estira el músculo, él mismo se contrae, y el músculo opuesto se apaga mientras tanto. Lo apaga una neurona inhibidora de tipo \nt{GLYC}: aquí está el trabajo de ese tipo.
+
+Pero cada lazo tiene un retardo: en la médula, decenas de milisegundos; a través del ojo, cientos. Y una retroalimentación retrasada hace oscilar el sistema, como un conductor que maneja mirando la carretera con retraso. Cuanto más largo es el lazo, más despacio tiene que corregir. El límite a partir del cual el lazo medular empieza a oscilar ronda las ocho oscilaciones por segundo. Está cerca de la frecuencia del temblor fino que tiene toda persona sana, y el lazo de estiramiento es una de sus fuentes probables.
+
+¿Cómo nos movemos entonces rápido y con precisión? Según una hipótesis extendida, prediciendo: mantenemos un modelo interno del cuerpo y calculamos el resultado de la orden sin esperar a los sensores.
+
+\section*{Ritmo sin metrónomo}
+
+Caminar y respirar son rítmicos, pero no necesitan metrónomo. Dos grupos de neuronas que se frenan mutuamente y se cansan poco a poco trabajan por turnos solos: el ganador se cansa, el rival descansado toma el mando, y así una y otra vez. Una orden constante desde arriba, “camina”, se convierte allí mismo en el ritmo “izquierda, derecha”.
+
+\fullversion{13}

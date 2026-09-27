@@ -1,0 +1,53 @@
+\chapter{Neurônios jogam tênis}
+% versão completa: chapters/22_dishbrain.tex
+
+O experimento mais famoso com neurônios vivos num chip é o DishBrain, o ``cérebro na placa''. Cerca de um milhão de neurônios, cultivados num chip com vinte e seis mil eletrodos, jogavam o mais simples dos tênis de computador: a bola voa pela tela, a raquete sobe e desce.
+
+\section*{Como o jogo funciona}
+
+A bola entra na rede por oito eletrodos. Qual deles clica diz a que altura está a bola. Com que frequência ele clica diz se a bola está longe: quatro vezes por segundo quando ela está junto à parede do fundo, e cada vez mais, até quarenta, quando ela se aproxima da raquete. A saída são duas regiões de eletrodos: os cliques numa movem a raquete para cima; na outra, para baixo. A cada dez milissegundos, o computador conta os cliques e move a raquete. Esses dez milissegundos são o clock do computador da bancada, não da cultura: a rede em si funciona de forma assíncrona, como toda rede nervosa.
+
+\pencilfig{22}{\pencilart{22}}{A bola, a raquete e um milhão de neurônios que a movem.}
+
+\section*{O professor}
+
+Nada de dopamina. Depois de um acerto, a rede recebe um sinal curto e totalmente previsível: os oito eletrodos de uma vez, por um décimo de segundo. Depois de um erro, quatro segundos de estimulação desordenada, em lugares e momentos aleatórios; depois uma pausa, e um novo saque.
+
+\section*{O que aconteceu}
+
+Numa sessão de vinte minutos, os ralis das culturas vivas ficavam mais longos, e os saques perdidos, menos numerosos. Isso funcionava melhor com a realimentação completa. Quando, no lugar dos sinais depois do acerto e do erro, vinha simplesmente o silêncio, também havia melhora, porém mais fraca; sem realimentação, não havia. Os neurônios humanos jogavam um pouco melhor que os de camundongo. Já o aprendizado espalhado por vários dias não se mostrou confiável.
+
+\section*{Por que a rede aprende}
+
+Os autores explicam o resultado assim: a rede busca tornar as suas sensações previsíveis. O erro traz caos, o acerto traz ordem, e a rede muda para que haja mais ordem. Mas há também uma explicação mais pé no chão, que também concorda com os dados: ``sacuda depois do erro, não mexa depois do acerto''. Cada sacudida embaralha um pouco as ligações ao acaso. Os ajustes com que a rede erra muito são embaralhados o tempo todo, e os bons ficam intocados. A rede, sozinha, se demora onde há poucos erros --- ninguém a ensinou, simplesmente param de sacudi-la. No nosso modelo simples, essa regra de fato aumenta a proporção de acertos.
+
+\pencilfig{130}{%
+% scrambler: miss probability p over one setting of the network (valley in the middle); a miss kicks the setting
+% at random, a hit leaves it alone, so the time spent at a setting is proportional to 1/p (6x more in the valley here)
+\draw[pen] (0,1.2) -- (8.2,1.2);
+\draw[penlite=pcRed] plot[smooth] coordinates {(0.0,2.46) (0.8,2.46) (1.6,2.46) (2.0,2.44) (2.4,2.41) (2.8,2.32) (3.2,2.15) (3.6,1.90) (4.0,1.62) (4.4,1.44) (4.8,1.44) (5.2,1.62) (5.6,1.90) (6.0,2.15) (6.4,2.32) (6.8,2.41) (7.2,2.44) (7.6,2.46) (8.0,2.46)};
+\node[lbl, text=pcRed, anchor=south] at (7.55,2.55) {muitos erros};
+\node[lbl, text=pcRed, anchor=west] at (5.3,1.45) {poucos};
+% kicked balls on the slopes
+\draw[dotpen=pcBlue, wash=pcBlue] (1.3,2.68) circle (0.12);
+\draw[arr=pcGray, densely dashed] (1.35,2.82) to[bend left=50] (2.35,2.72);
+\draw[arr=pcGray, densely dashed] (1.22,2.82) to[bend right=50] (0.4,2.72);
+\draw[dotpen=pcBlue, wash=pcBlue] (6.3,2.45) circle (0.12);
+\draw[arr=pcGray, densely dashed] (6.25,2.59) to[bend right=50] (5.45,2.25);
+\node[lbl, anchor=south] at (1.3,3.05) {sacudida após o erro};
+% the ball left alone in the valley
+\draw[dotpen=pcBlue, wash=pcBlue] (4.6,1.66) circle (0.12);
+\node[lbl, anchor=south] at (4.6,1.95) {em paz};
+% where the network spends its time (proportional to 1/p)
+\fill[pcGreen, opacity=0.22] (0,0) -- plot[smooth] coordinates {(0.0,0.18) (0.8,0.18) (1.6,0.18) (2.0,0.19) (2.4,0.19) (2.8,0.21) (3.2,0.24) (3.6,0.33) (4.0,0.55) (4.4,0.98) (4.8,0.98) (5.2,0.55) (5.6,0.33) (6.0,0.24) (6.4,0.21) (6.8,0.19) (7.2,0.19) (7.6,0.18) (8.0,0.18)} -- (8.0,0) -- cycle;
+\draw[penlite=pcGreen] plot[smooth] coordinates {(0.0,0.18) (0.8,0.18) (1.6,0.18) (2.0,0.19) (2.4,0.19) (2.8,0.21) (3.2,0.24) (3.6,0.33) (4.0,0.55) (4.4,0.98) (4.8,0.98) (5.2,0.55) (5.6,0.33) (6.0,0.24) (6.4,0.21) (6.8,0.19) (7.2,0.19) (7.6,0.18) (8.0,0.18)};
+\draw[pen] (0,0) -- (8.2,0);
+\node[lbl, text=pcGreen!60!black, anchor=west] at (5.3,0.6) {onde a rede passa o tempo};
+\node[lbl, anchor=north] at (4.1,-0.03) {ajustes da rede};
+}{O erro sacode os ajustes da rede ao acaso; o acerto os deixa em paz. Onde há muitos erros, a rede não se demora. Onde há poucos, param de sacudi-la, e ela fica ali --- embora ninguém a tenha levado até lá.}
+
+Como distinguir as duas explicações? É preciso um experimento que ainda não foi feito: depois do erro, aplicar não um sinal caótico, e sim um sinal \emph{previsível}, com a mesma duração e a mesma intensidade. Se a rede aprender assim também, a questão não é a previsibilidade, e sim simplesmente a diferença entre ``depois do acerto'' e ``depois do erro''. Esse experimento ainda espera quem o faça.
+
+Aqui termina o nosso caminho. A máquina de vinte watts é montada com peças simples, mas como exatamente ela as combina num pensamento, por enquanto, só entendemos em parte. Talvez o próximo capítulo seja escrito por você.
+
+\fullversion{22}

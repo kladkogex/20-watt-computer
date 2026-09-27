@@ -1,0 +1,41 @@
+\chapter{Conversa pelo ar}
+% versão completa: chapters/05_serocomputer.tex
+
+\pencilfig{5}{\pencilart{5}}{À esquerda, o telefone: um fio de um para um. À direita, o rádio: uma mensagem para todos ao redor de uma vez.}
+
+Até agora os neurônios conversavam entre si por telefone: fio com fio, com endereço certo. Agora vamos ligar a primeira estação de rádio: os neurônios \nt{SERO}, que liberam serotonina. São só algumas centenas de milhares no cérebro inteiro, mas os seus fios se espalham por regiões enormes dele.
+
+\section*{Quatro diferenças}
+
+O neurônio \nt{SERO} não se parece com o \nt{GLUT}. Primeiro, quem decide se o sinal dele é positivo ou negativo é o destinatário: a serotonina tem ``fechaduras'' dos dois tipos. Segundo, ele trabalha sozinho: na vigília clica de modo regular algumas vezes por segundo, se recebe uma alimentação de fundo constante --- é um metrônomo. Terceiro, ele é lento: o seu sinal age não em milissegundos, mas em centenas de milissegundos. Quarto, muitas vezes ele libera a substância não numa fenda estreita, mas no espaço ao redor, onde ela se espalha como uma gota de tinta na água. O destinatário sente a concentração e não sabe de quem veio a molécula.
+
+\section*{Uma lógica que não existe}
+
+Um metrônomo com uma ``fechadura'' inibitória é um ``não'' pronto: enquanto não há serotonina, o neurônio trabalha; quando ela aparece, ele se cala. Um neurônio no lugar de um circuito inteiro. Parece que a rede de serotonina é logicamente mais poderosa que a rede \nt{GLUT}.
+
+Mas há um porém. A substância liberada no espaço se mistura. Dois sinais só continuam diferentes se foram soltos em lugares mais distantes entre si do que a substância consegue se espalhar --- e isso são dezenas de micrômetros. Só que cada neurônio de serotonina tem uma quantidade enorme de pontos de liberação, espalhados por regiões grandes, e os ``fios'' de neurônios diferentes se sobrepõem. Por uma rede assim não se transmitem bits separados. Ela só pode transmitir algumas grandezas gerais --- como um rádio em que todos ouvem a mesma estação.
+
+\pencilfig{123}{%
+% two release sites: far apart the clouds stay separate (two signals), close together they merge (one level)
+\foreach \x/\y in {0.9/1.55, 4.1/1.55, 1.9/0, 2.9/0}{
+  \foreach \r/\o in {0.95/0.07, 0.7/0.09, 0.45/0.12}{\fill[pcViolet, opacity=\o] (\x,\y) circle (\r);}
+  \draw[dotpen=pcViolet, fill=pcViolet] (\x,\y) circle (0.07);}
+\draw[arr] (1.95,1.55) -- (3.05,1.55); \draw[arr] (3.05,1.55) -- (1.95,1.55);
+\node[lbl, anchor=south, align=center] at (2.5,1.6) {mais longe do que\\ela se espalha};
+\node[lbl, anchor=west] at (5.25,1.55) {dois sinais};
+\node[lbl, anchor=west] at (5.25,0) {uma nuvem comum};
+}{A serotonina é liberada no espaço e se espalha como uma nuvem. Duas fontes dão dois sinais diferentes só se estiverem mais longe uma da outra do que a substância consegue se espalhar. Se estiverem mais perto, as nuvens se fundem num único nível comum.}
+
+\section*{O que ela faz de verdade}
+
+Para uma única grandeza geral, esse sistema tem tudo. A concentração de serotonina suaviza os cliques separados num nível contínuo --- é assim que o conversor mais simples transforma um trem de pulsos numa tensão. Esse nível se mantém por segundos e se desfaz sozinho: não é um bit que precisa ser apagado, e sim um traço que some devagar.
+
+Os neurônios de serotonina também têm ``fechaduras'' em si mesmos: a serotonina liberada freia a sua própria fonte. Um engenheiro reconhece nisso um amplificador com realimentação negativa --- um termostato que mantém o nível. É verdade que os experimentos mostram que essa autoinibição é endereçada e provoca só pausas curtas, então o papel de termostato, por enquanto, é mais hipótese do que fato.
+
+\section*{Quanto custa esperar}
+
+Que grandeza geral vale a pena manter lenta e igual para toda a rede? Uma boa candidata é a \emph{paciência}. Imagine uma escolha: uma recompensa pequena agora ou uma grande daqui a alguns segundos. Quanto você está disposto a esperar depende de quão depressa o futuro ``perde valor'' para você. Segundo uma das hipóteses, é esse o botão que a serotonina gira. Há experimentos a favor: se os neurônios de serotonina forem ligados artificialmente, o camundongo espera mais tempo pela recompensa adiada antes de desistir.
+
+Este capítulo apresenta três dispositivos que todas as estações de rádio do cérebro vão usar: o neurônio metrônomo, o ``fio'' que na verdade é um volume, e o nível lento no lugar de cliques separados.
+
+\fullversion{5}

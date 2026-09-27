@@ -1,0 +1,237 @@
+\chapter{Qué calculan las neuronas \nt{SERO}}
+\label{sec:serocomputer}
+
+\section{El primer canal de difusión}
+
+Hasta ahora todas las neuronas del libro hablaban por el bus de direcciones: \nt{GLUT} y \nt{GABA} enviaban espigas a destinatarios concretos, y averiguamos qué calcula una red así y en qué lenguaje habla. Pasamos ahora al segundo bus de la sección~\ref{sec:buses}, el de difusión. Su primer canal es \nt{SERO}. Como antes, solo nos permitiremos lo que existe en un organismo vivo.
+
+En este capítulo aparecerán tres dispositivos que después usarán todos los canales de difusión: una neurona que, con un aporte de fondo constante, funciona por sí sola mientras nada la detenga; un cable que en realidad es un volumen de tejido; y una concentración lenta en lugar de espigas sueltas. \nt{DOPA}, \nt{NORA} y \nt{ACET} se construirán en los capítulos~\ref{sec:dofa}--\ref{sec:acet} con las mismas piezas.
+
+Desde el punto de vista del ingeniero, la neurona \nt{SERO} tiene cuatro diferencias importantes.
+
+\emph{Primera: el signo lo elige el receptor.} La serotonina tiene receptores de ambos signos, y la regla~\eqref{eq:dalesign} no se aplica aquí: el signo no lo fija el emisor, sino el receptor del destinatario (proposición~\ref{prop:receptor})~\cite{BarnesSharp1999}.
+
+\emph{Segunda: la neurona \nt{SERO} funciona sola si hay un fondo constante.} En la vigilia emite espigas de forma regular, varias por segundo, y no necesita un empujón para cada una: es un marcapasos. Pero necesita un aporte de fondo permanente. En una rebanada de cerebro, donde ese aporte falta, la mayoría de estas células calla; el ritmo regular vuelve si se aplica noradrenalina a través de los receptores $\alpha_1$, y su bloqueo lo apaga~\cite{VandermaelenAghajanian1983}. En el organismo ese fondo llega de \nt{NORA}. Para el circuito es un oscilador que necesita alimentación: mientras la tiene, funciona solo, hasta que lo detiene la inhibición.
+
+\emph{Tercera: es lenta.} Casi todos los receptores de serotonina son metabotrópicos: no abren un canal por sí mismos, sino que disparan dentro de la célula una cadena de reacciones. La respuesta es lenta: la corriente inhibidora a través del receptor principal sube y baja en cerca de un segundo~\cite{CourtneyFord2016}, decenas de veces más que la respuesta de una sinapsis rápida \nt{GLUT}.
+
+\emph{Cuarta: no libera el neurotransmisor en un cable, sino en un volumen.} En las regiones a las que van las salidas de las neuronas \nt{SERO}, la serotonina a menudo no sale a una hendidura estrecha, sino al espacio extracelular, y se difunde alrededor~\cite{Bunin1998}. El destinatario siente una concentración y no puede saber de qué emisor vino la molécula.
+
+Con estos tiempos las espigas sueltas ya no importan, así que describiremos la red con frecuencias $r_j$ y concentraciones. La concentración $c$ de serotonina en el volumen donde liberan el neurotransmisor las neuronas $j$ crece con la liberación y decae porque el neurotransmisor se recaptura:
+\begin{empheq}[box=\keybox]{equation}
+\tau_c\,\frac{\dd c}{\dd t} \;=\; -c \;+\; \kappa\sum_j r_j ,
+\qquad
+r_i \;=\; f_i\bigl(b_i + s_i\,g\,c\bigr), \quad s_i=\pm1 .
+\label{eq:seroneuron}
+\end{empheq}
+Es otra forma de leer un tren de espigas, que complementa la proposición~\ref{prop:reader}: el volumen no ve ni espigas sueltas ni su orden, solo la frecuencia promediada en el tiempo $\tau_c$. La primera ecuación es el mismo circuito RC que la membrana: $\tau_c$ es la vida media del neurotransmisor en el volumen; no se ha medido directamente, y lo tomamos del orden de un segundo; $\kappa$ es cuánto neurotransmisor aporta una espiga. La segunda describe al destinatario: $b_i$ es su propio aporte, positivo en un marcapasos (incluye la entrada de fondo constante de \nt{NORA}); $g$ es la sensibilidad del receptor; el signo $s_i$ lo elige el destinatario; $f_i$ es una característica de transferencia no decreciente.
+
+\section{Un NO con una sola neurona}
+
+Tomemos un marcapasos con receptor inhibidor, $s=-1$. Mientras no hay serotonina alrededor, funciona con su propio aporte $b$. Cuando aparece serotonina, el aporte baja en $gc$, y si $gc>b$, la neurona calla. Esto es un NO: hay salida cuando no hay entrada. Ha costado una sola neurona (fig.~\ref{fig:serogates}). La proposición~\ref{prop:monotone} no se aplica aquí: exigía pesos positivos.
+
+Si sobre el mismo marcapasos actúa serotonina de dos volúmenes distintos, calla cuando hay serotonina en al menos uno. Esto es un NO-O, y con NO-O se puede construir cualquier función lógica. El código de dos cables de la red \nt{GLUT} no hace falta aquí: la ausencia de señal la calculan neuronas que funcionan mientras nada las detenga.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  nrn/.style={circle,draw,very thick,fill=blue!6,minimum size=0.95cm,inner sep=0pt},
+  pace/.style={nrn,double,double distance=1.2pt},
+  inh/.style={-{Bar[width=7pt]},thick,red!70!black}]
+\node[pace] (N1) at (0,0) {};
+\draw[inh] (-1.6,0) node[left,black] {$c$} -- (N1);
+\draw[->,very thick,red!70!black] (N1) -- (1.3,0) node[right,black] {$\bar c$};
+\node[below=0.55cm] at (0,0) {\small NO};
+\node[pace] (N2) at (5,0) {};
+\draw[inh] (3.4,0.45) node[left,black] {$c_1$} -- (N2);
+\draw[inh] (3.4,-0.45) node[left,black] {$c_2$} -- (N2);
+\draw[->,very thick,red!70!black] (N2) -- (6.3,0) node[right,black] {$\overline{c_1\vee c_2}$};
+\node[below=0.55cm] at (5,0) {\small NO-O};
+\end{tikzpicture}
+\caption{Lógica con neuronas \nt{SERO}. El círculo doble es un marcapasos: con un aporte de fondo constante funciona solo mientras no lo inhiban. La línea con barra es un receptor inhibidor, $s=-1$; $c$, $c_1$, $c_2$ son las concentraciones de serotonina en los volúmenes que rodean al destinatario. A la izquierda, NO; a la derecha, NO-O.}
+\label{fig:serogates}
+\end{figure}
+
+\begin{keyblock}
+\begin{proposition}[Completitud de la lógica \nt{SERO}]
+\label{prop:serocomplete}
+Si la red tiene marcapasos con receptores inhibidores y las liberaciones en volúmenes distintos no se mezclan, la red~\eqref{eq:seroneuron} puede calcular cualquier función lógica, y cada bit se transmite por un solo cable.
+\end{proposition}
+\end{keyblock}
+
+Lógicamente la red \nt{SERO} es más potente que \nt{GLUT}, pero la condición “las liberaciones en volúmenes distintos no se mezclan” no se cumple en el cerebro (sección~\ref{sec:volume}).
+
+\section{Realimentación negativa}
+
+Las neuronas serotoninérgicas tienen receptores inhibidores sobre sí mismas~\cite{Sprouse1987}. La serotonina que liberan vuelve a ellas y las frena. Para un ingeniero es un esquema conocido: un amplificador con realimentación negativa (fig.~\ref{fig:serofeedback}).
+
+Qué está medido aquí y qué es modelo. En los propios núcleos del rafe, donde están las neuronas \nt{SERO}, la serotonina inhibe a las vecinas no a través de un volumen común, sino punto a punto, por sinapsis: el transportador la retira deprisa y no deja que se acumule fuera de la hendidura. Una liberación aislada solo produce una pausa breve en la descarga, y la frecuencia media no cambia~\cite{CourtneyFord2016}. Por eso el lazo de abajo, cerrado a través de un volumen común, es un modelo: calculamos qué haría esa realimentación si funcionara al nivel de las frecuencias medias.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  nrn/.style={circle,draw,very thick,fill=blue!6,minimum size=0.95cm,inner sep=0pt},
+  pace/.style={nrn,double,double distance=1.2pt},
+  blk/.style={draw,very thick,rounded corners=2pt,fill=orange!10,minimum height=0.9cm,minimum width=2.2cm,align=center,font=\small},
+  inh/.style={-{Bar[width=7pt]},thick,red!70!black}]
+\node[pace] (N) at (0,0) {};
+\node[blk] (V) at (3.6,0) {volumen\\$\tau_c$};
+\draw[->,very thick] (N) -- node[above] {\small $r$} (V);
+\draw[->,very thick] (V) -- (6.0,0) node[right] {\small $c$: a todos los destinatarios};
+\draw[inh] (V.south) -- ++(0,-0.9) -| node[pos=0.25,below] {\small $-g\,c$} (N.south);
+\draw[->,thick,blue!60!black] (-1.7,0) node[left,black] {\small $b$} -- (N);
+\end{tikzpicture}
+\caption{Neurona \nt{SERO} con realimentación a través de su propio neurotransmisor: la concentración $c$ llega a todos los destinatarios e inhibe a la propia neurona. En el modelo es un regulador de nivel; en el cerebro, ese papel del lazo es una hipótesis.}
+\label{fig:serofeedback}
+\end{figure}
+
+Calculemos qué hace este lazo. Sea la característica de transferencia lineal, $f(u)=au$ para $u>0$. En equilibrio $c=\kappa r$ y $r=a(b-gc)$. Sustituyendo una en otra, obtenemos
+\begin{empheq}[box=\keybox]{equation}
+r \;=\; \frac{a\,b}{1+G}, \qquad G \;=\; a\,g\,\kappa .
+\label{eq:feedback}
+\end{empheq}
+La magnitud $G$ es la ganancia del lazo. Es la misma fórmula que la de cualquier amplificador con realimentación negativa, y da las mismas dos ventajas.
+
+\emph{Robustez frente a la dispersión.} Supongamos que la excitabilidad $a$ de la neurona cambia en una fracción $\varepsilon$. Sin realimentación, la frecuencia cambiaría en la misma fracción. Con realimentación, para $G\gg1$, la frecuencia $r\approx b/(g\kappa)$ casi no depende de $a$: su cambio es $1+G$ veces menor. Con $G=9$ la dispersión se reduce diez veces.
+
+\emph{Rapidez.} Sustituyamos $r=a(b-gc)$ en la primera ecuación~\eqref{eq:seroneuron}: obtenemos $\tau_c\,\dd c/\dd t=-(1+G)\,c+\kappa ab$. La concentración se acerca a su nivel con constante de tiempo $\tau_c/(1+G)$, es decir, $1+G$ veces más rápido que sin realimentación.
+
+He aquí el primer cálculo que podría hacer el sistema \nt{SERO}: mantener el nivel global de serotonina en el cerebro en un valor fijado, como un termostato mantiene la temperatura. Es una hipótesis: en los experimentos, la autoinhibición solo se ve por ahora como pausas breves que no cambian la frecuencia media.
+
+\section{De espigas a nivel}
+
+El segundo cálculo está escondido en la primera ecuación~\eqref{eq:seroneuron}. Las neuronas emiten espigas sueltas, y el destinatario siente una concentración que las suaviza en el tiempo $\tau_c$. Si la frecuencia de la fuente cambia, la concentración la sigue con retraso:
+\begin{equation}
+c(t) \;=\; \frac{\kappa}{\tau_c}\int_{-\infty}^{t} e^{-(t-t')/\tau_c}\,\sum_j r_j(t')\,\dd t' .
+\label{eq:lowpass}
+\end{equation}
+Es la media móvil de la actividad de las fuentes en una ventana de unas pocas $\tau_c$ hacia atrás: un filtro paso bajo (fig.~\ref{fig:lowpass}). Así el convertidor digital-analógico más sencillo pasa los pulsos por un circuito RC y convierte su frecuencia en un nivel. El sistema \nt{SERO} hace lo mismo con cientos de miles de neuronas a la vez.
+
+Esta magnitud es además una memoria. Cuando las fuentes callan, la concentración se mantiene todavía un tiempo del orden de $\tau_c$. No es un bit, sino una huella que se desvanece poco a poco.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=1.45cm,y=1cm]
+\draw[gray!70!black] (0,3.2) -- (8.1,3.2);
+\node[left,font=\small] at (-0.05,3.4) {espigas};
+\node[above,font=\scriptsize,gray!40!black] at (1,3.65) {$2$ por segundo};
+\node[above,font=\scriptsize,gray!40!black] at (3.5,3.65) {$8$ por segundo};
+\node[above,font=\scriptsize,gray!40!black] at (6.5,3.65) {$2$ por segundo};
+\draw[->,gray!70!black] (0,0) -- (8.3,0) node[right,black] {\small $t$};
+\draw[->,gray!70!black] (0,0) -- (0,2.75) node[left,black] {\small $c$};
+\foreach \s in {0.136,0.529,0.760,1.223,1.714,1.748,1.755,2.663,2.701,2.734,3.414,3.493,3.719,3.800,3.928,3.948,4.074,4.327,4.420,4.589,4.728,4.736,4.914,5.025,5.205,5.220,6.224,6.544,7.178}{\draw[thick,blue!60!black] (\s,3.2) -- (\s,3.6);}
+\foreach \a/\b/\v in {0.000/0.136/0.000,0.136/0.529/1.000,0.529/0.760/1.675,0.760/1.223/2.330,1.223/1.714/2.466,1.714/1.748/2.509,1.748/1.755/3.425,1.755/2.663/4.402,2.663/2.701/2.775,2.701/2.734/3.672,2.734/3.414/4.553,3.414/3.493/3.306,3.493/3.719/4.055,3.719/3.800/4.235,3.800/3.928/4.905,3.928/3.948/5.316,3.948/4.074/6.211,4.074/4.327/6.476,4.327/4.420/6.028,4.420/4.589/6.493,4.589/4.728/6.483,4.728/4.736/6.642,4.736/4.914/7.589,4.914/5.025/7.351,5.025/5.205/7.579,5.205/5.220/7.331,5.220/6.224/8.221,6.224/6.544/4.012,6.544/7.178/3.914,7.178/8.000/3.076}{\draw[very thick,orange!85!black] plot[domain=\a:\b,samples=10] (\x,{0.25*\v*exp(-(\x-\a))});}
+\foreach \s/\p/\q in {0.136/0.000/1.000,0.529/0.675/1.675,0.760/1.330/2.330,1.223/1.466/2.466,1.714/1.509/2.509,1.748/2.425/3.425,1.755/3.402/4.402,2.663/1.775/2.775,2.701/2.672/3.672,2.734/3.553/4.553,3.414/2.306/3.306,3.493/3.055/4.055,3.719/3.235/4.235,3.800/3.905/4.905,3.928/4.316/5.316,3.948/5.211/6.211,4.074/5.476/6.476,4.327/5.028/6.028,4.420/5.493/6.493,4.589/5.483/6.483,4.728/5.642/6.642,4.736/6.589/7.589,4.914/6.351/7.351,5.025/6.579/7.579,5.205/6.331/7.331,5.220/7.221/8.221,6.224/3.012/4.012,6.544/2.914/3.914,7.178/2.076/3.076}{\draw[very thick,orange!85!black] (\s,0.25*\p) -- (\s,0.25*\q);}
+\draw[thick,densely dashed,black] plot[domain=0:2,samples=30] (\x,{0.25*2*(1-exp(-\x))})
+  plot[domain=2:5,samples=40] (\x,{0.25*(8-6.271*exp(-(\x-2)))})
+  plot[domain=5:8,samples=40] (\x,{0.25*(2+5.688*exp(-(\x-5)))});
+\foreach \x in {0,2,5,8}{\draw[gray!60!black] (\x,-0.05) -- (\x,0.05) node[below=3pt,font=\scriptsize] {\x\,s};}
+\end{tikzpicture}
+\caption{De espigas a nivel. Arriba, las espigas de las neuronas \nt{SERO}: dos segundos escasas, tres segundos frecuentes y después otra vez escasas. Abajo, la concentración de serotonina~\eqref{eq:lowpass} con $\tau_c=1\,\text{s}$. La línea discontinua es lo mismo si las espigas llegaran de forma perfectamente regular.}
+\label{fig:lowpass}
+\end{figure}
+
+\section{El cable es un volumen}
+\label{sec:volume}
+
+Volvamos a la condición de la proposición~\ref{prop:serocomplete}. La serotonina liberada cerca por emisores distintos se suma en una sola concentración.
+
+\emph{Aquí el cable no es una fibra, sino un volumen de tejido.} Dos señales siguen siendo distintas solo si se liberan en regiones separadas por más de lo que alcanza a difundirse el neurotransmisor. En un tiempo $\tau$, una molécula con coeficiente de difusión $D$ se aleja
+\begin{empheq}[box=\keybox]{equation}
+\ell \;\sim\; \sqrt{D\,\tau}\, .
+\label{eq:diffusionlength}
+\end{empheq}
+La tortuosidad de los espacios extracelulares frena la difusión de una molécula pequeña unas $2.6$ veces~\cite{Sykova2008}, y el coeficiente de difusión de la propia serotonina en el tejido no se ha medido; por el tamaño de la molécula lo estimamos en unas pocas unidades por $10^{-6}$~cm$^2$/s. Si la señal vive $\tau\sim1$~s (también una estimación), entonces $\ell\sim\sqrt{3\cdot10^{-6}}$~cm $\approx20\um$. La dirección en una red así es un \emph{lugar}: el destinatario sabe de quién viene la señal solo por dónde se encuentra él mismo.
+
+Las neuronas \nt{SERO} reales están hechas de modo que casi no quedan direcciones separadas. La salida de cada una se reparte por enormes zonas del cerebro: las ramas de una sola célula llegan a muchas regiones alejadas entre sí~\cite{GagnonParent2014}. Se estiman unos $10^5$ sitios de liberación por célula (tabla~\ref{tab:types}); nadie los ha contado directamente. Los “cables” de distintas neuronas \nt{SERO} se superponen y se mezclan. Aun así, no se funden del todo en un único cable: las neuronas \nt{SERO} se dividen en varios subsistemas que envían su salida a regiones distintas y responden de forma diferente al mismo suceso~\cite{Ren2018}. Pero esos subsistemas son unos pocos, no cientos de miles.
+
+\begin{keyblock}
+\begin{proposition}[Número de cables independientes]
+\label{prop:volumewires}
+En una red con transmisión de volumen, el número de señales independientes no está limitado por el número de neuronas, sino por el número de regiones disjuntas de tamaño $\ell\sim\sqrt{D\tau}$ en las que liberan el neurotransmisor. Si la salida de cada neurona se reparte por un volumen grande, toda la red transmite solo unas pocas variables comunes.
+\end{proposition}
+\end{keyblock}
+
+Por eso los circuitos lógicos de la proposición~\ref{prop:serocomplete} no se pueden construir en el cerebro: falta con qué. En cambio, al regulador~\eqref{eq:feedback} y al filtro~\eqref{eq:lowpass} no les hacen falta cables separados: les basta una sola magnitud común. El filtro se sigue directamente de la liberación en volumen medida en las regiones de destino~\cite{Bunin1998}; el regulador de nivel es una hipótesis.
+
+\section{El horizonte de planificación}
+\label{sec:horizon}
+
+¿Para qué puede servir una sola magnitud común y lenta? Un buen candidato es un parámetro que debe ser igual para toda la red y no cambiar más deprisa que en segundos o minutos. En el capítulo~\ref{sec:neurontypes} ya apareció uno así: el coeficiente $\gamma$ de la fórmula del error~\eqref{eq:rpe}, que dice cuánto menos vale una recompensa futura que una inmediata. En tiempo continuo su lugar lo ocupa el \emph{horizonte} $\tau_\gamma$: una recompensa $R$ que llegará tras una espera $D$ vale ahora $R\,e^{-D/\tau_\gamma}$.
+
+El horizonte decide si vale la pena esperar. Supongamos que se puede tomar enseguida una recompensa pequeña $r_0$ o esperar una grande $R$. Esperar conviene mientras
+\begin{empheq}[box=\keybox]{equation}
+D \;<\; \tau_\gamma\,\ln\frac{R}{r_0} .
+\label{eq:patience}
+\end{empheq}
+Con $\tau_\gamma=2\,\text{s}$ y una recompensa diferida tres veces mayor, conviene esperar hasta $2.2\,\text{s}$; si el horizonte es el doble, hasta $4.4\,\text{s}$. La paciencia es proporcional al horizonte.
+
+La fórmula~\eqref{eq:patience} se basa en un descuento exponencial. El descuento medido con esperas de segundos se parece más a una hipérbola $R/(1+D/\tau_\gamma)$: así caen en los monos tanto el valor de la recompensa diferida en la elección como la respuesta de las neuronas \nt{DOPA} a la señal que la anuncia~\cite{KobayashiSchultz2008}. Para la hipérbola, la condición~\eqref{eq:patience} se sustituye por $D<\tau_\gamma\,(R/r_0-1)$: la dependencia del cociente de recompensas ya no es logarítmica sino lineal, y con los mismos números el límite de espera casi se duplica. La hipérbola sale de la misma exponencial si la espera es aleatoria (ejercicio~\ref{ex:05:7}), y la paciencia sigue siendo proporcional a la escala de tiempo.
+
+Según una hipótesis, el horizonte lo fija precisamente \nt{SERO}~\cite{Doya2002}. Para ese papel tiene todo lo necesario: un solo nivel común para toda la red, que cambia en segundos. Hay también experimentos directos: si se activan artificialmente las neuronas serotoninérgicas, el animal espera más tiempo una recompensa diferida antes de rendirse~\cite{Miyazaki2014} e insiste más en buscar recompensa donde se ha vuelto escasa~\cite{Lottem2018}. Cómo se convierte exactamente la concentración de serotonina en $\tau_\gamma$ dentro de la red no se sabe. En el capítulo siguiente el horizonte entrará en el error que difunde \nt{DOPA}.
+
+\section{Resumen}
+
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{>{\raggedright}p{3.6cm}>{\raggedright}p{4.3cm}>{\raggedright\arraybackslash}p{4.3cm}}
+\toprule
+& \nt{GLUT} & \nt{SERO} \\
+\midrule
+tiempo de reacción & milisegundos & de fracciones de segundo a un segundo \\
+signo de la acción & solo $+$ & $+$ y $-$, lo elige el destinatario \\
+sin entrada & calla & funciona sola con un aporte de fondo constante \\
+direccionamiento & punto a punto & volumen; la dirección es el lugar \\
+NO & solo mediante detectores de “apagado” & una neurona \\
+memoria & actividad autosostenida, se apaga por fatiga & concentración, se desvanece en el tiempo $\tau_c$ \\
+cálculos principales & coincidencias, retardos, lógica, secuencias & suavizado; regulación de nivel y horizonte $\tau_\gamma$ (hipótesis) \\
+\bottomrule
+\end{tabular}
+\caption{Qué calculan las redes formadas solo por neuronas \nt{GLUT} y solo por neuronas \nt{SERO}.}
+\label{tab:glutvssero}
+\end{table}
+
+Como elemento lógico (tabla~\ref{tab:glutvssero}), la neurona \nt{SERO} es más rica que \nt{GLUT}, pero como sistema de comunicación es un canal de difusión: lento y casi sin direcciones. Por eso no intenta ser un procesador, sino que suaviza y difunde unas pocas magnitudes comunes de las que se habló en el capítulo~\ref{sec:neurontypes}; según una hipótesis, entre ellas el horizonte de planificación. El marcapasos, el volumen y la concentración lenta nos saldrán al paso tres veces más: en \nt{DOPA}, \nt{NORA} y \nt{ACET}.
+
+\section{Ejercicios}
+
+\begin{exercise}[\lvlA]
+\label{ex:05:1}
+\emph{El cable es un volumen.} Tome para la serotonina $D=3\cdot10^{-6}$~cm$^2$/s (sección~\ref{sec:volume}). Halle con~\eqref{eq:diffusionlength} $\ell$ para una señal que vive $1\,\text{s}$, y el tiempo en que el neurotransmisor se difunde $5$~cm. ¿Qué hace entonces que \nt{SERO} llegue a todas partes: la difusión o la ramificación del cable con $\sim10^5$ sitios de liberación?
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:05:2}
+\emph{Regulador de nivel.} Demuestre que en~\eqref{eq:seroneuron} con $f(u)=au$ la sensibilidad relativa $S=(a/r)\,\partial r/\partial a$ vale exactamente $1/(1+G)$, y no solo para $G\gg1$. Con $G=9$, la excitabilidad $a$ sube un $20\%$. ¿En qué porcentaje cambia $r$ sin linealizar?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:05:3}
+\emph{Receptor lento en el lazo.} El receptor \nt{SERO} responde con retardo: $r(t)=a\bigl(b-gc(t-T)\bigr)$, y el volumen sigue~\eqref{eq:seroneuron}. Demuestre que para $G>1$ el lazo es estable solo si $T<T^*=\tau_c\arccos(-1/G)/\sqrt{G^2-1}$. Halle $T^*$ con $\tau_c=1\,\text{s}$ para $G=2$ y $G=9$. ¿Qué supresión de la dispersión es posible con un retardo de cientos de milisegundos?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:05:4}
+\emph{Ruido de disparo del nivel.} Cada espiga suma a $c$, según~\eqref{eq:lowpass}, una exponencial con $\tau_c=1\,\text{s}$. Halle el coeficiente de variación de $c$ si las $3\cdot10^5$ neuronas \nt{SERO} liberan en un mismo volumen espigas de Poisson a $2$ por segundo. ¿Qué $\tau_c$ daría $\mathrm{CV}=10\%$ a una sola neurona con $4$ espigas por segundo?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:05:5}
+\emph{Simulación: realimentación contra ruido.} Simule $N=50$ marcapasos de Poisson con frecuencias $r_i=a_i[b-gc]_+$, $a_i$ uniformes en $[2.8,\,5.2]$, y el volumen~\eqref{eq:seroneuron} con $\kappa=1/N$, $\tau_c=1\,\text{s}$. ¿Cuántas veces reduce la realimentación ($b=1$, $g=2.25$) el CV del nivel $c$ frente a $b=0.1$, $g=0$? ¿Iguala las frecuencias de las neuronas?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:05:6}
+\emph{Diseño: XOR con lógica \nt{SERO}.} Una compuerta es un marcapasos que emite $r_0$ si $b-g\sum_kc_k>0$ y $0$ en caso contrario, hacia su propio volumen $\tau_c\,\dd c/\dd t=-c+\kappa r$; calcula NO-O. Construya un XOR con cinco compuertas así y halle su tiempo de establecimiento con $\tau_c=1\,\text{s}$ y $G'=g\kappa r_0/b=2$.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:05:7}
+\emph{Paciencia con espera desconocida.} (a)~Un animal acepta esperar una recompensa tres veces mayor si la espera no pasa de $6\,\text{s}$. ¿Qué horizonte $\tau_\gamma$ implica? (b)~Sea la espera $D$ exponencial con media $\bar D$. Demuestre que esperar conviene si $\bar D<\tau_\gamma(R/r_0-1)$, y compare con una espera fija para $\tau_\gamma=2\,\text{s}$, $R=3r_0$.
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:05:8}
+\emph{Cómo fija la concentración el horizonte.} Una neurona \nt{DOPA} recibe $V$ directamente con peso $k_1$ y a través de una intermediaria \nt{GABA} que suaviza con $\tau_d=0.1\,\text{s}$, con peso $-k_2$; para $V$ lentas la suma vale $(k_1-k_2)V+k_2\tau_d\dot V$. Ajuste $k_1$, $k_2$ a~\eqref{eq:ctd} con $\tau_\gamma=2\,\text{s}$. \nt{SERO} multiplica $k_1$ por $m$: ¿cuánto hay que cambiar $m$ para duplicar el horizonte?
+\end{exercise}

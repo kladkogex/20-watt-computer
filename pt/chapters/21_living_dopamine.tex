@@ -1,0 +1,63 @@
+\section{Dopamina por um clarão de luz}
+\label{sec:dishdopamine}
+
+O único experimento direto que conhecemos em que se deu dopamina a uma cultura como professor foi feito numa plataforma de organoides à qual os pesquisadores se conectam remotamente~\cite{Jordan2024}. Ao líquido que banha os organoides acrescentou-se dopamina dentro de uma ``gaiola'' fotossensível: a molécula presa não age sobre os receptores. A concentração da dopamina enjaulada é de $1$~mM. Quando é preciso recompensar a rede, ela é iluminada com ultravioleta: a gaiola se desfaz, e a dopamina sai para o volume.
+
+A malha funciona assim. O mesmo estímulo é aplicado repetidas vezes; se ele provocou mais disparos que antes, o clarão é acionado e a dopamina é liberada. Ao longo de $240$ repetições, o número de disparos evocados em geral cresceu. Os próprios autores escrevem que um único experimento desses não permite concluir que o crescimento se deve à dopamina~\cite{Jordan2024}.
+
+Para um engenheiro, é a primeira tentativa de montar numa placa de cultura a regra de três fatores~\eqref{eq:threefactor}: a atividade do remetente e do destinatário deixa um traço, e o sinal comum decide se a mudança se fixa. Mas aqui o sinal só pode ser positivo: há recompensa ou não há, e a montagem não fornece erro negativo $\delta<0$. Além disso, a dopamina se espalha e é removida devagar, como a concentração em~\eqref{eq:lowpass}, de modo que clarões frequentes podem simplesmente elevar seu nível geral. Para distinguir aprendizado disso, são necessários dois controles: o mesmo número de clarões em momentos aleatórios, sem relação com a resposta da rede, e os mesmos clarões sem a dopamina enjaulada. E é preciso um teste depois de um repouso: a mudança permaneceu quando a dopamina foi embora?
+
+\section{A dopamina ensina o silício}
+\label{sec:biohybrid}
+
+No experimento inverso, células vivas ensinam a eletrônica~\cite{Keene2020}. Células que liberam dopamina são cultivadas num microcanal sobre um elemento neuromórfico orgânico, um transistor cuja condutância do canal faz o papel de peso sináptico. A dopamina que sai das células se oxida junto ao eletrodo do elemento, e isso muda a condutância. O dispositivo reproduz também o mecanismo de remoção do neurotransmissor da fenda, por isso o peso pode não só mudar por muito tempo, mas também voltar ao valor anterior.
+
+Em termos de circuito, é um integrador com vazamento de entrada química: o peso acumula o fluxo de dopamina, e a ``remoção'' define a rapidez com que ele esquece; é o mesmo circuito RC de~\eqref{eq:lowpass}. O essencial aqui é o sentido da ligação. A sonda do capítulo~\ref{sec:debugging} não enxerga os registradores de difusão, porque eles são químicos. Este elemento lê justamente um registrador químico e o converte num peso elétrico. Para as interfaces cérebro-computador, é o caminho para um sensor que ouve não só o barramento de dados, mas também os registradores de controle.
+
+\section{Organoides com seus próprios neurônios de dopamina}
+\label{sec:midbrainorg}
+
+A partir de células-tronco humanas já se sabe cultivar organoides parecidos com a região do cérebro onde ficam os neurônios \nt{DOPA}. Eles têm neurônios dopaminérgicos funcionais, que liberam dopamina~\cite{Jo2016}. Esses organoides são cultivados sobretudo para estudar doenças. Não encontramos experimentos em que a dopamina deles servisse de professor para outra rede.
+
+Para a máquina de neurônios vivos, essa é a peça que falta. A bancada do capítulo~\ref{sec:livingmachine} é barramento de dados e controle de fluxo sem registradores de controle; aqui a fonte do sinal de difusão já existe. Falta o crítico: uma rede que calcule o erro de predição~\eqref{eq:ctd} e comande esses neurônios. Ligar um organoide de córtex a um organoide desses de modo que a dopamina seja liberada conforme o erro é um problema em aberto, e por enquanto uma hipótese, não um experimento.
+
+\section{Um organoide equilibra uma haste sem dopamina}
+\label{sec:cartpole}
+
+O mais completo dos experimentos recentes dispensa totalmente a dopamina~\cite{Robbins2026}. Organoides de córtex de camundongo foram ligados em malha fechada à tarefa do ``pêndulo no carrinho'': a atividade do organoide move o carrinho, e a posição da haste volta por estimulação. Entre as tentativas, o organoide recebe estímulos de ensino curtos e de alta frequência. Quais exatamente, quem escolhe é um programa de aprendizado por reforço.
+
+Os resultados foram medidos:
+\begin{itemize}
+\item na maioria dos organoides, os sinais de ensino escolhidos pelo programa deram resultado melhor que sinais escolhidos ao acaso ou a ausência de sinal;
+\item depois de $45$ minutos de repouso, a melhora não se mantinha;
+\item o bloqueio dos dois tipos de receptor de glutamato, AMPA e NMDA, anulava a melhora.
+\end{itemize}
+
+O último item diz onde mora o que foi aprendido: nas sinapses \nt{GLUT}, e por meio do receptor que, na seção~\ref{sec:weightstore}, funciona como detector de coincidência de entrada e saída. O segundo item mostra o que falta: há mudança rápida, mas não há consolidação, como no aprendiz rápido do capítulo~\ref{sec:motorlearning} sem o lento. E o papel do professor mudou: o engenheiro que escolhe o padrão de corrente foi substituído por um programa, mas o professor continua do lado de fora da placa.
+
+Entre os experimentos anteriores de ensino de culturas em matrizes de eletrodos também não encontramos nenhum que usasse dopamina: o sinal de ensino sempre foi a estimulação elétrica.
+
+\section{Quem ensina a cultura}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{2.7cm}>{\raggedright}p{2.5cm}>{\raggedright}p{3.2cm}>{\raggedright\arraybackslash}p{4.4cm}}
+\toprule
+Experimento & Quem ensina & Sinal de ensino & O que se sabe \\
+\midrule
+parar a estimulação na resposta desejada & engenheiro & fim da estimulação & a resposta se fixa --- medido \\
+DishBrain (cap.~\ref{sec:dishbrain}) & engenheiro & corrente previsível ou aleatória & aumento significativo dos ralis na sessão só com realimentação completa; com silêncio, efeito menor --- medido; instável de uma sessão para outra; a causa está em debate \\
+pêndulo no carrinho & programa de aprendizado por reforço & estímulos de alta frequência escolhidos pelo programa & melhor que os aleatórios, mas não se mantém após o repouso --- medido \\
+dopamina por clarão & regra ``mais disparos = recompensa'' & dopamina liberada pela luz & aumento dos disparos --- observação; o papel da dopamina não está provado \\
+sinapse bio-híbrida & células vivas & dopamina das células & mudança duradoura e retorno do peso do elemento --- medido \\
+organoides com neurônios \nt{DOPA} & --- & --- & a fonte de dopamina existe; não foi usada como professor \\
+\bottomrule
+\end{tabular}
+\caption{Quem ensina os neurônios vivos no chip, e com quê.}
+\label{tab:dishteachers}
+\end{table}
+
+Em todos os experimentos em que a própria cultura aprende, o professor por enquanto está fora (tabela~\ref{tab:dishteachers}): o engenheiro, um programa ou uma regra definida pelo engenheiro. A dopamina entrou na placa uma única vez, e seu papel ainda precisa ser provado. Montar na placa um canal de difusão de verdade, com crítico, erro e traço, como no capítulo~\ref{sec:dofa}, é o próximo passo, que ninguém ainda deu.

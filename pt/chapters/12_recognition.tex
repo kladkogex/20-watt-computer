@@ -1,0 +1,225 @@
+\chapter{Reconhecimento de imagens e vídeo}
+\chaptermark{Reconhecimento}
+\label{sec:recognition}
+
+\section{O problema: a mesma coisa com pixels diferentes}
+
+O capítulo~\ref{sec:sensors} levou a imagem até a entrada da máquina: cerca de um milhão de neurônios de saída do olho, um fluxo comprimido que transmite sobretudo bordas e mudanças. Mas entre o sensor e a ação há um passo sobre o qual ainda não falamos. Um gato numa imagem não é um conjunto de pixels. Desloque-o meio quadro, gire-o, afaste-o, apague metade da luz: quase todos os pixels mudam, e a resposta ``gato'' precisa continuar a mesma. O engenheiro chama isso de \emph{invariância}: a resposta do classificador não deve mudar com deslocamento, escala, rotação e iluminação.
+
+A dificuldade aparece bem num experimento simples. Tomemos uma ``retina'' unidimensional de $24$ pontos e duas figuras de cinco pontos cada, que podem estar em qualquer lugar. Um classificador que compara a entrada com um modelo memorizado num só lugar acerta em $49$--$52\%$ dos casos, o mesmo que uma moeda. O deslocamento quebra por completo a comparação pixel a pixel. É preciso outro esquema.
+
+\section{Uma linha de montagem de estágios}
+
+A velocidade com que o cérebro faz isso já conhecemos do capítulo~\ref{sec:code}: um animal numa imagem mostrada por um instante é reconhecido em cerca de $150\ms$, e o sinal passa por cerca de uma dezena de estágios, com $10$--$20\ms$ para cada um~\cite{Thorpe1996}. Em cada estágio o neurônio só tem tempo de emitir zero ou um disparo. Portanto, o reconhecimento rápido é uma única passagem pela linha de montagem, sem longas reflexões nem repetições. A questão é o que cada estágio faz.
+
+A resposta sugerida pelas medições nos primeiros estágios da visão~\cite{HubelWiesel1962} consiste em duas operações alternadas (fig.~\ref{fig:conveyor}).
+
+\emph{Seletividade.} Um neurônio do estágio $S$ olha para um pequeno trecho da entrada e dispara só se ali houver uma certa combinação de partes: esta borda aqui e aquela ao lado. É um E sobre as partes: o neurônio de limiar do capítulo~\ref{sec:glutcomputer}, com limiar mais alto do que qualquer parte isolada fornece.
+
+\emph{Invariância.} Um neurônio do estágio $C$ reúne as saídas de muitos neurônios $S$ que procuram a mesma combinação em lugares diferentes e dispara se ela for encontrada em algum lugar. É um OU sobre as posições, ou, mais exatamente, a escolha do máximo.
+
+Para o modelo unidimensional, as duas operações se escrevem assim:
+\begin{empheq}[box=\keybox]{equation}
+s_{f,p} \;=\; \Bigl[\sum_i t_{f,i}\,x_{p+i} - \theta\Bigr]_+ ,
+\qquad
+c_f \;=\; \max_p\, s_{f,p} ,
+\label{eq:scstage}
+\end{empheq}
+em que $x$ é a entrada, $t_{f,i}$ é o modelo do atributo $f$, $p$ é a posição e $\theta$ é o limiar. A primeira expressão torna a resposta seletiva, a segunda a torna independente da posição. O máximo de muitas entradas a rede obtém com os recursos do capítulo~\ref{sec:gaba}: a inibição mútua deixa passar a entrada mais forte (proposição~\ref{prop:wta}), e a divisão pela atividade total equaliza as respostas com brilhos diferentes~\cite{Carandini2012}.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  px/.style={draw,minimum size=0.36cm,inner sep=0pt},
+  on/.style={px,fill=blue!55!black},
+  snode/.style={circle,draw,very thick,minimum size=0.62cm,inner sep=0pt,font=\scriptsize,fill=blue!6},
+  cnode/.style={circle,draw,very thick,minimum size=0.8cm,inner sep=0pt,font=\scriptsize,fill=red!10}]
+% two inputs: the same shape at two positions
+\foreach \row/\sh/\lab in {0/1/{quadro 1},1/7/{quadro 2}}{
+  \begin{scope}[yshift=-\row*1.0cm]
+  \node[left,font=\scriptsize] at (-0.25,0) {\lab};
+  \foreach \i in {0,...,13}{\node[px] at (\i*0.4,0) {};}
+  \foreach \d in {0,1,3,4}{\node[on] at ({(\sh+\d)*0.4},0) {};}
+  \end{scope}}
+% S stage: detectors of the shape at several positions
+\foreach \k in {0,...,5}{
+  \node[snode] (S\k) at ({0.8+0.8*\k},1.7) {$S$};}
+\node[font=\scriptsize,left] at (-0.25,1.7) {estágio $S$: E sobre as partes};
+\draw[->,thick,blue!60!black] (1.2,0.25) -- (S1.south);
+\draw[->,thick,orange!85!black] (3.6,0.25) -- (S4.south);
+\node[font=\scriptsize,blue!60!black,anchor=east] at (1.25,0.85) {quadro 1};
+\node[font=\scriptsize,orange!85!black,anchor=west] at (3.9,0.85) {quadro 2};
+% C stage
+\node[cnode] (C) at (2.8,3.25) {$C$};
+\node[font=\scriptsize,left] at (-0.25,3.25) {estágio $C$: OU sobre as posições};
+\foreach \k in {0,...,5}{\draw[->,gray!60!black] (S\k.north) -- (C);}
+\draw[->,very thick,red!70!black] (C.north) -- ++(0,0.6) node[above,font=\scriptsize,black] {``a figura está lá'' nos dois quadros};
+% next stages
+\draw[decorate,decoration={brace,amplitude=5pt},gray!60!black] (6.3,1.4) -- (6.3,-1.3);
+\node[right,font=\scriptsize,align=left] at (6.5,0.05) {o mesmo\\objeto, outros\\pixels};
+\draw[->,thick,densely dashed,gray!60!black] (3.6,3.25) -- (5.9,3.25) node[right,font=\scriptsize,black,align=left] {próximos pares\\$S$, $C$: maiores,\\mais complexos, mais invariantes};
+\end{tikzpicture}
+\caption{Um par de estágios da linha de montagem. Os neurônios $S$ procuram a mesma combinação de partes em lugares diferentes; o neurônio $C$ responde se ela for encontrada em algum lugar~\eqref{eq:scstage}. A figura no quadro 1 e no quadro 2 excita neurônios $S$ diferentes, mas o mesmo $C$. Os próximos pares de estágios repetem o mesmo com combinações cada vez maiores e mais complexas.}
+\label{fig:conveyor}
+\end{figure}
+
+No mesmo modelo unidimensional, o par de estágios~\eqref{eq:scstage} reconhece a figura em qualquer lugar sem erros, e se cada ponto da entrada for invertido ao acaso com probabilidade $0.1$, em $86\%$ dos casos; com probabilidade $0.2$, em $70\%$. A moeda continua dando metade. Empilhe alguns desses pares: o primeiro procura bordas, o seguinte combinações de bordas, mais acima partes de objetos, no topo objetos inteiros. A cada par as combinações são maiores, e a resposta depende cada vez menos de onde e como o objeto está~\cite{Riesenhuber1999}.
+
+\begin{keyblock}
+\begin{proposition}[Linha de montagem de seletividade e invariância]
+\label{prop:conveyor}
+O reconhecimento rápido é uma única passagem por uma dezena de estágios. Em cada par de estágios, o E sobre as partes~\eqref{eq:scstage} torna a resposta seletiva, e o OU sobre as posições a torna independente do deslocamento. A alternância dessas duas operações dá uma resposta que distingue objetos e quase não depende de onde e como eles são vistos. A construção dos primeiros estágios e a velocidade da passagem foram medidas; que toda a cadeia se reduza a essas duas operações é uma simplificação.
+\end{proposition}
+\end{keyblock}
+
+Se essa construção parece familiar, é porque deve parecer. Foi justamente essa alternância (procurar um atributo em todos os lugares e depois juntar lugares vizinhos) que os engenheiros levaram às redes artificiais \emph{convolucionais}~\cite{Fukushima1980}. E recentemente fizeram o caminho de volta: redes convolucionais treinadas para reconhecer objetos se revelaram o melhor modelo conhecido das respostas dos neurônios nos estágios superiores da visão~\cite{Yamins2014}. O resultado no topo se lê de forma simples: pelas taxas somadas de cerca de uma centena de neurônios do último estágio, um bloco de decisão linear reconhece o objeto um décimo de segundo depois da apresentação~\cite{Hung2005}. É o código de taxa de um grupo do capítulo~\ref{sec:code}.
+
+\section{O professor que não existe: aprender com vídeo}
+
+Uma rede convolucional é treinada com milhões de imagens rotuladas. Ao cérebro quase ninguém dá rótulos: a criança vê objetos por horas, e ouve a palavra ``xícara'' só de vez em quando. Então como os estágios $C$ sabem quais neurônios $S$ juntar? Afinal, para juntar ``esta figura aqui'' com ``esta figura ali'', é preciso já saber que é a mesma figura.
+
+A pista vem do próprio vídeo. O mundo muda de forma contínua: um objeto no campo de visão continua sendo o mesmo objeto enquanto se desloca, gira e muda de iluminação, e só de vez em quando o olhar passa para outro. Tudo o que muda \emph{devagar} provavelmente pertence ao objeto, e tudo o que muda depressa, à sua posição e aparência~\cite{WiskottSejnowski2002}. Portanto basta ao neurônio $C$ a regra de Hebb com traço do capítulo~\ref{sec:dofa}: ligar o que veio em sequência, e não só o que veio ao mesmo tempo~\cite{Foldiak1991}:
+\begin{empheq}[box=\keybox]{equation}
+\tau_{\text{tr}}\,\frac{\dd\bar y_k}{\dd t} \;=\; -\bar y_k + y_k ,
+\qquad
+\frac{\dd\mathbf w_k}{\dd t} \;=\; \eta\,\bar y_k\,\bigl(\mathbf x - \mathbf w_k\bigr) .
+\label{eq:traceinvariance}
+\end{empheq}
+Aqui $y_k$ é a atividade do neurônio $C$ número $k$, que venceu a competição pela inibição, $\bar y_k$ é o seu traço, o mesmo circuito RC da regra~\eqref{eq:threefactor}, e $\mathbf x$ são as saídas dos neurônios $S$. O neurônio que venceu na primeira vista do objeto ainda se lembra disso quando chega a segunda vista e a puxa para si também.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=1.0cm,y=1.0cm]
+\foreach \i/\lab in {0/1,1/2,2/3,3/4}{
+  \node[draw,thick,fill=blue!8,minimum width=0.9cm,minimum height=0.55cm,font=\scriptsize] at (\i+0.5,2.2) {$A$ em \lab};}
+\foreach \i/\lab in {0/4,1/3,2/2,3/1}{
+  \node[draw,thick,fill=orange!12,minimum width=0.9cm,minimum height=0.55cm,font=\scriptsize] at (\i+6.5,2.2) {$B$ em \lab};}
+\node[font=\scriptsize,gray!40!black] at (5.0,2.2) {pausa};
+\draw[->,gray!70!black] (0,0) -- (10.4,0) node[below left,font=\scriptsize,black] {tempo};
+% traces
+\draw[thick,blue!60!black] (0,0.05) .. controls (0.4,1.2) and (0.8,1.3) .. (1.2,1.35) -- (4,1.4) .. controls (4.6,0.5) and (5.2,0.15) .. (6,0.08) -- (10,0.05);
+\draw[thick,orange!85!black] (0,0.05) -- (6,0.05) .. controls (6.4,1.2) and (6.8,1.3) .. (7.2,1.35) -- (10,1.4);
+\node[font=\scriptsize,blue!60!black,anchor=west] at (1.4,1.65) {traço $\bar y_1$: dura toda a passagem de $A$};
+\node[font=\scriptsize,orange!85!black,anchor=west] at (7.2,1.65) {traço $\bar y_2$};
+\draw[decorate,decoration={brace,amplitude=4pt},gray!60!black] (4.0,2.6) -- (0,2.6);
+\draw[decorate,decoration={brace,amplitude=4pt,mirror},gray!60!black] (0,-0.35) -- (4,-0.35) node[midway,below=4pt,font=\scriptsize,black] {todas as vistas de $A$ se ligam ao neurônio 1};
+\end{tikzpicture}
+\caption{Como o vídeo ensina a invariância, esquema. O objeto $A$ passa por quatro posições, depois vem uma pausa, depois o objeto $B$. O traço~\eqref{eq:traceinvariance} do neurônio que venceu na primeira vista de $A$ dura toda a passagem, e todas as vistas de $A$ acabam ligadas a um só neurônio. A pausa apaga o traço, e $B$ fica com outro neurônio.}
+\label{fig:tracevideo}
+\end{figure}
+
+Testamos isso num modelo (fig.~\ref{fig:tracevideo}). Dois neurônios $C$ competem pelas entradas de $16$ neurônios $S$: duas figuras em oito posições. A figura percorre todas as posições, $50\ms$ em cada uma, depois vem uma pausa de $0.3\,\text{s}$ e a próxima figura ao acaso. Nenhum rótulo. Se o traço é curto, $\tau_{\text{tr}}=5\ms$, os neurônios dividem a entrada pela \emph{posição}, e a resposta coincide com a figura não melhor que uma moeda: $52\%$ em média em dez rodadas. Se o traço é comparável ao tempo de exibição de uma posição, a partir de $\tau_{\text{tr}}\approx20\ms$, cada neurônio reúne \emph{todas} as posições da sua figura (com $20$, $50$ e $200\ms$, em todas as dez rodadas): a invariância foi aprendida só com o vídeo. A pausa entre objetos importa: sem ela, o traço passa para o objeto seguinte e os confunde.
+
+O mesmo se vê em experimentos. Se durante um experimento o objeto é trocado discretamente enquanto o olho salta de um lugar para outro, os neurônios dos estágios superiores, em uma ou duas horas, passam a responder ao objeto trocado como se fosse o mesmo: eles ligam o que veio em sequência~\cite{LiDiCarlo2008}. A invariância no cérebro é de fato aprendida a partir da continuidade do tempo. Até que ponto essa regra explica todo o aprendizado visual é hipótese.
+
+\section{Vídeo é movimento}
+
+O vídeo não é só um fluxo de quadros para aprender, mas também a própria tarefa: o que se move, para onde e com que rapidez. O primeiro passo já conhecemos: o detector de direção do capítulo~\ref{sec:gaba} (fig.~\ref{fig:direction}), em que a inibição atrasada cancela o movimento num sentido. Esses detectores estão espalhados por todo o campo visual, e depois são tratados como os atributos de forma: estágios que reúnem muitos detectores da mesma direção em lugares diferentes respondem ao movimento de um objeto grande independentemente de onde ele está. É o mesmo par E e OU~\eqref{eq:scstage}, só que o atributo não é ``borda'', e sim ``borda que se deslocou no tempo $d$''.
+
+O vídeo também é previsível: o próximo quadro é quase igual ao anterior. Pela hipótese da \emph{codificação preditiva}, os estágios superiores enviam aos inferiores uma predição, e para cima sobe principalmente o erro, aquilo que a predição não levou em conta~\cite{RaoBallard1999}. É a mesma economia de disparos da proposição~\ref{prop:economy}: pagar pelas novidades, e não pelo que já se sabe. Algumas observações concordam com essa hipótese, mas como construção geral da linha de montagem ela não está provada.
+
+\section{O cérebro e a rede convolucional}
+
+Até onde vai a semelhança? Para o reconhecimento rápido de um só objeto, ela é de fato profunda~\cite{Yamins2014}. Mas o cérebro tem também o que uma rede convolucional simples não tem.
+
+\emph{Realimentação.} A linha de montagem do cérebro não é só direta: cada estágio tem conexões para trás e para os lados. Para imagens difíceis (com sobreposição, com pouca luz) a resposta dos estágios superiores se forma mais tarde, e essas respostas tardias são mais bem descritas por redes com realimentação do que por redes diretas~\cite{Kar2019}. Uma passagem resolve os casos fáceis; os difíceis exigem várias voltas.
+
+\emph{Robustez.} Uma rede artificial pode ser enganada por uma falsificação de pixels imperceptível ao olho~\cite{Szegedy2014}: uma mudança que o ser humano não vê transforma um ``panda'' num ``gibão''~\cite{Goodfellow2015}. A visão humana é muito mais robusta a essas falsificações, mas não invulnerável: imagens que enganam muitas redes ao mesmo tempo, mostradas brevemente, também desviam a escolha humana~\cite{Elsayed2018}. Por que a robustez difere tanto é uma questão aberta; os candidatos são o ruído, a divisão pela atividade total e a realimentação.
+
+\emph{O professor.} A rede precisa de milhões de exemplos rotulados; o cérebro, sobretudo de vídeo sem rótulos~\eqref{eq:traceinvariance} e de algumas dicas de \nt{DOPA} sobre o que importa.
+
+\emph{Energia.} O cérebro inteiro gasta cerca de $20$ watts (proposição~\ref{prop:economy}), e o reconhecimento ocupa só parte disso; uma rede convolucional treinada num acelerador gráfico gasta centenas de watts.
+
+\section{Ilusões: onde a máquina erra e por quê}
+\label{sec:illusions}
+
+O engenheiro que quer entender um circuito alheio aplica nele sinais incomuns e observa onde ele erra. Para a visão, esses sinais foram inventados há muito tempo: são as ilusões visuais. Uma ilusão não é uma avaria. Cada uma aponta para um certo mecanismo da máquina, que funciona corretamente em condições normais e se denuncia numa imagem escolhida de propósito.
+
+\emph{Expectativas razoáveis.} A entrada é ruidosa, e a máquina a completa com o que costuma acontecer no mundo. Movimentos lentos são mais frequentes que rápidos; quando a entrada não é confiável (por exemplo, quando a imagem tem pouco contraste), a estimativa de velocidade se desloca para o lento, e um objeto pálido parece se mover mais devagar que um brilhante~\cite{Weiss2002}. Muitas ilusões de brilho se explicam da mesma forma: não vemos o brilho do pixel, e sim a superfície a que esse brilho mais frequentemente correspondeu no passado~\cite{Purves2011}. A foto do vestido que uns veem branco e dourado e outros azul e preto é o mesmo mecanismo: a imagem é ambígua, e as pessoas divergem na iluminação que supõem sem perceber~\cite{LaferSousa2015,Wallisch2017}. As diferenças entre pessoas foram medidas; que o cérebro aqui combine a entrada com a expectativa pelas regras da teoria das probabilidades é uma hipótese bem fundamentada.
+
+\emph{Controle de ganho.} Olhe por um minuto para uma cachoeira e depois para as pedras paradas: as pedras vão flutuar para cima. Os canais ``para baixo'' e ``para cima'' são um par de fios, como em~\eqref{eq:dualrail}; o controle de ganho~\eqref{eq:nakarushton} abafou o canal cansado, e o equilíbrio do par se deslocou. As ilusões de inclinação e de contraste, em que o entorno muda a aparência do centro, se explicam pela divisão pela atividade dos vizinhos~\cite{Schwartz2009}, como no capítulo~\ref{sec:gaba}. Há também um exemplo instrutivo de cautela: as manchas escuras nos cruzamentos das faixas brancas de uma grade foram explicadas por muito tempo pela simples inibição dos vizinhos, mas experimentos com uma grade modificada mostraram que essa explicação não funciona~\cite{SchillerCarvey2005}.
+
+\emph{Compensação de atrasos.} O caminho do olho até os estágios superiores leva dezenas de milissegundos, e um objeto em movimento se desloca nesse tempo. Se um ponto parado piscar ao lado dele, o objeto parece estar à frente do clarão, embora coincidissem~\cite{Nijhawan1994}. Por uma das explicações, a máquina prolonga o movimento para a frente para compensar o atraso, o mesmo que no capítulo~\ref{sec:muscles}: com realimentação atrasada, é preciso prever. Essa ilusão tem várias explicações, e a disputa não está resolvida.
+
+\emph{Erro no código temporal.} Uma imagem parada de anéis com transições de cor bruscas parece girar. Trechos contrastados são processados mais rápido que os pálidos, e a diferença de latências~\eqref{eq:latency} é lida pelos detectores de direção como movimento~\cite{Conway2005}. A ilusão é disparada pelos pequenos saltos involuntários do olho e pelas piscadas: cada salto renova a entrada, e os detectores veem de novo ``movimento''~\cite{OteroMillan2012}. É o código temporal do capítulo~\ref{sec:code}, lido de forma errada.
+
+\emph{Duas imagens numa.} A armação de um cubo que ora nos mostra uma face, ora outra, ou imagens diferentes nos dois olhos: a percepção salta a cada poucos segundos. Os melhores modelos são a inibição mútua de duas interpretações, uma fadiga lenta e ruído~\cite{MorenoBote2007}, ou seja, o mesmo esquema~\eqref{eq:halfcentre} que no capítulo~\ref{sec:muscles} gerava o ritmo do passo. O tempo das trocas é definido pelo ruído e pela fadiga; pelo modelo~\cite{MorenoBote2007}, o papel principal é do ruído, e a fadiga só ajuda.
+
+E as redes artificiais? Uma rede treinada para prever o próximo quadro de um vídeo vê rotação nos mesmos anéis parados e não a vê nas imagens de controle~\cite{Watanabe2018}. Redes treinadas para limpar o ruído das imagens e aumentar a sua nitidez caem nas mesmas ilusões de cor e brilho que as pessoas~\cite{GomezVilla2020}. Portanto, parte das ilusões é consequência da própria tarefa que a máquina aprende, e não de particularidades do tecido nervoso. Quais ilusões são exclusivas do cérebro é um bom teste para qualquer modelo da visão.
+
+\begin{keyblock}
+\begin{proposition}[Ilusões como impressões dos mecanismos]
+\label{prop:illusions}
+Uma ilusão surge quando um mecanismo útil no mundo comum recebe uma entrada incomum: a expectativa vence uma entrada pouco confiável, o controle de ganho desloca um par de canais, a compensação de atraso leva o objeto para a frente, a diferença de latências é lida como movimento, a inibição mútua com ruído e fadiga salta. Cada ilusão é um sinal de teste que aponta para o seu mecanismo. As próprias ilusões foram medidas; as suas explicações vão das bem fundamentadas às controversas.
+\end{proposition}
+\end{keyblock}
+
+\section{Resumo}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{3.0cm}>{\raggedright}p{4.6cm}>{\raggedright\arraybackslash}p{5.2cm}}
+\toprule
+O que a máquina faz & Como & O que se sabe \\
+\midrule
+reconhece em $150\ms$ & uma passagem por uma dezena de estágios & velocidade medida \\
+torna a resposta seletiva & E sobre as partes, estágio $S$~\eqref{eq:scstage} & medido nos primeiros estágios \\
+torna a resposta invariante & OU sobre as posições, estágio $C$; inibição e divisão & medido nos primeiros estágios; para os superiores, simplificação \\
+dá a resposta & taxas de cerca de uma centena de neurônios do último estágio, leitura linear & medido \\
+aprende sem rótulos & regra de Hebb com traço~\eqref{eq:traceinvariance} sobre vídeo contínuo & a troca do objeto muda as respostas: medido; como regra principal, hipótese \\
+vê o movimento & detectores de direção, depois o mesmo par E/OU & medido \\
+economiza no previsível & para cima vai o erro de predição & hipótese \\
+resolve casos difíceis & realimentação, várias voltas & respostas tardias e papel da realimentação medidos \\
+erra de modo previsível & ilusões: expectativas, controle de ganho, atrasos, inibição mútua com ruído e fadiga & ilusões medidas; explicações das fundamentadas às controversas \\
+\bottomrule
+\end{tabular}
+\caption{Como a máquina reconhece imagens e vídeo.}
+\label{tab:recognition}
+\end{table}
+
+O reconhecimento é montado com peças que já tínhamos (tabela~\ref{tab:recognition}): o limiar dá o E sobre as partes, a inibição mútua dá o OU sobre as posições, a divisão dá a independência do brilho, a regra de Hebb com traço substitui o professor que não existe. Os engenheiros tomaram da visão a alternância de seletividade e invariância e construíram com ela as redes convolucionais; o caminho de volta ainda não trouxe o principal: aprender com vídeo sem rótulos e quase sem energia.
+
+\section{Exercícios}
+
+\begin{exercise}[\lvlA]
+\label{ex:12:1}
+\emph{A taxa num estágio.} Um estágio da linha de montagem dura $15\ms$, os neurônios trabalham com taxa de $20$ disparos por segundo, os ruídos são correlacionados com $c=0.1$~\eqref{eq:correlated}. Qual é o erro relativo da taxa de um grupo de cem neurônios e o seu limite para um grupo arbitrariamente grande? Quantos níveis de taxa se distinguem num estágio?
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:12:2}
+\emph{A energia de um reconhecimento.} Numa passagem de $150\ms$, dez estágios de $10^7$ neurônios emitem no máximo um disparo cada, ao custo de $10^{-10}$~J. (a)~Que fração da energia do cérebro inteiro nesses $150\ms$ custa o reconhecimento? (b)~Quantas vezes mais gasta um acelerador de $300$~W que reconhece a imagem em $10\ms$?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:12:3}
+\emph{Os limiares do estágio $S$.} ``Retina'' de $24$ pontos, figuras $A=11011$ e $B=10101$; o modelo~\eqref{eq:scstage} vale $+1$ nos uns da figura e $-1$ nos zeros. (a)~Com que limiares o neurônio $S$ perdoa um ponto invertido, mas fica calado com a figura alheia? (b)~Quantos neurônios $S$ são necessários para dez atributos de $5\times5$ numa imagem de $100\times100$?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:12:4}
+\emph{Quanto dura uma das duas imagens.} No esquema de saltos~\eqref{eq:halfcentre} com $\tau\ll\tau_a$, enquanto o grupo~1 vence, $r_2=0$ e $r_1=I-a_1$. (a)~Ache a duração da vitória com $I=1$, $\beta=2$, $b=2$, $\tau_a=0.4\,\text{s}$. (b)~Que $\tau_a$ dá uma troca de imagem a cada três segundos?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:12:5}
+\emph{Simulação: o preço da invariância.} Com a função \texttt{two\_stage} de \texttt{models/\allowbreak recognition\_models.py} ($4000$ tentativas), ache com que probabilidade de inversão de ponto $p$ o par de estágios $S$, $C$ com $N=24$ erra em um de cada quatro casos. Como muda a fração de acertos com $p=0.1$ de $N=8$ a $N=192$?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:12:6}
+\emph{Simulação: a janela do traço.} Com dez rodadas de \texttt{trace\_learning} de \texttt{models/\allowbreak recognition\_models.py} e pausa de $0.3\,\text{s}$, ache para quais $\tau_{\text{tr}}$ entre $5\ms$ e $2\,\text{s}$ todas as rodadas aprendem a invariância sem erro. De onde vem o limite superior dessa janela?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:12:7}
+\emph{Movimento em qualquer lugar.} Em pontos vizinhos de uma fileira, com passo de $0.1^\circ$, há detectores de direção do capítulo~\ref{sec:gaba}: a inibição de $A$ com atraso $d$ cancela a excitação de $B$ se elas se separarem no máximo $5\ms$; acima deles, um estágio $C$. Que atrasos são necessários para que $C$ fique calado com movimento inverso de $5$ a $20^\circ$ por segundo?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:12:8}
+\emph{Falsificação de pixels.} Quantos pontos invertidos são necessários para mudar a resposta do modelo \texttt{two\_stage} ($N=24$) numa figura limpa? E a do classificador ``mais de $3.5$ uns na entrada: é $A$'', também invariante ao deslocamento? Qual a sua fração de acertos com $p=0.1$, contra $0.86$ do par de estágios?
+\end{exercise}

@@ -1,0 +1,49 @@
+\chapter{Um computador de células vivas}
+% versão completa: chapters/21_living.tex
+
+\pencilfig{21}{\pencilart{21}}{Neurônios vivos num chip: embaixo deles, milhares de eletrodos, e cada um sabe tanto ouvir quanto falar.}
+
+Dá para construir uma máquina não de silício, mas de neurônios vivos? Dá, e ela já está sendo construída. Os neurônios são cultivados direto num chip com milhares de eletrodos --- numa camada plana ou em bolinhas parecidas com um cérebro minúsculo. Cada eletrodo sabe tanto ouvir quanto aplicar um sinal. É uma bancada com o circuito aberto: tudo pode ser medido, e em tudo se pode intervir. Só que ela não tem estações de rádio --- é um barramento de dados sem registradores de controle.
+
+\section*{O que a rede faz sozinha}
+
+Deixada por conta própria, a cultura de tempos em tempos se acende inteira: quase todos os neurônios clicam juntos e depois se aquietam, com intervalos de um segundo a vários minutos. É o oscilador que já conhecemos: a rede excita a si mesma e se cansa, até que as conexões recomponham o estoque de substância.
+
+\pencilfig{129}{%
+% spike raster of 8 neurons in a culture left to itself: sparse single clicks and shared bursts
+\foreach \b in {0.9,3.1,4.0,6.6}{\fill[pcAmber, opacity=0.18] (\b-0.1,-0.15) rectangle (\b+0.32,2.95);}
+\foreach \y/\ss in {0/{0.96,1.0,1.13,2.43,3.0,3.12,3.24,4.02,4.09,4.15,6.66,6.69,6.81},
+  1/{0.46,0.88,1.0,1.05,3.09,3.2,3.94,4.04,4.37,6.65,6.71},
+  2/{0.73,0.84,0.94,1.41,3.08,3.12,3.21,4.05,4.06,4.17,6.59,6.63},
+  3/{0.89,0.93,1.06,3.1,3.19,3.28,3.89,3.94,4.13,4.2,4.31,6.63,6.65,6.78},
+  4/{0.87,0.96,3.09,3.15,3.23,3.73,3.96,4.06,4.19,5.98,6.66,6.68,6.75},
+  5/{0.44,0.92,0.97,3.05,3.22,3.27,4.01,4.07,4.17,5.76,6.57,6.73,6.75},
+  6/{0.92,1.0,1.73,2.85,3.18,3.19,4.0,4.07,6.53,6.66,6.73},
+  7/{0.87,0.92,3.13,3.13,3.27,3.99,4.06,4.17,6.44,6.61,6.72,7.13}}{
+  \foreach \s in \ss {\draw[pcBlue, line width=0.7pt] (\s,0.35*\y) -- (\s,0.35*\y+0.25);}}
+\draw[arr] (0,-0.3) -- (7.5,-0.3); \node[lbl, anchor=north] at (3.75,-0.32) {tempo};
+\node[lbl, anchor=east, align=right] at (-0.05,1.35) {oito\\neurônios};
+\node[lbl, text=pcAmber!70!black, anchor=south] at (3.55,2.95) {rajadas coletivas};
+}{Uma cultura no chip, deixada por conta própria. Cliques isolados são raros, e de tempos em tempos quase a rede inteira se acende de uma vez --- e se aquieta até que as conexões recomponham o estoque.}
+
+\section*{Um professor sem dopamina}
+
+Como ensinar uma rede assim, se não há dopamina? Os primeiros métodos foram elétricos. Por exemplo: estimular a rede até ela dar a resposta desejada --- e parar na hora. A resposta se fixa. Em outro experimento, a cultura comandava um ``corpo'' virtual simples e aprendia a levá-lo até um alvo. Em todos esses experimentos, o professor é um padrão de corrente escolhido pelo engenheiro.
+
+\section*{Dopamina por um clarão de luz}
+
+Uma vez tentaram tornar o professor químico. Numa das plataformas com bolinhas vivas de neurônios, acrescentaram ao líquido nutritivo dopamina presa numa ``gaiola'' sensível à luz, que a impede de agir. Quando a rede respondia a um estímulo com mais força que antes, ela era ``recompensada'': um clarão de ultravioleta destruía a gaiola, e a dopamina era liberada. Ao longo de duzentas e quarenta repetições, as respostas, no geral, cresceram. Mas os próprios autores escrevem, com honestidade, que um único experimento assim não permite dizer se a causa foi a dopamina.
+
+\section*{A vara no carrinho}
+
+Num experimento recente, bolinhas de neurônios foram treinadas para equilibrar uma vara num carrinho --- um problema clássico para programas de aprendizado. Que pulsos de treino aplicar, quem escolhia era um programa. Os sinais escolhidos pelo programa funcionaram melhor que os aleatórios, mas depois de quarenta e cinco minutos de descanso o aprendido desaparecia. E, se as conexões \nt{GLUT} fossem bloqueadas, o aprendizado não acontecia de jeito nenhum: o que se aprende mora justamente ali. Já o professor continua do lado de fora --- só que agora não é um engenheiro, e sim um programa.
+
+\section*{Um reservatório vivo}
+
+Há também outra abordagem: não ensinar a rede viva de jeito nenhum. Ela é usada como ``reservatório'' --- um sistema rico e emaranhado, cujas respostas um simples contador eletrônico aprende a decifrar. Assim uma bolinha viva ajudou a distinguir vozes. É verdade que, segundo os autores, as ligações da própria bolinha também mudavam durante o trabalho.
+
+\section*{O custo e a pergunta}
+
+Um milhão de neurônios num chip consome cerca de um décimo de milésimo de watt --- bem menos que a eletrônica ao redor deles. E a bancada não sabe decidir sozinha o que conta como sucesso: esse papel é sempre de alguém de fora. E, à medida que esses sistemas crescem, surge também uma questão ética que ninguém resolveu ainda.
+
+\fullversion{21}

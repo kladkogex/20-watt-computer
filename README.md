@@ -17,6 +17,9 @@
 [![Text: CC BY-NC-SA 4.0](https://img.shields.io/badge/text-CC_BY--NC--SA_4.0-lightgrey)](LICENSE)
 [![Code: MIT](https://img.shields.io/badge/code-MIT-blue)](LICENSE)
 
+
+**Read it in:** 🇬🇧 [English](https://kladkogex.github.io/20-watt-computer/pdf/20-watt-computer-en.pdf) · 🇨🇳 [中文](https://kladkogex.github.io/20-watt-computer/pdf/20-watt-computer-zh.pdf) · 🇯🇵 [日本語](https://kladkogex.github.io/20-watt-computer/pdf/20-watt-computer-ja.pdf) · 🇰🇷 [한국어](https://kladkogex.github.io/20-watt-computer/pdf/20-watt-computer-ko.pdf) · 🇪🇸 [Español](https://kladkogex.github.io/20-watt-computer/pdf/20-watt-computer-es.pdf) · 🇧🇷 [Português](https://kladkogex.github.io/20-watt-computer/pdf/20-watt-computer-pt.pdf) · 🇷🇺 [Русский](https://kladkogex.github.io/20-watt-computer/pdf/20-watt-computer-ru.pdf) · 🇺🇦 Українська (coming soon). Each edition also has a pocket-size paperback.
+
 </div>
 
 ---
@@ -25,7 +28,6 @@ A single AI accelerator draws about 700 W. The machine reading this sentence run
 
 Neurons are typed the way an engineer types a part, by what they put on the wire. **GLUT** (glutamate) is the data bus. **GABA** (GABA) is flow control. **DOPA** (dopamine), **SERO** (serotonin), **NORA** (noradrenaline) and **ACET** (acetylcholine) are broadcast control registers. Every number in the book comes from a small Python program you can run and change. Every major claim is traced to the experiment behind it.
 
-> 🌍 **Editions:** 🇷🇺 [Russian](https://kladkogex.github.io/20-watt-computer/pdf/20-watt-computer-ru.pdf) · 🇬🇧 [English](https://kladkogex.github.io/20-watt-computer/pdf/20-watt-computer-en.pdf) · 🇨🇳 [中文](https://kladkogex.github.io/20-watt-computer/pdf/20-watt-computer-zh.pdf) · 🇯🇵 [日本語](https://kladkogex.github.io/20-watt-computer/pdf/20-watt-computer-ja.pdf) · 🇰🇷 [한국어](https://kladkogex.github.io/20-watt-computer/pdf/20-watt-computer-ko.pdf). Spanish and Portuguese are on the way. Each has a pocket-size paperback edition too. ⭐ Star the repo to hear when they land.
 
 ## Things you will be able to prove
 

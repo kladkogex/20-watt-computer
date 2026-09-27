@@ -1,0 +1,194 @@
+\chapter{O que os neurônios fazem durante o sono}
+\chaptermark{Sono}
+\label{sec:sleep}
+
+\section{O sono não é desligamento, e sim outro modo}
+
+Um engenheiro, ao ver um computador desligado, diz: ele não faz nada. Com o cérebro adormecido não é assim. No sono os neurônios não se calam: no sono profundo o córtex emite disparos, e no sono REM quase tantos quanto de dia. O que muda não é \emph{se} os neurônios funcionam, mas \emph{como} funcionam. O sono é um conjunto de modos da máquina, e quem os troca são os mesmos canais de difusão que atuam de dia.
+
+Para cada modo pode-se escrever o ``estado dos registradores'' (tabela~\ref{tab:sleepmodes}). De dia, \nt{ACET}, \nt{NORA} e \nt{SERO} funcionam, os sensores estão conectados, os músculos obedecem. No sono de ondas lentas, o sono profundo, os três canais se aquietam, e a entrada dos órgãos dos sentidos fica atenuada~\cite{Hasselmo1999}: a liberação de acetilcolina no córtex cai, e os neurônios \nt{NORA} e \nt{SERO} disparam menos que de dia~\cite{Marrosu1995,AstonJonesBloom1981,McGintyHarper1976}. No sono REM o quadro é estranho: o \nt{ACET} volta a subir ao nível diurno~\cite{Marrosu1995}, enquanto \nt{NORA} e \nt{SERO} se calam quase por completo~\cite{AstonJonesBloom1981,McGintyHarper1976,JacobsAzmitia1992}. No sono REM os músculos do corpo ficam desligados: os neurônios \nt{ACET} que os controlam são fortemente inibidos por \nt{GABA} e \nt{GLYC}~\cite{BrooksPeever2012}, a mesma proibição do capítulo~\ref{sec:gaba}, só que imposta à saída inteira de uma vez.
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{3.1cm}>{\raggedright}p{2.9cm}>{\raggedright}p{3.2cm}>{\raggedright\arraybackslash}p{3.4cm}}
+\toprule
+& vigília & sono de ondas lentas & sono REM \\
+\midrule
+\nt{ACET} (escrita, cap.~\ref{sec:acet}) & alto & baixo & alto \\
+\nt{NORA} (ganho, cap.~\ref{sec:nora}) & médio, surtos & baixo & quase calado \\
+\nt{SERO} (cap.~\ref{sec:serocomputer}) & médio & baixo & quase calado \\
+entrada dos sensores & conectada & atenuada & atenuada \\
+saída para os músculos & conectada & atenuada & desligada por inibição \\
+atividade do córtex & contínua & gangorra lenta: atividade --- silêncio & contínua, como de dia \\
+\bottomrule
+\end{tabular}
+\caption{O estado dos registradores da máquina nos três modos. Todas as linhas foram medidas; os níveis de \nt{ACET}, \nt{NORA} e \nt{SERO}, por registros diretos em cada estágio do sono~\cite{Marrosu1995,AstonJonesBloom1981,McGintyHarper1976}.}
+\label{tab:sleepmodes}
+\end{table}
+
+\section{Quando dormir: um relé com histerese}
+
+O que decide quando a máquina passa para o sono? Um esquema simples de duas partes funciona bem~\cite{Borbely1982}. A primeira parte é a \emph{pressão do sono} $S$, que se acumula enquanto estamos acordados e se descarrega enquanto dormimos. É um capacitor que carrega de dia e descarrega à noite:
+\begin{empheq}[box=\keybox]{equation}
+\frac{\dd S}{\dd t} \;=\; \frac{1-S}{\tau_r}\ \ \text{(vigília)},\qquad
+\frac{\dd S}{\dd t} \;=\; -\frac{S}{\tau_d}\ \ \text{(sono)} .
+\label{eq:sleeppressure}
+\end{empheq}
+A segunda parte são dois limiares: a máquina adormece quando $S$ chega ao limiar superior $H(t)$ e acorda quando $S$ desce ao inferior $L(t)$. Os dois limiares oscilam suavemente no compasso do ritmo diário do capítulo~\ref{sec:chemoutput}. O resultado é um relé com histerese, o disparador Schmitt da seção~\ref{sec:bistable}, e junto com o capacitor ele forma um oscilador de relaxação ajustado em fase pelo ritmo diário~\eqref{eq:pll}.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=0.16cm,y=4.2cm]
+\foreach \a/\b in {0/4.3,21.2/29.3,45.4/53.4,69.5/72}{\fill[blue!8] (\a,0) rectangle (\b,1);}
+\draw[->,gray!70!black] (0,0) -- (75,0) node[right,font=\small,black] {$t$, h};
+\draw[->,gray!70!black] (0,0) -- (0,1.08) node[left,font=\small,black] {$S$};
+\foreach \t in {0,24,48,72}{\draw[gray!60!black] (\t,-0.02) -- (\t,0.02); \node[below,font=\scriptsize] at (\t,0) {\t};}
+\draw[thick,densely dashed,red!70!black] plot file {figures/sleep_H.dat};
+\draw[thick,densely dashed,green!45!black] plot file {figures/sleep_L.dat};
+\draw[very thick,blue!60!black] plot file {figures/sleep_S.dat};
+\node[font=\scriptsize,red!70!black,anchor=west] at (73,0.72) {$H$: adormecer};
+\node[font=\scriptsize,green!45!black,anchor=west] at (73,0.24) {$L$: acordar};
+\node[font=\scriptsize,blue!60!black] at (25.25,0.93) {sono};
+\node[font=\scriptsize,blue!60!black] at (49.4,0.93) {sono};
+\end{tikzpicture}
+\caption{Pressão do sono $S$~\eqref{eq:sleeppressure} com $\tau_r=18.2$~h, $\tau_d=4.2$~h. De dia, $S$ carrega até o limiar superior $H$; à noite (sombreado), descarrega até o inferior $L$; os dois limiares oscilam com o ritmo diário. A máquina chega sozinha a um regime de cerca de $16$ horas de vigília e $8$ horas de sono.}
+\label{fig:twoprocess}
+\end{figure}
+
+No nosso modelo, com os valores usuais $\tau_r=18.2$~h e $\tau_d=4.2$~h, a máquina chega sozinha a $16.1$ horas de vigília e $8.0$ horas de sono (fig.~\ref{fig:twoprocess}). O modelo explica também o que parece estranho: depois de quarenta horas sem dormir, a pressão chega a $0.90$, mas o sono de recuperação no modelo dura só $8.8$ horas, e não um dia a mais que o normal. A descarga é exponencial, e uma carga alta vai embora depressa; a ``dívida'' é paga não com a duração, e sim com a profundidade do sono.
+
+O que desempenha fisicamente o papel de $S$? Um forte candidato é a adenosina, o ``contador de carga'' do apêndice~\ref{sec:othermediators}: sua concentração cresce durante a vigília e cai durante o sono~\cite{PorkkaHeiskanen1997,Dunwiddie2001}. Que a pressão do sono seja exatamente a adenosina e nada mais é uma hipótese.
+
+\section{Sono de ondas lentas: a rede inteira como oscilador de relaxação}
+
+No sono profundo, os neurônios do córtex funcionam em alternância, o grupo todo junto: menos de uma vez por segundo, eles se ligam juntos por algumas centenas de milissegundos (o \emph{estado ativo}) e juntos se calam (o \emph{estado silencioso}); a frequência dessa gangorra fica abaixo de $1$~Hz, e sob anestesia costuma ser de $0.3$--$0.4$~Hz~\cite{Steriade1993}. Essa gangorra lenta pode ser montada com peças que já temos. Tomemos um grupo de neurônios \nt{GLUT} com forte realimentação sobre si mesmo, a memória do capítulo~\ref{sec:glutcomputer}, que tem dois estados estáveis, e acrescentemos uma fadiga lenta, como no gerador de ritmo do capítulo~\ref{sec:muscles}:
+\begin{empheq}[box=\keybox]{equation}
+\tau\,\frac{\dd r}{\dd t} = -r + F\bigl(w\,r + I - a\bigr),
+\qquad
+\tau_a\,\frac{\dd a}{\dd t} = -a + b\,r .
+\label{eq:updown}
+\end{empheq}
+O grupo se liga, funciona e se cansa; a fadiga $a$ consome o estado superior, e o grupo cai no silêncio; no silêncio a fadiga passa, o estado inferior desaparece, e o grupo se liga de novo. O resultado é o mesmo oscilador de relaxação da pressão do sono, só que umas oitenta mil vezes mais rápido.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=2.9cm,y=1.0cm]
+\begin{scope}[yshift=1.9cm]
+\draw[->,gray!70!black] (0,0) -- (4.1,0);
+\draw[->,gray!70!black] (0,0) -- (0,1.25) node[left,font=\small,black] {$r$};
+\draw[thick,blue!60!black] plot file {figures/updown_sleep.dat};
+\node[font=\scriptsize,anchor=west] at (4.15,0.5) {sono: $b=5$};
+\end{scope}
+\draw[->,gray!70!black] (0,0) -- (4.1,0) node[right,font=\small,black] {$t$, s};
+\draw[->,gray!70!black] (0,0) -- (0,1.25) node[left,font=\small,black] {$r$};
+\draw[thick,red!70!black] plot file {figures/updown_wake.dat};
+\node[font=\scriptsize,anchor=west] at (4.15,0.5) {dia: $b=1$};
+\foreach \t in {0,1,2,3,4}{\draw[gray!60!black] (\t,-0.05) -- (\t,0.05); \node[below,font=\scriptsize] at (\t,0) {\t};}
+\end{tikzpicture}
+\caption{O mesmo grupo~\eqref{eq:updown} em dois modos: $w=5$, $I=2$, $\theta=2.5$, $\tau=10\ms$, $\tau_a=0.3$~s. Com fadiga forte ($b=5$, como no sono de ondas lentas), o grupo oscila entre atividade e silêncio com período de $1.1$~s (valor do modelo; no córtex o período passa de um segundo, e sob anestesia é de cerca de $3$~s). Se enfraquecemos a fadiga ($b=1$), que é o que a acetilcolina faz, o mesmo grupo funciona de modo contínuo.}
+\label{fig:updown}
+\end{figure}
+
+E o que leva a rede da gangorra ao funcionamento contínuo do dia? A acetilcolina suprime nos neurônios as correntes lentas que criam a fadiga~\cite{McCormick1992}. No nosso modelo, com fadiga forte, $b=5$, o grupo oscila com período de $1.1$~s (mais rápido que a gangorra medida, mas da mesma ordem) e fica ativo cerca de $35\%$ do tempo, na média sobre um número inteiro de períodos; com fadiga fraca, $b=1$, o mesmo grupo funciona de modo contínuo (fig.~\ref{fig:updown}). Um só registrador, o nível de \nt{ACET}, transforma o oscilador num amplificador. Por cima da gangorra lenta, no sono, vêm também surtos mais rápidos de um ritmo de $7$--$15$ oscilações por segundo; eles são gerados pela malha \nt{GLUT}--\nt{GABA} entre o córtex e um nó de retransmissão intermediário~\cite{SteriadeMcCormickSejnowski1993}, parente do ritmo do capítulo~\ref{sec:gaba}.
+
+\section{Replays: o dia em avanço rápido}
+
+No capítulo~\ref{sec:acet} vimos que, no sono de ondas lentas, os neurônios que funcionaram juntos de dia voltam a disparar juntos e na mesma ordem. Acrescentemos um detalhe de engenharia: os replays são \emph{acelerados}. Uma sequência que de dia levou segundos é reproduzida no sono em décimos de segundo~\cite{Nadasdy1999}: no hipocampo, cerca de vinte vezes mais depressa~\cite{LeeWilson2002}, no córtex, seis a sete vezes~\cite{Euston2007}. E não é reproduzida a qualquer momento: os surtos curtos de replay numa região se ajustam à gangorra de atividade e silêncio e aos surtos rápidos de ritmo no córtex. Se essa coordenação é reforçada artificialmente, a memória melhora~\cite{Maingret2016}; isso já é uma relação causal, não uma coincidência.
+
+Para que a máquina reproduz o dia em avanço rápido? O engenheiro conhece a dificuldade chamada \emph{esquecimento catastrófico}: uma rede que aprende coisas novas em sequência, uma depois da outra, estraga as antigas. A saída é \emph{intercalar}: aprender o novo misturado com o antigo, em porções pequenas, muitas vezes. A hipótese dos dois sistemas de aprendizado~\cite{McClelland1995} diz que a memória rápida grava o dia inteiro e, no sono, o reproduz aos poucos, intercalado e muitas vezes, para o córtex lento. É o mesmo par ``buffer rápido --- armazenamento lento'' do capítulo~\ref{sec:acet} e o mesmo par de aprendizes rápido e lento do capítulo~\ref{sec:motorlearning}. Os replays e sua coordenação foram medidos; que sua finalidade seja o aprendizado intercalado da memória lenta é uma hipótese bem fundamentada.
+
+\section{Renormalização dos pesos}
+
+De dia, as regras de Hebb do capítulo~\ref{sec:dofa} sobretudo reforçam conexões. Se só se reforça, os pesos crescem, e com eles crescem os gastos de energia e cai a sensibilidade: um neurônio com todas as entradas fortes deixa de distingui-las. Segundo a hipótese da \emph{homeostase sináptica}~\cite{TononiCirelli2014}, o sono serve também para devolver os pesos ao nível de trabalho: todas as conexões enfraquecem pelo mesmo fator, de modo que suas \emph{razões}, isto é, o que foi aprendido, se preservam. Para o engenheiro, é uma normalização, como na regra~\eqref{eq:oja}, só que feita não em operação, mas num horário à parte.
+
+As medições diretas não contradizem isso: em camundongos, a área de contato das sinapses do córtex após o sono é cerca de $18\%$ menor que após a vigília, a redução é proporcional ao tamanho, e os contatos maiores e mais estáveis quase não mudam~\cite{deVivo2017}. O escalonamento dos pesos foi medido; que essa seja a tarefa principal do sono é uma hipótese.
+
+\section{Sono REM: a máquina desconectada das entradas e saídas}
+
+No sono REM o córtex funciona quase como de dia, mas a entrada dos órgãos dos sentidos está atenuada, e a saída para os músculos está desligada por inibição. Para o engenheiro, é um modo conhecido: o \emph{teste em bancada}. O circuito funciona a plena potência, mas suas entradas estão ligadas a um gerador interno, e as saídas, desconectadas dos atuadores, para não quebrar nada. Os sonhos, segundo uma das hipóteses, são justamente essa execução interna do modelo do mundo montado durante o dia; o que exatamente a rede faz nesse momento, e se aprende, não se sabe. Aqui só foi medido o que está na tabela~\ref{tab:sleepmodes}: que canal está ligado, qual está calado, e que a saída está bloqueada.
+
+\section{Manutenção e sono local}
+
+Por muito tempo se considerou que, no sono, os espaços entre as células se alargam e o cérebro é lavado mais depressa dos produtos do metabolismo~\cite{Xie2013}. Experimentos recentes, que mediram a lavagem de outro modo, obtiveram o contrário: no sono ela é mais lenta~\cite{Miao2024}. A questão hoje está em aberto, e vamos deixá-la em aberto.
+
+Mais sólido é outro fato: o sono é uma propriedade de redes locais, e não da máquina inteira de uma vez. Se um animal é mantido acordado por muito tempo, trechos isolados do seu córtex, enquanto o animal está acordado e se movendo, caem por instantes no silêncio, como no sono de ondas lentas, e nesses momentos o animal erra mais~\cite{Vyazovskiy2011}. Cada rede se cansa sozinha e se comuta sozinha; o modo geral surge quando os canais de difusão comutam todas as redes de uma vez.
+
+\begin{keyblock}
+\begin{proposition}[O sono como conjunto de modos]
+\label{prop:sleep}
+No sono os neurônios não se desligam: os canais de difusão levam a máquina a outros modos. Quando dormir é decidido por um relé com histerese~\eqref{eq:sleeppressure}, ajustado pelo ritmo diário. No sono de ondas lentas, a rede se torna um oscilador de relaxação~\eqref{eq:updown} e reproduz o dia em avanço rápido; no REM, funciona desconectada das entradas e saídas. Os modos, os replays e o escalonamento dos pesos foram medidos; suas finalidades, o aprendizado intercalado e a renormalização, são hipóteses bem fundamentadas.
+\end{proposition}
+\end{keyblock}
+
+\section{Resumo}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{3.2cm}>{\raggedright}p{4.4cm}>{\raggedright\arraybackslash}p{5.2cm}}
+\toprule
+O que acontece & Como & O que se sabe \\
+\midrule
+troca de modos & registradores \nt{ACET}, \nt{NORA}, \nt{SERO} (tab.~\ref{tab:sleepmodes}) & medido \\
+quando dormir & capacitor $S$ e relé com histerese~\eqref{eq:sleeppressure} & o modelo descreve bem os experimentos; adenosina como $S$: hipótese \\
+gangorra lenta & grupo com realimentação e fadiga~\eqref{eq:updown} & gangorra medida; o modelo é o circuito mais simples \\
+o dia em avanço rápido & replays $6$--$20$ vezes mais rápidos, coordenados com a gangorra & medido; reforçar a coordenação melhora a memória \\
+para que os replays & aprendizado intercalado da memória lenta & hipótese bem fundamentada \\
+renormalização dos pesos & escalonamento das conexões no sono & redução dos contatos medida; papel principal do sono: hipótese \\
+sono REM & funcionamento com entradas e saída desconectadas & modo medido; finalidade desconhecida \\
+lavagem & alargamento dos espaços entre as células & resultados contraditórios \\
+sono local & trechos isolados caem no silêncio & medido \\
+\bottomrule
+\end{tabular}
+\caption{O que os neurônios fazem durante o sono.}
+\label{tab:sleep}
+\end{table}
+
+A tabela~\ref{tab:sleep} resume o capítulo. O sono acabou se mostrando não uma pausa no funcionamento da máquina, mas sua manutenção em operação: troca de modos pelos mesmos canais de difusão, um oscilador feito das mesmas peças que o ritmo dos passos, o dia em avanço rápido para a memória lenta e a renormalização dos pesos. De dia a máquina grava; à noite, reescreve e põe em ordem o que foi gravado.
+
+\section{Exercícios}
+
+\begin{exercise}[\lvlA]
+\label{ex:20:1}
+\emph{Relé sem ritmo diário.} Sejam os limiares constantes: $H=0.67$, $L=0.17$ (valores médios dos limiares do modelo da fig.~\ref{fig:twoprocess}). Deduza de~\eqref{eq:sleeppressure} as durações da vigília e do sono e o período do oscilador com $\tau_r=18.2$~h, $\tau_d=4.2$~h. Por que o modelo com limiares oscilantes chega ainda assim a $16.1+8.0=24$~h? A que componente do capítulo~\ref{sec:chemoutput} esse efeito corresponde?
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:20:2}
+\emph{A dívida de sono.} Um sono iniciado com pressão $S_0$ dura $t_s=\tau_d\ln(S_0/L)$, $\tau_d=4.2$~h, e $L$ é o limiar inferior no despertar. (a)~Após $40$~h sem dormir, $S_0=0.90$, e o sono durou $8.8$~h. Qual era $L$? Quanto duraria o sono com o $L\approx0.092$ usual? (b)~Numa noite, a área dos contatos sinápticos diminui $18\%$. Quanto os pesos devem crescer durante o dia?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:20:3}
+\emph{Projeto dos limiares.} Escolha limiares constantes $H$ e $L$ com que o relé~\eqref{eq:sleeppressure} com $\tau_r=18.2$~h e $\tau_d=4.2$~h dê exatamente $16$~h de vigília e $8$~h de sono. Em que essa máquina é pior que a de limiares oscilantes se uma noite ela for acordada após $4$~horas?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:20:4}
+\emph{O período da gangorra lenta.} No modelo~\eqref{eq:updown}, $F(x)=1/\bigl(1+e^{-(x-\theta)/k}\bigr)$, $w=5$, $I=2$, $\theta=2.5$, $k=0.25$, $b=5$, $\tau\ll\tau_a=0.3$~s. (a)~Ache os pontos de retorno $a_{\text{s}}$ e $a_{\text{i}}$ da curva $r=F(wr+I-a)$, onde desaparecem a atividade e o silêncio. (b)~Tomando $r\approx1$ na atividade e $r\approx0$ no silêncio, ache o período e a fração de atividade.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:20:5}
+\emph{Quando a gangorra se desliga.} No modelo do exercício~\ref{ex:20:4}, o ponto fixo está na interseção da curva $a=wr+I-F^{-1}(r)$ com a reta $a=br$. As oscilações existem enquanto a interseção está no ramo do meio, entre os pontos de retorno. Para que $b$ isso vale? Como o \nt{ACET}, mudando $b$, transforma o oscilador num amplificador?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:20:6}
+\emph{Simulação: dívida ou fase.} Em \texttt{sleep\_models.py}, tome o primeiro despertar após $48$~h e mantenha a máquina acordada por $D=24$, $32$, $40$, $48$, $64$~h (\texttt{stay\_awake}, \texttt{days=8}). Quanto dura o sono de recuperação para cada $D$? O que determina sua duração?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:20:7}
+\emph{Simulação: esquecimento e intercalação.} Um neurônio linear $y=\mathbf w\cdot\mathbf x$, $n=40$, aprende pela regra $\mathbf w\leftarrow\mathbf w-0.5\,(y-y^*)\,\mathbf x$. As tarefas A e B têm $10$ padrões cada, $x_j\sim\mathcal N(0,1/n)$, $y^*=\pm1$. Qual é o erro quadrático médio em A após $200$ épocas de A e depois $200$ épocas de B? E após $200$ épocas de A e B intercaladas?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:20:8}
+\emph{Pesquisa: intercalação ou renormalização?} O neurônio do exercício~\ref{ex:20:7}, com limiar; dois procedimentos noturnos: (i)~todos os pesos são multiplicados por $0.82$; (ii)~os padrões antigos são repetidos intercalados com os novos. O que cada um faz com as razões dos pesos e com as respostas do neurônio? Como distinguir as hipóteses pelo tamanho das sinapses após o sono?
+\end{exercise}

@@ -1,0 +1,178 @@
+\chapter{Cómo aprende a moverse la máquina}
+\chaptermark{Cómo aprende a moverse la máquina}
+\label{sec:motorlearning}
+
+\section{Tres maestros}
+
+En el capítulo~\ref{sec:muscles} vimos cómo mueve la máquina los músculos y nos detuvimos en una hipótesis: los movimientos rápidos y precisos requieren un modelo interno del cuerpo que prediga el resultado de una orden~\cite{WolpertGhahramani2000}. ¿De dónde sale ese modelo? Hay que aprenderlo, y aprenderlo de un modo distinto de como hemos aprendido hasta ahora.
+
+En el libro ya hubo dos maestros. El primero es \emph{ninguno}: la regla de Hebb (capítulo~\ref{sec:dofa}) refuerza lo que ocurre a menudo a la vez y comprime las entradas. El segundo es la \emph{recompensa}: \nt{DOPA} envía a todos un solo número, “mejor o peor de lo esperado”. El movimiento necesita un tercer maestro: el \emph{error}. La mano no alcanzó la taza por dos centímetros a la izquierda: eso no es “peor”, es un vector que le dice a cada salida hacia dónde y cuánto se equivocó. Un ingeniero lo llamaría aprendizaje supervisado.
+
+La diferencia entre el segundo y el tercer maestro es la diferencia entre un solo cable para todos y un cable propio para cada salida. En la proposición~\ref{prop:broadcastcost}, el aprendizaje con un único número común se volvía más lento con cada neurona cuyo ruido influía en el resultado. Pero si cada salida $i$ recibe su propio error $e_i$, los pesos pueden cambiar según la regla más simple:
+\begin{empheq}[box=\keybox]{equation}
+\frac{\dd w_{ij}}{\dd t} \;=\; -\eta\,e_i(t)\,x_j(t) .
+\label{eq:lms}
+\end{empheq}
+Es la regla de mínimos cuadrados, conocida desde hace mucho en la técnica de los filtros adaptativos~\cite{WidrowHoff1960}: el peso cambia en proporción al producto de su entrada por el error de su salida y, en promedio, sigue el gradiente del cuadrado del error. No hace falta ningún ruido de búsqueda como en el capítulo~\ref{sec:dofa}: la dirección de la corrección llega directamente por el cable de error. Y la velocidad no cae con el número de salidas, porque los errores ajenos no llegan a la sinapsis.
+
+\begin{keyblock}
+\begin{proposition}[Tres maestros]
+\label{prop:teachers}
+La regla de Hebb enseña sin maestro lo que es frecuente; la señal de \nt{DOPA} enseña con un solo número para toda la red lo que es ventajoso, y más despacio con cada neurona; un cable de error hacia cada salida enseña, según la regla~\eqref{eq:lms}, lo que es preciso, y la velocidad no depende del número de salidas. El precio del tercer método es un cable propio para cada salida y alguien que conozca la respuesta correcta.
+\end{proposition}
+\end{keyblock}
+
+\section{El cable de error}
+
+¿Quién puede conocer la respuesta correcta para un movimiento? Los propios sensores. Si la mano se desvió a la izquierda del objetivo, lo informan el ojo y los sensores de estiramiento del capítulo~\ref{sec:sensors}. Hace falta un circuito que lleve ese error a las salidas correspondientes.
+
+En el cerebro hay una región que, al parecer, está construida exactamente para esto~\cite{Marr1969,Albus1971}. Su esquema es inusualmente regular, casi cristalino, y en él es fácil reconocer la regla~\eqref{eq:lms} (fig.~\ref{fig:errorwire}).
+
+\emph{Capa de expansión de la entrada.} Las señales sobre la orden y sobre el estado del cuerpo llegan a una enorme capa de pequeñas neuronas \nt{GLUT}. Son unos setenta mil millones, más que en todo el resto del cerebro junto~\cite{Azevedo2009}. Cada una mezcla unas pocas entradas, y la señal se descompone en un vector muy largo. El truco le resulta familiar al ingeniero: si se eleva la dimensión de la entrada, en el nuevo espacio casi cualquier dependencia deseada se obtiene con una simple suma ponderada~\cite{Cover1965}.
+
+\emph{Neuronas de salida.} La suma ponderada la calculan unos treinta millones de grandes neuronas de salida~\cite{Andersen1992cereb}, cada una con del orden de cien mil entradas de la capa de expansión. Y son neuronas \nt{GABA}: el resultado del aprendizaje no se transmite por excitación, sino por inhibición, como en el veto del capítulo~\ref{sec:gaba}.
+
+\emph{Cable de error.} Cada neurona de salida recibe además una entrada especial: exactamente un cable \nt{GLUT}, que se activa rara vez, alrededor de una vez por segundo, pero que cada vez provoca en la neurona de salida una descarga potente~\cite{Ito2001}. Eso es $e_i$: la probabilidad de la descarga depende de la dirección del error del movimiento~\cite{Herzfeld2018}. La coincidencia de la descarga de error con la actividad de una entrada debilita esa entrada: exactamente el término $-\eta\,e_i x_j$ de~\eqref{eq:lms}.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  gran/.style={circle,draw,thick,fill=blue!6,minimum size=0.32cm,inner sep=0pt},
+  outn/.style={circle,draw,very thick,fill=red!10,minimum size=1.1cm,inner sep=0pt,font=\scriptsize},
+  inh/.style={-{Bar[width=7pt]},very thick,red!70!black}]
+% inputs
+\foreach \y/\lab in {1.6/{orden},0.4/{estado del cuerpo}}{
+  \draw[->,thick,blue!60!black] (-0.6,\y) node[left,font=\scriptsize,black] {\lab} -- (0.35,\y);}
+% expansion layer
+\foreach \i in {0,...,11}{\node[gran] (g\i) at ({0.8+0.28*mod(\i,2)},{-0.3+0.23*\i}) {};}
+\foreach \i in {0,...,11}{\pgfmathsetmacro{\yy}{mod(\i,3)>0 ? 1.6 : 0.4}\draw[gray!60!black] (0.35,\yy) -- (g\i);}
+\node[font=\scriptsize,align=center] at (0.95,-1.05) {capa de expansión\\$\sim7\cdot10^{10}$ \nt{GLUT}};
+% parallel wires to the output neuron
+\foreach \i in {0,...,11}{\draw[->,gray!70!black] (g\i.east) -- (4.1,{1.0+0.07*(\i-5.5)});}
+\node[outn] (P) at (4.6,1.0) {\nt{GABA}};
+\node[font=\scriptsize,align=center,above=2pt] at (P.north) {neurona de salida\\$\sim10^5$ entradas $x_j$, pesos $w_{ij}$};
+\draw[inh] (P) -- (6.8,1.0) node[right,font=\scriptsize,align=left] {corrección\\del movimiento};
+% error wire
+\draw[->,very thick,red!70!black,densely dashed] (4.6,-1.4) node[below,font=\scriptsize,black,align=center] {un solo cable de error $e_i$\\\nt{GLUT}, $\sim1$ vez/s} -- (P.south);
+\end{tikzpicture}
+\caption{Esquema del aprendizaje supervisado tal como, al parecer, lo implementa el cerebro. La orden y el estado del cuerpo se descomponen en un vector largo $x_j$ mediante una enorme capa de neuronas \nt{GLUT}; la neurona \nt{GABA} de salida lo suma con pesos $w_{ij}$. Un único cable de error trae $e_i$; la coincidencia del error con una entrada activa debilita el peso de esa entrada, como en la regla~\eqref{eq:lms}.}
+\label{fig:errorwire}
+\end{figure}
+
+Una dificultad la conocemos del capítulo~\ref{sec:dofa}: el error llega más tarde que la entrada que lo causó. El fallo se ve decenas o cientos de milisegundos después de la orden. Por lo tanto, la sinapsis debe recordar que estuvo activa: hace falta una traza, como en la regla~\eqref{eq:threefactor}. Y la duración de esa traza, a juzgar por los experimentos, está ajustada al retardo de la realimentación en cada tarea: donde el error llega a los cien milisegundos, se debilita sobre todo la entrada que estuvo activa cien milisegundos antes~\cite{Suvrathan2016}.
+
+\begin{keyblock}
+\begin{proposition}[Cable de error]
+\label{prop:errorwire}
+En el circuito de la fig.~\ref{fig:errorwire}, cada neurona de salida recibe exactamente un cable de error, y la coincidencia del error con una entrada debilita esa entrada. Es la regla de mínimos cuadrados~\eqref{eq:lms} aplicada a una entrada expandida hasta una dimensión enorme. La estructura del circuito y el debilitamiento por coincidencia están medidos; que todo el circuito funcione como aprendizaje supervisado es la hipótesis principal.
+\end{proposition}
+\end{keyblock}
+
+\section{El modelo interno como filtro adaptativo}
+
+¿Qué aprende un circuito así? La respuesta más natural es: a predecir. Supongamos que a la entrada llega la orden $u(t)$, pasada por un conjunto de filtros con distintas constantes de tiempo, como en la capa de expansión: $x_j(t)=(g_j*u)(t)$. La salida es su suma ponderada, una predicción de lo que informarán los sensores:
+\begin{empheq}[box=\keybox]{equation}
+\hat y(t) \;=\; \sum_j w_j\,(g_j*u)(t), \qquad e(t) \;=\; \hat y(t) - y(t) ,
+\label{eq:adaptivefilter}
+\end{empheq}
+y los pesos aprenden según~\eqref{eq:lms}. Es un \emph{filtro adaptativo}: un circuito que elige por sí mismo su función de transferencia para reproducir un sistema desconocido~\cite{Fujita1982}. Aquí el sistema desconocido es el propio cuerpo, con su masa, su elasticidad y sus retardos. El filtro aprendido es precisamente el modelo interno del capítulo~\ref{sec:muscles}: dice lo que informarán los sensores sin esperarlos.
+
+Este modelo es útil por partida doble. Primero, su predicción puede usarse en lugar de la realimentación retardada, y entonces la condición de estabilidad~\eqref{eq:delaystable} deja de atar las manos: se puede corregir rápido, según el modelo. Segundo, la diferencia entre lo predicho y lo recibido es una señal de lo \emph{inesperado}. Todo lo que la máquina hizo por sí misma, el modelo lo predijo y lo restó; queda lo que hizo el mundo. Por eso, según una hipótesis, no podemos hacernos cosquillas a nosotros mismos~\cite{Blakemore1998}.
+
+\section{Cuando el mundo cambia: lo rápido y lo lento}
+
+Pongamos a prueba el circuito con un experimento fácil de montar. Una persona alcanza un objetivo, y el mundo cambia de repente: por ejemplo, una fuerza lateral actúa sobre la mano. Los primeros movimientos fallan, luego el fallo disminuye. Si se quita la fuerza, la mano falla al principio hacia el \emph{otro} lado: el modelo aprendió la fuerza y sigue compensándola. Es una prueba directa de que se aprendió un modelo, y no simplemente que “empezó a salir bien”.
+
+Los experimentos muestran algo más sutil: aprenden a la vez dos procesos, uno rápido, que aprende rápido y olvida rápido, y uno lento, que aprende despacio y recuerda mucho tiempo~\cite{Smith2006}. Las correcciones se actualizan tras cada movimiento, por evento:
+\begin{empheq}[box=\keybox]{equation}
+e = p - (x_f + x_s), \qquad x_f \leftarrow A_f\,x_f + B_f\,e, \qquad x_s \leftarrow A_s\,x_s + B_s\,e ,
+\label{eq:tworate}
+\end{empheq}
+donde $p$ es la perturbación, $x_f$ y $x_s$ son las correcciones aprendidas por los dos procesos, $A$ indica cuánto se conserva la corrección hasta el movimiento siguiente y $B$, con qué fuerza aprende del error. En el proceso rápido, $B$ es grande y $A$ bastante menor que uno; en el lento, al revés.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=0.034cm,y=1.9cm]
+\draw[->,gray!70!black] (0,0) -- (355,0) node[right,font=\small,black] {movimiento};
+\draw[->,gray!70!black] (0,-1.15) -- (0,1.25);
+\foreach \v in {-1,1}{\draw[gray!60!black] (-3,\v) -- (3,\v); \node[left,font=\scriptsize] at (0,\v) {$\v$};}
+\foreach \n in {100,200,300}{\draw[gray!60!black] (\n,-0.04) -- (\n,0.04); \node[below,font=\scriptsize] at (\n,0) {\n};}
+\draw[thin,gray!70!black] plot file {figures/tworate_p.dat};
+\draw[thick,orange!85!black] plot file {figures/tworate_fast.dat};
+\draw[thick,blue!60!black] plot file {figures/tworate_slow.dat};
+\draw[very thick,black] plot file {figures/tworate_net.dat};
+\node[font=\scriptsize,gray!50!black] at (120,1.12) {perturbación $p$};
+\node[font=\scriptsize,black,anchor=west] at (238,0.52) {suma: regreso};
+\node[font=\scriptsize,blue!60!black,anchor=west] at (150,0.39) {lento $x_s$};
+\node[font=\scriptsize,orange!85!black,anchor=west] at (60,0.08) {rápido $x_f$};
+\draw[densely dashed,gray!60!black] (226,-1.15) -- (226,1.25);
+\node[font=\scriptsize,align=center,anchor=south west] at (228,-1.1) {ya no hay\\errores};
+\end{tikzpicture}
+\caption{Dos procesos de aprendizaje según el modelo~\eqref{eq:tworate}, $A_f=0.92$, $B_f=0.1$, $A_s=0.996$, $B_s=0.02$. Doscientos movimientos con la perturbación $p=1$ y luego seis con la inversa, $p=-1$, hasta que la suma vuelve a cero. Tras la línea discontinua dejan de llegar errores, y la suma vuelve sola a la corrección anterior: el proceso rápido olvidó la perturbación inversa; el lento recuerda la directa.}
+\label{fig:tworate}
+\end{figure}
+
+El modelo~\eqref{eq:tworate} explica un experimento difícil de entender sin él (fig.~\ref{fig:tworate}). En nuestro cálculo, en doscientos movimientos con perturbación la suma de correcciones llega a $0.84$, y la mayor parte la sostiene el proceso lento, $0.63$. Luego, seis movimientos con la perturbación inversa devuelven la suma a cero: el proceso rápido pasó a negativo, $-0.53$, y el lento sigue en positivo, $0.46$. Si ahora se deja de informar los errores, el proceso rápido olvida su corrección en decenas de movimientos, el lento tarda mucho más, y la suma sube \emph{sola} a $0.37$ en cuarenta movimientos: la vieja habilidad vuelve sin ningún entrenamiento. Esta recuperación espontánea está medida en personas; un modelo con un solo proceso no puede producirla: sin errores, simplemente decae a cero.
+
+¿Para qué dos procesos? Una respuesta de ingeniería verosímil la da el filtro óptimo del capítulo~\ref{sec:acet}. El cuerpo cambia por distintas causas y a distintas velocidades: los músculos se cansan en minutos, crecen y se debilitan en meses. Si las perturbaciones son rápidas y lentas, la mejor estimación consta de dos filtros con distintas constantes de tiempo, y cada uno capta la suya~\cite{Kording2007}. El proceso rápido es una corrección temporal, “la mano está cansada”; el lento, “la mano ha cambiado”. Por ahora es una hipótesis, pero explica por qué una habilidad aprendida en un día se pierde en parte al día siguiente y por qué la segunda vez se aprende más rápido.
+
+\section{Resumen}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{3.0cm}>{\raggedright}p{4.6cm}>{\raggedright\arraybackslash}p{5.2cm}}
+\toprule
+Qué hace el circuito & Cómo & Qué se sabe \\
+\midrule
+aprende con maestro & cable de error a cada salida, regla~\eqref{eq:lms} & estructura del circuito y debilitamiento por coincidencia medidos; aprendizaje supervisado: hipótesis principal \\
+expande la entrada & setenta mil millones de neuronas \nt{GLUT} & número de neuronas medido; papel de la expansión: teoría \\
+tiene en cuenta el retardo del error & traza ajustada al retardo & medido \\
+construye un modelo interno & filtro adaptativo~\eqref{eq:adaptivefilter} & hipótesis bien fundada \\
+aprende a dos ritmos & procesos rápido y lento~\eqref{eq:tworate} & efecto posterior y recuperación espontánea medidos; los dos procesos, modelo \\
+\bottomrule
+\end{tabular}
+\caption{Cómo aprende a moverse la máquina.}
+\label{tab:motorlearning}
+\end{table}
+
+Ahora la máquina tiene tres maestros (tabla~\ref{tab:motorlearning}). Hebb comprime lo frecuente; \nt{DOPA}, con un solo número, enseña a elegir lo ventajoso; el cable de error enseña precisión, y la enseña rápido, porque a cada salida le llega su propio error. El cerebro, al parecer, usa los tres, y cada uno donde resulta más barato: la señal de difusión, para unas pocas decisiones; los cables propios, para el ajuste fino del cuerpo, donde la respuesta correcta la informan los propios sensores.
+
+\section{Ejercicios}
+
+\begin{exercise}[\lvlA]
+\label{ex:15:1}
+\emph{Capacidad del circuito con cable de error.} El circuito tiene $3\cdot10^7$ neuronas de salida con $10^5$ entradas cada una, y cada una con su propio cable de error ($1$~espiga/s). Una neurona con $n$ entradas aprende cualquier etiquetado de $\approx2n$ vectores~\cite{Cover1965}. (a)~¿Cuántas asociaciones guarda el circuito? (b)~Estime con~\eqref{eq:spikeentropy}, con $\Delta t=10\ms$, el tiempo mínimo para llenar la capacidad de una neurona.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:15:2}
+\emph{Velocidad de la regla de mínimos cuadrados.} Los modos de la regla~\eqref{eq:lms} decaen con tasas $\eta\lambda_k(C)$. Para cinco filtros~\eqref{eq:adaptivefilter} con ruido blanco, $C_{jk}=2\sqrt{\tau_j\tau_k}/(\tau_j+\tau_k)$. Halle el cociente entre la tasa más rápida y la más lenta si cada $\tau_j$ es $2$ veces mayor que el anterior ($10$--$160\ms$) y si es $4$ veces mayor.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:15:3}
+\emph{Análisis de los dos procesos.} Escriba el modelo~\eqref{eq:tworate} con los parámetros de la fig.~\ref{fig:tworate} como $\mathbf x_{n+1}=M\mathbf x_n+\mathbf b\,p$. (a)~Halle, a partir de los valores propios de $M$, las constantes de tiempo en movimientos. (b)~Halle los $x_f$, $x_s$ estacionarios y su suma con $p=1$ constante.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:15:4}
+\emph{Simulación: la segunda vez es más rápido.} Con el modelo~\eqref{eq:tworate} y los parámetros de \texttt{models/\allowbreak motor\_learning.py}, halle el número de movimientos hasta $x_f+x_s\ge0.8$ con $p=1$: (a)~en una máquina sin entrenar; (b)~tras $200$ movimientos con $p=1$ y la perturbación inversa hasta anular la suma, como en la fig.~\ref{fig:tworate}. ¿Puede acelerarse así un modelo de un solo proceso?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:15:5}
+\emph{Regulador con modelo interno.} La planta $\dd x/\dd t=ku$ se observa con retardo $d$; el regulador $u=-G\hat x$ predice $\hat x(t)=x(t-d)+\hat k\int_{t-d}^{t}u\,\dd s$. (a)~Con $\hat k=k=1$, $d=150\ms$, halle $G$ para una constante de tiempo de $20\ms$ y compárelo con el límite~\eqref{eq:delaystable}. (b)~¿Es estable el esquema con $\hat k=0.4k$?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:15:6}
+\emph{Un filtro adaptativo aprende un músculo.} La planta es la sacudida~\eqref{eq:twitch} de área unitaria, $T_c=50\ms$; los filtros~\eqref{eq:adaptivefilter} son circuitos RC con $\tau_j=12.5$, $25$, $50$, $100$, $200\ms$; la entrada es un nuevo número normal cada $10\ms$. ¿En cuántos segundos la regla~\eqref{eq:lms} con $\eta=50$ y $200$ reduce el error al $0.5\%$? ¿Por qué los pesos siguen lejos de los óptimos incluso a los $300$~s?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:15:7}
+\emph{Los dos procesos como filtro óptimo.} La perturbación es la suma de los procesos $p^{f,s}_{n+1}=A_{f,s}\,p^{f,s}_n+w^{f,s}_n$ con varianzas de ruido $q_f$, $q_s$; el error se observa con ruido de varianza $R$; el filtro de Kalman da~\eqref{eq:tworate}. ¿Con qué $q_f/R$, $q_s/R$ se obtienen, a partir de $A_f=0.92$, $A_s=0.996$, $B_f=0.1$ y $B_s=0.02$? ¿Cómo cambian $B_f$ y $B_s$ si se cuadruplica $q_s$?
+\end{exercise}

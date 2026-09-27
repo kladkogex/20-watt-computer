@@ -1,0 +1,42 @@
+\chapter{Escritura y lectura}
+% versión completa: chapters/09_acet.tex
+
+La memoria del cerebro tiene una particularidad incómoda: los recuerdos se guardan en las mismas conexiones por las que va el trabajo. No hay un disco duro aparte. Cada vez que la red recuerda, usa sus conexiones, y cada vez que aprende, las cambia. ¿Cómo no estropear lo viejo al escribir lo nuevo? En una computadora hay para eso una señal aparte: “habilitar escritura”. En el cerebro, al parecer, ese papel lo cumple la emisora \nt{ACET}: la acetilcolina.
+
+\section*{Dos modos}
+
+Imagine una red que guarda varias imágenes: muéstrele la mitad y completará el resto. Eso es lectura. Ahora muéstrele una imagen nueva, parecida a una vieja. Si la red, por costumbre, completa, no verá lo nuevo sino lo viejo, y aprenderá un error. Para escribir lo nuevo, la red tiene que dejar por un rato de confiar en su memoria y mirar el mundo.
+
+\pencilfig{9}{\pencilart{9}}{Un solo cable cambia el modo de la red: escribir lo nuevo o recordar lo viejo.}
+
+La acetilcolina hace exactamente eso, y sus tres efectos están medidos: debilita las conexiones internas de la red, con las que “recuerda”; refuerza las señales que llegan de los órganos de los sentidos; y facilita el cambio de conexiones. Mucha acetilcolina: modo escritura, la red escucha al mundo y aprende. Poca: modo lectura, la red se apoya en la memoria y completa.
+
+En nuestro modelo no existe un nivel con el que ambas cosas salgan bien. Para escribir hay que atenuar las conexiones internas, y para leer se necesitan a plena fuerza. Por eso el conmutador es imprescindible.
+
+\section*{Cuánto creerles a los ojos}
+
+Los ingenieros resolvieron hace tiempo un problema parecido. Cuando un barco sigue su rumbo, el navegante tiene un cálculo de dónde debería estar el barco y observaciones nuevas pero imprecisas. ¿Cuánto confiar en cada cosa? El filtro óptimo responde: confíe en las observaciones tanto más cuanto menos seguro esté del cálculo. Y la misma receta dice otra cosa: cuanto menor la seguridad, más rápido hay que reaprender. Una sola perilla controla a la vez el peso de la entrada y la velocidad de aprendizaje. Es justo lo que hace la acetilcolina. De ahí la hipótesis: le comunica a la red lo insegura que está su propio modelo del mundo.
+
+\pencilfig{124}{%
+% optimal blending: the less sure the model, the more weight on the observation (and the faster it relearns)
+\foreach \dx/\wm/\we/\ttop/\bbot in {0/2.4pt/0.6pt/{modelo seguro}/{poca acetilcolina}, 4.3/0.6pt/2.4pt/{modelo inseguro}/{mucha acetilcolina}}{
+  \begin{scope}[xshift=\dx cm]
+  \draw[penlite=pcViolet, wash=pcViolet, rounded corners=3pt] (0,0.95) rectangle (1.3,1.45); \node[lbl, text=black] at (0.65,1.2) {memoria};
+  \draw[penlite=pcBlue, wash=pcBlue, rounded corners=3pt] (0,-0.25) rectangle (1.3,0.25); \node[lbl, text=black] at (0.65,0) {ojos};
+  \draw[dotpen=pcAmber, wash=pcAmber] (2.95,0.6) circle (0.55); \node[lbl, text=black] at (2.95,0.6) {estimado};
+  \draw[pcViolet, line width=\wm, line cap=round, -{Stealth[length=5pt]}] (1.35,1.2) -- (2.4,0.8);
+  \draw[pcBlue, line width=\we, line cap=round, -{Stealth[length=5pt]}] (1.35,0) -- (2.4,0.4);
+  \node[font=\small\itshape, text=pcGray, anchor=south] at (1.55,1.6) {\ttop};
+  \node[lbl, anchor=north] at (1.55,-0.4) {\bbot};
+  \end{scope}}
+}{Cuánto creerles a los ojos. Si la red está segura de su modelo del mundo, la estimación sale casi toda de la memoria. Si no lo está, sale de las observaciones, y entonces la red también reaprende más rápido. Según la hipótesis, esta perilla la gira la acetilcolina.}
+
+\section*{División del trabajo}
+
+Recuerde el capítulo anterior. Cuando el mundo cambia de repente, la noradrenalina, según la hipótesis, detecta la sorpresa. Y la acetilcolina mantiene la red en modo escritura hasta que la nueva situación está aprendida. Una dice “algo cambió”; la otra, “escribe”.
+
+\section*{Reescritura nocturna}
+
+Durante el sueño profundo, el nivel de acetilcolina es bajo. La red está desconectada del mundo y en modo lectura. Justo en ese momento se “reproducen” en ella los sucesos del día: eso está medido. Que al mismo tiempo lo aprendido durante el día se reescriba en la memoria de largo plazo es una hipótesis verosímil, a la que volveremos en el capítulo sobre el sueño.
+
+\fullversion{9}

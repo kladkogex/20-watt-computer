@@ -1,0 +1,352 @@
+\chapter{Código Morse: lo que sabemos del lenguaje que hablan las neuronas \nt{GLUT} y \nt{GABA}}
+\chaptermark{Código Morse}
+\label{sec:code}
+
+\section{Un alfabeto de un solo signo}
+
+El código Morse tiene dos signos, el punto y la raya, y pausas de tres longitudes entre ellos. El alfabeto de la neurona, como vimos en el capítulo~\ref{sec:neurontypes}, es aún más pobre: tiene un solo signo. Una espiga dura cerca de un milisegundo, y todas las espigas de una neurona son iguales en altura y forma. Por eso todo el mensaje está en las pausas, es decir, en la secuencia de instantes $t_1,t_2,t_3,\dots$ Es un Morse sin rayas, en el que el sentido lo lleva solo el ritmo de los puntos (fig.~\ref{fig:morse}).
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=0.08cm,y=1cm]
+% Morse letter: dot, dash, dot
+\node[left,font=\small] at (-6,2.55) {Morse:};
+\fill[black] (0,2.45) rectangle (6,2.65);
+\fill[black] (14,2.45) rectangle (32,2.65);
+\fill[black] (40,2.45) rectangle (46,2.65);
+\node[right,font=\small,gray!40!black] at (52,2.55) {punto, raya, punto: el sentido está en duraciones y pausas};
+% stimulus onset
+\node[left,font=\small] at (-6,0.4) {neurona:};
+\draw[->,thick,green!45!black] (0,-0.55) -- (0,-0.05);
+\node[below,font=\scriptsize,green!45!black] at (0,-0.55) {estímulo};
+\draw[gray!70!black] (0,0) -- (152,0) node[right,black] {\small $t$};
+% spikes: single ones blue, the burst red
+\foreach \s in {14,26,41,88,112,131}{\draw[very thick,blue!60!black] (\s,0) -- (\s,0.8);}
+\foreach \s in {60,63,66,69}{\draw[very thick,red!70!black] (\s,0) -- (\s,0.8);}
+% latency
+\draw[<->,thick] (0,1.1) -- node[above,font=\scriptsize] {$t_1$: tiempo de la primera espiga} (14,1.1);
+% burst
+\draw[decorate,decoration={brace,amplitude=4pt},red!70!black] (58,0.95) -- (71,0.95) node[midway,above=4pt,font=\scriptsize] {ráfaga: una “raya”};
+% counting windows
+\foreach \a/\b/\n in {0/50/3,50/100/5,100/150/2}{
+  \draw[decorate,decoration={brace,amplitude=4pt,mirror},gray!50!black] (\a+1,-0.2) -- (\b-1,-0.2) node[midway,below=4pt,font=\small] {$n=\n$};}
+\node[font=\scriptsize,gray!40!black] at (75,-1.05) {código de frecuencia: número de espigas $n$ en cada ventana};
+\foreach \x in {0,50,100,150}{\draw[gray!60!black] (\x,-0.06) -- (\x,0.06);}
+\end{tikzpicture}
+\caption{El código Morse y el código de la neurona. Una misma secuencia de espigas puede leerse de maneras distintas: contar las espigas en ventanas de $50\ms$ (sección~\ref{sec:rate}), medir la latencia $t_1$~\eqref{eq:latency} o notar la ráfaga, una “raya”~\eqref{eq:burst}.}
+\label{fig:morse}
+\end{figure}
+
+¿Qué pausas son posibles? Por abajo las limita el período refractario: tras una espiga, la neurona no puede dispararse de nuevo durante cerca de un milisegundo, así que no hay más de unos cientos de espigas por segundo. Por arriba no las limita nada: una neurona puede callar durante minutos. En las neuronas \nt{GLUT} de la corteza, las frecuencias van de fracciones de espiga a unas decenas de espigas por segundo, y la mayoría de las neuronas trabaja la mayor parte del tiempo cerca del límite inferior.
+
+En los capítulos~\ref{sec:glutcomputer} y~\ref{sec:gaba} adoptamos sobre la marcha ora una, ora otra manera de escribir números con espigas. Ahora preguntemos directamente: ¿en qué lenguaje hablan entre sí las neuronas \nt{GLUT} y \nt{GABA}? No hay una respuesta completa; este lenguaje no está descifrado. Pero algunas cosas se saben con seguridad, y casi todo lo que se sabe puede obtenerse razonando como un ingeniero de comunicaciones: capacidad del canal, ruido, receptor, costo de la transmisión.
+
+\section{Cuánto se puede transmitir}
+
+Empecemos por la cota superior. Supongamos que el receptor distingue los instantes de las espigas con precisión $\Delta t$: desplazamientos menores que $\Delta t$ le resultan indistinguibles. Cortemos el tiempo en celdas de longitud $\Delta t$, menores que el período refractario, de modo que en cada celda haya una espiga o ninguna (fig.~\ref{fig:cells}). Con una frecuencia media $r$, una espiga cae en una celda con probabilidad $p=r\Delta t$. El flujo lleva la máxima información cuando las celdas son independientes, y entonces cada celda aporta una entropía de $-p\log_2p-(1-p)\log_2(1-p)\approx p\log_2(e/p)$ bits para $p\ll1$. Dividiendo por $\Delta t$ obtenemos la velocidad máxima de transmisión y su parte por espiga~\cite{MacKay1952}:
+\begin{empheq}[box=\keybox]{equation}
+R_{\max} \;\approx\; r\,\log_2\frac{e}{r\,\Delta t}\ \ \text{bits/s},
+\qquad
+\frac{R_{\max}}{r} \;\approx\; \log_2\frac{e}{r\,\Delta t}\ \ \text{bits por espiga}.
+\label{eq:spikeentropy}
+\end{empheq}
+Con $r=10$ espigas por segundo y $\Delta t=1\ms$ son unos ocho bits por espiga y ochenta bits por segundo.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=0.5cm,y=1cm]
+% time cut into cells of width Delta t; a cell holds one impulse or none
+\foreach \k in {0,...,23}{\draw[gray!55] (\k,0) rectangle (\k+1,0.7);}
+\foreach \k in {2,7,8,15,21}{
+  \fill[red!10] (\k,0) rectangle (\k+1,0.7);
+  \draw[very thick,red!70!black] (\k+0.5,0.05) -- (\k+0.5,0.65);}
+\foreach \k in {0,...,23}{
+  \pgfmathtruncatemacro{\bit}{(\k==2)||(\k==7)||(\k==8)||(\k==15)||(\k==21)}
+  \ifnum\bit=1 \def\bitcol{red!70!black}\else \def\bitcol{gray!60!black}\fi
+  \node[font=\scriptsize,text=\bitcol] at (\k+0.5,-0.25) {\bit};}
+\draw[<->,gray!60!black] (0,0.95) -- (1,0.95) node[midway,above,font=\scriptsize,black] {$\Delta t$};
+\node[font=\small,anchor=east] at (-0.3,0.35) {espigas};
+\node[font=\small,anchor=east] at (-0.3,-0.25) {bits};
+\draw[decorate,decoration={brace,amplitude=5pt,mirror},gray!60!black] (0,-0.55) -- (24,-0.55)
+  node[midway,below=6pt,font=\scriptsize,black,align=center] {un receptor que solo cuenta: “$n=5$”;\\ un receptor que ve las celdas: exactamente cuáles $5$ de $24$, que son $\log_2\binom{24}{5}\approx15$ bits};
+\end{tikzpicture}
+\caption{De dónde sale la capacidad~\eqref{eq:spikeentropy}. El tiempo está cortado en celdas de longitud $\Delta t$; en cada celda hay espiga ($1$) o no la hay ($0$): el flujo de espigas es una cadena binaria. Una espiga cae en una celda con probabilidad $p=r\Delta t$. Cuanto más finas son las celdas, más larga es la cadena y más bits contiene; un contador de espigas pierde casi todo lo que está escrito en \emph{dónde} están los unos.}
+\label{fig:cells}
+\end{figure}
+
+Los bits por espiga dependen de la precisión temporal solo de forma logarítmica: con una precisión de $10\ms$ quedan unos cinco bits por espiga. Pero si el receptor solo cuenta las espigas de cada segundo, con $r=10$ obtiene menos de dos bits en todo el segundo (sección~\ref{sec:rate}).
+
+\begin{keyblock}
+\begin{proposition}[Capacidad del canal de espigas]
+\label{prop:capacity}
+Un flujo de espigas con frecuencia media $r$, leído con precisión temporal $\Delta t$, no lleva más que~\eqref{eq:spikeentropy}. Casi toda esta capacidad está en el \emph{tiempo} de las espigas: un receptor que solo cuenta espigas extrae del mismo flujo decenas de veces menos que uno que distingue sus instantes con precisión de un milisegundo.
+\end{proposition}
+\end{keyblock}
+
+Es una cota superior, no una medición. Las mediciones en neuronas sensoriales cuyo estímulo se conoce dan de uno a varios bits por espiga; en los mejores casos, hasta la mitad de la cota calculada para su precisión~\cite{Rieke1997}. Así pues, al menos en la entrada del sistema nervioso, el tiempo de las espigas se aprovecha y no se desperdicia.
+
+\section{Un canal ruidoso}
+
+La capacidad~\eqref{eq:spikeentropy} se calculó sin ruido. Sobre dónde surge el ruido se conocen con seguridad tres hechos.
+
+\emph{El generador de espigas es preciso.} Si a una neurona de la corteza extraída del cerebro junto con un trocito de tejido se le aplica muchas veces la misma corriente de variación rápida, las espigas se repiten con una precisión de cerca de un milisegundo~\cite{Mainen1995}. Si la corriente es constante, los instantes de las espigas se dispersan de una vez a otra: el tiempo preciso lo generan los cambios rápidos de la entrada, no la neurona misma.
+
+\emph{La sinapsis es poco fiable.} Una espiga que llega a una sinapsis \nt{GLUT} libera una porción de neurotransmisor solo con cierta probabilidad $p$. En las sinapsis del hipocampo, más de la mitad de las espigas simplemente no llegan al receptor, y la causa es justamente el azar de la liberación, no fallos de conducción~\cite{AllenStevens1994}. Para un ingeniero de comunicaciones es un canal con borrado; varias sinapsis entre dos neuronas salvan en parte la situación.
+
+\emph{En la corteza viva, el flujo de espigas parece aleatorio.} Los intervalos entre espigas se dispersan aproximadamente como en un flujo aleatorio de Poisson, y al repetir el mismo estímulo el número de espigas por ventana varía de modo que su varianza es cercana a su media~\cite{Softky1993}.
+
+¿Cómo genera un elemento preciso un flujo aleatorio? La neurona recibe miles de entradas, cada una poco fiable, y la excitación y la inhibición están equilibradas, como en el capítulo~\ref{sec:gaba}. El voltaje de la membrana fluctúa cerca del umbral, y los instantes de las espigas los fijan esas fluctuaciones. Si esto es ruido o un mensaje que no sabemos leer es en buena medida una pregunta abierta. Parte del “ruido” ya ha resultado ser mensaje: en la corteza visual, una fracción considerable de la dispersión sigue los movimientos del propio animal~\cite{Stringer2019}. La dificultad aquí es de principio: un mensaje bien comprimido es indistinguible de un flujo aleatorio para quien no conoce el código.
+
+\section{Frecuencia: lento pero fiable}
+\label{sec:rate}
+
+El código más sencillo es el \emph{de frecuencia}: el número está escrito en cuántas espigas emite la neurona en una ventana $T$. Ni los borrados ni la fluctuación de los instantes afectan a este código. Pero tiene un precio. Si el flujo es de Poisson, el número de espigas $n$ en una ventana tiene media $rT$ y dispersión $\sqrt{rT}$:
+\begin{empheq}[box=\keybox]{equation}
+\frac{\sigma_n}{\bar n} \;=\; \frac{1}{\sqrt{r\,T}} .
+\label{eq:rateerror}
+\end{empheq}
+Para conocer la frecuencia con una precisión del diez por ciento hacen falta cien espigas; con veinte espigas por segundo, cinco segundos. Los niveles vecinos se distinguen si están separados por un par de dispersiones, así que hasta la frecuencia $r$ en un tiempo $T$ se distinguen unos $\sqrt{rT}$ niveles: con $r=10$ y $T=1\,\text{s}$ son tres o cuatro niveles, menos de dos bits.
+El cerebro no trabaja tan despacio. Una persona reconoce un animal en una imagen mostrada un instante, y la respuesta aparece en el cerebro al cabo de unos $150\ms$~\cite{Thorpe1996}. Según una estimación burda, en ese tiempo la señal recorre una decena de etapas de procesamiento sucesivas, de $10$--$20\ms$ por etapa. Con las frecuencias habituales de la corteza, cada neurona alcanza a emitir cero o una espiga por etapa, y su frecuencia en una ventana así no está definida. Hay dos salidas: tomar muchas neuronas o mirar el tiempo.
+
+\emph{Muchas neuronas.} Supongamos que $N$ neuronas llevan el mismo número y que el receptor suma sus espigas. Si sus ruidos son independientes, en~\eqref{eq:rateerror} aparece $NrT$ en lugar de $rT$: cien neuronas con $r=20$ en $15\ms$ dan treinta espigas y una precisión de cerca del veinte por ciento. El espacio sustituye al tiempo. Sin embargo, los ruidos de las neuronas vecinas de la corteza no son independientes: el coeficiente de correlación de los números de espigas de un par de vecinas suele rondar $0.1$~\cite{Zohary1994}. Si vale $c$, la varianza de la media sobre $N$ neuronas es
+\begin{empheq}[box=\keybox]{equation}
+\sigma^2_N \;=\; \sigma^2_1\,\frac{1+(N-1)\,c}{N}
+\;\xrightarrow[N\to\infty]{}\; c\,\sigma^2_1 .
+\label{eq:correlated}
+\end{empheq}
+
+\begin{keyblock}
+\begin{proposition}[Límite del promediado]
+\label{prop:pooling}
+Con ruido correlacionado, promediar sobre un grupo reduce el error como mucho $1/\sqrt{c}$ veces. Con $c=0.1$ es un factor de tres, y esa ganancia se alcanza ya con unas decenas de neuronas; añadir más es inútil.
+\end{proposition}
+\end{keyblock}
+
+No toda correlación es igual de dañina. Solo limita la precisión la parte del ruido común que \emph{se parece a la señal misma}, es decir, que desplaza a todo el grupo igual que lo desplazaría un cambio de la magnitud medida~\cite{MorenoBote2014}. Cuánto ruido de este tipo hay en realidad en el cerebro aún se está investigando.
+
+Hay otra manera de usar muchas neuronas: escribir el número en \emph{cuál} neurona se disparó, como en el localizador de sonidos (fig.~\ref{fig:itd}). Es el código \emph{de lugar}, el más fiable que se conoce: en las neuronas sensoriales, el número de cable indica qué punto de la piel se tocó o qué altura tiene un sonido, y esto se ha establecido muchas veces. Es caro en número de neuronas, pero rápido: el mensaje cuesta un solo retardo.
+
+\section{Tiempo: rápido, pero ¿desde cuándo se cuenta?}
+
+La segunda salida es escribir el número en el tiempo de la espiga. Tomemos la neurona~\eqref{eq:glutneuron} y apliquémosle desde el instante $t=0$ una entrada constante que elevaría el voltaje hasta el nivel $U$. El voltaje crece como $V=U\bigl(1-e^{-t/\tau}\bigr)$ y alcanza el umbral $\theta$ en el instante
+\begin{empheq}[box=\keybox]{equation}
+t_1 \;=\; \tau\,\ln\frac{U}{U-\theta}, \qquad U>\theta .
+\label{eq:latency}
+\end{empheq}
+Entrada fuerte, espiga temprana; débil, espiga tardía; subumbral, ninguna. Con $\tau=10\ms$, la entrada $U=4\theta$ da la primera espiga al cabo de $2.9\ms$; $U=2\theta$, al cabo de $6.9\ms$; $U=1.2\theta$, al cabo de $17.9\ms$. Una sola espiga lleva un número.
+
+Pero ¿desde qué instante se cuenta $t_1$? No hay reloj, y el receptor no sabe cuándo empezó el estímulo. Hay tres respuestas.
+
+\emph{La latencia relativa.} Dos neuronas ven el mismo estímulo, y la diferencia de sus latencias $t_1^A-t_1^B$ depende solo de sus entradas, no del instante de inicio. Los instantes los comparan detectores de coincidencias con retardos (fig.~\ref{fig:itd}). Si $N$ neuronas emitieron una espiga cada una, el propio \emph{orden} de llegada lleva hasta $\log_2N!$ bits: para diez neuronas, unos veintidós bits, mientras que la respuesta “se disparó o no” daría como mucho diez. En la retina se ha mostrado que la imagen puede reconstruirse de forma rápida y fiable a partir de las latencias relativas de las primeras espigas de sus neuronas de salida~\cite{Gollisch2008}.
+
+\emph{La descarga como inicio de palabra.} Un cambio brusco del estímulo hace que muchas neuronas se disparen casi a la vez. Esa descarga sirve por sí misma de marca de inicio, como la pausa larga entre palabras del código Morse, y el receptor cuenta las latencias a partir de ella.
+
+\emph{El ritmo local.} En el capítulo~\ref{sec:gaba}, el lazo \nt{GLUT}--\nt{GABA} generaba un ritmo local con un período de $12$--$50\ms$. No es un reloj, pero dentro de su ciclo una neurona con entrada fuerte alcanza a dispararse antes que una con entrada débil, y~\eqref{eq:latency} se convierte en un código \emph{de fase}: el número está escrito en qué parte del ciclo llegó la espiga. Este código se ha observado: las neuronas que responden a un lugar concreto del espacio se disparan cada vez antes en el ciclo de un ritmo local lento a medida que el animal atraviesa “su” lugar~\cite{OKeefe1993}. Hasta qué punto usa el cerebro la fase aún no se sabe.
+
+\section{El código lo elige el receptor}
+
+En una secuencia de espigas hay a la vez frecuencia, tiempos y orden. Qué se leerá de todo ello lo decide el receptor, y lo decide con un solo parámetro: su constante de tiempo $\tau$.
+
+Promediemos la ecuación~\eqref{eq:glutneuron} en el tiempo. Si a la neurona llegan flujos independientes con frecuencias $r_j$, el voltaje medio y su fluctuación relativa valen
+\begin{empheq}[box=\keybox]{equation}
+\bar V \;=\; \tau\sum_j w_j\,r_j ,
+\qquad
+\frac{\sigma_V}{\bar V} \;\approx\; \frac{1}{\sqrt{2\,r_{\text{ent}}\,\tau}} ,
+\label{eq:reader}
+\end{empheq}
+donde la segunda igualdad está escrita para pesos iguales, y $r_{\text{ent}}$ es la frecuencia total de todas las entradas. Cuando $\tau$ es grande, el voltaje casi no fluctúa y reproduce la suma ponderada de las frecuencias: el receptor es un \emph{integrador}, lee frecuencias y olvida tiempos. Cuando $\tau$ es pequeña, el voltaje alcanza a caer entre espigas, y el umbral solo se alcanza cuando varias espigas llegan dentro de la ventana~\eqref{eq:window}: el receptor es un \emph{detector de coincidencias}, lee tiempos (fig.~\ref{fig:reader}). Mil entradas de cinco espigas por segundo con $\tau=10\ms$ dan una fluctuación de cerca del diez por ciento: integración casi pura. Si la inhibición, como en el capítulo~\ref{sec:gaba}, acorta $\tau$ a $2\ms$, la fluctuación sube a más del veinte por ciento, y la neurona empieza a notar coincidencias.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=0.115cm,y=1cm]
+% common input: the same spike train for both receivers
+\foreach \s in {6,21,22,38,52,55.5,59,62.5,66,69.5,73,76.5,80,83.5,87,90.5,94,97.5}{\draw[thick,gray!40!black] (\s,5.25) -- (\s,5.65);}
+\draw[gray!70!black] (0,5.25) -- (105,5.25);
+\node[left,font=\small] at (-1,5.45) {entrada};
+\node[above,font=\scriptsize,gray!40!black] at (13.5,5.65) {escasas};
+\node[above,font=\scriptsize,gray!40!black] at (21.5,6.0) {par};
+\node[above,font=\scriptsize,gray!40!black] at (75,5.65) {frecuentes};
+% axes and thresholds
+\foreach \y/\th in {2.7/2.5,0/1.5}{
+  \draw[gray!70!black] (0,\y) -- (106,\y) node[right,black] {\small $t$};
+  \draw[densely dashed,gray!60!black] (0,\y+0.6*\th) -- (104,\y+0.6*\th) node[right,black,font=\small] {$\theta$};
+}
+\node[anchor=south west,font=\small] at (0,4.3) {$\tau=10\ms$: integrador};
+\node[anchor=south east,font=\small] at (104,1.0) {$\tau=2\ms$: detector de coincidencias};
+% integrator: tau=10 ms, theta=2.5w
+\begin{scope}[yshift=2.7cm]
+\foreach \a/\b/\v in {0/6/0.000,6/21/1.000,21/22/1.223,22/38/2.107,38/52/1.425,52/55.5/1.351,55.5/59/1.952,59/62.5/2.376,62.5/66/0.000,66/69.5/1.000,69.5/73/1.705,73/76.5/2.201,76.5/80/0.000,80/83.5/1.000,83.5/87/1.705,87/90.5/2.201,90.5/94/0.000,94/97.5/1.000,97.5/104/1.705}{\draw[very thick,blue!60!black] plot[domain=\a:\b,samples=14] (\x,{0.6*\v*exp(-(\x-\a)/10)});}
+\foreach \s/\p/\q in {6/0.000/1.000,21/0.223/1.223,22/1.107/2.107,38/0.425/1.425,52/0.351/1.351,55.5/0.952/1.952,59/1.376/2.376,62.5/1.674/2.500,62.5/2.500/0.000,66/0.000/1.000,69.5/0.705/1.705,73/1.201/2.201,76.5/1.551/2.500,76.5/2.500/0.000,80/0.000/1.000,83.5/0.705/1.705,87/1.201/2.201,90.5/1.551/2.500,90.5/2.500/0.000,94/0.000/1.000,97.5/0.705/1.705}{\draw[very thick,blue!60!black] (\s,0.6*\p) -- (\s,0.6*\q);}
+\foreach \s in {62.5,76.5,90.5}{\draw[->,thick,red!70!black] (\s,1.58) -- (\s,1.95);}
+\end{scope}
+% coincidence: tau=2 ms, theta=1.5w
+\begin{scope}[yshift=0cm]
+\foreach \a/\b/\v in {0/6/0.000,6/21/1.000,21/22/1.001,22/38/0.000,38/52/1.000,52/55.5/1.001,55.5/59/1.174,59/62.5/1.204,62.5/66/1.209,66/69.5/1.210,69.5/73/1.210,73/76.5/1.210,76.5/80/1.210,80/83.5/1.210,83.5/87/1.210,87/90.5/1.210,90.5/94/1.210,94/97.5/1.210,97.5/104/1.210}{\draw[very thick,blue!60!black] plot[domain=\a:\b,samples=14] (\x,{0.6*\v*exp(-(\x-\a)/2)});}
+\foreach \s/\p/\q in {6/0.000/1.000,21/0.001/1.001,22/0.607/1.500,22/1.500/0.000,38/0.000/1.000,52/0.001/1.001,55.5/0.174/1.174,59/0.204/1.204,62.5/0.209/1.209,66/0.210/1.210,69.5/0.210/1.210,73/0.210/1.210,76.5/0.210/1.210,80/0.210/1.210,83.5/0.210/1.210,87/0.210/1.210,90.5/0.210/1.210,94/0.210/1.210,97.5/0.210/1.210}{\draw[very thick,blue!60!black] (\s,0.6*\p) -- (\s,0.6*\q);}
+\foreach \s in {22}{\draw[->,thick,red!70!black] (\s,0.98) -- (\s,1.35);}
+\end{scope}
+\foreach \x in {0,50,100}{\draw[gray!60!black] (\x,-0.06) -- (\x,0.06) node[below,font=\scriptsize] {\x\,ms};}
+\end{tikzpicture}
+\caption{Una misma entrada, dos receptores distintos. Cada espiga eleva el voltaje en $w$, y luego este decae, como en el modelo de neurona~\eqref{eq:glutneuron}; las flechas rojas son las espigas del receptor. El receptor lento ($\tau=10\ms$, $\theta=2.5w$) se dispara donde hay \emph{muchas} espigas y no nota el par. El rápido ($\tau=2\ms$, $\theta=1.5w$) solo se dispara con el par dentro de la ventana~\eqref{eq:window}, y deja pasar el flujo frecuente pero no coincidente.}
+\label{fig:reader}
+\end{figure}
+
+Las mediciones muestran que en la corteza activa la conductancia de la membrana aumenta varias veces respecto del reposo~\cite{Destexhe2003}. Por tanto, allí $\tau$ es más corta, y las neuronas de la corteza en régimen de trabajo están más cerca de los detectores de coincidencias que de los integradores.
+
+\begin{keyblock}
+\begin{proposition}[El código lo fija el receptor]
+\label{prop:reader}
+Una misma secuencia de espigas lleva, para un receptor lento, una frecuencia; para uno rápido, tiempos; para el volumen en el que se libera el neurotransmisor, un nivel de concentración suavizado durante segundos (capítulo~\ref{sec:serocomputer}). Qué código se usa no lo determina el emisor, sino la constante de tiempo del receptor, y esta la ajusta la inhibición.
+\end{proposition}
+\end{keyblock}
+\section{Puntos y rayas: la sinapsis como filtro}
+
+Hasta ahora nuestra sinapsis era un cable con peso. En realidad, su respuesta depende de las espigas anteriores, y eso da al lenguaje de las neuronas un segundo signo.
+
+\emph{Depresión: la sinapsis transmite cambios.} Cada liberación gasta una fracción $U$ de la reserva de neurotransmisor lista para liberarse~\cite{Tsodyks1997}, y la reserva se recupera con una constante de tiempo $\tau_{\text{rec}}$ del orden de cientos de milisegundos. Con una frecuencia $r$, la amplitud de la respuesta por espiga se estabiliza aproximadamente en $A(r)=A_0/(1+U r\tau_{\text{rec}})$, donde $A_0$ es la respuesta de la sinapsis descansada. La corriente que recibe el receptor por unidad de tiempo es
+\begin{empheq}[box=\keybox]{equation}
+r\,A(r) \;=\; \frac{A_0\,r}{1+U r\,\tau_{\text{rec}}}
+\;\xrightarrow[r\to\infty]{}\; \frac{A_0}{U\tau_{\text{rec}}} .
+\label{eq:depression}
+\end{empheq}
+Con $U=0.5$ y $\tau_{\text{rec}}=0.8\,\text{s}$, la saturación empieza ya a partir de $1/(U\tau_{\text{rec}})=2.5$ espigas por segundo. Si la frecuencia sube de cinco a veinte, la corriente estacionaria crece solo un tercio. En cambio, las primeras espigas a la nueva frecuencia llegan mientras la reserva es todavía la anterior, y la corriente salta momentáneamente al cuádruple y luego decae en $\tau_{\text{rec}}/(1+Ur\tau_{\text{rec}})\approx90\ms$ (fig.~\ref{fig:depression}).
+
+Una sinapsis así no transmite la frecuencia, sino su \emph{cambio}, en esencia el cambio relativo $\Delta r/r$~\cite{Abbott1997depression}. Para un electrónico, es un filtro pasa altos colocado directamente en el cable.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=12.5cm,y=1cm]
+% input rate
+\draw[->,gray!70!black] (0,2.6) -- (0.9,2.6) node[right,black] {\small $t$};
+\draw[->,gray!70!black] (0,2.6) -- (0,4.3) node[above,black] {\small $r$};
+\draw[very thick,blue!60!black] (0,2.9) -- (0.2,2.9) -- (0.2,3.8) -- (0.8,3.8);
+\node[left,font=\scriptsize] at (0,2.9) {$5$};
+\node[left,font=\scriptsize] at (0,3.8) {$20$};
+\node[right,font=\small,blue!60!black] at (0.4,4.1) {frecuencia a la entrada de la sinapsis};
+% output current
+\draw[->,gray!70!black] (0,0) -- (0.9,0) node[right,black] {\small $t$};
+\draw[->,gray!70!black] (0,0) -- (0,2.45) node[left,black] {\small $rA$};
+\draw[densely dashed,gray!60!black] (0,0.667) -- (0.8,0.667);
+\draw[very thick,red!70!black] (0,0.5) -- (0.2,0.5) -- (0.2,2.0)
+   plot[domain=0.2:0.8,samples=60] (\x,{0.667+(2.0-0.667)*exp(-(\x-0.2)/0.089)});
+\node[left,font=\scriptsize] at (0,0.5) {$1.7$};
+\node[left,font=\scriptsize] at (0,2.0) {$6.7$};
+\node[right,font=\scriptsize] at (0.8,0.667) {$2.2$};
+\node[right,font=\small,red!70!black] at (0.28,1.6) {corriente al receptor: salto y caída en $\approx90\ms$};
+\draw[gray!60!black] (0.2,-0.08) -- (0.2,0.08); \node[below,font=\scriptsize] at (0.2,0) {$0.2\,\text{s}$};
+\draw[gray!60!black] (0.8,-0.08) -- (0.8,0.08); \node[below,font=\scriptsize] at (0.8,0) {$0.8\,\text{s}$};
+\end{tikzpicture}
+\caption{Una sinapsis con depresión según la fórmula~\eqref{eq:depression} con $U=0.5$, $\tau_{\text{rec}}=0.8\,\text{s}$; corriente en unidades de $A_0$ por segundo; la línea discontinua es la corriente estacionaria: solo subió de $1.7$ a $2.2$, pero en el instante del salto llegó a $6.7$. La sinapsis informa al receptor de que la frecuencia cambió, no de cuál es.}
+\label{fig:depression}
+\end{figure}
+
+\emph{Facilitación: la ráfaga como raya.} En otras sinapsis la probabilidad de liberación es baja, pero tras cada espiga crece durante decenas de milisegundos. Una espiga aislada que pasa por una sinapsis así se pierde casi siempre. En cambio, una \emph{ráfaga} (varias espigas seguidas con intervalos de unos pocos milisegundos) pasa casi con seguridad. Incluso sin facilitación, la probabilidad de que se pierdan las $k$ espigas de la ráfaga es
+\begin{empheq}[box=\keybox]{equation}
+P_{\text{pérd}} \;=\; (1-p)^k ,
+\label{eq:burst}
+\end{empheq}
+con $p=0.2$ es $0.8$ para una espiga aislada y $0.41$ para una ráfaga de cuatro; la facilitación la reduce aún más. Así la neurona adquiere un segundo signo: la espiga aislada es un punto; la ráfaga, una raya. La sinapsis con depresión transmite mejor la primera espiga tras una pausa; la sinapsis con facilitación deja pasar las ráfagas y silencia los puntos aislados. Que las ráfagas se transmiten de forma más fiable está medido; que el cerebro las usa realmente como un signo aparte es una hipótesis verosímil~\cite{Lisman1997}.
+
+\section{Cómo hablan las neuronas \nt{GABA}}
+
+Las más numerosas de la corteza son las rápidas~\cite{Tremblay2016}. Sus espigas son más cortas que las de las neuronas \nt{GLUT}, y pueden emitirlas de forma regular y prolongada a cientos por segundo, casi sin fatigarse. Sus sinapsis son más fiables: la conexión con cada receptor consta de muchos puntos de liberación, y una espiga casi nunca se pierde. Sus salidas llegan cerca del lugar del receptor donde nace su espiga, de modo que no controlan cómo suma el receptor sus entradas, sino si se disparará y cuándo.
+
+Ellas mismas reciben excitación de muchas neuronas \nt{GLUT} vecinas e informan de la actividad total del entorno: justo lo que hace falta para la división del capítulo~\ref{sec:gaba}. Por último, las neuronas \nt{GABA} rápidas están conectadas entre sí y se disparan juntas con facilidad; son precisamente ellas las que fijan el ritmo local del que se habló antes~\cite{Cardin2009}.
+
+En el lenguaje del código Morse, las neuronas \nt{GABA} no se encargan de las letras, sino de las \emph{pausas}. Cortan el flujo continuo de espigas \nt{GLUT} en ventanas dentro de las cuales el receptor puede dispararse, estrechan las ventanas de coincidencia y atenúan todo el flujo cuando se vuelve demasiado fuerte.
+
+\begin{keyblock}
+\begin{proposition}[División de papeles]
+\label{prop:punctuation}
+Las neuronas \nt{GLUT} llevan el contenido del mensaje: \emph{qué} y \emph{cuánto}. Las neuronas \nt{GABA} rápidas llevan su puntuación: \emph{cuándo} se puede hablar y \emph{con qué volumen}; otra clase más, inhibiendo a las inhibidoras, decide \emph{para quién} está abierta la compuerta. Partes concretas de esta división están medidas; como regla general es una hipótesis de trabajo.
+\end{proposition}
+\end{keyblock}
+
+Hay también otras neuronas \nt{GABA}, más lentas, cuyas salidas llegan a entradas concretas del receptor. Funcionan como el veto~\eqref{eq:veto} del capítulo~\ref{sec:gaba}: cierran un flujo de espigas \nt{GLUT} sin tocar los demás.
+
+La división en neuronas \nt{GABA} rápidas y lentas es un cuadro antiguo, e incompleto. Hoy se distinguen en la corteza al menos tres grandes clases~\cite{Tremblay2016}, y la tercera funciona de forma inesperada: no inhibe a las neuronas \nt{GLUT}, sino a otras neuronas \nt{GABA}, sobre todo a las que cierran entradas~\cite{Pfeffer2013}. Inhibir la inhibición es una doble negación. Una neurona así \emph{abre} la compuerta sin enviar al receptor ni una sola espiga excitadora. La activan señales de otras áreas de la corteza y los canales de difusión, así que funciona como una entrada de habilitación de toda una región de la red: mientras está activa, los vetos se levantan y el flujo pasa~\cite{Pi2013}. En el apéndice~\ref{sec:othermediators} este recurso se llama desinhibición.
+\section{Un lenguaje económico}
+
+Lo último que se sabe con seguridad del lenguaje de las neuronas es que es caro. Una espiga, junto con el trabajo sináptico que provoca, cuesta unos $10^9$ moléculas de ATP (estimación para la corteza de roedores~\cite{Attwell2001}), y una molécula aporta cerca de $10^{-19}$ julios. Por tanto, una espiga cuesta del orden de $E_{\text{esp}}\sim10^{-10}$ julios. Todo el cerebro consume unos $20$ vatios, y si la mitad se va en transmitir señales, $P\sim10$ vatios, la frecuencia media de una neurona es
+\begin{empheq}[box=\keybox]{equation}
+\bar r \;\approx\; \frac{P}{N\,E_{\text{esp}}}
+\;\sim\; \frac{10\ \text{W}}{8.6\cdot10^{10}\cdot10^{-10}\ \text{J}}
+\;\approx\; 1\ \text{espiga por segundo}.
+\label{eq:energy}
+\end{empheq}
+Estimaciones más detalladas para la corteza dan todavía menos~\cite{Lennie2003}. El código del cerebro está obligado a ser \emph{disperso}: solo una pequeña fracción de las neuronas puede trabajar rápido.
+
+De~\eqref{eq:spikeentropy} se ve que esto no es tan malo. Con una precisión de $1\ms$, una espiga de una neurona que trabaja a $100$ por segundo lleva como mucho cinco bits, y una espiga de una neurona que trabaja una vez por segundo, hasta once. Si lo que se paga son las espigas, conviene hablar poco. La corteza, de hecho, cambia precisión por energía: cuando falta alimento, las neuronas conservan su frecuencia de espigas, pero gastan menos en corrientes sinápticas, y sus respuestas se vuelven menos precisas~\cite{Padamsey2022}.
+
+En el código Morse, las letras frecuentes son cortas: la letra más frecuente del texto inglés, la E, es un solo punto. El código de las neuronas, hasta donde se sabe, sigue la misma regla en otra forma: lo esperado cuesta pocas espigas~\cite{Barlow1961}. Ante un estímulo constante, la neurona reduce poco a poco su frecuencia; los sensores del capítulo~\ref{sec:glutcomputer} responden a los cambios, no a los niveles; y las neuronas \nt{DOPA} del capítulo~\ref{sec:neurontypes} solo informan del error de predicción de la recompensa.
+
+\begin{keyblock}
+\begin{proposition}[Economía]
+\label{prop:economy}
+La energía limita la frecuencia media de una neurona a un valor del orden de una espiga por segundo. Por eso el lenguaje de las neuronas \nt{GLUT} es disperso y gasta las espigas en noticias: en lo que cambió o no estaba predicho. El límite energético está medido; que el código del cerebro esté ajustado al máximo de bits por julio es una hipótesis bien fundada.
+\end{proposition}
+\end{keyblock}
+
+\section{Balance}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{2.6cm}>{\raggedright}p{2.3cm}>{\raggedright}p{3.0cm}>{\raggedright}p{2.0cm}>{\raggedright\arraybackslash}p{3.6cm}}
+\toprule
+Forma de escritura & Qué lleva & Quién lo lee & Tiempo por mensaje & Qué se sabe \\
+\midrule
+número de la neurona que se disparó (código de lugar) & qué valor & cualquier receptor; detectores de coincidencias & un retardo & establecido en neuronas sensoriales y en la localización de sonidos \\
+frecuencia de una neurona & una magnitud & integrador con $\tau$ grande; el volumen (cap.~\ref{sec:serocomputer}) & cientos de ms -- segundos & establecido; demasiado lento para una etapa de procesamiento de $10$--$20\ms$ \\
+frecuencia de un grupo & una magnitud & neurona con miles de entradas & $10$--$50\ms$ & establecido; ganancia limitada por las correlaciones~\eqref{eq:correlated} \\
+tiempo de la primera espiga, orden & magnitud, orden & detectores de coincidencias con retardos & un retardo & establecido en la entrada del sistema nervioso; en la corteza, en discusión \\
+fase en un ritmo local & magnitud, posición & neuronas con un ritmo común & ciclo de $12$--$50\ms$ o más lento & observado en algunas áreas; papel general: hipótesis \\
+ráfaga (“raya”) & “importante”: entrega fiable & sinapsis con facilitación & $\sim10\ms$ & fiabilidad medida; signo aparte: hipótesis \\
+cambio de frecuencia & una noticia & sinapsis con depresión & $\sim0.1\,\text{s}$ & establecido \\
+espigas de las neuronas \nt{GABA} rápidas & cuándo y con qué volumen & todas las neuronas \nt{GLUT} vecinas & $1$--$30\ms$ & ritmo y división medidos; la “puntuación” como regla: hipótesis \\
+\bottomrule
+\end{tabular}
+\caption{Formas en que las neuronas \nt{GLUT} y \nt{GABA} escriben mensajes con espigas. La columna derecha separa lo medido de lo supuesto.}
+\label{tab:code}
+\end{table}
+
+La tabla~\ref{tab:code} reúne lo que sabemos; en ella se ve también lo que no sabemos. No sabemos en qué medida la corteza usa el tiempo preciso de las espigas y no solo las frecuencias de grupo. No sabemos si las neuronas tienen “palabras”: combinaciones estables de espigas de muchas neuronas que se leen como un todo. Y no sabemos si el lenguaje es el mismo en las distintas partes del cerebro. El código Morse se aprende en una tarde, porque su tabla se conoce. La tabla del lenguaje de las neuronas está aún por hacer, y probablemente la harán ingenieros de comunicaciones.
+
+\section{Ejercicios}
+
+\begin{exercise}[\lvlA]
+\label{ex:04:1}
+\emph{La capacidad en números.} $\Delta t=1\ms$. (a)~¿Cuántos bits por julio da una neurona con frecuencia de $1$ espiga por segundo con el costo por espiga de~\eqref{eq:energy}? (b)~Con $r=10$, ¿cuántas veces menos que la cota~\eqref{eq:spikeentropy} extrae un receptor que solo cuenta las espigas de cada segundo?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:04:2}
+\emph{Frecuencia óptima.} Una neurona gasta una potencia $P_0+rE_{\text{esp}}$, donde $P_0$ es la otra mitad de los $20$~W repartida entre todas las neuronas, y $E_{\text{esp}}=10^{-10}$~J. ¿Con qué frecuencia $r$ es máximo el número de bits por julio $R_{\max}(r)/(P_0+rE_{\text{esp}})$ según~\eqref{eq:spikeentropy} con $\Delta t=1\ms$?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:04:3}
+\emph{Qué correlación es dañina.} $N=1000$ neuronas, varianza $\sigma^2=1$, correlación por pares $c=0.1$. Calcule la información de Fisher $\mathcal I=f'^{\mathsf T}\Sigma^{-1}f'$ ($\Sigma$ es la matriz de covarianzas) para pendientes iguales $f'=\mathbf 1$ y para pendientes $\pm1$ con $\mathbf 1^{\mathsf T}f'=0$. ¿Cuántas veces difieren?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:04:4}
+\emph{Simulación: detector de coincidencias.} La neurona~\eqref{eq:glutneuron} recibe $1000$ entradas de Poisson de $5$ espigas por segundo, $w=1$; el umbral $\theta$ es tal que el voltaje libre lo cruza una vez por segundo. Halle con un modelo cuántas entradas simultáneas $m$ disparan la neurona con probabilidad $1/2$ para $\tau=10$ y $2\ms$.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:04:5}
+\emph{Diseño: detector de cambios relativos.} Ajuste la sinapsis~\eqref{eq:depression}: la corriente estacionaria a $40$ espigas por segundo no más de un $10\%$ mayor que a $10$, y tras un salto a $40$ la corriente llega al nuevo nivel con una constante de tiempo no mayor que $50\ms$. ¿Cuál es el menor $\tau_{\text{rec}}$ y con qué $U$?
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:04:6}
+\emph{Tiempo de la primera espiga y ráfagas.} (a)~Con~\eqref{eq:latency}, halle la entrada con la que la primera espiga llega exactamente al cabo de una constante de tiempo. ¿De qué depende? (b)~Con una probabilidad de liberación $p=0.2$, ¿cuántas espigas debe tener una ráfaga para perderlas todas con probabilidad menor del $5\%$?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:04:7}
+\emph{Investigación: cuántos bits hay en la disposición.} La neurona es un conjunto de celdas independientes~\eqref{eq:spikeentropy}, $r=10$, $\Delta t=1\ms$. (a)~Descomponga la entropía de una “palabra” de $20$ celdas en la entropía del número de espigas y el resto. (b)~Simule la estimación de la entropía a partir de las frecuencias de palabras con $N=30$ y $10^4$ registros. ¿Cuánto la subestima?
+\end{exercise}

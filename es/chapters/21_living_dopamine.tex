@@ -1,0 +1,63 @@
+\section{Dopamina con un destello de luz}
+\label{sec:dishdopamine}
+
+El único experimento directo que conocemos en el que se dio dopamina a un cultivo como maestro se hizo en una plataforma de organoides a la que los investigadores se conectan a distancia~\cite{Jordan2024}. Al líquido que baña los organoides se le añadió dopamina en una “jaula” fotosensible: la molécula enjaulada no actúa sobre los receptores. La concentración de dopamina enjaulada es de $1$~mM. Cuando hay que recompensar a la red, se la ilumina con luz ultravioleta: la jaula se rompe y la dopamina sale al volumen.
+
+El lazo funciona así. El mismo estímulo se aplica una y otra vez; si provocó más espigas que antes, se enciende el destello y se libera dopamina. A lo largo de $240$ repeticiones el número de espigas evocadas creció en conjunto. Los propios autores escriben que con un solo experimento así no se puede concluir que el aumento se deba a la dopamina~\cite{Jordan2024}.
+
+Para un ingeniero es el primer intento de montar en una placa de cultivo la regla de tres factores~\eqref{eq:threefactor}: la actividad del emisor y del receptor deja una traza, y una señal común decide si se consolida el cambio. Pero aquí la señal solo puede ser positiva: hay recompensa o no la hay, y el montaje no produce un error negativo $\delta<0$. Además, la dopamina se dispersa y se retira despacio, como la concentración en~\eqref{eq:lowpass}, así que los destellos frecuentes pueden simplemente elevar su nivel general. Para distinguir el aprendizaje de esto hacen falta dos controles: el mismo número de destellos en momentos aleatorios, sin relación con la respuesta de la red, y los mismos destellos sin dopamina enjaulada. Y hace falta una comprobación tras el descanso: si el cambio se mantiene cuando la dopamina ya se ha ido.
+
+\section{La dopamina enseña al silicio}
+\label{sec:biohybrid}
+
+En el experimento inverso, las células vivas enseñan a la electrónica~\cite{Keene2020}. Células que liberan dopamina se cultivan en un microcanal sobre un elemento neuromórfico orgánico: un transistor cuya conductancia de canal hace de peso sináptico. La dopamina que sale de las células se oxida en el electrodo del elemento, y eso cambia la conductancia. El dispositivo reproduce también el mecanismo de retirada del neurotransmisor de la hendidura, de modo que el peso no solo se puede cambiar de forma duradera, sino también devolver a su valor.
+
+En términos de circuito es un integrador con fugas con entrada química: el peso acumula el flujo de dopamina, y la “retirada” fija lo rápido que lo olvida; es el mismo circuito RC que~\eqref{eq:lowpass}. Lo principal aquí es la dirección de la conexión. La sonda del capítulo~\ref{sec:debugging} no ve los registros de difusión, porque son químicos. Este elemento lee precisamente un registro químico y lo convierte en un peso eléctrico. Para las interfaces cerebro-computadora es un camino hacia un sensor que oiga no solo el bus de datos, sino también los registros de control.
+
+\section{Organoides con sus propias neuronas dopaminérgicas}
+\label{sec:midbrainorg}
+
+A partir de células madre humanas se saben cultivar organoides parecidos a la región del cerebro donde están las neuronas \nt{DOPA}. Contienen neuronas dopaminérgicas funcionales que liberan dopamina~\cite{Jo2016}. Estos organoides se cultivan sobre todo para estudiar enfermedades. No hemos encontrado experimentos en los que su dopamina sirviera de maestro para otra red.
+
+Para una máquina de neuronas vivas, esta es la pieza que falta. El banco del capítulo~\ref{sec:livingmachine} es un bus de datos con control de flujo sin registros de control; aquí la fuente de la señal de difusión ya existe. Falta el crítico: una red que calcule el error de predicción~\eqref{eq:ctd} y gobierne estas neuronas. Conectar un organoide de corteza con uno de estos organoides de modo que la dopamina se libere según el error es un problema abierto, y por ahora es una hipótesis, no un experimento.
+
+\section{Un organoide equilibra un péndulo sin dopamina}
+\label{sec:cartpole}
+
+El experimento reciente más completo prescinde por completo de la dopamina~\cite{Robbins2026}. Se conectaron organoides de corteza de ratón en lazo cerrado a la tarea del “péndulo sobre un carro”: la actividad del organoide mueve el carro, y la posición del péndulo se devuelve como estimulación. Entre intentos, el organoide recibe breves estímulos de enseñanza de alta frecuencia. Cuáles exactamente lo elige un programa de aprendizaje por refuerzo.
+
+Los resultados están medidos:
+\begin{itemize}
+\item en la mayoría de los organoides, las señales de enseñanza elegidas por el programa dieron mejor resultado que señales elegidas al azar o que la ausencia de señal;
+\item tras $45$ minutos de descanso la mejora no se conservaba;
+\item el bloqueo de los receptores de glutamato de ambos tipos, AMPA y NMDA, anulaba la mejora.
+\end{itemize}
+
+El último punto dice dónde vive lo aprendido: en las sinapsis \nt{GLUT}, y a través del receptor que en la sección~\ref{sec:weightstore} funciona como detector de coincidencias entre entrada y salida. El segundo punto muestra lo que falta: hay cambio rápido, pero no consolidación, como el aprendiz rápido del capítulo~\ref{sec:motorlearning} sin el lento. Y el papel del maestro ha cambiado: al ingeniero que elige el patrón de corriente lo ha sustituido un programa, pero el maestro sigue estando fuera de la placa.
+
+Entre los experimentos anteriores de aprendizaje de cultivos sobre matrices de electrodos tampoco hemos encontrado ninguno que usara dopamina: la señal de enseñanza fue siempre la estimulación eléctrica.
+
+\section{Quién enseña al cultivo}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{2.7cm}>{\raggedright}p{2.5cm}>{\raggedright}p{3.2cm}>{\raggedright\arraybackslash}p{4.4cm}}
+\toprule
+Experimento & Quién enseña & Señal de enseñanza & Qué se sabe \\
+\midrule
+parar la estimulación ante la respuesta deseada & el ingeniero & fin de la estimulación & la respuesta se fija; medido \\
+DishBrain (cap.~\ref{sec:dishbrain}) & el ingeniero & corriente predecible o aleatoria & aumento significativo de peloteos en la sesión solo con retroalimentación completa, con silencio el efecto es menor; medido; inestable de una sesión a otra; la causa se discute \\
+péndulo sobre un carro & programa de aprendizaje por refuerzo & estímulos de alta frecuencia elegidos por el programa & mejor que los aleatorios, pero no se conserva tras el descanso; medido \\
+dopamina por destello & la regla “más espigas = recompensa” & dopamina liberada por la luz & aumento de espigas: observación; el papel de la dopamina no está demostrado \\
+sinapsis biohíbrida & células vivas & dopamina de las células & cambio duradero y retorno del peso del elemento; medido \\
+organoides con neuronas \nt{DOPA} & --- & --- & la fuente de dopamina existe; no se ha usado como maestro \\
+\bottomrule
+\end{tabular}
+\caption{Quién enseña a las neuronas vivas sobre un chip, y con qué.}
+\label{tab:dishteachers}
+\end{table}
+
+En todos los experimentos en los que aprende el propio cultivo, el maestro está por ahora fuera (tabla~\ref{tab:dishteachers}): el ingeniero, un programa o una regla fijada por el ingeniero. La dopamina ha entrado en la placa una sola vez, y su papel aún está por demostrar. Montar en la placa un verdadero canal de difusión, con crítico, error y traza como en el capítulo~\ref{sec:dofa}, es el siguiente paso, que nadie ha dado todavía.

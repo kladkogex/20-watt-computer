@@ -1,0 +1,46 @@
+\chapter{O que a máquina faz à noite}
+% versão completa: chapters/20_sleep.tex
+
+O sono não é o desligamento da máquina, e sim uma mudança de modo. Isso se vê pelas estações de rádio. No sono profundo, quase todas estão abafadas: acetilcolina, noradrenalina, serotonina. No sono com sonhos, a acetilcolina volta ao nível diurno, a noradrenalina e a serotonina quase se calam, e a saída para os músculos é desligada pelos freios --- por isso, dormindo, não corremos atrás daquilo de que fugimos no sonho. Tudo isso está medido.
+
+\section*{Quando é hora de dormir}
+
+Imagine um capacitor que se carrega o dia inteiro, enquanto você está acordado, e se descarrega à noite. A carga é a ``pressão do sono''. Você adormece quando a carga atinge o limiar superior e acorda quando ela desce até o inferior. E os próprios limiares sobem e descem suavemente junto com o ritmo diário do capítulo 16. Esse esquema simples chega sozinho a dezesseis horas de vigília e oito de sono. E explica por que, depois de uma noite em claro, não dormimos o dobro, e sim mais profundamente: um capacitor cheio se descarrega mais depressa. Candidata ao papel de ``carga'' é uma substância que se acumula no cérebro durante o trabalho; que seja exatamente ela, por enquanto, é hipótese.
+
+\pencilfig{120}{%
+% figures/sleep_{S,H,L}.dat from models/sleep_models.py, t in hours
+\begin{scope}[x=0.1cm, y=2.6cm]
+\foreach \a/\b in {0/4.3,21.2/29.3,45.4/53.4,69.5/72}{\fill[pcBlue, opacity=0.1] (\a,0) rectangle (\b,1);}
+\draw[pen] (0,0) -- (72,0);
+\draw[penlite=pcRed, densely dashed] plot file {figures/sleep_H.dat};
+\draw[penlite=pcGreen, densely dashed] plot file {figures/sleep_L.dat};
+\draw[pcBlue, line width=1.0pt] plot file {figures/sleep_S.dat};
+\foreach \t/\l in {0/0,24/{1 dia},48/{2 dias},72/{3 dias}}{\draw[pcGray, line width=0.5pt] (\t,0) -- (\t,-0.04); \node[lbl, anchor=base] at (\t,-0.16) {\l};}
+\node[lbl, text=pcBlue] at (25.25,0.93) {sono}; \node[lbl, text=pcBlue] at (49.4,0.93) {sono};
+\end{scope}
+\node[lbl, text=pcRed, anchor=west] at (7.3,2.0) {adormecer};
+\node[lbl, text=pcGreen!70!black, anchor=west] at (7.3,0.62) {acordar};
+\node[lbl, text=pcBlue, anchor=west] at (7.3,1.35) {pressão do sono};
+}{A pressão do sono se acumula de dia e se desfaz à noite; adormecemos no limiar superior, acordamos no inferior, e os dois limiares oscilam junto com o dia.}
+
+\section*{O balanço lento}
+
+No sono profundo, regiões inteiras do cérebro ligam e desligam em sincronia --- menos de uma vez por segundo. É um esquema já conhecido: um grupo que se excita sozinho e se cansa é um oscilador. De dia, a acetilcolina suprime o cansaço dos neurônios, e o mesmo grupo trabalha de modo contínuo; à noite há pouca acetilcolina, e a rede começa a balançar.
+
+\pencilfig{20}{\pencilart{20}}{À noite a rede balança devagar: ora quase todos os neurônios trabalham, ora quase todos se calam.}
+
+\section*{Avanço rápido}
+
+É nesse balanço que acontece o mais interessante. As sequências de disparos de neurônios que ocorreram durante o dia são ``reproduzidas'' de novo --- e várias vezes mais depressa: na região da memória, umas vinte vezes; no córtex, algumas vezes. Se a sincronia dessas reproduções com o balanço lento for reforçada artificialmente, a memória melhora --- é um experimento causal. Para que isso serve? Uma hipótese plausível: a memória lenta de longo prazo aprende com repetições misturadas com o antigo, para que o novo não apague o que já existia. Os engenheiros conhecem esse problema: uma rede neural treinada numa tarefa nova esquece a antiga se não repetir os exemplos antigos.
+
+\section*{A poda das ligações}
+
+Outra coisa medida: depois do sono, os contatos entre neurônios ficam em média menores --- de alguns a algumas dezenas por cento, em proporção ao seu tamanho. É como se todos os volumes fossem baixados um pouco num só gesto: as proporções se mantêm, o aprendido fica, e sobra espaço para o aprendizado de amanhã. Que essa seja a principal função do sono é hipótese.
+
+\section*{Sonhos e faxina}
+
+O sono com sonhos parece um teste de bancada: a máquina trabalha a toda potência, mas as entradas são trocadas por sinais internos e a saída está desligada. Para que isso serve, não sabemos. A ideia de que durante o sono o cérebro é ``lavado'' dos resíduos ainda é controversa: há experimentos a favor e contra.
+
+O mais surpreendente: o sono pode ser local. Depois de uma vigília longa, trechos isolados do córtex de uma pessoa acordada ``adormecem'' por um instante, calando-se no meio do trabalho.
+
+\fullversion{20}

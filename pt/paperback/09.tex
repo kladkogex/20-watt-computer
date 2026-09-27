@@ -1,0 +1,42 @@
+\chapter{Escrita e leitura}
+% versão completa: chapters/09_acet.tex
+
+A memória no cérebro tem uma particularidade incômoda: quem guarda as lembranças são as mesmas ligações por onde passa o trabalho. Não há um disco rígido separado. Cada vez que a rede lembra, ela usa as suas ligações --- e cada vez que aprende, ela as muda. Como não estragar o antigo ao gravar o novo? No computador existe para isso um sinal próprio: ``habilitar escrita''. No cérebro, ao que parece, esse papel é da estação de rádio \nt{ACET}, a acetilcolina.
+
+\section*{Dois modos}
+
+Imagine uma rede que guarda algumas imagens: mostre a ela a metade de uma, e ela completa o resto. Isso é leitura. Agora mostre a ela uma imagem nova, parecida com uma antiga. Se a rede continuar completando por hábito, vai ver não o novo, mas o antigo --- e aprender o erro. Para gravar o novo, a rede precisa parar por um tempo de confiar na própria memória e olhar para o mundo.
+
+\pencilfig{9}{\pencilart{9}}{Um único fio comuta a rede: gravar o novo ou lembrar o antigo.}
+
+A acetilcolina faz exatamente isso, e os seus três efeitos estão medidos: ela enfraquece as ligações internas da rede, pelas quais ela ``lembra'', reforça os sinais que chegam dos órgãos dos sentidos e facilita a mudança das ligações. Muita acetilcolina: modo de escrita, a rede escuta o mundo e aprende. Pouca: modo de leitura, a rede se apoia na memória e completa.
+
+No nosso modelo não existe um nível em que as duas coisas funcionem bem. Para escrever, as ligações internas precisam ser abafadas; para ler, elas são necessárias com força total. Por isso o comutador é indispensável.
+
+\section*{Quanto confiar nos olhos}
+
+Os engenheiros resolveram há muito tempo um problema parecido. Quando um navio segue o seu rumo, o navegador tem um cálculo de onde o navio deve estar e tem observações novas, mas imprecisas. Quanto confiar em cada coisa? O filtro ótimo responde: confie nas observações tanto mais quanto menos seguro você estiver do cálculo. E a mesma receita traz uma segunda coisa: quanto menor a segurança, mais depressa é preciso reaprender. Um único botão controla ao mesmo tempo o peso da entrada e a velocidade de aprendizado. É exatamente o que a acetilcolina faz. Daí a hipótese: ela comunica à rede quão incerto é o seu próprio modelo do mundo.
+
+\pencilfig{124}{%
+% optimal blending: the less sure the model, the more weight on the observation (and the faster it relearns)
+\foreach \dx/\wm/\we/\ttop/\bbot in {0/2.4pt/0.6pt/{modelo seguro}/{pouca acetilcolina}, 4.3/0.6pt/2.4pt/{modelo inseguro}/{muita acetilcolina}}{
+  \begin{scope}[xshift=\dx cm]
+  \draw[penlite=pcViolet, wash=pcViolet, rounded corners=3pt] (0,0.95) rectangle (1.3,1.45); \node[lbl, text=black] at (0.65,1.2) {memória};
+  \draw[penlite=pcBlue, wash=pcBlue, rounded corners=3pt] (0,-0.25) rectangle (1.3,0.25); \node[lbl, text=black] at (0.65,0) {olhos};
+  \draw[dotpen=pcAmber, wash=pcAmber] (2.95,0.6) circle (0.55); \node[lbl, text=black] at (2.95,0.6) {palpite};
+  \draw[pcViolet, line width=\wm, line cap=round, -{Stealth[length=5pt]}] (1.35,1.2) -- (2.4,0.8);
+  \draw[pcBlue, line width=\we, line cap=round, -{Stealth[length=5pt]}] (1.35,0) -- (2.4,0.4);
+  \node[font=\small\itshape, text=pcGray, anchor=south] at (1.55,1.6) {\ttop};
+  \node[lbl, anchor=north] at (1.55,-0.4) {\bbot};
+  \end{scope}}
+}{Quanto confiar nos olhos. Se a rede está segura do seu modelo do mundo, o palpite vem quase todo da memória. Se não está, vem das observações, e nesse caso a rede também reaprende mais depressa. Segundo a hipótese, é a acetilcolina que gira esse botão.}
+
+\section*{Divisão de trabalho}
+
+Lembre do capítulo anterior. Quando o mundo muda de repente, a noradrenalina, segundo a hipótese, percebe o inesperado. Já a acetilcolina mantém a rede em modo de escrita até que a nova situação seja aprendida. Uma avisa ``algo mudou''; a outra, ``grave''.
+
+\section*{A regravação noturna}
+
+Durante o sono profundo, o nível de acetilcolina é baixo. A rede está desligada do mundo e em modo de leitura. É justamente nesse período que os eventos do dia são ``reproduzidos'' nela --- isso está medido. Que nesse processo o que foi aprendido durante o dia é regravado na memória de longo prazo é uma hipótese plausível, à qual vamos voltar no capítulo sobre o sono.
+
+\fullversion{9}

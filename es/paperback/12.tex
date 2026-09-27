@@ -1,0 +1,44 @@
+\chapter{Cómo reconocer un gato}
+% versión completa: chapters/12_recognition.tex
+
+\pencilfig{12}{\pencilart{12}}{Un gato grande y uno pequeño son imágenes muy distintas en los sensores del ojo, pero la respuesta es una sola.}
+
+Un gato en una imagen puede estar a la izquierda o a la derecha, cerca o lejos, al sol o a la sombra. Cada vez cae sobre los sensores del ojo un patrón completamente distinto, y usted lo reconoce en fracciones de segundo. En eso consiste la dificultad del reconocimiento: hay que reconocer lo mismo en miles de aspectos distintos.
+
+\section*{Una cadena de montaje}
+
+El cerebro resuelve el problema con una cadena de montaje de unas diez etapas, y la señal la recorre en quince centésimas de segundo. En cada etapa se hacen dos cosas. Primero, un “y”: la neurona se activa si las piezas necesarias están en el orden necesario, por ejemplo, dos segmentos que se juntan en un ángulo. Después, un “o en todos los lugares”: la neurona siguiente se activa si el ángulo está en cualquier sitio cercano, sin importar dónde exactamente. La primera operación vuelve preciso el reconocimiento; la segunda, tolerante al desplazamiento. Etapa tras etapa, las piezas se juntan en partes, las partes en objetos, y los desplazamientos y las escalas se perdonan.
+
+\pencilfig{112}{%
+\foreach \i/\y/\cx/\cy in {1/1.2/0.15/0.3,2/0.3/0.3/0.1,3/-0.6/0.05/0.05}{
+  \draw[penlite] (0,\y-0.3) rectangle (0.6,\y+0.3);
+  \draw[pcGray, line width=0.8pt] (\cx,\y-0.3+\cy+0.35) -- (\cx,\y-0.3+\cy) -- (\cx+0.3,\y-0.3+\cy);
+  \draw[pen=pcBlue, wash=pcBlue] (1.9,\y) circle (0.2);
+  \draw[arr] (0.65,\y) -- (1.65,\y);
+  \draw[arr=pcBlue] (2.12,\y) -- (3.62,{0.3+0.12*(2-\i)});}
+\draw[pen=pcBlue, wash=pcBlue] (3.9,0.3) circle (0.25);
+\draw[arr] (4.2,0.3) -- (5.75,0.3); \node[lbl, anchor=south] at (4.97,0.35) {más etapas};
+% a small cat
+\draw[penlite] (6.3,0.3) circle (0.32);
+\draw[penlite] (6.03,0.5) -- (6.07,0.82) -- (6.23,0.6); \draw[penlite] (6.57,0.5) -- (6.53,0.82) -- (6.37,0.6);
+\node[lbl, anchor=north] at (0.3,-1.0) {imagen}; \node[lbl, anchor=north, align=center] at (1.9,-1.0) {Y: ángulo\\aquí};
+\node[lbl, anchor=north, align=center] at (3.9,-1.0) {O: ángulo\\dondequiera}; \node[lbl, anchor=north] at (6.3,-1.0) {gato};
+}{Una etapa de la cadena: el “y” arma el ángulo en un lugar; el “o” perdona dónde está exactamente.}
+
+Justamente este esquema lo copiaron las redes neuronales convolucionales que reconocen imágenes en el teléfono. Y ellas devuelven el favor: las redes entrenadas para reconocer objetos predicen bastante bien cómo responden las neuronas de las etapas superiores de la visión.
+
+\section*{Aprender del video}
+
+Pero ¿quién le enseñó al cerebro? Nadie le mostró a usted un millón de imágenes etiquetadas “gato”. Una respuesta verosímil: el video. El mundo fluye sin cortes, y en una fracción de segundo un objeto casi no cambia; cambian su posición y su iluminación. Si las conexiones se refuerzan entre lo que se ve ahora y lo que se veía un instante antes, la red por sí sola unirá los distintos aspectos de un mismo objeto: lo lento es el objeto; lo rápido, las circunstancias. Hay un experimento en el que los objetos se cambiaban sin que se notara durante los movimientos del ojo, y las neuronas empezaban a tomar objetos distintos por uno solo. Como regla general, esto es todavía una hipótesis.
+
+\section*{Las ilusiones, huellas de los mecanismos}
+
+Las ilusiones no son averías, sino huellas de cómo está hecha la máquina. Si el ojo mira largo rato una cascada y luego unas piedras quietas, las piedras “trepan” hacia arriba: el par de canales “abajo” y “arriba” quedó desequilibrado por el cansancio de uno de ellos. El famoso vestido que unos ven blanco y dorado y otros azul y negro divide a la gente según la iluminación que su cerebro supone en silencio. Las “serpientes que giran” dibujadas parecen moverse porque las zonas brillantes se procesan un poco más rápido que las apagadas, y la diferencia de tiempo se lee como movimiento. Y el cubo que tan pronto sobresale como se hunde son dos grupos de neuronas que compiten entre sí; el cambio de resultado, según un modelo, lo decide sobre todo el ruido.
+
+Es curioso que una red neuronal entrenada para predecir el siguiente fotograma de un video también “ve” girar las serpientes. Así que algunas ilusiones son el precio inevitable de saber predecir.
+
+\section*{El cerebro contra la red neuronal}
+
+El parecido no es completo. Al cerebro le bastan pocos ejemplos, aprende casi sin etiquetas y gasta en todo veinte vatios. A una red neuronal se la puede engañar con una alteración de la imagen que una persona no nota. Eso sí, a las personas también las despistan un poco esas alteraciones si se les muestran por un instante. Dónde pasa la verdadera frontera entre estas dos máquinas todavía se está averiguando.
+
+\fullversion{12}

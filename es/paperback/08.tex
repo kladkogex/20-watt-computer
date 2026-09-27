@@ -1,0 +1,45 @@
+\chapter{La perilla del riesgo}
+% versión completa: chapters/08_nora.tex
+
+Usted elige dónde almorzar. ¿Ir al café de siempre o probar uno nuevo? Si siempre va al de siempre, nunca sabrá que a la vuelta de la esquina hay uno mejor. Si prueba siempre algo nuevo, a menudo comerá mal. ¿Dónde está el punto medio? Este problema, buscar o aprovechar lo encontrado, lo enfrenta todo ser que aprende. En el cerebro, al parecer, se encarga de él la emisora \nt{NORA}: la noradrenalina.
+
+\section*{La perilla de contraste}
+
+La noradrenalina cambia lo abrupta que es la respuesta de la neurona a una señal. Con un efecto débil, la neurona se parece a un regulador suave de brillo: un poco más de señal, una respuesta un poco más brillante. Con uno fuerte, se parece a un interruptor: por debajo del umbral, silencio; por encima, respuesta completa. Para ser precisos, los experimentos muestran que la noradrenalina suprime la charla de fondo de las neuronas más que su respuesta a una señal real; la “perilla de contraste” es un modelo cómodo de ese efecto.
+
+\pencilfig{8}{\pencilart{8}}{La perilla del riesgo: gírela a la izquierda y la máquina prueba lo nuevo; a la derecha, elige con decisión lo conocido.}
+
+\section*{Pensar o decidir}
+
+Recuerde los dos grupos del tercer capítulo que se frenan mutuamente. Cuando el contraste es bajo, los dos trabajan, el débil un poco más bajo: la red todavía “piensa”, sopesa las opciones. Cuando el contraste supera cierto umbral, la red pasa de golpe al modo “ya decidí”: un grupo gana y el otro se calla. Una sola perilla cambia la máquina entre la reflexión y la decisión.
+
+\section*{Cuánto buscar}
+
+Agreguemos ruido. Con contraste bajo, el ruido supera fácilmente la pequeña diferencia entre opciones, y la máquina a menudo prueba una opción que no es la mejor: busca. Con contraste alto, el ruido no decide nada, y la máquina siempre toma lo que considera mejor: aprovecha.
+
+En nuestro modelo el mundo cambia de vez en cuando: la mejor opción pasa a ser la peor. La recompensa depende de la perilla como una U invertida. Con muy poco contraste, la máquina vaga a ciegas. Con demasiado, no nota que el mundo cambió y sigue yendo, terca, al café que se echó a perder. Y cuanto más a menudo cambia el mundo, más bajo está el mejor ajuste: en un mundo cambiante conviene buscar.
+
+\pencilfig{108}{%
+% points: models/nora_explore.py, reward as a share of the best possible, gain 0.5 ... 64 (doubling); the y axis starts at 0.70, hence the break mark
+\draw[pen] (0,0) -- (6.3,0); \draw[pen] (0,0) -- (0,0.18); \draw[pen] (0,0.34) -- (0,2.4);
+\draw[pcGray, line width=0.6pt] (-0.1,0.14) -- (0.1,0.22); \draw[pcGray, line width=0.6pt] (-0.1,0.3) -- (0.1,0.38);
+\node[lbl, anchor=north] at (3.0,-0.05) {perilla de contraste};
+\node[lbl, anchor=south, rotate=90] at (-0.1,1.3) {recompensa};
+\draw[penlite=pcBlue] plot[smooth] coordinates {(0.00,0.55) (0.85,0.79) (1.70,1.19) (2.55,1.68) (3.40,2.00) (4.25,2.07) (5.10,2.01) (5.95,1.91)};
+\draw[penlite=pcRed] plot[smooth] coordinates {(0.00,0.55) (0.85,0.69) (1.70,0.93) (2.55,1.24) (3.40,1.40) (4.25,1.28) (5.10,1.06) (5.95,0.89)};
+\draw[dotpen=pcBlue, wash=pcBlue] (4.25,2.07) circle (0.07);
+\draw[dotpen=pcRed, wash=pcRed] (3.40,1.40) circle (0.07);
+\node[lbl, text=pcBlue, anchor=south] at (4.25,2.15) {el mundo cambia poco};
+\node[lbl, text=pcRed, anchor=north] at (3.40,1.30) {mucho};
+\node[lbl, anchor=north west, align=left] at (0.05,-0.35) {vaga\\a ciegas}; \node[lbl, anchor=north east, align=right] at (6.3,-0.35) {no nota\\los cambios};
+}{La recompensa del modelo con distintas posiciones de la perilla. Cada curva tiene un máximo; cuando el mundo cambia a menudo, queda más abajo y más a la izquierda.}
+
+\section*{Quién gira la perilla}
+
+La señal natural de un cambio es la sorpresa: los errores se volvieron más grandes que de costumbre. Según una hipótesis, justo de ese cambio inesperado informa la noradrenalina. Aquí importa un matiz: el nivel constante, de fondo, de noradrenalina se asocia más bien con la búsqueda y la distracción, mientras que los estallidos breves ante un suceso importante se asocian con la concentración y la decisión. Tal vez el estallido funcione como una interrupción en una computadora: “deja lo que haces, el mundo cambió, rehaz el plan”.
+
+Un indicio indirecto de este sistema se ve desde fuera: la pupila se dilata cuando algo cambia de forma inesperada y las personas empiezan a aprender más rápido. Eso sí, la pupila no solo sigue a la noradrenalina, así que es una pista, no un instrumento.
+
+Y una confesión honesta: en nuestro modelo, ajustar la perilla según la sorpresa ganó muy poco frente al mejor ajuste fijo. Dónde exactamente compensa ese ajuste está por entenderse.
+
+\fullversion{8}

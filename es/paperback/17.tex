@@ -1,0 +1,28 @@
+\chapter{Cómo reparar la máquina sin el esquema}
+% versión completa: chapters/17_debugging.tex
+
+\pencilfig{17}{\pencilart{17}}{Una placa sin esquema: la sonda solo oye unos pocos cables entre miles de millones.}
+
+Imagine que le dan una placa que funciona, sin el esquema, y le piden repararla. Un ingeniero tiene cuatro herramientas: una sonda, para escuchar una señal; un generador, para inyectar una señal propia; la posibilidad de desconectar una pieza y ver qué se rompe; y el acceso a los registros de control. Exactamente con esas herramientas se estudia también el cerebro.
+
+\section*{Una sonda para mil neuronas}
+
+Un electrodo clavado en el cerebro oye los clics de unas pocas neuronas cercanas. Parecería que, de ochenta y seis mil millones, mil electrodos no son nada. Pero bastan para mover un cursor en la pantalla. ¿Por qué? Las neuronas vecinas hacen ruido parecido, y la actividad que controla la mano se describe en realidad con apenas una o dos decenas de variables comunes. No hace falta escuchar a todas; basta con oír esas pocas “voces”.
+
+La señal cruda de mil electrodos son cientos de millones de bits por segundo: un canal de radio desde debajo del cráneo no la deja pasar. Y los clics en sí llevan unas mil veces menos. Por eso conviene extraer los clics en el propio implante y enviar afuera solo eso: el mismo truco de compresión que en el ojo.
+
+\section*{Qué hace Neuralink}
+
+La empresa Neuralink se ocupó del lado de ingeniería del problema: hilos finos y flexibles en lugar de agujas rígidas, un robot que los implanta y un implante inalámbrico hermético. Su trabajo publicado describe un sistema conectado a la computadora por cable, y la compresión y la conexión inalámbrica figuran como planes. Los datos sobre una persona con los brazos paralizados que controla un cursor se conocen por ahora sobre todo por los informes de la propia empresa; según ellos, el implante tiene unos mil canales en unas decenas de hilos, y parte de los hilos se desplazó tras la implantación. La idea en sí no es nueva: grupos académicos con matrices rígidas de un centenar de electrodos ya habían permitido a personas mover un cursor, “escribir” letras con el pensamiento y convertir los intentos de hablar en texto en pantalla a unas sesenta palabras por minuto.
+
+\section*{Lectura y escritura}
+
+El decodificador lee las frecuencias de clics de muchas neuronas y obtiene menos de diez bits por segundo: una fracción ínfima de lo que llevan las propias neuronas. A cambio, el cerebro y el decodificador aprenden uno del otro: la persona se adapta al decodificador, y el decodificador a la persona. Dos alumnos que se ajustan mutuamente son un problema delicado: aunque cada uno por separado sea estable, juntos pueden entrar en oscilación.
+
+Escribir en el cerebro es más difícil que leer. La corriente de un electrodo excita todo alrededor, no una sola neurona elegida. Se pueden “dibujar” puntos de luz, como píxeles encendidos, y la persona distinguirá letras simples. Pero escribir el código comprimido del ojo de modo que el cerebro vea una imagen, por ahora nadie lo sabe hacer.
+
+\section*{Lo que la sonda no ve}
+
+El electrodo oye la red telefónica de datos. Pero las emisoras de radio, dopamina, serotonina, noradrenalina y acetilcolina, son concentraciones de sustancias, y la sonda no las oye. Tampoco ve la fuerza de las conexiones, donde se guarda toda la memoria. Y no ve el dolor como lo siente la persona. Un depurador que ve los datos pero no los registros siempre se preguntará por qué la misma entrada da respuestas distintas.
+
+\fullversion{17}

@@ -1,0 +1,128 @@
+\chapter{Depurando a máquina}
+\chaptermark{Depurando a máquina}
+\label{sec:debugging}
+
+\section{Como se depura uma máquina sem esquema}
+
+Um engenheiro que recebe uma placa funcionando sem o esquema a depura com quatro técnicas. Ele põe uma \emph{sonda} e olha o que passa pelo fio. Ele \emph{aplica um sinal de teste} e olha o que mudou. Ele \emph{desliga} um pedaço do circuito e olha o que parou de funcionar. E ele \emph{lê os registradores de controle} para saber em que modo a placa está operando. Este livro inteiro é uma tentativa de ler o esquema do cérebro, e neste capítulo veremos quais das quatro técnicas os engenheiros já sabem usar e o que os capítulos anteriores dizem sobre o que esperar.
+
+O exemplo mais visível hoje dessa depuração são as interfaces cérebro-computador: dispositivos que leem os disparos dos neurônios e os transformam em comandos para máquinas externas ou, ao contrário, enviam ao cérebro sinais de fora. A maior parte do capítulo é dedicada a elas e, antes de tudo, ao que faz a empresa Neuralink.
+
+\section{A sonda: o que o eletrodo ouve}
+
+A sonda do cérebro é um eletrodo fino inserido no tecido. Ele ouve os disparos dos neurônios que estão num raio da ordem de cem micrômetros: em geral, de um a alguns. No eletrodo, um disparo é um pico de dezenas a centenas de microvolts com duração de cerca de um milissegundo, e pela forma dele é possível distinguir neurônios vizinhos uns dos outros. Os mais bem ouvidos são os grandes neurônios \nt{GLUT}: eles são a maioria no córtex (tabela~\ref{tab:types}), e suas correntes são mais fortes.
+
+A dificuldade principal aparece logo. Uma boa sonda hoje tem centenas ou milhares de eletrodos, e o cérebro tem $8.6\cdot10^{10}$ neurônios. Escutamos cerca de um centésimo de milionésimo da máquina. Por que, então, dá para entender alguma coisa a partir de uma amostra tão ínfima? A resposta veio no capítulo~\ref{sec:code}. Neurônios vizinhos têm ruído correlacionado, e a média sobre um grupo esbarra num limite (proposição~\ref{prop:pooling}): cem neurônios carregam quase tanto quanto mil. Além disso, a tarefa que o córtex motor resolve tem poucas dimensões: o braço tem poucas articulações (capítulo~\ref{sec:muscles}), e a atividade das centenas de neurônios que o controlam cabe num espaço de apenas uma ou duas dezenas de variáveis comuns~\cite{Gallego2017}. Uma sonda de cem neurônios ouve quase todas essas variáveis. Se o cérebro guardasse uma mensagem independente em cada neurônio, essa escuta seria inútil.
+
+\section{O fluxo de dados: compressão na própria sonda}
+
+A sonda produz um fluxo enorme. Para ver a forma do disparo, cada eletrodo precisa ser digitalizado cerca de $20$ mil vezes por segundo, com precisão de uns dez bits. Mil eletrodos dão
+\begin{empheq}[box=\keybox]{equation}
+\begin{aligned}
+R_{\text{bruto}} \;&=\; N\,f_s\,b \;\approx\; 10^3\cdot2\cdot10^4\cdot10 \;\approx\; 2\cdot10^8\ \text{bit/s},\\
+R_{\text{disp}} \;&\approx\; N\,r\,\log_2\frac{e}{r\,\Delta t} \;\approx\; 8\cdot10^4\ \text{bit/s}.
+\end{aligned}
+\label{eq:probedata}
+\end{empheq}
+A segunda estimativa é a capacidade do fluxo de disparos~\eqref{eq:spikeentropy} com $r=10$ disparos por segundo e precisão $\Delta t=1\ms$: tudo o que de fato há nele ocupa duas mil e quinhentas vezes menos. Para um dispositivo implantado, essa diferença é decisiva: o fluxo bruto não pode ser transmitido por rádio através da pele com a potência que se pode gastar dentro da cabeça sem aquecer o tecido. Por isso um dispositivo implantado precisa detectar os disparos no próprio chip, junto dos eletrodos, e enviar para fora só os eventos: o número do canal e o instante do disparo. Na primeira descrição do sistema da Neuralink isso ainda não tinha sido alcançado: os chips amplificam e digitalizam os sinais, todo o fluxo bruto sai por cabo, e os disparos são detectados por um programa do lado de fora; a compressão no chip e a comunicação sem fio aparecem ali como plano~\cite{Musk2019}.
+
+É uma técnica conhecida. O olho comprime o sinal cem vezes antes de mandá-lo pelo cabo longo (capítulo~\ref{sec:sensors}); uma câmera de eventos não transmite quadros, mas mudanças. Para caber no fio, a sonda é obrigada a fazer o mesmo que o próprio cérebro faz: falar por disparos e só sobre novidades.
+
+\section{O que a Neuralink faz}
+
+O dispositivo da Neuralink é uma sonda construída sob essas restrições~\cite{Musk2019}. Em vez de uma matriz rígida de agulhas, há muitos fios flexíveis, mais finos que um cabelo, com eletrodos ao longo de cada um: na primeira descrição do sistema, até $3072$ eletrodos em $96$ fios, $32$ por fio; no dispositivo implantado em pessoas, segundo a empresa, cerca de mil canais em $64$ fios. Fios flexíveis danificam menos o tecido e toleram melhor o fato de o cérebro se deslocar ligeiramente o tempo todo dentro do crânio. Os fios são inseridos por um robô, que desvia dos vasos. Na primeira descrição, como dito acima, o fluxo bruto~\eqref{eq:probedata} saía por cabo. O dispositivo para pessoas, segundo a empresa, é diferente: a carcaça fica totalmente coberta pela pele, os disparos são detectados dentro dela, os dados saem por rádio e a energia chega sem fio.
+
+A tarefa do primeiro dispositivo é a leitura. Os fios são postos na parte do córtex que planeja os movimentos do braço, e um decodificador transforma os disparos no movimento de um cursor na tela. Uma pessoa com os braços paralisados controla o computador imaginando o movimento. A ideia em si não é nova: interfaces com matrizes rígidas de uma centena de eletrodos já permitiam há tempos controlar um cursor~\cite{Hochberg2006}, escrever texto imaginando os movimentos da mão ao escrever~\cite{Willett2021} e até converter tentativas de falar em texto na tela a cerca de sessenta palavras por minuto~\cite{Willett2023}. A novidade da Neuralink é a engenharia: o número de canais, a ausência de fios, a carcaça fechada e a inserção robotizada, isto é, a tentativa de fazer uma sonda que possa ser usada por anos fora do laboratório. Pelo que sabemos, os resultados dos testes em pessoas foram publicados sobretudo pela própria empresa, e não em artigos revisados por pares; a empresa relatou, em particular, que parte dos fios se deslocou depois da inserção e o número de canais funcionando diminuiu. Para a depuração, é um contratempo comum: uma sonda que se move em relação à placa já ouve outros fios.
+
+A segunda linha da empresa é a escrita: um dispositivo de visão que envia sinais ao córtex visual de uma pessoa que perdeu a visão. Falamos dele abaixo, na seção sobre escrita.
+
+\section{Leitura: o decodificador como destinatário}
+
+O decodificador da interface é um destinatário no sentido da proposição~\ref{prop:reader}: ele mesmo decide que parte da mensagem ler. Praticamente todas as interfaces leem \emph{taxas de grupo}: contam os disparos de cada canal em janelas de algumas dezenas de milissegundos e os somam com pesos ajustados para produzir o movimento pretendido. É o código de taxa de grupo da seção~\ref{sec:rate}, e a escolha não é por acaso: com poucos disparos por janela, a taxa de um só neurônio não está definida, mas a soma sobre uma centena já funciona.
+
+Quanta informação se consegue extrair? A escrita com a ``mão mental'' chegou a cerca de noventa caracteres por minuto~\cite{Willett2021}, ou seja, um caractere e meio por segundo: mesmo com cinco bits por caractere, são menos de oito bits por segundo. O controle do cursor, segundo a Neuralink, dá da ordem de dez bits por segundo. Já o limite superior~\eqref{eq:spikeentropy} para \emph{um} neurônio é de dezenas de bits por segundo, e para cem, de milhares. A interface extrai dos neurônios escutados uma pequena fração do que eles poderiam carregar. O gargalo não é o fio, e sim quantas variáveis independentes o grupo carrega (proposição~\ref{prop:pooling}) e quão bem o decodificador entende o código, que, como vimos no capítulo~\ref{sec:code}, não foi decifrado por completo.
+
+Há uma segunda particularidade, conhecida do capítulo~\ref{sec:motorlearning}. O decodificador e o cérebro aprendem um com o outro. O cérebro vê para onde o cursor foi, recebe o erro e ajusta seus comandos: é o mesmo aprendizado motor pelo fio de erro. E os engenheiros de tempos em tempos reajustam os pesos do decodificador, porque os neurônios sob os fios mudam e as conexões da rede reaprendem. O resultado são dois aprendizes que se ajustam um ao outro; para que esse par não entre em descontrole, convém separar suas velocidades de aprendizado: que um aprenda depressa e o outro devagar.
+
+\begin{keyblock}
+\begin{proposition}[Por que uma sonda de mil neurônios funciona]
+\label{prop:probe}
+Uma interface que escuta uma fração ínfima dos neurônios consegue controlar movimento porque a atividade do grupo tem poucas dimensões e seus ruídos são correlacionados: algumas centenas de neurônios carregam quase todas as variáveis comuns. Pelo mesmo motivo, a interface extrai só alguns bits por segundo: tantos quantas são as variáveis independentes da tarefa, e não quantos cabem no fluxo de disparos. O desempenho das interfaces foi medido; quanto o decodificador vai melhorar quando o código for entendido é uma questão em aberto.
+\end{proposition}
+\end{keyblock}
+
+\section{Escrita: mais difícil que a leitura}
+
+Enviar um sinal à máquina é mais difícil que lê-lo. Um eletrodo pelo qual passa corrente não excita um neurônio, mas todos os neurônios e fios em volta, sem distinguir tipo nem sinal. Com ele não se pode escrever um código em que importa \emph{qual} neurônio disparou e \emph{quando} (capítulo~\ref{sec:code}): só se pode definir grosseiramente \emph{onde} e \emph{com que intensidade}.
+
+Para a visão, isso basta em parte. Uma corrente por um eletrodo no córtex visual é vista pela pessoa como um ponto luminoso num certo lugar do campo visual; quando os pontos eram acesos ao mesmo tempo, até dezesseis de uma vez, uma pessoa que perdeu a visão reconhecia algumas letras e distinguia bordas de objetos~\cite{Fernandez2021}. É um código de posição, e ele pode ser escrito. Mas lembre o capítulo~\ref{sec:sensors}: o olho não envia pixels ao cérebro, e sim uma descrição comprimida (bordas, mudanças, clareamento e escurecimento) por fios separados. Escrever ``pontos de luz'' no córtex é escrever pixels numa máquina que espera na entrada um código completamente diferente. Por isso a visão artificial ainda é mais grosseira do que se esperaria pelo número de eletrodos. Há também sinais de teste que dispensam eletrodo: as ilusões visuais entram pelo olho como uma entrada incomum e tiram a máquina do seu modo normal, e cada erro aponta para um mecanismo (seção~\ref{sec:illusions}).
+
+\section{O que a sonda não vê}
+
+O eletrodo ouve o barramento de endereços: os disparos dos neurônios \nt{GLUT} e, pior, os dos pequenos \nt{GABA}. Mas nos capítulos~\ref{sec:serocomputer}--\ref{sec:acet} vimos que o modo de operação da máquina inteira é definido pelos registradores de difusão: as concentrações de \nt{SERO}, \nt{DOPA}, \nt{NORA}, \nt{ACET}. O eletrodo não os ouve: os neurônios de origem são pouquíssimos, e seu sinal não é um disparo junto da sonda, mas uma concentração num volume. Um depurador que vê o barramento de dados mas não vê os registradores de controle vai se surpreender sempre: a mesma entrada vai dar respostas diferentes, porque em algum lugar mudou $g$, $a$ ou $\tau_\gamma$. As concentrações podem ser medidas por sensores químicos no próprio tecido~\cite{Bunin1998}, mas esses sensores ainda não são usados em interfaces. Também fica totalmente fora do alcance da sonda a segunda saída, a lenta, da máquina: os hormônios no sangue (capítulo~\ref{sec:chemoutput}), que são medidos em amostras de sangue, não por eletrodo.
+
+A sonda também não vê os pesos, e é neles que está guardada quase toda a memória e tudo o que foi aprendido. Só dá para adivinhá-los pela maneira como as respostas mudam. E ela não vê a dor como a pessoa a sente: no capítulo~\ref{sec:pain} vimos que a intensidade do sinal de alarme é definida pela própria máquina, pela comporta na medula espinhal e pelos reguladores de cima, de modo que pelo sensor não se pode ler o quanto dói.
+
+\section{Resumo: depuração e questões em aberto}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{2.2cm}>{\raggedright}p{3.6cm}>{\raggedright}p{3.4cm}>{\raggedright\arraybackslash}p{4.0cm}}
+\toprule
+Técnica de depuração & O que a interface faz & O que o livro explica & O que se sabe \\
+\midrule
+sonda & ouve centenas a milhares de neurônios & poucas dimensões e ruído correlacionado (cap.~\ref{sec:code}) & medido \\
+compressão na sonda & transmite eventos em vez do sinal bruto & capacidade do fluxo de disparos~\eqref{eq:spikeentropy} & resolvido na engenharia \\
+leitura & taxas de grupo $\to$ movimento, texto, fala & o decodificador é um destinatário; código de taxa de grupo & funciona; alguns bits por segundo \\
+aprendizado conjunto & cérebro e decodificador se ajustam um ao outro & fio de erro (cap.~\ref{sec:motorlearning}) & observado; as regras de ajuste estão em estudo \\
+escrita & a corrente acende pontos no campo visual & o código de posição pode ser escrito, o temporal não (cap.~\ref{sec:sensors}) & pontos medidos; visão útil, ainda não \\
+leitura de registradores & quase não se faz & canais de difusão (cap.~\ref{sec:serocomputer}--\ref{sec:acet}) & sensores químicos existem em experimentos \\
+\bottomrule
+\end{tabular}
+\caption{Depurando a máquina: o que as interfaces cérebro-computador sabem fazer e o que os capítulos do livro dizem sobre elas.}
+\label{tab:debugging}
+\end{table}
+
+A tabela~\ref{tab:debugging} resume o capítulo. As interfaces cérebro-computador já sabem pôr uma sonda no barramento de endereços e ler dele alguns bits por segundo, e o fato de isso funcionar se explica pelas poucas dimensões e pelo ruído correlacionado do capítulo~\ref{sec:code}. Escrever na máquina elas só sabem de forma grosseira, porque o código de entrada dela é comprimido e endereçado a fios separados. E os registradores de controle e os pesos, aquilo que torna a máquina capaz de aprender e de se ajustar, ainda são quase invisíveis para a sonda.
+
+Cada questão em aberto do capítulo~\ref{sec:synthesis} é também uma tarefa para o depurador. Que código ler se resolverá quando as sondas ficarem mais densas e os decodificadores aprenderem a usar o tempo dos disparos, e não só as taxas. Como uma rede de várias camadas aprende pode ser verificado pondo sondas em várias camadas ao mesmo tempo e observando como suas respostas mudam durante o aprendizado. O que os canais de difusão transmitem ficará visível quando sondas químicas se somarem às elétricas. Este livro é uma tentativa de ler o esquema da máquina pelo seu comportamento e pelas leis que qualquer engenheiro conhece. Os depuradores que estão sendo construídos agora permitirão verificar esse esquema com uma sonda.
+
+\section{Exercícios}
+
+\begin{exercise}[\lvlA]
+\label{ex:17:1}
+\emph{Orçamento do rádio.} Transmitir através da pele custa $1$~nJ por bit, e o transmissor pode gastar no máximo $10$~mW. Que potência é necessária para o fluxo bruto~\eqref{eq:probedata} com $N=1000$ eletrodos e para o fluxo de disparos? Que energia por bit o fluxo bruto exigiria?
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:17:2}
+\emph{Quantos bits há em cem neurônios.} O decodificador soma os disparos de $N$ neurônios em janelas de $50\ms$ com $r=20$~disparos/s, correlação de ruído entre pares $c=0.1$, e o sinal muda a taxa do grupo em $30\%$ (valor quadrático médio). Estime a taxa $\tfrac12\log_2(1+\text{SNR})$ por janela para $N=10$, $100$, $1000$ e $N\to\infty$. E com $c=0$, $N=1000$?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:17:3}
+\emph{Velocidade de uma interface-teclado.} Uma vez e meia por segundo, a interface escolhe um de $N=32$ caracteres: o pretendido com probabilidade $P$, e os erros são equiprováveis. Quantos bits por segundo ela transmite com $P=0.99$, $0.94$, $0.8$? Quantos caracteres por segundo são necessários com $P=0.94$ para $10$~bit/s?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:17:4}
+\emph{Simulação: decodificador de grupo.} $N$ neurônios com $\lambda_i=[b+m\,\mathbf v\cdot\mathbf p_i]_+$, $b=20$, $m=15$~disparos/s, janelas de $50\ms$, $\mathbf v$ com desvio padrão $0.5$ por componente; todos veem um ruído comum, $\mathbf v+\boldsymbol\xi$, $\sigma_\xi=0.2$. Simule o decodificador não enviesado de vetor de população. Com que $N$ os dois ruídos se igualam, e quantos bits por componente por janela dá $N\to\infty$?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:17:5}
+\emph{Dois aprendizes.} O cérebro emite o comando $m=b\,v^*$, o decodificador, $v=d\,m$, com $\langle v^{*2}\rangle=1$. Após cada tentativa, ambos dão um passo de gradiente em $\tfrac12(v-v^*)^2$ com taxa $\eta$. Simule a partir de $b=1.2$, $d=1$ com $\eta=0.8$, $1.1$, $1.5$, $2$. Cada um sozinho é estável para $\eta<2$; com que $\eta$ o par é estável?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:17:6}
+\emph{Projeto: o pipeline da sonda.} $1024$ canais a $20$~mil amostras por segundo, neurônios a $10$~disparos/s, rádio a $1$~nJ/bit. Que limiar, sobre ruído branco das amostras, dá no máximo $0.1$~Hz de disparos falsos por canal? Transmitimos as contagens de disparos em $20\ms$ com $2$~bits: qual é a potência, e quantas vezes ela é menor que para amostras brutas de $10$~bits?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:17:7}
+\emph{O limite de velocidade da interface.} Estime $R\le DW\log_2(1+\text{SNR})$ para $D=10$ variáveis com banda $W=5$~Hz, com $\text{SNR}\approx0.9$ (ruído parecido com o sinal) e $90$ (ruído independente de $1000$ neurônios). O medido é cerca de $10$~bit/s. Que experimento distinguiria as duas explicações da diferença: ruído parecido com o sinal ou desconhecimento do código?
+\end{exercise}

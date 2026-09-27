@@ -1,0 +1,46 @@
+\chapter{Qué hace la máquina de noche}
+% versión completa: chapters/20_sleep.tex
+
+El sueño no es apagar la máquina, sino cambiar de modo. Se nota en las emisoras de radio. En el sueño profundo casi todas están atenuadas: acetilcolina, noradrenalina, serotonina. En el sueño con ensueños, la acetilcolina vuelve al nivel diurno, la noradrenalina y la serotonina casi callan, y la salida a los músculos está desconectada por los frenos: por eso, dormidos, no corremos tras aquello de lo que huimos en el sueño. Todo esto está medido.
+
+\section*{Cuándo es hora de dormir}
+
+Imagine un condensador que se carga todo el día, mientras usted está despierto, y se descarga de noche. La carga es la “presión de sueño”. Usted se duerme cuando la carga alcanza el umbral superior y se despierta cuando baja hasta el inferior. Y los propios umbrales suben y bajan suavemente con el ritmo diario del capítulo 16. Un esquema tan simple llega por sí solo a dieciséis horas de vigilia y ocho de sueño. Y explica por qué, tras una noche en vela, no dormimos el doble, sino más profundo: un condensador lleno se descarga más rápido. La candidata al papel de “carga” es una sustancia que se acumula en el cerebro con el trabajo; que sea justo esa es por ahora una hipótesis.
+
+\pencilfig{120}{%
+% figures/sleep_{S,H,L}.dat from models/sleep_models.py, t in hours
+\begin{scope}[x=0.1cm, y=2.6cm]
+\foreach \a/\b in {0/4.3,21.2/29.3,45.4/53.4,69.5/72}{\fill[pcBlue, opacity=0.1] (\a,0) rectangle (\b,1);}
+\draw[pen] (0,0) -- (72,0);
+\draw[penlite=pcRed, densely dashed] plot file {figures/sleep_H.dat};
+\draw[penlite=pcGreen, densely dashed] plot file {figures/sleep_L.dat};
+\draw[pcBlue, line width=1.0pt] plot file {figures/sleep_S.dat};
+\foreach \t/\l in {0/0,24/1 día,48/2 días,72/3 días}{\draw[pcGray, line width=0.5pt] (\t,0) -- (\t,-0.04); \node[lbl, anchor=base] at (\t,-0.16) {\l};}
+\node[lbl, text=pcBlue] at (25.25,0.93) {sueño}; \node[lbl, text=pcBlue] at (49.4,0.93) {sueño};
+\end{scope}
+\node[lbl, text=pcRed, anchor=west] at (7.3,2.0) {dormirse};
+\node[lbl, text=pcGreen!70!black, anchor=west] at (7.3,0.62) {despertar};
+\node[lbl, text=pcBlue, anchor=west] at (7.3,1.35) {presión de sueño};
+}{La presión de sueño se acumula de día y se disipa de noche; nos dormimos en el umbral superior y despertamos en el inferior, y ambos umbrales oscilan con el día.}
+
+\section*{Un columpio lento}
+
+En el sueño profundo, regiones enteras del cerebro se encienden y se apagan en sincronía, menos de una vez por segundo. Es un esquema ya conocido: un grupo que se excita a sí mismo y se cansa es un oscilador. De día, la acetilcolina suprime el cansancio de las neuronas, y el mismo grupo trabaja de forma pareja; de noche hay poca, y la red empieza a oscilar.
+
+\pencilfig{20}{\pencilart{20}}{De noche la red oscila despacio: tan pronto trabajan casi todas las neuronas como callan casi todas.}
+
+\section*{Avance rápido}
+
+En ese columpio ocurre lo más interesante. Las secuencias de activación de neuronas que se dieron durante el día se “reproducen” de nuevo, y varias veces más rápido: en la región de la memoria, unas veinte veces; en la corteza, unas pocas veces. Si se refuerza artificialmente la coordinación de esas reproducciones con el columpio lento, la memoria mejora: es un experimento causal. ¿Para qué sirve? Una hipótesis verosímil: la memoria lenta de largo plazo aprende de repeticiones mezcladas con lo viejo, para que lo nuevo no borre lo anterior. Los ingenieros conocen ese problema: una red neuronal entrenada en una tarea nueva olvida la vieja si no se repasan los ejemplos viejos.
+
+\section*{Poda de conexiones}
+
+Otra cosa medida: tras el sueño, los contactos entre neuronas se vuelven en promedio más pequeños, de unos pocos a unas decenas por ciento, en proporción a su tamaño. Como si se bajaran un poco todos los volúmenes con un solo gesto: las proporciones se conservan, lo aprendido se queda, y se libera espacio para lo que se aprenda mañana. Que esa sea la tarea principal del sueño es una hipótesis.
+
+\section*{Ensueños y limpieza}
+
+El sueño con ensueños se parece a una prueba en banco: la máquina trabaja a plena potencia, pero las entradas se sustituyen por señales internas y la salida está desconectada. Para qué sirve, no lo sabemos. La idea de que durante el sueño el cerebro se “lava” de desechos sigue en discusión: hay experimentos a favor y en contra.
+
+Lo más sorprendente: el sueño puede ser local. Tras una vigilia larga, zonas sueltas de la corteza de una persona despierta se “duermen” por un instante y se callan en medio del trabajo.
+
+\fullversion{20}

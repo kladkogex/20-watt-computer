@@ -1,0 +1,67 @@
+\chapter{Um saco de peças}
+% versão completa: chapters/01b_neurontypes.tex
+
+\pencilfig{1}{\pencilart{1}}{Um saco de peças: quase todas azuis, algumas vermelhas e um punhado de outras.}
+
+Imagine que lhe deram um saco com oitenta e seis bilhões de peças de aparência idêntica e pediram que você descobrisse como montar um computador com elas. Por onde você começaria? Um engenheiro não ficaria examinando o formato das peças. Ele perguntaria: quantas entradas a peça tem, quantas saídas e o que ela entrega na saída.
+
+O neurônio --- é assim que se chama essa peça --- é surpreendentemente simples. Entradas ele tem aos milhares: chegam a ele fios vindos de outros neurônios. A saída é uma só. Mas essa saída se ramifica como uma árvore, e a mesma cópia do sinal vai para milhares de destinatários. Imagine uma pessoa que escuta mil interlocutores ao mesmo tempo e responde com uma única frase, mas de modo que outras mil pessoas a ouçam.
+
+Que sinal é esse? Um clique curto. De tempos em tempos o neurônio emite um disparo --- um pico de tensão que dura cerca de um milésimo de segundo. Todos os cliques de um neurônio são iguais, como as batidas de um mesmo tambor. Por isso, tudo o que o neurônio pode dizer está escrito não no volume do clique, mas em \emph{quando} ele clica: mais vezes, menos vezes, de imediato ou com atraso.
+
+Por dentro, o neurônio faz o cálculo mais simples que se pode imaginar: soma os sinais que chegam e, se a soma passa do limiar, clica ele mesmo. Algumas entradas empurram a soma para cima, outras para baixo.
+
+\section*{Como separar o saco}
+
+A ponta do fio de saída, ao alcançar o vizinho, não chega a tocá-lo. Entre os dois fica uma fenda estreita, e quem transmite o sinal através dela é a química: o fio libera uma pitada de uma substância especial --- o neurotransmissor --- e o vizinho a captura. E aqui vem a sorte: quase todo neurônio libera a mesma substância em todas as pontas do seu fio. Então os neurônios podem ser separados pelo \emph{que} eles liberam.
+
+Vamos chamar o tipo de neurônio pelas quatro primeiras letras da sua substância. O neurônio que libera glutamato é \nt{GLUT}. O que libera ácido gama-aminobutírico é \nt{GABA}. Depois vêm \nt{DOPA} (dopamina), \nt{SERO} (serotonina), \nt{NORA} (noradrenalina), \nt{ACET} (acetilcolina) e mais alguns.
+
+Com o saco separado, o quadro fica muito desigual. De cada mil neurônios, cerca de novecentos e sessenta são \nt{GLUT}. O sinal deles empurra o destinatário em direção ao clique: é o ``mais''. Outros trinta e seis, mais ou menos, são \nt{GABA}; o sinal deles afasta do limiar: é o ``menos''. No córtex eles são mais numerosos, de um quinto a um quarto. E todos os demais tipos juntos somam alguns neurônios em cada cem mil. Uma gota no oceano.
+
+\section*{Telefone e rádio}
+
+Mas essa gota funciona de um jeito completamente diferente. O fio de um neurônio \nt{GLUT} ou \nt{GABA} leva a vizinhos determinados, como uma linha telefônica: o sinal só chega a quem recebe a ligação. Já os grupos minúsculos de \nt{DOPA}, \nt{SERO}, \nt{NORA} e \nt{ACET} funcionam como estações de rádio. Seus fios se espalham por regiões enormes do cérebro, a substância muitas vezes é despejada não na fenda, mas no espaço ao redor, e a mesma mensagem é ouvida ao mesmo tempo por milhões de células.
+
+Pelas linhas telefônicas passam os dados: aqui há uma linha na imagem, ali um som de certa altura. Pelo rádio passam os ajustes gerais: quão alto está tudo, se vale a pena aprender, se já é hora de dormir. Em qualquer computador é igual: células de memória são bilhões, e registradores de controle, um punhado. Sem eles, porém, a máquina não funciona.
+
+\section*{Quem dá o sentido é o destinatário}
+
+Há um detalhe. A substância em si não sabe se é ``mais'' ou ``menos''. A molécula é uma chave. O que acontece quando a chave entra é decidido pela fechadura --- uma proteína especial do lado do destinatário. A mesma dopamina anima alguns destinatários e abafa outros, conforme a fechadura que cada um tem. É como uma mesma transmissão de rádio que ouvintes diferentes entendem de maneiras diferentes.
+
+\section*{O sinal ``melhor do que o esperado''}
+
+O canal de rádio mais famoso é a dopamina. O que ela transmite? Eis um experimento. Um animal recebe, sem aviso, uma gota de suco, e os neurônios de dopamina respondem com uma rajada de cliques. Depois, antes do suco, acende-se sempre uma lâmpada. O animal aprende que a lâmpada promete suco, e agora a rajada acontece na lâmpada, e no próprio suco, não. E se depois da lâmpada o suco não vem, os neurônios de dopamina \emph{se calam} no momento da espera.
+
+\pencilfig{101}{%
+% three rows: a spike raster of a DOPA neuron; lamp (amber) and juice (blue drop) above the axis
+\foreach \row/\y in {1/0,2/-1.05,3/-2.1}{
+  \draw[pen] (0,\y) -- (6.2,\y);
+  \foreach \s in {0.3,0.75,1.1,2.15,2.6,3.05,3.45,3.9,4.45,4.95,5.4,5.85}{
+    \pgfmathtruncatemacro{\gap}{(\row==3)&&(\s>3.6)&&(\s<4.7)}
+    \ifnum\gap=0 \draw[pcGray, line width=0.7pt] (\s,\y) -- (\s,\y+0.3);\fi}}
+% row 1: juice without a lamp -> burst at the juice
+\foreach \s in {4.0,4.08,4.16,4.24,4.33}{\draw[pcAmber, line width=0.8pt] (\s,0) -- (\s,0.45);}
+\draw[dotpen=pcBlue, wash=pcBlue] (4.15,0.72) circle (0.09); \draw[pcBlue, line width=0.6pt] (4.07,0.76) -- (4.15,0.92) -- (4.23,0.76);
+% row 2: lamp -> burst at the lamp, nothing at the promised juice
+\foreach \y in {-1.05,-2.1}{
+  \foreach \s in {1.5,1.58,1.66,1.74,1.83}{\draw[pcAmber, line width=0.8pt] (\s,\y) -- (\s,\y+0.45);}
+  \draw[dotpen=pcAmber, wash=pcAmber] (1.65,\y+0.72) circle (0.1);
+  \foreach \a in {30,90,150}{\draw[pcAmber, line width=0.5pt] ($(1.65,\y+0.72)+(\a:0.14)$) -- ($(1.65,\y+0.72)+(\a:0.24)$);}}
+\draw[dotpen=pcBlue, wash=pcBlue] (4.15,-0.33) circle (0.09); \draw[pcBlue, line width=0.6pt] (4.07,-0.29) -- (4.15,-0.13) -- (4.23,-0.29);
+% row 3: lamp, no juice -> a gap where the juice was expected
+\draw[pcBlue, line width=0.6pt, densely dotted] (4.15,-1.38) circle (0.09); \draw[pcBlue, line width=0.6pt, densely dotted] (4.07,-1.34) -- (4.15,-1.18) -- (4.23,-1.34);
+\draw[penlite=pcRed] (3.65,-2.22) -- (3.65,-2.28) -- (4.65,-2.28) -- (4.65,-2.22);
+\node[lbl, text=pcRed, anchor=north] at (4.15,-2.3) {silêncio};
+\node[lbl, anchor=east, align=right] at (-0.1,0.15) {suco\\sem lâmpada};
+\node[lbl, anchor=east, align=right] at (-0.1,-0.9) {lâmpada,\\depois suco};
+\node[lbl, anchor=east, align=right] at (-0.1,-1.95) {lâmpada,\\sem suco};
+}{Uma rajada no suco inesperado; na lâmpada que o promete; e um silêncio no instante em que o suco prometido não chegou.}
+
+A regra que explica os três casos: a dopamina não comunica ``bom'', e sim ``melhor do que eu esperava''. O suco inesperado é uma surpresa agradável. O prometido não é surpresa nenhuma. O prometido e não entregue é uma surpresa desagradável. É exatamente essa grandeza que usam os programas que aprendem com os próprios erros. Ainda vamos voltar a ela.
+
+\section*{O que levar consigo}
+
+O cérebro é uma rede enorme de peças de aparência idêntica. Quase todas são os ``mais'' e os ``menos'' da rede telefônica de dados. E pouquíssimas são estações de rádio, que ajustam a rede inteira de uma vez. No próximo capítulo vamos ver o que se pode construir só com ``mais''.
+
+\fullversion{1}

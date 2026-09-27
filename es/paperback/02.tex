@@ -1,0 +1,59 @@
+\chapter{Una máquina sin director}
+% versión completa: chapters/02_glutcomputer.tex
+
+Su computadora tiene un director de orquesta: el generador de reloj. Miles de millones de veces por segundo da la señal, y todos los elementos del circuito conmutan a la vez, al unísono. En el cerebro no hay ningún director. Cada neurona trabaja por su cuenta: las señales le llegan cuando toca y salen de ella cuando toca. Veamos qué se puede calcular en una máquina así si tomamos solo neuronas \nt{GLUT}: solo “más”.
+
+\section*{El balde agujereado}
+
+Conviene imaginar la neurona como un balde con un agujero. Cada espiga que llega es un jarro de agua. El agua se escapa poco a poco por el agujero. Si los jarros llegan seguido, el agua alcanza a subir hasta el borde, y el balde se vuelca: la neurona hace clic, el balde queda vacío, y todo empieza de nuevo. Si los jarros llegan de tarde en tarde, el agua alcanza a escaparse y no pasa nada.
+
+\pencilfig{2}{\pencilart{2}}{La neurona es un balde agujereado: las gotas de las entradas lo llenan, el agua se escapa; al llegar a la raya, clic.}
+
+El agujero es la diferencia principal entre una neurona y una compuerta lógica. La neurona no recuerda una espiga para siempre, sino durante unos milisegundos. Todo lo que llega dentro de esa ventana se suma; lo anterior se olvida.
+
+\section*{“O” e “y”}
+
+Si un solo jarro basta para volcar el balde, la neurona se activa con cualquier entrada. Eso es un “o”. Si hacen falta dos, empieza lo interesante: “¿llegaron los dos?” no tiene sentido sin director mientras no se diga \emph{dentro de qué plazo}. La neurona se activará solo si las dos espigas llegan casi a la vez, antes de que el primer jarro se escape. Es un “y en el tiempo”, un detector de coincidencias. En unas neuronas la ventana es de unos milisegundos; en las neuronas del oído, de fracciones de milisegundo.
+
+\section*{Lo que los “más” solos no pueden}
+
+Intente construir un “no”: una neurona que funcione cuando la entrada calla. No sale: el silencio no echa agua al balde. Y esto vale no solo para una neurona, sino para cualquier red de solo “más”: si se refuerzan las entradas, ninguna neurona de esa red trabajará menos. De ahí la propiedad más incómoda: \emph{la actividad no se puede apagar con actividad}. Un incendio desatado solo se detiene de una manera: dejando de echarle leña.
+
+La naturaleza encontró un atajo. En muchos órganos de los sentidos, el mismo estímulo lo transmiten dos grupos de neuronas. En el ojo, unas células avisan “hay más luz” y otras “hay menos luz”. Si en lugar de un cable usted tiene un par de cables, “sí” y “no”, el “no” sale gratis: basta con intercambiar los cables. Con esos pares, solo con “más”, se puede armar cualquier circuito lógico, e incluso saber que el cálculo terminó: en cada par se encendió exactamente un cable. Así construyen los ingenieros circuitos asíncronos que funcionan bien con cualquier retardo.
+
+\section*{Tiempo a partir de retardos}
+
+Sin director no hay un reloj común, pero el tiempo se puede calcular igual. El sonido que viene de un lado llega al oído cercano antes que al lejano, por fracciones de milisegundo. Tendamos desde el oído izquierdo un cable de izquierda a derecha a lo largo de una fila de detectores de coincidencias, y desde el derecho, uno de derecha a izquierda. Las dos señales correrán una hacia la otra y se encontrarán en el punto al que ambas lleguen a la vez. Justo ahí se activará un detector. La diferencia de tiempo se convirtió en el \emph{número} de la neurona activada, es decir, en la dirección del sonido. La precisión llega a una decena de microsegundos, aunque cada neurona sola es mucho menos precisa: lo que salva es que hay muchos detectores.
+
+\pencilfig{102}{%
+% delay line: the left-ear wire runs right along the top, the right-ear wire runs left along the bottom
+\draw[pen=pcBlue] (0,0.6) -- (5.6,0.6); \draw[pen=pcBlue] (6.0,-0.6) -- (0.4,-0.6);
+\foreach \i in {1,...,7}{
+  \pgfmathsetmacro{\x}{0.75*\i}
+  \draw[pen=pcBlue] (\x,0.6) -- (\x,0.24); \draw[pen=pcBlue] (\x,-0.6) -- (\x,-0.24);
+  \ifnum\i=5 \draw[dotpen=pcAmber, wash=pcAmber, line width=1.1pt] (\x,0) circle (0.2);
+  \else \draw[dotpen=pcBlue, wash=pcBlue] (\x,0) circle (0.2); \fi}
+\draw[arr=pcBlue] (0.95,0.78) -- (1.75,0.78); \draw[arr=pcBlue] (5.3,-0.78) -- (4.5,-0.78);
+\node[lbl, anchor=east] at (-0.05,0.6) {oído izq.};
+\node[lbl, anchor=west] at (6.05,-0.6) {oído der.};
+\node[lbl, text=pcAmber!70!black, anchor=south] at (3.75,0.95) {aquí se encontraron};
+\draw[arr=pcAmber!70!black] (3.75,0.95) -- (3.75,0.68);
+% sound source on the left
+\draw[penlite] (-1.25,-0.25) -- (-1.05,-0.25) -- (-0.8,-0.45) -- (-0.8,0.05) -- (-1.05,-0.15) -- (-1.25,-0.15) -- cycle;
+\foreach \r in {0.2,0.35}{\draw[penlite] ($(-0.75,-0.2)+(-40:\r)$) arc (-40:40:\r);}
+\node[lbl, anchor=north] at (-0.95,-0.5) {sonido a la izq.};
+}{El sonido de la izquierda llega antes al oído izquierdo, su señal alcanza a correr más lejos, y el encuentro queda a la derecha del centro. El número de la neurona activada es la dirección del sonido.}
+
+\section*{La memoria es una fogata}
+
+Tomemos un grupo de neuronas que se excitan fuertemente entre sí. Si lo encendemos con una señal breve, se mantendrá solo, como una fogata que se alimenta a sí misma. La señal terminó, pero el grupo sigue ardiendo: recuerda que hubo una señal. Es una celda de memoria. Y si la señal fue demasiado breve, la fogata no alcanza a prender y se apaga.
+
+Pero hay un problema: ¿cómo se borra esa memoria? Con actividad, de ningún modo. Solo queda esperar a que las neuronas se cansen y la fogata se consuma.
+
+\section*{Un temporizador que arranca con un evento}
+
+Unamos los grupos en cadena: el primero enciende al segundo, el segundo al tercero. Empujemos el primero y una onda recorrerá la cadena, como una fila de fichas de dominó. El número de la ficha caída dice cuánto tiempo pasó desde el empujón. No es un reloj que marca siempre, sino un temporizador que arranca con un evento y funciona una sola vez. En los pájaros cantores, durante el canto, las neuronas de una región se activan estrictamente por turno: algo muy parecido a esa cadena.
+
+Así que solo con “más” se logra mucho. Faltan tres cosas: elegir una entre muchas, borrar la memoria a voluntad y evitar que la red se incendie. Las tres las dan los “menos”, de los que trata el próximo capítulo.
+
+\fullversion{2}

@@ -1,0 +1,177 @@
+\chapter{Las entradas de la máquina: cómo se conectan los ojos, los oídos y los demás sensores}
+\chaptermark{Las entradas de la máquina}
+\label{sec:sensors}
+
+\section{El sensor como transductor}
+
+En la fig.~\ref{fig:machine} los datos entraban a la máquina por la izquierda, desde el bloque “sensores”. Ahora abrimos ese bloque. Para un ingeniero, cada órgano de los sentidos es un \emph{transductor} con una etapa analógica de entrada y un convertidor analógico-digital al final, solo que los dígitos de salida no son números, sino espigas.
+
+El esquema es el mismo en todos los órganos de los sentidos (fig.~\ref{fig:transducer}). Una magnitud física (luz, presión, vibración, una molécula) actúa sobre una proteína receptora en la membrana de la célula sensorial. Esa proteína funciona como una compuerta: por sí misma o a través de una breve cadena de reacciones abre un canal iónico. Surge una \emph{corriente de receptor} y, con ella, un voltaje analógico en la membrana. Después, el voltaje pasa por el control de ganancia y llega al codificador de espigas, la ya conocida neurona integradora~\eqref{eq:glutneuron}, que convierte el nivel en frecuencia y en instantes de espigas. La salida es casi siempre la misma: las neuronas sensoriales del ojo, del oído, del olfato y de la piel liberan glutamato, de modo que las entradas se conectan directamente al bus \nt{GLUT}.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  blk/.style={draw,very thick,rounded corners=2pt,align=center,font=\footnotesize,minimum height=1.0cm,text width=1.9cm,fill=blue!5}]
+\node[align=center,font=\small] (P) at (0.1,0) {luz, sonido,\\presión,\\molécula};
+\node[blk] (R) at (3.0,0) {receptor-\\compuerta};
+\node[blk] (G) at (6.5,0) {control\\de ganancia};
+\node[blk] (E) at (10.0,0) {codificador\\de espigas};
+\node[align=center,font=\small] (B) at (13.4,0) {bus\\\nt{GLUT}};
+\draw[->,very thick] (P) -- (R);
+\foreach \ic/\xx in {sun/-1.1,speaker/-0.3,press/0.5,molecule/1.3}{\pic[scale=0.85] at (\xx,1.05) {\ic};}
+\draw[->,very thick] (R) -- node[above,font=\scriptsize] {corriente} (G);
+\draw[->,very thick] (G) -- node[above,font=\scriptsize] {nivel} (E);
+\draw[->,very thick,red!70!black] (E) -- node[above,font=\scriptsize,black] {espigas} (B);
+\draw[decorate,decoration={brace,amplitude=5pt,mirror},gray!60!black] (1.8,-0.8) -- (7.7,-0.8) node[midway,below=5pt,font=\scriptsize,black] {parte analógica};
+\draw[decorate,decoration={brace,amplitude=5pt,mirror},gray!60!black] (8.8,-0.8) -- (11.2,-0.8) node[midway,below=5pt,font=\scriptsize,black] {espigas};
+\end{tikzpicture}
+\caption{Cualquier órgano de los sentidos como cadena de conversiones. La proteína receptora abre un canal y produce una corriente; el control de ganancia la adapta a las condiciones; el codificador~\eqref{eq:glutneuron} convierte el nivel en espigas, que van al bus \nt{GLUT}. En el ojo y en el oído las primeras etapas no emiten espigas en absoluto: la señal sigue siendo analógica hasta que hay que transmitirla lejos.}
+\label{fig:transducer}
+\end{figure}
+
+Un detalle le resulta muy familiar al electrónico. En el ojo y en el oído las primerísimas células no emiten espigas: pasan a sus vecinas un voltaje continuo, como una etapa analógica en una placa. Las espigas aparecen solo donde la señal debe viajar lejos. Una señal analógica se atenúa y se llena de ruido en cuestión de milímetros, mientras que la espiga, como vimos en el capítulo~\ref{sec:neurontypes}, llega al final del cable con la misma altura. Se digitaliza allí donde empieza la línea larga.
+
+\section{Al límite de la física}
+
+Los sensores del cerebro trabajan cerca de los límites físicos de la sensibilidad. El sensor de luz en la oscuridad responde a \emph{un solo fotón}: la absorción de una partícula de luz produce una corriente de alrededor de un picoamperio, visible sobre su propio ruido~\cite{Baylor1979}. El sensor de sonido detecta desplazamientos de su haz sensible de menos de un nanómetro~\cite{Hudspeth1989}.
+
+Cuando hay poca luz, lo que limita la precisión no es el sensor, sino la propia luz: los fotones llegan al azar, en un flujo de Poisson. Si durante el tiempo de acumulación $T$ llegan al sensor en promedio $N=\Phi T$ fotones, su número fluctúa en $\sqrt N$. Para que un incremento $\Delta N$ sea perceptible, debe ser varias veces mayor que esa fluctuación, y la fracción distinguible de cambio de brillo es
+\begin{empheq}[box=\keybox]{equation}
+\frac{\Delta I}{I} \;\approx\; \frac{k}{\sqrt{\Phi\,T}} .
+\label{eq:photonnoise}
+\end{empheq}
+Es la misma fórmula que para el número de espigas~\eqref{eq:rateerror}: el ruido de disparo de los fotones y el de las espigas obedecen la misma ley. En la oscuridad el ojo solo puede mejorar la precisión de una manera, acumulando fotones durante más tiempo, y el tiempo de acumulación en efecto crece hasta décimas de segundo. Por eso en el crepúsculo vemos más despacio.
+
+\section{Rango dinámico: control de ganancia}
+
+El problema de ingeniería más difícil de los sensores es el rango. La iluminación, de una noche estrellada a la nieve al sol, varía en unos diez órdenes de magnitud; la intensidad del sonido, del umbral de audición al umbral del dolor, en doce. En cambio, la frecuencia de espigas va de cero a unos cientos por segundo, menos de tres órdenes. No hay forma lineal de meter esa entrada en esa salida.
+
+La solución es la misma que en cualquier receptor de radio: el \emph{control automático de ganancia}. Las respuestas de las células sensoriales del ojo se describen bien con la fórmula
+\begin{empheq}[box=\keybox]{equation}
+r \;=\; r_{\max}\,\frac{I}{I+\sigma} ,
+\label{eq:nakarushton}
+\end{empheq}
+donde $\sigma$ es el brillo con el que la respuesta llega a la mitad~\cite{NakaRushton1966}. Por sí sola,~\eqref{eq:nakarushton} abarca apenas dos o tres órdenes. Pero $\sigma$ no es constante: tras un rato de trabajo con un fondo brillante, crece siguiendo el brillo medio. La curva de respuesta se desplaza a lo largo del eje logarítmico del brillo y cada vez coloca su tramo empinado donde se encuentra ahora la entrada (fig.~\ref{fig:adaptation}). Es la misma división por la actividad total que la inhibición de derivación del capítulo~\ref{sec:gaba}~\cite{Carandini2012}, solo que aquí el denominador es el brillo medio de los últimos segundos.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=1.25cm,y=2.8cm]
+\draw[->,gray!70!black] (-2,0) -- (6.4,0) node[below left,font=\small,black] {$\log_{10} I$};
+\draw[->,gray!70!black] (-2,0) -- (-2,1.15) node[left,font=\small,black] {$r/r_{\max}$};
+\foreach \u in {-2,0,2,4,6}{\draw[gray!60!black] (\u,-0.02) -- (\u,0.02); \node[below,font=\scriptsize] at (\u,0) {$\u$};}
+\draw[densely dashed,gray!60!black] (-2,0.5) -- (6.2,0.5);
+\foreach \s/\c/\lab in {0/blue!60!black/{fondo oscuro},2/green!45!black/{medio},4/red!70!black/{brillante}}{
+  \pgfmathsetmacro{\lo}{max(-2,\s-3)}
+  \draw[very thick,\c] (-2,0) -- (\lo,0) plot[domain=\lo:6.2,samples=80] (\x,{1/(1+10^(\s-\x))});
+  \node[font=\scriptsize,\c,anchor=west] at (\s+0.15,0.42) {\lab};}
+\foreach \s/\ic in {0/moon,2/cloud,4/sun}{\pic at (\s+0.6,0.64) {\ic};}
+\end{tikzpicture}
+\caption{Control de ganancia del sensor de luz según~\eqref{eq:nakarushton}. Cada curva abarca dos o tres órdenes de brillo; al pasar a un fondo más brillante, $\sigma$ crece y la curva se desplaza por el eje logarítmico. Juntas, las curvas desplazadas cubren todo el rango.}
+\label{fig:adaptation}
+\end{figure}
+
+El control tiene un precio ya conocido del capítulo~\ref{sec:code}: el sensor no informa el brillo, sino el brillo \emph{respecto del fondo}. Una entrada constante deja poco a poco de provocar respuesta, y cada cambio sí la provoca. Las entradas de la máquina hablan desde el principio de cambios, no de niveles, y en eso está el mismo ahorro de espigas que en la proposición~\ref{prop:economy}~\cite{Barlow1961}. De ahí también los sensores de encendido y de apagado del capítulo~\ref{sec:glutcomputer}~\cite{Schiller1992}: unos informan que la luz aumentó, otros que disminuyó.
+
+Los ingenieros repitieron este truco en las \emph{cámaras de eventos}. Una cámara así no toma fotogramas al ritmo de un reloj: cada uno de sus píxeles, por su cuenta y sin ciclo común, emite un evento “más brillante” o “más oscuro” cuando el logaritmo del brillo cambió en una fracción dada~\cite{Lichtsteiner2008}. Es exactamente el código de dos cables de encendido y apagado del capítulo~\ref{sec:glutcomputer}, llevado al silicio, y le da a la cámara un rango y una rapidez inalcanzables para un sensor de imagen común~\cite{Gallego2022}.
+
+\section{El ojo: compresión hasta caber en un cable}
+
+En el ojo hay unos $10^8$ sensores de luz~\cite{Curcio1990}, y las neuronas de salida que llevan la imagen al cerebro son alrededor de un millón. Antes de que la señal salga del ojo, se comprime unas cien veces. Los trucos principales de la compresión ya los conocemos. Cada neurona de salida responde a la diferencia entre el brillo de una pequeña mancha y el brillo a su alrededor: es la resta de los vecinos mediante inhibición, como en el capítulo~\ref{sec:gaba}. Las zonas uniformes de la imagen casi no cuestan nada, mientras que los bordes y los cambios sí se transmiten. Las distintas neuronas de salida están especializadas: unas informan de que se aclara, otras de que se oscurece, otras del movimiento en una dirección determinada (fig.~\ref{fig:direction}); en el ratón se han contado más de treinta canales de salida de este tipo~\cite{Baden2016}.
+
+¿Qué capacidad tiene el cable resultante? En el cobayo, a partir de registros de las neuronas de salida, se midieron unos $875$ mil bits por segundo para $\sim10^5$ de esas neuronas; el cálculo para el millón de neuronas de salida humanas da del orden de $10^7$ bits por segundo~\cite{Koch2006}, tanto como un viejo cable de red de diez megabits. Con una frecuencia media de unas pocas espigas por segundo por neurona, eso son unos pocos bits por espiga, como obtuvimos en el capítulo~\ref{sec:code}.
+
+\section{El oído: un banco de filtros}
+
+El oído resuelve otro problema: el sonido debe descomponerse en frecuencias. Un ingeniero pondría un banco de filtros pasabanda, y el oído hace exactamente eso, mecánicamente. La vibración sonora recorre una membrana elástica cuyas propiedades cambian suavemente a lo largo de ella, y cada tramo resuena a su propia frecuencia. Los sensores situados en un tramo responden solo a su banda (fig.~\ref{fig:filterbank}). Las frecuencias se reparten por lugar de forma aproximadamente logarítmica: a cada octava le corresponde una fracción parecida de los sensores. El número del sensor que se activó es la frecuencia: el código de lugar del capítulo~\ref{sec:code}.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=1.35cm,y=2.2cm]
+\draw[->,gray!70!black] (-0.3,0) -- (7.6,0) node[above left,font=\small,black] {frecuencia, Hz};
+\draw[->,gray!70!black] (-0.3,0) -- (-0.3,1.15) node[left,font=\small,black] {respuesta};
+\foreach \k/\f in {0/125,1/250,2/500,3/1000,4/2000,5/4000,6/8000}{
+  \draw[gray!60!black] (\k,-0.02) -- (\k,0.02); \node[below,font=\scriptsize] at (\k,0) {\f};
+  \draw[thick,blue!60!black] plot[domain={max(\k-1.2,-0.3)}:{\k+0.7},samples=60] (\x,{1/(1+((\x-\k)/(\x<\k?0.45:0.2))^4)});}
+% a piano keyboard: seven white keys per octave, like the octaves on the axis
+\foreach \i in {0,...,48}{\draw[gray!50!black,fill=white,line width=0.3pt] ({\i/7},-0.44) rectangle ({(\i+1)/7},-0.26);}
+\foreach \o in {0,...,6}{\foreach \j in {0,1,3,4,5}{\fill[black] ({\o+(\j+1)/7-0.035},-0.35) rectangle ({\o+(\j+1)/7+0.035},-0.26);}}
+\end{tikzpicture}
+\caption{El oído como banco de filtros pasabanda, esquema. Cada curva es la respuesta de los sensores de un tramo a sonidos de distinta frecuencia; las frecuencias centrales van de octava en octava, como las teclas en una escala logarítmica. Los filtros reales tienen una pendiente de alta frecuencia abrupta y una de baja frecuencia suave. Abajo, un teclado: en él, como en el oído, a cada octava le toca el mismo espacio.}
+\label{fig:filterbank}
+\end{figure}
+
+Los resonadores del oído no son pasivos. Parte de los sensores mueven ellos mismos la membrana al compás del sonido y amplifican las vibraciones débiles miles de veces en amplitud ($66$--$76$\,dB), y la ganancia cae al aumentar el volumen~\cite{Ruggero1997,Robles2001}. Para un ingeniero, es un amplificador con realimentación positiva colocado justo al borde de la autooscilación: la misma vida al límite que la de la red del capítulo~\ref{sec:gaba}, pues cerca del borde el sistema es especialmente sensible a las señales pequeñas. La compresión del volumen la hace el mismo amplificador: lo suave se amplifica mucho, lo fuerte, poco.
+
+El oído tiene también un segundo código. A bajas frecuencias, las espigas de las neuronas van en fase con el sonido: la neurona se dispara en un tramo determinado de cada onda, aunque no en todas las ondas. En el cobayo, el enganche de fase empieza a debilitarse hacia $600$\,Hz y todavía se nota hasta unos $3.5$\,kHz~\cite{PalmerRussell1986}. Así, los instantes de las espigas conservan el tiempo exacto del sonido y, a partir de él, la diferencia de llegada del sonido a los dos oídos, con la que la red del capítulo~\ref{sec:glutcomputer} halla la dirección~\cite{Grothe2010}. A altas frecuencias las espigas no alcanzan a seguir la onda, y queda solo el código de lugar. Un mismo oído usa los dos códigos del capítulo~\ref{sec:code}: el tiempo donde las neuronas alcanzan a seguir, y el lugar donde no.
+
+\section{Los demás sensores}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{1.9cm}>{\raggedright}p{2.6cm}>{\raggedright}p{4.0cm}>{\raggedright\arraybackslash}p{4.6cm}}
+\toprule
+Sentido & Qué mide & Cómo es la entrada & Truco del libro \\
+\midrule
+vista & luz & $\sim10^8$ sensores, compresión de $\sim100$ veces, $\sim10^7$ bit/s & control de ganancia, resta de vecinos, dos cables, dirección del movimiento \\
+oído & presión del aire & banco de filtros mecánico, amplificador activo & código de lugar y código temporal, retardos \\
+tacto & presión, vibración & sensores de adaptación rápida y lenta & par “filtro pasaaltos y filtro pasabajos” \\
+temperatura & calor & sensores separados de calor y de frío & código de dos cables \\
+olfato & moléculas & $\sim400$ tipos de receptores, un tipo por sensor & código combinatorio: el olor es el conjunto de tipos activados \\
+gusto & sustancias de los alimentos & cinco cualidades: dulce, amargo, salado, ácido, umami & líneas marcadas; algunas células liberan ATP o serotonina, no glutamato \\
+posición del cuerpo & estiramiento muscular & sensores de longitud y de velocidad de estiramiento & realimentación para el regulador del movimiento \\
+\bottomrule
+\end{tabular}
+\caption{Cómo están conectados los sensores. Todos los dispositivos de la tercera columna se han medido; la columna derecha los relaciona con los trucos de los capítulos anteriores.}
+\label{tab:sensors}
+\end{table}
+
+Los demás sentidos están reunidos en la tabla~\ref{tab:sensors}, y en casi cada fila se reconoce un truco de los capítulos anteriores. El tacto usa un par de filtros: unos sensores de presión responden al contacto y se callan enseguida, otros mantienen la respuesta mientras dure la presión. La temperatura la transmiten dos cables, uno para el calor y otro para el frío. La entrada más inusual es el olfato. Los tipos de receptores olfativos en el ser humano son unos cuatrocientos, y cada neurona olfativa lleva un solo tipo~\cite{Mombaerts2004}. Un olor no activa un tipo, sino un conjunto, y el mensaje es \emph{cuáles} tipos se activaron. Para un ingeniero, es un vector binario de longitud cercana a cuatrocientos, con un número astronómico de valores posibles.
+
+\begin{keyblock}
+\begin{proposition}[Entradas de la máquina]
+\label{prop:sensors}
+Cada sentido es un transductor que trabaja cerca del límite físico de la sensibilidad, comprime un enorme rango dinámico mediante el control automático de ganancia y transmite por el bus \nt{GLUT} ante todo los \emph{cambios}. Para ello los sensores usan los mismos trucos que la propia máquina: el código de dos cables, el código de lugar, el código temporal y la división por el fondo. La estructura de los sensores está medida; que sus códigos estén ajustados para obtener la máxima información por espiga es una hipótesis bien fundada.
+\end{proposition}
+\end{keyblock}
+
+Las entradas, como todo lo demás, trabajan de forma asíncrona. Cada sensor emite una espiga cuando tiene algo que informar, y los distintos sentidos llegan con distintos retardos: el sonido, en milisegundos; la luz, en decenas de milisegundos. Cómo la máquina los reúne en una sola imagen del mundo sin un reloj común es uno de los problemas de coordinación en el tiempo del capítulo~\ref{sec:synthesis}.
+
+\section{Ejercicios}
+
+\begin{exercise}[\lvlA]
+\label{ex:11:1}
+\emph{Cuánto acumular fotones.} En el crepúsculo llegan al sensor $100$ fotones por segundo; un incremento se nota si es $3$ veces mayor que la fluctuación~\eqref{eq:photonnoise}. (a)~¿Cuánto tiempo necesita un sensor para notar un cambio de brillo del $10\,\%$? (b)~¿Cuántos sensores hay que sumar para lograrlo en $0.2\,\text{s}$, y cuántas veces cae la resolución espacial?
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:11:2}
+\emph{Cuántos bits hay en una espiga.} (a)~El ojo transmite $\sim10^7$ bit/s por $10^6$ neuronas de salida con una frecuencia de $3$--$5$ espigas por segundo. ¿Qué fracción de la capacidad~\eqref{eq:spikeentropy} con $\Delta t=1\ms$ usa? (b)~Un olor activa $20$ de $\approx400$ tipos de receptores. ¿Cuántos bits lleva ese conjunto y cuántos tipos comparten en promedio dos olores al azar?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:11:3}
+\emph{Qué puede hacer una sola curva~\eqref{eq:nakarushton}.} (a)~¿En qué rango de brillos crece la respuesta del $10\,\%$ al $90\,\%$ de $r_{\max}$? ¿Cuántos órdenes son? (b)~¿Cuántas posiciones de la curva desplazable hacen falta para cubrir diez órdenes de brillo? ¿Y doce órdenes de volumen?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:11:4}
+\emph{El límite del código temporal en el oído.} La diferencia de llegada del sonido a los dos oídos es de hasta $0.22\,\text{m}/343\,\text{m/s}$. (a)~Las espigas van en fase con el tono: ¿hasta qué frecuencia determinan la dirección sin ambigüedad? (b)~La espiga fluctúa $0.5\ms$, y hay que distinguir $20$~\textmu s. ¿Cuántas neuronas de $100$ espigas por segundo hay que promediar en $50\ms$?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:11:5}
+\emph{Una cámara de eventos en el cable del ojo.} Una cámara de $10^6$ píxeles con una salida de $10^7$ bit/s envía un evento (dirección y signo) cuando $\ln I$ en un píxel cambió en $\ln1.2$. ¿A qué velocidad máxima puede moverse un borde de $500$ píxeles de largo con un salto de brillo de $4$? ¿Cuántos cuadros por segundo daría por la misma salida una cámara común a $8$ bits por píxel?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:11:6}
+\emph{Simulación: control de ganancia.} El sensor~\eqref{eq:nakarushton} ajusta $\sigma$ con $\tau=1\,\text{s}$ en escala logarítmica, $\tau\,\dd\ln\sigma/\dd t=\ln I-\ln\sigma$, o linealmente, $\tau\,\dd\sigma/\dd t=I-\sigma$; el fondo salta $1\to100\to1$. ¿En cuántos segundos la respuesta a una prueba de $+10\,\%$ recupera la mitad del valor adaptado tras el salto hacia arriba y hacia abajo con cada ley?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:11:7}
+\emph{A qué mundo está ajustada la curva.} Con un ruido de salida pequeño y constante, la información sobre el brillo es máxima cuando $r(I)=r_{\max}\Phi_I(I)$, donde $\Phi_I$ es la función de distribución de los brillos. (a)~¿Para qué distribución es óptima la curva~\eqref{eq:nakarushton} y cuál es su dispersión de $\log_{10}I$? (b)~¿Qué curva es óptima con ruido de Poisson a la salida?
+\end{exercise}

@@ -1,0 +1,59 @@
+\chapter{Uma máquina sem maestro}
+% versão completa: chapters/02_glutcomputer.tex
+
+O seu computador tem um maestro: o gerador de clock. Bilhões de vezes por segundo ele dá o sinal, e todos os elementos do circuito comutam ao mesmo tempo, em compasso. No cérebro não há maestro nenhum. Cada neurônio trabalha por conta própria: os sinais chegam a ele quando calha e saem dele quando calha. Vamos ver o que se pode calcular numa máquina assim usando só neurônios \nt{GLUT} --- só ``mais''.
+
+\section*{O balde furado}
+
+É cômodo imaginar o neurônio como um balde com um furo. Cada disparo que chega é uma concha de água. A água vai escorrendo aos poucos pelo furo. Se as conchas chegam com frequência, a água chega à borda --- e o balde vira: o neurônio clica, o balde se esvazia, e tudo recomeça. Se as conchas chegam raramente, a água tem tempo de escorrer, e nada acontece.
+
+\pencilfig{2}{\pencilart{2}}{O neurônio é um balde furado: as gotas das entradas o enchem, a água vaza; chegou à marca --- clique.}
+
+O furo é a principal diferença entre o neurônio e uma porta lógica. O neurônio não lembra de um disparo para sempre, só por alguns milissegundos. Tudo o que chega dentro dessa janela se soma; o que veio antes está esquecido.
+
+\section*{``Ou'' e ``e''}
+
+Se uma concha basta para virar o balde, o neurônio dispara com qualquer entrada. Isso é o ``ou''. Se são precisas duas conchas, começa a parte interessante: ``chegaram as duas?'' não faz sentido sem maestro enquanto não se diz \emph{dentro de quanto tempo}. O neurônio só dispara se os dois disparos chegarem quase juntos, antes que a primeira concha escorra. Isso é o ``e no tempo'', um detector de coincidência. Em alguns neurônios a janela é de alguns milissegundos; nos neurônios da audição, de frações de milissegundo.
+
+\section*{O que só ``mais'' não consegue}
+
+Tente construir um ``não'': um neurônio que trabalha quando a entrada está calada. Não dá: o silêncio não põe água no balde. E isso vale não só para um neurônio, mas para qualquer rede feita só de ``mais'': se as entradas aumentam, nenhum neurônio dessa rede passa a trabalhar menos. Daí vem a propriedade mais incômoda: \emph{não se apaga atividade com atividade}. Um incêndio que pegou só pode ser detido de um jeito: parando de pôr lenha.
+
+A natureza achou um atalho. Em muitos órgãos dos sentidos, o mesmo estímulo é transmitido por dois grupos de neurônios. No olho, umas células avisam ``ficou mais claro'', outras, ``ficou mais escuro''. Se em vez de um fio você tem um par de fios ``sim'' e ``não'', o ``não'' sai de graça: basta trocar os fios de lugar. Com pares assim, feitos só de ``mais'', dá para montar qualquer circuito lógico --- e até perceber que o cálculo terminou: em cada par acendeu exatamente um fio. Engenheiros constroem assim circuitos assíncronos, que funcionam corretamente com quaisquer atrasos.
+
+\section*{Tempo a partir de atrasos}
+
+Sem maestro não há relógio comum, mas o tempo também pode ser calculado assim. O som de uma fonte ao lado chega ao ouvido mais próximo antes que ao mais distante --- frações de milissegundo antes. Vamos passar um fio do ouvido esquerdo, da esquerda para a direita, ao longo de uma fileira de detectores de coincidência, e outro do ouvido direito, da direita para a esquerda. Os dois sinais correm um ao encontro do outro e se encontram no ponto aonde ambos chegam ao mesmo tempo. O detector dispara exatamente ali. A diferença de tempo virou o \emph{número} do neurônio que disparou --- ou seja, a direção do som. A precisão chega a uma dezena de microssegundos, embora cada neurônio isolado seja bem menos preciso: o que salva é haver muitos detectores.
+
+\pencilfig{102}{%
+% delay line: the left-ear wire runs right along the top, the right-ear wire runs left along the bottom
+\draw[pen=pcBlue] (0,0.6) -- (5.6,0.6); \draw[pen=pcBlue] (6.0,-0.6) -- (0.4,-0.6);
+\foreach \i in {1,...,7}{
+  \pgfmathsetmacro{\x}{0.75*\i}
+  \draw[pen=pcBlue] (\x,0.6) -- (\x,0.24); \draw[pen=pcBlue] (\x,-0.6) -- (\x,-0.24);
+  \ifnum\i=5 \draw[dotpen=pcAmber, wash=pcAmber, line width=1.1pt] (\x,0) circle (0.2);
+  \else \draw[dotpen=pcBlue, wash=pcBlue] (\x,0) circle (0.2); \fi}
+\draw[arr=pcBlue] (0.95,0.78) -- (1.75,0.78); \draw[arr=pcBlue] (5.3,-0.78) -- (4.5,-0.78);
+\node[lbl, anchor=east, align=right] at (-0.05,0.6) {ouvido\\esquerdo};
+\node[lbl, anchor=west, align=left] at (6.05,-0.6) {ouvido\\direito};
+\node[lbl, text=pcAmber!70!black, anchor=south] at (3.75,0.95) {aqui se encontraram};
+\draw[arr=pcAmber!70!black] (3.75,0.95) -- (3.75,0.68);
+% sound source on the left
+\draw[penlite] (-1.25,-0.25) -- (-1.05,-0.25) -- (-0.8,-0.45) -- (-0.8,0.05) -- (-1.05,-0.15) -- (-1.25,-0.15) -- cycle;
+\foreach \r in {0.2,0.35}{\draw[penlite] ($(-0.75,-0.2)+(-40:\r)$) arc (-40:40:\r);}
+\node[lbl, anchor=north] at (-0.95,-0.5) {som à esquerda};
+}{O som da esquerda chega antes ao ouvido esquerdo, o sinal dele tem tempo de correr mais longe, e o encontro fica à direita do meio. O número do neurônio que disparou é a direção do som.}
+
+\section*{A memória é uma fogueira}
+
+Pegue um grupo de neurônios que se excitam fortemente uns aos outros. Se ele for aceso por um sinal curto, vai se manter sozinho, como uma fogueira que alimenta o próprio fogo. O sinal acabou, e o grupo continua aceso --- ele lembra que o sinal existiu. Isso é uma célula de memória. E se o sinal foi curto demais, a fogueira não chega a pegar e se apaga.
+
+Mas eis o problema: como apagar essa memória? Com atividade, de jeito nenhum. Resta esperar que os neurônios se cansem e a fogueira se consuma.
+
+\section*{Um temporizador disparado por um evento}
+
+Vamos ligar os grupos em cadeia: o primeiro acende o segundo, o segundo acende o terceiro. Um empurrão no primeiro --- e uma onda corre pela cadeia, como peças de dominó. O número da peça que caiu diz quanto tempo passou desde o empurrão. Não é um relógio que faz tique-taque sempre, e sim um temporizador que um evento liga e que funciona uma única vez. Nas aves canoras, durante o canto, os neurônios de uma certa região disparam rigorosamente um após o outro --- muito parecido com uma cadeia assim.
+
+Portanto, só com ``mais'' dá para fazer muita coisa. Faltam três: escolher uma coisa entre muitas, apagar a memória sob comando e impedir que a rede pegue fogo. As três vêm dos ``menos'' --- o assunto do próximo capítulo.
+
+\fullversion{2}

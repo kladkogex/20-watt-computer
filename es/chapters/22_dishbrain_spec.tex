@@ -1,0 +1,101 @@
+\section{Especificación del banco: cómo reproducirlo}
+\label{sec:dishspec}
+
+A continuación está todo lo necesario para montar de nuevo un banco así: el equipo, el lazo, la codificación de la entrada, la lectura de la salida, la retroalimentación y el protocolo del experimento. Cada parámetro lleva indicada su fuente. “Artículo”: el valor está tomado del texto del trabajo~\cite{Kagan2022}. “Elección”: el artículo no lo da, y para reproducirlo habrá que fijarlo uno mismo; proponemos un valor por defecto y decimos cómo comprobarlo.
+
+\subsection*{Equipo y cultivo}
+
+\begin{center}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{4.0cm}>{\raggedright}p{6.9cm}>{\raggedright\arraybackslash}p{1.6cm}}
+\toprule
+Parámetro & Valor & Fuente \\
+\midrule
+chip & matriz MaxOne: $26\,000$ electrodos de platino en un área de $8$~mm$^2$ & artículo \\
+registro & hasta $1024$ canales a la vez, $20\,000$ muestras por segundo & artículo \\
+estimulación & técnicamente hasta $32$ electrodos; en el experimento, $8$ independientes & artículo \\
+células & corteza de embrión de ratón; neuronas humanas a partir de células madre (dos métodos de cultivo); células HEK293T (no neuronas) como control & artículo \\
+siembra & alrededor de $10^6$ células por chip & artículo \\
+edad del cultivo en el experimento & ratón: desde $\sim10$ días; humano: $14$--$24$ días o $\sim80$ días según el método de cultivo & artículo \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection*{Lazo y tiempo}
+
+El lazo funciona en ventanas de $10\ms$ ($200$ muestras): en cada ventana se cuentan las espigas en los electrodos de las regiones motoras, se actualiza el juego y se emite la siguiente estimulación. El retardo desde una espiga en el cultivo hasta el estímulo de respuesta es de unos $5\ms$. Durante el juego, la señal de cada electrodo pasa por un filtro de Bessel paso alto de 2.º orden con frecuencia de corte de $100$~Hz; el valor absoluto de la señal se suaviza con un filtro de Bessel paso bajo de 1.er orden de $1$~Hz, y el umbral de espiga es proporcional a ese valor absoluto suavizado. El umbral de seis desviaciones estándar del fondo el artículo lo indica para mediciones aparte de la actividad, no para el juego. Para que la estimulación no cuente como respuesta del cultivo, todas las señales se anulan cuando llegan a la vez más de $15$ pulsos grandes, de más de $75$~mV. Todo esto: artículo.
+
+\subsection*{Codificación de la pelota}
+
+\begin{center}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{3.4cm}>{\raggedright}p{7.5cm}>{\raggedright\arraybackslash}p{1.6cm}}
+\toprule
+Parámetro & Valor & Fuente \\
+\midrule
+región sensorial & $8$ electrodos dispuestos de modo que electrodos vecinos signifiquen posiciones vecinas de la pelota & artículo \\
+código de lugar & el número de electrodo $k=1,\dots,8$ da la posición de la pelota respecto al centro de la raqueta & artículo \\
+qué coordenada & la posición vertical de la pelota; para reproducirlo, respecto a la raqueta, $k=\lceil 8(y-p+\tfrac12)\rceil$ con $y-p\in[-\tfrac12,\tfrac12]$ & artículo; fórmula: elección \\
+código de frecuencia & una frecuencia de estimulación de $4$ a $40$~pulsos/s lleva la distancia a la raqueta & artículo \\
+sentido de la escala & $4$~pulsos/s cuando la pelota está junto a la pared opuesta, y linealmente hasta $40$~pulsos/s cuando está junto a la pared de la raqueta: $f=4+36\,(1-x/L)$, $x$ es la distancia a la pared de la raqueta, $L$ el ancho de la cancha & artículo \\
+forma del pulso & rectangular bifásico corto: primero la fase positiva, luego la negativa & artículo \\
+amplitud & $75$~mV; elegida para no forzar el disparo de las células inhibidas & artículo \\
+duración de las fases & no indicada; usar el ajuste estándar del sistema de estimulación y no cambiarlo durante el experimento & elección \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection*{Lectura de la raqueta}
+
+En el artículo hay dos regiones motoras: las espigas en la primera mueven la raqueta hacia arriba; en la segunda, hacia abajo. La contribución de las regiones se pondera para tener en cuenta su distinta densidad de células y su distinta actividad~\cite{Kagan2022}. La fórmula exacta no se da. Para reproducirlo tomamos la regla~\eqref{eq:dishreadout}, $\Delta p=c\,(n_\uparrow-n_\downarrow)$ en cada ventana de $10\ms$, con un peso que iguala las regiones por su actividad media en reposo (elección): $n_\uparrow$ y $n_\downarrow$ se dividen entre la cuenta media de su región por ventana, medida antes del juego. El coeficiente $c$ se elige de modo que una diferencia de una cuenta media desplace la raqueta un $1\%$ de la altura de la cancha por ventana (elección); así, un predominio constante de una región lleva la raqueta de un lado a otro de la cancha en $1$~s.
+
+La ubicación de las regiones en el chip no está dada con coordenadas en el texto del artículo; solo hay un esquema. Para reproducirlo bastan tres grupos de electrodos disjuntos: los ocho sensoriales en el centro y un grupo de electrodos de registro a cada lado, uno “arriba” y otro “abajo” (elección).
+
+\subsection*{El juego}
+
+El tamaño de la cancha, la longitud de la raqueta y la velocidad de la pelota no se indican en el artículo; solo se dice que la pelota vuela a velocidad constante y rebota en las paredes. Para reproducirlo (elección): cancha de $1\times1$, raqueta de longitud $0.2$ en la pared derecha (acierto con $|y-p|<0.1$, como en el modelo~\texttt{models/dishbrain\_model.py}), y la pelota cruza la cancha en $1$~s. Un fallo sin ninguna pelota devuelta en el peloteo cuenta como “ace”; un peloteo de más de tres golpes seguidos, como “largo” (artículo).
+
+\subsection*{Retroalimentación}
+
+\begin{center}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{2.6cm}>{\raggedright}p{8.3cm}>{\raggedright\arraybackslash}p{1.6cm}}
+\toprule
+Evento & Qué se aplica & Fuente \\
+\midrule
+acierto & estímulo predecible: los $8$ electrodos sensoriales a la vez, $75$~mV, $100$~pulsos/s, $100\ms$; la estimulación normal de la pelota se interrumpe durante ese tiempo & artículo \\
+fallo & estímulo impredecible: $150$~mV, $5$~pulsos/s, $4$~s, en instantes aleatorios y en electrodos elegidos al azar entre los $8$; luego $4$~s sin estimulación, y la pelota sale en una dirección aleatoria & artículo \\
+ley del azar & no indicada; para reproducirlo, los instantes de los pulsos como un proceso de Poisson de frecuencia media $5$~pulsos/s & elección \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection*{Protocolo y control}
+
+Una sesión dura $20$~min; se comparan los primeros $5$ y los últimos $15$~min (artículo). Tres medidas del resultado: la longitud media del peloteo, la fracción de aces y la fracción de peloteos largos. Condiciones del experimento (artículo):
+\begin{itemize}
+\item \emph{estímulo}: el lazo completo, como se describe arriba;
+\item \emph{silencio}: en lugar del estímulo de acierto o de fallo, el mismo tiempo sin ninguna estimulación; luego la pelota sale en una dirección aleatoria;
+\item \emph{sin retroalimentación}: tras un fallo la pelota simplemente rebota y sigue volando, y la estimulación de la posición de la pelota continúa;
+\item \emph{reposo}: el juego sigue y la raqueta se mueve según la actividad, pero no hay ninguna estimulación;
+\item \emph{controles}: chip solo con medio; células HEK293T; “cultivo en la computadora”, una simulación en lugar de células.
+\end{itemize}
+Tamaño de muestra en la serie principal: $9$ cultivos de ratón ($101$ sesiones), $11$ cultivos humanos ($138$), $6$ chips con medio ($80$), $20$ cultivos en reposo ($42$), $3$ simulaciones ($38$); en total, $399$ sesiones. En la serie sobre la retroalimentación: $486$ sesiones en $3$ días, $3$ sesiones al día, con las condiciones “estímulo”, “silencio” y “sin retroalimentación” ($n=27$, $17$ y $15$). El aumento de la longitud media del peloteo de los primeros $5$ minutos a los últimos $15$ solo se obtuvo en cultivos vivos. En la serie sobre la retroalimentación, el aumento significativo en el tiempo solo se dio en la condición “estímulo”; al final de la sesión la condición “silencio” sí superaba a “sin retroalimentación”, pero con un efecto menor, y no hubo aprendizaje estable de una sesión a otra en los tres días~\cite{Kagan2022}.
+
+\subsection*{El ciclo del banco paso a paso}
+
+Cada $10\ms$ la computadora del banco hace lo siguiente.
+\begin{enumerate}
+\item Lee el número de espigas $n_\uparrow$, $n_\downarrow$ en las dos regiones motoras durante la ventana anterior y lo normaliza por la cuenta media de la región en reposo.
+\item Desplaza la raqueta en $\Delta p=c\,(n_\uparrow-n_\downarrow)$ y la limita a los bordes de la cancha.
+\item Avanza la pelota un paso; la hace rebotar en las paredes superior, inferior e izquierda.
+\item Si la pelota llegó a la pared derecha: con $|y-p|<0.1$ hay acierto, la cuenta del peloteo sube en uno y se aplica el estímulo de acierto ($100\ms$); si no, hay fallo, se registra el peloteo, se aplica el estímulo de fallo ($4$~s), luego $4$~s de pausa, y la pelota vuelve a salir.
+\item Si no, elige el electrodo $k$ según la posición vertical de la pelota y la frecuencia $f$ según la distancia a la pared de la raqueta, y aplica al electrodo $k$ pulsos bifásicos de $75$~mV con frecuencia $f$ hasta la siguiente ventana.
+\end{enumerate}
+Esto basta para montar un banco compatible con el publicado y comprobar la pregunta principal del capítulo: si al cultivo le enseña la predictibilidad o la simple diferencia entre la respuesta al acierto y al fallo. Para ello conviene añadir a las tres condiciones del artículo una cuarta que no está en él: tras el fallo, un estímulo \emph{predecible} de la misma duración y energía que el impredecible. Si el cultivo aprende también así, lo que cuenta es la diferencia, no la predictibilidad.

@@ -1,0 +1,53 @@
+\chapter{Las neuronas juegan al tenis}
+% versión completa: chapters/22_dishbrain.tex
+
+El experimento más famoso con neuronas vivas sobre un chip es DishBrain, el “cerebro en una placa”. Alrededor de un millón de neuronas, cultivadas sobre un chip con veintiséis mil electrodos, jugaban al tenis de computadora más sencillo: una pelota vuela por la pantalla y una paleta sube y baja.
+
+\section*{Cómo funciona el juego}
+
+La pelota entra en la red por ocho electrodos. Cuál de ellos hace clic dice a qué altura está la pelota. Con qué frecuencia hace clic dice qué tan lejos está: cuatro veces por segundo cuando está junto a la pared del fondo, y cada vez más seguido, hasta cuarenta, cuando se acerca a la paleta. La salida son dos zonas de electrodos: los clics en una mueven la paleta hacia arriba; en la otra, hacia abajo. Cada diez milisegundos la computadora cuenta los clics y mueve la paleta. Esos diez milisegundos son el ciclo de reloj de la computadora del banco de pruebas, no del cultivo: la red en sí funciona de forma asíncrona, como toda red nerviosa.
+
+\pencilfig{22}{\pencilart{22}}{La pelota, la paleta y el millón de neuronas que la mueven.}
+
+\section*{El maestro}
+
+Nada de dopamina. Tras un acierto, la red recibe una señal breve y totalmente predecible: los ocho electrodos a la vez, durante una décima de segundo. Tras un fallo, cuatro segundos de estimulación desordenada en lugares al azar y en momentos al azar; luego una pausa, y un nuevo saque.
+
+\section*{Qué resultó}
+
+A lo largo de una sesión de veinte minutos, los peloteos de los cultivos vivos se alargaban y los saques perdidos disminuían. Lo mejor se lograba con la retroalimentación completa. Cuando, en lugar de las señales tras el acierto y el fallo, simplemente había silencio, también había mejora, pero más débil; sin retroalimentación no la había. Las neuronas humanas jugaban un poco mejor que las de ratón. En cambio, el aprendizaje repartido a lo largo de varios días no resultó fiable.
+
+\section*{Por qué aprende la red}
+
+Los autores explican el resultado así: la red busca que sus sensaciones sean predecibles. El fallo trae caos; el acierto, orden; y la red cambia para que haya más orden. Pero hay también una explicación más terrenal que también concuerda con los datos: “sacude tras un fallo, no toques tras un acierto”. Cada sacudida revuelve un poco las conexiones al azar. Los ajustes con los que la red falla a menudo se revuelven todo el tiempo, y los buenos quedan intactos. La red se queda sola donde hay pocos fallos: nadie le enseñó, simplemente dejan de sacudirla. En nuestro modelo sencillo, esa regla de verdad aumenta la proporción de aciertos.
+
+\pencilfig{130}{%
+% scrambler: miss probability p over one setting of the network (valley in the middle); a miss kicks the setting
+% at random, a hit leaves it alone, so the time spent at a setting is proportional to 1/p (6x more in the valley here)
+\draw[pen] (0,1.2) -- (8.2,1.2);
+\draw[penlite=pcRed] plot[smooth] coordinates {(0.0,2.46) (0.8,2.46) (1.6,2.46) (2.0,2.44) (2.4,2.41) (2.8,2.32) (3.2,2.15) (3.6,1.90) (4.0,1.62) (4.4,1.44) (4.8,1.44) (5.2,1.62) (5.6,1.90) (6.0,2.15) (6.4,2.32) (6.8,2.41) (7.2,2.44) (7.6,2.46) (8.0,2.46)};
+\node[lbl, text=pcRed, anchor=south] at (7.55,2.55) {muchos fallos};
+\node[lbl, text=pcRed, anchor=west] at (5.3,1.45) {pocos};
+% kicked balls on the slopes
+\draw[dotpen=pcBlue, wash=pcBlue] (1.3,2.68) circle (0.12);
+\draw[arr=pcGray, densely dashed] (1.35,2.82) to[bend left=50] (2.35,2.72);
+\draw[arr=pcGray, densely dashed] (1.22,2.82) to[bend right=50] (0.4,2.72);
+\draw[dotpen=pcBlue, wash=pcBlue] (6.3,2.45) circle (0.12);
+\draw[arr=pcGray, densely dashed] (6.25,2.59) to[bend right=50] (5.45,2.25);
+\node[lbl, anchor=south] at (1.3,3.05) {sacudida tras un fallo};
+% the ball left alone in the valley
+\draw[dotpen=pcBlue, wash=pcBlue] (4.6,1.66) circle (0.12);
+\node[lbl, anchor=south] at (4.6,1.95) {no la sacuden};
+% where the network spends its time (proportional to 1/p)
+\fill[pcGreen, opacity=0.22] (0,0) -- plot[smooth] coordinates {(0.0,0.18) (0.8,0.18) (1.6,0.18) (2.0,0.19) (2.4,0.19) (2.8,0.21) (3.2,0.24) (3.6,0.33) (4.0,0.55) (4.4,0.98) (4.8,0.98) (5.2,0.55) (5.6,0.33) (6.0,0.24) (6.4,0.21) (6.8,0.19) (7.2,0.19) (7.6,0.18) (8.0,0.18)} -- (8.0,0) -- cycle;
+\draw[penlite=pcGreen] plot[smooth] coordinates {(0.0,0.18) (0.8,0.18) (1.6,0.18) (2.0,0.19) (2.4,0.19) (2.8,0.21) (3.2,0.24) (3.6,0.33) (4.0,0.55) (4.4,0.98) (4.8,0.98) (5.2,0.55) (5.6,0.33) (6.0,0.24) (6.4,0.21) (6.8,0.19) (7.2,0.19) (7.6,0.18) (8.0,0.18)};
+\draw[pen] (0,0) -- (8.2,0);
+\node[lbl, text=pcGreen!60!black, anchor=west] at (5.3,0.6) {dónde pasa el tiempo la red};
+\node[lbl, anchor=north] at (4.1,-0.03) {ajustes de la red};
+}{Un fallo sacude los ajustes de la red al azar; un acierto los deja en paz. Donde hay muchos fallos, la red no se queda. Donde hay pocos, dejan de sacudirla, y se queda ahí, aunque nadie la llevó.}
+
+¿Cómo distinguir las dos explicaciones? Hace falta un experimento que no se ha hecho: tras un fallo, dar no una señal caótica, sino una \emph{predecible}, de la misma duración y fuerza. Si la red aprende igual, la clave no está en la previsibilidad, sino simplemente en la diferencia entre “después de un acierto” y “después de un fallo”. Ese experimento todavía espera a quien lo haga.
+
+Y aquí termina nuestro camino. La máquina de veinte vatios está hecha de piezas simples, pero cómo exactamente las combina en un pensamiento, por ahora solo lo entendemos en parte. Quizá el próximo capítulo lo escriba usted.
+
+\fullversion{22}

@@ -1,0 +1,292 @@
+\chapter{Qué calculan las neuronas \nt{GLUT}}
+\label{sec:glutcomputer}
+
+\section{Las reglas del juego}
+
+En el capítulo~\ref{sec:neurontypes} vimos que la inmensa mayoría de las neuronas del cerebro son \nt{GLUT}: solo excitan, y sus pesos solo son positivos. Tomemos tantas neuronas de este tipo como queramos y preguntémonos: ¿qué puede calcular una red así si nos permitimos solo lo que existe en un organismo vivo?
+
+Y en un organismo vivo no hay un generador de reloj que conmute todos los elementos a la vez. Cada neurona trabaja por su cuenta, en tiempo continuo: las espigas llegan y salen cuando toca, con retardos distintos. Hay \emph{entradas} (neuronas sensoriales que se disparan con la luz, el sonido o la presión) y \emph{salidas} (neuronas que controlan los músculos). Entre ellas está la red, y nadie le dice cuándo empezar ni cuándo terminar el cálculo. Para un electrónico, es un circuito \emph{asíncrono} con elementos cuyos retardos no se conocen con exactitud de antemano.
+
+Tomemos el modelo de neurona más sencillo de los que funcionan de verdad en tiempo continuo. El voltaje $V$ de la membrana de la neurona vale cero en reposo. Cada espiga que llega de la neurona $j$ lo eleva de golpe en $w_j\ge0$, y luego el voltaje vuelve solo hacia cero con constante de tiempo $\tau$:
+\begin{empheq}[box=\keybox]{equation}
+\tau\,\frac{\dd V}{\dd t} \;=\; -V \;+\; \tau\sum_j w_j \sum_k \delta\bigl(t-t_j^{(k)}-d_j\bigr), \qquad w_j\ge 0 .
+\label{eq:glutneuron}
+\end{empheq}
+Aquí $t_j^{(k)}$ son los instantes de las espigas de la neurona $j$, $d_j$ es el retardo del camino desde ella y $\delta$ es la función delta, que representa precisamente el salto instantáneo. Cuando $V$ alcanza el umbral $\theta$, la neurona emite una espiga, $V$ se reinicia a cero y durante aproximadamente un milisegundo la neurona no puede volver a dispararse. Valores típicos: $\tau$, desde fracciones de milisegundo hasta veinte milisegundos según la neurona; retardos, desde fracciones de milisegundo hasta decenas de milisegundos. Es la \emph{neurona integradora con fugas}: un circuito RC con umbral. Es una simplificación consciente: en las neuronas de la corteza, las ramas de entrada generan por sí mismas espigas locales~\cite{Smith2013}, y una neurona se comporta más bien como una pequeña red multicapa (capítulo~\ref{sec:synthesis}). Para las preguntas de este capítulo basta con un solo circuito RC.
+
+La diferencia principal con una compuerta lógica es la fuga: la neurona no recuerda una espiga para siempre, sino durante aproximadamente $\tau$, y solo se suma lo que llega dentro de esa ventana.
+
+\section{OR y AND}
+
+Empecemos por las compuertas. Si una sola espiga eleva el voltaje por encima del umbral, $w\ge\theta$, la neurona se dispara con cada espiga de cualquier entrada. Es un \emph{OR}.
+
+El AND es más interesante. Sea $w<\theta<2w$: una espiga no basta, hacen falta dos. Pero ahora la pregunta “¿llegaron las dos?” no tiene sentido mientras no se diga \emph{dentro de qué intervalo de tiempo}. Supongamos que la primera espiga llegó en el instante $0$ y la segunda al cabo de un tiempo $\Delta$. Cuando llega la segunda, de la primera queda $we^{-\Delta/\tau}$, y la neurona se dispara si $we^{-\Delta/\tau}+w\ge\theta$. De ahí la ventana de coincidencia:
+\begin{empheq}[box=\keybox]{equation}
+\Delta \;\le\; \Delta_{\max} \;=\; \tau\,\ln\frac{w}{\theta-w} .
+\label{eq:window}
+\end{empheq}
+No es un AND lógico, sino un \emph{detector de coincidencias}: un AND en el tiempo (fig.~\ref{fig:coincidence}). Con $\theta=1.5w$ la ventana vale $\tau\ln2\approx0.7\tau$. En una neurona de la corteza con $\tau=10\ms$ son unos siete milisegundos. En las neuronas del sistema auditivo, donde $\tau$ es menor que un milisegundo, la ventana se reduce a fracciones de milisegundo.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=0.9cm,y=1.6cm]
+\foreach \dx/\lab/\c [count=\i] in {0.5/{coinciden}/red!70!black, 2.6/{no coinciden}/blue!60!black}{
+ \begin{scope}[xshift={(\i-1)*7.2cm}]
+  \draw[->,gray!70!black] (0,0) -- (6.3,0) node[below left,black] {\small $t$};
+  \draw[->,gray!70!black] (0,0) -- (0,1.75) node[left,black] {\small $V$};
+  \draw[densely dashed,gray!60!black] (0,1.5) -- (6.0,1.5) node[right,black] {\small $\theta$};
+  \draw[very thick,\c] (0,0) -- (1,0) -- (1,1)
+      plot[domain=1:1+\dx,samples=30] (\x,{exp(-(\x-1)/1.5)});
+  \pgfmathsetmacro{\v}{exp(-\dx/1.5)+1}
+  \draw[very thick,\c] (1+\dx,{exp(-\dx/1.5)}) -- (1+\dx,{min(\v,1.5)});
+  \ifdim\v pt<1.5pt
+    \draw[very thick,\c] plot[domain=1+\dx:6,samples=40] (\x,{\v*exp(-(\x-1-\dx)/1.5)});
+  \else
+    \draw[very thick,\c] (1+\dx,1.5) -- (1+\dx,0) -- (6,0);
+    \draw[->,thick,\c] (1+\dx,1.55) -- (1+\dx,1.72) node[above,font=\scriptsize] {espiga};
+  \fi
+  \draw[->,thick] (1,-0.35) -- (1,-0.08); \draw[->,thick] (1+\dx,-0.35) -- (1+\dx,-0.08);
+  \draw[decorate,decoration={brace,amplitude=3pt,mirror}] (1,-0.42) -- (1+\dx,-0.42) node[midway,below=3pt] {\scriptsize $\Delta$};
+  \node[\c] at (3.5,-0.95) {\small \lab};
+ \end{scope}}
+\end{tikzpicture}
+\caption{Detector de coincidencias, umbral $\theta=1.5w$. A la izquierda, la segunda espiga llegó al cabo de $\Delta<\Delta_{\max}$, la suma alcanzó el umbral y la neurona se disparó. A la derecha, $\Delta>\Delta_{\max}$: de la primera espiga casi no quedaba nada, y la neurona calló.}
+\label{fig:coincidence}
+\end{figure}
+
+Otra forma de obtener un AND es por la duración, no por el instante exacto. Mientras hay luz, la neurona sensorial emite espigas frecuentes y regulares; si al umbral no le basta una de estas entradas pero sí dos, la neurona trabaja mientras ambas estén activas. Así la red calcula con \emph{niveles}, y el instante exacto de llegada de las espigas no importa. La mayor parte de lo que sigue funciona precisamente así.
+
+\section{Lo que no se puede hacer}
+
+Intentemos ahora construir un NOT: una neurona que trabaje cuando la entrada calla. No se puede: sin espigas de entrada, en~\eqref{eq:glutneuron} no hay ni un solo salto, y el voltaje se queda en cero, por debajo del umbral. ¿Y una red de muchas neuronas? Tampoco, y se demuestra de una vez para todas las redes.
+
+Lo más cómodo es hablar de frecuencias. Sea $r_i$ la frecuencia de espigas de la neurona $i$, $I_i$ el aporte de las entradas y $f_i$ su característica de transferencia: cómo depende la frecuencia del aporte total. En una neurona integradora esta característica es no decreciente: a más aporte, espigas más frecuentes. Las frecuencias de una red que ha llegado al equilibrio satisfacen las ecuaciones
+\begin{equation}
+r_i \;=\; f_i\Bigl(\sum_j w_{ij}\,r_j + I_i\Bigr), \qquad w_{ij}\ge 0 .
+\label{eq:ratenet}
+\end{equation}
+
+\begin{keyblock}
+\begin{proposition}[Monotonía]
+\label{prop:monotone}
+Supongamos que la red~\eqref{eq:ratenet} consta solo de neuronas \nt{GLUT} y parte del silencio total. Si se refuerzan las entradas, la frecuencia estacionaria de ninguna neurona disminuye. Todo lo que calcula una red así son funciones \emph{monótonas} de las entradas.
+\end{proposition}
+\end{keyblock}
+
+Demostración. Partamos del silencio, $r^{(0)}=0$, y sustituyamos las frecuencias en el lado derecho de~\eqref{eq:ratenet}: $r^{(k+1)}=F\bigl(r^{(k)}\bigr)$. El lado derecho $F$ no decrece en ningún argumento, porque los pesos son no negativos y las $f_i$ no decrecen. Como $r^{(1)}\ge0=r^{(0)}$, por inducción $r^{(k+1)}\ge r^{(k)}$: las frecuencias solo crecen y llegan a la menor solución de~\eqref{eq:ratenet}. Si las entradas $I$ se sustituyen por otras mayores $I'$, en cada paso $r^{(k)}(I)\le r^{(k)}(I')$, y también en el límite. Una red real no llega al equilibrio por pasos, sino de forma continua, pero para ella vale lo mismo: con conexiones positivas, la desigualdad entre dos ejecuciones que se cumple al principio se mantiene todo el tiempo.
+
+Para espigas individuales la proposición no es literalmente cierta: una espiga de entrada adicional puede hacer que la neurona se dispare un poco antes, y por el milisegundo refractario se perderá su espiga siguiente. Pero el efecto es débil y poco fiable, no se puede calcular con él. Para las frecuencias, la monotonía es estricta.
+
+Las consecuencias son las mismas que en cualquier circuito sin inversores. No hay NOT. No hay OR exclusivo: añadir una segunda entrada no puede apagar la salida. Y lo más incómodo: \emph{la actividad no se puede detener con actividad}; solo se puede retirar lo que la sostiene.
+
+\section{Dos cables: encendido y apagado}
+
+La salida del callejón la sugiere el propio organismo. En muchos órganos de los sentidos el estímulo se transmite por dos conjuntos de neuronas: en la visión, unas células responden al aumento de la luz y otras a su disminución~\cite{Schiller1992}. Llamémoslas de \emph{encendido} y de \emph{apagado}. En lugar de un solo cable $x$, la red recibe un par $(x,\bar x)$, y la ausencia, que no sabe calcular, se la comunica el propio sensor.
+
+Con un par de cables, el NOT sale gratis: basta con intercambiar los cables. AND y OR se hacen con dos neuronas cada uno:
+\begin{empheq}[box=\keybox]{equation}
+\begin{aligned}
+x\wedge y \;&\to\; \bigl(\;x\wedge y,\;\; \bar x\vee\bar y\;\bigr),\\
+x\vee y \;&\to\; \bigl(\;x\vee y,\;\; \bar x\wedge\bar y\;\bigr).
+\end{aligned}
+\label{eq:dualrail}
+\end{empheq}
+A la derecha todas las operaciones son monótonas, así que la proposición~\ref{prop:monotone} no se viola.
+
+Para un circuito asíncrono, el código de dos cables tiene una segunda ventaja, aún más importante. Un par de cables tiene tres estados: “sí”, “no” y, cuando ambos callan, \emph{“todavía no hay respuesta”}. El receptor sabe que el cálculo ha terminado no por un reloj, sino por la propia señal: en cada par se ha activado exactamente un cable. Entre estímulos los sensores callan, y la red vuelve al silencio, lista para la próxima vez. En la electrónica asíncrona, sobre este recurso se construyen circuitos que funcionan correctamente con cualquier retardo de sus elementos~\cite{Sparso2001}.
+
+\begin{keyblock}
+\begin{proposition}[Cálculo asíncrono]
+\label{prop:dualrail}
+Si cada entrada llega como un par de cables de “encendido-apagado”, una red de neuronas \nt{GLUT} puede calcular cualquier función lógica de las entradas. La respuesta también llega en pares de cables, y se sabe que está lista porque en cada par se ha activado un cable. No hace falta reloj. El precio: aproximadamente el doble de neuronas.
+\end{proposition}
+\end{keyblock}
+
+Un ejemplo es el OR exclusivo: “cambió exactamente uno de los dos estímulos”. El cable directo de la respuesta es $(x\wedge\bar y)\vee(\bar x\wedge y)$, y el inverso, $(x\wedge y)\vee(\bar x\wedge\bar y)$. Son seis neuronas, y ninguna necesita inhibición (fig.~\ref{fig:dualxor}).
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=1cm,y=1cm,
+  nrn/.style={circle,draw,very thick,fill=blue!6,minimum size=0.75cm,inner sep=0pt,font=\small},
+  inp/.style={font=\small}]
+\node[inp] (X)  at (0,3.3) {$x$};
+\node[inp] (Xb) at (0,2.2) {$\bar x$};
+\node[inp] (Y)  at (0,1.1) {$y$};
+\node[inp] (Yb) at (0,0)   {$\bar y$};
+\node[nrn] (A1) at (3.2,3.3) {$2$};
+\node[nrn] (A2) at (3.2,2.2) {$2$};
+\node[nrn] (A3) at (3.2,1.1) {$2$};
+\node[nrn] (A4) at (3.2,0)   {$2$};
+\node[nrn] (O)  at (7.2,2.75) {$1$};
+\node[nrn] (Ob) at (7.2,0.55) {$1$};
+\foreach \s/\t in {X/A1,Yb/A1,Xb/A2,Y/A2,X/A3,Y/A3,Xb/A4,Yb/A4}{\draw[->,thick,blue!60!black] (\s) -- (\t);}
+\draw[->,thick,blue!60!black] (A1) -- node[pos=0.45,above,sloped,font=\scriptsize,black] {$x\wedge\bar y$} (O);
+\draw[->,thick,blue!60!black] (A2) -- node[pos=0.45,below,sloped,font=\scriptsize,black] {$\bar x\wedge y$} (O);
+\draw[->,thick,blue!60!black] (A3) -- node[pos=0.45,above,sloped,font=\scriptsize,black] {$x\wedge y$} (Ob);
+\draw[->,thick,blue!60!black] (A4) -- node[pos=0.45,below,sloped,font=\scriptsize,black] {$\bar x\wedge\bar y$} (Ob);
+\draw[->,very thick,red!70!black] (O) -- (8.6,2.75) node[right,black] {$x\oplus y$: “sí”};
+\draw[->,very thick,red!70!black] (Ob) -- (8.6,0.55) node[right,black] {$\overline{x\oplus y}$: “no”};
+\node[below,font=\small,gray!40!black] at (3.2,-0.55) {AND: umbral $2$};
+\node[below,font=\small,gray!40!black] at (7.2,-0.55) {OR: umbral $1$};
+\node[below,font=\small,gray!40!black] at (0,-0.55) {pares de cables};
+\end{tikzpicture}
+\caption{OR exclusivo en código de dos cables, solo con neuronas \nt{GLUT}. El número del círculo es el umbral en unidades del peso de una entrada. Cuatro neuronas AND reconocen las cuatro combinaciones de entradas, y dos neuronas OR las reúnen en el par de cables de la respuesta.}
+\label{fig:dualxor}
+\end{figure}
+
+\section{Retardos en lugar de reloj}
+
+Para calcular con el tiempo bastan retardos en los cables y detectores de coincidencias. El mejor ejemplo es cómo determina el cerebro de dónde viene un sonido.
+
+El sonido de una fuente situada a un lado llega al oído cercano antes que al lejano. La diferencia depende de la dirección: desde cero, cuando la fuente está justo delante, hasta $0.22\,\text{m}/343\,\text{m/s}\approx0.6\ms$ en el ser humano, cuando está exactamente a un lado. El cerebro distingue diferencias de unos diez \emph{microsegundos}~\cite{KlumppEady1956,Grothe2010}, aunque las neuronas mismas se disparan con una precisión no mejor que fracciones de milisegundo. ¿Cómo?
+
+Llevemos un cable desde el oído izquierdo a lo largo de una fila de detectores de coincidencias de izquierda a derecha, y otro desde el derecho, de derecha a izquierda (fig.~\ref{fig:itd}). La señal corre por el cable a velocidad $v$. Hasta un detector situado a una distancia $x$ del extremo izquierdo de una fila de longitud $L$, la señal izquierda tarda $x/v$, y la derecha, $(L-x)/v$. Si el sonido llegó al oído derecho con un retraso $\delta t$, las dos señales se encontrarán a la vez en el punto donde
+\begin{empheq}[box=\keybox]{equation}
+\frac{x}{v} \;=\; \frac{L-x}{v} + \delta t
+\quad\Longrightarrow\quad
+x \;=\; \frac{L}{2} + \frac{v\,\delta t}{2} .
+\label{eq:itd}
+\end{empheq}
+Solo se disparará el detector al que ambas señales llegaron dentro de la ventana~\eqref{eq:window}. El número del detector que se dispara es la dirección de la fuente. La diferencia de tiempo se ha convertido en \emph{lugar}.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  nrn/.style={circle,draw,very thick,fill=blue!6,minimum size=0.7cm,inner sep=0pt}]
+\foreach \k in {0,...,6}{\node[nrn] (D\k) at (1.4*\k,0) {\scriptsize $2$};}
+\node[nrn,fill=red!15] at (D4) {\scriptsize $2$};
+\draw[->,thick,blue!60!black] (-1.4,0.9) node[left,black] {\small oído izquierdo} -- (9.2,0.9);
+\draw[->,thick,orange!85!black] (9.8,-0.9) node[right,black] {\small oído derecho} -- (-0.8,-0.9);
+\foreach \k in {0,...,6}{
+  \draw[->,blue!60!black] (1.4*\k,0.9) -- (D\k.north);
+  \draw[->,orange!85!black] (1.4*\k,-0.9) -- (D\k.south);}
+\draw[->,thick,red!70!black] (D4.north east) ++(0.1,0.05) -- ++(0.5,0.45) node[above right,font=\small,black] {se disparó};
+\node[font=\small,gray!40!black] at (4.2,-1.5) {el retardo crece $\longrightarrow$ \hspace{2.2cm} $\longleftarrow$ el retardo crece};
+\pic[scale=1.4] at (-2.3,1.75) {speaker};
+\node[font=\scriptsize,align=center] at (-2.3,2.35) {fuente a la izquierda};
+\end{tikzpicture}
+\caption{Localización de un sonido. Las señales de los dos oídos corren una al encuentro de la otra; cada círculo es un detector de coincidencias con umbral $2$. Si el sonido llegó más tarde al oído derecho, las señales se encuentran a la derecha del centro, según la fórmula~\eqref{eq:itd}. La salida de la red es el número de la neurona que se dispara. Aquí la fuente está a la izquierda: el sonido llegó antes al oído izquierdo.}
+\label{fig:itd}
+\end{figure}
+
+Aquí no hay reloj, ni inhibición, ni siquiera código de dos cables: la red no responde “sí” o “no”, sino que señala una neurona entre muchas. Un circuito así, de líneas de retardo y detectores de coincidencias, parece funcionar realmente en el tronco auditivo de las aves~\cite{Carr1990}. La precisión de microsegundos no sale de la precisión de cada neurona, sino de que hay muchos detectores y cada uno vigila su propio retardo. En los mamíferos no se ha encontrado una fila de retardos así: allí la misma tarea parece resolverse con detectores de coincidencias ajustados por una inhibición de \nt{GLYC} temporizada con precisión~\cite{Brand2002,Grothe2010}. Cómo la inhibición estrecha la ventana de coincidencia lo veremos en el capítulo~\ref{sec:gaba} con el ejemplo de \nt{GABA}; la glicina inhibe del mismo modo, abriendo canales de cloro en el receptor.
+
+\section{Memoria}
+
+Una computadora necesita memoria. En una red así, la memoria es una actividad que se sostiene a sí misma. Tomemos un grupo de neuronas \nt{GLUT} fuertemente conectadas entre sí y describámoslo con una sola frecuencia $r$ (fig.~\ref{fig:recurrentgroup}a). En equilibrio, $r=f(wr+I)$, donde $w$ es la fuerza de la realimentación del grupo sobre sí mismo e $I$ es el aporte externo. Resolvamos esta ecuación gráficamente, cortando la curva $f(wr+I)$ con la recta $r$ (fig.~\ref{fig:bistable}).
+
+\begin{figure}[t]
+\centering
+% (b): tau dr/dt = -r + f(w r + I), f as in fig:bistable, w=1, I=0.6; Euler dt=0.001 tau.
+\begin{tikzpicture}[>=Stealth,
+  nrn/.style={circle,draw,thick,fill=blue!6,minimum size=0.5cm,inner sep=0pt}]
+\begin{scope}
+\node[font=\small] at (-0.5,1.55) {(a)};
+\foreach \k in {1,...,6}{\node[nrn] (n\k) at ({1.4+1.0*cos(60*\k)},{1.0*sin(60*\k)}) {};}
+\foreach \a/\b in {1/2,2/3,3/4,4/5,5/6,6/1,1/4,2/5,3/6}{\draw[<->,blue!60!black] (n\a) -- (n\b);}
+\foreach \k in {2,3,4}{\draw[->,thick,green!45!black] ($(n\k)+(-0.95,0)$) -- (n\k);}
+\node[font=\small,green!45!black] at (-0.35,-0.45) {$I$};
+\node[font=\Large] at (3.1,0) {$\approx$};
+\node[nrn,minimum size=0.85cm,font=\small] (R) at (4.35,-0.1) {$r$};
+\draw[->,thick,blue!60!black] (R) edge[loop above,looseness=6] node[above,font=\small] {$w$} (R);
+\draw[->,thick,green!45!black] (3.55,-0.95) node[left,font=\small] {$I$} -- (R);
+\end{scope}
+\begin{scope}[xshift=6.3cm,y=2.6cm,x=1.05cm]
+\node[font=\small] at (-0.6,1.25) {(b)};
+\draw[->,gray!70!black] (0,0) -- (7.3,0) node[below left,font=\small,black] {$t/\tau$};
+\draw[->,gray!70!black] (0,0) -- (0,1.12) node[left,font=\small,black] {$r$};
+\foreach \t in {0,2,4,6}{\draw[gray!60!black] (\t,-0.02) -- (\t,0.02); \node[below,font=\scriptsize] at (\t,0) {\t};}
+\draw[densely dotted,gray!60!black] (0,0.5) -- (7,0.5) node[right,font=\scriptsize,black,align=left] {umbral de\\escritura};
+\fill[green!45!black,opacity=0.25] (1,-0.2) rectangle (2,-0.13);
+\fill[gray!60!black,opacity=0.35] (1,-0.29) rectangle (1.5,-0.22);
+\draw[very thick,blue!60!black] plot coordinates {(0.0,0.002) (0.1,0.002) (0.2,0.002) (0.3,0.002) (0.4,0.002) (0.5,0.002) (0.6,0.002) (0.7,0.002) (0.8,0.002) (0.9,0.002) (1.0,0.002) (1.1,0.083) (1.2,0.165) (1.3,0.242) (1.4,0.313) (1.5,0.378) (1.6,0.437) (1.7,0.491) (1.8,0.539) (1.9,0.583) (2.0,0.623) (2.1,0.643) (2.2,0.665) (2.3,0.688) (2.4,0.71) (2.5,0.732) (2.6,0.753) (2.7,0.773) (2.8,0.792) (2.9,0.81) (3.0,0.826) (3.2,0.855) (3.4,0.88) (3.6,0.9) (3.8,0.917) (4.0,0.931) (4.4,0.953) (4.8,0.967) (5.2,0.977) (5.6,0.984) (6.0,0.988) (6.5,0.992) (7.0,0.994)};
+\draw[very thick,gray!60!black,densely dashed] plot coordinates {(0.0,0.002) (0.1,0.002) (0.2,0.002) (0.3,0.002) (0.4,0.002) (0.5,0.002) (0.6,0.002) (0.7,0.002) (0.8,0.002) (0.9,0.002) (1.0,0.002) (1.1,0.083) (1.2,0.165) (1.3,0.242) (1.4,0.313) (1.5,0.378) (1.6,0.358) (1.7,0.336) (1.8,0.313) (1.9,0.291) (2.0,0.269) (2.2,0.228) (2.4,0.191) (2.6,0.159) (2.8,0.133) (3.0,0.11) (3.2,0.091) (3.4,0.076) (3.6,0.063) (3.8,0.052) (4.0,0.043) (4.4,0.03) (4.8,0.021) (5.2,0.015) (5.6,0.011) (6.0,0.008) (6.5,0.006) (7.0,0.004)};
+\node[font=\scriptsize,blue!60!black,anchor=west] at (3.3,0.8) {aporte $1\tau$: escrito};
+\node[font=\scriptsize,gray!50!black,anchor=west] at (2.3,0.3) {aporte $0.5\tau$: se apagó};
+\end{scope}
+\end{tikzpicture}
+\caption{Un grupo fuertemente conectado consigo mismo. (a)~Muchas neuronas \nt{GLUT} que se excitan entre sí se comportan como una sola neurona de frecuencia $r$ que se excita a sí misma con fuerza $w$; desde fuera llega el aporte $I$. (b)~Frecuencia del grupo en el tiempo con $w=1$ y la misma curva $f$ que en la fig.~\ref{fig:bistable}. El aporte $I=0.6$ se aplica durante el tiempo marcado por la franja bajo el eje. Si dura $1\tau$, el grupo alcanza a cruzar el punto inestable $r=0.5$, se enciende y sigue encendido cuando el aporte termina. Si dura solo $0.5\tau$, no llega a ese punto y vuelve a apagarse: para escribir un bit, el aporte debe durar más de aproximadamente $0.7\tau$.}
+\label{fig:recurrentgroup}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=5cm,y=3.2cm]
+\draw[->,gray!70!black] (0,0) -- (1.1,0) node[below left,black] {\small $r$};
+\draw[->,gray!70!black] (0,0) -- (0,1.1);
+\draw[thick,gray!60!black] (0,0) -- (1.05,1.05) node[right,black] {\small $r$};
+\draw[very thick,blue!60!black] plot[domain=0:1.05,samples=80] (\x,{1/(1+exp(-(\x-0.5)/0.08))});
+\draw[very thick,red!70!black,densely dashed] plot[domain=0:1.05,samples=80] (\x,{1/(1+exp(-(\x+0.3-0.5)/0.08))});
+\fill[blue!60!black] (0.002,0.002) circle (0.018);
+\draw[blue!60!black,fill=white,thick] (0.5,0.5) circle (0.018);
+\fill[blue!60!black] (0.998,0.998) circle (0.018);
+\node[below right,font=\small] at (0.02,0.0) {apag.};
+\node[right,font=\small] at (0.52,0.46) {inestable};
+\node[below,font=\small] at (0.99,0.96) {enc.};
+\node[anchor=east,font=\small,red!70!black] at (0.19,0.62) {$f(wr+I)$};
+\node[anchor=west,font=\small,blue!60!black] at (0.45,0.1) {$f(wr)$};
+\end{tikzpicture}
+\caption{Memoria a partir de un grupo de neuronas \nt{GLUT} con realimentación fuerte. La curva continua, sin aporte externo: dos cortes estables con la recta $r$, “apagado” y “encendido”, y uno inestable entre ellos. Un aporte breve $I$ (curva discontinua) deja solo el superior.}
+\label{fig:bistable}
+\end{figure}
+
+Si la realimentación es fuerte, hay tres cortes: el inferior es el silencio, el superior es el grupo encendido a pleno, y el del medio es inestable. Se obtiene un elemento con dos estados estables, un biestable. Escribir en él un uno es fácil: un aporte breve eleva la curva, el corte inferior desaparece y el grupo se enciende, y sigue encendido cuando el aporte termina (fig.~\ref{fig:recurrentgroup}b). Un aporte demasiado breve no alcanza a llevar el grupo al punto inestable, y este vuelve a apagarse. Esta actividad autosostenida, que se mantiene segundos después de que el estímulo desaparece, se observa realmente en el cerebro y se considera la base de la memoria a corto plazo~\cite{Wang2001}. Pero no es la única forma de recordar durante segundos. La información también puede guardarse en una variable lenta de las propias sinapsis: tras una ráfaga de espigas, la facilitación, como en la sinapsis “raya” del capítulo~\ref{sec:code}, dura cerca de un segundo, y la red puede casi callar entre breves destellos: no es un biestable, sino un condensador cargado~\cite{Mongillo2008}. Estos intervalos “silenciosos” durante el mantenimiento en memoria se observan~\cite{Stokes2015}, y guardar sin espigas constantes es más barato en energía. Cuál de las dos formas usa la corteza en cada caso está en discusión.
+
+¿Y cómo borrar? Según la proposición~\ref{prop:monotone}, con actividad no hay manera; queda \emph{retirar} algo. La primera forma es retirar el sostén: si el grupo solo está encendido junto con el aporte de otro grupo, la memoria se apaga con él. La segunda es la fatiga. En las sinapsis reales, con el trabajo prolongado se agota la reserva de neurotransmisor~\cite{Tsodyks1997}, y en las neuronas crecen corrientes lentas que reducen la excitabilidad. La realimentación se debilita, el corte superior desaparece y el grupo se apaga solo al cabo de segundos. Resulta una memoria que se enciende con una señal y solo se apaga con el tiempo.
+
+\section{Secuencias}
+
+En lugar de un reloj se puede tener un \emph{temporizador disparado por un evento}. Unamos grupos de neuronas \nt{GLUT} en cadena: el primero excita al segundo, el segundo al tercero, y así sucesivamente. Una señal externa enciende el primer grupo, y una onda de actividad recorre la cadena, cada eslabón uno o dos retardos después del anterior y una sola vez: justo después de una espiga las neuronas son refractarias, y la onda ya ha seguido adelante.
+
+Una cadena así mide el tiempo desde un evento: si se disparó el eslabón número $k$, desde el arranque han pasado $k$ retardos. Sus salidas pueden llevarse a los músculos para obtener una secuencia de movimientos que se despliega sola. En las aves canoras, durante el canto, neuronas \nt{GLUT} individuales de una de las regiones del cerebro se disparan estrictamente por turno, cada una en su momento del canto, lo que se parece mucho a una cadena así~\cite{Hahnloser2002}.
+
+A diferencia de un reloj, la cadena calla mientras no se la arranca, funciona una sola vez y mide el tiempo solo para quienes están conectados a ella. La red sigue sin tener un ciclo de reloj común.
+
+\section{Lo que falta}
+
+Con neuronas \nt{GLUT} solas, sin inhibición, se logra mucho. Pero faltan tres cosas, y las tres por la proposición~\ref{prop:monotone}.
+
+\emph{Elección.} La red debe elegir una dirección, una acción. Si dos estímulos son casi iguales, en la red de la fig.~\ref{fig:itd} se dispararán ambas salidas, y no hay con qué suprimir la débil en favor de la fuerte.
+
+\emph{Reinicio.} La memoria no se puede borrar con una señal.
+
+\emph{Estabilidad.} En una red donde las conexiones no surgen según el plan de un ingeniero, los lazos de realimentación positiva son inevitables, y la actividad en ellos puede crecer en avalancha (capítulo~\ref{sec:neurontypes}). El único freno es la misma fatiga, lenta y tosca.
+
+Los tres males se curan con un solo remedio: una neurona que apaga una espiga con una espiga. Es \nt{GABA}, y no hace falta para calcular, sino para elegir, reiniciar y mantener el cálculo bajo control.
+
+\section{Ejercicios}
+
+\begin{exercise}[\lvlA]
+\label{ex:02:1}
+\emph{Fila de detectores para el sonido.} Las señales de los oídos corren por los cables de la fig.~\ref{fig:itd} a $5$~m/s; la mayor diferencia de llegada es $0.64\ms$. Los detectores (neuronas~\eqref{eq:glutneuron} con $\tau=0.5\ms$, $\theta=1.5w$) están dispuestos de modo que los vecinos distinguen $10$~\textmu s. ¿Cuántos detectores hay en la fila y cuántos se disparan con un sonido?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:02:2}
+\emph{Entradas desiguales desplazan la ventana.} Un detector de coincidencias~\eqref{eq:glutneuron} con $\tau=0.5\ms$, $\theta=1.5$ recibe una espiga de cada una de dos entradas con pesos $1$ y $0.8$. Halle la ventana de coincidencia y su centro. ¿En cuántos microsegundos se equivocará la fila de la fig.~\ref{fig:itd} si la entrada de un oído es un $20\%$ más débil que la del otro?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:02:3}
+\emph{Qué redes no oscilan.} La red $\tau\dot r_i=-r_i+f_i\bigl(\textstyle\sum_jw_{ij}r_j+I_i\bigr)$ con $f_i$ no decrecientes y $w_{ij}\ge0$ para $i\ne j$ es monótona y no oscila de forma sostenida. Demuestre que con el cambio $r_i\to\pm r_i$ se reduce a ella una red con un número par de conexiones inhibidoras en cada ciclo. ¿Puede oscilar la inhibición mutua de dos grupos? ¿Un lazo \nt{GLUT}--\nt{GABA}?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:02:4}
+\emph{Diseño: sumador de dos cables.} Cada bit se transmite por un par de cables $(x,\bar x)$. Construya con neuronas \nt{GLUT} un sumador completo de tres bits que entregue los pares $(S,\bar S)$ de la suma y $(C,\bar C)$ del acarreo, indicando pesos y umbrales. Use como máximo ocho neuronas. ¿Cuántas necesitaría un circuito de elementos AND y OR como el de la fig.~\ref{fig:dualxor}?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:02:5}
+\emph{Simulación: cuánto dura la escritura.} El grupo de la fig.~\ref{fig:recurrentgroup}: $\tau\dot r=-r+f(r+I)$, $f(u)=1/\bigl(1+e^{-(u-0.5)/0.08}\bigr)$, antes de la escritura en el estado inferior; el aporte $I$ se aplica durante un tiempo $T$. Halle numéricamente el menor $T$ que escribe el bit con $I=0.6$, y el umbral $I_c$ por debajo del cual el bit no se escribe con ningún $T$.
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:02:6}
+\emph{La cadena como temporizador.} Un eslabón de la cadena tiene $100$ neuronas \nt{GLUT} y un retardo de $2\ms$ con una dispersión independiente de $0.2\ms$. (a)~¿Cuántas neuronas hacen falta para medir $1$~s y cuál es el error relativo? ¿Cómo depende del intervalo? (b)~Un temporizador real tiene un error del $5\%$ para cualquier intervalo. ¿Qué fuente de dispersión produce esto?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:02:7}
+\emph{Investigación: biestable o condensador.} $100$ neuronas mantienen un bit durante $10$~s. Biestable: cada una emite $20$ espigas por segundo. Condensador: la facilitación $u$ decae con $\tau_F=1$~s, el bit se lee si $u\ge u_{\max}/2$, y el refresco es una ráfaga de tres espigas en cada neurona. ¿Cuántas veces más económico es el condensador, y qué le pasa al bit si el grupo se silencia durante $200\ms$?
+\end{exercise}

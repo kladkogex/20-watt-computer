@@ -1,0 +1,128 @@
+\chapter{Depuración de la máquina}
+\chaptermark{Depuración de la máquina}
+\label{sec:debugging}
+
+\section{Cómo se depura una máquina sin esquema}
+
+Un ingeniero al que le dan una placa que funciona pero sin su esquema la depura con cuatro técnicas. Coloca una \emph{sonda} y mira qué pasa por el cable. \emph{Inyecta una señal de prueba} y mira qué cambió. \emph{Desconecta} un trozo del circuito y mira qué dejó de funcionar. Y \emph{lee los registros de control} para saber en qué modo trabaja la placa. Todo este libro es un intento de leer el esquema del cerebro, y en este capítulo veremos cuáles de las cuatro técnicas saben usar ya los ingenieros y qué les dicen los capítulos anteriores sobre lo que cabe esperar.
+
+El ejemplo más visible hoy de esta depuración son las interfaces cerebro-computadora: dispositivos que leen las espigas de las neuronas y las convierten en órdenes para máquinas externas o, al revés, introducen en el cerebro señales desde fuera. A ellas se dedica la mayor parte del capítulo, y ante todo a lo que hace la empresa Neuralink.
+
+\section{La sonda: qué oye el electrodo}
+
+La sonda del cerebro es un electrodo fino insertado en el tejido. Oye las espigas de las neuronas situadas en un radio del orden de un centenar de micrómetros, normalmente de una a unas pocas. En el electrodo, una espiga es un pico de decenas a cientos de microvoltios que dura alrededor de un milisegundo, y por su forma se pueden distinguir neuronas vecinas entre sí. Las que mejor se oyen son las grandes neuronas \nt{GLUT}: son mayoría en la corteza (tabla~\ref{tab:types}) y sus corrientes son más intensas.
+
+La dificultad principal salta a la vista. Una buena sonda actual tiene cientos o miles de electrodos, y el cerebro tiene $8.6\cdot10^{10}$ neuronas. Escuchamos más o menos una cienmillonésima parte de la máquina. ¿Por qué entonces se puede entender algo con una muestra tan ínfima? La respuesta la dio el capítulo~\ref{sec:code}. Las neuronas vecinas tienen ruido correlacionado, y el promedio sobre un grupo choca con un límite (proposición~\ref{prop:pooling}): un centenar de neuronas lleva casi lo mismo que mil. Además, la tarea que resuelve la corteza motora es de baja dimensión: el brazo tiene pocas articulaciones (capítulo~\ref{sec:muscles}), y la actividad de los cientos de neuronas que lo controlan cabe en un espacio de apenas una o dos decenas de variables comunes~\cite{Gallego2017}. Una sonda sobre un centenar de neuronas oye casi todas esas variables. Si el cerebro guardara un mensaje independiente en cada neurona, esta escucha sería inútil.
+
+\section{Flujo de datos: compresión en la propia sonda}
+
+La sonda produce un flujo enorme. Para ver la forma de la espiga, cada electrodo debe digitalizarse unas $20$ mil veces por segundo con una precisión de unos diez bits. Mil electrodos dan
+\begin{empheq}[box=\keybox]{equation}
+\begin{aligned}
+R_{\text{bruto}} \;&=\; N\,f_s\,b \;\approx\; 10^3\cdot2\cdot10^4\cdot10 \;\approx\; 2\cdot10^8\ \text{bit/s},\\
+R_{\text{esp}} \;&\approx\; N\,r\,\log_2\frac{e}{r\,\Delta t} \;\approx\; 8\cdot10^4\ \text{bit/s}.
+\end{aligned}
+\label{eq:probedata}
+\end{empheq}
+La segunda estimación es la capacidad del flujo de espigas~\eqref{eq:spikeentropy} con $r=10$ espigas por segundo y una precisión $\Delta t=1\ms$: todo lo que el flujo contiene realmente ocupa dos mil quinientas veces menos. Para un dispositivo implantado es una diferencia decisiva: el flujo bruto no puede transmitirse por radio a través de la piel con la potencia que puede permitirse dentro de la cabeza sin calentar el tejido. Por eso un dispositivo implantado debe detectar las espigas en el propio chip, junto a los electrodos, y transmitir hacia fuera solo los eventos: número de canal e instante de la espiga. La primera descripción del sistema de Neuralink aún no llegaba a eso: los chips amplifican y digitalizan las señales, todo el flujo bruto sale por un cable y las espigas las detecta un programa externo; la compresión en el chip y el enlace inalámbrico figuran allí como plan~\cite{Musk2019}.
+
+Es un recurso conocido. El ojo comprime la señal cien veces antes de enviarla por un cable largo (capítulo~\ref{sec:sensors}); una cámara de eventos no transmite fotogramas, sino cambios. Para caber en el cable, la sonda se ve obligada a hacer lo mismo que el propio cerebro: hablar con espigas y solo de novedades.
+
+\section{Qué hace Neuralink}
+
+El dispositivo de Neuralink es una sonda construida en torno a estas limitaciones~\cite{Musk2019}. En vez de una matriz rígida de agujas, muchos hilos flexibles más finos que un cabello, con electrodos a lo largo de cada uno: en la primera descripción del sistema, hasta $3072$ electrodos en $96$ hilos, $32$ por hilo, y en el dispositivo implantado en personas, según la empresa, unos mil canales en $64$ hilos. Los hilos flexibles dañan menos el tejido y toleran mejor que el cerebro se desplace ligeramente todo el tiempo dentro del cráneo. Los hilos los inserta un robot, esquivando los vasos. En la primera descripción, como se dijo, el flujo bruto~\eqref{eq:probedata} salía por un cable. El dispositivo para personas, según la empresa, es distinto: la carcasa queda totalmente cubierta por la piel, las espigas se detectan dentro, los datos salen por radio y la alimentación llega sin cables.
+
+La tarea del primer dispositivo es la lectura. Los hilos se colocan en la parte de la corteza que planifica los movimientos del brazo, y un decodificador convierte las espigas en el movimiento de un cursor en la pantalla. Una persona con parálisis de los brazos controla la computadora imaginando el movimiento. La idea en sí no es nueva: las interfaces con matrices rígidas de un centenar de electrodos permiten desde hace tiempo mover un cursor~\cite{Hochberg2006}, escribir texto imaginando los movimientos de la mano al escribir~\cite{Willett2021} e incluso convertir los intentos de hablar en texto en pantalla a unas sesenta palabras por minuto~\cite{Willett2023}. Lo nuevo de Neuralink es la ingeniería: el número de canales, la transmisión inalámbrica, la carcasa cerrada y la inserción robótica, es decir, el intento de hacer una sonda que pueda llevarse durante años fuera del laboratorio. Hasta donde sabemos, los resultados de los ensayos en personas los ha publicado sobre todo la propia empresa, no artículos revisados por pares; la empresa informó, en particular, de que parte de los hilos se desplazó tras la inserción y el número de canales operativos disminuyó. Para la depuración es un contratiempo habitual: una sonda que se mueve respecto a la placa ya oye otros cables.
+
+La segunda línea de la empresa es la escritura: un dispositivo de visión que introduce señales en la corteza visual de una persona que ha perdido la vista. De él se habla más abajo, en la sección sobre escritura.
+
+\section{Lectura: el decodificador como receptor}
+
+El decodificador de una interfaz es un receptor en el sentido de la proposición~\ref{prop:reader}: decide por sí mismo qué parte del mensaje leer. Prácticamente todas las interfaces leen \emph{frecuencias de grupo}: cuentan las espigas de cada canal en ventanas de varias decenas de milisegundos y las suman con pesos ajustados para obtener el movimiento deseado. Es el código de frecuencia de grupo de la sección~\ref{sec:rate}, y no se eligió por casualidad: con unas pocas espigas por ventana, la frecuencia de una sola neurona no está definida, pero la suma sobre un centenar ya funciona.
+
+¿Cuánta información se logra extraer? La escritura con la “mano mental” alcanzó unos noventa caracteres por minuto~\cite{Willett2021}, es decir, un carácter y medio por segundo: incluso con cinco bits por carácter, son menos de ocho bits por segundo. El control del cursor, según Neuralink, da del orden de diez bits por segundo. En cambio, el límite superior~\eqref{eq:spikeentropy} para \emph{una} neurona es de decenas de bits por segundo, y para un centenar, de miles. La interfaz extrae de las neuronas escuchadas una pequeña fracción de lo que podrían llevar. El cuello de botella no es el cable, sino cuántas variables independientes lleva el grupo (proposición~\ref{prop:pooling}) y lo bien que el decodificador entiende un código que, como vimos en el capítulo~\ref{sec:code}, no está descifrado del todo.
+
+Hay una segunda particularidad, conocida del capítulo~\ref{sec:motorlearning}. El decodificador y el cerebro aprenden el uno del otro. El cerebro ve adónde fue el cursor, recibe un error y ajusta sus órdenes: el mismo aprendizaje motor por el cable de error. Y los ingenieros reajustan de vez en cuando los pesos del decodificador, porque las neuronas bajo los hilos cambian y las conexiones de la red se reaprenden. Resultan dos aprendices que se ajustan el uno al otro; para que esa pareja no se desboque, conviene separar sus velocidades de aprendizaje: que uno aprenda rápido y el otro despacio.
+
+\begin{keyblock}
+\begin{proposition}[Por qué funciona una sonda sobre mil neuronas]
+\label{prop:probe}
+Una interfaz que escucha una fracción ínfima de las neuronas puede controlar el movimiento porque la actividad del grupo es de baja dimensión y sus ruidos están correlacionados: unos cientos de neuronas llevan casi todas las variables comunes. Por la misma razón la interfaz extrae solo unos pocos bits por segundo: tantos como variables independientes tiene la tarea, no tantos como caben en el flujo de espigas. El funcionamiento de las interfaces está medido; cuánto mejorará el decodificador cuando se entienda el código es una pregunta abierta.
+\end{proposition}
+\end{keyblock}
+
+\section{Escritura: más difícil que la lectura}
+
+Introducir una señal en la máquina es más difícil que leerla. Un electrodo por el que se hace pasar corriente no excita una neurona, sino todas las neuronas y cables que lo rodean, sin distinguir tipo ni signo. Con él no se puede escribir un código en el que importa \emph{qué} neurona se activó y \emph{cuándo} (capítulo~\ref{sec:code}): solo se puede fijar a grandes rasgos \emph{dónde} y \emph{con qué intensidad}.
+
+Para la visión esto basta en parte. La corriente a través de un electrodo de la corteza visual la persona la ve como un punto luminoso en un lugar determinado del campo visual; cuando se encendían puntos simultáneamente, hasta dieciséis a la vez, una persona que había perdido la vista reconocía algunas letras y distinguía los bordes de los objetos~\cite{Fernandez2021}. Es un código de lugar, y ese sí se puede escribir. Pero recuerde el capítulo~\ref{sec:sensors}: el ojo no envía al cerebro píxeles, sino una descripción comprimida (bordes, cambios, aclaramiento y oscurecimiento) por cables separados. Escribir “puntos de luz” en la corteza es escribir píxeles en una máquina que espera en su entrada un código completamente distinto. Por eso la visión artificial es todavía más tosca de lo que cabría esperar por el número de electrodos. Hay también señales de prueba que no necesitan electrodo: las ilusiones visuales introducen por el ojo una entrada inusual y sacan a la máquina de su modo habitual, y cada error apunta a su propio mecanismo (sección~\ref{sec:illusions}).
+
+\section{Lo que la sonda no ve}
+
+El electrodo oye el bus de direcciones: las espigas de las neuronas \nt{GLUT} y, peor, las de las pequeñas \nt{GABA}. Pero en los capítulos~\ref{sec:serocomputer}--\ref{sec:acet} vimos que el modo de trabajo de toda la máquina lo fijan los registros de difusión: las concentraciones de \nt{SERO}, \nt{DOPA}, \nt{NORA}, \nt{ACET}. El electrodo no los oye: las neuronas fuente son poquísimas, y su señal no es una espiga junto a la sonda, sino una concentración en un volumen. Un depurador que ve el bus de datos pero no los registros de control siempre se sorprenderá: una misma entrada dará respuestas distintas porque en algún sitio cambió $g$, $a$ o $\tau_\gamma$. Las concentraciones pueden medirse con sensores químicos en el propio tejido~\cite{Bunin1998}, pero en las interfaces esos sensores aún no se usan. Totalmente fuera del alcance de la sonda queda también la segunda salida, la lenta, de la máquina: las hormonas en la sangre (capítulo~\ref{sec:chemoutput}), que se miden en muestras de sangre y no con un electrodo.
+
+La sonda tampoco ve los pesos, y es justamente en ellos donde se guarda casi toda la memoria y todo lo aprendido. Solo pueden adivinarse por cómo cambian las respuestas. Y no ve el dolor tal como lo siente la persona: en el capítulo~\ref{sec:pain} vimos que la intensidad de la señal de alarma la fija la propia máquina, con compuertas en la médula espinal y reguladores desde arriba, así que por el sensor no se puede leer cuánto duele.
+
+\section{Resumen: depuración y preguntas abiertas}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{2.2cm}>{\raggedright}p{3.6cm}>{\raggedright}p{3.4cm}>{\raggedright\arraybackslash}p{4.0cm}}
+\toprule
+Técnica de depuración & Qué hace la interfaz & Qué explica el libro & Qué se sabe \\
+\midrule
+sonda & oye de cientos a miles de neuronas & baja dimensión y ruido correlacionado (cap.~\ref{sec:code}) & medido \\
+compresión en la sonda & transmite eventos en lugar de la señal bruta & capacidad del flujo de espigas~\eqref{eq:spikeentropy} & resuelto en ingeniería \\
+lectura & frecuencias de grupo $\to$ movimiento, texto, habla & el decodificador es un receptor; código de frecuencia de grupo & funciona; unos pocos bits por segundo \\
+aprendizaje conjunto & el cerebro y el decodificador se ajustan el uno al otro & cable de error (cap.~\ref{sec:motorlearning}) & observado; las reglas del ajuste están en investigación \\
+escritura & la corriente enciende puntos en el campo visual & el código de lugar se puede escribir, el temporal no (cap.~\ref{sec:sensors}) & puntos medidos; visión útil, aún no \\
+lectura de registros & casi no se hace & canales de difusión (caps.~\ref{sec:serocomputer}--\ref{sec:acet}) & hay sensores químicos en experimentos \\
+\bottomrule
+\end{tabular}
+\caption{Depuración de la máquina: qué saben hacer las interfaces cerebro-computadora y qué dicen de ellas los capítulos del libro.}
+\label{tab:debugging}
+\end{table}
+
+La tabla~\ref{tab:debugging} resume el capítulo. Las interfaces cerebro-computadora ya saben colocar una sonda en el bus de direcciones y leer de él unos pocos bits por segundo, y que esto funcione siquiera se explica por la baja dimensión y el ruido correlacionado del capítulo~\ref{sec:code}. Escribir en la máquina solo lo saben hacer de forma tosca, porque su código de entrada está comprimido y dirigido a cables concretos. Y los registros de control y los pesos, lo que hace a la máquina entrenable y ajustable, apenas son visibles aún para la sonda.
+
+Cada pregunta abierta del capítulo~\ref{sec:synthesis} es también una tarea para el depurador. Qué código leer se decidirá cuando las sondas sean más densas y los decodificadores aprendan a usar el tiempo de las espigas y no solo las frecuencias. Cómo aprende una red de varias capas se puede comprobar colocando sondas en varias capas a la vez y observando cómo cambian sus respuestas durante el aprendizaje. Qué transmiten los canales de difusión se verá cuando a las sondas eléctricas se sumen las químicas. Este libro es un intento de leer el esquema de la máquina a partir de su comportamiento y de las leyes que conoce cualquier ingeniero. Los depuradores que se construyen hoy permitirán comprobar ese esquema con una sonda.
+
+\section{Ejercicios}
+
+\begin{exercise}[\lvlA]
+\label{ex:17:1}
+\emph{Presupuesto del radioenlace.} Transmitir a través de la piel cuesta $1$~nJ por bit, y el transmisor no puede gastar más de $10$~mW. ¿Qué potencia hace falta para el flujo bruto~\eqref{eq:probedata} con $N=1000$ electrodos y para el flujo de espigas? ¿Qué energía por bit exigiría el flujo bruto?
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:17:2}
+\emph{Cuántos bits hay en cien neuronas.} Un decodificador suma las espigas de $N$ neuronas en ventanas de $50\ms$ con $r=20$~espigas/s; la correlación de ruido por pares es $c=0.1$ y la señal cambia la frecuencia del grupo en un $30\%$ (valor cuadrático medio). Estime la tasa $\tfrac12\log_2(1+\text{SNR})$ por ventana con $N=10$, $100$, $1000$ y $N\to\infty$. ¿Y con $c=0$, $N=1000$?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:17:3}
+\emph{Velocidad de una interfaz-teclado.} Una interfaz elige una vez y media por segundo uno de $N=32$ caracteres: el deseado con probabilidad $P$, y los errores son equiprobables. ¿Cuántos bits por segundo transmite con $P=0.99$, $0.94$, $0.8$? ¿Cuántos caracteres por segundo hacen falta con $P=0.94$ para $10$~bit/s?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:17:4}
+\emph{Simulación: decodificador de grupo.} $N$ neuronas con $\lambda_i=[b+m\,\mathbf v\cdot\mathbf p_i]_+$, $b=20$, $m=15$~espigas/s, ventanas de $50\ms$, $\mathbf v$ con desviación estándar $0.5$ por componente; todas ven un ruido común, $\mathbf v+\boldsymbol\xi$, $\sigma_\xi=0.2$. Simule un decodificador insesgado por vector de población. ¿Con qué $N$ se igualan ambos ruidos y cuántos bits por componente y ventana da $N\to\infty$?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:17:5}
+\emph{Dos aprendices.} El cerebro emite la orden $m=b\,v^*$ y el decodificador $v=d\,m$, con $\langle v^{*2}\rangle=1$. Tras cada intento, ambos dan un paso de gradiente sobre $\tfrac12(v-v^*)^2$ con tasa $\eta$. Simule desde $b=1.2$, $d=1$ con $\eta=0.8$, $1.1$, $1.5$, $2$. Cada uno por separado es estable con $\eta<2$; ¿con qué $\eta$ es estable la pareja?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:17:6}
+\emph{Diseño: la cadena de la sonda.} $1024$ canales a $20$~mil muestras por segundo, neuronas a $10$~espigas/s, radio a $1$~nJ/bit. ¿Qué umbral sobre el ruido blanco de las muestras da como mucho $0.1$~Hz de espigas falsas por canal? Si transmitimos el número de espigas cada $20\ms$ con $2$~bits, ¿qué potencia hace falta y cuántas veces es menor que para muestras brutas de $10$~bits?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:17:7}
+\emph{Límite de velocidad de una interfaz.} Estime $R\le DW\log_2(1+\text{SNR})$ para $D=10$ variables con ancho de banda $W=5$~Hz con $\text{SNR}\approx0.9$ (ruido parecido a la señal) y $90$ (ruido independiente de $1000$ neuronas). Lo medido es unos $10$~bit/s. ¿Qué experimento distinguiría las dos explicaciones de la brecha: ruido parecido a la señal o desconocimiento del código?
+\end{exercise}

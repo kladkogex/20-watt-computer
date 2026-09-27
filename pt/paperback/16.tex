@@ -1,0 +1,39 @@
+\chapter{A segunda saída}
+% versão completa: chapters/16_chemoutput.tex
+
+A máquina tem duas saídas. A rápida são os músculos. A lenta é a química do corpo: o cérebro controla o coração, os vasos e as glândulas e, pelo sangue, manda mensagens a todo o corpo de uma vez. O sangue é o barramento de difusão mais amplo de todos: uma mensagem chega a cada célula em cerca de um minuto, e quem lhe dá sentido, como sempre, é a ``fechadura'' do destinatário.
+
+\section*{Gás e freio}
+
+O coração bate sozinho, ele tem o seu próprio metrônomo. O cérebro só ajusta o ritmo com dois fios de sinais opostos. \nt{NORA} é o gás, o pedal do acelerador: acelera, mas devagar. \nt{ACET} é o freio: desacelera depressa, porque não precisa de uma longa cadeia de reações químicas. E aqui finalmente aparece um trabalho para o tipo \nt{ADRE}: a adrenalina liberada no sangue é o mesmo pedal do acelerador, só que pisado para o corpo inteiro de uma vez.
+
+\pencilfig{16}{\pencilart{16}}{O coração é comandado por dois fios de sinais opostos: gás e freio.}
+
+\section*{Uma cascata com realimentação}
+
+Muitos hormônios são controlados por uma cascata: o cérebro dá uma ordem à primeira glândula, esta à segunda, a segunda libera o hormônio, e o hormônio avisa o cérebro de que já basta. É um termostato de três estágios. Um engenheiro sabe qual é o perigo de um esquema assim: se o laço ficar ``sensível'' demais, ele começa a oscilar --- o nível não se mantém, e sim balança. Por isso a precisão de um regulador assim é limitada: não dá para fazê-lo ao mesmo tempo estável e muito preciso.
+
+\pencilfig{127}{%
+% three identical first-order stages with proportional feedback: secretion = max(0, K (target - level)).
+% K = 3 settles at 3/4 of the target; K = 12 (above the stability limit K = 8) keeps oscillating. x = 0.42 t, y = 0.55 level
+\foreach \yo/\t in {1.75/{laço fraco: estável, mas longe do alvo}, 0/{laço forte: mais perto do alvo, mas oscila}}{
+  \draw[pen] (0,\yo) -- (8.5,\yo);
+  \draw[pcGray, densely dashed, line width=0.5pt] (0,\yo+0.55) -- (8.5,\yo+0.55);
+  \node[lbl, anchor=south west] at (2.0,\yo+0.8) {\t};}
+\node[lbl, anchor=west] at (8.55,2.3) {alvo}; \node[lbl, anchor=west] at (8.55,0.55) {alvo};
+\begin{scope}[yshift=1.75cm]
+\draw[penlite=pcBlue] plot[smooth] coordinates {(0.00,0.00) (0.17,0.01) (0.34,0.08) (0.50,0.19) (0.67,0.33) (0.84,0.46) (1.01,0.55) (1.18,0.59) (1.34,0.58) (1.51,0.55) (1.68,0.49) (1.85,0.43) (2.02,0.37) (2.18,0.34) (2.35,0.33) (2.52,0.34) (2.69,0.37) (2.86,0.40) (3.02,0.43) (3.19,0.44) (3.36,0.45) (3.53,0.45) (3.70,0.44) (3.86,0.42) (4.03,0.41) (4.20,0.40) (4.37,0.39) (4.54,0.39) (4.70,0.40) (4.87,0.40) (5.04,0.41) (5.38,0.42) (5.88,0.42) (6.38,0.41) (7.06,0.41) (8.40,0.41)};
+\end{scope}
+\draw[penlite=pcRed] plot[smooth] coordinates {(0.00,0.00) (0.17,0.05) (0.34,0.30) (0.50,0.68) (0.67,1.02) (0.84,1.23) (1.01,1.30) (1.18,1.26) (1.34,1.16) (1.51,1.02) (1.68,0.87) (1.85,0.72) (2.02,0.58) (2.18,0.47) (2.35,0.39) (2.52,0.38) (2.69,0.46) (2.86,0.57) (3.02,0.67) (3.19,0.71) (3.36,0.70) (3.53,0.65) (3.70,0.58) (3.86,0.50) (4.03,0.43) (4.20,0.41) (4.37,0.45) (4.54,0.53) (4.70,0.61) (4.87,0.65) (5.04,0.64) (5.21,0.60) (5.38,0.54) (5.54,0.47) (5.71,0.42) (5.88,0.42) (6.05,0.48) (6.22,0.56) (6.38,0.62) (6.55,0.64) (6.72,0.62) (6.89,0.56) (7.06,0.50) (7.22,0.44) (7.39,0.42) (7.56,0.45) (7.73,0.53) (7.90,0.60) (8.06,0.63) (8.23,0.62) (8.40,0.58)};
+\node[lbl, anchor=north] at (4.2,-0.05) {tempo};
+}{Modelo de uma cascata hormonal de três estágios. A realimentação fraca acalma o nível, mas o deixa bem abaixo do alvo. A forte o leva mais perto, mas o nível já não se mantém: balança.}
+
+\section*{Pulsos, não nível}
+
+Alguns hormônios só funcionam em pulsos. Se forem dados continuamente, a glândula receptora ``se cansa'' e se desliga; se vierem em pulsos curtos, uma vez por hora, ela funciona. O destinatário lê não o nível, mas o ritmo --- como a sinapse do capítulo sobre o código Morse, que só ouve mudanças.
+
+\section*{O dia}
+
+Por fim, o corpo tem um gerador lento com período de cerca de um dia. O seu período natural difere um pouco de vinte e quatro horas, e toda manhã a luz o acerta, como um rádio se sintoniza numa estação. Não o confunda com o gerador de clock do computador: ele não mede os passos do cálculo. Ele alterna os modos de funcionamento da máquina inteira --- dia e noite, vigília e sono.
+
+\fullversion{16}
