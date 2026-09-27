@@ -35,12 +35,12 @@ r \;=\; F\bigl(g\,(u-\theta)\bigr), \qquad F(z)=\frac{r_{\max}}{1+e^{-z}}
 \label{fig:gaincurves}
 \end{figure}
 
-大增益能对抗噪声吗？不一定。设两个输入相差$\Delta u$，需要判断哪个更大。如果噪声$\sigma_{\text{前}}$是在放大器\emph{之前}加到输入上的，那么信号和噪声一起被放大，二者之比不变。如果噪声$\sigma_{\text{后}}$是在放大器\emph{之后}加入的——来自不可靠的突触和网络自身的随机脉冲，如第~\ref{sec:code}~章——那么信噪比
+大增益能对抗噪声吗？不一定。设两个输入相差$\Delta u$，需要判断哪个更大。如果噪声$\sigma_{\text{pre}}$是在放大器\emph{之前}加到输入上的，那么信号和噪声一起被放大，二者之比不变。如果噪声$\sigma_{\text{post}}$是在放大器\emph{之后}加入的——来自不可靠的突触和网络自身的随机脉冲，如第~\ref{sec:code}~章——那么信噪比
 \begin{empheq}[box=\keybox]{equation}
-d' \;=\; \frac{g\,\Delta u}{\sqrt{g^2\sigma_{\text{前}}^2+\sigma_{\text{后}}^2}}
+d' \;=\; \frac{g\,\Delta u}{\sqrt{g^2\sigma_{\text{pre}}^2+\sigma_{\text{post}}^2}}
 \label{eq:gainsnr}
 \end{empheq}
-随$g$增大，直到$g\sigma_{\text{前}}$与$\sigma_{\text{后}}$相当为止~\cite{ServanSchreiber1990}。
+随$g$增大，直到$g\sigma_{\text{pre}}$与$\sigma_{\text{post}}$相当为止~\cite{ServanSchreiber1990}。
 
 \begin{keyblock}
 \begin{proposition}[增益何时有用]
@@ -90,7 +90,7 @@ d' \;=\; \frac{g\,\Delta u}{\sqrt{g^2\sigma_{\text{前}}^2+\sigma_{\text{后}}^2
 P(A) \;=\; \frac{1}{1+e^{-g\,(u_A-u_B)/\sigma}} .
 \label{eq:softmax}
 \end{empheq}
-程序员会认出这是温度为$T=\sigma/g$的 softmax 选择。增益就是逆温度。$g$小时，即使明显更好的选项也只比差的选项稍常被选中：网络在大量探索。$g$大时，已知的最佳选项几乎总被选中：网络在利用已知。
+程序员会认出这是温度为$T=\sigma/g$的softmax选择。增益就是逆温度。$g$小时，即使明显更好的选项也只比差的选项稍常被选中：网络在大量探索。$g$大时，已知的最佳选项几乎总被选中：网络在利用已知。
 
 需要说明~\eqref{eq:wtagain}和~\eqref{eq:softmax}中的$g$是什么：它是选择时刻对当前任务输入之差的\emph{有效}增益。\nt{NORA}的两种模式对它的作用相反。决策时刻的时相性簇放电提高它，网络巩固选择。反之，高紧张性活动伴随着探索：人在随机选择之前基线瞳孔更大~\cite{JepmaNieuwenhuis2011}，而在大鼠中，\nt{NORA}向前扣带皮层的输入使选择转入随机模式~\cite{Tervo2014stochastic}。可见，高紧张性\nt{NORA}对应\emph{小}的有效$g$，簇放电则对应大的有效$g$。
 
@@ -114,20 +114,20 @@ P(A) \;=\; \frac{1}{1+e^{-g\,(u_A-u_B)/\sigma}} .
 \node[font=\small\itshape,gray!35!black,anchor=west] at (0.15,2.3) {盲目探索};
 \node[font=\small\itshape,gray!35!black] at (6.45,2.55) {察觉不到变化};
 \end{tikzpicture}
-\caption{恒定增益$g$下获得的最佳可能奖励的比例（$g$轴为对数刻度）。蓝线：世界平均每一千次尝试变化一次；红线：每二十次变化一次。箭头标出最佳$g$：在快速变化的世界中它小一半。为 60 次运行、每次 4000 次尝试的平均。}
+\caption{恒定增益$g$下获得的最佳可能奖励的比例（$g$轴为对数刻度）。蓝线：世界平均每一千次尝试变化一次；红线：每二十次变化一次。箭头标出最佳$g$：在快速变化的世界中它小一半。为60次运行、每次4000次尝试的平均。}
 \label{fig:invertedU}
 \end{figure}
 
 $g=0.5$时网络几乎不利用知识，只得到可能奖励的约四分之三；$g$很大时则错过变化。最佳值：世界每一千次尝试变化一次时为$g=16$（比例$0.976$），每二十次变化一次时为$g=8$（$0.886$）。
 
 \begin{keyblock}
-\begin{proposition}[倒 U 形]
+\begin{proposition}[倒U形]
 \label{prop:explore}
-网络收集到的奖励与增益呈倒 U 形关系：$g$太小，尝试浪费在探索上；$g$太大，察觉不到变化。世界变化越快，最佳$g$越小。
+网络收集到的奖励与增益呈倒U形关系：$g$太小，尝试浪费在探索上；$g$太大，察觉不到变化。世界变化越快，最佳$g$越小。
 \end{proposition}
 \end{keyblock}
 
-倒 U 形在实验中也能观察到：在\nt{NORA}神经元紧张性活动适中、时相性响应清晰时，动物完成任务最好，而在紧张性活动很高时，它们会分心，在任务之间切换~\cite{AstonJones2005}。这与上一节中模式的区别相符：决策时刻的时相性簇放电恰在需要选择时给出大的有效$g$，而没有簇放电的高紧张性活动会不加区分地放大一切，包括无关输入，因此对当前任务的有效$g$下降——这就是探索。
+倒U形在实验中也能观察到：在\nt{NORA}神经元紧张性活动适中、时相性响应清晰时，动物完成任务最好，而在紧张性活动很高时，它们会分心，在任务之间切换~\cite{AstonJones2005}。这与上一节中模式的区别相符：决策时刻的时相性簇放电恰在需要选择时给出大的有效$g$，而没有簇放电的高紧张性活动会不加区分地放大一切，包括无关输入，因此对当前任务的有效$g$下降——这就是探索。
 
 \section{谁来转动旋钮}
 
@@ -150,7 +150,7 @@ $g=0.5$时网络几乎不利用知识，只得到可能奖励的约四分之三�
 \midrule
 改变神经元响应的斜率 & \eqref{eq:gain}中的增益$g$ & 信噪比提高已测得；乘法模型是一种简化 \\
 切换选择 & 使网络越过$g\beta=1$ & 由模型~\eqref{eq:wtagain}推出；没有对阈值的直接测量 \\
-决定探索多少 & $g$是逆温度~\eqref{eq:softmax}；紧张性活动对应小的有效$g$（探索），簇放电对应大的（决断） & 倒 U 形和两种工作模式已测得；与探索的联系是有充分依据的假说 \\
+决定探索多少 & $g$是逆温度~\eqref{eq:softmax}；紧张性活动对应小的有效$g$（探索），簇放电对应大的（决断） & 倒U形和两种工作模式已测得；与探索的联系是有充分依据的假说 \\
 报告变化 & 非预期的不确定性 & 变化后瞳孔和学习速率增大——已测得；这是\nt{NORA}的信号——假说 \\
 中断并复位 & 对意外事件的时相性簇放电 & 对重要事件的簇放电已测得；“中断”是假说 \\
 \bottomrule
@@ -165,17 +165,17 @@ $g=0.5$时网络几乎不利用知识，只得到可能奖励的约四分之三�
 
 \begin{exercise}[\lvlA]
 \label{ex:08:1}
-\emph{全脑一个旋钮。}（a）~根据表~\ref{tab:types}估计每个\nt{NORA}神经元对应多少个脑神经元。（b）~放大器前的噪声为$\sigma_{\text{前}}=0.5$，之后为$\sigma_{\text{后}}=4$。$g$为多少时，\eqref{eq:gainsnr}中的$d'$达到其极限的$90\,\%$？
+\emph{全脑一个旋钮。}(a)~根据表~\ref{tab:types}估计每个\nt{NORA}神经元对应多少个脑神经元。(b)~放大器前的噪声为$\sigma_{\text{pre}}=0.5$，之后为$\sigma_{\text{post}}=4$。$g$为多少时，\eqref{eq:gainsnr}中的$d'$达到其极限的$90\,\%$？
 \end{exercise}
 
 \begin{exercise}[\lvlB]
 \label{ex:08:2}
-\emph{带增益的选择。}$\tau\,\dd r_1/\dd t=-r_1+g[I_1-\beta r_2]_+$，$\tau\,\dd r_2/\dd t=-r_2+g[I_2-\beta r_1]_+$，$\tau=20\ms$。（a）~$g\beta=0.5$和$0.9$时，$r_1-r_2$衰减需要多长时间？（b）~当$\varepsilon=0.05$时，求出一个$g\beta$值：低于它两组都工作，高于它弱输入的获胜是稳定的。
+\emph{带增益的选择。}$\tau\,\dd r_1/\dd t=-r_1+g[I_1-\beta r_2]_+$，$\tau\,\dd r_2/\dd t=-r_2+g[I_2-\beta r_1]_+$，$\tau=20\ms$。(a)~$g\beta=0.5$和$0.9$时，$r_1-r_2$衰减需要多长时间？(b)~当$\varepsilon=0.05$时，求出一个$g\beta$值：低于它两组都工作，高于它弱输入的获胜是稳定的。
 \end{exercise}
 
 \begin{exercise}[\lvlA]
 \label{ex:08:3}
-\emph{由噪声得到 softmax。}$K$组中每组各得到自己的 Gumbel 噪声，$P(\eta_k<z)=\exp(-e^{-z/\sigma})$，$gu_k+\eta_k$最大者获胜。求$P(k)$。当$u_A-u_B=0.1$、$\sigma=1$时，$g$为多少才能使两个选项中较好的那个在$90\,\%$的情况下被选中？
+\emph{由噪声得到softmax。}$K$组中每组各得到自己的Gumbel噪声，$P(\eta_k<z)=\exp(-e^{-z/\sigma})$，$gu_k+\eta_k$最大者获胜。求$P(k)$。当$u_A-u_B=0.1$、$\sigma=1$时，$g$为多少才能使两个选项中较好的那个在$90\,\%$的情况下被选中？
 \end{exercise}
 
 \begin{exercise}[\lvlB]
@@ -195,5 +195,5 @@ $g=0.5$时网络几乎不利用知识，只得到可能奖励的约四分之三�
 
 \begin{exercise}[\lvlC]
 \label{ex:08:7}
-\emph{调节何时有回报。}一个先知知道当前是平稳时期还是多变时期，并在每个时期设定各自的$g$。（a）~用模型求它在本章的世界中（每个时期$1000$次尝试，$h=0.001$和$0.05$）相对于最佳恒定$g$的收益。（b）~构造一个收益更大的世界，并求按意外进行的调节能拿到其中多少。
+\emph{调节何时有回报。}一个先知知道当前是平稳时期还是多变时期，并在每个时期设定各自的$g$。(a)~用模型求它在本章的世界中（每个时期$1000$次尝试，$h=0.001$和$0.05$）相对于最佳恒定$g$的收益。(b)~构造一个收益更大的世界，并求按意外进行的调节能拿到其中多少。
 \end{exercise}

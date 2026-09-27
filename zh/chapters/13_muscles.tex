@@ -34,9 +34,9 @@ F(t) \;=\; \sum_k h\bigl(t-t_k\bigr) .
 \draw[thick,blue!60!black] plot file {figures/muscle_twitch_5.dat};
 \draw[thick,green!45!black] plot file {figures/muscle_twitch_15.dat};
 \draw[thick,red!70!black] plot file {figures/muscle_twitch_40.dat};
-\node[font=\scriptsize,blue!60!black,anchor=west] at (0.605,0.9) {5 次/秒};
-\node[font=\scriptsize,green!45!black,anchor=west] at (0.605,2.1) {15 次/秒};
-\node[font=\scriptsize,red!70!black,anchor=west] at (0.605,5.4) {40 次/秒};
+\node[font=\scriptsize,blue!60!black,anchor=west] at (0.605,0.9) {5次/秒};
+\node[font=\scriptsize,green!45!black,anchor=west] at (0.605,2.1) {15次/秒};
+\node[font=\scriptsize,red!70!black,anchor=west] at (0.605,5.4) {40次/秒};
 \end{tikzpicture}
 \caption{肌肉作为数模转换器：一个运动单位规则发放时的力~\eqref{eq:forcesum}，$T_c=50\ms$。稀疏的脉冲产生分离的抽搐，密集的脉冲融合成平稳的力——正如图~\ref{fig:lowpass}中密集的脉冲融合成平稳的浓度。}
 \label{fig:tetanus}
@@ -91,7 +91,7 @@ M \;=\; \ell\,(F_1-F_2), \qquad K \;\approx\; \kappa_m\,(F_1+F_2),
 \draw[->,thick,blue!60!black] (-0.3,-3.0) node[left,font=\scriptsize,black,align=right] {大脑\\指令} -- (M1);
 \draw[->,thick,blue!60!black] (10.3,-3.0) node[right,font=\scriptsize,black,align=left] {大脑\\指令} -- (M2);
 \end{tikzpicture}
-\caption{一个关节上的两块肌肉和最快的反馈环路。\nt{ACET}神经元接收大脑的指令，把关节拉向不同方向；力之差使关节转动，力之和使它更僵硬。左侧肌肉的牵拉传感器（\nt{GLUT}）兴奋该肌肉自己的\nt{ACET}神经元，并经\nt{GLYC}中间神经元抑制拮抗肌的神经元——即第~\ref{sec:gaba}~章的禁止。}
+\caption{一个关节上的两块肌肉和最快的反馈环路。\nt{ACET}神经元接收大脑的指令，把关节拉向不同方向；力之差使关节转动，力之和使它更僵硬。左侧肌肉的牵拉传感器（\nt{GLUT}）兴奋该肌肉自己的\nt{ACET}神经元，并经\nt{GLYC}中间神经元抑制拮抗肌的神经元——即第~\ref{sec:gaba}~章的否决。}
 \label{fig:antagonists}
 \end{figure}
 
@@ -159,7 +159,7 @@ G\,d \;<\; \frac{\pi}{2} ,
 把脉冲变成力 & 抽搐叠加~\eqref{eq:forcesum}，低通滤波器 & 已测量；线性叠加是简化 \\
 调配力 & 按大小启动单位，浮点~\eqref{eq:sizeprinciple} & 启动顺序已测量 \\
 只会拉却能推 & 一对肌肉：力矩为差，刚度为和~\eqref{eq:antagonists} & 已测量 \\
-稳住关节 & 牵拉环路，经\nt{GLYC}禁止拮抗肌 & 已测量 \\
+稳住关节 & 牵拉环路，经\nt{GLYC}否决拮抗肌 & 已测量 \\
 不颤抖 & $Gd<\pi/2$~\eqref{eq:delaystable} & 来自控制理论；对颤动的贡献是可能的原因 \\
 动作迅速 & 依据内部模型预测 & 有充分依据的假说 \\
 有节律地行走和呼吸 & 节律发生器~\eqref{eq:halfcentre} & 发生器已测量；最简方案是模型 \\

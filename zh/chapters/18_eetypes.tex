@@ -2,7 +2,7 @@
 \chaptermark{作为器件的神经元}
 \label{sec:eetypes}
 
-在第~\ref{sec:neurontypes}~章中，我们按照神经元输出端释放的神经递质对它们进行了分类。电子工程师会用另一种方式分类：看神经元对自己的信号做了什么——它作为哪种器件工作。本书的主要器件我们从第~\ref{sec:glutcomputer}~章起就认识了：泄漏积分神经元~\eqref{eq:glutneuron}，即带比较器的 RC 电路。但大脑中还有别的器件。表~\ref{tab:eetypes}~把它们分成四组，而且几乎每一种都已在书中出现过。
+在第~\ref{sec:neurontypes}~章中，我们按照神经元输出端释放的神经递质对它们进行了分类。电子工程师会用另一种方式分类：看神经元对自己的信号做了什么——它作为哪种器件工作。本书的主要器件我们从第~\ref{sec:glutcomputer}~章起就认识了：泄漏积分神经元~\eqref{eq:glutneuron}，即带比较器的RC电路。但大脑中还有别的器件。表~\ref{tab:eetypes}~把它们分成四组，而且几乎每一种都已在书中出现过。
 
 \begin{center}
 \footnotesize
@@ -21,7 +21,7 @@
 \bottomrule
 \endfoot
 \multicolumn{4}{l}{\emph{滤波器和积分器}} \\
-泄漏积分神经元 & 带比较器的 RC 积分器 & 在窗口 $\tau$ 内对输入求和，到达阈值时发放 & 第~\ref{sec:glutcomputer}~章，\eqref{eq:glutneuron} \\
+泄漏积分神经元 & 带比较器的RC积分器 & 在窗口 $\tau$ 内对输入求和，到达阈值时发放 & 第~\ref{sec:glutcomputer}~章，\eqref{eq:glutneuron} \\
 符合检测器 & 带时间窗的与门 & 只有输入几乎同时到达时才发放；$\tau$ 很小 & 第~\ref{sec:glutcomputer}、\ref{sec:code}~章，\eqref{eq:window} \\
 相位型神经元 & 高通滤波器，边沿检测器 & 对输入的变化作出响应，随后沉默 & 第~\ref{sec:sensors}~章 \\
 适应型神经元 & 带自动增益控制的高通滤波器 & 输入恒定时频率下降 & 第~\ref{sec:sensors}~章，\eqref{eq:nakarushton} \\
@@ -38,7 +38,7 @@
 \multicolumn{4}{l}{\emph{振荡器与时间}} \\
 起搏器 & 弛张振荡器，多谐振荡器 & 自己以恒定频率输出脉冲 & 第~\ref{sec:serocomputer}、\ref{sec:dofa}~章 \\
 带输入的起搏器 & 压控振荡器 & 有自己的节律，输入使其加快或减慢 & 第~\ref{sec:chemoutput}~章 \\
-簇放电神经元 & 门控簇脉冲发生器 & 输出密集脉冲的簇——“长划” & 第~\ref{sec:code}~章，\eqref{eq:burst} \\
+簇放电神经元 & 门控簇脉冲发生器 & 输出密集脉冲的簇——“划” & 第~\ref{sec:code}~章，\eqref{eq:burst} \\
 锁相神经元 & 鉴相器，锁相环 & 在输入波的特定相位发放 & 第~\ref{sec:sensors}、\ref{sec:chemoutput}~章 \\
 带延迟的轴突 & 延迟线 & 把信号延迟一段给定的时间 & 第~\ref{sec:glutcomputer}~章，图~\ref{fig:itd} \\
 \midrule
@@ -70,7 +70,7 @@
 \subsection{双稳态神经元}
 \label{sec:bistable}
 
-在第~\ref{sec:glutcomputer}~章和第~\ref{sec:gaba}~章中，触发器是由一群神经元组装的。但单个细胞中也有触发器。有些神经元具有一种电流，一旦开启就会自己维持兴奋：短暂的输入使神经元进入持久的工作状态——\emph{平台}——而抑制使它回到静息。这就是施密特触发器：神经元有两个稳定状态，两者之间有迟滞。例如，控制肌肉的 \nt{ACET} 神经元就是这样，而这一特性由广播通道开启：当血清素到达神经元时，平台才会出现\cite{Hounsgaard1988}。同一个细胞有 \nt{SERO} 时是锁存器，没有时是普通的积分器。
+在第~\ref{sec:glutcomputer}~章和第~\ref{sec:gaba}~章中，触发器是由一群神经元组装的。但单个细胞中也有触发器。有些神经元具有一种电流，一旦开启就会自己维持兴奋：短暂的输入使神经元进入持久的工作状态——\emph{平台}——而抑制使它回到静息。这就是施密特触发器：神经元有两个稳定状态，两者之间有迟滞。例如，控制肌肉的\nt{ACET}神经元就是这样，而这一特性由广播通道开启：当血清素到达神经元时，平台才会出现\cite{Hounsgaard1988}。同一个细胞有\nt{SERO}时是锁存器，没有时是普通的积分器。
 
 \subsection{积分器与谐振器}
 
@@ -89,7 +89,7 @@
 
 \begin{exercise}[\lvlA]
 \label{ex:18:1}
-\emph{无泄漏积分器的容差。}$\tau=0.1$~s 的神经元按~\eqref{eq:perfectint}~在 $T=1$~s 内保持眼睛位置，双向误差不超过 $5\%$。(a)~求 $w$ 的允许范围。(b)~$w$ 是 $K$ 个突触权重之和，每个突触有独立的 $10\%$ 误差。$K$ 为多少时和的离散落在容差之内？
+\emph{无泄漏积分器的容差。}$\tau=0.1$~s的神经元按~\eqref{eq:perfectint}~在 $T=1$~s内保持眼睛位置，双向误差不超过 $5\%$。(a)~求 $w$ 的允许范围。(b)~$w$ 是 $K$ 个突触权重之和，每个突触有独立的 $10\%$ 误差。$K$ 为多少时和的离散落在容差之内？
 \end{exercise}
 
 \begin{exercise}[\lvlB]
@@ -114,10 +114,10 @@
 
 \begin{exercise}[\lvlB]
 \label{ex:18:6}
-\emph{积分器的自我调节。}注视时输入 $I=0$，滑动传感器给出漂移速度 $e=\dd r/\dd t$，且 $\dd w/\dd t=-\eta\,e\,r$。在 $w=0.95$、$\tau=0.1$~s、$\langle r^2\rangle=1$ 时，求 $\eta$，使得在 $60$~s 的注视内 $|1-w|$ 进入习题~\ref{ex:18:1}~的容差。如果在眼睛转动时也进行学习，会出什么问题？
+\emph{积分器的自我调节。}注视时输入 $I=0$，滑动传感器给出漂移速度 $e=\dd r/\dd t$，且 $\dd w/\dd t=-\eta\,e\,r$。在 $w=0.95$、$\tau=0.1$~s、$\langle r^2\rangle=1$ 时，求 $\eta$，使得在 $60$~s的注视内 $|1-w|$ 进入习题~\ref{ex:18:1}~的容差。如果在眼睛转动时也进行学习，会出什么问题？
 \end{exercise}
 
 \begin{exercise}[\lvlC]
 \label{ex:18:7}
-\emph{为什么要重构器件？}广播通道把习题~\ref{ex:18:2}~模型的 $\alpha$ 在 $0$ 和 $4$ 之间切换。对于白噪声电流中的弱正弦信号，在 $11$~Hz 和 $1$~Hz 处，谐振器的信噪比比积分器高多少倍？设计一个恰好需要切换模式才占优的任务。
+\emph{为什么要重构器件？}广播通道把习题~\ref{ex:18:2}~模型的 $\alpha$ 在 $0$ 和 $4$ 之间切换。对于白噪声电流中的弱正弦信号，在 $11$~Hz和 $1$~Hz处，谐振器的信噪比比积分器高多少倍？设计一个恰好需要切换模式才占优的任务。
 \end{exercise}

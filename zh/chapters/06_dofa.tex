@@ -83,7 +83,7 @@ w \;=\; N_s\,p\,A_1 .
 
 第三个信号由\nt{DOPA}带来：多巴胺神经元广播一个数——奖励预测误差$\delta$~\eqref{eq:rpe}（第~\ref{sec:neurontypes}~章）。设权重的变化与三个因子的乘积成正比：发送者的活动、接收者的活动和$\delta$。
 
-难点在于，奖励并不是在网络选择动作的时刻到来，而是在几百毫秒或几秒之后。等$\delta$到来时，乘积$xy$早已为零，突触需要记住自己曾经参与过。最简单的记忆就是我们熟悉的 RC 电路：
+难点在于，奖励并不是在网络选择动作的时刻到来，而是在几百毫秒或几秒之后。等$\delta$到来时，乘积$xy$早已为零，突触需要记住自己曾经参与过。最简单的记忆就是我们熟悉的RC电路：
 \begin{empheq}[box=\keybox]{equation}
 \tau_e\,\frac{\dd e}{\dd t} \;=\; -e \;+\; x\,y ,
 \qquad
@@ -203,7 +203,7 @@ V(t) \;=\; \int_t^{\infty} e^{-(s-t)/\tau_\gamma}\,r(s)\,\dd s .
 \delta(t) \;=\; r(t) \;+\; \frac{\dd V}{\dd t} \;-\; \frac{V}{\tau_\gamma} .
 \label{eq:ctd}
 \end{empheq}
-常数$\tau_\gamma$是规划视野，即系数$\gamma$的连续时间对应物；按照假说，它由\nt{SERO}设定（第~\ref{sec:horizon}~节），这样~\eqref{eq:patience}就是值得等多久的规则。我们检查三种情况（图~\ref{fig:ctdcases}）。预示果汁的灯亮了：$V$跃升，$\dd V/\dd t$很大，出现一个尖峰。承诺的果汁到了：$r>0$，但期望在同一时刻耗尽，$\dd V/\dd t\approx-r$，没有尖峰。果汁没来：期望在没有奖励的情况下消失，$\dd V/\dd t<0$，出现低谷。
+常数$\tau_\gamma$是规划视野，即系数$\gamma$的连续时间对应物；按照假说，它由\nt{SERO}设定（第~\ref{sec:horizon}~节），这样~\eqref{eq:patience}就是值得等多久的规则。我们检查三种情况（图~\ref{fig:ctdcases}）。预示果汁的灯亮了：$V$跃升，$\dd V/\dd t$很大，出现一个爆发。承诺的果汁到了：$r>0$，但期望在同一时刻耗尽，$\dd V/\dd t\approx-r$，没有爆发。果汁没来：期望在没有奖励的情况下消失，$\dd V/\dd t<0$，出现低谷。
 
 \begin{figure}[t]
 \centering
@@ -242,7 +242,7 @@ V(t) \;=\; \int_t^{\infty} e^{-(s-t)/\tau_\gamma}\,r(s)\,\dd s .
   \fi
  \end{scope}}
 \end{tikzpicture}
-\caption{误差~\eqref{eq:ctd}的三种情况；自上而下依次为奖励$r$、期望$V$和误差$\delta$。左：没有期望，果汁完全出乎意料。中：灯使$V$跃升，这是$\dd V/\dd t$的跃变，$\delta$的尖峰落在灯亮时。之后$V$恰好按视野的要求增长，$\delta=0$；果汁到来时，奖励$r$与$V$的下降相互抵消。右：$V$在没有奖励时下降——低谷。这就是图~\ref{fig:rpe}中的尖峰、转移和低谷，只是现在能看出它们从何而来。}
+\caption{误差~\eqref{eq:ctd}的三种情况；自上而下依次为奖励$r$、期望$V$和误差$\delta$。左：没有期望，果汁完全出乎意料。中：灯使$V$跃升，这是$\dd V/\dd t$的跃变，$\delta$的爆发落在灯亮时。之后$V$恰好按视野的要求增长，$\delta=0$；果汁到来时，奖励$r$与$V$的下降相互抵消。右：$V$在没有奖励时下降——低谷。这就是图~\ref{fig:rpe}中的爆发、转移和低谷，只是现在能看出它们从何而来。}
 \label{fig:ctdcases}
 \end{figure}
 
@@ -252,7 +252,7 @@ V(t) \;=\; \int_t^{\infty} e^{-(s-t)/\tau_\gamma}\,r(s)\,\dd s .
 
 \emph{导数$\dd V/\dd t$。}任何对变化而非对电平作出响应的电路都能计算它：直接兴奋加上经\nt{GABA}中介的延迟抑制，如第~\ref{sec:gaba}~章的方向检测器；或者第~\ref{sec:code}~章的耗竭型突触~\eqref{eq:depression}。
 
-\emph{一根导线中的符号。}误差可正可负，而脉冲频率只能为正。解决办法与第~\ref{sec:serocomputer}~章中\nt{SERO}神经元的相同：\nt{DOPA}神经元是起搏器。它平稳的每秒几个脉冲表示$\delta=0$，簇放电表示$\delta>0$，停顿表示$\delta<0$。负误差的余地更小：频率不能降到零以下。真实的\nt{DOPA}神经元的低谷确实比尖峰浅~\cite{Bayer2005}。
+\emph{一根导线中的符号。}误差可正可负，而脉冲频率只能为正。解决办法与第~\ref{sec:serocomputer}~章中\nt{SERO}神经元的相同：\nt{DOPA}神经元是起搏器。它平稳的每秒几个脉冲表示$\delta=0$，簇放电表示$\delta>0$，停顿表示$\delta<0$。负误差的余地更小：频率不能降到零以下。真实的\nt{DOPA}神经元的低谷确实比爆发浅~\cite{Bayer2005}。
 
 多巴胺的行为像$\delta$，这是测量结果。脑究竟如何计算$\dd V/\dd t$，还是假说。
 
@@ -323,7 +323,7 @@ V(t) \;=\; \int_t^{\infty} e^{-(s-t)/\tau_\gamma}\,r(s)\,\dd s .
 
 \begin{exercise}[\lvlA]
 \label{ex:06:1}
-\emph{资格迹能存活多久。}共同活动$xy=1$持续$T_a=0.2\,\text{s}$，从$e=0$开始，多巴胺在其结束后$d=0.5\,\text{s}$到达。（a）~此刻$\tau_e=1\,\text{s}$时的资格迹~\eqref{eq:threefactor}是$\tau_e=50\ms$时的多少倍？（b）~$\tau_e$为多少时它最大？
+\emph{资格迹能存活多久。}共同活动$xy=1$持续$T_a=0.2\,\text{s}$，从$e=0$开始，多巴胺在其结束后$d=0.5\,\text{s}$到达。(a)~此刻$\tau_e=1\,\text{s}$时的资格迹~\eqref{eq:threefactor}是$\tau_e=50\ms$时的多少倍？(b)~$\tau_e$为多少时它最大？
 \end{exercise}
 
 \begin{exercise}[\lvlA]
@@ -338,7 +338,7 @@ V(t) \;=\; \int_t^{\infty} e^{-(s-t)/\tau_\gamma}\,r(s)\,\dd s .
 
 \begin{exercise}[\lvlA]
 \label{ex:06:4}
-\emph{尖峰中的视野。}灯在不可预测的时刻亮起，大小为$R$的果汁在$L=1\,\text{s}$后到达。证明对于按~\eqref{eq:ctd}学到的期望，灯与果汁之间$\delta\equiv0$，并求$\tau_\gamma=2\,\text{s}$和$\tau_\gamma=4\,\text{s}$时灯亮尖峰的面积。
+\emph{爆发中的视野。}灯在不可预测的时刻亮起，大小为$R$的果汁在$L=1\,\text{s}$后到达。证明对于按~\eqref{eq:ctd}学到的期望，灯与果汁之间$\delta\equiv0$，并求$\tau_\gamma=2\,\text{s}$和$\tau_\gamma=4\,\text{s}$时灯亮爆发的面积。
 \end{exercise}
 
 \begin{exercise}[\lvlB]
@@ -348,7 +348,7 @@ V(t) \;=\; \int_t^{\infty} e^{-(s-t)/\tau_\gamma}\,r(s)\,\dd s .
 
 \begin{exercise}[\lvlB]
 \label{ex:06:6}
-\emph{设计：计算$\delta$的电路。}\nt{DOPA}神经元接收$r$、权重为$k_1$的$V$，以及以$\tau_d$平滑、权重为$-k_2$的$V$的副本。（a）~选取$k_1$、$k_2$，使对慢变的$V$输出为~\eqref{eq:ctd}。（b）~当$V=V_0e^{t/\tau_\gamma}$时，真实的$\delta=0$。若$\tau_\gamma=2\,\text{s}$，$\tau_d$为多少时电路的虚假误差不超过$V/\tau_\gamma$的$5\,\%$？
+\emph{设计：计算$\delta$的电路。}\nt{DOPA}神经元接收$r$、权重为$k_1$的$V$，以及以$\tau_d$平滑、权重为$-k_2$的$V$的副本。(a)~选取$k_1$、$k_2$，使对慢变的$V$输出为~\eqref{eq:ctd}。(b)~当$V=V_0e^{t/\tau_\gamma}$时，真实的$\delta=0$。若$\tau_\gamma=2\,\text{s}$，$\tau_d$为多少时电路的虚假误差不超过$V/\tau_\gamma$的$5\,\%$？
 \end{exercise}
 
 \begin{exercise}[\lvlB]

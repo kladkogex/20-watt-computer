@@ -6,7 +6,7 @@
 
 我们每次从表~\ref{tab:types}中取出一种神经元类型，追问它给这台计算机器增加了什么。规则每次都一样：只用活体中真实存在的东西，也不借助任何全局时钟。现在把各个部件装成一台机器，看看它们如何协同工作。
 
-第~\ref{sec:neurontypes}~章的图景得到了证实，也变得更精确。庞大的\nt{GLUT}神经元寻址网络承载数据。\nt{GABA}神经元控制这些数据的流动。网络之上悬着四条广播通道，每条各有一个旋钮：\nt{DOPA}决定保留哪些权重变化，\nt{SERO}维持总体水平，并且按照假说还设定规划的时间范围，\nt{NORA}在探索与决断之间选择，\nt{ACET}在写入与读取之间选择（图~\ref{fig:machine}）。
+第~\ref{sec:neurontypes}~章的图景得到了证实，也变得更精确。庞大的\nt{GLUT}神经元寻址网络承载数据。\nt{GABA}神经元控制这些数据的流动。网络之上悬着四条广播通道，每条各有一个旋钮：\nt{DOPA}决定保留哪些权重变化，\nt{SERO}维持总体水平，并且按照假说还设定规划视野，\nt{NORA}在探索与决断之间选择，\nt{ACET}在写入与读取之间选择（图~\ref{fig:machine}）。
 
 \begin{figure}[t]
 \centering
@@ -21,7 +21,7 @@
 \node[font=\scriptsize,align=center] at (4.3,0.25) {符合、延迟、\\逻辑（第\ref{sec:glutcomputer}章）};
 \node[font=\scriptsize,align=center] at (7.4,0.25) {记忆、编码\\（第\ref{sec:code}、\ref{sec:acet}章）};
 \draw[thick,red!70!black,fill=red!8,rounded corners=2pt] (2.8,-1.15) rectangle (8.8,-0.55);
-\node[font=\scriptsize,red!60!black] at (5.8,-0.85) {\nt{GABA}（第\ref{sec:gaba}章）：禁止、选择、除法、节律};
+\node[font=\scriptsize,red!60!black] at (5.8,-0.85) {\nt{GABA}（第\ref{sec:gaba}章）：否决、选择、除法、节律};
 \node[blk,fill=blue!5,text width=2.0cm] (A) at (10.9,0) {选择\\动作};
 \draw[->,very thick] (S) -- (2.6,0);
 \draw[->,very thick] (9.0,0) -- (A);
@@ -48,7 +48,7 @@
 \pic[scale=0.9] at (-0.45,3.7) {juice};
 \draw[->,thick,densely dotted,gray!50!black] ([yshift=0.45cm]D.north) to[bend left=18] node[above,font=\scriptsize,black] {意外} ([yshift=0.45cm]N.north);
 \end{tikzpicture}
-\caption{整台机器。\nt{GLUT}总线把数据从传感器送到动作选择；\nt{GABA}控制总线内部的数据流。双线圆圈是广播通道；虚线箭头表示把它们的信号发给整个网络，每条通道有自己的旋钮。\nt{DOPA}接收奖励$r$和来自总线内部评价者的预期$V$（第~\ref{sec:dofa}~章）；点线箭头是一个假说：\nt{NORA}通过异常大的误差得知意外（第~\ref{sec:nora}~章）。}
+\caption{整台机器。\nt{GLUT}总线把数据从传感器送到动作选择；\nt{GABA}控制总线内部的数据流。双线圆圈是广播通道；虚线箭头表示把它们的信号发给整个网络，每条通道有自己的旋钮。\nt{DOPA}接收奖励$r$和来自总线内部评论器的预期$V$（第~\ref{sec:dofa}~章）；点线箭头是一个假说：\nt{NORA}通过异常大的误差得知意外（第~\ref{sec:nora}~章）。}
 \label{fig:machine}
 \end{figure}
 
@@ -64,7 +64,7 @@
 \end{aligned}
 \label{eq:machine}
 \end{empheq}
-其中$r_i$是\nt{GLUT}神经元的发放频率，$x_i$是来自传感器的输入，$W_{ij}\ge0$是它们之间的权重（第~\ref{sec:glutcomputer}~章）；$q_k$是\nt{GABA}神经元的发放频率，$M_{ik}\ge0$是它们的抑制强度（第~\ref{sec:gaba}~章）；$e_{ij}$是资格迹，$\delta$是\nt{DOPA}误差（第~\ref{sec:dofa}~章）；$\tau_\gamma$是时间范围，按照假说由\nt{SERO}设定；$g$是\nt{NORA}的增益（第~\ref{sec:nora}~章）；$a$是\nt{ACET}的水平（第~\ref{sec:acet}~章）。
+其中$r_i$是\nt{GLUT}神经元的发放频率，$x_i$是来自传感器的输入，$W_{ij}\ge0$是它们之间的权重（第~\ref{sec:glutcomputer}~章）；$q_k$是\nt{GABA}神经元的发放频率，$M_{ik}\ge0$是它们的抑制强度（第~\ref{sec:gaba}~章）；$e_{ij}$是资格迹，$\delta$是\nt{DOPA}误差（第~\ref{sec:dofa}~章）；$\tau_\gamma$是视野，按照假说由\nt{SERO}设定；$g$是\nt{NORA}的增益（第~\ref{sec:nora}~章）；$a$是\nt{ACET}的水平（第~\ref{sec:acet}~章）。
 
 请注意式~\eqref{eq:machine}中缺了什么。没有节拍：一切都用微分方程写出，每个神经元自行变化。没有独立的存储器：负责记忆的正是参与计算的那些$W_{ij}$，以及同一个活动$r_i$。绝大多数突触没有各自的专属修正：它们的学习是局部资格迹与一个公共数的乘积；只有在学习动作的回路里，才有通往每个输出的单独误差导线（第~\ref{sec:motorlearning}~章）。控制信号总共只有四类：$\delta$、$\tau_\gamma$、$g$、$a$，却要管理八百亿个神经元。每一类其实不是一个数，而是一小束并行线路（命题~\ref{prop:bundle}），但每束只有几条线。
 
@@ -89,12 +89,12 @@
 类型 & 章 & 计算什么 & 时间 & 总线 & 已知程度 \\
 \midrule
 \nt{GLUT} & \ref{sec:glutcomputer}, \ref{sec:code}, \ref{sec:sensors}, \ref{sec:motorlearning}, \ref{sec:dendrites} & 数据：符合、延迟、逻辑、记忆、序列 & ms & 寻址 & 已确立 \\
-\nt{GABA} & \ref{sec:gaba}, \ref{sec:code}, \ref{sec:pain}, \ref{sec:motorlearning} & 数据流控制：禁止、选择、除法、稳定、节律；疼痛闸门 & ms & 寻址 & 已确立；频率除法需与背景噪声共同作用 \\
-\nt{SERO} & \ref{sec:serocomputer}, \ref{sec:pain}, \ref{sec:sleep} & 水平调节器、平滑；时间范围$\tau_\gamma$；疼痛音量；睡眠模式 & 秒 & 容积 & 自抑制已测量；时间范围是假说 \\
+\nt{GABA} & \ref{sec:gaba}, \ref{sec:code}, \ref{sec:pain}, \ref{sec:motorlearning} & 数据流控制：否决、选择、除法、稳定、节律；疼痛闸门 & ms & 寻址 & 已确立；频率除法需与背景噪声共同作用 \\
+\nt{SERO} & \ref{sec:serocomputer}, \ref{sec:pain}, \ref{sec:sleep} & 水平调节器、平滑；视野$\tau_\gamma$；疼痛音量；睡眠模式 & 秒 & 容积 & 自抑制已测量；视野是假说 \\
 \nt{DOPA} & \ref{sec:dofa}, \ref{sec:dofaalt} & 预测误差$\delta$；慢水平是时间的代价 & $0.1$\,s和分钟 & 广播 & $\delta$已测量；扩展见第\ref{sec:dofaalt}章 \\
 \nt{NORA} & \ref{sec:nora}, \ref{sec:pain}, \ref{sec:chemoutput}, \ref{sec:sleep} & 增益$g$：探索还是决断；意外；器官的“油门” & 秒 & 广播 & 信噪比提高已测量；在探索中的作用是假说 \\
 \nt{ACET} & \ref{sec:acet}, \ref{sec:muscles}, \ref{sec:chemoutput}, \ref{sec:sleep} & 写入还是读取；学习速度；通往肌肉的输出；器官的“刹车” & 秒 & 两者皆有 & 三种效应已测量；模式切换是假说 \\
-\nt{GLYC} & \ref{sec:muscles}, \ref{sec:pain} & 脊髓和脑干中的负权重：禁止拮抗肌 & ms & 寻址 & 已确立 \\
+\nt{GLYC} & \ref{sec:muscles}, \ref{sec:pain} & 脊髓和脑干中的负权重：否决拮抗肌 & ms & 寻址 & 已确立 \\
 \nt{HIST} & --- & 全局“保持清醒”信号 & 缓慢 & 广播 & 在计算中的作用未经研究 \\
 \nt{ADRE} & \ref{sec:chemoutput} & 经血液给全身踩“油门”；在脑内未知 & 缓慢 & 广播 & 脑外已确立；在脑内的作用不清楚 \\
 \nt{ASPA} & --- & 弱正权重 & ms & 寻址 & 作用有争议 \\
@@ -116,7 +116,7 @@
 
 \emph{新习惯。}尝试$B$带来了谁也没料到的果汁：一次爆发，$\delta>0$，选择了$B$的突触被加强。这样试上几次，预期$V$就追上了新世界，误差重新变小。
 
-\emph{复原。}意外过去，\nt{NORA}恢复高增益，选择重新变得果断；\nt{ACET}回落，网络在读取模式下使用学到的东西。在整个过程中，\nt{SERO}按照假说设定时间范围$\tau_\gamma$：多远之后的果汁仍然值得等待。
+\emph{复原。}意外过去，\nt{NORA}恢复高增益，选择重新变得果断；\nt{ACET}回落，网络在读取模式下使用学到的东西。在整个过程中，\nt{SERO}按照假说设定视野$\tau_\gamma$：多远之后的果汁仍然值得等待。
 
 \begin{figure}[t]
 \centering
@@ -168,7 +168,7 @@
 \label{tab:computer}
 \end{table}
 
-表~\ref{tab:computer}汇总了主要区别。每一条都不是大自然来不及修正的缺陷，而是同一套方案的组成部分。没有统一节拍，就需要“开—关”传感器和符合检测器。元件不可靠，就需要大量神经元提供冗余。存储与计算合一，就需要\nt{ACET}，让写入不破坏读取。学习没有反向导线，就需要\nt{DOPA}和噪声。而每秒一个脉冲的能量上限，迫使整套语言精打细算，只把脉冲花在新消息上。
+表~\ref{tab:computer}汇总了主要区别。每一条都不是大自然来不及修正的缺陷，而是同一套方案的组成部分。没有统一节拍，就需要“接通—断开”传感器和符合检测器。元件不可靠，就需要大量神经元提供冗余。存储与计算合一，就需要\nt{ACET}，让写入不破坏读取。学习没有反向导线，就需要\nt{DOPA}和噪声。而每秒一个脉冲的能量上限，迫使整套语言精打细算，只把脉冲花在新消息上。
 
 \section{我们还不知道什么}
 
@@ -216,7 +216,7 @@
 
 \begin{exercise}[\lvlB]
 \label{ex:10:5}
-\emph{建模：谁察觉到变化。}评价者看到$y=s+\text{噪声}$（$R=1$）；$s$以$1/200$的概率跳变到方差为$J^2=4$的新值。模拟$q=0$的卡尔曼滤波器，当$E\leftarrow0.9E+\delta^2/(P+R)$超过$20$时把$P$升到$J^2$。它的误差比最佳常数$\alpha$时小多少？
+\emph{建模：谁察觉到变化。}评论器看到$y=s+\text{噪声}$（$R=1$）；$s$以$1/200$的概率跳变到方差为$J^2=4$的新值。模拟$q=0$的卡尔曼滤波器，当$E\leftarrow0.9E+\delta^2/(P+R)$超过$20$时把$P$升到$J^2$。它的误差比最佳常数$\alpha$时小多少？
 \end{exercise}
 
 \begin{exercise}[\lvlA]
