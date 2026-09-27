@@ -44,7 +44,7 @@ O quadro do capítulo~\ref{sec:neurontypes} se confirmou e ficou mais preciso. U
 \draw[bc] (H.south) -- (10.0,2.1) -- (8.8,1.35);
 \draw[bc] (H.south east) to[bend left=20] (A.north east);
 \draw[->,thick] (2.85,1.35) -- (2.85,2.75) -- (D.west) node[pos=0.25,left,font=\scriptsize] {$V$};
-\draw[->,thick,green!45!black] (0.4,3.2) node[left,black,font=\small] {prêmio $r$} -- (2.2,3.2) -- (D.west);
+\draw[->,thick,green!45!black] (0.4,3.2) node[left,black,font=\footnotesize] {recompensa $r$} -- (2.2,3.2) -- (D.west);
 \pic[scale=0.9] at (-0.45,3.7) {juice};
 \draw[->,thick,densely dotted,gray!50!black] ([yshift=0.45cm]D.north) to[bend left=18] node[above,font=\scriptsize,black] {surpresa} ([yshift=0.45cm]N.north);
 \end{tikzpicture}
@@ -157,7 +157,7 @@ Note que nenhum botão sabe o que os outros fazem. Cada um responde aos seus pr�
 \midrule
 tempo & relógio comum, cerca de um gigahertz & não há relógio comum; cada neurônio muda por conta própria, as janelas são definidas por eventos e ritmos locais (cap.~\ref{sec:glutcomputer}, \ref{sec:gaba}, \ref{sec:code}) \\
 elementos & portas binárias confiáveis & elementos analógicos de limiar; a sinapse perde a maior parte dos disparos (cap.~\ref{sec:code}) \\
-sinal da conexão & qualquer & definido pelo neurônio emissor (cap.~\ref{sec:neurontypes}) \\
+sinal da conexão & qualquer & definido pelo neurônio remetente (cap.~\ref{sec:neurontypes}) \\
 memória & separada do processador & nas mesmas conexões que o cálculo e na atividade autossustentada (cap.~\ref{sec:glutcomputer}, \ref{sec:acet}) \\
 aprendizado & retropropagação do erro & regras locais, um único número de difusão $\delta$ (cap.~\ref{sec:dofa}) e fios de erro para as saídas do circuito motor (cap.~\ref{sec:motorlearning}) \\
 controle & registradores e barramento de instruções & quatro canais de difusão, cada um um feixe de algumas linhas (cap.~\ref{sec:serocomputer}, \ref{sec:dofa}--\ref{sec:acet}) \\
@@ -226,5 +226,5 @@ Os exercícios deste capítulo juntam resultados de capítulos diferentes: cada 
 
 \begin{exercise}[\lvlC]
 \label{ex:10:7}
-\emph{Um feixe em vez de um fio.} Saídas $y_k=w_k+\xi_k$, recompensa $R=-\sum_ky_k^2$; cada linha do feixe difunde para um grupo de $G$ neurônios o erro das saídas dele, $w_k\leftarrow w_k+\eta\,\delta_l\xi_k$. Mostre que, com o melhor $\eta$, chegar a $\sum w_k^2=\varepsilon\sum w_k^2(0)$ exige $\approx(G+2)\ln(1/\varepsilon)$ tentativas. Quanto tempo leva, com $\varepsilon=0.01$, para aprender um circuito de $10^6$ neurônios com cinco linhas, uma tentativa a cada três segundos?
+\emph{Um feixe em vez de um fio.} Saídas $y_k=w_k+\xi_k$, recompensa $R=-\sum_ky_k^2$; cada linha difunde a um grupo de $G$ neurônios o erro de suas saídas, $w_k\leftarrow w_k+\eta\,\delta_l\xi_k$. Mostre que, com $\eta$ ótimo, chegar a $\sum w_k^2=\varepsilon\sum w_k^2(0)$ exige $\approx(G+2)\ln(1/\varepsilon)$ tentativas. Com $\varepsilon=0.01$, quanto tempo aprende um circuito de $10^6$ neurônios e $5$ linhas, uma tentativa a cada $3$~s?
 \end{exercise}

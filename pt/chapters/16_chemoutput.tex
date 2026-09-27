@@ -52,7 +52,7 @@ Descrevemos cada estágio por um circuito RC com constante de tempo $\tau$ e gan
 \tau\,\frac{\dd x_3}{\dd t} = -x_3 + g\,x_2 ,
 \label{eq:cascade}
 \end{equation}
-onde $u$ é o comando do cérebro e $x_3$, o nível do hormônio final. O ganho de malha é $K=g^3k$. No equilíbrio, $x_3=g^3u/(1+K)$ e, como em qualquer regulador com realimentação, uma malha grande torna o nível insensível à dispersão dos ganhos dos estágios. Mas cada estágio desloca a fase: na frequência $\omega=\sqrt3/\tau$, os três estágios iguais juntos dão meia volta de defasagem e uma atenuação de oito vezes. Daí o resultado clássico da teoria de controle:
+onde $u$ é o comando do cérebro e $x_3$, o nível do hormônio final. O ganho do laço é $K=g^3k$. No equilíbrio, $x_3=g^3u/(1+K)$ e, como em qualquer regulador com realimentação, um laço grande torna o nível insensível à dispersão dos ganhos dos estágios. Mas cada estágio desloca a fase: na frequência $\omega=\sqrt3/\tau$, os três estágios iguais juntos dão meia volta de defasagem e uma atenuação de oito vezes. Daí o resultado clássico da teoria de controle:
 \begin{empheq}[box=\keybox]{equation}
 K \;<\; 8 ,
 \label{eq:cascadestable}
@@ -81,11 +81,11 @@ Verificamos isso no modelo~\eqref{eq:cascade} (fig.~\ref{fig:cascade}). Com $K=4
 \node[font=\scriptsize,blue!60!black,anchor=west] at (16,0.55) {$K=4$: estabiliza-se};
 \node[font=\scriptsize,red!70!black,anchor=west] at (16,1.75) {$K=12$: pulsa};
 \end{tikzpicture}
-\caption{Cascata de três estágios com realimentação segundo~\eqref{eq:cascade}: nível do hormônio final em frações do valor de equilíbrio $x_3^*$. Com ganho de malha abaixo de oito, o nível se estabiliza; acima, a própria cascata gera pulsações regulares.}
+\caption{Cascata de três estágios com realimentação segundo~\eqref{eq:cascade}: nível do hormônio final em frações do valor de equilíbrio $x_3^*$. Com ganho do laço abaixo de oito, o nível se estabiliza; acima, a própria cascata gera pulsações regulares.}
 \label{fig:cascade}
 \end{figure}
 
-Os hormônios reais de cascata de fato saem em pulsos: o nível do hormônio do estresse, por exemplo, oscila com período de cerca de uma hora. Segundo uma das hipóteses, essas pulsações nascem da própria realimentação atrasada entre os estágios, e não é preciso um gerador de ritmo separado para elas~\cite{Walker2010}. É a mesma causa de oscilação da malha \nt{GLUT}--\nt{GABA} na proposição~\ref{prop:ei} e do laço de estiramento do músculo na condição~\eqref{eq:delaystable}: uma realimentação negativa que chega atrasada.
+Os hormônios reais de cascata de fato saem em pulsos: o nível do hormônio do estresse, por exemplo, oscila com período de cerca de uma hora. Segundo uma das hipóteses, essas pulsações nascem da própria realimentação atrasada entre os estágios, e não é preciso um gerador de ritmo separado para elas~\cite{Walker2010}. É a mesma causa de oscilação do laço \nt{GLUT}--\nt{GABA} na proposição~\ref{prop:ei} e do laço de estiramento do músculo na condição~\eqref{eq:delaystable}: uma realimentação negativa que chega atrasada.
 
 \section{O código de pulsos dos hormônios}
 
@@ -126,7 +126,7 @@ O que a saída química faz & Como & O que se sabe \\
 \midrule
 ajusta os órgãos & acelerador \nt{NORA} e freio \nt{ACET}~\eqref{eq:gasbrake} & medido; o freio é mais rápido que o acelerador \\
 põe o corpo inteiro em modo de corrida & adrenalina \nt{ADRE} no sangue & medido \\
-mantém os níveis hormonais & cascata com realimentação, $K<8$~\eqref{eq:cascadestable} & cascatas e realimentação medidas; pulsações geradas pela própria malha: hipótese \\
+mantém os níveis hormonais & cascata com realimentação, $K<8$~\eqref{eq:cascadestable} & cascatas e realimentação medidas; pulsações geradas pelo próprio laço: hipótese \\
 transmite pela frequência das porções & receptor cansado como filtro passa-altas & dependência das porções medida \\
 troca de modo ao longo do dia & gerador com captura de fase pela luz~\eqref{eq:pll} & período e ajuste pela luz medidos \\
 \bottomrule

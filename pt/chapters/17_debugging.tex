@@ -55,7 +55,7 @@ Uma interface que escuta uma fração ínfima dos neurônios consegue controlar 
 
 Enviar um sinal à máquina é mais difícil que lê-lo. Um eletrodo pelo qual passa corrente não excita um neurônio, mas todos os neurônios e fios em volta, sem distinguir tipo nem sinal. Com ele não se pode escrever um código em que importa \emph{qual} neurônio disparou e \emph{quando} (capítulo~\ref{sec:code}): só se pode definir grosseiramente \emph{onde} e \emph{com que intensidade}.
 
-Para a visão, isso basta em parte. Uma corrente por um eletrodo no córtex visual é vista pela pessoa como um ponto luminoso num certo lugar do campo visual; quando os pontos eram acesos ao mesmo tempo, até dezesseis de uma vez, uma pessoa que perdeu a visão reconhecia algumas letras e distinguia bordas de objetos~\cite{Fernandez2021}. É um código de posição, e ele pode ser escrito. Mas lembre o capítulo~\ref{sec:sensors}: o olho não envia pixels ao cérebro, e sim uma descrição comprimida (bordas, mudanças, clareamento e escurecimento) por fios separados. Escrever ``pontos de luz'' no córtex é escrever pixels numa máquina que espera na entrada um código completamente diferente. Por isso a visão artificial ainda é mais grosseira do que se esperaria pelo número de eletrodos. Há também sinais de teste que dispensam eletrodo: as ilusões visuais entram pelo olho como uma entrada incomum e tiram a máquina do seu modo normal, e cada erro aponta para um mecanismo (seção~\ref{sec:illusions}).
+Para a visão, isso basta em parte. Uma corrente por um eletrodo no córtex visual é vista pela pessoa como um ponto luminoso num certo lugar do campo visual; quando os pontos eram acesos ao mesmo tempo, até dezesseis de uma vez, uma pessoa que perdeu a visão reconhecia algumas letras e distinguia bordas de objetos~\cite{Fernandez2021}. É um código de lugar, e ele pode ser escrito. Mas lembre o capítulo~\ref{sec:sensors}: o olho não envia pixels ao cérebro, e sim uma descrição comprimida (bordas, mudanças, clareamento e escurecimento) por fios separados. Escrever ``pontos de luz'' no córtex é escrever pixels numa máquina que espera na entrada um código completamente diferente. Por isso a visão artificial ainda é mais grosseira do que se esperaria pelo número de eletrodos. Há também sinais de teste que dispensam eletrodo: as ilusões visuais entram pelo olho como uma entrada incomum e tiram a máquina do seu modo normal, e cada erro aponta para um mecanismo (seção~\ref{sec:illusions}).
 
 \section{O que a sonda não vê}
 
@@ -78,7 +78,7 @@ sonda & ouve centenas a milhares de neurônios & poucas dimensões e ruído corr
 compressão na sonda & transmite eventos em vez do sinal bruto & capacidade do fluxo de disparos~\eqref{eq:spikeentropy} & resolvido na engenharia \\
 leitura & taxas de grupo $\to$ movimento, texto, fala & o decodificador é um destinatário; código de taxa de grupo & funciona; alguns bits por segundo \\
 aprendizado conjunto & cérebro e decodificador se ajustam um ao outro & fio de erro (cap.~\ref{sec:motorlearning}) & observado; as regras de ajuste estão em estudo \\
-escrita & a corrente acende pontos no campo visual & o código de posição pode ser escrito, o temporal não (cap.~\ref{sec:sensors}) & pontos medidos; visão útil, ainda não \\
+escrita & a corrente acende pontos no campo visual & o código de lugar pode ser escrito, o temporal não (cap.~\ref{sec:sensors}) & pontos medidos; visão útil, ainda não \\
 leitura de registradores & quase não se faz & canais de difusão (cap.~\ref{sec:serocomputer}--\ref{sec:acet}) & sensores químicos existem em experimentos \\
 \bottomrule
 \end{tabular}
@@ -109,7 +109,7 @@ Cada questão em aberto do capítulo~\ref{sec:synthesis} é também uma tarefa p
 
 \begin{exercise}[\lvlB]
 \label{ex:17:4}
-\emph{Simulação: decodificador de grupo.} $N$ neurônios com $\lambda_i=[b+m\,\mathbf v\cdot\mathbf p_i]_+$, $b=20$, $m=15$~disparos/s, janelas de $50\ms$, $\mathbf v$ com desvio padrão $0.5$ por componente; todos veem um ruído comum, $\mathbf v+\boldsymbol\xi$, $\sigma_\xi=0.2$. Simule o decodificador não enviesado de vetor de população. Com que $N$ os dois ruídos se igualam, e quantos bits por componente por janela dá $N\to\infty$?
+\emph{Simulação: decodificador de grupo.} $N$ neurônios com $\lambda_i=[b+m\,\mathbf v\cdot\mathbf p_i]_+$, $b=20$, $m=15$~disparos/s, janelas de $50\ms$, $\mathbf v$ com desvio padrão $0.5$ por componente; todos veem ruído comum, $\mathbf v+\boldsymbol\xi$, $\sigma_\xi=0.2$. Simule o decodificador não enviesado de vetor de população. Com que $N$ os dois ruídos se igualam e quantos bits por componente por janela dá $N\to\infty$?
 \end{exercise}
 
 \begin{exercise}[\lvlB]
@@ -124,5 +124,5 @@ Cada questão em aberto do capítulo~\ref{sec:synthesis} é também uma tarefa p
 
 \begin{exercise}[\lvlC]
 \label{ex:17:7}
-\emph{O limite de velocidade da interface.} Estime $R\le DW\log_2(1+\text{SNR})$ para $D=10$ variáveis com banda $W=5$~Hz, com $\text{SNR}\approx0.9$ (ruído parecido com o sinal) e $90$ (ruído independente de $1000$ neurônios). O medido é cerca de $10$~bit/s. Que experimento distinguiria as duas explicações da diferença: ruído parecido com o sinal ou desconhecimento do código?
+\emph{O limite de velocidade da interface.} Estime $R\le DW\log_2(1+\text{SNR})$ para $D=10$ variáveis com banda $W=5$~Hz, com $\text{SNR}\approx0.9$ (ruído parecido com o sinal) e $90$ (ruído independente de $1000$ neurônios). Mede-se cerca de $10$~bit/s. Que experimento distingue as duas explicações da diferença: ruído parecido com o sinal ou código desconhecido?
 \end{exercise}

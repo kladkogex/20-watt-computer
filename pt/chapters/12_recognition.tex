@@ -108,7 +108,7 @@ Aqui $y_k$ é a atividade do neurônio $C$ número $k$, que venceu a competiçã
 \label{fig:tracevideo}
 \end{figure}
 
-Testamos isso num modelo (fig.~\ref{fig:tracevideo}). Dois neurônios $C$ competem pelas entradas de $16$ neurônios $S$: duas figuras em oito posições. A figura percorre todas as posições, $50\ms$ em cada uma, depois vem uma pausa de $0.3\,\text{s}$ e a próxima figura ao acaso. Nenhum rótulo. Se o traço é curto, $\tau_{\text{tr}}=5\ms$, os neurônios dividem a entrada pela \emph{posição}, e a resposta coincide com a figura não melhor que uma moeda: $52\%$ em média em dez rodadas. Se o traço é comparável ao tempo de exibição de uma posição, a partir de $\tau_{\text{tr}}\approx20\ms$, cada neurônio reúne \emph{todas} as posições da sua figura (com $20$, $50$ e $200\ms$, em todas as dez rodadas): a invariância foi aprendida só com o vídeo. A pausa entre objetos importa: sem ela, o traço passa para o objeto seguinte e os confunde.
+Testamos isso num modelo (fig.~\ref{fig:tracevideo}). Dois neurônios $C$ competem pelas entradas de $16$ neurônios $S$: duas figuras em oito posições. A figura percorre todas as posições, $50\ms$ em cada uma, depois vem uma pausa de $0.3\,\text{s}$ e a próxima figura ao acaso. Nenhum rótulo. Se o traço é curto, $\tau_{\text{tr}}=5\ms$, os neurônios dividem a entrada pela \emph{posição}, e a resposta coincide com a figura não melhor que uma moeda: $52\%$ em média em dez execuções. Se o traço é comparável ao tempo de exibição de uma posição, a partir de $\tau_{\text{tr}}\approx20\ms$, cada neurônio reúne \emph{todas} as posições da sua figura (com $20$, $50$ e $200\ms$, em todas as dez execuções): a invariância foi aprendida só com o vídeo. A pausa entre objetos importa: sem ela, o traço passa para o objeto seguinte e os confunde.
 
 O mesmo se vê em experimentos. Se durante um experimento o objeto é trocado discretamente enquanto o olho salta de um lugar para outro, os neurônios dos estágios superiores, em uma ou duas horas, passam a responder ao objeto trocado como se fosse o mesmo: eles ligam o que veio em sequência~\cite{LiDiCarlo2008}. A invariância no cérebro é de fato aprendida a partir da continuidade do tempo. Até que ponto essa regra explica todo o aprendizado visual é hipótese.
 
@@ -211,7 +211,7 @@ O reconhecimento é montado com peças que já tínhamos (tabela~\ref{tab:recogn
 
 \begin{exercise}[\lvlB]
 \label{ex:12:6}
-\emph{Simulação: a janela do traço.} Com dez rodadas de \texttt{trace\_learning} de \texttt{models/\allowbreak recognition\_models.py} e pausa de $0.3\,\text{s}$, ache para quais $\tau_{\text{tr}}$ entre $5\ms$ e $2\,\text{s}$ todas as rodadas aprendem a invariância sem erro. De onde vem o limite superior dessa janela?
+\emph{Simulação: a janela do traço.} Com dez execuções de \texttt{trace\_learning} de \texttt{models/\allowbreak recognition\_models.py} e pausa de $0.3\,\text{s}$, ache para quais $\tau_{\text{tr}}$ entre $5\ms$ e $2\,\text{s}$ todas as execuções aprendem a invariância sem erro. De onde vem o limite superior dessa janela?
 \end{exercise}
 
 \begin{exercise}[\lvlB]
