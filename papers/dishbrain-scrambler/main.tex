@@ -98,9 +98,9 @@ with $U=\ln P$ for $\kappa=0$, and a true equilibrium, since detailed balance ho
 
 We first checked Proposition~\ref{prop:exact} on a two-parameter paddle, $p=\mathrm{clip}(ay+b)$ for a ball arriving at height $y\sim U(0,1)$, with a miss moving $(a,b)$ to a random neighbor on a $31\times21$ grid. The predicted stationary miss rate is $0.815$ and the simulated rate $0.810$, against $0.845$ for a uniformly random setting.
 
-We then built a DishBrain-like loop (appendix~\ref{app:sim}). The ball's height relative to the paddle is place-coded on 8 sensory channels and its distance to the paddle wall rate-coded from 4 to 40, as in the experiment. Two motor populations read the active channel through 16 plastic weights in $[-1,1]$, and their rectified noisy rates move the paddle. The only teacher is a random kick to all weights after each approach, of standard deviation $\sigma_m$ after a miss and $\sigma_h$ after a hit, on top of a small spontaneous drift. Sessions of 2000 approaches compare the first quarter with the remaining three, as the experiment compares the first 5 of 20 minutes.
+We then built a DishBrain-like loop (appendix~\ref{app:sim}), first in the abstract form of Proposition~\ref{prop:kappa}, with the network's setting reduced to its sensorimotor weights. The ball's height relative to the paddle is place-coded on 8 sensory channels and its distance to the paddle wall rate-coded from 4 to 40, as in the experiment. Two motor populations read the active channel through 16 plastic weights in $[-1,1]$, and their rectified noisy rates move the paddle. The only teacher is a random kick to all weights after each approach, of standard deviation $\sigma_m$ after a miss and $\sigma_h$ after a hit, on top of a small spontaneous drift. Sessions of 2000 approaches compare the first quarter with the remaining three, as the experiment compares the first 5 of 20 minutes.
 
-The Silent condition removes the stimulation after a miss but not the eight-second withdrawal of sensory input. Rapid distributed stimulation suppresses the global bursts that dominate unstimulated cultures \citep{Wagenaar2005}, and such bursts make synaptic weights drift \citep{Chao2005}. We therefore model Silent as a weaker scrambler ($\sigma_m=0.03$) than Stimulus ($\sigma_m=0.08$); this assumption is testable (section~\ref{sec:exp}).
+The Silent condition removes the stimulation after a miss but not the eight-second withdrawal of sensory input. In cultures that burst, unstimulated periods let global bursts return \citep{Wagenaar2005}, and bursts make synaptic weights drift \citep{Chao2005}; the curve labelled Silent in Figure~\ref{fig:sim} shows this burst-driven case as a weaker scrambler ($\sigma_m=0.03$ against $0.08$). It is a conditional prediction, not a reproduction of the data: the Silent cultures of \citet{Kagan2022} were all human-derived, and human cultures in their Rest recordings do not burst (section~\ref{sec:net}); correspondingly, Silent shows no within-session gain in the published data (section~\ref{sec:reanalysis}). In this abstract model a miss is followed by a new serve also in the No-feedback condition, whereas in the experiment No feedback is one continuous rally; the network model below plays the exact protocol.
 
 \begin{figure}[t]
 \centering
@@ -133,7 +133,69 @@ The Silent condition removes the stimulation after a miss but not the eight-seco
 \label{fig:sim}
 \end{figure}
 
-Over 400 simulated cultures the within-session change in hit fraction (mean $\pm$ s.e.) is $+0.161\pm0.014$ for Stimulus, $+0.068\pm0.012$ for Silent and $+0.017\pm0.007$ for No feedback (Figure~\ref{fig:sim}a). This is the reported ordering, with Silent above No feedback but with a smaller effect \citep{Kagan2022}. The same kick after every outcome gives $-0.010\pm0.007$, and reversed disruption $-0.019\pm0.006$. Performance falls monotonically with $\kappa$ and crosses the information-free level at $\kappa=1$ (Figure~\ref{fig:sim}b), as Proposition~\ref{prop:kappa} requires. The model is not fitted to data: the time scale of learning depends on the kick size and the number of plastic parameters, both unknown for a culture. The claim is qualitative, that the contingency in DishBrain's feedback suffices to produce its effects.
+Over 400 simulated cultures the within-session change in hit fraction (mean $\pm$ s.e.) is $+0.161\pm0.014$ for Stimulus, $+0.068\pm0.012$ for Silent and $+0.017\pm0.007$ for No feedback (Figure~\ref{fig:sim}a). This is the reported ordering, with Silent above No feedback but with a smaller effect \citep{Kagan2022}. The same kick after every outcome gives $-0.010\pm0.007$, and reversed disruption $-0.019\pm0.006$. Performance falls monotonically with $\kappa$ and crosses the information-free level at $\kappa=1$ (Figure~\ref{fig:sim}b), as Proposition~\ref{prop:kappa} requires. The model is not fitted to data: the time scale of learning depends on the kick size and the number of plastic parameters, both unknown for a culture. The claim is qualitative, that the contingency in DishBrain's feedback suffices to produce its effects. The time scale matters, however: in the published sessions a rally lasts $12.7+5.9h$~s with $h$ hits (fit to the gameplay data), so a 20-minute session holds about 170 approaches and 95 misses, against 2000 approaches here. A culture learning within one session therefore needs per-miss perturbations roughly ten times larger than in this model.
+
+\subsection{A Network with the Culture's Geometry}\label{sec:net}
+
+We then asked whether DishBrain's actual stimuli, acting through local plasticity, realize $\kappa<1$. A sheet of 3000 leaky integrate-and-fire neurons (80\% excitatory, 100 distance-weighted inputs each, short-term depression) covers the $3.85\times2.10$~mm MaxOne array, and the protocol is replicated exactly: electrode layout, place and rate code, hit and miss programs, the four motor regions with the 20~Hz gain normalization, blanking after stimulation, No feedback as one continuous rally, and session timing (appendix~\ref{app:net}). The paddle half-length is set so that Rest sessions give the published 0.73 hits per rally.
+
+\emph{Calibration.} Free parameters were fitted to eight statistics of the 233 Rest recordings of the human cultures \citep{Kagan2022}, computed identically for model and data (Table~\ref{tab:calib}). The fit is within the data's interquartile range except for rates about 0.1~Hz high and pairwise correlations near zero. The Rest statistics fix rates, irregularity, synchrony and the absence of bursts, but not recurrent coupling: parameter sets with excitatory weights spanning a factor of 40 fit about equally well, so we carry three (weak, medium, strong coupling).
+
+\emph{No sensorimotor channel at this scale.} Single pulses at the stimulation electrodes produced no detectable change in the motor regions, about 1~mm away, in any set or recruitment assumption (fraction of cases with $z>3$: 0.00; with medium coupling, 150~mV pulses slightly suppress all regions alike). The model has about 375 neurons per mm$^2$, far fewer than a culture of $10^6$ plated cells, and the real cultures respond across the whole array during stimulation \citep[Fig.~4C]{Kagan2022}. Consequently the paddle is not driven by the ball, and closed-loop learning cannot be tested at this scale: in 20-minute sessions (medium coupling, gated rule, 32 cultures) hits per rally changed by $-0.11$ in Stimulus, $+0.09$ in Silent and $+0.04$ in No feedback, none significantly (Wilcoxon $p=0.12$, $0.07$, $0.49$). What can be measured is the quantity Proposition~\ref{prop:kappa} depends on.
+
+\emph{Emergent $\kappa$.} We logged the total squared change of the excitatory weights after every hit and every miss, under two local rules without reward or error signal: activity-gated random updates and spike-timing-dependent plasticity (Table~\ref{tab:kappa}). When a 75~mV pulse recruits few cells, or many cells only up to threshold, as the authors intended in choosing 75~mV ``to prevent forcing hyperpolarised cells from firing'' \citep{Kagan2022}, $\kappa$ per approach is $0.6$--$0.8$ in all sets and under both rules: the learning regime. It is the same in Stimulus, in Predictable (protocol~B) and in Silent, because it comes from time, not stimulation: a miss is followed by eight seconds without play and a new serve, a hit by the return of the ball, and plasticity accrues at a nearly constant rate. With small recruitment the 150~mV random program adds only 15\% to the displacement of eight seconds of silence. When 75~mV pulses recruit as widely as 150~mV pulses, the 80-pulse hit program dominates and $\kappa>1$: anti-learning.
+
+Under local plasticity at this scale the network therefore predicts learning for Stimulus and Silent alike and none for No feedback. The data show learning in Stimulus only. Either the 150~mV stimulation perturbs synapses in real cultures far more than activity-gated rules do in a sparse model, or Silent's missing gain reflects its high starting level (0.849 hits per rally at T1, above Stimulus's end point). The model leaves the amplitude account untested rather than refuted; protocol F (Table~\ref{tab:exp}) separates the two.
+
+\begin{table}[t]
+\centering\small
+\begin{tabular}{lcc}
+\toprule
+Statistic (Rest, human cultures) & Data: median [IQR] & Model: median [IQR] \\
+\midrule
+rate per active unit, median (Hz) & 0.30 [0.26, 0.39] & 0.42 [0.38, 0.45] \\
+rate per active unit, mean (Hz) & 0.55 [0.46, 0.69] & 0.72 [0.65, 0.77] \\
+CV of inter-spike intervals & 0.97 [0.93, 1.02] & 0.96 [0.96, 0.97] \\
+pairwise correlation, 100 ms bins & 0.0025 [0.0007, 0.012] & 0.0000 [$-$0.0002, 0.0001] \\
+Fano factor of population count & 1.08 [0.92, 1.46] & 0.91 [0.89, 0.93] \\
+units co-active in 50 ms, 99th pct. & 0.086 [0.078, 0.100] & 0.086 [0.086, 0.099] \\
+units co-active in 50 ms, max. & 0.16 [0.13, 0.23] & 0.14 [0.12, 0.14] \\
+network events per minute & 0 [0, 0.15] & 0 [0, 0] \\
+\bottomrule
+\end{tabular}
+\caption{Calibration of the network to the Rest recordings of the human cultures of \citet{Kagan2022} (data: 168 recordings, 24 chips; model: 64 ten-minute runs of the best set, 81 active units subsampled per run, as in the data).}
+\label{tab:calib}
+\end{table}
+
+\begin{table}[t]
+\centering\small
+\begin{tabular}{llccccc}
+\toprule
+& & \multicolumn{3}{c}{$\kappa$ per approach} & \multicolumn{2}{c}{programs only} \\
+\cmidrule(lr){3-5}\cmidrule(lr){6-7}
+Rule & 75 mV recruitment & Stimulus & Predictable & Silent & $\kappa_{\rm prog}$ & $\frac{\text{150 mV miss}}{\text{silent miss}}$ \\
+\midrule
+gated & small & 0.65 & 0.65 & 0.63 & 0.12 & 1.16 \\
+gated & wide, near-threshold & 0.72 & 0.72 & 0.82 & 0.35 & 2.71 \\
+gated & wide & 1.26 & 1.28 & 1.11 & 0.92 & 2.83 \\
+gated & widest & 2.95 & 2.93 & 1.60 & 4.60 & 4.03 \\
+STDP & small & 0.63 & 0.63 & 0.65 & 0.10 & 1.15 \\
+STDP & wide & 1.11 & 1.10 & 0.97 & 0.75 & 2.55 \\
+STDP & widest & 2.96 & 2.94 & 1.49 & 4.07 & 3.21 \\
+\bottomrule
+\end{tabular}
+\caption{Emergent $\kappa$ in the calibrated network: squared excitatory-weight change from one outcome to the next after hits, divided by the same after misses (means over the three coupling sets, 8 cultures each, 5-minute sessions; values per set in \texttt{network/results}). $\kappa_{\rm prog}$: the same for the feedback programs alone. Last column: displacement of the Stimulus miss program relative to eight seconds of silence.}
+\label{tab:kappa}
+\end{table}
+
+\section{Re-analysis of the Published Data}\label{sec:reanalysis}
+
+The per-rally gameplay data of the feedback study are public (\citealp{Kagan2022}; OSF, \url{https://doi.org/10.17605/osf.io/5u6qv}), and our analysis script is in the folder \texttt{reanalysis}. Taking the culture as the unit and hits per rally as the measure, in the first 5 minutes of gameplay (T1) and the remaining 15 (T2):
+\begin{itemize}
+\item Stimulus rises within the session, from 0.687 to 0.839 ($+0.152$, Wilcoxon $p=0.0002$, $n=24$), in every cell line; Silent ($-0.033$, $p=0.35$, $n=17$) and No feedback ($-0.002$, $p=1$, $n=15$) do not.
+\item At T2 the three conditions do not differ (Kruskal--Wallis $p=0.22$). Stimulus reaches, within the session, the level the other groups already had.
+\end{itemize}
+Both points fit section~\ref{sec:pictures}: when a hit perturbs little, the strength of the post-miss perturbation sets the speed of learning, not the level reached. Two methods caveats apply to the published comparisons, which express gameplay relative to each culture's Rest session. The Rest baselines differ between the condition groups (0.666, 0.775 and 0.787 hits per rally; $p=7\times10^{-5}$), with the Stimulus cultures worst at rest, and the groups differ in cell type (Silent has no mouse cultures). Finally, as a suggestive signature of a scrambler, the lag-1 correlation of consecutive rally lengths falls from Rest to gameplay in Stimulus ($0.098\to0.026$, $p=0.0005$) but not in Silent or No feedback; the Stimulus cultures' high Rest persistence carries the same baseline caveat, so this is consistent with, not evidence for, perturbation after misses.
 
 \section{Experiments That Decide}\label{sec:exp}
 
@@ -153,9 +215,10 @@ B. Predictable penalty & as A & 150~mV, same dose as A, in a fixed sequence & we
 C. Quenched penalty & as A & 8~s of random, rapid, low-amplitude stimulation that suppresses bursts & learns & weak or none \\
 D. Reversed & 150~mV fixed pattern, 1~s & 75~mV random, 1~s & learns & below E \\
 E. Information-free & same random stimulus & same random stimulus & none & none \\
+F. Equal time-out & 8~s pause & 150~mV random, 4~s; 4~s pause & learns & learns only if amplitude matters \\
 \bottomrule
 \end{tabular}
-\caption{Protocols that separate the accounts. B and C are the minimal pair; D tests the sign rule of Proposition~\ref{prop:kappa}; E is the reference level for D.}
+\caption{Protocols that separate the accounts. B and C are the minimal pair; D tests the sign rule of Proposition~\ref{prop:kappa}; E is the reference level for D; F separates the time-out after a miss from its stimulation (section~\ref{sec:net}).}
 \label{tab:exp}
 \end{table}
 
@@ -165,10 +228,10 @@ Two analyses of existing recordings also decide. \emph{Per-event displacement:} 
 
 If the perturbation account holds, DishBrain demonstrates a generic property of plastic networks under outcome-contingent perturbation rather than predictive processing in particular. The accounts are not mutually exclusive: a surprise-minimizing system may implement exactly this stabilization, and the present data cannot tell them apart. The account also explains why the improvement did not carry over between sessions \citep{Kagan2022}: a setting held only by the absence of perturbation is diffused by spontaneous bursting between sessions \citep{Chao2005}, which predicts that quenching bursts between sessions should improve retention. For comparisons of sample efficiency between cultures and learning algorithms, the natural baseline is a learner that uses only the hit-or-miss signal by perturbing on failure.
 
-Two limitations apply. Real stimulation does not perturb synapses isotropically, and a patterned 100~Hz burst can itself induce pathway-specific potentiation and depression \citep{Jimbo1999}, so the ``predictable'' stimulus may push the network in a consistent direction rather than leave it alone; the displacement analysis measures such effects directly. And the reading of the Silent condition through post-miss bursts is a hypothesis, which the burst analysis tests.
+Two limitations apply. Real stimulation does not perturb synapses isotropically, and a patterned 100~Hz burst can itself induce pathway-specific potentiation and depression \citep{Jimbo1999}, so the ``predictable'' stimulus may push the network in a consistent direction rather than leave it alone; the displacement analysis measures such effects directly. The network model (section~\ref{sec:net}) is too sparse to carry a sensorimotor channel, so it tests the perturbation contingency, not closed-loop learning; under local rules it attributes $\kappa<1$ to the time-out after a miss rather than to the stimulation, and does not explain why Silent did not learn. The burst reading of Silent applies only to bursting cultures.
 
 \section*{Code Availability}
-The simulation (\texttt{scrambler.py}, standard-library Python) and the data behind Figure~\ref{fig:sim} are in the folder \texttt{papers/\allowbreak dishbrain-scrambler} of the repository\\ \url{https://github.com/kladkogex/20-watt-computer}.
+The abstract model (\texttt{scrambler.py}, standard-library Python), the network simulator and its calibration (\texttt{network/}, PyTorch on a GPU), the re-analysis (\texttt{reanalysis/}) and the data behind the figures and tables are in the folder \texttt{papers/\allowbreak dishbrain-scrambler} of the repository\\ \url{https://github.com/kladkogex/20-watt-computer}.
 
 \appendix
 \section{Proofs}\label{app:proofs}
@@ -203,6 +266,18 @@ primes denoting $d/dy$. The ground state $\chi_0$ has $E_0=0$ by construction.
 
 \emph{Grid check of Proposition~\ref{prop:exact}.} $a\in\{-1,-0.9,\dots,2\}$, $b\in\{-1,-0.9,\dots,1\}$; $P(a,b)$ is evaluated on 400 equally spaced ball heights. After a miss the setting moves to a uniformly chosen neighbor; moves off the grid or into one of the seven never-miss settings are rejected, which keeps the kernel symmetric on the remaining states. The chain is run for $3\times10^6$ approaches.
 
+\section{The Network Model}\label{app:net}
+
+\emph{Network.} $N=3000$ leaky integrate-and-fire neurons ($\tau_m=20$~ms, threshold 1, reset 0, refractory 2~ms) at uniform random positions on $3.85\times2.10$~mm; the first 80\% excitatory. Each neuron receives $K=100$ inputs drawn without replacement with probability $\propto e^{-d/\lambda}$, $\lambda=1$~mm (of the order of the input numbers estimated for dissociated cultures, \citealp{Soriano2008}; the excitatory fraction and $\lambda$ are assumptions). Exponential current synapses ($\tau_e=5$, $\tau_i=10$~ms); short-term depression of excitatory synapses (release fraction $U$, recovery 500~ms); Ornstein--Uhlenbeck membrane noise of stationary s.d.\ $\sigma$; a fixed per-neuron drive $\mu+\mu_{sd}\,\xi_i$. Integration is exact for the linear parts with $dt=1$~ms.
+
+\emph{Calibration.} $\mu,\sigma,\mu_{sd},J_{EE},J_{IE},J_{EI}=J_{II},U$ and an adaptation strength were drawn at random (weights log-uniformly), 512 sets per round, and refined in two further rounds around the best 16 (60, 90 and 120~s of spontaneous activity). The loss is $\sum_s\bigl((v_s-\mathrm{med}_s)/\mathrm{IQR}_s\bigr)^2$ over the eight statistics of Table~\ref{tab:calib}, computed by the same code for data and model after subsampling the model's active units ($\ge0.1$~Hz) to the data's median of 81. Best set (weak coupling): $\mu=0.20$, $\sigma=0.26$, $\mu_{sd}=0.14$, $J_{EE}=0.0066$, $J_{IE}=0.079$, $J_{EI}=0.066$, $U=0.089$; medium: $J_{EE}=0.118$, $J_{EI}=0.61$; strong: $J_{EE}=0.153$, $J_{EI}=0.47$ (losses 0.52, 0.68, 0.77; full values in \texttt{network/calib\_sets.json}).
+
+\emph{Stimulation and protocol.} Electrode positions follow Fig.~4D of \citet{Kagan2022}: eight stimulation electrodes in a zig-zag across the sensory band and four $31\times33$-electrode motor regions, counterbalanced up/down. A 75~mV pulse raises the membrane of neurons within $r_{75}$ of the electrode by $k_{75}$; a 150~mV pulse forces a spike within $r_{150}$. Recruitment assumptions $(r_{75},k_{75},r_{150})$: small (0.05~mm, 1.2, 0.10~mm), wide near-threshold (0.12, 0.7, 0.20), wide (0.12, 1.2, 0.20), widest (0.20, 1.5, 0.23). The decoder sums spikes per region every 10~ms, scales each region by a running (5~s) gain toward 20~Hz, and moves the paddle by 0.01 court heights toward the larger of the up and down sums; readout is blanked for 5~ms after every stimulation command. The ball crosses the court in 2.9~s (fit to the gameplay data); the paddle half-length 0.214 gives the published Rest level of 0.73 hits per rally. A 60~s burn-in without plasticity precedes each session.
+
+\emph{Plasticity and displacement.} Activity-gated rule: when an excitatory neuron spikes, each excitatory input weight changes by $\pm\eta\,w_{\max}x_j$ with random sign, $x_j$ the input's 20~ms trace. STDP: additive pair rule with $A_+=\eta w_{\max}$, $A_-=1.05A_+$, 20~ms traces. Weights stay in $[0,w_{\max}]$, $w_{\max}=2J_{EE}$. The simulator logs the cumulative $\sum\Delta w^2$ at every outcome and at the end of every feedback program; $\kappa$ per approach is the mean increment from a hit to the next outcome divided by that from a miss.
+
+\emph{Implementation and checks.} All runs are simulated together on one GPU (NVIDIA GB10): state tensors carry a run axis, synapses propagate only from neurons that spiked, the neuron update is one fused kernel, and each 10~ms block is replayed as a CUDA graph. 288 five-minute sessions take 6.5--8~min. Firing rates, irregularity and correlations agree with a dense NumPy reference of the same equations to within sampling error (\texttt{validate.py}). At most $12R$ spikes per millisecond are propagated; in the 288-run batches this cap was exceeded during synchronous stimulation steps, which drops propagation (and plasticity) of some spikes during the hit tetanus, so the hit-program displacement and hence $\kappa$ are, if anything, underestimated.
+
 \begin{thebibliography}{}
 \small\singlespacing
 \bibitem[Ashby(1952)]{Ashby1952} Ashby, W.~R. (1952). \emph{Design for a brain}. Chapman \& Hall.
@@ -222,6 +297,7 @@ primes denoting $d/dy$. The ground state $\chi_0$ has $E_0=0$ by construction.
 \bibitem[Schnitzer(1993)]{Schnitzer1993} Schnitzer, M.~J. (1993). Theory of continuum random walks and application to chemotaxis. \emph{Physical Review E}, \emph{48}, 2553--2568.
 \bibitem[Shahaf \& Marom(2001)]{Shahaf2001} Shahaf, G., \& Marom, S. (2001). Learning in networks of cortical neurons. \emph{Journal of Neuroscience}, \emph{21}, 8782--8788.
 \bibitem[Sinapayen et~al.(2017)]{Sinapayen2017} Sinapayen, L., Masumori, A., \& Ikegami, T. (2017). Learning by stimulation avoidance: A principle to control spiking neural networks dynamics. \emph{PLOS ONE}, \emph{12}, e0170388.
+\bibitem[Soriano et~al.(2008)]{Soriano2008} Soriano, J., Rodr\'{\i}guez Mart\'{\i}nez, M., Tlusty, T., \& Moses, E. (2008). Development of input connections in neural cultures. \emph{Proceedings of the National Academy of Sciences USA}, \emph{105}, 13758--13763.
 \bibitem[Tsetlin(1961)]{Tsetlin1961} Tsetlin, M.~L. (1961). On the behavior of finite automata in random media. \emph{Avtomatika i Telemekhanika}, \emph{22}, 1345--1354 (in Russian).
 \bibitem[Tsetlin(1963)]{Tsetlin1963} Tsetlin, M.~L. (1963). Finite automata and models of simple forms of behaviour. \emph{Russian Mathematical Surveys}, \emph{18}, 1--27.
 \bibitem[van Kampen(1988)]{vanKampen1988} van Kampen, N.~G. (1988). Diffusion in inhomogeneous media. \emph{Journal of Physics and Chemistry of Solids}, \emph{49}, 673--677.
