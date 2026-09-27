@@ -1,15 +1,19 @@
 # Build the book in each language. Sources live in <lang>/main.tex + <lang>/chapters/;
 # figures/ (TikZ data, icons) and models/ (Python simulations) are shared by all languages.
-# Russian, English, Spanish, Portuguese, Ukrainian, French and Vietnamese build with pdflatex; Chinese (ctex), Japanese (xeCJK)
-# and Korean (kotex) with xelatex; Arabic (right-to-left, babel bidi) with lualatex.
-ENGINE = $(if $(filter zh ja ko,$(1)),xelatex,$(if $(filter ar,$(1)),lualatex,pdflatex))
+# The full books: Chinese (ctex), Japanese (xeCJK) and Korean (kotex) build with xelatex, all others with lualatex
+# (OpenType type, figures/booklook.tex). The paperbacks: Russian, English, Spanish, Portuguese, Ukrainian, French and
+# Vietnamese with pdflatex, Chinese, Japanese and Korean with xelatex, Arabic (right-to-left, babel bidi) with lualatex.
+ENGINE = $(if $(filter zh ja ko,$(1)),xelatex,lualatex)
+PBENGINE = $(if $(filter zh ja ko,$(1)),xelatex,$(if $(filter ar,$(1)),lualatex,pdflatex))
 DOCKER = docker run --rm -v "$(CURDIR)":/w -e TEXINPUTS=/w/$(1):/w: -w /w/$(1) texlive/texlive \
          $(call ENGINE,$(1)) -interaction=nonstopmode -jobname=20-watt-computer-$(1) main.tex
 
 .PHONY: all ru en zh ja ko es pt uk fr vi ar ru-paperback en-paperback zh-paperback ja-paperback ko-paperback es-paperback pt-paperback uk-paperback fr-paperback vi-paperback ar-paperback models clean
 all: ru
 
+# three passes: page references and the chapter bands (TikZ overlays) settle on the third
 ru en zh ja ko es pt uk fr vi ar:
+	$(call DOCKER,$@) >/dev/null
 	$(call DOCKER,$@) >/dev/null
 	$(call DOCKER,$@) >/dev/null
 	@grep -a 'Output written' $@/20-watt-computer-$@.log
@@ -17,7 +21,7 @@ ru en zh ja ko es pt uk fr vi ar:
 
 # Popular «paperback» edition: <lang>/paperback/main.tex, one file per chapter, same numbering as the full edition.
 PAPERBACK = docker run --rm -v "$(CURDIR)":/w -e TEXINPUTS=/w/$(1):/w: -w /w/$(1) texlive/texlive \
-            $(call ENGINE,$(1)) -interaction=nonstopmode -jobname=20-watt-computer-$(1)-paperback paperback/main.tex
+            $(call PBENGINE,$(1)) -interaction=nonstopmode -jobname=20-watt-computer-$(1)-paperback paperback/main.tex
 
 ru-paperback en-paperback zh-paperback ja-paperback ko-paperback es-paperback pt-paperback uk-paperback fr-paperback vi-paperback ar-paperback:
 	$(call PAPERBACK,$(@:-paperback=)) >/dev/null

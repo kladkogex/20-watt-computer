@@ -1,6 +1,12 @@
 \chapter{Les entrées de la machine: comment s'y branchent les yeux, les oreilles et les autres capteurs}
 \chaptermark{Les entrées de la machine}
 \label{sec:sensors}
+\begin{chaptergoals}
+\item comment chaque sens est un transducteur: porte du récepteur, réglage du gain, codeur d'impulsions;
+\item pourquoi le bruit de grenaille limite la vision nocturne, et pourquoi elle ralentit au crépuscule;
+\item comment le réglage du gain comprime une plage immense: les capteurs signalent les changements;
+\item comment l'œil comprime son image d'un facteur cent, et l'oreille fonctionne en banc de filtres.
+\end{chaptergoals}
 
 \section{Le capteur comme transducteur}
 
@@ -86,7 +92,7 @@ L'oreille résout un autre problème: il faut décomposer le son en fréquences.
 
 \begin{figure}[t]
 \centering
-\shorthandoff{:?}% pgfmath ternary below
+\ifLuaTeX\else\shorthandoff{:?}\fi% pgfmath ternary below
 \begin{tikzpicture}[>=Stealth,x=1.35cm,y=2.2cm]
 \draw[->,gray!70!black] (-0.3,0) -- (7.6,0) node[above left,font=\small,black] {fréquence, Hz};
 \draw[->,gray!70!black] (-0.3,0) -- (-0.3,1.15) node[left,font=\small,black] {réponse};
@@ -97,7 +103,7 @@ L'oreille résout un autre problème: il faut décomposer le son en fréquences.
 \foreach \i in {0,...,48}{\draw[gray!50!black,fill=white,line width=0.3pt] ({\i/7},-0.44) rectangle ({(\i+1)/7},-0.26);}
 \foreach \o in {0,...,6}{\foreach \j in {0,1,3,4,5}{\fill[black] ({\o+(\j+1)/7-0.035},-0.35) rectangle ({\o+(\j+1)/7+0.035},-0.26);}}
 \end{tikzpicture}
-\shorthandon{:?}
+\ifLuaTeX\else\shorthandon{:?}\fi
 \caption{L'oreille comme banc de filtres passe-bande, schéma. Chaque courbe est la réponse des capteurs d'une portion à des sons de fréquences différentes; les fréquences centrales sont espacées d'une octave, comme des touches sur une échelle logarithmique. Les vrais filtres ont un flanc haute fréquence raide et un flanc basse fréquence doux. En bas, un clavier: comme dans l'oreille, chaque octave y occupe la même place.}
 \label{fig:filterbank}
 \end{figure}

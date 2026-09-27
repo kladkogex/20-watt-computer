@@ -1,6 +1,12 @@
 \chapter{Comment la machine apprend à bouger}
 \chaptermark{Comment la machine apprend à bouger}
 \label{sec:motorlearning}
+\begin{chaptergoals}
+\item pourquoi le mouvement exige un troisième professeur, un fil d'erreur par sortie, et ce qu'il coûte;
+\item comment une vaste couche d'expansion \nt{GLUT} et un fil d'erreur par sortie mènent aux moindres carrés;
+\item comment le circuit appris devient un modèle interne, un filtre adaptatif qui prédit le corps;
+\item pourquoi deux processus, rapide et lent, expliquent effets consécutifs et récupération spontanée.
+\end{chaptergoals}
 
 \section{Trois professeurs}
 
@@ -36,7 +42,7 @@ Le cerveau possède une région qui semble construite exactement pour cela~\cite
 
 \begin{figure}[t]
 \centering
-\shorthandoff{:?}% pgfmath ternary below
+\ifLuaTeX\else\shorthandoff{:?}\fi% pgfmath ternary below
 \begin{tikzpicture}[>=Stealth,
   gran/.style={circle,draw,thick,fill=blue!6,minimum size=0.32cm,inner sep=0pt},
   outn/.style={circle,draw,very thick,fill=red!10,minimum size=1.1cm,inner sep=0pt,font=\scriptsize},
@@ -56,7 +62,7 @@ Le cerveau possède une région qui semble construite exactement pour cela~\cite
 % error wire
 \draw[->,very thick,red!70!black,densely dashed] (4.6,-1.4) node[below,font=\scriptsize,black,align=center] {un seul fil d'erreur $e_i$\\\nt{GLUT}, $\sim1$ fois/s} -- (P.south);
 \end{tikzpicture}
-\shorthandon{:?}
+\ifLuaTeX\else\shorthandon{:?}\fi
 \caption{Le circuit d'apprentissage supervisé, tel que le cerveau semble le réaliser. La commande et l'état du corps sont décomposés par une immense couche de neurones \nt{GLUT} en un long vecteur $x_j$; le neurone \nt{GABA} de sortie en fait la somme avec les poids $w_{ij}$. Un unique fil d'erreur apporte $e_i$; la coïncidence de l'erreur avec une entrée active affaiblit le poids de cette entrée, comme dans la règle~\eqref{eq:lms}.}
 \label{fig:errorwire}
 \end{figure}

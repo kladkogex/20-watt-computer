@@ -1,63 +1,111 @@
-% The textbook look of the full book, shared by every edition: \input{figures/booklook} at the end of the preamble.
-% Nothing here changes the text block, the fonts or the sizes, so the page breaks of the reviewed editions stay.
+% The textbook design of the full book, shared by every edition: \input{figures/booklook} at the end of the preamble.
+% Type: Libertinus Serif for text, Libertinus Math for formulas, Source Sans 3 for headings, captions, figure labels
+% and running heads. Chapter openers: a full-width band with the number at the outer edge, the title in sans below,
+% and the "In this chapter" box (environment chaptergoals, defined plainly in each main.tex for the web build).
+% Propositions: tinted panels with an accent rule; exercises: "Exercise 4.3 ** Title" in sans.
 % An edition may define before the \input:
-%   \chapterlabel      the word above the chapter number (default: \@chapapp, i.e. Chapter / Appendix from babel;
-%                      empty = the number alone, used where the language puts the number inside the word);
-%                      \booklookapponly = the word only on appendices;
-%   \booklooknohead    keep the edition's own running heads (Arabic: right-to-left page numbers);
-%   \booklookbarside   the side of the accent bar on key statements (default west; east for right-to-left).
+%   \chapterlabel         the word in the band (default: \@chapapp, i.e. Chapter / Appendix from babel;
+%                         \booklookapponly = the word only on appendices, for languages that put the number inside it);
+%   \booklooknohead       keep the edition's own running heads (Arabic: right-to-left page numbers);
+%   \booklookbarside      the side of the accent rule on key statements (default west; east for right-to-left);
+%   \booklookbabelfonts   set the Latin faces with \babelfont[english] (Arabic) instead of \setmainfont.
 \makeatletter
+% ---------- type
+\RequirePackage{unicode-math}
+\ifdefined\booklookbabelfonts
+  \babelfont[english]{rm}{Libertinus Serif}
+  \babelfont[english]{sf}[Scale=MatchLowercase,BoldFont=* Semibold]{Source Sans 3}
+\else
+  \setmainfont{Libertinus Serif}
+  \setsansfont{Source Sans 3}[Scale=MatchLowercase,BoldFont=* Semibold]
+\fi
+\setmathfont{Libertinus Math}
+% a loose line rather than one running into the margin (short lines with long code names, e.g. exercise titles)
+\setlength{\emergencystretch}{6em}
+
+% ---------- colour
 \definecolor{accent}{rgb}{0.11,0.30,0.53}
-\hypersetup{linkcolor=accent,citecolor=accent}
+\colorlet{accentdark}{accent!75!black}
+\colorlet{tint}{accent!6}
+\colorlet{inkgray}{black!62}
+\hypersetup{linkcolor=accent,citecolor=accent,urlcolor=accent}
 \providecommand{\chapterlabel}{\@chapapp}
-\providecommand{\booklookragged}{\raggedright}
 \providecommand{\booklookbarside}{west}
 \def\booklook@app{\appendixname}
 \newcommand{\booklookapponly}{\ifx\@chapapp\booklook@app\appendixname\fi}
 
-% chapter opener: a small label, a large number in the accent colour, a rule, then the title
+% ---------- chapter opener: a full-width band, the number at the outer edge, the title below in sans
+% the band: an overlay anchored to the page (needs the positions of the previous run; the Makefile runs three passes)
+\def\booklook@band#1{%
+  \noindent\begin{tikzpicture}[remember picture,overlay]
+    \fill[accent] (current page.north west) rectangle ([yshift=-1.45in]current page.north east);
+    \fill[accentdark] ([yshift=-1.45in]current page.north west) rectangle ([yshift=-1.51in]current page.north east);
+    #1
+  \end{tikzpicture}\par\nointerlineskip}
+\def\booklook@title#1{%
+  \vspace*{\dimexpr0.6in-\topskip\relax}%
+  {\parindent\z@\raggedright\sffamily\bfseries\fontsize{25}{30}\selectfont\color{accentdark}#1\par\nobreak}%
+  \vskip 20\p@}
 \def\@makechapterhead#1{%
-  \vspace*{6\p@}%
-  {\parindent\z@ \normalfont
-   \ifnum \c@secnumdepth >\m@ne \if@mainmatter
-     {\color{accent}\large\scshape\chapterlabel\par}%
-     \vskip 2\p@
-     {\color{accent}\scalebox{1.5}{\fontsize{36}{36}\selectfont\bfseries \thechapter}\par}% scaled: the Cyrillic fonts stop at 36pt
-     \vskip 10\p@
-   \fi\fi
-   {\color{accent}\rule{\linewidth}{1.2\p@}\par}%
-   \vskip 16\p@
-   {\booklookragged\Huge\bfseries #1\par\nobreak}%
-   \vskip 34\p@}}
-\def\@makeschapterhead#1{%
-  \vspace*{6\p@}%
-  {\parindent\z@ \normalfont
-   {\color{accent}\rule{\linewidth}{1.2\p@}\par}%
-   \vskip 16\p@
-   {\booklookragged\Huge\bfseries #1\par\nobreak}%
-   \vskip 34\p@}}
+  \ifnum\c@secnumdepth>\m@ne\if@mainmatter
+    \booklook@band{%
+      \ifodd\c@page
+        \node[anchor=base east,text=white,inner sep=0pt,font=\sffamily\bfseries\fontsize{80}{80}\selectfont]
+          at ([xshift=-0.55in,yshift=-1.22in]current page.north east) {\thechapter};
+        \node[anchor=base west,text=white!80!accent,inner sep=0pt,font=\sffamily\large]
+          at ([xshift=\Gm@lmargin,yshift=-1.22in]current page.north west) {\MakeUppercase{\chapterlabel}};
+      \else
+        \node[anchor=base west,text=white,inner sep=0pt,font=\sffamily\bfseries\fontsize{80}{80}\selectfont]
+          at ([xshift=0.55in,yshift=-1.22in]current page.north west) {\thechapter};
+        \node[anchor=base east,text=white!80!accent,inner sep=0pt,font=\sffamily\large]
+          at ([xshift=-\Gm@rmargin,yshift=-1.22in]current page.north east) {\MakeUppercase{\chapterlabel}};
+      \fi}%
+  \else\booklook@band{}\fi\else\booklook@band{}\fi
+  \booklook@title{#1}}
+\def\@makeschapterhead#1{\booklook@band{}\booklook@title{#1}}
+% "In this chapter": the chapter's goals under its title
+\renewenvironment{chaptergoals}{%
+  \begin{tcolorbox}[enhanced,colback=tint,colframe=tint,arc=0pt,boxrule=0pt,left=10pt,right=10pt,top=6pt,bottom=6pt,
+    fontupper=\sffamily\small,before skip=0pt,after skip=14pt]
+  {\color{accent}\bfseries\MakeUppercase{\chaptergoalsname}}\par\smallskip
+  \begin{itemize}\setlength{\itemsep}{1pt}}{\end{itemize}\end{tcolorbox}}
 
-% section headings in the accent colour (same sizes and spacing as the book class)
-\renewcommand\section{\@startsection{section}{1}{\z@}{-3.5ex \@plus -1ex \@minus -.2ex}{2.3ex \@plus.2ex}{\normalfont\Large\bfseries\color{accent}}}
-\renewcommand\subsection{\@startsection{subsection}{2}{\z@}{-3.25ex\@plus -1ex \@minus -.2ex}{1.5ex \@plus .2ex}{\normalfont\large\bfseries\color{accent}}}
-\renewcommand\subsubsection{\@startsection{subsubsection}{3}{\z@}{-3.25ex\@plus -1ex \@minus -.2ex}{1.5ex \@plus .2ex}{\normalfont\normalsize\bfseries\color{accent}}}
+% ---------- headings in sans, numbers in the accent colour
+\def\@seccntformat#1{{\color{accent}\csname the#1\endcsname}\hskip 0.7em}
+\renewcommand\section{\@startsection{section}{1}{\z@}{-3.5ex \@plus -1ex \@minus -.2ex}{2ex \@plus.2ex}{\normalfont\sffamily\bfseries\Large\color{accentdark}\raggedright}}
+\renewcommand\subsection{\@startsection{subsection}{2}{\z@}{-3.25ex\@plus -1ex \@minus -.2ex}{1.5ex \@plus .2ex}{\normalfont\sffamily\bfseries\large\color{accentdark}\raggedright}}
+\renewcommand\subsubsection{\@startsection{subsubsection}{3}{\z@}{-3.25ex\@plus -1ex \@minus -.2ex}{1.5ex \@plus .2ex}{\normalfont\sffamily\bfseries\normalsize\color{accentdark}}}
 
-% running heads: the chapter and section marks as before, a thin accent rule under them, bold page number
+% ---------- running heads in sans: the chapter and section marks, a thin accent rule, the page number outside
 \ifdefined\booklooknohead\else
 \def\booklook@rule{\makebox[\z@][l]{\color{accent}\rule[-5\p@]{\textwidth}{0.4\p@}}}
 \def\ps@headings{%
   \let\@oddfoot\@empty\let\@evenfoot\@empty
-  \def\@evenhead{\booklook@rule{\bfseries\thepage}\hfil{\color{black!75}\leftmark}}%
-  \def\@oddhead{\booklook@rule{\color{black!75}\rightmark}\hfil{\bfseries\thepage}}%
+  \def\@evenhead{\sffamily\booklook@rule{\bfseries\color{accent}\thepage}\hfil{\color{inkgray}\leftmark}}%
+  \def\@oddhead{\sffamily\booklook@rule{\color{inkgray}\rightmark}\hfil{\bfseries\color{accent}\thepage}}%
   \let\@mkboth\markboth}
+\def\ps@plain{\let\@oddhead\@empty\let\@evenhead\@empty
+  \def\@oddfoot{\hfil\sffamily\color{inkgray}\thepage\hfil}\let\@evenfoot\@oddfoot}
 \pagestyle{headings}
 \fi
 
-% figure and table labels in bold accent
+% ---------- figures and tables in sans (labels inside the drawings, table text, captions); captions small
+\g@addto@macro\@floatboxreset{\sffamily}
 \def\fnum@figure{\textcolor{accent}{\bfseries\figurename\nobreakspace\thefigure}}
 \def\fnum@table{\textcolor{accent}{\bfseries\tablename\nobreakspace\thetable}}
+\AtBeginDocument{\let\booklook@makecaption\@makecaption
+  \long\def\@makecaption#1#2{\small\booklook@makecaption{#1}{#2}}}
 
-% key statements: the light-yellow box gets an accent bar on its leading edge
-\tcbset{booklook bar/.style/.expanded={borderline \booklookbarside={2pt}{0pt}{accent!70}}}
-\renewtcolorbox{keyblock}{enhanced,breakable,colback=keyyellow,colframe=keyyellow,boxrule=0pt,arc=0pt,left=6pt,right=6pt,top=2pt,bottom=2pt,boxsep=0pt,booklook bar}
+% ---------- key statements: a tinted panel with an accent rule on the leading edge
+\def\booklook@west{west}
+\ifx\booklookbarside\booklook@west\def\booklook@rulekey{leftrule}\else\def\booklook@rulekey{rightrule}\fi
+\tcbset{booklook rule/.style/.expanded={\booklook@rulekey=2.5pt}}
+\renewtcolorbox{keyblock}{enhanced,breakable,colback=tint,colframe=accent,boxrule=0pt,arc=0pt,booklook rule,
+  left=9pt,right=9pt,top=5pt,bottom=5pt,boxsep=0pt}
+% theorem heads (the names come from each edition's \newtheorem): "Proposition 4.1 · Title." in sans accent,
+% exercises "Exercise 4.3 ** Title" with the difficulty stars; amsthm looks the style up when a theorem is used
+\newtheoremstyle{plain}{\topsep}{\topsep}{\itshape}{}{\sffamily\bfseries\color{accent}}{.}{0.5em}
+  {\thmname{#1}\thmnumber{~#2}\thmnote{\ \textperiodcentered\ #3}}
+\newtheoremstyle{definition}{\topsep}{\topsep}{\normalfont}{}{\sffamily\bfseries\color{accentdark}}{}{0.6em}
+  {\thmname{#1}\thmnumber{~#2}\thmnote{\ #3}}
 \makeatother
