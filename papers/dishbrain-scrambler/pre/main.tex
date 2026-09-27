@@ -1,0 +1,243 @@
+% Physical Review E version. Build: pdflatex, bibtex, pdflatex, pdflatex (run in this folder; the figure reads
+% the simulation data in the parent folder, shared with the Neural Computation version).
+\documentclass[pre,twocolumn,superscriptaddress,showpacs=false,amsmath,amssymb,nofootinbib]{revtex4-2}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage[colorlinks=true,linkcolor=blue!50!black,citecolor=blue!50!black,urlcolor=blue!50!black]{hyperref}
+\usepackage{microtype}
+\newcommand{\datadir}{..}
+
+\begin{document}
+
+\title{Scrambled when wrong, left alone when right: Outcome-dependent diffusion and learning in cultured neurons playing Pong}
+
+\author{Konstantin Kladko}
+\email{[email]}
+\affiliation{[Affiliation, City, Country]}
+
+\begin{abstract}
+A system whose parameters receive random kicks of variance $\sigma_m^2$ after a failure and $\sigma_h^2$ after a success diffuses with a state-dependent coefficient $D\propto\kappa+(1-\kappa)P$, where $P$ is the local failure probability and $\kappa=\sigma_h^2/\sigma_m^2$. With departure-point (It\^o) steps the stationary density is $\rho\propto1/D$: failures become rarer than chance for $\kappa<1$, unchanged at $\kappa=1$, more frequent for $\kappa>1$. Mapped to an imaginary-time Schr\"odinger operator, the dynamics has a zero-energy ground state $\phi_0\propto D^{-1/2}$ and a gap $\propto\sigma_m^2$, so the kick strength sets the learning rate but not the endpoint; the stationary state is a Boltzmann law with potential $\ln D$ at unit temperature, which can be lowered only by kicks that grow with $P$. We test this against DishBrain, where cortical cultures play Pong and a miss triggers stimulation of twice the amplitude of the hit stimulus plus an 8-s time-out. In the published data only the Stimulus condition improves within a session ($+0.152$ hits per rally, $p=0.0002$; Silent $-0.03$ and No feedback $-0.002$, not significant) and all conditions end at the same level ($p=0.22$), as the gap scaling predicts; Rest baselines differ between groups ($p=7\times10^{-5}$). A spiking network calibrated to the cultures' Rest statistics is too sparse to carry a sensory-to-motor path, so it cannot show closed-loop learning, but its emergent $\kappa$ under local plasticity is 0.6--0.8 for near-threshold recruitment and above 1 for wide recruitment, set by the time-out rather than the pulse amplitude. An equal time-out after hits and misses decides between the two.
+\end{abstract}
+
+\maketitle
+
+\section{Introduction}
+
+Random search that is interrupted by success is among the oldest learning mechanisms: Ashby's ultrastable homeostat changes its parameters at random until its essential variables stay in range \cite{Ashby1952}, finite automata that switch state only when penalized behave better than chance \cite{Tsetlin1961,Tsetlin1963,Robbins1952}, and woodlice gather in damp places by moving more in dry air \cite{Gunn1937}. In physical terms these are random walks whose step size depends on position, and random walkers accumulate where they move slowly \cite{Schnitzer1993,vanKampen1988,Landauer1988}. How strongly they accumulate, and in which convention the multiplicative noise must be read, are classical questions of stochastic dynamics \cite{Volpe2016}.
+
+Here the position is the setting of a learning system and the step size depends on its performance. The experimental motivation is DishBrain \cite{Kagan2022}, in which cortical cultures on a high-density electrode array play Pong. Spikes in four motor regions move a paddle, and the ball's position is delivered to eight sensory electrodes. After a hit the culture receives a ``predictable'' stimulus (100~Hz for 100~ms on all eight electrodes at 75~mV); after a miss, an ``unpredictable'' one (150~mV at 5~Hz at random sites and times for 4~s), followed by 4~s without stimulation before a new serve. Cultures improved within a session, and this was read as evidence that neurons act to make their input predictable, as the free-energy principle proposes \cite{Friston2010,Kagan2022}. The 150~mV amplitude was chosen, however, to force action potentials ``regardless of the state the cell was in, thereby being even more disruptive to the culture'' \cite{Kagan2022}: the feedback after a miss is less predictable and more disruptive at once, and the published controls do not separate the two. Earlier criticism concerned the terms intelligence and sentience \cite{Balci2023,Kagan2023reply}; closer precedents in cultures are the stimulus-regulation principle \cite{Shahaf2001,Marom2002} and learning by stimulation avoidance \cite{Sinapayen2017,Masumori2020}.
+
+We formulate learning by outcome-contingent perturbation as a drift-free diffusion with outcome-dependent diffusivity (Sec.~\ref{sec:model}), solve its stationary state and relaxation exactly (Sec.~\ref{sec:results}), and test the predictions against the published data (Sec.~\ref{sec:data}) and a spiking network calibrated to the cultures (Sec.~\ref{sec:net}).
+
+\section{Model}\label{sec:model}
+
+Let $\psi\in\Omega$ be the setting of the system, all variables that determine its play, and $P(\psi)\in(0,1)$ its probability of missing a ball. Time is counted in ball approaches. After a miss the setting jumps with a symmetric kernel, $K(\psi,\psi')=K(\psi',\psi)$; after a hit it stays. On a finite $\Omega$ the distribution evolves as
+\begin{equation}
+\rho_{t+1}=\rho_t-(I-K)\,\mathrm{diag}(P)\,\rho_t .
+\label{eq:chain}
+\end{equation}
+In general both outcomes perturb, with variances $\sigma_m^2$ after a miss and $\sigma_h^2$ after a hit. For small isotropic steps whose size is set at the point of departure, the setting diffuses with
+\begin{equation}
+D(\psi)=\tfrac12\bigl[\sigma_m^2P(\psi)+\sigma_h^2\bigl(1-P(\psi)\bigr)\bigr]
+=\tfrac12\sigma_m^2\bigl[\kappa+(1-\kappa)P\bigr],
+\label{eq:D}
+\end{equation}
+$\kappa=\sigma_h^2/\sigma_m^2$, and the density obeys the It\^o form of the Fokker--Planck equation with no drift \cite{Schnitzer1993,vanKampen1988,Volpe2016},
+\begin{equation}
+\partial_t\rho=\nabla^2\bigl(D\rho\bigr),
+\label{eq:FP}
+\end{equation}
+with reflecting boundaries. The It\^o convention is not a choice here: a kick is drawn with the variance of the outcome that has just occurred, at the current setting. Nothing in the model computes a prediction, a reward, or the sign of an error.
+
+\section{Analytical results}\label{sec:results}
+
+\subsection{Stationary state and the sign rule}
+
+For the chain (\ref{eq:chain}), $\rho\propto1/P$ satisfies detailed balance, $\rho(\psi)P(\psi)K(\psi,\psi')=\rho(\psi')P(\psi')K(\psi',\psi)$, and is unique when $K$ is irreducible \cite{Norris1997}. The long-run miss rate is then the harmonic mean of $P$,
+\begin{equation}
+\langle P\rangle_\infty=\frac{|\Omega|}{\sum_\psi1/P(\psi)}\le\frac1{|\Omega|}\sum_\psi P(\psi),
+\label{eq:harmonic}
+\end{equation}
+below the arithmetic mean, the miss rate of a setting drawn at random, unless $P$ is constant. A setting that misses ten times less often is kept ten times longer.
+
+For the continuum (\ref{eq:FP}) the stationary flux $-\nabla(D\rho)$ vanishes, so
+\begin{equation}
+\rho_\infty\propto\frac1D\propto\frac1{\kappa+(1-\kappa)P}.
+\label{eq:rho}
+\end{equation}
+With $w=1/[\kappa+(1-\kappa)P]$ and $\mathbb E_u$ the uniform average (the stationary law of information-free kicks), $\langle P\rangle_\infty=\mathbb E_u[Pw]/\mathbb E_u[w]$. For $\kappa<1$, $w$ decreases with $P$ and Chebyshev's association inequality \cite{Chebyshev1882} gives $\langle P\rangle_\infty<\mathbb E_u[P]$: learning. At $\kappa=1$ there is no learning, and for $\kappa>1$ the inequality reverses: anti-learning. Predictability does not enter; only how far each outcome moves the setting does.
+
+\subsection{Imaginary-time Schr\"odinger form}
+
+The substitution $\rho=D^{-1/2}\phi$ turns Eq.~(\ref{eq:FP}) into
+\begin{equation}
+-\partial_t\phi=H\phi,\qquad H=-\sqrt D\,\nabla^2\sqrt D ,
+\label{eq:H}
+\end{equation}
+with the Neumann condition $\partial_n(\sqrt D\phi)=0$ at reflecting walls \cite{Risken1989}. Green's identity gives $\langle\chi,H\phi\rangle=\int\nabla(\sqrt D\chi)\cdot\nabla(\sqrt D\phi)$, so $H$ is self-adjoint and $H\ge0$. Its ground state is $\phi_0\propto D^{-1/2}$ with $E_0=0$, and $\rho_\infty=\hat\phi_0^{\,2}$. In one dimension, $dy=d\psi/\sqrt D$ and $\chi=D^{1/4}\phi$ bring $H$ to the standard form $-\partial_y^2+V(y)$ with
+\begin{equation}
+V=\tfrac34\Bigl(\frac{q'}{q}\Bigr)^2-\tfrac12\frac{q''}{q}=\frac{\chi_0''}{\chi_0},\qquad q=\sqrt D,\quad\chi_0=D^{-1/4},
+\end{equation}
+primes denoting $d/dy$. On a finite set, $\phi=\mathrm{diag}(\sqrt P)\rho$ turns Eq.~(\ref{eq:chain}) into $\phi_{t+1}=\phi_t-H\phi_t$ with the tight-binding Hamiltonian
+\begin{equation}
+H=\mathrm{diag}(\sqrt P)\,(I-K)\,\mathrm{diag}(\sqrt P),
+\end{equation}
+whose ground state is $\phi_0\propto P^{-1/2}$ with $H\phi_0=0$,
+which reproduces Eq.~(\ref{eq:harmonic}). The evolution is in imaginary time and reversible; nothing is quantum.
+
+The first excited level sets the rate of learning, $\|\rho(t)-\rho_\infty\|\sim e^{-E_1t}$. When a hit perturbs nothing, $\sigma_h=0$ and $D=\tfrac12\sigma_m^2P$, so $H=\sigma_m^2H_1$ with $H_1$ fixed by $P$ alone: every eigenvalue scales as $\sigma_m^2$, while every eigenfunction, $\rho_\infty$ included, is independent of $\sigma_m$. The strength of the post-failure perturbation sets how fast the system learns, not where it ends. Numerically (script \texttt{theory\_check.py}), on a random 60-state chain $\max|H\phi_0|=2\times10^{-16}$, the stationary law equals $\hat\phi_0^{\,2}$ to $10^{-15}$, and the miss rate is the harmonic mean 0.298 against the arithmetic mean 0.443; on a one-dimensional landscape $E_1/\sigma_m^2=2.6426$ for $\sigma_m=0.5,1,2$ with an unchanged endpoint.
+
+\subsection{Boltzmann form and cooling}
+
+Equation~(\ref{eq:FP}) can be written as gradient dynamics,
+\begin{equation}
+\partial_t\rho=\nabla\cdot\bigl[D\bigl(\nabla\rho+\rho\nabla U\bigr)\bigr],\qquad U=\ln D ,
+\end{equation}
+so that
+\begin{equation}
+\rho_\infty\propto e^{-U/T},\qquad U=\ln\bigl[\kappa+(1-\kappa)P\bigr],\qquad T=1 ,
+\label{eq:boltz}
+\end{equation}
+up to an additive constant in $U$,
+an equilibrium with detailed balance in any dimension, with $U=\ln P$ at $\kappa=0$. There is no force: the potential is induced by the state dependence of the noise, as in Landauer's ``blowtorch'' \cite{Landauer1988}. Three consequences follow. (i) The temperature is pinned at 1: rescaling all kicks by $c$ shifts $U$ by $2\ln c$ and leaves $\rho_\infty$ unchanged, the same speed--endpoint separation as above. (ii) Concentration is weak: occupancies stand in the ratio of the miss rates, not exponentially in them, which is why the gain is only the gap between the arithmetic and harmonic means. (iii) The system can be cooled: if the per-approach variance grows as $P^\alpha$, then $\rho_\infty\propto P^{-\alpha}$, an effective temperature $1/\alpha$. On the test landscape the stationary miss rate falls from 0.323 ($\alpha=1$) to 0.210 ($\alpha=2$) and 0.155 ($\alpha=3$), against 0.454 for a random setting and 0.109 for the best one. Finally, any Markov process with stationary law $e^{-U}$ lowers $F[\rho]=\langle U\rangle_\rho-S[\rho]$, the relative entropy to $\rho_\infty$ up to a constant. Here $U$ is the logarithm of the failure rate, not a sensory surprise, so a decrease of free energy during learning does not by itself indicate predictive processing.
+
+\subsection{A closed-loop Pong model}
+
+A two-parameter paddle, $p=\mathrm{clip}(ay+b)$ for a ball at height $y\sim U(0,1)$, with a miss moving $(a,b)$ to a random neighbor on a $31\times21$ grid, has a predicted stationary miss rate of 0.815 and a simulated one of 0.810, against 0.845 for a random setting. In a DishBrain-like loop (Appendix~\ref{app:abstract}) the ball is place- and rate-coded on eight channels as in the experiment, two motor populations read it through 16 plastic weights, and the only teacher is a random kick to all weights after each approach. Over 400 simulated cultures the within-session gain in hit fraction is $+0.161\pm0.014$ for $(\sigma_h,\sigma_m)=(0,0.08)$, $+0.068\pm0.012$ for a weaker $(0,0.03)$, $+0.017\pm0.007$ without kicks, $-0.010\pm0.007$ for equal kicks and $-0.019\pm0.006$ for reversed ones $(0.08,0.02)$; performance falls monotonically with $\kappa$ and crosses the information-free level at $\kappa=1$ (Fig.~\ref{fig:sim}). The model is not fitted to data. In the experiment a rally lasts $12.7+5.9h$~s with $h$ hits (fit to the gameplay data), so a 20-min session holds about 170 approaches and 95 misses, against 2000 approaches here; a culture learning within one session needs per-miss perturbations about ten times larger.
+
+\begin{figure*}[t]
+\centering
+\begin{tikzpicture}
+\begin{axis}[width=0.5\textwidth,height=5.4cm,xlabel={ball approach},ylabel={hit fraction},xmin=100,xmax=2000,ymin=0.18,ymax=0.6,
+  legend to name=simleg,legend columns=5,legend style={font=\scriptsize,draw=none,/tikz/every even column/.append style={column sep=8pt}},tick label style={font=\scriptsize},label style={font=\small},
+  title={\small (a)},cycle list={{blue!70!black,thick},{teal!70!black,thick},{gray,thick},{black,thick,dashed},{red!70!black,thick}}]
+\addplot table {\datadir/curve_stimulus.dat}; \addlegendentry{$(\sigma_h,\sigma_m)=(0,0.08)$}
+\addplot table {\datadir/curve_silent.dat}; \addlegendentry{$(0,0.03)$}
+\addplot table {\datadir/curve_nofb.dat}; \addlegendentry{no kicks}
+\addplot table {\datadir/curve_allrandom.dat}; \addlegendentry{$(0.08,0.08)$}
+\addplot table {\datadir/curve_swapped.dat}; \addlegendentry{$(0.08,0.02)$}
+\end{axis}
+\end{tikzpicture}\hfill
+\begin{tikzpicture}
+\begin{axis}[width=0.46\textwidth,height=5.4cm,xlabel={$\kappa=\sigma_h^2/\sigma_m^2$},ylabel={hit fraction (last 3/4)},xmin=0,xmax=4.1,ymin=0.18,ymax=0.6,
+  tick label style={font=\scriptsize},label style={font=\small},title={\small (b)}]
+\fill[blue!6] (axis cs:0,0.18) rectangle (axis cs:1,0.6);
+\fill[red!6] (axis cs:1,0.18) rectangle (axis cs:4.1,0.6);
+\addplot[black,thick,mark=*,mark size=1.6pt] table {\datadir/kappa.dat};
+\draw[dashed,gray] (axis cs:0,0.277) -- (axis cs:4.1,0.277);
+\node[font=\scriptsize,anchor=south west] at (axis cs:1.05,0.52) {anti-learning};
+\node[font=\scriptsize,anchor=south] at (axis cs:0.5,0.52) {learning};
+\node[font=\scriptsize,anchor=south west,gray!40!black] at (axis cs:2.2,0.28) {information-free};
+\end{axis}
+\end{tikzpicture}
+
+\vspace{2pt}\ref*{simleg}
+\caption{Learning by outcome-contingent kicks in a closed-loop Pong model (400 simulated cultures). (a) Hit fraction along a session (sliding window of 100 approaches) for five kick schedules. (b) Hit fraction over the last three quarters of a session against $\kappa$ ($\sigma_m=0.08$); dashed: the information-free level $\kappa=1$.}
+\label{fig:sim}
+\end{figure*}
+
+\section{Re-analysis of the published data}\label{sec:data}
+
+The per-rally gameplay data of the feedback study are public \cite{OSF2022}. Taking the culture as the unit and hits per rally as the measure, in the first 5~min of gameplay (T1) and the remaining 15 (T2), Stimulus rises from 0.687 to 0.839 ($+0.152$, Wilcoxon $p=0.0002$, $n=24$), in every cell line, whereas Silent ($-0.033$, $p=0.35$, $n=17$) and No feedback ($-0.002$, $p=1$, $n=15$) do not change. At T2 the three conditions do not differ (Kruskal--Wallis $p=0.22$): Stimulus reaches, within the session, the level the other groups already had. This is the speed--endpoint separation of Sec.~\ref{sec:results}: the post-miss perturbation sets how fast the level is reached, not the level. Two caveats apply to the published comparisons, which express gameplay relative to each culture's Rest session: the Rest baselines differ between the groups (0.666, 0.775 and 0.787 hits per rally; $p=7\times10^{-5}$), with the Stimulus cultures worst at rest, and the groups differ in cell type (Silent has no mouse cultures). As a suggestive signature of scrambling, the lag-1 correlation of consecutive rally lengths falls from Rest to gameplay in Stimulus ($0.098\to0.026$, $p=0.0005$) but not in Silent or No feedback; the Stimulus cultures' high Rest persistence carries the same baseline caveat.
+
+\section{Calibrated spiking network}\label{sec:net}
+
+To ask whether DishBrain's actual stimuli realize $\kappa<1$ through local plasticity, we simulated 3000 leaky integrate-and-fire neurons on the $3.85\times2.10$~mm array with the exact protocol: electrode layout, place and rate code, hit and miss programs, four motor regions with the 20~Hz gain normalization, readout blanking, No feedback as one continuous rally, and session timing (Appendix~\ref{app:net}). The paddle size gives the published Rest level of 0.73 hits per rally.
+
+\emph{Calibration.} Free parameters were fitted to eight statistics of the Rest recordings of the human cultures, computed identically for model and data (Table~\ref{tab:calib}). The fit lies within the data's interquartile range except for rates about 0.1~Hz high and pairwise correlations near zero. The Rest statistics fix rates, irregularity, synchrony and the absence of bursts but not recurrent coupling: parameter sets with excitatory weights spanning a factor of 40 fit about equally well, so we carry three (weak, medium and strong coupling).
+
+\emph{What the network cannot show.} Single pulses at the stimulation electrodes produced no detectable change in the motor regions, about 1~mm away, in any set or recruitment assumption (fraction of cases with $z>3$: 0.00). The model has about 375 neurons per mm$^2$, far fewer than a culture of $10^6$ plated cells, whose responses spread across the array during stimulation \cite{Kagan2022}. The paddle is therefore not driven by the ball, and in 20-min sessions (medium coupling, activity-gated plasticity, 32 cultures) hits per rally changed by $-0.11$, $+0.09$ and $+0.04$ in Stimulus, Silent and No feedback, none significantly ($p=0.12$, 0.07, 0.49). Closed-loop learning cannot be tested at this density.
+
+\emph{What it can show: emergent $\kappa$.} We logged the total squared change of the excitatory weights from each outcome to the next, under two local rules without reward or error signal: activity-gated random updates and spike-timing-dependent plasticity (Table~\ref{tab:kappa}). When a 75~mV pulse recruits few cells, or many only up to threshold as the authors intended, $\kappa$ per approach is 0.6--0.8 in all sets and under both rules: the learning regime. It is the same for Stimulus, for a predictable miss stimulus of equal dose, and for Silent, because it comes from time rather than stimulation: a miss is followed by 8~s without play and a new serve, a hit by the return of the ball, and plasticity accrues at a nearly constant rate. The 150~mV random program adds only 15\% to the displacement of 8~s of silence with small recruitment. When 75~mV pulses recruit as widely as 150~mV pulses, the 80-pulse hit program dominates and $\kappa>1$: anti-learning. Under local plasticity at this scale the network therefore predicts learning for Stimulus and Silent alike and none for No feedback, whereas the data show learning in Stimulus only. Either 150~mV stimulation perturbs real synapses far more than activity-gated rules do in a sparse model, or Silent's missing gain reflects its high starting level (0.849 hits per rally at T1, above Stimulus's end point).
+
+\begin{table*}[t]
+\caption{Calibration to the Rest recordings of the human cultures of Ref.~\cite{Kagan2022} (data: 168 recordings, 24 chips; model: 64 ten-minute runs of the best set, 81 active units subsampled per run, as in the data). Median [interquartile range].}
+\label{tab:calib}
+\footnotesize
+\begin{ruledtabular}
+\begin{tabular}{lcc}
+Statistic & Data & Model \\
+\hline
+rate, median (Hz) & 0.30 [0.26, 0.39] & 0.42 [0.38, 0.45] \\
+rate, mean (Hz) & 0.55 [0.46, 0.69] & 0.72 [0.65, 0.77] \\
+CV of interspike intervals & 0.97 [0.93, 1.02] & 0.96 [0.96, 0.97] \\
+correlation, 100 ms & 0.0025 [0.0007, 0.012] & 0.0000 [$-$0.0002, 0.0001] \\
+Fano factor, population & 1.08 [0.92, 1.46] & 0.91 [0.89, 0.93] \\
+co-active in 50 ms, 99th pct. & 0.086 [0.078, 0.100] & 0.086 [0.086, 0.099] \\
+co-active in 50 ms, max. & 0.16 [0.13, 0.23] & 0.14 [0.12, 0.14] \\
+network events per min & 0 [0, 0.15] & 0 [0, 0] \\
+\end{tabular}
+\end{ruledtabular}
+\end{table*}
+
+\begin{table*}[t]
+\caption{Emergent $\kappa$ in the calibrated network: squared excitatory-weight change from a hit to the next outcome divided by the same after a miss (means over the three coupling sets, 8 cultures each, 5-min sessions). Pred.: predictable 150~mV miss stimulus of equal dose. $\kappa_{\rm prog}$: feedback programs alone. Last column: 150~mV miss program relative to 8~s of silence.}
+\label{tab:kappa}
+\footnotesize
+\begin{ruledtabular}
+\begin{tabular}{llccccc}
+Rule & 75 mV recruitment & Stim. & Pred. & Silent & $\kappa_{\rm prog}$ & ratio \\
+\hline
+gated & small & 0.65 & 0.65 & 0.63 & 0.12 & 1.16 \\
+gated & wide, near threshold & 0.72 & 0.72 & 0.82 & 0.35 & 2.71 \\
+gated & wide & 1.26 & 1.28 & 1.11 & 0.92 & 2.83 \\
+gated & widest & 2.95 & 2.93 & 1.60 & 4.60 & 4.03 \\
+STDP & small & 0.63 & 0.63 & 0.65 & 0.10 & 1.15 \\
+STDP & wide & 1.11 & 1.10 & 0.97 & 0.75 & 2.55 \\
+STDP & widest & 2.96 & 2.94 & 1.49 & 4.07 & 3.21 \\
+\end{tabular}
+\end{ruledtabular}
+\end{table*}
+
+\section{Discussion}\label{sec:discussion}
+
+Learning by outcome-contingent perturbation is a noise-induced equilibrium: the potential is the logarithm of the local diffusivity, the temperature is fixed at one, and the only control parameter is $\kappa$. The Schr\"odinger form separates speed from endpoint, which the published DishBrain data show directly: the condition with the strongest post-miss perturbation is the only one that improves within a session, and all conditions end at the same level. The accounts by predictability and by perturbation agree on every published condition. They disagree on the protocols of Table~\ref{tab:protocols}. B and C change one property of the post-miss feedback while holding the other; D reverses which outcome is more disruptive and tests the sign rule against the information-free level E. F is suggested by the network: equal time-outs after hits and misses, with stimulation only after misses. If the time-out is what perturbs, F gives $\kappa\approx1$ and no learning; if the stimulation amplitude matters, F learns. Two analyses of existing recordings also decide: a miss should move the network's state (e.g., the evoked response to a fixed probe) further than a hit, with the within-session gain growing with the difference, and in Silent the number of spontaneous bursts after misses should predict each culture's gain. Cooling offers a positive test: stimulation that grows with a culture's recent miss rate should raise the level reached, as $\rho_\infty\propto P^{-\alpha}$.
+
+\begin{table}[b]
+\caption{Protocols that separate the predictability (Pr.) and perturbation (Pe.) accounts.}
+\label{tab:protocols}
+\footnotesize
+\begin{ruledtabular}
+\begin{tabular}{p{1.55cm}p{1.4cm}p{2.2cm}p{0.95cm}p{1.2cm}}
+Protocol & After hit & After miss & Pr. & Pe. \\
+\hline
+A published & 75 mV, 100 Hz, 100 ms & 150 mV random, 4 s; 4 s pause & learns & learns \\
+B predictable penalty & as A & 150 mV, same dose, fixed sequence & weak or none & learns \\
+C quenched penalty & as A & 8 s random low-amplitude stimulation that suppresses bursts & learns & weak or none \\
+D reversed & 150 mV fixed, 1 s & 75 mV random, 1 s & learns & below E \\
+E info-free & same random & same random & none & none \\
+F equal time-out & 8 s pause & 150 mV random, 4 s; 4 s pause & learns & learns only if amplitude matters \\
+\end{tabular}
+\end{ruledtabular}
+\end{table}
+
+The limitations are specific. Real stimulation does not perturb synapses isotropically, and a patterned 100~Hz burst can itself induce pathway-specific potentiation and depression \cite{Jimbo1999}, so the ``predictable'' stimulus may push the network in a consistent direction; the displacement analysis measures such effects directly. The network is too sparse to carry a sensorimotor channel, so it tests the perturbation contingency, not closed-loop learning; under local rules it attributes $\kappa<1$ to the time-out rather than to the stimulation and does not explain why Silent did not learn. In bursting cultures, silence after a miss lets bursts return \cite{Wagenaar2005}, and bursts make weights drift \cite{Chao2005}; the human Silent cultures did not burst. Finally, the two accounts need not exclude each other: a surprise-minimizing system may implement exactly this stabilization.
+
+\section*{Data availability}
+The abstract model (\texttt{scrambler.py}), the analytical checks (\texttt{theory\_check.py}), the GPU network simulator with its calibration and results (\texttt{network/}), and the re-analysis of the published data (\texttt{reanalysis/}) are available in the folder \texttt{papers/dishbrain-scrambler} of \url{https://github.com/kladkogex/20-watt-computer}; an archived copy will be deposited on Zenodo on publication. The DishBrain data are from Ref.~\cite{OSF2022}.
+
+\appendix
+
+\section{Closed-loop Pong model}\label{app:abstract}
+
+The court is $1\times1$ with the paddle on the right wall (half-length 0.1). Each serve starts at the far wall with horizontal speed 1 and vertical speed uniform in $[-0.8,0.8]$; the ball reflects from the other walls. The ball's height relative to the paddle selects one of eight channels, $k=\lfloor8(y-p+0.5)\rfloor$, and its position $x$ sets the rate $s=(4+36x)/40$. The motor rates are $[W_{\uparrow,\downarrow}[k]\,s+\xi]_+$ with Gaussian noise of s.d.\ 0.35 per 20-ms step, and the paddle moves by $1.5(r_\uparrow-r_\downarrow)$ court heights per second. The 16 weights start uniform in $[-1,1]$ and reflect at $\pm1$, so information-free kicks leave the uniform law invariant. After every approach each weight receives a Gaussian kick of s.d.\ 0.01, then one of s.d.\ $\sigma_h$ after a hit or $\sigma_m$ after a miss. Each culture plays 2000 approaches; the gain is the hit fraction over the last 1500 minus that over the first 500. In this model a miss is followed by a new serve in all conditions, whereas in the experiment No feedback is one continuous rally; the network of Sec.~\ref{sec:net} plays the exact protocol. The grid check uses $a\in\{-1,-0.9,\dots,2\}$, $b\in\{-1,-0.9,\dots,1\}$ and 400 ball heights; moves off the grid or into one of the seven never-miss settings are rejected, which keeps the kernel symmetric, and the chain runs for $3\times10^6$ approaches.
+
+\section{Network model}\label{app:net}
+
+\emph{Network.} $N=3000$ leaky integrate-and-fire neurons ($\tau_m=20$~ms, threshold 1, reset 0, refractory period 2~ms) at uniform random positions; 80\% excitatory. Each neuron receives 100 inputs drawn without replacement with probability $\propto e^{-d/\lambda}$, $\lambda=1$~mm, of the order of the input numbers estimated for dissociated cultures \cite{Soriano2008}; the excitatory fraction and $\lambda$ are assumptions. Exponential current synapses ($\tau_e=5$, $\tau_i=10$~ms), short-term depression of excitatory synapses (release fraction $U$, recovery 500~ms), Ornstein--Uhlenbeck membrane noise of stationary s.d.\ $\sigma$, and a fixed per-neuron drive $\mu+\mu_{sd}\xi_i$; integration is exact for the linear parts with $dt=1$~ms.
+
+\emph{Calibration.} Parameters were drawn at random, 512 sets per round, and refined twice around the best 16 (60, 90 and 120~s of spontaneous activity). The loss is $\sum_s[(v_s-\mathrm{med}_s)/\mathrm{IQR}_s]^2$ over the statistics of Table~\ref{tab:calib}, after subsampling the model's active units to the data's median of 81. Best set (weak coupling): $\mu=0.20$, $\sigma=0.26$, $\mu_{sd}=0.14$, $J_{EE}=0.0066$, $J_{IE}=0.079$, $J_{EI}=0.066$, $U=0.089$; medium: $J_{EE}=0.118$, $J_{EI}=0.61$; strong: $J_{EE}=0.153$, $J_{EI}=0.47$ (losses 0.52, 0.68, 0.77).
+
+\emph{Stimulation and protocol.} Electrodes follow Fig.~4D of Ref.~\cite{Kagan2022}: eight stimulation electrodes in a zigzag across the sensory band and four motor regions, counterbalanced up and down. A 75~mV pulse raises the membrane of neurons within $r_{75}$ by $k_{75}$; a 150~mV pulse forces a spike within $r_{150}$. Recruitment $(r_{75},k_{75},r_{150})$: small (0.05~mm, 1.2, 0.10~mm), wide near threshold (0.12, 0.7, 0.20), wide (0.12, 1.2, 0.20), widest (0.20, 1.5, 0.23). The decoder sums spikes per region every 10~ms, scales each region by a running 5-s gain toward 20~Hz, and moves the paddle by 0.01 court heights toward the larger of the up and down sums; readout is blanked for 5~ms after every stimulation command. The ball crosses in 2.9~s; the paddle half-length 0.214 gives 0.73 hits per rally at Rest. A 60-s burn-in without plasticity precedes each session.
+
+\emph{Plasticity.} Activity-gated rule: when an excitatory neuron spikes, each excitatory input weight changes by $\pm\eta w_{\max}x_j$ with random sign, $x_j$ the input's 20-ms trace. STDP: additive pair rule with $A_+=\eta w_{\max}$, $A_-=1.05A_+$ and 20-ms traces. Weights stay in $[0,w_{\max}]$, $w_{\max}=2J_{EE}$.
+
+\emph{Implementation and checks.} All runs are simulated together on one GPU (NVIDIA GB10): state tensors carry a run axis, synapses propagate only from neurons that spiked, the neuron update is one fused kernel, and each 10-ms block is replayed as a CUDA graph; 288 five-minute sessions take 6.5--8~min. Rates, irregularity and correlations agree with a dense NumPy reference of the same equations within sampling error. At most $12R$ spikes per millisecond are propagated for $R$ parallel runs; in the 288-run batches this cap was exceeded during synchronous stimulation steps, which drops propagation and plasticity of some spikes during the hit program, so the hit displacement and hence $\kappa$ are, if anything, underestimated.
+
+\bibliography{refs}
+
+\end{document}
