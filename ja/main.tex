@@ -7,9 +7,6 @@
 \setCJKsansfont{IPAexGothic}
 \setCJKmonofont{IPAexGothic}
 \xeCJKsetup{CJKecglue={\hskip 0.15em plus 0.05em minus 0.05em}}
-\usepackage{titlesec}
-\newcommand{\chaptersuffix}{章}
-\titleformat{\chapter}[display]{\normalfont\huge\bfseries}{\ifx\chaptersuffix\empty\appendixname\thechapter\else 第\thechapter\chaptersuffix\fi}{20pt}{\Huge}
 \AtBeginDocument{\renewcommand{\contentsname}{目次}\renewcommand{\figurename}{図}\renewcommand{\tablename}{表}\renewcommand{\bibname}{参考文献}\renewcommand{\appendixname}{付録~}\renewcommand{\proofname}{証明}}
 \usepackage{amsmath,amssymb,amsthm}
 \usepackage{graphicx}
@@ -69,6 +66,10 @@
 \newcommand{\Ca}{\ion{Ca}{2+}}
 \newcommand{\conc}[1]{[\mathrm{#1}]}
 
+% textbook look: chapter openers, headings, running heads, figure labels (figures/booklook.tex)
+\newcommand{\chapterlabel}{\booklookapponly}
+\input{figures/booklook}
+
 \title{\Huge 20ワットのコンピュータ\\[16pt] \Large 脳はどのように計算するか：エンジニアのための定量的アプローチ}
 \hypersetup{pdftitle={20ワットのコンピュータ. 脳はどのように計算するか：エンジニアのための定量的アプローチ},pdfauthor={Konstantin Kladko}}
 \author{\Large コンスタンチン・クラドコ（Konstantin Kladko）}
@@ -116,7 +117,6 @@
 \input{chapters/21_living}
 \input{chapters/22_dishbrain}
 \appendix
-\renewcommand{\chaptersuffix}{}
 \input{chapters/appendix_othermediators}
 \input{chapters/appendix_notation}
 \input{chapters/appendix_answers}

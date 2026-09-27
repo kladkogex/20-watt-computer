@@ -1,0 +1,63 @@
+% The textbook look of the full book, shared by every edition: \input{figures/booklook} at the end of the preamble.
+% Nothing here changes the text block, the fonts or the sizes, so the page breaks of the reviewed editions stay.
+% An edition may define before the \input:
+%   \chapterlabel      the word above the chapter number (default: \@chapapp, i.e. Chapter / Appendix from babel;
+%                      empty = the number alone, used where the language puts the number inside the word);
+%                      \booklookapponly = the word only on appendices;
+%   \booklooknohead    keep the edition's own running heads (Arabic: right-to-left page numbers);
+%   \booklookbarside   the side of the accent bar on key statements (default west; east for right-to-left).
+\makeatletter
+\definecolor{accent}{rgb}{0.11,0.30,0.53}
+\hypersetup{linkcolor=accent,citecolor=accent}
+\providecommand{\chapterlabel}{\@chapapp}
+\providecommand{\booklookragged}{\raggedright}
+\providecommand{\booklookbarside}{west}
+\def\booklook@app{\appendixname}
+\newcommand{\booklookapponly}{\ifx\@chapapp\booklook@app\appendixname\fi}
+
+% chapter opener: a small label, a large number in the accent colour, a rule, then the title
+\def\@makechapterhead#1{%
+  \vspace*{6\p@}%
+  {\parindent\z@ \normalfont
+   \ifnum \c@secnumdepth >\m@ne \if@mainmatter
+     {\color{accent}\large\scshape\chapterlabel\par}%
+     \vskip 2\p@
+     {\color{accent}\scalebox{1.5}{\fontsize{36}{36}\selectfont\bfseries \thechapter}\par}% scaled: the Cyrillic fonts stop at 36pt
+     \vskip 10\p@
+   \fi\fi
+   {\color{accent}\rule{\linewidth}{1.2\p@}\par}%
+   \vskip 16\p@
+   {\booklookragged\Huge\bfseries #1\par\nobreak}%
+   \vskip 34\p@}}
+\def\@makeschapterhead#1{%
+  \vspace*{6\p@}%
+  {\parindent\z@ \normalfont
+   {\color{accent}\rule{\linewidth}{1.2\p@}\par}%
+   \vskip 16\p@
+   {\booklookragged\Huge\bfseries #1\par\nobreak}%
+   \vskip 34\p@}}
+
+% section headings in the accent colour (same sizes and spacing as the book class)
+\renewcommand\section{\@startsection{section}{1}{\z@}{-3.5ex \@plus -1ex \@minus -.2ex}{2.3ex \@plus.2ex}{\normalfont\Large\bfseries\color{accent}}}
+\renewcommand\subsection{\@startsection{subsection}{2}{\z@}{-3.25ex\@plus -1ex \@minus -.2ex}{1.5ex \@plus .2ex}{\normalfont\large\bfseries\color{accent}}}
+\renewcommand\subsubsection{\@startsection{subsubsection}{3}{\z@}{-3.25ex\@plus -1ex \@minus -.2ex}{1.5ex \@plus .2ex}{\normalfont\normalsize\bfseries\color{accent}}}
+
+% running heads: the chapter and section marks as before, a thin accent rule under them, bold page number
+\ifdefined\booklooknohead\else
+\def\booklook@rule{\makebox[\z@][l]{\color{accent}\rule[-5\p@]{\textwidth}{0.4\p@}}}
+\def\ps@headings{%
+  \let\@oddfoot\@empty\let\@evenfoot\@empty
+  \def\@evenhead{\booklook@rule{\bfseries\thepage}\hfil{\color{black!75}\leftmark}}%
+  \def\@oddhead{\booklook@rule{\color{black!75}\rightmark}\hfil{\bfseries\thepage}}%
+  \let\@mkboth\markboth}
+\pagestyle{headings}
+\fi
+
+% figure and table labels in bold accent
+\def\fnum@figure{\textcolor{accent}{\bfseries\figurename\nobreakspace\thefigure}}
+\def\fnum@table{\textcolor{accent}{\bfseries\tablename\nobreakspace\thetable}}
+
+% key statements: the light-yellow box gets an accent bar on its leading edge
+\tcbset{booklook bar/.style/.expanded={borderline \booklookbarside={2pt}{0pt}{accent!70}}}
+\renewtcolorbox{keyblock}{enhanced,breakable,colback=keyyellow,colframe=keyyellow,boxrule=0pt,arc=0pt,left=6pt,right=6pt,top=2pt,bottom=2pt,boxsep=0pt,booklook bar}
+\makeatother

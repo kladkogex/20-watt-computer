@@ -2,7 +2,7 @@
 
 TeX4ht cannot end a longtable caption row with \\ when the first column is \raggedright:
 use \tabularnewline there, which means the same thing to LaTeX.
-The paperback's collage cover and the full book's figure cover are left out (see below).
+The paperback's collage cover, the full book's figure cover and its print design are left out (see below).
 """
 import pathlib, re, sys
 
@@ -22,7 +22,9 @@ if pb.exists():
 mt = ru / "main.tex"
 if mt.exists():
     s = mt.read_text(encoding="utf-8")
-    mt.write_text(s.replace("\\input{figures/bookcover}", "\\maketitle", 1), encoding="utf-8")
+    s = s.replace("\\input{figures/bookcover}", "\\maketitle", 1)
+    # and the print page design (chapter openers, running heads); the web pages have their own (book.css)
+    mt.write_text(s.replace("\\input{figures/booklook}", "", 1), encoding="utf-8")
 
 # Korean: kotex does not run under TeX4ht (neither engine); the web build uses LuaLaTeX with fontspec and the
 # Un fonts instead (the HTML text does not depend on TeX fonts; the SVG figures do) and sets the Korean names.
