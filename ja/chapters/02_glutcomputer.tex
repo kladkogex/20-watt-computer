@@ -1,0 +1,292 @@
+\chapter{\nt{GLUT}ニューロンは何を計算するか}
+\label{sec:glutcomputer}
+
+\section{ゲームのルール}
+
+第\ref{sec:neurontypes}章で見たように、脳のニューロンの圧倒的多数は\nt{GLUT}である。これらは興奮させるだけで、重みは正だけである。このようなニューロンを好きなだけ用意して問おう。生体の中で起こりうることだけを許すとき、このネットワークは何を計算できるか。
+
+生体には、すべての素子を一斉に切り替えるクロック発生器がない。各ニューロンは独立に連続時間で動作し、スパイクはまちまちの遅延で、そのつど届いては出ていく。\emph{入力}は光、音、圧力で発火する感覚ニューロンであり、\emph{出力}は筋肉を制御するニューロンである。その間にネットワークがあり、いつ計算を始めていつ終えるかを教えてくれる者はいない。電子回路の技術者にとって、これは素子の遅延が事前に正確にはわからない\emph{非同期}回路である。
+
+ニューロンのモデルとしては、連続時間で正しく動作するもののうち最も単純なものを採る。ニューロンの膜電位$V$は静止時にゼロである。ニューロン$j$からスパイクが届くたびに$V$は$w_j\ge0$だけ跳ね上がり、その後は時定数$\tau$でひとりでにゼロへ戻っていく。
+\begin{empheq}[box=\keybox]{equation}
+\tau\,\frac{\dd V}{\dd t} \;=\; -V \;+\; \tau\sum_j w_j \sum_k \delta\bigl(t-t_j^{(k)}-d_j\bigr), \qquad w_j\ge 0 .
+\label{eq:glutneuron}
+\end{empheq}
+ここで$t_j^{(k)}$はニューロン$j$のスパイクの時刻、$d_j$はそこからの経路の遅延、$\delta$はデルタ関数で、瞬間的な跳躍を表す。$V$が閾値$\theta$に達すると、ニューロンはスパイクを出し、$V$はゼロにリセットされ、約1ミリ秒の間ニューロンは再び発火できない。典型的な値は、$\tau$がニューロンによって1ミリ秒未満から20ミリ秒、遅延が1ミリ秒未満から数十ミリ秒である。これは\emph{漏れ積分発火ニューロン}、つまり閾値つきのRC回路である。意図的な単純化であることに注意しよう。皮質ニューロンでは入力の枝そのものが局所的なスパイクを出し~\cite{Smith2013}、1個のニューロンはむしろ小さな多層ネットワークのようにふるまう（第\ref{sec:synthesis}章）。この章の問いには、RC回路一つで足りる。
+
+論理ゲートとの主な違いは漏れである。ニューロンはスパイクを永遠に覚えているのではなく、約$\tau$だけ覚えている。足し合わされるのは、この窓の中に届いたものだけである。
+
+\section{ORとAND}
+
+ゲートから始めよう。1個のスパイクで電圧が閾値を超える、つまり$w\ge\theta$なら、ニューロンはどの入力のどのスパイクにも発火する。これが\emph{OR}である。
+
+ANDはもっと面白い。$w<\theta<2w$としよう。スパイク1個では足りず、2個必要である。だがこうなると、「両方届いたか」という問いは、\emph{どれだけの時間内に}かを決めない限り意味をもたない。最初のスパイクが時刻$0$に、2番目が時間$\Delta$の後に届いたとする。2番目が届いた時点で最初のスパイクの分は$we^{-\Delta/\tau}$残っており、$we^{-\Delta/\tau}+w\ge\theta$ならニューロンは発火する。ここから同時性の窓が得られる。
+\begin{empheq}[box=\keybox]{equation}
+\Delta \;\le\; \Delta_{\max} \;=\; \tau\,\ln\frac{w}{\theta-w} .
+\label{eq:window}
+\end{empheq}
+これは論理的なANDではなく\emph{同時検出器}、つまり時間の中のANDである（図~\ref{fig:coincidence}）。$\theta=1.5w$なら窓は$\tau\ln2\approx0.7\tau$である。$\tau=10\ms$の皮質ニューロンでは約7ミリ秒になる。$\tau$が1ミリ秒未満の聴覚系のニューロンでは、窓は1ミリ秒未満に縮む。
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=0.9cm,y=1.6cm]
+\foreach \dx/\lab/\c [count=\i] in {0.5/{同時}/red!70!black, 2.6/{同時でない}/blue!60!black}{
+ \begin{scope}[xshift={(\i-1)*7.2cm}]
+  \draw[->,gray!70!black] (0,0) -- (6.3,0) node[below left,black] {\small $t$};
+  \draw[->,gray!70!black] (0,0) -- (0,1.75) node[left,black] {\small $V$};
+  \draw[densely dashed,gray!60!black] (0,1.5) -- (6.0,1.5) node[right,black] {\small $\theta$};
+  \draw[very thick,\c] (0,0) -- (1,0) -- (1,1)
+      plot[domain=1:1+\dx,samples=30] (\x,{exp(-(\x-1)/1.5)});
+  \pgfmathsetmacro{\v}{exp(-\dx/1.5)+1}
+  \draw[very thick,\c] (1+\dx,{exp(-\dx/1.5)}) -- (1+\dx,{min(\v,1.5)});
+  \ifdim\v pt<1.5pt
+    \draw[very thick,\c] plot[domain=1+\dx:6,samples=40] (\x,{\v*exp(-(\x-1-\dx)/1.5)});
+  \else
+    \draw[very thick,\c] (1+\dx,1.5) -- (1+\dx,0) -- (6,0);
+    \draw[->,thick,\c] (1+\dx,1.55) -- (1+\dx,1.72) node[above,font=\scriptsize] {スパイク};
+  \fi
+  \draw[->,thick] (1,-0.35) -- (1,-0.08); \draw[->,thick] (1+\dx,-0.35) -- (1+\dx,-0.08);
+  \draw[decorate,decoration={brace,amplitude=3pt,mirror}] (1,-0.42) -- (1+\dx,-0.42) node[midway,below=3pt] {\scriptsize $\Delta$};
+  \node[\c] at (3.5,-0.95) {\small \lab};
+ \end{scope}}
+\end{tikzpicture}
+\caption{同時検出器、閾値$\theta=1.5w$。左では2番目のスパイクが$\Delta<\Delta_{\max}$の後に届き、和が閾値に達してニューロンが発火した。右では$\Delta>\Delta_{\max}$で、最初のスパイクの分はほとんど残っておらず、ニューロンは黙っている。}
+\label{fig:coincidence}
+\end{figure}
+
+ANDを得るもう一つの方法は、正確な時刻ではなく持続時間を使うことである。光が点いている間、感覚ニューロンは高い頻度で一様にスパイクを出す。閾値にとってそのような入力1本では足りず2本なら足りるとすれば、ニューロンは両方が活動している間ずっと動作する。こうしてネットワークは\emph{レベル}で計算し、スパイクの到着の正確な時刻は問題にならない。以下の多くはこの方式である。
+
+\section{できないこと}
+
+次にNOTを作ってみよう。入力が黙っているときに動作するニューロンである。これはできない。入力スパイクがなければ式~\eqref{eq:glutneuron}には跳躍が一つもなく、電圧はゼロ、つまり閾値より下にとどまる。多数のニューロンからなるネットワークならどうか。やはりできない。しかもこれは、あらゆるネットワークについて一挙に証明できる。
+
+発火率で考えるのが最も便利である。$r_i$をニューロン$i$の発火率、$I_i$を入力からの流入、$f_i$をその伝達特性、つまり発火率が流入の総和にどう依存するかとする。積分型ニューロンではこの特性は非減少である。流入が大きいほどスパイクは頻繁になる。平衡に達したネットワークの発火率は、次の方程式を満たす。
+\begin{equation}
+r_i \;=\; f_i\Bigl(\sum_j w_{ij}\,r_j + I_i\Bigr), \qquad w_{ij}\ge 0 .
+\label{eq:ratenet}
+\end{equation}
+
+\begin{keyblock}
+\begin{proposition}[単調性]
+\label{prop:monotone}
+ネットワーク~\eqref{eq:ratenet}が\nt{GLUT}ニューロンだけからなり、完全な静寂から出発するとする。入力を強めても、どのニューロンの定常発火率も減らない。このようなネットワークが計算するものはすべて入力の\emph{単調}関数である。
+\end{proposition}
+\end{keyblock}
+
+証明。静寂$r^{(0)}=0$から始め、発火率を式~\eqref{eq:ratenet}の右辺に代入していく：$r^{(k+1)}=F\bigl(r^{(k)}\bigr)$。重みが非負で$f_i$が非減少なので、右辺$F$はどの引数についても減少しない。$r^{(1)}\ge0=r^{(0)}$だから、帰納法により$r^{(k+1)}\ge r^{(k)}$である。発火率は増えるだけで、式~\eqref{eq:ratenet}の最小解に到達する。入力$I$をより大きな$I'$に置き換えれば、各ステップで$r^{(k)}(I)\le r^{(k)}(I')$であり、極限でも同じである。実際のネットワークはステップではなく連続的に平衡に達するが、同じことが成り立つ。正の結合のもとでは、二つの試行の間に最初に成り立っていた不等式はずっと保たれる。
+
+個々のスパイクについては、この主張は文字どおりには成り立たない。余分な入力スパイクがニューロンを少し早く発火させ、1ミリ秒の不応期のせいで次のスパイクが失われることがある。しかしこの効果は弱く当てにならないので、計算には使えない。発火率については単調性は厳密である。
+
+帰結はインバータのない回路と同じである。NOTがない。排他的ORがない。2番目の入力を加えても出力を消すことはできない。そして最もやっかいなのは、\emph{活動で活動を止めることはできない}ことである。できるのは、活動を支えているものを取り除くことだけである。
+
+\section{2本の配線：オンとオフ}
+
+行き詰まりからの出口は生体自身が示している。多くの感覚器では、刺激は2組のニューロンで伝えられる。視覚では、ある細胞は光の増加に、別の細胞は光の減少に応答する~\cite{Schiller1992}。これらを\emph{オン}ニューロン、\emph{オフ}ニューロンと呼ぼう。ネットワークは1本の配線$x$の代わりにペア$(x,\bar x)$を受け取る。ネットワークが自分では計算できない「ないこと」は、センサ自身が知らせてくれるのである。
+
+配線のペアがあれば、NOTはただで手に入る。配線を入れ替えればよい。ANDとORはそれぞれニューロン2個で作れる。
+\begin{empheq}[box=\keybox]{equation}
+\begin{aligned}
+x\wedge y \;&\to\; \bigl(\;x\wedge y,\;\; \bar x\vee\bar y\;\bigr),\\
+x\vee y \;&\to\; \bigl(\;x\vee y,\;\; \bar x\wedge\bar y\;\bigr).
+\end{aligned}
+\label{eq:dualrail}
+\end{empheq}
+右辺の演算はすべて単調なので、命題~\ref{prop:monotone}には反しない。
+
+非同期回路にとって、2線式符号にはもう一つ、さらに重要な長所がある。配線のペアは三つの状態をとる。「はい」、「いいえ」、そして両方が黙っているときの\emph{「まだ答えがない」}である。受け手は計算が終わったことをクロックではなく信号そのものから知る。各ペアでちょうど1本の配線が動作し始めればよい。刺激と刺激の間はセンサが黙り、ネットワークは静寂に戻って次の回に備える。非同期エレクトロニクスでは、この手法を使って素子の遅延がどうであれ正しく動作する回路を作る~\cite{Sparso2001}。
+
+\begin{keyblock}
+\begin{proposition}[非同期計算]
+\label{prop:dualrail}
+各入力が「オン・オフ」の配線ペアで届くなら、\nt{GLUT}ニューロンのネットワークは入力の任意の論理関数を計算できる。答えも配線ペアで届き、その準備ができたことは各ペアで1本の配線が動作し始めたことでわかる。そのためにクロックは要らない。代償はニューロンがおよそ2倍になることである。
+\end{proposition}
+\end{keyblock}
+
+例は排他的ORである。「二つの刺激のちょうど一方だけが変化した」。答えの正の配線は$(x\wedge\bar y)\vee(\bar x\wedge y)$、負の配線は$(x\wedge y)\vee(\bar x\wedge\bar y)$である。ニューロン6個で、どれも抑制を必要としない（図~\ref{fig:dualxor}）。
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=1cm,y=1cm,
+  nrn/.style={circle,draw,very thick,fill=blue!6,minimum size=0.75cm,inner sep=0pt,font=\small},
+  inp/.style={font=\small}]
+\node[inp] (X)  at (0,3.3) {$x$};
+\node[inp] (Xb) at (0,2.2) {$\bar x$};
+\node[inp] (Y)  at (0,1.1) {$y$};
+\node[inp] (Yb) at (0,0)   {$\bar y$};
+\node[nrn] (A1) at (3.2,3.3) {$2$};
+\node[nrn] (A2) at (3.2,2.2) {$2$};
+\node[nrn] (A3) at (3.2,1.1) {$2$};
+\node[nrn] (A4) at (3.2,0)   {$2$};
+\node[nrn] (O)  at (7.2,2.75) {$1$};
+\node[nrn] (Ob) at (7.2,0.55) {$1$};
+\foreach \s/\t in {X/A1,Yb/A1,Xb/A2,Y/A2,X/A3,Y/A3,Xb/A4,Yb/A4}{\draw[->,thick,blue!60!black] (\s) -- (\t);}
+\draw[->,thick,blue!60!black] (A1) -- node[pos=0.45,above,sloped,font=\scriptsize,black] {$x\wedge\bar y$} (O);
+\draw[->,thick,blue!60!black] (A2) -- node[pos=0.45,below,sloped,font=\scriptsize,black] {$\bar x\wedge y$} (O);
+\draw[->,thick,blue!60!black] (A3) -- node[pos=0.45,above,sloped,font=\scriptsize,black] {$x\wedge y$} (Ob);
+\draw[->,thick,blue!60!black] (A4) -- node[pos=0.45,below,sloped,font=\scriptsize,black] {$\bar x\wedge\bar y$} (Ob);
+\draw[->,very thick,red!70!black] (O) -- (8.6,2.75) node[right,black] {$x\oplus y$：「はい」};
+\draw[->,very thick,red!70!black] (Ob) -- (8.6,0.55) node[right,black] {$\overline{x\oplus y}$：「いいえ」};
+\node[below,font=\small,gray!40!black] at (3.2,-0.55) {AND：閾値$2$};
+\node[below,font=\small,gray!40!black] at (7.2,-0.55) {OR：閾値$1$};
+\node[below,font=\small,gray!40!black] at (0,-0.55) {配線ペア};
+\end{tikzpicture}
+\caption{2線式符号による排他的OR。\nt{GLUT}ニューロンだけで作る。丸の中の数は、入力1本の重みを単位とした閾値である。4個のANDニューロンが入力の4通りの組み合わせを認識し、2個のORニューロンがそれを答えの配線ペアにまとめる。}
+\label{fig:dualxor}
+\end{figure}
+
+\section{クロックの代わりに遅延}
+
+時間を使う計算には、配線の遅延と同時検出器があれば十分である。最もよい例は、脳が音の来た方向を知るしくみである。
+
+横にある音源からの音は、遠い耳より近い耳に早く届く。その差は方向で決まり、音源が真正面ならゼロ、ヒトで真横なら$0.22\,\text{m}/343\,\text{m/s}\approx0.6\ms$である。脳は約10\emph{マイクロ秒}の差を区別する~\cite{KlumppEady1956,Grothe2010}。ニューロン自体の発火の精度は1ミリ秒未満の程度にすぎないのに、なぜか。
+
+左耳からの配線を同時検出器の列に沿って左から右へ、右耳からの配線を右から左へ通す（図~\ref{fig:itd}）。信号は配線上を速さ$v$で進む。長さ$L$の列の左端から距離$x$にある検出器まで、左の信号は時間$x/v$、右の信号は$(L-x)/v$かかる。右耳に音が$\delta t$だけ遅れて届いたなら、二つの信号は次の点で同時に出会う。
+\begin{empheq}[box=\keybox]{equation}
+\frac{x}{v} \;=\; \frac{L-x}{v} + \delta t
+\quad\Longrightarrow\quad
+x \;=\; \frac{L}{2} + \frac{v\,\delta t}{2} .
+\label{eq:itd}
+\end{empheq}
+発火するのは、二つの信号が窓~\eqref{eq:window}の中に届いた検出器だけである。発火した検出器の番号が、そのまま音源の方向である。時間の差が\emph{場所}に変わった。
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  nrn/.style={circle,draw,very thick,fill=blue!6,minimum size=0.7cm,inner sep=0pt}]
+\foreach \k in {0,...,6}{\node[nrn] (D\k) at (1.4*\k,0) {\scriptsize $2$};}
+\node[nrn,fill=red!15] at (D4) {\scriptsize $2$};
+\draw[->,thick,blue!60!black] (-1.4,0.9) node[left,black] {\small 左耳} -- (9.2,0.9);
+\draw[->,thick,orange!85!black] (9.8,-0.9) node[right,black] {\small 右耳} -- (-0.8,-0.9);
+\foreach \k in {0,...,6}{
+  \draw[->,blue!60!black] (1.4*\k,0.9) -- (D\k.north);
+  \draw[->,orange!85!black] (1.4*\k,-0.9) -- (D\k.south);}
+\draw[->,thick,red!70!black] (D4.north east) ++(0.1,0.05) -- ++(0.5,0.45) node[above right,font=\small,black] {発火};
+\node[font=\small,gray!40!black] at (4.2,-1.5) {遅延が増える $\longrightarrow$ \hspace{2.2cm} $\longleftarrow$ 遅延が増える};
+\pic[scale=1.4] at (-2.3,1.75) {speaker};
+\node[font=\scriptsize,align=center] at (-2.3,2.35) {左の音源};
+\end{tikzpicture}
+\caption{音の方向の検出。両耳からの信号は互いに向かって進む。各丸は閾値$2$の同時検出器である。右耳に音が遅れて届くと、信号は式~\eqref{eq:itd}に従って中央より右で出会う。ネットワークの出力は発火したニューロンの番号である。ここでは音源が左にあり、左耳に音が先に届いた。}
+\label{fig:itd}
+\end{figure}
+
+ここにはクロックも抑制もなく、2線式符号さえない。ネットワークは「はい」か「いいえ」で答えるのではなく、多数のニューロンのうち1個を指し示す。遅延線と同時検出器からなるこの回路は、鳥の聴覚脳幹で実際に働いているらしい~\cite{Carr1990}。マイクロ秒の精度は、個々のニューロンの精度からではなく、検出器が多数あってそれぞれが自分の遅延を見ていることから生まれる。哺乳類ではこのような遅延の列は見つかっていない。そこでは同じ課題を、\nt{GLYC}ニューロンからの時間的に精密な抑制で調整された同時検出器が解いているらしい~\cite{Brand2002,Grothe2010}。抑制が同時性の窓をどう狭めるかは、第\ref{sec:gaba}章で\nt{GABA}を例に検討する。グリシンも受け手の塩素チャネルを開いて同じように抑制する。
+
+\section{メモリ}
+
+コンピュータにはメモリが必要である。このようなネットワークでは、メモリとは自分自身を維持する活動である。互いに強く結合した\nt{GLUT}ニューロンの群をとり、それを一つの発火率$r$で表そう（図~\ref{fig:recurrentgroup}(a)）。平衡では$r=f(wr+I)$である。ここで$w$は群の自分自身への帰還の強さ、$I$は外部からの流入である。この方程式を、曲線$f(wr+I)$と直線$r$の交点として図で解く（図~\ref{fig:bistable}）。
+
+\begin{figure}[t]
+\centering
+% (b): tau dr/dt = -r + f(w r + I), f as in fig:bistable, w=1, I=0.6; Euler dt=0.001 tau.
+\begin{tikzpicture}[>=Stealth,
+  nrn/.style={circle,draw,thick,fill=blue!6,minimum size=0.5cm,inner sep=0pt}]
+\begin{scope}
+\node[font=\small] at (-0.5,1.55) {(a)};
+\foreach \k in {1,...,6}{\node[nrn] (n\k) at ({1.4+1.0*cos(60*\k)},{1.0*sin(60*\k)}) {};}
+\foreach \a/\b in {1/2,2/3,3/4,4/5,5/6,6/1,1/4,2/5,3/6}{\draw[<->,blue!60!black] (n\a) -- (n\b);}
+\foreach \k in {2,3,4}{\draw[->,thick,green!45!black] ($(n\k)+(-0.95,0)$) -- (n\k);}
+\node[font=\small,green!45!black] at (-0.35,-0.45) {$I$};
+\node[font=\Large] at (3.1,0) {$\approx$};
+\node[nrn,minimum size=0.85cm,font=\small] (R) at (4.35,-0.1) {$r$};
+\draw[->,thick,blue!60!black] (R) edge[loop above,looseness=6] node[above,font=\small] {$w$} (R);
+\draw[->,thick,green!45!black] (3.55,-0.95) node[left,font=\small] {$I$} -- (R);
+\end{scope}
+\begin{scope}[xshift=6.3cm,y=2.6cm,x=1.05cm]
+\node[font=\small] at (-0.6,1.25) {(b)};
+\draw[->,gray!70!black] (0,0) -- (7.3,0) node[below left,font=\small,black] {$t/\tau$};
+\draw[->,gray!70!black] (0,0) -- (0,1.12) node[left,font=\small,black] {$r$};
+\foreach \t in {0,2,4,6}{\draw[gray!60!black] (\t,-0.02) -- (\t,0.02); \node[below,font=\scriptsize] at (\t,0) {\t};}
+\draw[densely dotted,gray!60!black] (0,0.5) -- (7,0.5) node[right,font=\scriptsize,black,align=left] {書き込み\\閾値};
+\fill[green!45!black,opacity=0.25] (1,-0.2) rectangle (2,-0.13);
+\fill[gray!60!black,opacity=0.35] (1,-0.29) rectangle (1.5,-0.22);
+\draw[very thick,blue!60!black] plot coordinates {(0.0,0.002) (0.1,0.002) (0.2,0.002) (0.3,0.002) (0.4,0.002) (0.5,0.002) (0.6,0.002) (0.7,0.002) (0.8,0.002) (0.9,0.002) (1.0,0.002) (1.1,0.083) (1.2,0.165) (1.3,0.242) (1.4,0.313) (1.5,0.378) (1.6,0.437) (1.7,0.491) (1.8,0.539) (1.9,0.583) (2.0,0.623) (2.1,0.643) (2.2,0.665) (2.3,0.688) (2.4,0.71) (2.5,0.732) (2.6,0.753) (2.7,0.773) (2.8,0.792) (2.9,0.81) (3.0,0.826) (3.2,0.855) (3.4,0.88) (3.6,0.9) (3.8,0.917) (4.0,0.931) (4.4,0.953) (4.8,0.967) (5.2,0.977) (5.6,0.984) (6.0,0.988) (6.5,0.992) (7.0,0.994)};
+\draw[very thick,gray!60!black,densely dashed] plot coordinates {(0.0,0.002) (0.1,0.002) (0.2,0.002) (0.3,0.002) (0.4,0.002) (0.5,0.002) (0.6,0.002) (0.7,0.002) (0.8,0.002) (0.9,0.002) (1.0,0.002) (1.1,0.083) (1.2,0.165) (1.3,0.242) (1.4,0.313) (1.5,0.378) (1.6,0.358) (1.7,0.336) (1.8,0.313) (1.9,0.291) (2.0,0.269) (2.2,0.228) (2.4,0.191) (2.6,0.159) (2.8,0.133) (3.0,0.11) (3.2,0.091) (3.4,0.076) (3.6,0.063) (3.8,0.052) (4.0,0.043) (4.4,0.03) (4.8,0.021) (5.2,0.015) (5.6,0.011) (6.0,0.008) (6.5,0.006) (7.0,0.004)};
+\node[font=\scriptsize,blue!60!black,anchor=west] at (3.3,0.8) {流入$1\tau$：書き込み成功};
+\node[font=\scriptsize,gray!50!black,anchor=west] at (2.3,0.3) {流入$0.5\tau$：消えた};
+\end{scope}
+\end{tikzpicture}
+\caption{自分自身と強く結合した群。(a)~互いに興奮させ合う多数の\nt{GLUT}ニューロンは、強さ$w$で自分自身を興奮させる発火率$r$の1個のニューロンのようにふるまう。外部からは流入$I$が来る。(b)~$w=1$、図~\ref{fig:bistable}と同じ曲線$f$のときの群の発火率の時間変化。流入$I=0.6$は、軸の下の帯で示した時間だけ与えられる。流入が$1\tau$続けば、群は不安定点$r=0.5$を越え、燃え上がり、流入が終わっても燃え続ける。$0.5\tau$だけなら、この点まで届かずに消えて元に戻る。ビットを書き込むには、流入はおよそ$0.7\tau$より長く続かなければならない。}
+\label{fig:recurrentgroup}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=5cm,y=3.2cm]
+\draw[->,gray!70!black] (0,0) -- (1.1,0) node[below left,black] {\small $r$};
+\draw[->,gray!70!black] (0,0) -- (0,1.1);
+\draw[thick,gray!60!black] (0,0) -- (1.05,1.05) node[right,black] {\small $r$};
+\draw[very thick,blue!60!black] plot[domain=0:1.05,samples=80] (\x,{1/(1+exp(-(\x-0.5)/0.08))});
+\draw[very thick,red!70!black,densely dashed] plot[domain=0:1.05,samples=80] (\x,{1/(1+exp(-(\x+0.3-0.5)/0.08))});
+\fill[blue!60!black] (0.002,0.002) circle (0.018);
+\draw[blue!60!black,fill=white,thick] (0.5,0.5) circle (0.018);
+\fill[blue!60!black] (0.998,0.998) circle (0.018);
+\node[below right,font=\small] at (0.02,0.0) {オフ};
+\node[right,font=\small] at (0.52,0.46) {不安定};
+\node[below,font=\small] at (0.99,0.96) {オン};
+\node[anchor=east,font=\small,red!70!black] at (0.19,0.62) {$f(wr+I)$};
+\node[anchor=west,font=\small,blue!60!black] at (0.45,0.1) {$f(wr)$};
+\end{tikzpicture}
+\caption{強い帰還をもつ\nt{GLUT}ニューロン群によるメモリ。実線は外部流入がない場合で、直線$r$との安定な交点が二つ（「オフ」と「オン」）、その間に不安定な交点が一つある。短い流入$I$（破線）があると、上の交点だけが残る。}
+\label{fig:bistable}
+\end{figure}
+
+帰還が強ければ交点は三つある。下は静寂、上は群が全力で燃えている状態、中央は不安定である。二つの安定状態をもつ素子、つまりフリップフロップができた。これに1を書き込むのは簡単である。短い流入が曲線を持ち上げ、下の交点が消え、群は燃え上がる。そして流入が終わっても燃え続ける（図~\ref{fig:recurrentgroup}(b)）。流入が短すぎると群は不安定点まで届かず、消えて元に戻る。刺激が消えた後も数秒続くこのような自己維持活動は、実際に脳で観察されており、短期記憶の基礎と考えられている~\cite{Wang2001}。だが、秒単位の記憶の方法はこれだけではない。書き込んだ内容はシナプス自体の遅い変数にも保存できる。スパイクのバーストの後、第\ref{sec:code}章の「ツー」シナプスのような促通が約1秒続き、ネットワークは短い発火の合間にほとんど黙っていられる。フリップフロップではなく、充電されたコンデンサである~\cite{Mongillo2008}。記憶保持中のこのような「静かな」区間は観察されており~\cite{Stokes2015}、スパイクを出し続けない保存のほうがエネルギー的に安い。皮質がどの場合にどちらの方法を使うかは議論が続いている。
+
+では、どう消去するのか。命題~\ref{prop:monotone}により、活動では消せない。何かを\emph{取り除く}しかない。一つ目の方法は支えを取り除くことである。群が別の群からの流入があるときだけ燃えているなら、記憶はその流入とともに消える。二つ目は疲労である。実際のシナプスでは長く働くと神経伝達物質の蓄えが枯渇し~\cite{Tsodyks1997}、ニューロンでは興奮性を下げる遅い電流が増えていく。帰還が弱まり、上の交点が消え、群は数秒後にひとりでに消える。信号でオンになり、時間だけでオフになるメモリができる。
+
+\section{シーケンス}
+
+クロックの代わりに、\emph{イベントで起動するタイマー}をもつことができる。\nt{GLUT}ニューロンの群を連鎖状につなぐ。1番目が2番目を興奮させ、2番目が3番目を、というように続く。外部信号が1番目の群を点火すると、活動の波が連鎖を走り抜ける。各段は前の段から1--2遅延分の後に、ただ一度だけ発火する。スパイク直後のニューロンは不応期にあり、そのとき波はもう先へ進んでいるからである。
+
+このような連鎖はイベントからの時間を測る。$k$番目の段が発火したなら、起動から$k$遅延分が経過している。その出力を筋肉に送れば、ひとりでに展開する一連の動作が得られる。鳴禽では、歌っている間、脳のある部位の個々の\nt{GLUT}ニューロンが厳密に順番に、それぞれ歌の決まった瞬間に発火する。このような連鎖によく似ている~\cite{Hahnloser2002}。
+
+クロックと違って、連鎖は起動されるまで黙っており、一度だけ動作し、つながっている者のためにだけ時間を測る。ネットワーク全体に共通のクロックは依然としてない。
+
+\section{足りないもの}
+
+抑制なしで\nt{GLUT}ニューロンだけから多くのものが作れる。だが三つのものが足りず、三つとも命題~\ref{prop:monotone}のせいである。
+
+\emph{選択。}ネットワークは一つの方向、一つの行動を選ばなければならない。二つの刺激がほぼ等しいと、図~\ref{fig:itd}のネットワークでは両方の出力が発火し、弱いほうを抑えて強いほうを選ぶ手段がない。
+
+\emph{リセット。}信号でメモリを消去することができない。
+
+\emph{安定性。}結合がエンジニアの設計どおりにできるのではないネットワークでは、正帰還ループは避けられず、その中で活動が雪崩のように増えうる（第\ref{sec:neurontypes}章）。唯一のブレーキは、遅くて粗い同じ疲労である。
+
+三つの問題はすべて一つの薬で治る。スパイクでスパイクを消すニューロンである。それが\nt{GABA}であり、必要なのは計算するためではなく、選択し、リセットし、計算を制御下に保つためである。
+
+\section{問題}
+
+\begin{exercise}[\lvlA]
+\label{ex:02:1}
+\emph{音のための検出器の列。}両耳からの信号は図~\ref{fig:itd}の配線を速さ$5$~m/sで進み、到着時刻の差の最大値は$0.64\ms$である。検出器は$\tau=0.5\ms$、$\theta=1.5w$のニューロン~\eqref{eq:glutneuron}で、隣どうしが$10$~\textmu sを区別できるように並んでいる。列には検出器が何個あり、一つの音にそのうち何個が発火するか。
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:02:2}
+\emph{等しくない入力は窓をずらす。}$\tau=0.5\ms$、$\theta=1.5$の同時検出器~\eqref{eq:glutneuron}が、重み$1$と$0.8$の二つの入力から1個ずつスパイクを受け取る。同時性の窓とその中心を求めよ。一方の耳からの入力が他方より$20\,\%$弱いと、図~\ref{fig:itd}の列は何マイクロ秒誤るか。
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:02:3}
+\emph{振動しないネットワーク。}非減少の$f_i$と$i\ne j$で$w_{ij}\ge0$をもつネットワーク$\tau\dot r_i=-r_i+f_i\bigl(\textstyle\sum_jw_{ij}r_j+I_i\bigr)$は単調で、安定的に振動しない。各サイクルの抑制性結合の数が偶数であるネットワークは、置換$r_i\to\pm r_i$でこれに帰着することを証明せよ。二つの群の相互抑制は振動しうるか。\nt{GLUT}--\nt{GABA}ループはどうか。
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:02:4}
+\emph{設計：2線式加算器。}各ビットは配線ペア$(x,\bar x)$で伝えられる。和のペア$(S,\bar S)$と桁上げのペア$(C,\bar C)$を出す3ビットの全加算器を、重みと閾値を指定して\nt{GLUT}ニューロンで作れ。ニューロン8個に収めよ。図~\ref{fig:dualxor}のようにANDとORの素子で作ると何個必要か。
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:02:5}
+\emph{シミュレーション：書き込みにかかる時間。}図~\ref{fig:recurrentgroup}の群：$\tau\dot r=-r+f(r+I)$、$f(u)=1/\bigl(1+e^{-(u-0.5)/0.08}\bigr)$で、書き込み前は下の状態にある。流入$I$を時間$T$だけ与える。$I=0.6$でビットを書き込む最小の$T$と、どんな$T$でもビットが書き込まれなくなる閾値$I_c$を数値的に求めよ。
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:02:6}
+\emph{タイマーとしての連鎖。}連鎖の1段は\nt{GLUT}ニューロン$100$個で、遅延は$2\ms$、独立なばらつきは$0.2\ms$である。(a)~$1$~sを測るにはニューロンが何個必要で、相対誤差はいくらか。それは間隔にどう依存するか。(b)~実際のタイマーの誤差はどの間隔でも$5\,\%$である。どんなばらつきの源がそれを生むか。
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:02:7}
+\emph{研究：フリップフロップかコンデンサか。}ニューロン$100$個がビットを$10$~s保持する。フリップフロップ：各ニューロンが毎秒$20$スパイク。コンデンサ：促通$u$は$\tau_F=1$~sで減衰し、$u\ge u_{\max}/2$ならビットが読め、リフレッシュは各ニューロンの3スパイクのバースト。コンデンサは何倍経済的か。群を$200\ms$黙らせるとビットはどうなるか。
+\end{exercise}

@@ -1,0 +1,168 @@
+\chapter{痛み：警報信号}
+\chaptermark{痛み}
+\label{sec:pain}
+
+\section{測定ではなく警報}
+
+第\ref{sec:sensors}章のセンサはどれも世界を測っていた。光がどれだけあるか、音の高さはどうか、圧力はどれほどか。痛みのしくみは違う。痛みが伝えるのは「そこに何があるか」ではなく、「危ない、すべてを放り出せ」である。エンジニアから見れば、これは測定チャネルではなく\emph{警報信号}である。マシンがいま何をしていても、それを突き抜けて届かなければならない最優先の線路である。
+
+警報は三つの性質で測定チャネルと異なり、痛みはその三つをすべて備えている。第一に、順応によって弱めにくい。痛みのセンサは触覚のセンサよりはるかに順応しにくく、軽い損傷の後にはかえって敏感になる~\cite{LaMotte1982hyper}。強い加熱の後の応答の低下が測定されているのは、その一つの型だけである~\cite{Treede1995heat}。光センサは一定の背景のもとで沈黙する（図~\ref{fig:adaptation}）が、1分で黙る警報は役に立たない。第二に、しきい値が高い。痛みのセンサは作用が危険に近いときにしか発火しない。例えば加熱に対しては、センサの型によってしきい値は $41^\circ$ から $46$--$48^\circ$ である~\cite{Treede1995heat, Weidner1999cfib}。第三に、そしてこれがこの章の主題だが、警報の音量を決めるのはセンサだけでなく、マシン自身でもある。同じ傷でも状況によって痛み方が違う。これがすでにおなじみのどんな部品で組み立てられているかを見よう。
+
+痛みのセンサは、第\ref{sec:sensors}章の他の感覚ニューロンと同じく\nt{GLUT}ニューロンである。その一部はグルタミン酸とともに、付録~\ref{sec:othermediators}のサブスタンス~P を放出し、伝達をゆっくりと強める。
+
+\section{2本の配線：速い痛みと遅い痛み}
+
+指をぶつけると、痛みを2回感じる。最初は短く鋭い痛み、1秒ほど後に鈍く長い痛みである。これは2本の別々の配線である。速い配線は絶縁されていて、スパイクを速さ $v$ 毎秒 $5$ から $30$ メートルで伝える。遅い配線は細くむき出しで、毎秒 $0.5$--$2$ メートルである。足からの信号は約1メートル進むので、到着時間
+\begin{empheq}[box=\keybox]{equation}
+t \;=\; \frac{L}{v}
+\label{eq:paintime}
+\end{empheq}
+は、速い配線では数十ミリ秒、遅い配線では約1秒になる。2本の配線は二つのメッセージを運ぶ。速い配線は\emph{どこで}\emph{いつ}を伝える。そのスパイクは第\ref{sec:code}章の時間符号のように、より早く、より正確に届く。遅い配線は\emph{どれほど悪いか}を伝え、その長く鈍い痛みは損傷が治まるまでマシンを警報モードに保つ。
+
+\section{脊髄のゲート}
+
+痛みの信号が最初に着くのは脊髄であり、そこで信号は\emph{ゲート}を通る~\cite{MelzackWall1965}。このゲートを構成する具体的なニューロンが見つかったのは比較的最近である~\cite{Duan2014}。痛みを脳へ送る出力\nt{GLUT}ニューロンには、痛みの配線と触覚の配線が集まる。そしてその隣に、触覚によって興奮する抑制性の介在ニューロン、\nt{GABA}または\nt{GLYC}がある（図~\ref{fig:gate}）。触覚はゲートを閉じる。元のゲート理論~\cite{MelzackWall1965}では、逆に痛みがこの介在ニューロンをオフにし、強い痛みはゲートを開く。これは理論の仮定であり、見つかったゲートのニューロンで直接示されてはいない。
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  nrn/.style={circle,draw,very thick,minimum size=1.0cm,inner sep=0pt,font=\scriptsize},
+  inh/.style={-{Bar[width=7pt]},thick,red!70!black},
+  bc/.style={->,thick,densely dashed,orange!85!black}]
+\node[nrn,fill=blue!6] (Z) at (6,0) {\nt{GLUT}};
+\node[nrn,fill=red!10] (Q) at (3.6,-1.6) {\nt{GABA}};
+\draw[->,very thick,red!70!black] (0,0.6) node[left,font=\small,black,align=right] {痛み $\nu$} -- (5.45,0.15);
+\draw[->,very thick,blue!60!black] (0,-2.6) node[left,font=\small,black,align=right] {触覚 $\mu$} -- (2.9,-2.0);
+\draw[->,thick,blue!60!black] (1.8,-2.35) -- (5.5,-0.35) node[pos=0.8,below right=-2pt,font=\scriptsize] {$w_{z\mu}$};
+\draw[inh] (1.6,0.5) -- (3.35,-1.1) node[pos=0.5,left=1pt,font=\scriptsize] {$w_{q\nu}$};
+\draw[inh] (Q) -- (Z) node[pos=0.5,above left=-1pt,font=\scriptsize] {$\beta$};
+\draw[->,very thick] (Z) -- (8.2,0) node[right,font=\small,align=left] {脳へ：$z$};
+\draw[bc] (6,2.1) node[above,font=\scriptsize,black,align=center] {上から：\nt{SERO}, \nt{NORA}, オピオイド} -- (Z.north) node[pos=0.45,right,font=\scriptsize,black] {ゲイン $g$};
+\end{tikzpicture}
+\caption{モデル~\eqref{eq:gate}による脊髄の痛みのゲート。出力\nt{GLUT}ニューロンは痛み $\nu$ と、触覚 $\mu$ からの弱い興奮を受ける。抑制性の介在ニューロン（\nt{GABA}または\nt{GLYC}）は触覚で興奮し、ゲート理論の仮定では痛みでオフになる。上からはブロードキャストチャネルを通じてゲイン $g$ が来る。}
+\label{fig:gate}
+\end{figure}
+
+これを第\ref{sec:gaba}章と同じく発火率で書こう。介在ニューロンの発火率 $q$ と出力の発火率 $z$ は
+\begin{empheq}[box=\keybox]{equation}
+q \;=\; \bigl[w_{q\mu}\,\mu + q_0 - w_{q\nu}\,\nu\bigr]_+ ,
+\qquad
+z \;=\; \bigl[\,g\,(\nu + w_{z\mu}\,\mu) - \beta\,q\,\bigr]_+ ,
+\label{eq:gate}
+\end{empheq}
+である。ここで $\nu$ は痛みの入力、$\mu$ は触覚の入力、$w$ は結合の重み（第1添字が受け手、第2添字が送り手）、$\beta$ は抑制の強さ、$q_0$ は介在ニューロン自身の背景活動、$g$ は上から決められるゲイン（後述）である。これは第\ref{sec:gaba}章の禁止~\eqref{eq:veto}、「痛み、ただし触覚があるときは除く」であり、ゲート理論から仮定として取り入れた一つの修正がある。強い痛みは自ら禁止ニューロンをオフにする。
+
+$w_{q\mu}=1$, $q_0=0.2$, $w_{q\nu}=0.5$, $w_{z\mu}=0.3$, $\beta=1.5$ でモデルを計算した（図~\ref{fig:gatecurves}）。触覚がなければ、痛みは $\nu\approx0.18$ から通り始める。触覚があるとしきい値は $0.86$ に上がり、$\nu=1$ で出力は $1$ から $0.25$ へと4分の1に落ちる。だが強い痛み $\nu=2$ では、触覚はもう何も変えない。ゲートは開け放たれている。実生活でも同じである。打ち身をさするのは効くが、重いけがでは効かない。痛みのない触覚だけではゲートを通らない。触れただけで警報は上がらない。
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=5.2cm,y=1.35cm]
+\draw[->,gray!70!black] (0,0) -- (2.12,0) node[right,font=\small,black] {痛み $\nu$};
+\draw[->,gray!70!black] (0,0) -- (0,4.3) node[left,font=\small,black] {$z$};
+\foreach \t in {0,0.5,1,1.5,2}{\draw[gray!60!black] (\t,-0.05) -- (\t,0.05); \node[below,font=\scriptsize] at (\t,0) {\t};}
+\foreach \f in {1,2,3,4}{\draw[gray!60!black] (-0.01,\f) -- (0.01,\f); \node[left,font=\scriptsize] at (0,\f) {\f};}
+\draw[very thick,red!70!black] plot file {figures/pain_gate_notouch.dat};
+\draw[very thick,blue!60!black] plot file {figures/pain_gate_touch.dat};
+\draw[very thick,orange!85!black,densely dashed] plot file {figures/pain_gate_sens.dat};
+\draw[very thick,red!70!black] (0.08,3.9) -- (0.2,3.9) node[right,font=\scriptsize,black] {触覚なし};
+\draw[very thick,blue!60!black] (0.08,3.45) -- (0.2,3.45) node[right,font=\scriptsize,black] {触覚あり};
+\draw[very thick,orange!85!black,densely dashed] (0.08,3.0) -- (0.2,3.0) node[right,font=\scriptsize,black] {感作の後、$g=2$};
+\end{tikzpicture}
+\caption{痛みの強さに対するゲート~\eqref{eq:gate}の出力。触覚はしきい値を上げ、弱い痛みと中程度の痛みを弱めるが、強い痛みは弱めない。感作（破線）はゲインを2倍にする。同じ痛みが2倍の音量で伝えられ、しきい値は下がる。}
+\label{fig:gatecurves}
+\end{figure}
+
+\section{上からの音量つまみ}
+
+ゲートは下からだけ制御されるのではない。脳幹からは下行路が来て、\eqref{eq:gate}のゲイン $g$ を変える。\nt{SERO}, \nt{NORA}、そして付録~\ref{sec:othermediators}のオピオイドペプチドである~\cite{Fields2004}。これらは第\ref{sec:serocomputer}--\ref{sec:acet}章と同じブロードキャストチャネルであり、ここでのつまみは警報の音量である。つまみはどちらの向きにも回せる。同じ下行回路が痛みを弱めることも強めることもできる。
+
+マシンはなぜ警報を弱める必要があるのか。警報は割り込みであり、割り込みがいつも適切とは限らないからである。捕食者から逃げる動物は、傷ついた足のせいで止まってはならない。まず走り、傷をなめるのはその後である。楽になるという期待も痛みを弱め、その効果の一部はオピオイド受容体を遮断すると消える~\cite{Levine1978}。脳で計算された期待が、オピオイドのチャネルを下ってゲートに届くのである。この描像そのものは測定されている。脳が音量をどう決めているのかは仮説である。
+
+\section{感作：学習する警報}
+
+損傷の後、ゲートの出力ニューロンはより敏感になる。同じ入力がより大きな出力を生み、しきい値は下がる~\cite{Woolf1983}。モデル~\eqref{eq:gate}ではこれはゲイン $g$ の上昇であり、その最も単純な記述は、痛みそのものが駆動する遅いRC回路である：
+\begin{empheq}[box=\keybox]{equation}
+\tau_s\,\frac{\dd g}{\dd t} \;=\; -(g-1) + k_s\,z ,
+\label{eq:sensitization}
+\end{empheq}
+ここで $\tau_s$ は感度が正常に戻るまでの時間である。感作は損傷刺激が止んだ後も続くので~\cite{Woolf1983}、$\tau_s$ は痛みそのものの持続時間より長い。$k_s$ は駆動の強さである。組織が損傷している間はゲートの出力が $g$ を1より上に保ち、傷の近くで起こることはすべてより大きな音量で伝えられる（図~\ref{fig:gatecurves}の破線：$g=2$ でしきい値は $0.11$ に下がり、出力は2倍になる）。これは警報の合理的な設定である。損傷が治るまでは、用心しすぎるほうがよい。
+
+エンジニアから見れば、これは遅い漏れを持つ正帰還である。痛みがゲインを上げ、ゲインが痛みを上げる。ループが弱いうちは、傷が治れば $g$ は正常に戻る。ループが強いと、警報は損傷がなくなった後もオンの状態で固まりうる。図~\ref{fig:bistable}の強いフィードバックを持つ群と同じである。モデル~\eqref{eq:sensitization}は単純化である。中枢性感作が存在することは測定されている。
+
+\section{教師として、割り込みとしての痛み}
+
+マシンの中で痛みには、警報のほかに二つの仕事がある。
+
+\emph{教師。} 痛みは負の報酬であり、誤差の式~\eqref{eq:ctd}には $r<0$ として入る。第\ref{sec:dofa}章で述べたことはすべてここでも成り立つ。痛みの前触れは前もって誤差を起こすようになり、網は痛みにつながるものを避けることを学ぶ。ヒトでの実験は、痛みからの学習中の脳活動がまさに時間差分誤差に従うことを示し~\cite{Seymour2004}、\nt{DOPA}ニューロンの一部は不快な出来事にも応答する（第\ref{sec:dofaalt}章）。
+
+\emph{割り込み。} 痛みは注意をいまの課題から引きはがす。これは副作用ではなく、痛みの目的である~\cite{EcclestonCrombez1999}。第\ref{sec:nora}章では、同じ「割り込み」の役割を\nt{NORA}の急なバーストについて論じた。そして最も速い応答は脳にさえ届かない。熱いものから手を引っ込める反射は、図~\ref{fig:antagonists}と同じ筋肉の対と同じ拮抗筋の禁止によって、脊髄の中で直接閉じている。
+
+\begin{keyblock}
+\begin{proposition}[警報信号]
+\label{prop:pain}
+痛みは測定ではなく、優先度の高い警報信号である。測定チャネルよりはるかに順応しにくく、2本の配線（速いほうは「どこ」、遅いほうは「どれほど悪いか」）を通り、触覚が閉じる（そしてゲート理論の仮定では強い痛みが開く）ゲートを通過し、その音量は上からブロードキャストチャネルが決める。痛みによるゲートの開放を除き、これらの仕組みは測定されている。単純なモデル~\eqref{eq:gate}と~\eqref{eq:sensitization}は単純化である。
+\end{proposition}
+\end{keyblock}
+
+\section{まとめ}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{3.0cm}>{\raggedright}p{4.9cm}>{\raggedright\arraybackslash}p{4.9cm}}
+\toprule
+痛みは何をするか & どうやって & 分かっていること \\
+\midrule
+警報を上げる & 高いしきい値、触覚より弱い順応 & しきい値は測定済み；順応の比較は推定 \\
+「どこ」と「どれほど悪いか」を伝える & 速さの違う2本の配線~\eqref{eq:paintime} & 測定済み \\
+ゲートを通る & \nt{GABA}／\nt{GLYC}による禁止~\eqref{eq:gate} & ゲートは測定済み；痛みによる開放は理論の仮定；モデルは単純化 \\
+音量を変える & 下行性の\nt{SERO}, \nt{NORA}、オピオイド & 測定済み；音量を選ぶ規則は仮説 \\
+損傷の後に学習する & ゲインの上昇~\eqref{eq:sensitization} & 感作は測定済み；モデルは単純化 \\
+回避を教える & \eqref{eq:ctd}の負の報酬 & 時間差分誤差との類似は測定済み \\
+作業に割り込む & 注意の奪取；引っ込め反射 & 測定済み \\
+\bottomrule
+\end{tabular}
+\caption{警報信号としての痛み。}
+\label{tab:pain}
+\end{table}
+
+痛みはすでに見てきた部品で組み立てられている（表~\ref{tab:pain}）。\nt{GLUT}センサ、2本の配線、抑制性介在ニューロンによる禁止、ブロードキャストの音量つまみ、遅いRC回路、予測誤差、割り込み。新しいのは一つだけである。これはマシンの入力のうち、音量をマシン自身が決める唯一のものである。持ち主が弱めることも設定し直すこともできる警報なのである。
+
+\section{問題}
+
+\begin{exercise}[\lvlA]
+\label{ex:14:1}
+\emph{2本の配線。} 信号は足から来る、$L=1$~m。(a)~一斉射撃が、速さが範囲~\eqref{eq:paintime}を埋める同じ型の配線の束を通る。脊髄に着くまでに、速い型と遅い型でそれぞれどれだけ引き伸ばされるか。(b)~$15$~m/s と $1$~m/s の配線の痛みの波は、差が $0.1$~s 以上なら区別できる。どれだけの距離から融合するか。
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:14:2}
+\emph{触覚が痛むとき。} 本文のパラメータのゲート~\eqref{eq:gate}で、感作によってゲイン $g$ が上がる。痛みのない触覚が、どんな強さ $\mu$ でもゲートを通らないのは $g$ がいくつまでか。触覚 $\mu=1$ が通り始めるのはどの $g$ か。
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:14:3}
+\emph{感作の安定性。} 入力は一定で、ゲートの出力は $g$ について線形：$z=gA-C$、$A=\nu+w_{z\mu}\mu$、$C=\beta q\ge0$。(a)~モデル~\eqref{eq:sensitization}の平衡点 $g^*$ とその安定条件を求めよ。(b)~$k_s=0.5$ で、触覚なしと触覚 $\mu=1$ ありのそれぞれについて、それを超えるとモデルが暴走する痛みの強さを求めよ。
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:14:4}
+\emph{痛みの前触れ。} 時刻 $0$ の信号が時刻 $T=2$~s の痛みを予告する。\eqref{eq:ctd}で $r(t)=-P\,\delta(t-T)$、$\tau_\gamma=2$~s。(a)~信号の時点での $\delta$ の振れの面積を求めよ。(b)~時刻 $t_e=1$~s の行動が痛みを取り消す。この時点での $\delta$ の振れはいくらか。それは網に何を教えるか。
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:14:5}
+\emph{ラッチする警報。} \texttt{models/\allowbreak pain\_gate.py} のゲートにダイナミクス~\eqref{eq:sensitization}と飽和 $z\le4$ を加えよ。触覚 $\mu=1$ は常にあり、損傷 $\nu=2$ が時間 $T$ 続いた後 $\nu=0$ になる。$k_s=4$, $4.6$, $5$, $6$, $8$ について、警報がオンのまま残る最小の $T$（$\tau_s$ 単位）をシミュレーションで求めよ。
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:14:6}
+\emph{ゲートの設計。} $\beta=1.5$, $w_{z\mu}=0.3$, $g=1$ で、痛みのしきい値が触覚なしで $0.2$、触覚 $\mu=1$ ありで $1.0$ となり、$\nu_\times=2.5$ で触覚が痛みを弱めなくなるように、\eqref{eq:gate}の $q_0$, $w_{q\nu}$, $w_{q\mu}$ を選べ。痛みのない触覚がゲートを通らないのはゲイン $g$ がいくつまでか。
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:14:7}
+\emph{音量つまみ。} 作業は単位時間あたり価値 $V$ をもたらし、損傷 $\nu$ を抱えての作業はコスト $c\nu$ がかかるので、$\nu>V/c$ なら中断するのが得である。痛みは $z>\theta=0.5$ で割り込む。(a)~$V/c=0.25$, $0.5$, $2$ で、触覚なしのゲート~\eqref{eq:gate}にこのしきい値を与えるゲイン $g^*$ はいくらか。(b)~マシンは本書のどの信号から $V$ と $c$ を推定できるか。
+\end{exercise}

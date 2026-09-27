@@ -1,0 +1,214 @@
+\chapter{マシンの出力：脳はどう筋肉を制御するか}
+\chaptermark{マシンの出力}
+\label{sec:muscles}
+
+\section{速い出力}
+
+マシンが世界の中で素早く行うことは、すべて筋肉で行われる。言葉、視線、一歩、微笑み、どれも筋肉の収縮である。もう一つの遅い出力である体の化学は、第\ref{sec:chemoutput}章で扱う。図~\ref{fig:machine}で出力は「筋肉」という矢印だった。今度はその矢印の先に何があるかを見よう。
+
+連鎖の最後の環は\nt{ACET}ニューロンであり、表~\ref{tab:types}で「筋肉への出力」と書かれていたものである。各筋線維はちょうど1個のこうしたニューロンから入力を受け、1個のニューロンは数百から2000本ほどの線維からなるグループを制御する~\cite{Feinstein1955mu}。細かな調整を要する筋肉ではこの単位は小さく、脚の大きな筋肉では大きい。ニューロンとその線維を合わせて\emph{運動単位}と呼ぶ。これは脳が個別にオンにできる筋肉の最小の部分である。
+
+筋肉上のニューロンのシナプスは、第\ref{sec:code}章の皮質のシナプスとはまったく違う。あちらではスパイクの大部分が失われた。こちらではスパイクのたびに、線維を発火させるのに必要な量の数倍のアセチルコリンが放出される~\cite{WoodSlater2001}。これは\emph{安全率}を持つシナプスであり、ニューロンのスパイク1個がちょうど1回の線維の収縮になる。マシンの内部では信頼できない結合を許容し、誤りを冗長性で直すことができる。出力では誤りは動きそのものを損なうので、信頼性はハードウェアに直接組み込まれている。
+
+\section{力：発火率と単位の数}
+
+1個のスパイクは単収縮（トウィッチ）と呼ばれる1回の収縮を生む。力は数十ミリ秒で立ち上がり、また下がる。そのよい近似は次の式である~\cite{Fuglevand1993}：
+\begin{equation}
+h(t) \;=\; F_1\,\frac{t}{T_c}\,e^{\,1-t/T_c},
+\label{eq:twitch}
+\end{equation}
+ここで $T_c$ は立ち上がり時間で $50\ms$ 程度、$F_1$ は単収縮1回の力である。スパイクがより頻繁に来ると、単収縮は足し合わされる：
+\begin{empheq}[box=\keybox]{equation}
+F(t) \;=\; \sum_k h\bigl(t-t_k\bigr) .
+\label{eq:forcesum}
+\end{empheq}
+これは第\ref{sec:serocomputer}章でスパイクを濃度に変えたのと同じローパスフィルタであり、違うのは出力が濃度ではなく力であることだけである。筋肉はスパイクから力へのD/A変換器である（図~\ref{fig:tetanus}）。我々のモデルでは、毎秒5スパイクのとき単収縮はほとんど重ならず、力は $0.2F_1$ から $1.1F_1$ まで跳ねる。毎秒15スパイクではすでに $1.8F_1$ と $2.2F_1$ の間に保たれ、毎秒40スパイクではほぼ平らな約 $5.4F_1$ になる。実際の筋肉は高頻度のスパイクで飽和するので、線形の和~\eqref{eq:forcesum}が成り立つのは毎秒数十スパイクまでである。
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=20cm,y=0.55cm]
+\draw[->,gray!70!black] (0,0) -- (0.66,0) node[right,font=\small,black] {$t$, s};
+\draw[->,gray!70!black] (0,0) -- (0,6.4) node[left,font=\small,black] {$F/F_1$};
+\foreach \t in {0,0.2,0.4,0.6}{\draw[gray!60!black] (\t,-0.1) -- (\t,0.1); \node[below,font=\scriptsize] at (\t,0) {\t};}
+\foreach \f in {1,3,5}{\draw[gray!60!black] (-0.004,\f) -- (0.004,\f); \node[left,font=\scriptsize] at (0,\f) {\f};}
+\draw[thick,blue!60!black] plot file {figures/muscle_twitch_5.dat};
+\draw[thick,green!45!black] plot file {figures/muscle_twitch_15.dat};
+\draw[thick,red!70!black] plot file {figures/muscle_twitch_40.dat};
+\node[font=\scriptsize,blue!60!black,anchor=west] at (0.605,0.9) {5 スパイク/s};
+\node[font=\scriptsize,green!45!black,anchor=west] at (0.605,2.1) {15 スパイク/s};
+\node[font=\scriptsize,red!70!black,anchor=west] at (0.605,5.4) {40 スパイク/s};
+\end{tikzpicture}
+\caption{D/A変換器としての筋肉：1個の運動単位の規則的なスパイクに対する力~\eqref{eq:forcesum}、$T_c=50\ms$。まばらなスパイクは個々の単収縮を生み、頻繁なスパイクは融合して平らな力になる。図~\ref{fig:lowpass}で頻繁なスパイクが融合して平らな濃度になったのと同じである。}
+\label{fig:tetanus}
+\end{figure}
+
+脳には力のつまみが二つある。各単位のスパイクの発火率と、オンになっている単位の数である。そして2番目のつまみは実に巧妙にできている。筋肉の中の単位はそれぞれ異なり、最も弱いものは最も強いものの100分の1である。より大きな力が必要になると、単位は\emph{大きさの順に}、小さいものから大きいものへとオンになる~\cite{Henneman1957}。この順序を計算する者はいない。小さなニューロンは同じ共通入力でより興奮しやすいだけであり、オンになる順序はハードウェア自体が決めている。
+
+これで何が得られるか。順番に並べた各単位が一つ前より $q$ 倍強いとし、$q$ は1より少し大きいとする。オンになっている全単位の力は等比数列の和であり、そのほぼすべてが最後の数単位による。すると次にオンになる単位が加える力は
+\begin{empheq}[box=\keybox]{equation}
+\frac{\Delta F}{F} \;\approx\; q-1 \;=\; \text{const} ,
+\label{eq:sizeprinciple}
+\end{empheq}
+つまり力の刻みは力そのものに比例する。弱い力は細かく、強い力は粗く刻まれる。これは\emph{浮動小数点数}である。指数はオンになっている単位の数で、仮数はそのスパイクの発火率で決まる。第\ref{sec:sensors}章のセンサと同じ対数目盛である。マシンの入力と出力は、世界を相対的な割合で測る。
+
+浮動小数点には裏面がある。力のばらつきも力そのものに比例して大きくなる。強い動きは弱い動きより必然的に不正確になる。有力な仮説の一つによれば、まさにこの信号依存のノイズが、我々の動きがなめらかな理由を説明する。なめらかな指令が終点でのばらつきを最小にするのである~\cite{HarrisWolpert1998}。
+
+\section{引けるが押せない：関節あたり2本の配線}
+
+筋肉は引くことしかできない。\nt{GLUT}ニューロンが負の信号を出せないのと同じく、押すことはできない。解決法は第\ref{sec:glutcomputer}章でおなじみの\emph{2本の配線}である。各関節は、逆向きに引く一対の筋肉が受け持つ（図~\ref{fig:antagonists}）。力を $F_1$, $F_2$、モーメントアームを $\ell$ とすると、関節のトルクと剛性は
+\begin{empheq}[box=\keybox]{equation}
+M \;=\; \ell\,(F_1-F_2), \qquad K \;\approx\; \kappa_m\,(F_1+F_2),
+\label{eq:antagonists}
+\end{empheq}
+となる。ここで $\kappa_m$ は筋肉の力とその剛性とを結ぶ係数である。緊張した筋肉は弛緩した筋肉よりばねとして硬い。力の差がトルクを、和が剛性を決める~\cite{Hogan1984}。2本の配線で、脳は二つの独立な量を制御する。関節をどちらへ回すかと、どれだけ硬く保つかである。こぼさずにカップを持つとき、我々は両方の筋肉を同時に緊張させる。トルクは同じで剛性が高くなり、不意の衝撃で手がぶれにくくなる。
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  nrn/.style={circle,draw,very thick,minimum size=0.95cm,inner sep=0pt,font=\scriptsize},
+  inh/.style={-{Bar[width=7pt]},thick,red!70!black}]
+% the joint: a bar on a pivot, two springs pulling down on either side
+\fill[gray!30] (4.6,-0.25) -- (5.4,-0.25) -- (5,0.15) -- cycle;
+\draw[line width=3pt,gray!50!black] (2.4,0.2) -- (7.6,0.2);
+\fill[black] (5,0.2) circle (0.08);
+\draw[decorate,decoration={coil,segment length=5pt,amplitude=4pt},very thick,blue!60!black] (3.0,0.2) -- (3.0,-1.6);
+\draw[decorate,decoration={coil,segment length=5pt,amplitude=4pt},very thick,orange!85!black] (7.0,0.2) -- (7.0,-1.6);
+\draw[very thick] (2.5,-1.6) -- (3.5,-1.6); \draw[very thick] (6.5,-1.6) -- (7.5,-1.6);
+\node[font=\small,blue!60!black] at (2.35,-0.75) {$F_1$};
+\node[font=\small,orange!85!black] at (7.65,-0.75) {$F_2$};
+\draw[->,thick] (5.9,0.75) arc (60:120:1.8) node[above,font=\scriptsize,pos=0.5] {$M=\ell(F_1-F_2)$};
+% motor neurons and reflex circuit
+\node[nrn,fill=green!12] (M1) at (1.6,-3.0) {\nt{ACET}};
+\node[nrn,fill=green!12] (M2) at (8.4,-3.0) {\nt{ACET}};
+\node[nrn,fill=red!10] (G) at (5.0,-3.0) {\nt{GLYC}};
+\node[nrn,fill=blue!6] (S) at (1.6,-5.0) {\nt{GLUT}};
+\draw[->,very thick] (M1) -- (3.0,-1.7);
+\draw[->,very thick] (M2) -- (7.0,-1.7);
+\draw[->,thick] (S) -- (M1);
+\draw[->,thick] (S) -- (G);
+\draw[inh] (G) -- (M2);
+\draw[->,thick,densely dashed,gray!60!black] (3.15,-1.2) to[bend left=25] node[pos=0.35,right,font=\scriptsize,black] {伸張} (S.north east);
+\draw[->,thick,blue!60!black] (-0.3,-3.0) node[left,font=\scriptsize,black,align=right] {脳からの\\指令} -- (M1);
+\draw[->,thick,blue!60!black] (10.3,-3.0) node[right,font=\scriptsize,black,align=left] {脳からの\\指令} -- (M2);
+\end{tikzpicture}
+\caption{一つの関節に二つの筋肉と、最も速いフィードバックループ。\nt{ACET}ニューロンは脳からの指令を受け、関節を逆向きに引く。力の差が関節を回し、和が関節を硬くする。左の筋肉の伸張センサ（\nt{GLUT}）はその筋肉自身の\nt{ACET}ニューロンを興奮させ、\nt{GLYC}の介在ニューロンを通じて拮抗筋のニューロンを抑制する。第\ref{sec:gaba}章の禁止である。}
+\label{fig:antagonists}
+\end{figure}
+
+\section{遅延のあるフィードバック}
+
+筋肉はやみくもに働くわけではない。どの筋肉にも表~\ref{tab:sensors}で触れた伸張センサがあり、最も短いループは脊髄の中で直接閉じている（図~\ref{fig:antagonists}）。筋肉が不意に伸ばされると、伸張センサがその筋肉自身の\nt{ACET}ニューロンを興奮させ、筋肉は収縮して関節を元に戻す。同時に、抑制性の介在ニューロンを通じて拮抗筋がオフになり、邪魔をしないようにする。この介在ニューロンとして働くのが\nt{GLYC}である。表~\ref{tab:types}のうち自分の章を持たなかった型であり、その居場所はまさにここ、脊髄の速いループにある。
+
+どのループにも遅延 $d$ がある。脊髄のループは腕で約 $25$--$30\ms$、皮質を通るループはその1.5〜3倍、目を通るループは $100$--$200\ms$ である。そして遅延のあるフィードバックは、命題~\ref{prop:ei}で見たように系を揺らす。$d$ 秒前の情報にもとづいて偏差 $x$ を速さ $G$ で修正する最も単純な制御器、$\dd x/\dd t=-G\,x(t-d)$ の安定条件は次のとおりである~\cite{Hayes1950}：
+\begin{empheq}[box=\keybox]{equation}
+G\,d \;<\; \frac{\pi}{2} ,
+\label{eq:delaystable}
+\end{empheq}
+そして境界では系は周波数 $1/(4d)$ で振動する。これをモデルで確かめた。$d=30\ms$ のとき、$G=40$（毎秒）では偏差は減衰し、境界 $52$ をわずかに超える $G=55$（毎秒）では振動が増大する。
+
+ここから二つの帰結が出る。第一に、ループが長いほど修正は遅くなければならない。遅延150ミリ秒の目を通して手を直すなら、約0.1秒より速くは直せない。そうしないと手が震える。第二に、脊髄ループの安定境界 $1/(4\cdot30\ms)\approx8$ 回/秒は、健康な人なら誰にでもある細かな震え、毎秒8〜12回に近い。伸張ループはこの震えの有力な原因の一つである~\cite{McAuleyMarsden2000}。
+
+フィードバックが遅れるなら、脳はどうやって速く正確に動くのか。広く受け入れられた仮説によれば、\emph{予測する}のである。体の内部モデルを持ち、センサを待たずに指令の結果がどうなるかを計算する~\cite{WolpertGhahramani2000}。センサが必要なのは、一つ一つの動きではなくモデルを修正するためである。エンジニアならこれを、状態オブザーバ付きのフィードフォワード制御と呼ぶだろう。
+
+\section{運動のリズム発生器}
+
+歩行、呼吸、咀嚼はリズミカルな運動である。そのためにクロックは必要か。必要ない。脊髄と脳幹には、リズミカルな入力が何も来なくても自らリズムを生み出す小さなネットワークがある~\cite{MarderBucher2001}。最も単純なそのようなネットワークは、すでに手元にある部品で組み立てられる。図~\ref{fig:wta}のように\nt{GABA}または\nt{GLYC}の介在ニューロンを介して互いに抑制し合い、第\ref{sec:glutcomputer}章の記憶のようにゆっくり疲労する、二つの\nt{GLUT}ニューロン群である：
+\begin{empheq}[box=\keybox]{equation}
+\tau\,\frac{\dd r_i}{\dd t} = -r_i + \bigl[I - \beta\,r_j - a_i\bigr]_+ ,
+\qquad
+\tau_a\,\frac{\dd a_i}{\dd t} = -a_i + b\,r_i ,
+\label{eq:halfcentre}
+\end{empheq}
+ここで $a_i$ は群 $i$ の疲労、$j$ はもう一方の群である。$\beta>1$ の相互抑制が勝者を選ぶ（命題~\ref{prop:wta}）。勝者は働き、疲れる。疲労が入力を食いつぶすと、すでに休んでいた敗者が前に出て、今度は自分が疲れ始める。二つの群は交代で働き、それぞれが対の一方の筋肉を制御する（図~\ref{fig:halfcentre}）。
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=3.2cm,y=2.4cm]
+\draw[->,gray!70!black] (0,0) -- (4.2,0) node[right,font=\small,black] {$t$, s};
+\draw[->,gray!70!black] (0,0) -- (0,1.2) node[left,font=\small,black] {$r$};
+\foreach \t in {0,1,2,3,4}{\draw[gray!60!black] (\t,-0.03) -- (\t,0.03); \node[below,font=\scriptsize] at (\t,0) {\t};}
+\draw[thick,blue!60!black] plot file {figures/halfcentre1.dat};
+\draw[thick,orange!85!black] plot file {figures/halfcentre2.dat};
+\node[font=\scriptsize,blue!60!black,anchor=west] at (1.6,1.28) {群1：「前へ」};
+\node[font=\scriptsize,orange!85!black,anchor=west] at (2.7,1.28) {群2：「後ろへ」};
+\end{tikzpicture}
+\caption{モデル~\eqref{eq:halfcentre}によるリズム発生器：$I=1$, $\beta=2$, $b=2$, $\tau=20\ms$, $\tau_a=0.4\,\text{s}$。相互抑制と疲労を持つ二つの群は、入力が一定の信号であるにもかかわらず、周期 $0.84\,\text{s}$ で交代に働く。}
+\label{fig:halfcentre}
+\end{figure}
+
+我々のモデルでは、一定の入力のもとで二つの群は周期 $0.84\,\text{s}$ で交代する。これは疲労の時定数 $\tau_a$ のほぼ2倍である。上からの一定の指令「歩け」が、その場でリズムに変わる。これも第\ref{sec:gaba}章の\nt{GLUT}--\nt{GABA}ループのリズムと同じく局所的なリズムである。ネットワークが働いているときだけ生じ、自分が制御する筋肉にだけテンポを与える。
+
+\begin{keyblock}
+\begin{proposition}[マシンの出力]
+\label{prop:muscles}
+脳は制御器の階層として筋肉を制御する。最上位で行動が選ばれ（第\ref{sec:dofa}章）、その下で局所的な発生器が一定の指令をリズムに変え、脊髄の速いループが関節を保持する。力は浮動小数点で指定される。指数は大きさの順にオンになる単位の数、仮数はスパイクの発火率である。各関節は引く筋肉の対で制御され、その力の差がトルクを、和が剛性を決める。これらの仕組みは測定されている。脳が体の内部モデルに頼っているというのは、十分な根拠のある仮説である。
+\end{proposition}
+\end{keyblock}
+
+\section{まとめ}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{3.0cm}>{\raggedright}p{4.6cm}>{\raggedright\arraybackslash}p{5.2cm}}
+\toprule
+出力は何をするか & どうやって & 分かっていること \\
+\midrule
+スパイクを力に変える & 単収縮の和~\eqref{eq:forcesum}、ローパスフィルタ & 測定済み；線形の和は単純化 \\
+力を加減する & 大きさの順の単位の動員、浮動小数点~\eqref{eq:sizeprinciple} & 動員の順序は測定済み \\
+引くだけで押す & 筋肉の対：トルクは差、剛性は和~\eqref{eq:antagonists} & 測定済み \\
+関節を保持する & 伸張ループ、\nt{GLYC}による拮抗筋の禁止 & 測定済み \\
+震えない & $Gd<\pi/2$~\eqref{eq:delaystable} & 制御理論から導かれる；震えへの寄与は有力な原因 \\
+速く動く & 内部モデルによる予測 & 十分な根拠のある仮説 \\
+リズミカルに歩き、呼吸する & リズム発生器~\eqref{eq:halfcentre} & 発生器は測定済み；最も単純な回路はモデル \\
+\bottomrule
+\end{tabular}
+\caption{マシンは筋肉をどう制御するか。}
+\label{tab:muscles}
+\end{table}
+
+マシンの出力は、他のすべてと同じ手法でできている（表~\ref{tab:muscles}）。符号の代わりに2本の配線、DACの代わりにローパスフィルタ、線形目盛の代わりに対数目盛、クロック発生器の代わりに相互抑制と疲労。入力（第\ref{sec:sensors}章）と出力は世界を相対的な割合で測り、その間では本書が扱うマシンが働いている。
+
+\section{問題}
+
+\begin{exercise}[\lvlA]
+\label{ex:13:1}
+\emph{数字で見る浮動小数点。} 筋肉に $N=100$ 個の運動単位があり、力は $f_n=f_1q^{\,n-1}$、最も強いものは最も弱いものの $100$ 倍である。(a)~$q$、相対刻み~\eqref{eq:sizeprinciple}、ダイナミックレンジをデシベルで求めよ。(b)~同じ総力を持つ $100$ 個の等しい単位からなる「線形DAC」では、力 $10f_1$ での刻みはいくらか。
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:13:2}
+\emph{安全率の値段。} 筋線維上のシナプスは1スパイクごとに平均 $m$ のポアソン数の量子を放出し、線維は $n_{\text{th}}=20$ 量子以上で発火する。安全率は $S=m/n_{\text{th}}$ である。毎秒 $20$ スパイクで働く単位は、$S=2$ と $S=4$ で1日に何回失敗するか。
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:13:3}
+\emph{フィルタとしての筋肉。} $T_c=50\ms$ の単収縮~\eqref{eq:twitch}は線形系のインパルス応答である。(a)~その伝達関数 $H(s)$ と遮断周波数を求めよ。(b)~規則的なスパイクのどの頻度で、力の脈動の振れ幅が平均の力の $10\%$ になるか。
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:13:4}
+\emph{遅延より速くは直せない。} 制御器 $\dd x/\dd t=-G\,x(t-d)$。(a)~振動なしで偏差が最も速く減衰するのは $Gd=1/e$ のときで、その速さは $1/d$ であることを示せ。(b)~脊髄ループ $d=30\ms$ と目を通るループ $d=150\ms$ について、この $G$ と減衰の時定数を求めよ。
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:13:5}
+\emph{リズム発生器の周期。} $\tau\ll\tau_a$ のとき、モデル~\eqref{eq:halfcentre}の周期 $T$ は方程式 $(\beta-1)(1-E^{2+b})/(\beta-E)=b\,(1-E^{1+b})/(1+b)$ で決まる。ここで $E=e^{-T/(2\tau_a)}$。(a)~$\beta=b=2$, $\tau_a=0.4$~s のときの $T$ を求めよ。(b)~$T$ が入力 $I$ によらず、リズムは $b>\beta-1$ のときだけ可能であることを示せ。
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:13:6}
+\emph{発生器のシミュレーション。} \texttt{models/\allowbreak muscle\_models.py} から関数 \texttt{halfcentre} をインポートし（ファイル自体は実行しない）、最初の2周期を捨てて、$b=0.8$, $1.05$, $1.2$, $1.5$, $2$, $4$ および $I=0.5$, $1$, $2$ で周期を測れ。「もっと速く歩け」という指令は $I$ を通じてテンポを変えられるか。
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:13:7}
+\emph{剛性対反射。} 関節が伸張ループに囲まれている：$\dd\theta/\dd t=-a\theta(t)-G\theta(t-d)$、$a=K/B$、$d=30\ms$。これを問題~\ref{ex:13:4}に帰着させ、偏差が時定数 $15\ms$ で振動なしに減衰する最小の $a$ と、そのとき必要な $G$ を求めよ。筋肉の同時収縮を強めたら $G$ をどう変えるべきか。
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:13:8}
+\emph{テンポのつまみ。} 問題~\ref{ex:13:5}と~\ref{ex:13:6}によれば、発生器~\eqref{eq:halfcentre}の入力 $I$ は振れ幅だけを変え、テンポは変えない。ある $I_{\min}$ 未満ではリズムがなく、それを超えると $I$ とともに周期が減り、$I$ を3倍にすれば少なくとも半分になるような、本書の部品を使った最小限のモデル変更を提案せよ。$\tau\ll\tau_a$ で $I_{\min}$ を求め、シミュレーションで確かめよ。
+\end{exercise}

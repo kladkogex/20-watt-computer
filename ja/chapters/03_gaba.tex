@@ -1,0 +1,280 @@
+\chapter{\nt{GLUT}と\nt{GABA}の協働}
+\label{sec:gaba}
+
+\section{ゲームのルール}
+
+\nt{GLUT}ニューロンだけのネットワークは、選択することも、メモリをリセットすることも、活動の雪崩を抑えることもできない。すべて単調性のせいである（命題~\ref{prop:monotone}）。そこで、数で2番目に多いニューロンの型、\nt{GABA}を加えよう。ルールは前章と同じである。生体の中で起こりうることだけを使う。
+
+ニューロンのモデルは式~\eqref{eq:glutneuron}と同じだが、\nt{GABA}ニューロンからのスパイクは受け手の電圧を上げるのではなく下げる。重みは今や二つの符号をとり、符号は送り手が決める。規則~\eqref{eq:dalesign}である。
+
+回路のパラメータをいくつか挙げる。\nt{GABA}ニューロンは皮質のニューロンの5分の1から4分の1を占める~\cite{Hendry1987}。その出力は短く、遠い領域ではなく隣のニューロンを抑制する。抑制は1ミリ秒後に届き、数ミリ秒続く。入力がなければ\nt{GABA}ニューロンは黙っている。誰かを抑制するには、自分がまず興奮を受け取らなければならない。ふつうは同じネットワークの\nt{GLUT}ニューロンからである。
+
+そのため、\nt{GLUT}ニューロン$A$からニューロン$B$への負の結合は、仲介役を通して作るしかない。$A$が\nt{GABA}ニューロンを興奮させ、それが$B$を抑制する。符号の反転にはニューロン1個と遅延1段、約1ミリ秒がかかる。
+
+抑制では、結合が\emph{誰から}来るかだけでなく、\emph{どこに}つくかも重要である。結合の着地点が、その結合の働きを大きく左右する~\cite{Markram2004}。\nt{GLUT}の出力はおもに受け手の入力の枝、つまり\emph{樹状突起}につき、データを運ぶ。そのような入力の一つひとつが和の一つの項である。ニューロンの細胞体への出力は和全体に作用する。多くの速い\nt{GABA}ニューロンはこうして受け手の応答を割り算し、受け手がいつ発火するかを決める。受け手のスパイクが生まれる場所への出力は最終決定であり、出力全体を一度に禁止する。そして他のニューロンの配線の終末への出力は、他の線には触れずに、1本の入力線の放出確率$p$を変える~\cite{Rudomin1999}。第\ref{sec:pain}章の痛みのゲートは、とくにこのしくみで働く。脳の外では、出力は筋線維（第\ref{sec:muscles}章）や臓器（第\ref{sec:chemoutput}章）につき、どこにもつかずに神経伝達物質を組織の体積中や血液中に放出するものもある（第\ref{sec:serocomputer}章と第\ref{sec:chemoutput}章）。
+
+\section{NOTと禁止}
+
+これでNOTは作れるか。ほぼ作れる。入力が黙っているときに動作するニューロンは、どこかから興奮を得なければならない。生きた脳にはそれがある。各ニューロンには、数千の他のニューロンからの背景活動が絶えず届いている。背景活動がニューロン$Y$を動作させておき、入力$x$が\nt{GABA}の仲介役を通じてそれを抑制するとしよう。これがNOTである。
+
+しかし、より有用なのは\emph{禁止}、「$a$、ただし$b$のときは除く」である。
+\begin{empheq}[box=\keybox]{equation}
+y \;=\; a \wedge \bar b .
+\label{eq:veto}
+\end{empheq}
+ニューロン$Y$は$a$から興奮を受け取り、$b$が興奮させる\nt{GABA}ニューロンから抑制を受け取る。ここでは背景活動は要らない。興奮は$a$自身が与える。禁止とORからすべてが組み立てられる。たとえば排他的OR：$x\oplus y=(x\wedge\bar y)\vee(\bar x\wedge y)$は、禁止ニューロン2個、\nt{GABA}の仲介役2個、ORニューロン1個でできる。
+
+\begin{keyblock}
+\begin{proposition}[\nt{GLUT}+\nt{GABA}の完全性]
+\label{prop:gabacomplete}
+\nt{GLUT}ニューロンと\nt{GABA}ニューロンからなるネットワークは、入力の任意の論理関数を計算でき、各ビットは1本の配線で伝えられる。第\ref{sec:glutcomputer}章の「オン・オフ」センサはもう必要ない。すべての入力が黙っているときに1を出すべき関数には、背景活動の源が必要である。
+\end{proposition}
+\end{keyblock}
+
+証明：定数1があれば、禁止~\eqref{eq:veto}とORは関数的に完全である。NOT $x$は禁止「1、ただし$x$のときは除く」だからである。そして、すべての入力が黙っているときに0を出す関数は、定数1なしに禁止とORから組み立てられる。
+
+\section{運動の方向}
+
+時間の中の禁止は、第\ref{sec:glutcomputer}章の時間の中のANDと同様に、運動方向の検出器になる。
+
+隣り合う二つのセンサ$A$と$B$が距離$\Delta x$だけ離れているとする。出力ニューロン$Y$は$B$から興奮を受け取り、$A$から\nt{GABA}の仲介役を通じて遅延$d$で抑制を受け取る（図~\ref{fig:direction}）。$A$から$B$へ速さ$v$で動く光点は時刻$0$に$A$を通過し、抑制は時刻$d$に$Y$に届く。光点は時刻$\Delta x/v$に$B$を通過し、そのとき興奮が届く。これらの時刻が窓~\eqref{eq:window}の精度で一致すれば、抑制が興奮を打ち消し、$Y$は黙る。これが起こるのは速さがほぼ次の値のときである。
+\begin{empheq}[box=\keybox]{equation}
+v^* \;=\; \frac{\Delta x}{d} .
+\label{eq:vstar}
+\end{empheq}
+$B$から$A$へ動く場合は、$B$からの興奮が時刻$0$に届き、$A$からの抑制は時刻$\Delta x/v+d$になってやっと届くが、そのとき$Y$はもう発火している。
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  nrn/.style={circle,draw,very thick,fill=blue!6,minimum size=0.9cm,inner sep=0pt},
+  gab/.style={nrn,fill=red!10},
+  inh/.style={-{Bar[width=7pt]},thick,red!70!black}]
+\node[nrn] (A) at (0,2) {$A$};
+\node[nrn] (B) at (3,2) {$B$};
+\node[gab] (G) at (0.9,0.6) {\small \nt{GABA}};
+\node[nrn] (Y) at (3,-0.6) {$Y$};
+\draw[->,thick] (A) -- (G);
+\draw[inh] (G) -- node[below left=-2pt] {\scriptsize 遅延$d$} (Y);
+\draw[->,thick] (B) -- (Y);
+\draw[->,very thick,red!70!black] (Y) -- (4.6,-0.6) node[right,black] {\small 出力};
+\draw[->,thick,orange!85!black] (-0.6,2.9) -- (3.6,2.9) node[right,black] {\small 沈黙};
+\draw[<-,thick,orange!85!black] (-0.6,3.4) -- (3.6,3.4) node[right,black] {\small 応答};
+\foreach \yy/\dd in {2.9/-1,3.4/1}{
+  \foreach \k in {1,2,3}{\draw[orange!70!yellow,line width=0.8pt] (1.5+\dd*0.12+\dd*0.13*\k,\yy+0.1-0.1*\k+0.1) -- ++(\dd*0.25,0);}
+  \fill[yellow!70!orange,draw=orange!70!black] (1.5,\yy) circle (0.14);}
+\node[font=\scriptsize,align=center] at (1.5,3.95) {光点};
+\end{tikzpicture}
+\caption{運動方向の検出器。$B$は$Y$を興奮させ、$A$は\nt{GABA}の仲介役を通じて遅延$d$で$Y$を抑制する。$A$から$B$へ約$\Delta x/d$の速さで動くと、抑制が興奮を打ち消す。逆向きに動くと抑制は間に合わない。短い線のついた黄色の点は、センサの上を走る光である。}
+\label{fig:direction}
+\end{figure}
+
+網膜では、運動方向の選択性はまさにこのように、つまり応答すべきでない運動が来る側からの非対称な抑制によって作られているらしい~\cite{Barlow1965}。
+
+\section{引き算か割り算か}
+
+これまで抑制は引き算をしてきた。実際には、そのしくみはもっと繊細である。
+
+シナプスはチャネルを開く。つまりコンダクタンスをオンにする。興奮性シナプスの平衡電位は閾値よりはるか上、静止電位より約$70\mV$上にあり、開いたチャネルは電圧を上に引っ張る。抑制性の\nt{GABA}シナプスのチャネルは塩化物イオンを通し、その平衡電位は静止電位付近にあるので、開いたチャネルは電圧を下にではなく\emph{静止電位へ}引っ張る。電圧を静止電位から測れば、漏れコンダクタンス$g_L$、興奮性コンダクタンス$g_E$、抑制性コンダクタンス$g_I$をもつ膜の定常電圧は次のようになる。
+\begin{empheq}[box=\keybox]{equation}
+V_\infty \;=\; \frac{g_E\,E_E}{g_L+g_E+g_I} ,
+\label{eq:shunt}
+\end{empheq}
+ここで$E_E\approx70\mV$は興奮性シナプスの平衡電位である。これは分圧器のオームの法則である。$g_E$は$E_E$へ、$g_L$と$g_I$はゼロへ引っ張る。
+
+$g_I$は分子にマイナス符号つきで入るのではなく、分母に入る。抑制は興奮から\emph{引く}のではなく、興奮を\emph{割る}のである（図~\ref{fig:shunt}）。このような抑制はシャント抑制と呼ばれる。開いた塩素チャネルが膜を短絡するからである。ネットワークにとって、これはゲイン調整である。$g_I$が近隣の活動の総和に比例するなら、各ニューロンは自分の入力の絶対的な強さではなく、全体の活動に占めるその割合に応答する。全体の活動によるこのような割り算は脳の多くの部位で見られ、脳の標準的な演算の一つと考えられている~\cite{Carandini2012}。同じネットワークが弱い入力でも強い入力でも動作できる。
+
+但し書きがある。式~\eqref{eq:shunt}はスパイクを出さないニューロンについての式である。発火しているニューロンでは電圧は常に閾値付近に保たれ、抑制性コンダクタンスを通る電流はほぼ一定なので、シャントはスパイクの\emph{発火率}にはおもに引き算として作用する~\cite{HoltKoch1997}。発火率が割り算されるのは、生きた皮質の揺らぎのある釣り合った状態のように、釣り合った興奮性と抑制性の背景コンダクタンスをニューロンに同時に加えた場合である~\cite{Chance2002}。つまり脳は割り算を、シャント1個からではなく、抑制と背景雑音の組み合わせから得ている~\cite{Carandini2012}。
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=1.25cm,y=0.05cm]
+\draw[->,gray!70!black] (0,0) -- (5.4,0) node[right,black] {\small $g_E/g_L$};
+\draw[->,gray!70!black] (0,0) -- (0,68) node[above,black] {\small $V_\infty$, mV};
+\foreach \v in {20,40,60}{\draw[gray!60!black] (-0.05,\v) -- (0.05,\v) node[left=3pt,font=\scriptsize] {\v};}
+\foreach \x in {1,2,3,4,5}{\draw[gray!60!black] (\x,-1.5) -- (\x,1.5) node[below=5pt,font=\scriptsize] {\x};}
+\draw[very thick,blue!60!black] plot[domain=0:5,samples=60] (\x,{70*\x/(1+\x)});
+\draw[very thick,red!70!black] plot[domain=0:5,samples=60] (\x,{70*\x/(3+\x)});
+\draw[thick,densely dashed,gray!50!black] plot[domain=0.56:5,samples=60] (\x,{70*\x/(1+\x)-25});
+\node[right,font=\small,blue!60!black] at (5.02,58.3) {抑制なし};
+\node[right,font=\small,red!70!black] at (5.02,45.5) {割り算：$g_I=2g_L$};
+\node[right,font=\small,gray!40!black] at (5.02,32.5) {$25\mV$の引き算};
+\end{tikzpicture}
+\caption{シャント抑制は電圧から引くのではなく、電圧を割る。青の曲線は抑制なしの定常電圧~\eqref{eq:shunt}、赤は抑制性コンダクタンス$g_I=2g_L$のあるもの。赤の曲線は青の曲線を横に3倍引き延ばしたものであり、入力を$1+g_I/g_L=3$で割ったのと同じである。破線は一定の$25\mV$を引く抑制で、曲線全体が下がり、傾きは変わらない。}
+\label{fig:shunt}
+\end{figure}
+
+もう一つの帰結もある。膜の時定数は$\tau_{\text{eff}}=C/(g_L+g_E+g_I)$であり、抑制はこれを短くする。同時性の窓~\eqref{eq:window}は$\tau$に比例するので、興奮と一緒に届いた抑制は\emph{窓を狭める}。入力がニューロンを直接興奮させると同時に、1ミリ秒遅れて\nt{GABA}の仲介役を通じて抑制する回路は、脳で最もありふれた回路の一つである。ニューロンは最初の1--2ミリ秒に届いたものにしか応答する暇がない~\cite{Pouille2001}。
+
+\section{選択}
+
+いよいよ\nt{GLUT}ネットワークに欠けていた最も重要なもの、複数の候補から一つを選ぶことである。入力$I_1$と$I_2$をもつ\nt{GLUT}ニューロンの群を二つとる。それぞれが自分の\nt{GABA}仲介役を通じて、強さ$\beta$で相手を抑制する（図~\ref{fig:wta}）。発火率$r_1,r_2$について次を得る。
+\begin{equation}
+\tau\,\frac{\dd r_1}{\dd t} = -r_1 + \bigl[I_1-\beta r_2\bigr]_+ ,\qquad
+\tau\,\frac{\dd r_2}{\dd t} = -r_2 + \bigl[I_2-\beta r_1\bigr]_+ ,
+\label{eq:wta}
+\end{equation}
+ここで$[u]_+=\max(u,0)$である。発火率は負にならない。
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  nrn/.style={circle,draw,very thick,fill=blue!6,minimum size=0.9cm,inner sep=0pt},
+  gab/.style={nrn,fill=red!10,minimum size=0.75cm},
+  inh/.style={-{Bar[width=7pt]},thick,red!70!black}]
+\node[nrn] (E1) at (0,0) {$r_1$};
+\node[nrn] (E2) at (4,0) {$r_2$};
+\node[gab] (G1) at (1.4,1.1) {};
+\node[gab] (G2) at (2.6,-1.1) {};
+\draw[->,thick] (E1) -- (G1); \draw[inh] (G1) -- (E2);
+\draw[->,thick] (E2) -- (G2); \draw[inh] (G2) -- (E1);
+\draw[->,thick,blue!60!black] (-1.6,0) node[left,black] {$I_1$} -- (E1);
+\draw[->,thick,blue!60!black] (5.6,0) node[right,black] {$I_2$} -- (E2);
+\end{tikzpicture}
+\caption{二者択一。\nt{GLUT}ニューロンの二つの群（青）が、\nt{GABA}の仲介役（赤）を通じて互いに抑制し合う。}
+\label{fig:wta}
+\end{figure}
+
+両方のニューロンが動作している間、系~\eqref{eq:wta}は線形であり、そのふるまいは二つの固有値で決まる。両方の発火率が同じ向きにずれる場合は$-(1+\beta)/\tau$、逆向きにずれる場合は$-(1-\beta)/\tau$である。抑制が弱い$\beta<1$では両方とも負で、両方のニューロンが動作し、抑制は弱いほうを少し抑えるだけである。抑制が強い$\beta>1$では2番目の固有値が正になる。$r_1$と$r_2$の差はどんなものでも増大し、やがて一方のニューロンが完全に黙る。
+
+\begin{keyblock}
+\begin{proposition}[勝者総取り]
+\label{prop:wta}
+相互抑制が1より強い、$\beta>1$なら、両方の群が動作する状態は不安定である。ネットワークは一方の群が動作し他方が黙る状態に至る。発火率$r_1=I_1$の勝者は、$I_2<\beta I_1$である限り勝利を保つ。
+\end{proposition}
+\end{keyblock}
+
+これをモデルで確かめた。$\beta=0.5$、入力$1.0$と$0.9$では、両方の群が発火率$0.73$と$0.53$で動作する。$\beta=2$で同じ入力なら、第2の群は完全に黙る。この選択には記憶がある。その後で入力を入れ替えても、$1.0<2\cdot0.9$なので、以前の勝者が勝者のままである。
+
+100個の群でも同じである。それぞれが他のすべてを抑制し、一つだけが生き残る。
+
+\section{メモリのリセット}
+
+第\ref{sec:glutcomputer}章のメモリは疲労によってしか消えなかった。そこに、「リセット」信号で興奮し群を抑制する\nt{GABA}ニューロンを加えよう。抑制が図~\ref{fig:bistable}の曲線$f(wr+I)$を下げ、上の交点が消え、群は消える。そしてリセットが終わっても下の状態にとどまる。こうしてメモリは一つの信号で書き込まれ、別の信号で消去される。セット入力とリセット入力をもつフリップフロップと同じである。
+
+さらに美しいのは、そのような群を二つ、図~\ref{fig:wta}のように相互抑制でつなぎ、それぞれに自己帰還を与えることである。一方の群の入力への信号がセルをその状態に切り替え、セルは最後の決定を覚えている。これは、たすき掛けに接続した二つのNOR素子によるラッチの直接の類似物である。
+
+\section{安定性とリズム}
+
+\nt{GLUT}ネットワークの三つ目の問題、雪崩が残っている。自己帰還$w_{EE}$をもつ\nt{GLUT}ニューロンの群と、第1の群が強さ$w_{IE}$で興奮させ、第1の群を強さ$w_{EI}$で抑制する\nt{GABA}ニューロンの群をとる。発火率$E$と$I$について次を得る。
+\begin{equation}
+\tau_E\frac{\dd E}{\dd t} = -E + w_{EE}E - w_{EI}I + h, \qquad
+\tau_I\frac{\dd I}{\dd t} = -I + w_{IE}E ,
+\label{eq:ei}
+\end{equation}
+ここで$h$は外部入力である~\cite{WilsonCowan1972}。抑制がなく$w_{EE}>1$なら、活動は際限なく増える。1個のスパイクが次のスパイクを1個より多く生むからである。抑制があれば、定常発火率
+\begin{equation}
+E^* \;=\; \frac{h}{1-w_{EE}+w_{EI}w_{IE}}
+\label{eq:eistar}
+\end{equation}
+は、分母が正なら有限である。だがそれだけでは足りない。平衡はさらに引き寄せる力をもたなければならない。式~\eqref{eq:ei}の線形解析から二つの条件が得られる。
+
+\begin{keyblock}
+\begin{proposition}[安定性の条件]
+\label{prop:ei}
+平衡~\eqref{eq:eistar}は、抑制が次の条件を満たせば安定である。
+\begin{enumerate}
+\item[(i)] \emph{十分に強い}：$w_{EI}\,w_{IE} > w_{EE}-1$。
+\item[(ii)] \emph{十分に速い}：$\tau_I < \tau_E/(w_{EE}-1)$。
+\end{enumerate}
+(i)が破れると、活動は雪崩のように増える。(i)が満たされ(ii)が破れると、抑制が遅れ、活動は振動し始める。
+\end{proposition}
+\end{keyblock}
+
+条件~(i)は系~\eqref{eq:ei}の行列の行列式、条件~(ii)はそのトレースから来る。2番目の意味は、制御器を調整したことのある人なら誰にでもわかる。遅れた帰還はずれを打ち消すのではなく、揺り動かして大きくする。
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth]
+\draw[->,gray!70!black] (0,0) -- (10.9,0) node[below left,black] {\small $t$, ms};
+\draw[->,gray!70!black] (0,0) -- (0,3.3) node[left,black] {\small $E$};
+\foreach \t in {0,50,100,150}{\draw[gray!70!black] (\t*0.07,0.06) -- (\t*0.07,-0.06) node[below,font=\scriptsize] {\t};}
+\input{figures/ei_traces}
+\node[font=\small,gray!40!black,anchor=west] at (0.9,3.15) {抑制なし：雪崩};
+\node[font=\small,blue!60!black,anchor=west] at (7.4,1.25) {速い抑制};
+\node[font=\small,red!70!black,anchor=west] at (7.4,2.55) {遅い抑制};
+\end{tikzpicture}
+\caption{入力をオンにした後の、帰還$w_{EE}=1.5$、$\tau_E=10\ms$をもつ\nt{GLUT}群の発火率。抑制がないと（破線）活動は際限なく増える。強さ$w_{EI}w_{IE}=2$、$\tau_I=2\ms$の抑制があると（青の曲線）、活動はレベル$E^*=h/(1-1.5+2)=0.67h$に落ち着く。同じ強さでも遅い抑制$\tau_I=30\ms$では（赤の曲線）、活動は振動する。}
+\label{fig:ei}
+\end{figure}
+
+皮質はまさにこの状態で動作していると考えられている。皮質自身の帰還は、抑制がなければ雪崩に陥るほど強く、それを動作点に保っているのは速い抑制だけである~\cite{Tsodyks1997isn}。
+
+この状態には逆説的な特徴があり、それによって外から見分けることができる~\cite{Tsodyks1997isn}。式~\eqref{eq:ei}に、\nt{GABA}群に直接入る外部入力$h_I$を加えよう。定常発火率は次のようになる。
+\begin{equation}
+E^* \;=\; \frac{h-w_{EI}\,h_I}{D},\qquad
+I^* \;=\; \frac{w_{IE}\,h+(1-w_{EE})\,h_I}{D},\qquad
+D \;=\; 1-w_{EE}+w_{EI}w_{IE} .
+\label{eq:isn}
+\end{equation}
+$w_{EE}>1$なら、2番目の式の$h_I$の係数は負である。\nt{GABA}ニューロンを後押しすると、その発火率は\emph{下がる}。原因はループにある。余分な抑制が\nt{GLUT}群を抑え、\nt{GLUT}群は\nt{GABA}ニューロンをあまり興奮させなくなり、\nt{GABA}ニューロンは得た分より多くを失う。図~\ref{fig:ei}の値（$w_{EE}=1.5$、$w_{EI}w_{IE}=2$、$D=1.5$）では、加えた入力1単位ごとに$I^*$が3分の1単位下がる。この特徴は皮質で実際に見つかった。視覚野のニューロンの応答が周囲の刺激で抑えられるとき、ニューロンが受け取る抑制性電流は増えるのではなく、興奮性電流と一緒に減る~\cite{Ozeki2009}。その後、同じ特徴は皮質のさまざまな領域と層で見つかっている~\cite{Sanzeni2020}。
+
+条件~(ii)が破れたときの振動も脳で見られる。数ミリ秒の遅延をもつ「\nt{GLUT}が\nt{GABA}を興奮させ、\nt{GABA}が\nt{GLUT}を抑制する」ループは、周期$12$--$50\ms$程度（周波数$20$--$80$\,Hz）のリズムを生み、このような速いリズムは皮質でよく知られている~\cite{Cardin2009,Buzsaki2012}。これはコンピュータのクロックではない。リズムは局所的で、ネットワークが活動しているときにだけ現れる。だが数サイクルの間、リズムは時間を窓に区切り、ニューロンはその中で発火できる。
+
+\section{まとめ}
+
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{>{\raggedright}p{3.3cm}>{\raggedright}p{4.4cm}>{\raggedright\arraybackslash}p{4.4cm}}
+\toprule
+& \nt{GLUT}のみ & \nt{GLUT} + \nt{GABA} \\
+\midrule
+NOT & 「オン・オフ」センサを通じてのみ & 禁止$a\wedge\bar b$。背景活動があればNOT \\
+1ビットあたりの配線 & 2本 & 1本 \\
+運動の方向 & なし & 遅延つきの禁止 \\
+ゲイン調整 & なし & 割り算：シャントと背景雑音の組み合わせ \\
+同時性の窓 & $\sim\tau$ & 抑制によって狭まる \\
+多数から一つを選ぶ & なし & 相互抑制、$\beta>1$ \\
+メモリのリセット & 疲労によってのみ & \nt{GABA}を介した信号で \\
+安定性 & 疲労によってのみ & 速い負帰還 \\
+リズム & 不要 & 遅い抑制で生じる \\
+\bottomrule
+\end{tabular}
+\caption{\nt{GABA}が\nt{GLUT}ニューロンのネットワークに加えるもの。}
+\label{tab:gaba}
+\end{table}
+
+\nt{GABA}はネットワークに新しい\emph{計算}をほとんど加えない。これらはすべて2線式センサでも計算できた。加えるのは\emph{制御}である（表~\ref{tab:gaba}）。選択、リセット、ゲイン調整、そして安定性である。脳では興奮がデータを運び、抑制がどのデータを、いつ、どれだけの大きさで通すかを決める。皮質のニューロンの4個か5個に1個にとって、これは非常に合理的な分業である。
+
+\section{問題}
+
+\begin{exercise}[\lvlA]
+\label{ex:03:1}
+\emph{数値で見るシャント。}$E_E=70\mV$とする。式~\eqref{eq:shunt}から、$g_E=g_L$と$4g_L$のとき、抑制なしとシャント$g_I=2g_L$ありの$V_\infty$を求めよ。$g_E=g_L$でシャントと同じだけ下げる引き算なら、$g_E=4g_L$での$V_\infty$はいくらか。シャントは同時性の窓を何分の1に狭めるか。
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:03:2}
+\emph{安定性条件の導出。}線形系~\eqref{eq:ei}の行列のトレースと行列式を求め、そこから命題~\ref{prop:ei}の二つの条件を導け。条件~(ii)の境界では、平衡は振動的に安定性を失う。図~\ref{fig:ei}の値でこの振動の周期を求めよ。
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:03:3}
+\emph{遅延から生まれるリズム。}モデル~\eqref{eq:ei}の遅い抑制を、遅延$d$をもつ速い抑制に置き換える：$\tau_E\dot E=-E(t)-GE(t-d)+h$。$\tau_E=10\ms$のとき、振動を生む最小の遅延$d_c$と、$G=2$と$G=5$での振動の周期を求めよ。問題~\ref{ex:03:2}と違って、これは皮質の速いリズム$12$--$50\ms$に入るか。
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:03:4}
+\emph{シミュレーション：記憶をともなう選択。}$\beta=2$、$\tau=1$で式~\eqref{eq:wta}を積分せよ。(a)~$I_1=1$で$I_2$を$0$から$3$までゆっくり上げてから下げる。どの$I_2$でネットワークは切り替わるか。(b)~入力の差$\varepsilon$を10分の1にすると、静寂からの決定時間はどれだけ増えるか。
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:03:5}
+\emph{設計：速さの帯域の検出器。}図~\ref{fig:direction}の検出器は、$A$から$B$への走行時間が$5$--$20\ms$の運動に対して黙っていなければならない。遅延$d_k$の\nt{GABA}仲介役は、$A$のスパイクの後の区間$[d_k,\,d_k+5\ms]$で$Y$を禁止する。$B$からの興奮はすぐに届く。仲介役は何個必要で、遅延はそれぞれいくらか。
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:03:6}
+\emph{禁止と背景活動。}「入力ごとに\nt{GABA}仲介役、$f=1$の入力の組ごとに禁止、全体のOR」という一般的な回路で、パリティ$x\oplus y\oplus z$にはニューロンが何個必要か。入力を直接受け取る\nt{GABA}と\nt{GLUT}の2個のニューロンでこれを作り、重みと閾値を示せ。
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:03:7}
+\emph{設計：100個からの選択。}$100$個の\nt{GLUT}群のそれぞれが、自分以外のすべてを等しく抑制しなければならない。線形の\nt{GABA}仲介役は群から興奮を受けて群を抑制する。群どうしは互いに興奮させてよいが、自分自身は興奮させない。仲介役の最小数はいくつか。直接の興奮性結合がまったくない場合はどうか。
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:03:8}
+\emph{研究：抑制が逆説的になるとき。}図~\ref{fig:ei}のモデル（$w_{EI}=2$、$w_{IE}=1$）で、\nt{GLUT}群の伝達関数を$f(u)=[u]_+^2$とし、\nt{GABA}群は線形のままとする。\nt{GABA}群への入力の追加がその群自身の発火率を下げるのは、入力$h$がどの値$h_c$を超えたときか。シミュレーションで確かめよ。
+\end{exercise}

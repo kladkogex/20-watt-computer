@@ -6,7 +6,8 @@ rm -rf _site
 mkdir -p _site/breadboard _site/pdf
 cp site/index.html _site/
 cp site/og-card.png _site/
-cp ru/20-watt-computer-ru.pdf ru/20-watt-computer-ru-paperback.pdf _site/pdf/
+# every edition that has been built: ru, en, zh, ja, ko, es, pt (full book and paperback)
+cp */20-watt-computer-*.pdf _site/pdf/
 # breadboard.html is a page fragment (title, styles, markup, script); wrap it into a full document
 {
   printf '<!doctype html>\n<html lang="ru">\n<head>\n<meta charset="utf-8">\n'

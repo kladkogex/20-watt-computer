@@ -1,0 +1,81 @@
+\chapter*{本書の読み方}
+\addcontentsline{toc}{chapter}{本書の読み方}
+
+本書は最初から順に読む必要はない。第1--4章は共通の基礎であり、ニューロンの種類、\nt{GLUT}と\nt{GABA}が何を計算するか、そしてそれらがどんな言語で話すかを扱う。その先で本書は枝分かれする。図~\ref{fig:roadmap}の地図は、どの章がどの章に依存しているかを示す。章$A$から章$B$への矢印は、$B$で$A$の概念と式を使うという意味である。地図には主要な依存関係だけを載せた。細かな後方参照は読むうえで妨げにならない。
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[>=Stealth,scale=0.95,
+  ch/.style={draw,thick,rounded corners=3pt,align=center,font=\scriptsize,text width=1.85cm,minimum height=0.62cm,inner sep=2pt},
+  base/.style={ch,fill=blue!8}, bus/.style={ch,fill=orange!14}, sum/.style={ch,fill=gray!18},
+  io/.style={ch,fill=green!10}, sort/.style={ch,fill=cyan!8}, lab/.style={ch,fill=violet!10},
+  dep/.style={->,thick,gray!60!black}]
+% foundation
+\node[base] (c1) at (0,0) {1 ニューロン\\の種類};
+\node[base] (c2) at (2.3,0) {2 \nt{GLUT}};
+\node[base] (c3) at (4.6,0) {3 \nt{GLUT}と\nt{GABA}};
+\node[base] (c4) at (6.9,0) {4 モールス\\符号};
+% broadcast channels and the synthesis
+\node[bus] (c5) at (4.6,-1.5) {5 \nt{SERO}};
+\node[bus] (c6) at (7.3,-1.5) {6 \nt{DOPA}};
+\node[bus] (c7) at (9.2,-0.9) {7 ドーパミン\\の諸理論};
+\node[bus] (c8) at (9.2,-2.1) {8 \nt{NORA}};
+\node[bus] (c9) at (11.5,-2.1) {9 \nt{ACET}};
+\node[sum] (c10) at (13.8,-0.9) {10 マシン全体};
+% inputs and outputs
+\node[io] (c12) at (2.3,-4.1) {12 認識};
+\node[io] (c11) at (4.6,-4.1) {11 入力};
+\node[io] (c13) at (6.9,-4.1) {13 筋肉};
+\node[io] (c14) at (9.2,-3.05) {14 痛み};
+\node[io] (c15) at (9.2,-4.1) {15 運動の\\学習};
+\node[io] (c16) at (9.2,-5.15) {16 体の\\化学};
+% lab, sorting, sleep
+\node[lab] (c17) at (11.5,-4.1) {17 デバッグ};
+\node[lab] (c21) at (13.8,-4.1) {21 生きた\\マシン};
+\node[lab] (c22) at (13.8,-5.15) {22 DishBrain};
+\node[sort] (c18) at (11.5,-5.15) {18 回路素子\\としての型};
+\node[sort] (c19) at (13.8,-6.2) {19 樹状突起\\の数};
+\node[bus] (c20) at (11.5,-6.2) {20 睡眠};
+% dependencies
+\draw[dep] (c1) -- (c2); \draw[dep] (c2) -- (c3); \draw[dep] (c3) -- (c4);
+\draw[dep] (c1) -- (c5); \draw[dep] (c4) -- (c6); \draw[dep] (c5) -- (c6);
+\draw[dep] (c6) -- (c7); \draw[dep] (c6) -- (c8); \draw[dep] (c8) -- (c9);
+\draw[dep] (c7) -- (c10); \draw[dep] (c9) -- (c10);
+\draw[dep] (c4) -- (c11); \draw[dep] (c11) -- (c12); \draw[dep] (c11) -- (c13); \draw[dep] (c5) -- (c13);
+\draw[dep] (c13) -- (c14); \draw[dep] (c13) -- (c15); \draw[dep] (c13) -- (c16);
+\draw[dep] (c15) -- (c17); \draw[dep] (c9) -- (c17); \draw[dep] (c17) -- (c21); \draw[dep] (c21) -- (c22);
+\draw[dep] (c16) -- (c18); \draw[dep] (c18) -- (c19); \draw[dep] (c16) -- (c20);
+% legend
+\begin{scope}[yshift=-7.25cm]
+\foreach \s/\t [count=\i] in {base/基礎, bus/チャネルとモード, sum/まとめ, io/入力と出力, sort/ニューロンの分類, lab/実験室}{
+  \pgfmathtruncatemacro{\col}{mod(\i-1,3)}\pgfmathtruncatemacro{\row}{(\i-1)/3}
+  \node[\s,text width=0.3cm,minimum height=0.32cm] at ({\col*4.8+0.2},{-\row*0.55}) {};
+  \node[anchor=west,font=\scriptsize] at ({\col*4.8+0.55},{-\row*0.55}) {\t};}
+\end{scope}
+\end{tikzpicture}
+\caption{章の地図。矢印は、ある章からそれに依存する章へ向かう。これ以外の章間の参照は案内であって、依存関係ではない。}
+\label{fig:roadmap}
+\end{figure}
+
+\section*{本書の読み進め方}
+
+\begin{center}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{>{\raggedright}p{3.0cm}>{\raggedright}p{3.9cm}>{\raggedright\arraybackslash}p{6.4cm}}
+\toprule
+コース & 対象 & 章の順序 \\
+\midrule
+1クォーターの講義 & 教員、10週 & 第1週：第1--2章、2：第3章、3：第4章、4：第5--6章、5：第7--8章、6：第9章、7：第10章、8：第11--12章、9：第13章と第15章、10：第17章 \\
+AIと機械学習 & ニューラルネットワークを知っていて、脳がどう学習するかを理解したい人 & 1--4、5（流し読み）、6、7、8、9、11（流し読み）、12、13（流し読み）、15 \\
+エレクトロニクスとハードウェア & 回路設計者、ニューロモルフィックチップの開発者 & 1--4、5、11、13、16、18、19、17（第9章と第15章は流し読み） \\
+ニューロインターフェースと生きた計算機 & ブレイン・コンピュータ・インターフェースや生きたニューロンを載せたチップを作る人 & 1、2、4、11、13、17（第9章と第15章は流し読み）、21、22（第12章は流し読み） \\
+駆け足の概観 & 週末が空いている技術者 & 1、2、3、6、10。第6章から第4--5章への参照は文脈から理解できる \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+「流し読み」とは、章の冒頭、黄色い枠内の命題、章末のまとめの表を読めば十分という意味である。
+
+各章の終わりには問題がある。見積もり、導出、シミュレーション、設計の問題である。簡潔な解答は付録~\ref{sec:answers}にまとめた。記号はすべて付録~\ref{sec:notation}に、各章の主要な主張の根拠となる実験は付録~\ref{sec:supplement}にある。本書の数値は\texttt{models/}フォルダにある小さなプログラムで得たものであり、実行して書き換えることもできる。

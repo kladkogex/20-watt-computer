@@ -1,0 +1,175 @@
+\chapter{第二の出力：脳は体の化学をどう制御するか}
+\chaptermark{化学出力}
+\label{sec:chemoutput}
+
+\section{速い出力と遅い出力}
+
+第~\ref{sec:muscles}~章では、マシンの速い出力である筋肉を見た。だがマシンには遅い第二の出力もある。脳は体温、心拍数、水分と糖の量を必要な範囲に保ち、体を走る準備や眠る準備に切り替える。そのために関節を動かすのではなく、化学信号を放出する。経路は二つある。一つは内臓、すなわち心臓、血管、腸、腺へ直接向かう神経である。もう一つは血液である。一部のニューロンや腺は、物質を隣の細胞とのすき間ではなく、血流に直接放出する。
+
+血液は、本書に登場したバスの中で最も広域のブロードキャストバスである。第~\ref{sec:serocomputer}--\ref{sec:acet}~章のブロードキャストチャネルは脳の広い領域に信号を配った。血液は体のすべての細胞に配る。血液はおよそ1分で全身を一周するので、メッセージは数十秒で全体に届き、物質が分解されるまで数分から数時間とどまる。この配信にはアドレスがまったくない。命題~\ref{prop:receptor}と同じく、メッセージの意味は受け手が決める。応答するのは、その物質の受容体をもつ細胞だけである。
+
+\section{アクセルとブレーキ：臓器への2本の配線}
+
+最良の例は心臓である。心臓には、第~\ref{sec:serocomputer}~章の\nt{SERO}ニューロンのように独自のペースメーカーがある。ペースメーカーは自分でリズムを刻み、神経をすべて切っても心臓は毎分約100回拍動する。脳はリズムを生み出すのではなく、調整するだけである。しかも符号が逆の2本の配線で調整する（図~\ref{fig:gasbrake}）。一方を通るのは\nt{NORA}で、これは\emph{アクセル}としてリズムを速める。もう一方を通るのは\nt{ACET}で、これは\emph{ブレーキ}として遅くする。大まかに書けば
+\begin{empheq}[box=\keybox]{equation}
+f \;\approx\; f_0 \;+\; a_S\,S \;-\; a_P\,P ,
+\label{eq:gasbrake}
+\end{empheq}
+である。ここで$f_0\approx100$拍/分はペースメーカー固有のリズム、$S$と$P$はアクセルとブレーキの活動である。安静時はブレーキが踏まれており、心臓はふつう毎分60--70回程度で拍動する。負荷がかかるとブレーキを離し、アクセルを踏む。
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  blk/.style={draw,very thick,rounded corners=2pt,align=center,font=\small},
+  pace/.style={circle,draw,very thick,double,double distance=1.2pt,minimum size=1.8cm,inner sep=0pt,font=\scriptsize,fill=red!8,align=center},
+  inh/.style={-{Bar[width=7pt]},thick,red!70!black}]
+\node[blk,fill=blue!5,text width=1.6cm] (B) at (0,0) {脳の\\指令};
+\node[pace] (H) at (6.2,0) {ペース\\メーカー};
+\draw[->,very thick,orange!85!black] (B.north east) to[bend left=20] node[above,font=\scriptsize,black,align=center] {\nt{NORA}：アクセル、秒単位} (H.north west);
+\draw[inh,very thick,blue!60!black] (B.south east) to[bend right=20] node[below,font=\scriptsize,black,align=center] {\nt{ACET}：ブレーキ、1秒未満} (H.south west);
+\draw[->,very thick] (H) -- (8.4,0) node[right,font=\small] {心拍数 $f$};
+\node[blk,fill=orange!10,text width=1.6cm] (A) at (0,-2.6) {\nt{ADRE}\\血中へ};
+\draw[->,thick,orange!85!black] (B) -- (A);
+\foreach \y/\lab in {-2.0/{心臓},-2.6/{血管},-3.2/{肝臓、筋肉}}{
+  \draw[->,thick,densely dashed,orange!85!black] (A.east) -- (4.3,\y) node[right,font=\scriptsize,black] {\lab};}
+\end{tikzpicture}
+\caption{心臓のペースメーカーへ向かう符号が逆の2本の配線。アクセル\nt{NORA}は遅く、ブレーキ\nt{ACET}は速い。下段は同じアクセルをブロードキャストバスで送る経路である。\nt{ADRE}細胞がアドレナリンを血中に放出し、適合する受容体をもつすべての臓器が信号を受け取る（破線の矢印）。}
+\label{fig:gasbrake}
+\end{figure}
+
+これは第~\ref{sec:glutcomputer}~章の2線式符号であり、第~\ref{sec:muscles}~章の筋肉の対でもある。ただし今回の配線が制御するのは関節ではなく、ペースメーカーのテンポである。そして2本の配線は速さが違う。どちらもローパスフィルタとして働くが、ブレーキはアクセルより数倍速く変化を通す~\cite{Berger1989}。\nt{ACET}の経路は短い。受容体に結合したタンパク質が、細胞内のセカンドメッセンジャーを介さずにカリウムチャネルを直接開く~\cite{Logothetis1987gbg}。一方\nt{NORA}は細胞内の反応の連鎖を通じて作用する。エンジニアならここに、速さの異なる二つのアクチュエータを組み合わせる手法を見て取るだろう。速い方が精密な即時調整を、遅い方が大きく長い変化を受け持つ。
+
+ここで\nt{ADRE}の役割も見えてくる。表~\ref{tab:types}では、脳内での役割は不明と書いた。脳の外では明確である。アクセル経路の細胞の一部は、臓器へ配線を送らず、アドレナリンを直接血中に放出する。これは同じアクセルをブロードキャストバスで送るものである。数十秒で心臓、血管、肝臓、筋肉に同時に届き、数分間とどまる。アドレス付きのアクセル\nt{NORA}は一つの臓器を調整し、ブロードキャストのアクセル\nt{ADRE}は全身を走るモードに切り替える。
+
+\section{フィードバック付きカスケード}
+
+多くのホルモンは一つの腺からではなく、カスケードで放出される。脳の底部にある小さなニューロン群が最初の信号を血中に放出する。それが中継の腺に第二の信号を放出させ、第二の信号が最終段の腺に、体に作用するホルモンを放出させる。そして最終段のホルモンは前段に戻ってそれを抑える。こうして、負帰還で囲まれた3段の増幅器ができる。これはレベル調節器であり、式~\eqref{eq:feedback}の\nt{SERO}系と同じ種類のものである。
+
+各段を時定数$\tau$、利得$g$のRC回路で、フィードバックを係数$k$で表す。
+\begin{equation}
+\tau\,\frac{\dd x_1}{\dd t} = -x_1 + g\bigl[u - k\,x_3\bigr]_+ ,\qquad
+\tau\,\frac{\dd x_2}{\dd t} = -x_2 + g\,x_1 ,\qquad
+\tau\,\frac{\dd x_3}{\dd t} = -x_3 + g\,x_2 ,
+\label{eq:cascade}
+\end{equation}
+ここで$u$は脳の指令、$x_3$は最終段のホルモンのレベルである。ループ利得は$K=g^3k$である。平衡では$x_3=g^3u/(1+K)$となり、どのフィードバック調節器でもそうであるように、大きなループ利得はレベルを各段の利得のばらつきに鈍感にする。しかし各段は位相をずらす。角周波数$\omega=\sqrt3/\tau$では、同一の3段が合わせて半回転の位相遅れと8分の1への減衰を生む。ここから制御理論の古典的な結果が得られる。
+\begin{empheq}[box=\keybox]{equation}
+K \;<\; 8 ,
+\label{eq:cascadestable}
+\end{empheq}
+これを超えると調節器は周期約$2\pi\tau/\sqrt3\approx3.6\,\tau$で発振し始める。
+
+\begin{keyblock}
+\begin{proposition}[精度と安定性のトレードオフ]
+\label{prop:cascade}
+比例フィードバックをもつ3段カスケードでは、レベルの誤差は$1/(1+K)$であり、安定なのは$K<8$のときに限られる。したがってこの調節器は、およそ10パーセントより高い精度でレベルを保てない。利得を上げようとすれば、調節器は発振器に変わる。
+\end{proposition}
+\end{keyblock}
+
+これをモデル~\eqref{eq:cascade}で確かめた（図~\ref{fig:cascade}）。$K=4$では、レベルはスイッチオン後に少し振動してから落ち着く。$K=7$でも落ち着くが、ゆっくりである。$K=12$では振動は減衰せず、際限なく成長することもない。段は負の信号を出せないので、カスケードは平均レベルの$0.83$倍から$1.24$倍の間を周期$3.7$--$3.9\,\tau$で規則正しく脈動する状態に落ち着く。
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=0.3cm,y=1.2cm]
+\draw[->,gray!70!black] (0,0) -- (41.5,0) node[right,font=\small,black] {$t/\tau$};
+\draw[->,gray!70!black] (0,0) -- (0,2.8) node[left,font=\small,black] {$x_3/x_3^*$};
+\foreach \t in {0,10,20,30,40}{\draw[gray!60!black] (\t,-0.05) -- (\t,0.05); \node[below,font=\scriptsize] at (\t,0) {\t};}
+\foreach \f in {1,2}{\draw[gray!60!black] (-0.3,\f) -- (0.3,\f); \node[left,font=\scriptsize] at (0,\f) {\f};}
+\draw[densely dashed,gray!60!black] (0,1) -- (40,1);
+\draw[thick,blue!60!black] plot file {figures/cascade_K4.dat};
+\draw[thick,red!70!black] plot file {figures/cascade_K12.dat};
+\node[font=\scriptsize,blue!60!black,anchor=west] at (16,0.55) {$K=4$：落ち着く};
+\node[font=\scriptsize,red!70!black,anchor=west] at (16,1.75) {$K=12$：脈動する};
+\end{tikzpicture}
+\caption{式~\eqref{eq:cascade}によるフィードバック付き3段カスケード。最終段のホルモンのレベルを平衡値$x_3^*$に対する比で示す。ループ利得が8未満ならレベルは落ち着き、8を超えるとカスケードは自ら規則正しい脈動を生み出す。}
+\label{fig:cascade}
+\end{figure}
+
+実際のカスケードのホルモンは、確かにパルス状に放出される。たとえばストレスホルモンのレベルは約1時間の周期で振動する。ある仮説によれば、この脈動は遅れを伴う段間のフィードバックそのものが生み出しており、別のリズム発生器は必要ない~\cite{Walker2010}。これは命題~\ref{prop:ei}の\nt{GLUT}--\nt{GABA}ループや、条件~\eqref{eq:delaystable}の筋伸張ループと同じ振動の原因、すなわち遅れる負帰還である。
+
+\section{ホルモンのパルス符号}
+
+パルスは副作用であるだけでなく、符号でもありうる。生殖を制御するニューロンは、自らの信号を約1時間に1回、短い分量ずつ血中に放出する。受け手の腺に同じ信号を分量ずつではなく連続して与えると、腺はパルスのときのように全力で働くのではなく、沈黙する。再び1時間に1回の分量で与えると、働きは回復する~\cite{Belchetz1978}。つまり受け手が読んでいるのはレベルではなく、分量の\emph{頻度}である。
+
+エンジニアにとってここに謎はない。物質に長くさらされると疲れて応答しなくなる受容体は、第~\ref{sec:code}~章の枯渇するシナプス~\eqref{eq:depression}と同じくハイパスフィルタである。連続信号は抑え込み、変化は通す。このような受け手には、パルスでしか情報を伝えられない。情報はレベルから、分量の頻度と形へ移る。さらに、分量の頻度が違えば同じ腺の異なる細胞への作用も違うので、1本の化学的な線で複数の量を伝えられる。第~\ref{sec:dofaalt}~章で、1本の\nt{DOPA}配線に速い成分と遅い成分が流れていたのと同じである。
+
+\section{概日リズム：モードを切り替える遅い発振器}
+
+体で最も遅いリズムは概日リズムである。これは細胞内の遅れを伴う負帰還が生み出す。遺伝子がタンパク質を作り、そのタンパク質が数時間遅れて自らの産生を抑える~\cite{TakahashiJS2017}。またしても遅れる負帰還であり、本書で4度目である。そしてまたリズムが生じる。今回の周期は約1日である。主発振器は脳の底部にある数万個のニューロンからなる小さな群で、そのリズムが体の他の細胞を同期させる。
+
+ヒトにおけるこの発振器の固有周期はちょうど1日ではなく、平均$24.18$時間である~\cite{Czeisler1999}。毎日、眼のセンサ（第~\ref{sec:sensors}~章）から届く光がこれを合わせ直す。電子技術者にとってこれは\emph{位相同期ループ}（PLL）である。固有周波数$\omega_0$の発振器が周波数$\omega$の外部信号に同期し、位相差$\varphi$は次の方程式に従う。
+\begin{empheq}[box=\keybox]{equation}
+\frac{\dd\varphi}{\dd t} \;=\; (\omega-\omega_0) \;-\; K_\varphi\,\sin\varphi .
+\label{eq:pll}
+\end{empheq}
+$|\omega-\omega_0|<K_\varphi$なら同期は保たれる。周期$24.18$時間の発振器は毎日約11分ずれを補正する必要がある。朝の光はふつうこの補正に十分である。極夜や光のない洞窟では同期がなくなり、リズムは固有周期で進むようになる。
+
+概日発振器はコンピュータのクロック発振器ではない。計算のステップを数えることも、ニューロンのスパイクを同期させることもしない。これが切り替えるのは\emph{モード}である。睡眠と覚醒、ホルモンのレベル、体温、摂食の準備。これは第~\ref{sec:serocomputer}--\ref{sec:acet}~章のレジスタと同じ種類の遅いブロードキャストレジスタであり、ただその値が太陽に合わせたスケジュールで変わる。
+
+\begin{keyblock}
+\begin{proposition}[化学出力]
+\label{prop:chemoutput}
+マシンの遅い出力は、速い出力と同じ部品で作られている。臓器は符号が逆で速さの異なる2本の配線、すなわちアクセル\nt{NORA}とブレーキ\nt{ACET}を受け取り、全身はアドレナリン\nt{ADRE}を含む血中のブロードキャスト信号を一斉に受け取る。ホルモンのレベルは負帰還付きカスケードが保ち、その精度は安定性によって制限される。一部のホルモンは分量の頻度で符号化される。概日リズムは、光で位相同期する遅い発振器である。経路の構造、分量投与の実験、周期は測定済みである。カスケードの脈動をフィードバックそのもので説明するのは仮説である。
+\end{proposition}
+\end{keyblock}
+
+\section{まとめ}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{3.1cm}>{\raggedright}p{4.8cm}>{\raggedright\arraybackslash}p{4.9cm}}
+\toprule
+化学出力の役割 & 方法 & わかっていること \\
+\midrule
+臓器を調整する & アクセル\nt{NORA}とブレーキ\nt{ACET}~\eqref{eq:gasbrake} & 測定済み。ブレーキはアクセルより速い \\
+全身を走るモードにする & アドレナリン\nt{ADRE}を血中へ & 測定済み \\
+ホルモンのレベルを保つ & フィードバック付きカスケード、$K<8$~\eqref{eq:cascadestable} & カスケードとフィードバックは測定済み。ループ自体による脈動は仮説 \\
+分量の頻度で伝える & ハイパスフィルタとしての疲れる受容体 & 分量への依存は測定済み \\
+1日の中でモードを切り替える & 光で位相同期する発振器~\eqref{eq:pll} & 周期と光による同期は測定済み \\
+\bottomrule
+\end{tabular}
+\caption{マシンは体の化学をどう制御するか。}
+\label{tab:chemoutput}
+\end{table}
+
+マシンには二つの出力がある（表~\ref{tab:chemoutput}）。速い出力は筋肉で、ミリ秒単位、アドレス付きで、関節ごとに届く。遅い出力は体の化学で、秒、分、日の単位で働き、2本の配線で臓器へ、血液で全身へ一斉に届く。どちらの出力の部品も同じである。符号が逆の2本の配線、ペースメーカー、フィードバックとその遅れ。そしてそれは、マシンの内部を組み立てている部品と同じである。
+
+\section{問題}
+
+\begin{exercise}[\lvlA]
+\label{ex:16:1}
+\emph{フィルタとしての血液。}ホルモンは半減期$t_{1/2}=10$~minで血中から除去され、$T=60$~minごとに短い分量で放出される。濃度の最大値は最小値の何倍か。分量の基本波は何分の1に減衰するか。最大値が最小値のわずか2倍になるのは$t_{1/2}$がいくつのときか。
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:16:2}
+\emph{概日同期。}発振器~\eqref{eq:pll}の固有周期は$24.18$~h、光による位相シフトは1日最大1時間、すなわち$K_\varphi=2\pi/24$~rad/dayである。定常位相差$\varphi^*$を分単位で求め、緩和時間を求めよ。外部信号が$\pm6$~h跳んだあと、ずれが1時間未満になるまで何日かかるか。
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:16:3}
+\emph{精度と安定性。}線形化したカスケード~\eqref{eq:cascade}を同一の$n$段に延ばす。臨界利得$K_c(n)$と、$n=3$および$n=6$で達成できる最小誤差$1/(1+K_c)$を求めよ。$n\to\infty$でこの誤差は何に近づくか。
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:16:4}
+\emph{アクセルとブレーキ。}式~\eqref{eq:gasbrake}で、アクセルとブレーキの寄与は$\tau_S=2$~s、$\tau_P=0.4$~sのRC回路の出力であり、指令は最大$80$拍/分と$60$拍/分とする。$f_0=100$、安静時はブレーキ$35$、アクセル$0$で$f=65$である。$f=120$に達するのにかかる時間はいくらか。ブレーキを離さずアクセルだけで動かすとどうなるか。
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:16:5}
+\emph{シミュレーション：遅れのあるカスケード。}\texttt{models/\allowbreak chem\_models.py}の関数\texttt{cascade}（コピーして使い、ファイル自体は実行しない）のフィードバックに遅れ$d$を加え、第1段が$x_3(t-d)$を見るようにせよ。$d/\tau=0$、$0.5$、$1$、$2$で$K_c$と境界での周期を求め、$0.9K_c$と$1.1K_c$でシミュレーションにより確かめよ。
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:16:6}
+\emph{分量を読む受け手。}受容体は疲れる：$y=[c-a]_+$、$\tau_a\,\dd a/\dd t=c-a$、$\tau_a=30$~min。ホルモンは$6$~minずつの分量で周期$T$で届き、平均投与量$\bar c$は同じとする。$T=15$、$60$、$120$~minおよび$T\to\infty$での平均応答を求めよ。濃度が一定値$\bar c$のときはどうか。
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:16:7}
+\emph{発振器か、フィードバックか。}カスケード~\eqref{eq:cascade}の遅れるフィードバックが生む脈動と、独立したペースメーカーによる脈動とを区別する実験を提案せよ。$K$を1.5倍しか変えられず、周期の測定精度が$5\%$のとき、周期のずれから二つの仮説を区別できるか。
+\end{exercise}

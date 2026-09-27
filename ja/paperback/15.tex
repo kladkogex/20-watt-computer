@@ -1,0 +1,43 @@
+\chapter{動きを学ぶマシン}
+% full version: chapters/15_motorlearning.tex
+
+学び方を2つ見てきた。教師なしの「一緒に働けば、つながる」では、マシンはよく出会うものを覚える。ドーパミンがあれば、驚きから学ぶ。予想よりよかったか、悪かったか。だが、バスケットボールのシュートを外したとき、あなたにわかるのは「うまくいかなかった」だけではない。\emph{どれだけ}、\emph{どちらの方向に}外れたかもわかる。これが第三の教師、方向をもつ誤差であり、出力ごとに個別に届く。
+
+\section*{誤差の配線}
+
+脳には運動を学ぶための専用の回路があり、その作りはとても変わっている。数百億個もの膨大な数の小さな\nt{GLUT}ニューロンが、入力信号を非常に長い特徴のリストに展開する。この回路の出力ニューロンは抑制性の\nt{GABA}で、数千万個あり、それぞれが10万の入力を聞いている。そして各出力ニューロンには、ちょうど1本の特別な配線、誤差の配線が伸びている。入力が活動している間に誤差が届くと、その入力は弱まる。これは、エンジニアが適応フィルタを学習させるのに使う古典的な「誤差を減らせ」規則である。
+
+\pencilfig{15}{\pencilart{15}}{外れは「だめだった」だけでなく、「どれだけ、どちらへ」も教えてくれる。}
+
+この教師はドーパミンより速い。出力ごとに自分の誤差があり、全員共通の信号から自分の取り分を拾い出す必要がないからだ。ただし誤差は遅れて届くので、接続部にはまたしても、関わったことを覚えておく「付箋」が必要になる。実験によれば、この付箋の持続時間は誤差の遅れに合わせて調整されている。
+
+\section*{内部モデル}
+
+こうした回路は何を学ぶのか。自分の体のモデル、つまり指令がどんな結果を生むかである。これがあれば遅れてくるセンサーを待つ必要はない。結果を前もって予測できる。ある仮説によれば、だから自分で自分をくすぐることはできない。脳は何が起こるか前もって知っていて、予測したものを差し引くのだ。
+
+\section*{速い学習者と遅い学習者}
+
+像を横にずらすめがねをかけて、ダーツを投げてみよう。最初の何投かは横にそれるが、数十回試すうちに適応する。めがねを外すと、また外れる。今度は反対側にだ。面白いのはこの先である。実験は、2人の学習者が同時にいると考えるとよく説明できる。速い学習者は速く学んで速く忘れ、遅い学習者はゆっくり学ぶが長く覚えている。長く適応したあとで短く逆向きに学び直すと、全体の補正はゼロに戻る。ところがその後、古い技能が一部ひとりでに戻ってくる。速い学習者は忘れたが、遅い学習者は覚えているからだ。学習者1人のモデルではこうはならないが、人間ではこうなる。
+
+\pencilfig{115}{%
+% figures/tworate_*.dat from models/motor_learning.py: adapt 200 throws, reverse until the sum is back to zero, then no errors at all
+\begin{scope}[x=0.026cm, y=1.45cm]
+\fill[pcGray, opacity=0.08] (220,-1.1) rectangle (226,1.1);
+\draw[pen] (0,0) -- (340,0);
+\draw[pcGray, line width=0.4pt] plot file {figures/tworate_p.dat};
+\draw[penlite=pcAmber] plot file {figures/tworate_fast.dat};
+\draw[penlite=pcBlue] plot file {figures/tworate_slow.dat};
+\draw[pcGray!40!black, line width=1.1pt] plot file {figures/tworate_net.dat};
+\draw[pcGray, densely dashed, line width=0.4pt] (226,-1.1) -- (226,1.1);
+\end{scope}
+\node[lbl, anchor=south] at (3.1,1.47) {めがねあり};
+\node[lbl, anchor=north west, align=left] at (6.3,-0.55) {短く\\学び直す};
+\node[lbl, anchor=south west] at (6.0,1.47) {誤差なし};
+\node[lbl, text=pcBlue, anchor=north] at (4.4,0.8) {遅い};
+\node[lbl, text=pcAmber!80!black, anchor=south west] at (1.15,0.5) {速い};
+\node[lbl, text=pcGray!40!black, anchor=south] at (7.7,0.95) {和が戻る};
+}{モデルでの2人の学習者の補正。短く学び直したあと和はゼロになるが、遅い学習者は古いものを覚えていて、それがひとりでに戻ってくる。}
+
+なぜ学習者が2人なのか。仮説によれば、これは第9章の航海士と同じ処方である。世界は速くも遅くも変わるので、両方を追いかけるのが賢明なのだ。
+
+\fullversion{15}

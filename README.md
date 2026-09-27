@@ -25,7 +25,7 @@ A single AI accelerator draws about 700 W. The machine reading this sentence run
 
 Neurons are typed the way an engineer types a part, by what they put on the wire. **ГЛУТ** (glutamate) is the data bus. **ГАМК** (GABA) is flow control. **ДОФА** (dopamine), **СЕРО** (serotonin), **НОРА** (noradrenaline) and **АЦЕТ** (acetylcholine) are broadcast control registers. Every number in the book comes from a small Python program you can run and change. Every major claim is traced to the experiment behind it.
 
-> 🇷🇺 The book is currently in **Russian** («Компьютер на 20 ваттах. Как вычисляет мозг: количественный подход для инженеров»). The English edition is in progress. ⭐ Star the repo to hear when it lands.
+> 🌍 **Editions:** 🇷🇺 [Russian](https://kladkogex.github.io/20-watt-computer/pdf/20-watt-computer-ru.pdf) (original) · 🇬🇧 [English](https://kladkogex.github.io/20-watt-computer/pdf/20-watt-computer-en.pdf) · 🇨🇳 [中文](https://kladkogex.github.io/20-watt-computer/pdf/20-watt-computer-zh.pdf) · 🇯🇵 [日本語](https://kladkogex.github.io/20-watt-computer/pdf/20-watt-computer-ja.pdf). Korean, Spanish and Portuguese are on the way. Each has a pocket-size paperback edition too. ⭐ Star the repo to hear when they land.
 
 ## Things you will be able to prove
 

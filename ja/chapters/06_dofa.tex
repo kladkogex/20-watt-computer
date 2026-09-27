@@ -1,0 +1,362 @@
+\chapter{学習するニューラルネット：\nt{DOPA}を加える}
+\chaptermark{学習するネットワーク}
+\label{sec:dofa}
+
+\section{ゲームのルール}
+
+これまでの章の回路では、重みはすべてエンジニアが設定した。生体にエンジニアはいない。重みは動作しながら自分で決まり、しかもネットワークが何か役に立つことをするように決まらなければならない。これを学習という。
+
+これまでのルールに一つ加える。シナプスは自分の重みを自分で変え、知ることができるのは\emph{自分のすぐ近く}で起きていることだけである。送り手の活動$x$、受け手の活動$y$、そしてそこまで届く物質である。シナプスに個別の修正値を送ってくれる者はいない。
+
+これで人工ニューラルネットワークの主要な手法、誤差逆伝播法は除外される。そこでは出力の誤差が、順方向の伝播の後の別フェーズで、同じ重みを通ってネットワークを逆向きに進み、各重みがそれぞれの修正値を受け取る。そのためには順方向の配線を正確になぞる逆向きの配線と、共通のクロックが必要である。どちらも脳では見つかっていない。少なくとも人工ネットワークにおける形では~\cite{Lillicrap2020,WhittingtonBogacz2019}。
+
+重みの変化は、ゆっくりした連続的な過程として書く。
+\begin{equation}
+\frac{\dd w}{\dd t} \;=\; \eta\,\Phi(\text{シナプスが知っていること}),
+\label{eq:plasticity}
+\end{equation}
+ここで$\eta$は学習率で、1スパイクの間に重みがほとんど変わらないほど小さい。この章全体が、関数$\Phi$がどんなものでありうるかについての話である。
+
+\section{重みはどこに蓄えられるか}
+\label{sec:weightstore}
+
+「重みを変える」シナプスとは何だろうか。結合には二つの側がある。送り手の配線の終末（\emph{シナプス前}側）と、受容体をもつ受け手の膜の一部（\emph{シナプス後}側）で、その間に狭い間隙がある。\nt{GLUT}結合では、受け手の膜はふつう\emph{スパイン}、つまり受け手の入力枝にある小さな突起の上にある。結合の重みは三つの因子に分解すると便利である~\cite{delCastillo1954}。
+\begin{empheq}[box=\keybox]{equation}
+w \;=\; N_s\,p\,A_1 .
+\label{eq:quantal}
+\end{empheq}
+ここで$N_s$は二つのニューロン間の放出部位の数、$p$はスパイクが1か所で伝達物質の1パケットを放出する確率（第\ref{sec:code}章の$p$と同じ）、$A_1$は1パケットに対する受け手の応答、つまりそれを捕らえる受容体の数である。因子$p$は送り手の側に、$A_1$は受け手の側にあり、$N_s$には両側が必要である。新しい放出部位が生え、古いものは消え、これは生涯続く。
+
+\emph{決めるのは受け手である。}典型的な\nt{GLUT}シナプスでは、グルタミン酸受容体の一つが、二つの条件がそろったときだけ電流を通す。送り手からグルタミン酸が来ていること、そして受け手の膜がすでに興奮していることである~\cite{Nowak1984}。これは1個の分子に組み込まれたヘッブ則であり、第\ref{sec:glutcomputer}章の同時検出器がシナプスの入口そのものに置かれたものである。作動した受容体は受け手にカルシウムを流し込み、カルシウムが重みの変化を起動する。入力と出力が同時に見える場所は受け手だけなので、決定は受け手で下される。
+
+\emph{決定を実行するのはどちらの側でもよい。}最もよく調べられている長期増強は受け手の側で起こる。膜に新しい受容体が組み込まれ~\cite{Malinow2002}、スパインが大きくなる~\cite{Matsuzaki2004}。つまり$A_1$が増える。しかし受け手は$p$を変えることもできる。間隙を逆向きに送り手へ向かう物質を放出し（付録~\ref{sec:othermediators}の逆行チャネル）、送り手は伝達物質の放出を減らす~\cite{WilsonNicoll2001}。そして第\ref{sec:code}章の短期的な重みの変化、枯渇と促通は、送り手が自分の最近の活動に応じて自ら行う$p$の変化である。
+
+エンジニアから見ると、重みレジスタは二つのチップに分かれている。学習則を実行するのは受け手だが、結果は自分の側にも、逆行チャネルを通じて送り手の側にも書き込める。したがって本章の規則でいう「局所的」とは、結合の片側ではなく結合全体を指す。
+
+\section{教師なしで学ぶ}
+
+シナプスにできる最も単純なことは、送り手と受け手が一緒に活動したときに強まることである。
+\begin{equation}
+\frac{\dd w}{\dd t} \;=\; \eta\,x\,y .
+\label{eq:hebb}
+\end{equation}
+これがヘッブ則である~\cite{Hebb1949}。局所的で、クロックも要らない。しかし第\ref{sec:glutcomputer}章の\nt{GLUT}ネットワークと同じ問題を抱えている。正帰還である。強い重みは$y$を大きくし、大きな$y$は重みをさらに強め、重みは際限なく増える。治療法は重みに対する負帰還である。重みを$y^2$に比例して減らしもする。入力$\mathbf x$と線形出力$y=\mathbf w\cdot\mathbf x$をもつニューロンでは
+\begin{empheq}[box=\keybox]{equation}
+\frac{\dd\mathbf w}{\dd t} \;=\; \eta\,y\,\bigl(\mathbf x - y\,\mathbf w\bigr) .
+\label{eq:oja}
+\end{empheq}
+この規則も局所的である。シナプスは自分の入力$x_i$、出力$y$、重み$w_i$を知っている。
+
+\begin{keyblock}
+\begin{proposition}[ヘッブ則が見つけるもの]
+\label{prop:oja}
+規則~\eqref{eq:oja}は重みベクトルを、入力が最も大きく変動する方向に沿った単位長のベクトル、すなわち入力の相関行列$C=\langle\mathbf x\mathbf x^{\mathsf T}\rangle$の主固有ベクトルに導く~\cite{Oja1982}。ニューロンは、入力を圧縮できる最も表現力の高い一つの量を出すことを学ぶ。
+\end{proposition}
+\end{keyblock}
+
+証明。\eqref{eq:oja}を入力について平均すると$\dd\mathbf w/\dd t=\eta\bigl(C\mathbf w-(\mathbf w^{\mathsf T}C\mathbf w)\,\mathbf w\bigr)$となる。不動点は$C$の単位長の固有ベクトルである。$\mathbf w$が固有値$\lambda_k$の固有ベクトル$\mathbf e_k$に近いとき、別の固有ベクトル$\mathbf e_j$方向の小さな摂動は$e^{\eta(\lambda_j-\lambda_k)t}$のように成長する。安定なのは、すべての$\lambda_j<\lambda_k$となる点、つまり主固有ベクトルだけである。
+
+スパイクのタイミングを見るヘッブ則の変種もある。送り手のスパイクが受け手のスパイクより$s$ミリ秒\emph{前}に来れば重みは$A_+e^{-s/\tau_+}$だけ増え、$s$ミリ秒\emph{後}なら$A_-e^{-s/\tau_-}$だけ減る。$\tau_\pm$は20ミリ秒程度である。この規則は\nt{GLUT}ニューロンのシナプスで測定されている~\cite{BiPoo1998}。応答の\emph{原因でありえた}結合を強め、遅れて来た結合を弱める（図~\ref{fig:stdp}）。同じ興奮の系列を何度もネットワークに流せば、各段から次の段への結合が自然に育つ。第\ref{sec:glutcomputer}章の連鎖が、エンジニアなしで組み上がる。
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=0.07cm,y=1.3cm]
+\draw[->,gray!70!black] (-66,0) -- (68,0) node[right,black] {\small $s$};
+\draw[->,gray!70!black] (0,-1.2) -- (0,1.35) node[above,black] {\small 重みの変化};
+\draw[very thick,blue!60!black] plot[domain=0.5:60,samples=50] (\x,{exp(-\x/20)});
+\draw[very thick,red!70!black] plot[domain=-60:-0.5,samples=50] (\x,{-0.6*exp(\x/20)});
+\draw[blue!60!black,thick] (0.5,0) -- (0.5,1);
+\draw[red!70!black,thick] (-0.5,0) -- (-0.5,-0.6);
+\foreach \x in {-40,-20,20,40}{\draw[gray!60!black] (\x,-0.04) -- (\x,0.04);}
+\node[below,font=\scriptsize] at (20,-0.04) {$20\ms$};
+\node[above,font=\scriptsize] at (-20,0.04) {$-20\ms$};
+\node[align=left,font=\small,blue!60!black,anchor=west] at (22,0.95) {送り手が先：\\ 結合が強まる};
+\node[align=right,font=\small,red!70!black,anchor=east] at (-12,-0.95) {送り手が後：\\ 結合が弱まる};
+\end{tikzpicture}
+\caption{タイミングによるヘッブ則。横軸は$s=t_{\text{受}}-t_{\text{送}}$、つまり受け手のスパイクが送り手のスパイクからどれだけ遅れたか。$\tau_\pm=20\ms$、$A_-=0.6A_+$。幅数十ミリ秒の窓は、同時性の窓~\eqref{eq:window}と同じ桁である。}
+\label{fig:stdp}
+\end{figure}
+
+しかしこの節の規則はどれも、\emph{頻繁な}ことを教えるのであって、\emph{役に立つ}ことを教えるのではない。$x$と$y$しか知らないシナプスには、行動がジュースをもたらしたのか痛みをもたらしたのかが分からない。結果から学ぶには、シナプスに第三の信号が必要である。
+
+\section{第三の因子}
+
+第三の信号を運ぶのは\nt{DOPA}である。ドーパミンニューロンは一つの数、報酬予測誤差$\delta$~\eqref{eq:rpe}をブロードキャストする（第\ref{sec:neurontypes}章）。重みの変化を、送り手の活動、受け手の活動、$\delta$の三つの因子の積に比例させよう。
+
+難しいのは、報酬がネットワークが行動を選んだ時点ではなく、数百ミリ秒から数秒後に来ることである。$\delta$が届く頃には積$xy$はとうにゼロになっていて、シナプスには自分が関与したことの記憶が必要になる。最も簡単な記憶は、おなじみのRC回路である。
+\begin{empheq}[box=\keybox]{equation}
+\tau_e\,\frac{\dd e}{\dd t} \;=\; -e \;+\; x\,y ,
+\qquad
+\frac{\dd w}{\dd t} \;=\; \eta\,\delta(t)\,e(t) .
+\label{eq:threefactor}
+\end{empheq}
+量$e$を\emph{適格度トレース}と呼ぶ~\cite{Fremaux2016}。同時の活動はシナプスに印を残し、それは時間$\tau_e$で消えていく。その間にドーパミンが来れば重みは$\delta$の符号で変わり、来なければ印は跡形もなく消える（図~\ref{fig:trace}）。\nt{GLUT}シナプスで測定されている。同時の活動の後1〜2秒以内に届いたドーパミンはそれを結合の強化に変えるが、それより遅く届いたものは変えない~\cite{Yagishita2014}。第三の信号がドーパミンではなく受け手自身の強い興奮である場合にも、秒単位の可塑性の窓が見つかっている~\cite{Bittner2017}。
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=7cm,y=1cm]
+\fill[orange!12] (0.7,-0.2) rectangle (0.8,5.2);
+% rows: x*y, delta, traces, weights
+\foreach \y/\lab in {4.4/{$x\,y$},3.1/{$\delta$},1.4/{トレース $e$},0/{重み $w$}}{
+  \draw[gray!70!black] (0,\y) -- (1.42,\y);
+  \node[left,font=\small] at (-0.02,\y+0.3) {\lab};}
+\draw[very thick,blue!60!black] (0,4.4) -- (0,4.9) -- (0.2,4.9) -- (0.2,4.4);
+\node[right,font=\scriptsize,blue!60!black] at (0.21,4.8) {送り手と受け手が同時に活動};
+\draw[very thick,orange!85!black] (0,3.1) -- (0.7,3.1) -- (0.7,3.7) -- (0.8,3.7) -- (0.8,3.1) -- (1.4,3.1);
+\node[right,font=\scriptsize,orange!85!black] at (0.81,3.6) {ドーパミンが到着};
+% traces, each in units of its own maximum
+\draw[very thick,blue!60!black] plot[domain=0:0.2,samples=20] (\x,{1.4+1.1*(1-exp(-\x))/(1-exp(-0.2))})
+  plot[domain=0.2:1.4,samples=60] (\x,{1.4+1.1*exp(-(\x-0.2))});
+\draw[thick,densely dashed,gray!50!black] plot[domain=0:0.2,samples=30] (\x,{1.4+1.1*(1-exp(-\x/0.05))/(1-exp(-4))})
+  plot[domain=0.2:1.4,samples=80] (\x,{1.4+1.1*exp(-(\x-0.2)/0.05)});
+\node[right,font=\scriptsize,blue!60!black] at (1.0,2.15) {$\tau_e=1\,\text{s}$};
+\node[right,font=\scriptsize,gray!40!black] at (0.3,1.65) {$\tau_e=50\ms$};
+% weights
+\draw[very thick,blue!60!black] (0,0.25) -- (0.7,0.25) -- (0.8,0.8) -- (1.4,0.8) node[right,font=\scriptsize] {$\tau_e=1\,\text{s}$：重みが増加};
+\draw[thick,densely dashed,gray!50!black] (0,0.2) -- (1.4,0.2) node[right,font=\scriptsize,gray!40!black] {$\tau_e=50\ms$：変化なし};
+% time axis marks
+\foreach \x/\l in {0/0,0.2/0.2,0.7/0.7,1.4/1.4}{\draw[gray!60!black] (\x,-0.05) -- (\x,0.05) node[below=3pt,font=\scriptsize] {\l\,s};}
+\draw[<->,thick,gray!50!black] (0.2,5.35) -- node[above,font=\scriptsize,black] {報酬の遅延 $0.5\,\text{s}$} (0.7,5.35);
+\end{tikzpicture}
+\caption{規則~\eqref{eq:threefactor}による適格度トレース。同時の活動は$0.2\,\text{s}$続き、その終了の0.5秒後にドーパミンが来る。トレースはそれぞれの最大値に対する割合で示す。遅いトレース（$\tau_e=1\,\text{s}$）はこの時点でまだ生きているが、速いトレース（$\tau_e=50\ms$）はとうに消えている。}
+\label{fig:trace}
+\end{figure}
+
+\begin{keyblock}
+\begin{proposition}[ブロードキャスト信号による学習]
+\label{prop:threefactor}
+規則~\eqref{eq:threefactor}は、直近の$\tau_e$の間にネットワークの動作に関与したシナプスだけを、共通の信号$\delta$が指定する方向に変える。ブロードキャスト信号と局所的なトレースが組み合わさって、宛先をもった修正になる。行動と結果の間の遅延は、$\tau_e$を超えない限り許される。
+\end{proposition}
+\end{keyblock}
+
+\section{なぜうまくいくのか：探索としての雑音}
+\label{sec:dofagradient}
+
+規則~\eqref{eq:threefactor}はなぜ改善をもたらすのか。答えは第\ref{sec:code}章の雑音にある。ニューロンの出力を$y=f(u)+\xi$とする。ここで$u=\sum_jw_jx_j$、$\xi$は平均ゼロ、分散$\sigma^2$のランダムなゆらぎである。報酬$R$は$y$に依存する。トレースとして単なる$x_jy$ではなくそのランダムな部分$x_j\xi$をとり、第三の因子として誤差$\delta=R-\bar R$をとる。$\bar R$は期待報酬である。雑音が小さければ$R\approx R\bigl(f(u)\bigr)+R'\,\xi$なので
+\begin{empheq}[box=\keybox]{equation}
+\bigl\langle \delta\,\xi\,x_j \bigr\rangle \;=\; \sigma^2\,R'\,x_j \;=\; \frac{\sigma^2}{f'(u)}\,\frac{\partial\langle R\rangle}{\partial w_j} .
+\label{eq:perturbation}
+\end{empheq}
+平均的なステップは期待報酬の勾配に沿って進む~\cite{Williams1992}。誰も微分を計算していない。ネットワークがランダムにずれ、ドーパミンがそれでよくなったかを伝え、関与したシナプスが得をする方向に動いた（図~\ref{fig:perturbation}）。第\ref{sec:code}章でメッセージの伝達を妨げていた雑音が、ここでは探索になる。
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=2cm,y=3cm]
+\draw[->,gray!70!black] (0,0) -- (4.2,0) node[below left,font=\small,black] {出力 $y$};
+\draw[->,gray!70!black] (0,0) -- (0,1.2) node[left,font=\small,black] {報酬 $R$};
+% reward hill
+\draw[very thick,blue!60!black] plot[domain=0:4,samples=60] (\x,{max(0,1-((\x-3)/2.2)^2)});
+\node[font=\scriptsize,blue!60!black,anchor=south] at (3,1.02) {最良の出力};
+% noise around f(u)
+\draw[thick,gray!60!black] plot[domain=0.6:2.4,samples=50] (\x,{0.28*exp(-((\x-1.5)/0.3)^2/2)});
+\draw[densely dashed,gray!60!black] (1.5,0) -- (1.5,0.535);
+\node[below,font=\small] at (1.5,0) {$f(u)$};
+\node[font=\scriptsize,gray!50!black] at (1.5,-0.2) {ゆらぎ $\xi$};
+% expected reward
+\draw[densely dotted,gray!60!black] (0.5,0.535) node[left,font=\scriptsize,black] {$\bar R$} -- (2.1,0.535);
+% two random deviations
+\fill[green!45!black] (2.1,0.833) circle (0.035);
+\draw[very thick,green!45!black] (2.1,0.535) -- (2.1,0.833);
+\node[font=\scriptsize,green!45!black,anchor=west,align=left] at (2.18,0.6) {$\xi>0$：よい、\\ $\delta>0$};
+\fill[red!70!black] (0.9,0.089) circle (0.035);
+\draw[very thick,red!70!black] (0.9,0.535) -- (0.9,0.089);
+\node[font=\scriptsize,red!70!black,anchor=east,align=right] at (0.83,0.27) {$\xi<0$：悪い、\\ $\delta<0$};
+% resulting step
+\draw[->,very thick,orange!85!black] (1.55,0.4) -- (1.95,0.4) node[right,font=\scriptsize,black] {ステップ};
+\end{tikzpicture}
+\caption{探索としての雑音~\eqref{eq:perturbation}。ニューロンの出力は$f(u)$のまわりでゆらぐ。右へのランダムなずれ（緑）は期待より多くを得て$\delta>0$、左へのずれ（赤）は少なく$\delta<0$。どちらの場合も積$\delta\,\xi$は正で、重みは報酬が増える右へ動く。平均するとステップは傾き$R'$に比例する。山の頂上では両側へのずれが同じように悪く、ステップは打ち消し合う。}
+\label{fig:perturbation}
+\end{figure}
+
+\begin{keyblock}
+\begin{proposition}[逆向きの配線なしの勾配法]
+\label{prop:gradient}
+ネットワークに活動のランダムなずれがあり、ブロードキャスト信号が報酬予測誤差に等しく、各状況で平均ゼロであるなら、規則~\eqref{eq:threefactor}は平均として重みを期待報酬の勾配に沿って変える。そのために逆向きの配線も独立した学習フェーズも要らない。
+\end{proposition}
+\end{keyblock}
+
+これで、ドーパミンが報酬そのものではなく報酬予測の\emph{誤差}を伝える理由が分かる。第三の因子が報酬そのもの$R\ge0$だったとしても\eqref{eq:perturbation}の平均は変わらないが、二つの問題が生じる。第一に、有用な部分に項$\bar R\,\xi x_j$が加わる。平均はゼロだが、雑音は大きい。第二に、こちらのほうが深刻だが、本物のシナプスはトレース$x_jy$のランダムな部分とそうでない部分を分けられない。入力が同じなら$x_jf(u)$は試行ごとに同じ数である。その状況で$\delta$の平均がゼロなら、トレースのこの部分は何も変えない。しかし$\delta\ge0$なら、この部分はネットワークがしたことすべてを、正しいことも誤ったことも、繰り返し強化してしまう。したがって$\bar R$は、生涯の平均ではなく\emph{その状況での}期待値でなければならない。それを計算するのは、後で述べるクリティックの仕事である。
+
+これをモデルで確かめた。\nt{GLUT}ニューロンの二つの群が、図~\ref{fig:wta}のように相互抑制によって二つの行動の一方を選ぶ。「開始」信号から各群への重みは最初は等しく、どちらが勝つかは雑音が決める。行動$A$は確率$0.8$で、行動$B$は確率$0.2$でジュースをもたらし、ジュースは選択の0.5秒後に来る。$\tau_e=1\,\text{s}$、$\delta=R-\bar R$では、500試行で$A$を選ぶ割合は最初の100試行の$0.65$--$0.8$から最後の100試行の$0.96$--$1.0$に上がり、重みは$0.85$--$1.35$の範囲にとどまった。報酬の遅延より短い$\tau_e=50\ms$では、ネットワークは何も学ばなかった。$A$を選ぶ割合は半分前後のままだった。期待値を引かない$\delta=R$でもネットワークは$A$を選ぶようになったが、勝者の重みは同じ500試行で1000倍になり、なお増え続けた。そして同じ$\delta=R$で学習率を10倍にすると、3回の実行のうち1回で、ネットワークは最初のランダムな選択、しかも悪いほうを永久に固定してしまった。
+
+\section{配線1本の代償}
+
+信号$\delta$は全員に共通だが、それが評価する雑音は、結果に影響するすべての$N$個のニューロンのゆらぎの和である。各シナプスは$\delta$の中に、自分の有用な部分と、$N-1$個の隣人の雑音を見る。自分の分を取り出すには多くの試行で平均しなければならず、学習時間は$N$に比例して伸びる~\cite{Werfel2005}。誤差逆伝播法はこのような代償を払わない。
+
+\begin{keyblock}
+\begin{proposition}[ブロードキャストの代償]
+\label{prop:broadcastcost}
+共通の信号一つによる学習の時間は、結果に雑音が影響するニューロンの数に比例して伸びる。このような学習は、少数の選択肢から選ぶ小さな回路には向くが、数十億の重みの調整には向かない。
+\end{proposition}
+\end{keyblock}
+
+脳はどうやら実際にこのように仕事を分けている。\nt{DOPA}ニューロンの出力は主に行動を選ぶ領域に向かい（第\ref{sec:neurontypes}章）、重みの圧倒的多数がある皮質の巨大な\nt{GLUT}ネットワークは、主として局所的な規則で、外部の教師なしに学習する。かつてはそれをヘッブ則~\eqref{eq:oja}に帰着させていた。現在では、皮質には自分の目標、すなわち次の入力を\emph{予測する}ことがあるというデータが増えている。その場合、誤差は予測と実際の入力の差としてその場で計算される~\cite{Keller2018}。教師はネットワーク自体に組み込まれている。第三の信号が受け手自身の強い興奮である秒単位の可塑性の窓~\cite{Bittner2017}は、シナプスに局所的な誤差信号が実際にありうることを示している。それが皮質の一般的な規則であるかどうかは仮説である。
+
+\section{誤差はどこから来るか：連続時間のクリティック}
+
+残る問題は、\nt{DOPA}ニューロン自身がどのように$\delta$を計算するかである。強化学習のプログラムでは、予測誤差はステップ$t,t+1,\dots$で計算される。生体にステップはないので、連続時間で書く~\cite{Doya2000}。$r(t)$を報酬の流れ、$V(t)$を将来の全報酬の期待値とする。遠い報酬ほど価値は低い。
+\begin{equation}
+V(t) \;=\; \int_t^{\infty} e^{-(s-t)/\tau_\gamma}\,r(s)\,\dd s .
+\end{equation}
+微分すると$\dd V/\dd t=V/\tau_\gamma-r$となる。この等式の残差が予測誤差である。
+\begin{empheq}[box=\keybox]{equation}
+\delta(t) \;=\; r(t) \;+\; \frac{\dd V}{\dd t} \;-\; \frac{V}{\tau_\gamma} .
+\label{eq:ctd}
+\end{empheq}
+定数$\tau_\gamma$は計画の時間幅で、係数$\gamma$の連続版である。仮説によればこれを設定するのは\nt{SERO}であり（\ref{sec:horizon}節）、そのとき\eqref{eq:patience}はどれだけ待つ価値があるかの規則になる。三つの場合を確かめよう（図~\ref{fig:ctdcases}）。ジュースを約束するランプが点いた。$V$が跳ね上がり、$\dd V/\dd t$が大きく、バーストが出る。約束のジュースが来た。$r>0$だが、同じ瞬間に期待は尽きて$\dd V/\dd t\approx-r$となり、バーストは出ない。ジュースが来なかった。期待が報酬なしに消え、$\dd V/\dd t<0$で、落ち込みが出る。
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=1.15cm,y=1cm]
+\foreach \col/\ttl/\lampon/\juice in {0/{予期しないジュース}/0/1, 1/{約束のジュース}/1/1, 2/{ジュースが来ない}/1/0}{
+ \begin{scope}[xshift=\col*4.6cm]
+  \node[font=\small] at (1.5,3.55) {\ttl};
+  \foreach \yy in {2.4,1.2,0}{\draw[gray!60!black] (0,\yy) -- (3.1,\yy);}
+  % reward r
+  \ifnum\juice=1
+    \fill[green!45!black] (1.95,2.4) rectangle (2.05,2.85);
+    \pic[scale=0.55] at (2.0,3.1) {juice};
+  \else
+    \pic[scale=0.55] at (2.0,3.1) {nojuice};
+  \fi
+  % expectation V and error delta
+  \ifnum\lampon=1
+    \pic[scale=0.55] at (1.0,3.1) {lamp};
+    \draw[very thick,blue!60!black] (0,1.2) -- (1,1.2) -- (1,1.45)
+      plot[domain=1:2,samples=20] (\x,{1.2+0.25*exp((\x-1)/1.5)}) -- (2,{1.2+0.25*exp(1/1.5)}) -- (2,1.2) -- (3.1,1.2);
+    \draw[very thick,red!70!black] (0,0) -- (0.95,0) -- (0.95,0.5) -- (1.05,0.5) -- (1.05,0) -- (3.1,0);
+    \ifnum\juice=0
+      \draw[very thick,red!70!black] (1.95,0) -- (1.95,-0.45) -- (2.05,-0.45) -- (2.05,0);
+      \node[font=\scriptsize,red!70!black,anchor=west] at (2.1,-0.35) {落ち込み};
+    \else
+      \node[font=\scriptsize,gray!50!black,anchor=north,align=center] at (2.0,-0.08) {$r$と$V$の低下が\\ 打ち消し合う};
+    \fi
+  \else
+    \draw[very thick,blue!60!black] (0,1.2) -- (3.1,1.2);
+    \draw[very thick,red!70!black] (0,0) -- (1.95,0) -- (1.95,0.5) -- (2.05,0.5) -- (2.05,0) -- (3.1,0);
+  \fi
+  \ifnum\col=0
+    \node[font=\small,anchor=east] at (-0.1,2.55) {$r$};
+    \node[font=\small,anchor=east] at (-0.1,1.35) {$V$};
+    \node[font=\small,anchor=east] at (-0.1,0.1) {$\delta$};
+  \fi
+ \end{scope}}
+\end{tikzpicture}
+\caption{誤差~\eqref{eq:ctd}の三つの場合。上から報酬$r$、期待$V$、誤差$\delta$。左では期待がなく、ジュースはまるごと予期しないものである。中央ではランプが$V$を跳ね上げる。これは$\dd V/\dd t$の跳躍であり、$\delta$のバーストはランプの時点に来る。その後$V$は時間幅の要求どおりに増え、$\delta=0$となる。ジュースの瞬間、報酬$r$と$V$の低下が打ち消し合う。右では$V$が報酬なしに下がり、落ち込みになる。これは図~\ref{fig:rpe}と同じバースト、移行、落ち込みだが、今度はそれらがどこから来るかが見える。}
+\label{fig:ctdcases}
+\end{figure}
+
+手持ちの回路で\eqref{eq:ctd}を作るには何が要るか。三つある。
+
+\emph{推定値$V$そのもの。}これを出すのは\nt{GLUT}ニューロンの群、つまりクリティックである。その重みは同じ$\delta$を使う同じ規則~\eqref{eq:threefactor}で学習する。$\delta>0$なら期待が低すぎたのであり、直前に活動していた結合が強まる。
+
+\emph{微分$\dd V/\dd t$。}これはレベルではなく変化に応答する回路なら何でも計算できる。第\ref{sec:gaba}章の方向検出器のような、直接の興奮と\nt{GABA}仲介ニューロンを通る遅れた抑制の組み合わせでもよいし、第\ref{sec:code}章の枯渇するシナプス~\eqref{eq:depression}でもよい。
+
+\emph{1本の配線で符号を運ぶ。}誤差は正にも負にもなるが、スパイクのレートは正にしかならない。解決策は第\ref{sec:serocomputer}章の\nt{SERO}ニューロンと同じで、\nt{DOPA}ニューロンはペースメーカーである。毎秒数回の一定のスパイクは$\delta=0$、バーストは$\delta>0$、休止は$\delta<0$を意味する。負の誤差の余地は小さい。レートはゼロより下げられないからである。実際の\nt{DOPA}ニューロンでも、落ち込みはバーストより浅い~\cite{Bayer2005}。
+
+ドーパミンが$\delta$のようにふるまうことは測定されている。脳が$\dd V/\dd t$を正確にどう計算するかは仮説である。
+
+\section{アクターとクリティック}
+
+すべてを組み合わせよう（図~\ref{fig:actorcritic}）。状況ニューロンは、\nt{GABA}を通じて勝者を選ぶ行動群（命題~\ref{prop:wta}）、つまり\emph{アクター}を興奮させ、同時に$V$を出すクリティックも興奮させる~\cite{SuttonBarto2018}。\nt{DOPA}ニューロンは報酬$r$と$V$を受け取り、\eqref{eq:ctd}を計算し、$\delta$をアクターとクリティックのすべてのシナプスにブロードキャストする。
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  nrn/.style={circle,draw,very thick,fill=blue!6,minimum size=0.9cm,inner sep=0pt,font=\small},
+  gab/.style={circle,draw,very thick,fill=red!10,minimum size=0.6cm,inner sep=0pt},
+  dofa/.style={circle,draw,very thick,double,double distance=1.2pt,fill=orange!15,minimum size=1.35cm,inner sep=0pt,font=\scriptsize},
+  inh/.style={-{Bar[width=7pt]},thick,red!70!black},
+  bc/.style={->,thick,densely dashed,orange!85!black}]
+\node[nrn] (S1) at (0,2.4) {$x_1$};
+\node[nrn] (S2) at (0,1.2) {$x_2$};
+\node[nrn] (S3) at (0,0) {$x_3$};
+\node[left=0.15cm,align=right,font=\small] at (-0.5,1.2) {状況};
+\node[nrn] (A) at (4,2.6) {$A$};
+\node[nrn] (B) at (4,1.0) {$B$};
+\node[gab] (G) at (5.2,1.8) {};
+\draw[->,thick] (A) -- (G); \draw[->,thick] (B) -- (G);
+\draw[inh] (G) to[bend left=35] (A);
+\draw[inh] (G) to[bend right=35] (B);
+\node[above,font=\small] at (4.6,3.05) {アクター：行動の選択};
+\node[nrn] (V) at (4,-1.1) {$V$};
+\node[below,font=\small] at (4,-1.6) {クリティック};
+\foreach \s in {S1,S2,S3}{\foreach \t in {A,B,V}{\draw[->,gray!60!black] (\s) -- (\t);}}
+\node[dofa] (D) at (8.0,-1.1) {\nt{DOPA}};
+\draw[->,thick] (V) -- node[above,font=\scriptsize] {$V,\ \dd V/\dd t$} (D);
+\draw[->,thick,green!45!black] (10.0,-1.1) node[right,black,font=\small] {報酬 $r$} -- (D);
+\pic[scale=1.1] at (10.6,-0.5) {juice};
+\draw[bc] (D.north) -- (8.0,4.0) -- node[above,font=\small,black] {$\delta$：アクターとクリティックの全シナプスへ} (2.2,4.0) -- (2.2,3.0);
+\draw[bc] (D.south) -- (8.0,-2.4) -- (2.2,-2.4) -- (2.2,-0.6);
+\end{tikzpicture}
+\caption{行動の選択を学ぶネットワーク。灰色の矢印は重みが変わる\nt{GLUT}シナプス。赤い丸は\nt{GABA}ニューロン。二重丸は\eqref{eq:ctd}に従って$\delta$を計算する\nt{DOPA}ペースメーカー。破線の矢印は$\delta$のブロードキャスト。}
+\label{fig:actorcritic}
+\end{figure}
+
+伝達物質の作用の符号は受け手が選び（命題~\ref{prop:receptor}）、行動選択の領域では、ニューロンの一部はあるファミリーのドーパミン受容体をもち、一部は別のファミリーをもつ。スライスでの実験では、ドーパミンと同時の活動がそろうと、前者ではシナプスが強まり、後者では弱まる~\cite{Shen2008}。モデルでいえば、後者では\eqref{eq:threefactor}の$\delta$の符号が反転している。前者は\emph{すべきこと}を、後者は\emph{すべきでないこと}を学ぶ。
+
+\section{まとめ}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{2.6cm}>{\raggedright}p{2.7cm}>{\raggedright}p{3.1cm}>{\raggedright\arraybackslash}p{5.0cm}}
+\toprule
+規則 & シナプスが知ること & ネットワークが学ぶこと & 分かっていること \\
+\midrule
+レートによるヘッブ則~\eqref{eq:oja} & $x$、$y$、自分の重み & 入力の圧縮：主方向 & 同時活動による強化は測定済み。重みを制限する機構は研究中 \\
+タイミングによるヘッブ則 & $\sim20\ms$以内の$x$と$y$のスパイクの順序 & 因果的な結合、系列 & \nt{GLUT}シナプスで測定済み \\
+三要素則~\eqref{eq:threefactor} & $x$、$y$、トレース$e$、共通信号$\delta$ & 報酬をもたらす行動 & 活動後数秒以内のドーパミンの影響は測定済み。選択学習の主要な機構であることは十分な根拠のある仮説 \\
+クリティック~\eqref{eq:ctd} & 同上 & 報酬の期待$V$ & ドーパミンと$\delta$の類似は測定済み。$\dd V/\dd t$を計算する回路は仮説 \\
+誤差逆伝播法 & 重みごとの個別の修正値 & 何でも学べるが、逆向きの配線とクロックが必要 & 脳ではこの形では見つかっていない。近似が探されている \\
+\bottomrule
+\end{tabular}
+\caption{\nt{GLUT}、\nt{GABA}、\nt{DOPA}ニューロンからなるネットワークの学習則。}
+\label{tab:learning}
+\end{table}
+
+学習則を表~\ref{tab:learning}にまとめる。\nt{GLUT}はデータを運び、\nt{GABA}は流れを制御し、\nt{DOPA}はネットワークのどの変化を残すかを決める。
+
+\section{問題}
+
+\begin{exercise}[\lvlA]
+\label{ex:06:1}
+\emph{トレースの寿命。}同時の活動$xy=1$が$e=0$から始まって$T_a=0.2\,\text{s}$続き、その終了の$d=0.5\,\text{s}$後にドーパミンが来る。(a)~この時点のトレース~\eqref{eq:threefactor}は、$\tau_e=1\,\text{s}$のとき$\tau_e=50\ms$のときの何倍か。(b)~トレースが最大になるのはどの$\tau_e$か。
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:06:2}
+\emph{ヘッブ則のドリフト。}送り手と受け手は毎秒$10$スパイクの独立なポアソン列を出し、スパイクの各ペアは$\tau_\pm=20\ms$、$A_-=0.6A_+$の図~\ref{fig:stdp}の窓に従って重みを変える。まったくランダムな活動1時間で、重みは$A_+$の何倍増えるか。ドリフトが消えるのはどの$\tau_-$か。
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:06:3}
+\emph{共分散ではなく相関。}命題~\ref{prop:oja}の規則は$C=\langle\mathbf x\mathbf x^{\mathsf T}\rangle$の主固有ベクトルを見つける。レートは正である。$\mathbf x=\mathbf m+\mathbf n$、$\mathbf m=(\mu,0)$、雑音の共分散は$\operatorname{diag}(s_1^2,s_2^2)$とする。どんな条件でニューロンは$\mathbf e_1$を学ぶか。$\mu=1$、$s_1=0.1$、$s_2=0.5$では何を学ぶか。
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:06:4}
+\emph{バーストの中の時間幅。}ランプが予測できない時刻に点き、大きさ$R$のジュースが$L=1\,\text{s}$後に来る。\eqref{eq:ctd}で学習済みの期待について、ランプとジュースの間で$\delta\equiv0$であることを示し、$\tau_\gamma=2\,\text{s}$と$\tau_\gamma=4\,\text{s}$のときのランプへのバーストの面積を求めよ。
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:06:5}
+\emph{ブロードキャストの代償はどこから来るか。}$N$個のニューロンが独立にゆらぎ$\xi_i\sim\mathcal N(0,\sigma^2)$、誤差は$\delta=a\sum_i\xi_i$、シナプス$j$は勾配を$\delta\,\xi_jx_j$で推定する。1試行のSN比を求めよ。ニューロン1個が1試行$5\,\text{s}$で$100$試行で学習するとき、$N=10^4$と$N=10^{10}$では学習にどれだけかかるか。
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:06:6}
+\emph{設計：$\delta$を計算する回路。}\nt{DOPA}ニューロンは$r$と、重み$k_1$の$V$と、$\tau_d$で平滑化した$V$のコピーを重み$-k_2$で受け取る。(a)~ゆっくりした$V$で出力が\eqref{eq:ctd}になるように$k_1$、$k_2$を選べ。(b)~$V=V_0e^{t/\tau_\gamma}$では真の$\delta=0$である。$\tau_\gamma=2\,\text{s}$のとき、回路の偽の誤差が$V/\tau_\gamma$の$5\,\%$以下になるのはどの$\tau_d$か。
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:06:7}
+\emph{シミュレーション：報酬遅延の限界。}\texttt{models/\allowbreak dofa\_learning.py}のコピーの\texttt{run()}に報酬遅延$d$を加えよ。$d=0.5\,\text{s}$で$\tau_e=0.05$、$0.2$、$1$、$4\,\text{s}$のとき、および$\tau_e=1\,\text{s}$、$d=3\,\text{s}$のとき、$500$試行の最後の100試行で$A$を選ぶ割合を求めよ。報酬まで生き残るトレースの割合（問題~\ref{ex:06:1}）がどれだけになると学習は消えるか。
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:06:8}
+\emph{ブロードキャストの代償は回避できるか。}$N$個のニューロンで$y_i=w_i+\xi_i$、$\xi_i\sim\mathcal N(0,\sigma^2)$、報酬$R=-\sum_i(y_i-w_i^*)^2$、規則$\Delta w_i=\eta\,(R-\langle R\rangle)\,\xi_i$とする。最良の$\eta$で誤差$\sum_i(w_i-w_i^*)^2$が$1/e$になるのに何試行かかるか。$N$個のうちランダムな$m$個だけがゆらぐ場合はどうか。スパースな探索は役に立つか。
+\end{exercise}

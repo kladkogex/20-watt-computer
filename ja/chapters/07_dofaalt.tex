@@ -1,0 +1,218 @@
+\chapter{ドーパミンに基づく学習の現代的な代替理論}
+\chaptermark{\nt{DOPA}の他の理論}
+\label{sec:dofaalt}
+
+\section{配線を実際に流れているもの}
+
+第\ref{sec:dofa}章では、\nt{DOPA}系は1本の配線であり、そこを一つの数、報酬予測誤差$\delta$~\eqref{eq:ctd}が流れていた。この描像は多くを説明するが、ドーパミンの測定が精密になるほど、そこに収まらないものが見つかる。不快なものに報酬と同じように応答するニューロンがある。何も予期しないことが起きていないのに、動物が目標に向かって走る間ドーパミン濃度が上がる。\nt{DOPA}ニューロンごとにふるまいが違う。
+
+エンジニアにとって、これらの発見はすべて一つの問いに帰着する。\emph{ブロードキャストバス上の信号の形式は何か。}一つの数か、ベクトルか。配線上の信号は一つか、周波数で分けられた複数か。$\delta$のように未来について語るのか、過去について語るのか。以下に現代の六つの答えを示す。それぞれについて、測定されたことと推測されていることを分ける。
+
+\section{一つの数ではなく分布}
+
+誤差~\eqref{eq:ctd}はクリティックに報酬の\emph{平均の}期待を教える。しかし確実な半滴のジュースと、確率2分の1の1滴とは平均が同じである。両者を区別するには報酬の分布全体が必要である。
+
+最も簡単な課題を考える。予告信号の後にランダムな大きさ$r$の報酬が来る。\nt{DOPA}ニューロンが多数あり、$i$番目のニューロンはそれぞれ自分の推定値$V_i$を担当していて、報酬の瞬間の誤差は$\delta_i=r-V_i$であるとする。さらに、各ニューロンは正の誤差を重み$\alpha_i^+$で、負の誤差を重み$\alpha_i^-$で扱うとする。報酬のたびに推定値は次だけ動く。
+\begin{equation}
+\Delta V_i \;=\; \eta\,\bigl(\alpha_i^+\,[\delta_i]_+ \;-\; \alpha_i^-\,[-\delta_i]_+\bigr).
+\label{eq:asymmetric}
+\end{equation}
+平均して正の修正と負の修正がつり合うと、推定値は変わらなくなる。
+\begin{empheq}[box=\keybox]{equation}
+\alpha_i^+\,\bigl\langle[r-V_i]_+\bigr\rangle \;=\; \alpha_i^-\,\bigl\langle[V_i-r]_+\bigr\rangle ,
+\qquad
+\kappa_i \;=\; \frac{\alpha_i^+}{\alpha_i^++\alpha_i^-} .
+\label{eq:expectile}
+\end{empheq}
+$\kappa_i=1/2$ならこれは通常の平均である。$\kappa_i>1/2$ならニューロンは「楽観主義者」で、推定値は分布の上端寄りにずれる。$\kappa_i<1/2$なら「悲観主義者」である。
+
+例：ジュースが確率$1/2$で来て、1滴の大きさは$1$とする。すると\eqref{eq:expectile}から$\kappa_i\cdot\tfrac12(1-V_i)=(1-\kappa_i)\cdot\tfrac12V_i$、つまり$V_i=\kappa_i$となる（図~\ref{fig:expectiles}）。$\kappa_i$の異なるニューロンの集まりは、統計学で分位点の集まりが分布を記録するのと同じように、報酬の分布を記録する。
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=7cm,y=3cm]
+\draw[->,gray!70!black] (-0.08,0) -- (1.15,0) node[right,black] {\small 報酬};
+\draw[->,gray!70!black] (-0.08,0) -- (-0.08,0.75) node[left,black] {\small 確率};
+\fill[blue!25] (-0.03,0) rectangle (0.03,0.5);
+\fill[blue!25] (0.97,0) rectangle (1.03,0.5);
+\node[below,font=\small] at (0,0) {$0$};
+\node[below,font=\small] at (1,0) {$1$};
+\node[left,font=\scriptsize] at (-0.08,0.5) {$1/2$};
+\foreach \k/\c/\lab/\h in {0.2/blue!60!black/{悲観主義者、$\kappa=0.2$}/0.62, 0.5/gray!50!black/{平均、$\kappa=0.5$}/0.42, 0.8/red!70!black/{楽観主義者、$\kappa=0.8$}/0.22}{
+  \draw[very thick,\c] (\k,0) -- (\k,\h);
+  \node[above,font=\scriptsize,\c] at (\k,\h) {\lab};}
+\end{tikzpicture}
+\caption{\nt{DOPA}ニューロンの集まりに記録された報酬の分布。報酬は確率$1/2$で$0$または$1$（青い棒）。割合$\kappa$のニューロンは推定値$V=\kappa$に至る~\eqref{eq:expectile}。}
+\label{fig:expectiles}
+\end{figure}
+
+測定されていること。\nt{DOPA}ニューロンごとに「反転点」、つまり応答がバーストから落ち込みに切り替わる報酬の大きさが異なり、正と負の誤差への応答の非対称性が大きいニューロンほど、\eqref{eq:expectile}が要求するとおり大きな報酬で反転する~\cite{Dabney2020}。ニューロン群の応答から分布の形を復元できる。これがばらつきの副作用ではなく主な機能であることは仮説である。
+
+\begin{keyblock}
+\begin{proposition}[非対称性から分布へ]
+\label{prop:expectile}
+\nt{DOPA}ニューロンが正の誤差を扱う割合$\kappa_i$で異なれば、その推定値は報酬分布の異なる点~\eqref{eq:expectile}に収束する。ニューロン群は平均ではなく分布を伝え、したがってリスクも伝える。
+\end{proposition}
+\end{keyblock}
+
+\section{誤差だけでなく重要性も}
+
+誤差の式~\eqref{eq:ctd}によれば、不快な出来事（打撃、苦い味）は落ち込みを起こすはずである。期待より悪い結果だからである。\nt{DOPA}ニューロンの一部はそのとおりにふるまうが、別の一部は不快なものに報酬と同じく\emph{バースト}で応答する~\cite{Matsumoto2009}。これらのニューロンが伝えるのは誤差の符号ではなく、何か\emph{重要な}こと、つまり予期しない、強い、注意を要することが起きたということである~\cite{BrombergMartin2010}。
+
+エンジニアにとっては、これを二つの信号と考えると分かりやすい。第一は符号付きの誤差$\delta$で、重みをどちらへ変えるかを示す。第二はその絶対値$|\delta|$、あるいは出来事の新奇性で、重みを\emph{どれだけ強く}変えるか、つまり学習率を示す。予期しない出来事の後は速く学ぶべきである。意味の上では、第\ref{sec:neurontypes}章のノルアドレナリンによるゲインに近い。
+
+第三の可能性もある。別の軸のための別の配線である。行動選択の領域の一つに向かう\nt{DOPA}ニューロンは、報酬ではなく刺激の新奇性と強さに応答し、動物が危険を避けることを学ぶのに必要である~\cite{Menegas2018}。この配線を流れるのは「よいか悪いか」ではなく「危険か否か」である。
+
+測定されていること。\nt{DOPA}ニューロンの群ごとに不快なものと新しいものへの応答が異なり、出力ごとに異なることを教える。脳が重要性の信号を正確にどう使うのか、学習率としてか、注意の信号としてか、危険の軸に沿った別の誤差としてかは議論されている。
+
+\section{教えるだけでなく急き立てる}
+
+ドーパミンには即時の作用もある。多いほど、動物は進んで、速く行動する。これを学習とどう両立させるか。
+
+エンジニアの答えは\emph{周波数による分離}である。数百ミリ秒続く速いバーストと落ち込みは$\delta$を運び、学習させる。数分かけて変わるゆっくりしたレベルは別の量、単位時間あたりの平均報酬$\bar R$を運ぶ~\cite{Niv2007}。時間$\tau_a$で行う行動が労力$C/\tau_a$を要するとする。速いほど高くつく。一方、遅れた1秒ごとに$\bar R$のコストがかかる。その1秒で得られたはずの報酬である。総コスト$C/\tau_a+\bar R\,\tau_a$は次で最小になる。
+\begin{empheq}[box=\keybox]{equation}
+\tau_a^{*} \;=\; \sqrt{\frac{C}{\bar R}} .
+\label{eq:vigor}
+\end{empheq}
+環境が豊かなほど時間は高価になり、速く行動するほうが得になる。$\bar R$が2倍になれば行動時間は$\sqrt2\approx1.4$分の1になる。$\bar R$は第\ref{sec:dofa}章で差し引いた期待報酬そのものであることに注意しよう。
+
+投射先でのドーパミン放出は、スパイクのレートが変わらなくても変わりうる。出力そのものにある局所的な信号が放出を調整するからである~\cite{Mohebi2019}。しかしゆっくりした成分はスパイク自体にもある。次節の実験では、報酬に近づくにつれてのなめらかな増加が\nt{DOPA}ニューロンのレートにも見える~\cite{Kim2020}。つまりゆっくりしたレベルは、スパイクのレートと放出の局所的な調整という二つの源からなり、どちらが主かはおそらく出力と課題による。
+
+\begin{keyblock}
+\begin{proposition}[1本の配線に二つの信号]
+\label{prop:multiplex}
+\nt{DOPA}系は、時間スケールで分けられた少なくとも二つの量を伝える。学習させる速い誤差$\delta$と、時間のコスト~\eqref{eq:vigor}を、したがって行動の速さを決めるゆっくりしたレベルである。速い成分と遅い成分が異なるふるまいをすることは測定されている。遅い成分がまさに$\bar R$に等しいことは仮説である。
+\end{proposition}
+\end{keyblock}
+
+\section{接近に伴う増加}
+
+動物が通路を遠くの報酬へ走るとき、行動選択の領域のドーパミン濃度は、目標が近づく数秒の間なめらかに上昇する~\cite{Hamid2016}。第\ref{sec:dofa}章によれば、こうなるはずはない。すべては計画どおりに進み、$\delta$はゼロのはずである。
+
+第一の説明。この上昇は$\delta$ではなく期待$V$そのもの、つまり前節の「目標は近い、がんばる価値がある」という信号である~\cite{Hamid2016}。第二の説明は$\delta$を保持する~\cite{Kim2020}。期待が正しければ、時間幅$\tau_\gamma$のもとで報酬$R$への道のりにおいて期待は$V=Re^{-(T-t)/\tau_\gamma}$のように増え、誤差の式~\eqref{eq:ctd}により$\dd V/\dd t-V/\tau_\gamma=0$となる。しかし遠くでは期待が低すぎ、近づくにつれて推定が精密になるとしよう。すると期待はもっと急に、たとえば$\tau_v<\tau_\gamma$として$V=Re^{-(T-t)/\tau_v}$のように増え、
+\begin{empheq}[box=\keybox]{equation}
+\delta(t) \;=\; \frac{\dd V}{\dd t}-\frac{V}{\tau_\gamma} \;=\; V\Bigl(\frac{1}{\tau_v}-\frac{1}{\tau_\gamma}\Bigr) \;>\; 0 .
+\label{eq:ramp}
+\end{empheq}
+誤差は正で、$V$とともに増える。これがあのなめらかな上昇である（図~\ref{fig:ramp}）。$\tau_\gamma=4\,\text{s}$、$\tau_v=1\,\text{s}$なら、毎秒$\delta=0.75\,V$となる。この説は仮想通路で、動物を瞬時に目標の近くへ移すことで検証された。ドーパミンはなめらかなレベルではなく、微分にふさわしくバーストで応答した~\cite{Kim2020}。
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=1.6cm,y=2.6cm]
+\draw[->,gray!70!black] (-4.2,0) -- (0.5,0) node[below left,black] {\small $t$};
+\draw[->,gray!70!black] (-4.2,0) -- (-4.2,1.2);
+\foreach \x/\l in {-4/{$T-4$},-2/{$T-2$},0/{$T$}}{\draw[gray!60!black] (\x,-0.03) -- (\x,0.03); \node[below,font=\scriptsize] at (\x,0) {\l\,s};}
+\draw[thick,densely dashed,gray!60!black] plot[domain=-4:0,samples=40] (\x,{exp(\x/4)});
+\draw[very thick,blue!60!black] plot[domain=-4:0,samples=60] (\x,{exp(\x)});
+\draw[very thick,red!70!black] plot[domain=-4:0,samples=60] (\x,{0.75*exp(\x)});
+\node[anchor=south east,font=\small,gray!50!black] at (-1.3,0.77) {$\tau_v=\tau_\gamma$での$V$：$\delta=0$};
+\node[right,font=\small,blue!60!black] at (0.05,1.0) {$\tau_v=1\,\text{s}$での$V$};
+\node[right,font=\small,red!70!black] at (0.05,0.72) {\eqref{eq:ramp}による$\delta$};
+\end{tikzpicture}
+\caption{予測誤差としての、報酬への接近に伴うドーパミンの増加。$\tau_\gamma=4\,\text{s}$。破線は時間幅の要求どおりに増える期待（$\delta=0$）、青はもっと急に増える期待、赤は誤差~\eqref{eq:ramp}。}
+\label{fig:ramp}
+\end{figure}
+
+測定されていること。なめらかな増加は、ドーパミン濃度にも\nt{DOPA}ニューロンのスパイクのレートにもあり~\cite{Kim2020}、状況の瞬間的な跳躍はドーパミンの跳躍を起こす。二つの説明のどちらが正しいのか、あるいは出力ごとに両方が正しいのかは議論されている。
+
+\section{後ろを振り返る}
+
+ここまでの理論はすべて\emph{前を}見ている。現代の理論の一つは方向を逆にする~\cite{Jeong2022}。脳は予告信号から報酬を予測することを学ぶのではなく、報酬を得てから\emph{振り返る}ことを学ぶとする。どの出来事が他より頻繁にそれに先行したか。この結びつきの尺度は二つの確率の差である。
+\begin{empheq}[box=\keybox]{equation}
+M \;=\; P(\text{報酬の前の予告信号}) \;-\; P(\text{ランダムな窓の予告信号}) .
+\label{eq:retro}
+\end{empheq}
+予告信号が報酬なしにもよく現れるなら第二項が大きく、結びつきは弱い。この理論では、ドーパミンが伝えるのは予測誤差ではなく、その出来事がどれだけ報酬のありそうな\emph{原因}であるかである。
+
+振り返りの機構は、第\ref{sec:dofa}章の三要素則と同じものを要求する。報酬の瞬間にその前に何があったかを読み出せるよう、各出来事は消えていくトレースを残さなければならない。違いはシナプスではなく、\nt{DOPA}が何を伝えるかにある。
+
+理論~\eqref{eq:retro}と誤差~\eqref{eq:ctd}が異なる予測をする実験では、ドーパミン放出がいくつかの場合に前者に従った~\cite{Jeong2022}。しかし別の実験では、学習中のドーパミン応答は報酬の時点から予告信号の時点へと徐々に移った。誤差~\eqref{eq:ctd}による学習が要求するとおりである~\cite{Amo2022}。どちらの理論が脳を記述するかはまだ分からない。
+
+\section{報酬だけではない誤差}
+
+最後の拡張は、誤差が\emph{何についての}ものかに関する。期待していたジュースを、同じ価値で味の違う別のジュースに替えると、価値は変わらず、誤差~\eqref{eq:ctd}はゼロである。ところが\nt{DOPA}ニューロンはこの置き換えに応答する~\cite{Takahashi2017}。また人工的に起こしたドーパミンのバーストは、報酬なしに、二つの中立な刺激の結びつきを動物に学ばせることができる~\cite{Sharpe2017}。どうやら\nt{DOPA}は報酬だけでなく、\emph{何が}起こるかの予測誤差も伝えている。
+
+形式的には、これは\eqref{eq:ctd}の単純な一般化である。報酬の流れ$r$一つの代わりに、起きていることの特徴$\varphi_k$（味、場所、音）の組をとり、それぞれに固有の期待$M_k$と固有の誤差をもたせる~\cite{Gardner2018}。
+\begin{empheq}[box=\keybox]{equation}
+\delta_k(t) \;=\; \varphi_k(t) \;+\; \frac{\dd M_k}{\dd t} \;-\; \frac{M_k}{\tau_\gamma} ,
+\qquad k=1,\dots,K .
+\label{eq:vectortd}
+\end{empheq}
+報酬は特徴の一つにすぎず、誤差のベクトルは何がよいかだけでなく、何が何に続くか、つまり世界のモデルを教える。
+
+\nt{DOPA}ニューロンの不均一性はこれと整合する。一つの課題の中で、ニューロンごとに異なる量を運ぶ。報酬に関係するもの、運動に関係するもの、注意の向きに関係するものがある~\cite{Engelhard2019}。
+
+\begin{keyblock}
+\begin{proposition}[配線ではなく配線の束]
+\label{prop:bundle}
+\nt{DOPA}系の信号は一つの数ではない。ニューロンにわたって（分布~\eqref{eq:expectile}、異なる特徴~\eqref{eq:vectortd}、危険の別軸）、また時間にわたって（速い誤差とゆっくりしたレベル~\eqref{eq:vigor}）分解されている。スカラー誤差~\eqref{eq:ctd}はこの信号の第一近似であり、しきい値付き加算器がニューロンの第一近似であるのと同じである。
+\end{proposition}
+\end{keyblock}
+
+\section{まとめ}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{2.5cm}>{\raggedright}p{3.2cm}>{\raggedright}p{3.6cm}>{\raggedright\arraybackslash}p{4.2cm}}
+\toprule
+理論 & 配線を流れるもの & 主な測定 & 分かっていること \\
+\midrule
+予測誤差（第\ref{sec:dofa}章） & スカラー$\delta$~\eqref{eq:ctd} & バースト、予告信号への移行、落ち込み & 測定済み。第一近似 \\
+分布 & 非対称性の異なる$\delta_i$の組 & ニューロンごとに異なる反転点 & 実験との一致あり。ばらつきの役割は仮説 \\
+重要性 & $|\delta|$、新奇性。危険の軸 & 一部のニューロンでの不快なものへのバースト & 測定済み。使われ方は議論中 \\
+時間のコスト & ゆっくりしたレベル$\bar R$ & ドーパミンは行動を速める。遅い成分は出力での放出にもスパイクのレートにもある & 速い成分と遅い成分の分離は測定済み。$\bar R$は仮説 \\
+接近に伴う増加 & $V$、または推定の精密化に伴う$\delta$~\eqref{eq:ramp} & なめらかな増加、通路での移動時の跳躍 & 増加は測定済み。説明は議論中 \\
+後ろを振り返る & 因果的結びつきの尺度~\eqref{eq:retro} & 二つの理論の予測が分かれる実験 & 結果が互いに矛盾 \\
+誤差のベクトル & 特徴ごとの$\delta_k$~\eqref{eq:vectortd} & 味の変化への応答。報酬なしの学習 & 測定済み。ベクトル形式は仮説 \\
+\bottomrule
+\end{tabular}
+\caption{\nt{DOPA}系が伝えるもの：第\ref{sec:dofa}章の標準的な描像とその現代的な拡張。}
+\label{tab:dofaalt}
+\end{table}
+
+表~\ref{tab:dofaalt}の理論は互いに排他的ではない。ほぼすべてが予測誤差を基礎として残し、その形式を拡張している。本格的に競合するのは振り返りだけで、この論争は実験が決着をつける。エンジニアにとっての結論は単純である。配線が実は宛先の異なる多数の配線であれば、命題~\ref{prop:broadcastcost}のブロードキャストの代償は下がる。
+
+\section{問題}
+
+\begin{exercise}[\lvlA]
+\label{ex:07:1}
+\emph{1滴の分布の点。}大きさ$1$のジュースが確率$p=0.2$で来て、そうでなければ報酬は$0$である。\eqref{eq:expectile}から$\kappa_i=0.2$、$0.5$、$0.8$の$V_i$を求めよ。この報酬の中央値はいくらか。点~\eqref{eq:expectile}は分位点とどう違うか。
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:07:2}
+\emph{2個のニューロンから分布を。}報酬は$0$か$x$で、$x$の確率は$p$である。規則~\eqref{eq:asymmetric}に従う2個のニューロンが$V(1/2)=0.25$、$V(0.8)=0.5$を報告した。$p$、$x$、報酬の標準偏差を復元せよ。$\kappa=0.2$のニューロンは何を報告するか。
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:07:3}
+\emph{シミュレーション：非対称性から分布へ。}$\kappa_i=0.1,\dots,0.9$の9個の\nt{DOPA}ニューロンを、規則~\eqref{eq:asymmetric}、$\alpha_i^+=2\kappa_i$、$\alpha_i^-=2(1-\kappa_i)$、$[0,1]$上一様な報酬でシミュレートせよ。$V_i$のばらつきは$\eta$にどう依存するか。この分布を、等確率の2滴$0.25$と$0.75$から区別するにはどんな$\eta$が必要か。
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:07:4}
+\emph{時間のコスト。}(a)~\eqref{eq:vigor}を導き、最適点での総コストを求めよ。(b)~脳が$\bar R$を$k$倍の誤差で推定した。$k=2$と$k=4$での相対的な払いすぎを求めよ。ドーパミンのゆっくりしたレベルは$\bar R$をどれだけ正確に伝えなければならないか。
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:07:5}
+\emph{移動時のバースト。}期待は$\tau_v=1\,\text{s}$、$\tau_\gamma=4\,\text{s}$で\eqref{eq:ramp}に従って増え、動物は地点$T-2\,\text{s}$から$T-1\,\text{s}$へ瞬時に移される。$\delta$のバーストの面積を$R$に対する割合で求め、移動前のランプの何秒分にあたるかを求めよ。ドーパミンが$V$そのものを伝えるなら、移動は何を示すか。
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:07:6}
+\emph{設計：配線上の二つの信号。}\nt{DOPA}の配線を、毎秒$s=1/60$スパイク/sの割合で増えるレベルと、$A=3$スパイクの出来事が流れる。トレース$\tau_e=1\,\text{s}$のシナプスは、レートから$\tau_f$で平滑化したそのコピーを差し引く。出来事の損失が$10\,\%$以下で、かつトレースの時間内でのレベルの寄与が出来事の寄与の$10\,\%$未満になる$\tau_f$はどれか。
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:07:7}
+\emph{実験の設計：振り返り対誤差。}窓の中で予告信号は確率$0.1$で現れ、その後の報酬は確率$0.8$である。$\Delta P=P(\text{報酬}\mid\text{予告})-P(\text{報酬}\mid\text{なし})$と\eqref{eq:retro}の$M$を、(a)~予告信号なしの報酬を窓あたり$0.08$加えた場合、(b)~報酬なしの予告信号の頻度を2倍にした場合で比べよ。
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:07:8}
+\emph{配線の束とブロードキャストの代償。}問題~\ref{ex:06:8}のモデルで、$N$個のニューロンが自分の配線をもつ$K$群に分けられ、各配線には他群の誤差が割合$\rho$だけ漏れ込む。学習定数が$N/K+2+\rho^2N(1-1/K)$に等しいことを示せ。$K\to\infty$、$N=10^{10}$、$\rho=0.01$で何試行になるか。
+\end{exercise}

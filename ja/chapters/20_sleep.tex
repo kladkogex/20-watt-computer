@@ -1,0 +1,194 @@
+\chapter{睡眠中にニューロンは何をしているか}
+\chaptermark{睡眠}
+\label{sec:sleep}
+
+\section{睡眠は電源オフではなく、別のモードである}
+
+電源の切れたコンピュータを見たエンジニアは、何もしていないと言うだろう。眠っている脳ではそうはいかない。睡眠中もニューロンは黙っていない。深い睡眠では皮質はスパイクを出し、レム睡眠では日中とほぼ同じだけ出す。変わるのはニューロンが\emph{働くかどうか}ではなく、\emph{どう}働くかである。睡眠はマシンのモードの集まりであり、それを切り替えるのは日中と同じブロードキャストチャネルである。
+
+各モードについて「レジスタの状態」を書き出せる（表~\ref{tab:sleepmodes}）。日中は\nt{ACET}、\nt{NORA}、\nt{SERO}が働き、センサはつながり、筋肉は指令に従う。深いノンレム睡眠では三つのチャネルがすべて静まり、感覚器官からの入力は弱まる~\cite{Hasselmo1999}。皮質でのアセチルコリン放出は下がり、\nt{NORA}ニューロンと\nt{SERO}ニューロンは日中より低い頻度でスパイクを出す~\cite{Marrosu1995,AstonJonesBloom1981,McGintyHarper1976}。レム睡眠では奇妙な様子になる。\nt{ACET}は再び日中のレベルまで上がるが~\cite{Marrosu1995}、\nt{NORA}と\nt{SERO}はほぼ完全に沈黙する~\cite{AstonJonesBloom1981,McGintyHarper1976,JacobsAzmitia1992}。レム睡眠中は体の筋肉が切り離される。筋肉を制御する\nt{ACET}ニューロンが\nt{GABA}と\nt{GLYC}によって強く抑制されるからである~\cite{BrooksPeever2012}。第~\ref{sec:gaba}~章と同じ禁止を、出力全体に一度にかけたものである。
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{3.1cm}>{\raggedright}p{2.9cm}>{\raggedright}p{3.2cm}>{\raggedright\arraybackslash}p{3.4cm}}
+\toprule
+& 覚醒 & ノンレム睡眠 & レム睡眠 \\
+\midrule
+\nt{ACET}（書き込み、第~\ref{sec:acet}~章） & 高い & 低い & 高い \\
+\nt{NORA}（ゲイン、第~\ref{sec:nora}~章） & 中程度、バースト & 低い & ほぼ沈黙 \\
+\nt{SERO}（第~\ref{sec:serocomputer}~章） & 中程度 & 低い & ほぼ沈黙 \\
+センサからの入力 & 接続 & 弱まる & 弱まる \\
+筋肉への出力 & 接続 & 弱まる & 抑制で遮断 \\
+皮質の活動 & 一様 & 遅い振動：活動--静止 & 日中のように一様 \\
+\bottomrule
+\end{tabular}
+\caption{三つのモードにおけるマシンのレジスタの状態。すべての行は測定済みである。\nt{ACET}、\nt{NORA}、\nt{SERO}のレベルは睡眠段階ごとの直接記録による~\cite{Marrosu1995,AstonJonesBloom1981,McGintyHarper1976}。}
+\label{tab:sleepmodes}
+\end{table}
+
+\section{いつ眠るか：ヒステリシス付きリレー}
+
+マシンがいつ睡眠に切り替わるかを決めるものは何か。二つの部分からなる単純な回路がよく働く~\cite{Borbely1982}。第一の部分は\emph{睡眠圧}$S$である。起きている間にたまり、眠っている間に解消される。これは日中に充電され、夜に放電されるコンデンサである。
+\begin{empheq}[box=\keybox]{equation}
+\frac{\dd S}{\dd t} \;=\; \frac{1-S}{\tau_r}\ \ \text{（覚醒）},\qquad
+\frac{\dd S}{\dd t} \;=\; -\frac{S}{\tau_d}\ \ \text{（睡眠）} .
+\label{eq:sleeppressure}
+\end{empheq}
+第二の部分は二つの閾値である。$S$が上の閾値$H(t)$に達するとマシンは眠りに落ち、$S$が下の閾値$L(t)$まで下がると目覚める。どちらの閾値も、第~\ref{sec:chemoutput}~章の概日リズムに合わせて滑らかに揺れる。こうしてヒステリシス付きリレー、すなわち第~\ref{sec:bistable}~節のシュミットトリガができる。コンデンサと合わせると、概日リズム~\eqref{eq:pll}に位相同期する弛張発振器になる。
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=0.16cm,y=4.2cm]
+\foreach \a/\b in {0/4.3,21.2/29.3,45.4/53.4,69.5/72}{\fill[blue!8] (\a,0) rectangle (\b,1);}
+\draw[->,gray!70!black] (0,0) -- (75,0) node[right,font=\small,black] {$t$, h};
+\draw[->,gray!70!black] (0,0) -- (0,1.08) node[left,font=\small,black] {$S$};
+\foreach \t in {0,24,48,72}{\draw[gray!60!black] (\t,-0.02) -- (\t,0.02); \node[below,font=\scriptsize] at (\t,0) {\t};}
+\draw[thick,densely dashed,red!70!black] plot file {figures/sleep_H.dat};
+\draw[thick,densely dashed,green!45!black] plot file {figures/sleep_L.dat};
+\draw[very thick,blue!60!black] plot file {figures/sleep_S.dat};
+\node[font=\scriptsize,red!70!black,anchor=west] at (73,0.72) {$H$：入眠};
+\node[font=\scriptsize,green!45!black,anchor=west] at (73,0.24) {$L$：覚醒};
+\node[font=\scriptsize,blue!60!black] at (25.25,0.93) {睡眠};
+\node[font=\scriptsize,blue!60!black] at (49.4,0.93) {睡眠};
+\end{tikzpicture}
+\caption{$\tau_r=18.2$~h、$\tau_d=4.2$~hでの睡眠圧$S$~\eqref{eq:sleeppressure}。日中$S$は上の閾値$H$まで充電され、夜（網掛け）には下の閾値$L$まで放電される。二つの閾値は概日リズムとともに揺れる。マシンはおのずと約$16$時間の覚醒と$8$時間の睡眠のサイクルに落ち着く。}
+\label{fig:twoprocess}
+\end{figure}
+
+我々のモデルでは、通常の値$\tau_r=18.2$~h、$\tau_d=4.2$~hで、マシンはおのずと$16.1$時間の覚醒と$8.0$時間の睡眠に落ち着く（図~\ref{fig:twoprocess}）。モデルは奇妙に見えることも説明する。40時間眠らずにいると睡眠圧は$0.90$に達するが、モデルでの回復睡眠は$8.8$時間にすぎず、ふだんより1日長く眠るわけではない。放電は指数関数的なので、高い電荷はすばやく抜ける。「借り」は睡眠の長さではなく深さで返される。
+
+物理的に$S$の役割を果たすのは何か。有力な候補は、付録~\ref{sec:othermediators}の「負荷カウンタ」であるアデノシンである。その濃度は覚醒中に上がり、睡眠中に下がる~\cite{PorkkaHeiskanen1997,Dunwiddie2001}。睡眠圧がまさにアデノシンであり、それ以外の何物でもないというのは仮説である。
+
+\section{ノンレム睡眠：弛張発振器としてのネットワーク全体}
+
+深い睡眠では、皮質のニューロンは群全体で交互に働く。1秒に1回より少ない頻度で、数百ミリ秒のあいだ一斉にオンになり（\emph{活動状態}）、一斉に沈黙する（\emph{静止状態}）。この振動の周波数は$1$~Hz未満で、麻酔下では$0.3$--$0.4$~Hzが最も多い~\cite{Steriade1993}。この遅い振動は、すでに手元にある部品で組み立てられる。自己への強いフィードバックをもつ\nt{GLUT}ニューロン群、すなわち二つの安定状態をもつ第~\ref{sec:glutcomputer}~章の記憶を取り、第~\ref{sec:muscles}~章のリズム発生器のような遅い疲労を加える。
+\begin{empheq}[box=\keybox]{equation}
+\tau\,\frac{\dd r}{\dd t} = -r + F\bigl(w\,r + I - a\bigr),
+\qquad
+\tau_a\,\frac{\dd a}{\dd t} = -a + b\,r .
+\label{eq:updown}
+\end{empheq}
+群はオンになり、働き、疲れる。疲労$a$が上の状態を食いつぶし、群は静止に落ちる。静止中に疲労が回復すると下の状態が消え、群は再びオンになる。睡眠圧と同じ弛張発振器ができるが、およそ8万倍速い。
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=2.9cm,y=1.0cm]
+\begin{scope}[yshift=1.9cm]
+\draw[->,gray!70!black] (0,0) -- (4.1,0);
+\draw[->,gray!70!black] (0,0) -- (0,1.25) node[left,font=\small,black] {$r$};
+\draw[thick,blue!60!black] plot file {figures/updown_sleep.dat};
+\node[font=\scriptsize,anchor=west] at (4.15,0.5) {睡眠：$b=5$};
+\end{scope}
+\draw[->,gray!70!black] (0,0) -- (4.1,0) node[right,font=\small,black] {$t$, s};
+\draw[->,gray!70!black] (0,0) -- (0,1.25) node[left,font=\small,black] {$r$};
+\draw[thick,red!70!black] plot file {figures/updown_wake.dat};
+\node[font=\scriptsize,anchor=west] at (4.15,0.5) {日中：$b=1$};
+\foreach \t in {0,1,2,3,4}{\draw[gray!60!black] (\t,-0.05) -- (\t,0.05); \node[below,font=\scriptsize] at (\t,0) {\t};}
+\end{tikzpicture}
+\caption{二つのモードにおける同じ群~\eqref{eq:updown}：$w=5$、$I=2$、$\theta=2.5$、$\tau=10\ms$、$\tau_a=0.3$~s。疲労が強いと（$b=5$、ノンレム睡眠のように）、群は周期$1.1$~sで活動と静止の間を振動する（モデルの値。皮質では周期は1秒より長く、麻酔下では約$3$~s）。疲労を弱めると（$b=1$。アセチルコリンの作用がこれにあたる）、同じ群が一様に働く。}
+\label{fig:updown}
+\end{figure}
+
+では、ネットワークを振動から一様な日中の動作に移すものは何か。アセチルコリンは、ニューロンで疲労を生む遅い電流を抑える~\cite{McCormick1992}。我々のモデルでは、疲労が強い$b=5$のとき群は周期$1.1$~sで振動し（測定された振動より速いが同じ桁である）、整数個の周期で平均すると時間の約$35\%$働く。疲労が弱い$b=1$では、同じ群が一様に働く（図~\ref{fig:updown}）。一つのレジスタ、つまり\nt{ACET}のレベルが、発振器を増幅器に切り替える。睡眠中は遅い振動の上に、毎秒$7$--$15$回のより速いリズムのバーストも乗る。これを生むのは皮質と中間の中継核との間の\nt{GLUT}--\nt{GABA}ループであり~\cite{SteriadeMcCormickSejnowski1993}、第~\ref{sec:gaba}~章のリズムの親戚である。
+
+\section{リプレイ：1日の早送り}
+
+第~\ref{sec:acet}~章で、ノンレム睡眠中には日中に一緒に働いたニューロンが再び一緒に、同じ順序で発火するのを見た。ここにエンジニアリング上の細部を一つ加えよう。リプレイは\emph{早送り}で行われる。日中に数秒かかった系列が、睡眠中には1秒の数分の1で再生される~\cite{Nadasdy1999}。海馬ではおよそ20倍速く~\cite{LeeWilson2002}、皮質では6--7倍速い~\cite{Euston2007}。しかも再生はでたらめな時刻に起こるのではない。ある領域でのリプレイの短いバーストは、活動と静止の振動や、皮質のリズムの速いバーストにタイミングを合わせる。この協調を人為的に強めると記憶が良くなる~\cite{Maingret2016}。これはもう偶然の一致ではなく、因果関係である。
+
+なぜマシンは1日を早送りするのか。エンジニアは\emph{破滅的忘却}と呼ばれる困難を知っている。新しいことを次々に順番に学ぶネットワークは、古いことを壊してしまう。救いになるのは\emph{インターリーブ}である。新しいことを古いことと混ぜて、少しずつ、何度も学ぶ。二つの学習系の仮説~\cite{McClelland1995}によれば、速い記憶が1日をまるごと記録し、睡眠中にそれを少しずつ、混ぜながら、何度も遅い皮質に再生する。これは第~\ref{sec:acet}~章の「速いバッファ--遅いストレージ」の組と同じであり、第~\ref{sec:motorlearning}~章の速い学習者と遅い学習者の組とも同じである。リプレイとその協調は測定済みである。その目的が遅い記憶のインターリーブ学習だというのは、根拠の強い仮説である。
+
+\section{重みの再正規化}
+
+日中は、第~\ref{sec:dofa}~章のヘッブ則が主に結合を強める。強めるだけなら重みは増え続け、それとともにエネルギー消費が増え、感度が落ちる。すべての入力が強いニューロンは、入力を区別できなくなる。\emph{シナプス恒常性}仮説~\cite{TononiCirelli2014}によれば、睡眠が必要な理由の一つは重みを動作レベルに戻すことである。すべての結合が同じ比率で弱められるので、結合の\emph{比}、つまり学習した内容は保たれる。エンジニアにとってこれは規則~\eqref{eq:oja}のような正規化だが、動作中にではなく別の時間に行われる。
+
+直接の測定はこれと矛盾しない。マウスでは、皮質シナプスの接触面積は睡眠後に覚醒後より約$18\%$小さく、減少は大きさに比例し、最も大きく安定した接触はほとんど変わらない~\cite{deVivo2017}。重みのスケーリングは測定済みである。それが睡眠の主な役割だというのは仮説である。
+
+\section{レム睡眠：入力と出力から切り離されたマシン}
+
+レム睡眠では皮質はほぼ日中と同じように働くが、感覚器官からの入力は弱まり、筋肉への出力は抑制で遮断されている。エンジニアにはおなじみのモード、\emph{ベンチ試験}である。回路は全力で動くが、入力は内部の信号発生器につながれ、出力は何も壊さないようにアクチュエータから外されている。ある仮説によれば、夢はまさにこうした、日中に組み立てた世界モデルの内部での試運転である。そのときネットワークが正確に何をしているのか、学習しているのかどうかはわかっていない。ここで測定されているのは表~\ref{tab:sleepmodes}に書いたことだけである。どのチャネルがオンで、どれが沈黙し、出力が遮断されていること。
+
+\section{保守と局所睡眠}
+
+睡眠中は細胞間のすき間が広がり、脳から代謝産物がより速く洗い流されると長く考えられてきた~\cite{Xie2013}。別の方法で洗浄を測定した最近の実験は逆の結果を得た。睡眠中は洗浄が遅いというのである~\cite{Miao2024}。この問題はいま未解決であり、我々も未解決のままにしておく。
+
+より確かな事実がもう一つある。睡眠はマシン全体の性質ではなく、局所ネットワークの性質である。動物を長く眠らせずにおくと、動物が起きて動いている間にも、皮質の個々の部位がノンレム睡眠のように短時間静止に落ち込み、その瞬間に動物は誤りを犯しやすくなる~\cite{Vyazovskiy2011}。各ネットワークは自分で疲れ、自分で切り替わる。全体のモードが生じるのは、ブロードキャストチャネルがすべてのネットワークを一斉に切り替えるときである。
+
+\begin{keyblock}
+\begin{proposition}[モードの集まりとしての睡眠]
+\label{prop:sleep}
+睡眠中もニューロンはオフにならない。ブロードキャストチャネルがマシンを別のモードに移す。いつ眠るかは、概日リズムに同期したヒステリシス付きリレー~\eqref{eq:sleeppressure}が決める。ノンレム睡眠ではネットワークが弛張発振器~\eqref{eq:updown}になり、1日を早送りで再生する。レム睡眠では入力と出力から切り離されて働く。モード、リプレイ、重みのスケーリングは測定済みである。それらの目的、すなわちインターリーブ学習と再正規化は、根拠の強い仮説である。
+\end{proposition}
+\end{keyblock}
+
+\section{まとめ}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{3.2cm}>{\raggedright}p{4.4cm}>{\raggedright\arraybackslash}p{5.2cm}}
+\toprule
+起きること & 方法 & わかっていること \\
+\midrule
+モードの切り替え & \nt{ACET}、\nt{NORA}、\nt{SERO}のレジスタ（表~\ref{tab:sleepmodes}） & 測定済み \\
+いつ眠るか & コンデンサ$S$とヒステリシス付きリレー~\eqref{eq:sleeppressure} & モデルは実験をよく記述する。$S$としてのアデノシンは仮説 \\
+遅い振動 & フィードバックと疲労をもつ群~\eqref{eq:updown} & 振動は測定済み。モデルは最も単純な回路 \\
+1日の早送り & $6$--$20$倍速のリプレイ、振動と協調 & 測定済み。協調を強めると記憶が良くなる \\
+リプレイの目的 & 遅い記憶のインターリーブ学習 & 根拠の強い仮説 \\
+重みの再正規化 & 睡眠中の結合のスケーリング & 接触の縮小は測定済み。睡眠の主な役割とするのは仮説 \\
+レム睡眠 & 入力と出力を切り離した動作 & モードは測定済み。目的は不明 \\
+洗浄 & 細胞間のすき間の拡大 & 矛盾する結果 \\
+局所睡眠 & 個々の部位が静止に落ちる & 測定済み \\
+\bottomrule
+\end{tabular}
+\caption{睡眠中にニューロンは何をしているか。}
+\label{tab:sleep}
+\end{table}
+
+表~\ref{tab:sleep}が本章をまとめる。睡眠はマシンの作業の休止ではなく、動作中の保守であることがわかった。同じブロードキャストチャネルによるモードの切り替え、歩行リズムと同じ部品でできた発振器、遅い記憶のための1日の早送り、そして重みの再正規化である。日中にマシンは書き込み、夜には書いたものを書き直して整理する。
+
+\section{問題}
+
+\begin{exercise}[\lvlA]
+\label{ex:20:1}
+\emph{概日リズムのないリレー。}閾値が一定で$H=0.67$、$L=0.17$（図~\ref{fig:twoprocess}のモデルの閾値の平均値）とする。$\tau_r=18.2$~h、$\tau_d=4.2$~hのとき、\eqref{eq:sleeppressure}から覚醒と睡眠の長さ、発振器の周期を導け。それでも揺れる閾値のモデルが$16.1+8.0=24$~hに落ち着くのはなぜか。この効果は第~\ref{sec:chemoutput}~章のどの素子に関係するか。
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:20:2}
+\emph{睡眠の借り。}睡眠圧$S_0$で始まった睡眠は$t_s=\tau_d\ln(S_0/L)$続く。$\tau_d=4.2$~h、$L$は目覚めるときの下の閾値である。(a)~$40$~h眠らずにいたあと$S_0=0.90$で、睡眠は$8.8$~h続いた。$L$はいくらだったか。通常の$L\approx0.092$なら睡眠はどれだけ続くか。(b)~一晩でシナプス接触の面積は$18\%$減る。日中に重みはどれだけ増えなければならないか。
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:20:3}
+\emph{閾値の設計。}$\tau_r=18.2$~h、$\tau_d=4.2$~hのリレー~\eqref{eq:sleeppressure}がちょうど$16$~hの覚醒と$8$~hの睡眠を与えるように、一定の閾値$H$と$L$を選べ。ある夜$4$時間で起こされたとき、このマシンは閾値が揺れるマシンより何が劣るか。
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:20:4}
+\emph{遅い振動の周期。}モデル~\eqref{eq:updown}で$F(x)=1/\bigl(1+e^{-(x-\theta)/k}\bigr)$、$w=5$、$I=2$、$\theta=2.5$、$k=0.25$、$b=5$、$\tau\ll\tau_a=0.3$~sとする。(a)~活動と静止が消える曲線$r=F(wr+I-a)$の折り返し点$a_{\text{up}}$と$a_{\text{down}}$を求めよ。(b)~活動中$r\approx1$、静止中$r\approx0$として、周期と活動の割合を求めよ。
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:20:5}
+\emph{振動はいつ止まるか。}問題~\ref{ex:20:4}のモデルで、不動点は曲線$a=wr+I-F^{-1}(r)$と直線$a=br$の交点にある。交点が折り返し点の間の中間の枝にある限り振動が続く。それが成り立つのは$b$がどの範囲のときか。\nt{ACET}は$b$を変えることで、どのように発振器を増幅器に切り替えるか。
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:20:6}
+\emph{シミュレーション：借りか位相か。}\texttt{sleep\_models.py}で、$48$~h後の最初の目覚めから、マシンを$D=24$、$32$、$40$、$48$、$64$~h起こしておく（\texttt{stay\_awake}、\texttt{days=8}）。各$D$で回復睡眠はどれだけ続くか。その長さを決めているものは何か。
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:20:7}
+\emph{シミュレーション：忘却とインターリーブ。}線形ニューロン$y=\mathbf w\cdot\mathbf x$、$n=40$が規則$\mathbf w\leftarrow\mathbf w-0.5\,(y-y^*)\,\mathbf x$で学習する。課題AとBはそれぞれ$10$個のパターン、$x_j\sim\mathcal N(0,1/n)$、$y^*=\pm1$である。Aを$200$エポック、続いてBを$200$エポック学習したあと、Aでの二乗平均誤差はいくらか。AとBを混ぜて$200$エポック学習したあとではどうか。
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:20:8}
+\emph{研究：インターリーブか再正規化か。}閾値をもつ問題~\ref{ex:20:7}のニューロンに、夜間の二つの処理を考える。(i)~すべての重みに$0.82$を掛ける。(ii)~古いパターンを新しいパターンと混ぜて繰り返す。それぞれは重みの比とニューロンの応答に何をするか。睡眠後のシナプスの大きさから、二つの仮説をどう区別できるか。
+\end{exercise}

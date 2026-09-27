@@ -1,0 +1,230 @@
+\chapter{マシン全体}
+\chaptermark{マシン全体}
+\label{sec:synthesis}
+
+\section{何を組み立ててきたか}
+
+ここまで表~\ref{tab:types}のニューロン型を一つずつ取り上げ、それが計算機に何を付け加えるかを問うてきた。ルールは毎回同じだった。生きた生物に実際にあるものだけを使い、共通のクロックは使わない。いよいよ部品を一つのマシンに組み上げ、それらがどう協調して働くかを見よう。
+
+第\ref{sec:neurontypes}章で描いた全体像は裏づけられ、より精密になった。\nt{GLUT}ニューロンの巨大なアドレス網がデータを運ぶ。\nt{GABA}ニューロンがそのデータの流れを制御する。そして網の上には四つのブロードキャストチャネルがあり、それぞれが自分のつまみを持つ。\nt{DOPA}はどの重み変化を残すかを告げ、\nt{SERO}は全体のレベルを保ち、仮説によれば計画の時間幅も決める。\nt{NORA}は探索か決定かを選び、\nt{ACET}は書き込みか読み出しかを選ぶ（図~\ref{fig:machine}）。
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  blk/.style={draw,very thick,rounded corners=3pt,align=center,font=\small},
+  reg/.style={draw,very thick,double,double distance=1.2pt,circle,minimum size=1.25cm,inner sep=0pt,font=\scriptsize,fill=orange!15},
+  bc/.style={->,thick,densely dashed,orange!85!black}]
+% sensors, bus, actions
+\node[blk,fill=green!8,text width=1.7cm] (S) at (0.9,0) {センサ\\\scriptsize オン／オフ};
+\draw[very thick,rounded corners=4pt,fill=blue!5] (2.6,-1.35) rectangle (9.0,1.35);
+\node[font=\small] at (5.8,0.95) {\nt{GLUT}バス：データ};
+\node[font=\scriptsize,align=center] at (4.3,0.25) {同時性、遅延、\\論理（第\ref{sec:glutcomputer}章）};
+\node[font=\scriptsize,align=center] at (7.4,0.25) {記憶、符号\\（第\ref{sec:code}, \ref{sec:acet}章）};
+\draw[thick,red!70!black,fill=red!8,rounded corners=2pt] (2.8,-1.15) rectangle (8.8,-0.55);
+\node[font=\scriptsize,red!60!black] at (5.8,-0.85) {\nt{GABA}（第\ref{sec:gaba}章）：禁止、選択、除算、リズム};
+\node[blk,fill=blue!5,text width=2.0cm] (A) at (10.9,0) {行動の\\選択};
+\draw[->,very thick] (S) -- (2.6,0);
+\draw[->,very thick] (9.0,0) -- (A);
+\draw[->,very thick] (A) -- (12.6,0) node[right,font=\small] {筋肉};
+\pic[scale=1.1] at (13.2,-0.5) {spring};
+\pic[scale=1.15] at (0.4,0.85) {eyepic};
+\pic[scale=1.05] at (1.35,0.85) {speaker};
+% registers
+\node[reg] (D) at (3.4,3.2) {\nt{DOPA}};
+\node[reg] (C) at (5.6,3.2) {\nt{SERO}};
+\node[reg] (N) at (7.8,3.2) {\nt{NORA}};
+\node[reg] (H) at (10.0,3.2) {\nt{ACET}};
+\node[font=\scriptsize,align=center,above=1pt] at (D.north) {誤差 $\delta$};
+\node[font=\scriptsize,align=center,above=1pt] at (C.north) {レベル、$\tau_\gamma$};
+\node[font=\scriptsize,align=center,above=1pt] at (N.north) {ゲイン $g$};
+\node[font=\scriptsize,align=center,above=1pt] at (H.north) {書き込み $a$};
+\draw[bc] (D.south) -- (3.4,1.35);
+\draw[bc] (C.south) -- (5.6,1.35);
+\draw[bc] (N.south) -- (7.8,1.35);
+\draw[bc] (H.south) -- (10.0,2.1) -- (8.8,1.35);
+\draw[bc] (H.south east) to[bend left=20] (A.north east);
+\draw[->,thick] (2.85,1.35) -- (2.85,2.75) -- (D.west) node[pos=0.25,left,font=\scriptsize] {$V$};
+\draw[->,thick,green!45!black] (0.4,3.2) node[left,black,font=\small] {報酬 $r$} -- (2.2,3.2) -- (D.west);
+\pic[scale=0.9] at (-0.45,3.7) {juice};
+\draw[->,thick,densely dotted,gray!50!black] ([yshift=0.45cm]D.north) to[bend left=18] node[above,font=\scriptsize,black] {意外さ} ([yshift=0.45cm]N.north);
+\end{tikzpicture}
+\caption{マシンの全体像。\nt{GLUT}バスはデータをセンサから行動の選択へ運び、\nt{GABA}がその内部の流れを制御する。二重丸はブロードキャストチャネル、破線の矢印はその信号を網全体へ配ることを表し、チャネルごとに自分のつまみがある。\nt{DOPA}は報酬 $r$ と、バス内部の評価器（クリティック）からの期待値 $V$ を受け取る（第\ref{sec:dofa}章）。点線の矢印は、\nt{NORA}が異常に大きな誤差から意外さを知るという仮説を表す（第\ref{sec:nora}章）。}
+\label{fig:machine}
+\end{figure}
+
+\section{すべてのつまみを一つの式に}
+
+つまみは一つの模式的な式にまとめられる。これは新しいモデルではなく、第\ref{sec:glutcomputer}--\ref{sec:acet}章のモデルの要約であり、どの記号もそれぞれの章から取ってある。
+\begin{empheq}[box=\keybox]{equation}
+\begin{aligned}
+\tau\,\frac{\dd r_i}{\dd t} \;&=\; -r_i + F\Bigl(g\,\Bigl[\tfrac{1+a}{2}\,x_i + (1-a)\sum_j W_{ij}\,r_j - \sum_k M_{ik}\,q_k - \theta\Bigr]\Bigr),\\
+\frac{\dd W_{ij}}{\dd t} \;&=\; \eta\,a\,\delta(t)\,e_{ij}(t),
+\qquad \tau_e\,\frac{\dd e_{ij}}{\dd t} = -e_{ij} + r_i\,r_j,
+\qquad \delta = r + \frac{\dd V}{\dd t} - \frac{V}{\tau_\gamma} .
+\end{aligned}
+\label{eq:machine}
+\end{empheq}
+ここで $r_i$ は\nt{GLUT}ニューロンの発火率、$x_i$ はセンサからの入力、$W_{ij}\ge0$ はそれらの間の重みである（第\ref{sec:glutcomputer}章）。$q_k$ は\nt{GABA}ニューロンの発火率、$M_{ik}\ge0$ はその抑制の強さ（第\ref{sec:gaba}章）。$e_{ij}$ は適格度トレース、$\delta$ は\nt{DOPA}の誤差（第\ref{sec:dofa}章）。$\tau_\gamma$ は仮説上\nt{SERO}が決める時間幅、$g$ は\nt{NORA}のゲイン（第\ref{sec:nora}章）、$a$ は\nt{ACET}のレベル（第\ref{sec:acet}章）である。
+
+\eqref{eq:machine}に何が\emph{ない}かを見てほしい。クロックはない。すべては微分方程式で書かれ、各ニューロンは自分で変化する。独立したメモリもない。記憶するのは計算に使われるのと同じ $W_{ij}$ と、同じ活動 $r_i$ である。圧倒的多数のシナプスには個別の補正もない。その学習は局所的な適格度トレースと一つの共通の数との積である。出力ごとに専用の誤差配線を持つのは、運動を学習する回路だけである（第\ref{sec:motorlearning}章）。そして制御信号はわずか四種類、$\delta$, $\tau_\gamma$, $g$, $a$ で、これが八百億のニューロンを受け持つ。実際にはどれも一つの数ではなく、並列な線の小さな束である（命題~\ref{prop:bundle}）。だが束の中の線は数本にすぎない。
+
+\begin{keyblock}
+\begin{proposition}[アーキテクチャ]
+\label{prop:architecture}
+現在の理解の範囲で、脳というマシンは三つの層で記述できる。データは\nt{GLUT}のアドレスバスを流れる。データの流れを方向づけ、制限し、正規化するのはアドレス型の\nt{GABA}ニューロンである。動作モードを決めるのは数本のブロードキャストチャネルで、それぞれが網の広い領域に共通な並列線の小さな束である。最初の二層は確立している。ブロードキャストチャネル間の役割分担は、大部分が仮説である。
+\end{proposition}
+\end{keyblock}
+
+\section{すべての型を一つの表に}
+
+表~\ref{tab:synthesis}は本書のすべてのニューロン型をまとめる。自分の章を持たなかった四つの型も一行ずつ占める。そのうち二つはマシンの出力を扱う章で役割を得た。\nt{GLYC}は脊髄のループで（第\ref{sec:muscles}章）、\nt{ADRE}は化学的出力で（第\ref{sec:chemoutput}章）。残る二つの計算上の役割は、単純であるか未知である。ニューロンの型を決めない物質は付録~\ref{sec:othermediators}にまとめた。
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{1.3cm}>{\raggedright}p{1.0cm}>{\raggedright}p{3.9cm}>{\raggedright}p{1.5cm}>{\raggedright}p{1.8cm}>{\raggedright\arraybackslash}p{3.8cm}}
+\toprule
+型 & 章 & 何を計算するか & 時間 & バス & 分かっていること \\
+\midrule
+\nt{GLUT} & \ref{sec:glutcomputer}, \ref{sec:code}, \ref{sec:sensors}, \ref{sec:motorlearning}, \ref{sec:dendrites} & データ：同時性、遅延、論理、記憶、系列 & ms & アドレス & 確立 \\
+\nt{GABA} & \ref{sec:gaba}, \ref{sec:code}, \ref{sec:pain}, \ref{sec:motorlearning} & 流れの制御：禁止、選択、除算、安定性、リズム；痛みのゲート & ms & アドレス & 確立；発火率の除算は背景ノイズとの組み合わせで \\
+\nt{SERO} & \ref{sec:serocomputer}, \ref{sec:pain}, \ref{sec:sleep} & レベル調整器、平滑化；時間幅 $\tau_\gamma$；痛みの音量；睡眠のモード & 秒 & 容積 & 自己抑制は測定済み；時間幅は仮説 \\
+\nt{DOPA} & \ref{sec:dofa}, \ref{sec:dofaalt} & 予測誤差 $\delta$；遅いレベルは時間の値段 & $0.1$\,s と分 & ブロードキャスト & $\delta$ は測定済み；拡張は第\ref{sec:dofaalt}章 \\
+\nt{NORA} & \ref{sec:nora}, \ref{sec:pain}, \ref{sec:chemoutput}, \ref{sec:sleep} & ゲイン $g$：探索か決定か；意外さ；臓器への「アクセル」 & 秒 & ブロードキャスト & S/N比の向上は測定済み；探索での役割は仮説 \\
+\nt{ACET} & \ref{sec:acet}, \ref{sec:muscles}, \ref{sec:chemoutput}, \ref{sec:sleep} & 書き込みか読み出しか；学習速度；筋肉への出力；臓器への「ブレーキ」 & 秒 & 両方 & 三つの効果は測定済み；モード切り替えは仮説 \\
+\nt{GLYC} & \ref{sec:muscles}, \ref{sec:pain} & 脊髄と脳幹での負の重み：拮抗筋の禁止 & ms & アドレス & 確立 \\
+\nt{HIST} & --- & 全体への「起きていよ」信号 & 遅い & ブロードキャスト & 計算上の役割は未研究 \\
+\nt{ADRE} & \ref{sec:chemoutput} & 血液を通じた全身への「アクセル」；脳内では不明 & 遅い & ブロードキャスト & 脳の外では確立；脳内の役割は不明 \\
+\nt{ASPA} & --- & 弱い正の重み & ms & アドレス & 役割には異論あり \\
+\bottomrule
+\end{tabular}
+\caption{本書のすべてのニューロン型：それぞれが何を計算し、それがどこまで分かっているか。}
+\label{tab:synthesis}
+\end{table}
+
+\section{つまみはどう協調するか}
+
+これまで各章は一つのつまみだけを回してきた。今度は一つの出来事をマシン全体で追ってみよう（図~\ref{fig:timeline}）。動物はずっと前に、行動 $A$ がジュースをもたらすと学習している。ある時点で世界が変わる。$A$ はもうジュースをもたらさず、代わりに、動物がほとんど試さない行動 $B$ がジュースをもたらすようになる。
+
+\emph{誤差。} $A$ の後にジュースが来ず、\nt{DOPA}ニューロンは発火の落ち込みで応える。誤差の式~\eqref{eq:ctd}で $\delta<0$ である。いま $A$ を選んだばかりのシナプスは適格度トレースを持っており、弱まる。
+
+\emph{意外さ。} 一度の落ち込みはよくある偶然である。だが落ち込みが繰り返され、誤差がふだんより大きくなる。第\ref{sec:nora}章の仮説では、これこそが\nt{NORA}の信号、「世界が変わった」である。ゲイン $g$ が下がって選択が柔らかくなり、ノイズによって $B$ が試される頻度が上がる。
+
+\emph{書き込み。} 第\ref{sec:acet}章の仮説では、変化の後に\nt{ACET}が上がり、網を書き込みモードに切り替える。古い習慣を保持する内部結合は弱められ、センサからの入力は強められ、重みは容易に変わる。
+
+\emph{新しい習慣。} $B$ を試すと、誰も予期していなかったジュースが来る。発火のバースト、$\delta>0$ であり、$B$ を選んだシナプスが強まる。こうした試行が何回か続くと、期待値 $V$ は新しい世界に追いつき、誤差は再び小さくなる。
+
+\emph{復帰。} 意外さが去り、\nt{NORA}は高いゲインを戻し、選択は再び硬くなる。\nt{ACET}は下がり、網は読み出しモードで学習結果を使う。この間ずっと、仮説によれば\nt{SERO}が時間幅 $\tau_\gamma$、つまりどれほど先のジュースまで待つ価値があるかを決めている。
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=1.1cm,y=0.95cm]
+\foreach \y/\lab in {4/{$\delta$（\nt{DOPA}）},3/{$g$（\nt{NORA}）},2/{$a$（\nt{ACET}）},1/{$B$ の選択}}{
+  \draw[gray!60!black] (0,\y-0.35) -- (10,\y-0.35);
+  \node[left,font=\scriptsize] at (0,\y) {\lab};}
+\draw[densely dashed,gray!60!black] (2,0.4) -- (2,4.55) node[above,font=\scriptsize,black] {世界が変わった};
+\draw[densely dashed,gray!60!black] (5,0.4) -- (5,4.55) node[above,font=\scriptsize,black] {$B$ で初めてのジュース};
+\pic[scale=0.85] at (2,5.25) {nojuice};
+\pic[scale=0.85] at (5,5.25) {juice};
+% delta: dips after the change, burst at the first juice for B, then back to zero
+\draw[thick,red!70!black] (0,3.65) -- (2.3,3.65) -- (2.3,3.3) -- (2.5,3.3) -- (2.5,3.65) -- (3.2,3.65) -- (3.2,3.3) -- (3.4,3.3) -- (3.4,3.65) -- (4.1,3.65) -- (4.1,3.35) -- (4.3,3.35) -- (4.3,3.65) -- (5.0,3.65) -- (5.0,4.35) -- (5.2,4.35) -- (5.2,3.65) -- (5.8,3.65) -- (5.8,4.1) -- (6.0,4.1) -- (6.0,3.65) -- (6.6,3.65) -- (6.6,3.85) -- (6.8,3.85) -- (6.8,3.65) -- (10,3.65);
+% gain: high, drops after surprise, recovers
+\draw[thick,blue!60!black] (0,3.2) -- (3.0,3.2) -- (3.4,2.75) -- (5.8,2.75) -- (7.2,3.2) -- (10,3.2);
+% ACh: low, rises after the change, falls after learning
+\draw[thick,green!45!black] (0,1.75) -- (2.8,1.75) -- (3.3,2.25) -- (6.8,2.25) -- (7.8,1.75) -- (10,1.75);
+% choice of B
+\draw[thick,black] (0,0.7) -- (3.0,0.7) plot[domain=3:10,samples=40] (\x,{0.7+0.6/(1+exp(-(\x-5.3)*1.8))});
+\draw[->,gray!70!black] (0,0.2) -- (10.2,0.2) node[below left,font=\scriptsize,black] {時間};
+\end{tikzpicture}
+\caption{一つの出来事をマシン全体で追う。これは第\ref{sec:dofa}--\ref{sec:acet}章のモデルと仮説にもとづく定性的な模式図であり、計算結果ではない。変化の後、\nt{DOPA}は落ち込みで応える。落ち込みが繰り返されると、仮説では意外さの信号が上がり、\nt{NORA}がゲインを下げ、\nt{ACET}が書き込みを入れる。$B$ で初めてのジュースがバーストを生み、選択は $B$ に移り、つまみは元に戻る。}
+\label{fig:timeline}
+\end{figure}
+
+どのつまみも、他のつまみが何をしているかを知らないことに注意しよう。それぞれは自分の手がかり（誤差、その異常な大きさ、不確かさ）に反応し、動作の順序はひとりでに決まる。各ブロックが入力のそろった時点で動作する非同期回路と同じである。我々の知る限り、このような協調動作の全体はまだ検証されていない。個々のつまみは測定されているが、それらの協調は仮説である。
+
+\section{このマシンはコンピュータとどこが違うか}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{2.2cm}>{\raggedright}p{4.2cm}>{\raggedright\arraybackslash}p{6.6cm}}
+\toprule
+& 通常のコンピュータ & 脳 \\
+\midrule
+時間 & 共通のクロック、約1ギガヘルツ & 共通のクロックはない。各ニューロンは自分で変化し、窓は出来事と局所的なリズムが決める（第\ref{sec:glutcomputer}, \ref{sec:gaba}, \ref{sec:code}章） \\
+素子 & 信頼できる2値ゲート & アナログのしきい素子。シナプスはスパイクの大部分を失う（第\ref{sec:code}章） \\
+結合の符号 & 任意 & 送り手のニューロンが決める（第\ref{sec:neurontypes}章） \\
+記憶 & プロセッサとは別 & 計算と同じ結合の中と、自己維持する活動の中（第\ref{sec:glutcomputer}, \ref{sec:acet}章） \\
+学習 & 誤差逆伝播 & 局所的な規則、一つのブロードキャストされる数 $\delta$（第\ref{sec:dofa}章）と、運動回路の出力への誤差配線（第\ref{sec:motorlearning}章） \\
+制御 & レジスタと命令バス & 四つのブロードキャストチャネル、それぞれ数本の線の束（第\ref{sec:serocomputer}, \ref{sec:dofa}--\ref{sec:acet}章） \\
+エネルギー & プロセッサ1個に数十〜数百ワット & 脳全体で約 $20$ ワット、ニューロンあたり平均で毎秒約1スパイク（第\ref{sec:code}章） \\
+\bottomrule
+\end{tabular}
+\caption{脳と通常のコンピュータ。}
+\label{tab:computer}
+\end{table}
+
+表~\ref{tab:computer}は主な違いをまとめる。どれも自然が直しそびれた欠点ではなく、一つの設計の一部である。共通のクロックがなければ、「オン／オフ」センサと同時検出器が必要になる。信頼できない素子には、多数のニューロンによる冗長性が必要になる。計算と一体の記憶には、書き込みが読み出しを壊さないように\nt{ACET}が必要になる。逆向きの配線のない学習には、\nt{DOPA}とノイズが必要になる。そして毎秒1スパイクというエネルギーの上限が、言語全体を倹約的にし、スパイクをニュースのために使わせる。
+
+\section{分かっていないこと}
+
+このまとめを締めくくるのに最も誠実なのは、分かっていないことの一覧である。どの項目もエンジニアにとっての課題である。
+
+\emph{符号。} スパイクチャネルの容量は分かっているし、受け手がメッセージのどの部分を読むかを選ぶことも分かっている（第\ref{sec:code}章）。だが皮質がスパイクの正確なタイミングをどこまで使っているのか、ニューロンに「単語」があるのかは分かっていない。
+
+\emph{多層を通した学習。} ブロードキャスト信号による学習は遅く、結果に影響するニューロンが一つ増えるたびにさらに遅くなる（命題~\ref{prop:broadcastcost}）。では皮質は多層回路の数十億の重みをどう調整するのか。これは分かっていない。層の間で誤差をスパイクのバーストが運ぶモデルはある~\cite{Payeur2021}。答えの一部は、ニューロン自身の樹状突起の枝の中での計算にあるのかもしれない。そこでは一つのニューロンが小さな多層ネットワークのようにふるまう。皮質ニューロン一つのモデルの応答を再現するのに、人工ネットワークは5〜8層を要する~\cite{Beniaguev2021}。ヒトのニューロンの枝は排他的論理和さえ計算できる~\cite{Gidon2020}。もう一つの候補は自己教師あり学習である。皮質が自分自身の入力を予測するように学習するなら、誤差は各層でその場に生じ、共通の信号はいらない（第\ref{sec:dofa}章）~\cite{Keller2018}。
+
+\emph{ブロードキャストチャネルが実際に何を運ぶか。} \nt{DOPA}には標準的な描像とその六つの拡張がある（第\ref{sec:dofaalt}章）。\nt{NORA}と\nt{ACET}にはもっともらしい仮説がある（第\ref{sec:nora}, \ref{sec:acet}章）。\nt{SERO}については大部分が推測である。
+
+\emph{時間的な協調。} 関数をどう計算するか、出来事からの時間をどう計るか、局所的なリズムで流れをどう窓に切り分けるかは見てきた。だが共通のクロックを持たない巨大な網が遠く離れた領域の働きをどう協調させるのかは、部分的にしか分かっていない。
+
+\emph{エネルギー。} すべて合わせて20ワット。符号がなぜ疎でなければならないかは分かっている（命題~\ref{prop:economy}）。だが同じことを同じ電力でこなすマシンを作れる者は、まだいない~\cite{MehonicKenyon2022}。
+
+脳はエンジニアが組み立てたものではない計算機だが、その法則はどのエンジニアにも見覚えがある。RC回路、しきい値、フィードバック、フィルタ、バス、ブロードキャストレジスタ。その回路図を我々はまだ一部しか読めていない。続きを読むのは、回路図を読める人たちである。
+
+\section{本書のこの先}
+
+この章はマシンの計算の中核をまとめた。残りの章はその外へ出る。第\ref{sec:sensors}章と第\ref{sec:recognition}章は入力についてである。センサが光、音、分子をどうスパイクに変え、マシンがその中にどう物体を見分けるか。第\ref{sec:muscles}--\ref{sec:chemoutput}章は出力とそれを支えるものについてである。筋肉、警報信号としての痛み、専用の誤差配線による運動学習、そして体への遅い化学的出力。第\ref{sec:debugging}章は、ブレイン・コンピュータ・インターフェースを含め、マシンを外からどうデバッグするかを扱う。第\ref{sec:eetypes}章と第\ref{sec:dendrites}章は、今度は電気的な機能と入力の数でニューロンをもう一度分類する。第\ref{sec:sleep}章はマシンが世界から切り離されたときに何をするかを、第\ref{sec:livingmachine}章と第\ref{sec:dishbrain}章はチップ上の生きたニューロンで組み立てたマシンを扱う。
+
+\section{問題}
+
+この章の問題は、異なる章の結果を結びつける。どの問題も少なくとも二つの章にもとづく。
+
+\begin{exercise}[\lvlA]
+\label{ex:10:1}
+\emph{バスとレジスタ。} 四つのブロードキャストチャネルはそれぞれ約5本の線の束である（命題~\ref{prop:bundle}）。各線は毎秒1回変化し、4つのレベルを区別できる。\nt{GLUT}バス（$8.6\cdot10^{10}$ 個のニューロン、発火率は\eqref{eq:energy}、精度は\eqref{eq:spikeentropy}により $1\ms$）が1秒で送る量を、制御系が送るには何年かかるか。
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:10:2}
+\emph{一つのループに二つのつまみ。} ループ~\eqref{eq:ei}で、\eqref{eq:machine}のつまみが興奮側にかかるとする：$\tau_E\dot E=-E+g[(1-a)w_{EE}E-w_{EI}I+h]$。\nt{GABA}はつまみの制御を受けない。図~\ref{fig:ei}の数値で、\nt{NORA}のバーストが $g$ を $6$ に上げる。ループが安定となる最小の $a$ はいくつか。\nt{NORA}と\nt{ACET}のつまみは独立に回せるか。
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:10:3}
+\emph{ブロードキャストの代償はどこから来るか。} $N$ 個のニューロンの出力 $y_k=f(u_k)+\xi_k$ に分散 $\sigma^2$ の独立なガウスノイズがあり、$R\approx R_0+\sum_kR'_k\xi_k$（$R'_k$ はすべて等しい）、\nt{DOPA}は $\delta=R-R_0$ をブロードキャストする。1回の試行での補正 $\delta\,\xi_jx_j$ のS/N比を求めよ。試行数は $N$ とともにどう増えるか。
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:10:4}
+\emph{音と閃光を結びつける。} 音は $5\ms$ 後にバスに届き、閃光は $30\ms$ に初発スパイクの遅延~\eqref{eq:latency}（$\tau=10\ms$、$U$ は $1.2\theta$ から $4\theta$）を加えた時間後に届く。各入力の背景は毎秒 $5$ スパイクである。すべてのコントラストに対して、音の線の遅延と最小の同時性窓を選べ。背景は毎秒何回の誤った結びつけを生むか。
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:10:5}
+\emph{シミュレーション：変化に気づくのは誰か。} クリティックは $y=s+\text{ノイズ}$（$R=1$）を見る。確率 $1/200$ で $s$ は分散 $J^2=4$ の新しい値へ跳ぶ。$q=0$ で、$E\leftarrow0.9E+\delta^2/(P+R)$ が $20$ を超えたら $P$ を $J^2$ に引き上げるカルマンフィルタをシミュレーションせよ。その誤差は最良の一定の $\alpha$ の場合よりどれだけ小さいか。
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:10:6}
+\emph{習慣を変えるのに何回の試行が要るか。} 網は $Q_A=0.8$, $Q_B=0.2$ を学習し、\eqref{eq:softmax}に従い $\sigma=1$, $g=8$ で選ぶ。いま $A$ は確率 $0.2$ でジュースを出す。$Q_A\leftarrow Q_A+\alpha(r-Q_A)$ で、$Q_B$ は変わらない。$\alpha=0.1$ と $0.5$ のとき、$A$ を何回選べば $A$ を選ぶ確率が $0.6$ まで下がるか。\nt{NORA}が $g$ を $2$ に下げたらどうか。
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:10:7}
+\emph{配線の代わりに束。} 出力 $y_k=w_k+\xi_k$、報酬 $R=-\sum_ky_k^2$ とする。束の1本の線が $G$ 個のニューロンからなるグループにその出力の誤差を配り、$w_k\leftarrow w_k+\eta\,\delta_l\xi_k$ とする。最良の $\eta$ で $\sum w_k^2=\varepsilon\sum w_k^2(0)$ に達するには $\approx(G+2)\ln(1/\varepsilon)$ 回の試行が要ることを示せ。$\varepsilon=0.01$ で、$10^6$ 個のニューロンの回路が5本の線で、3秒に1回の試行で学習するとどれだけかかるか。
+\end{exercise}

@@ -1,0 +1,178 @@
+\chapter{マシンは動き方をどう学ぶか}
+\chaptermark{マシンは動き方をどう学ぶか}
+\label{sec:motorlearning}
+
+\section{三人の教師}
+
+第\ref{sec:muscles}章では、マシンが筋肉をどう動かすかを見て、一つの仮説で締めくくった。速く正確な動きには、指令の結果を予測する体の内部モデルが必要である~\cite{WolpertGhahramani2000}。このモデルはどこから来るのか。学習しなければならない。それも、これまでとは違うやり方で。
+
+本書にはすでに二人の教師が登場した。一人目は\emph{教師なし}である。ヘッブ則（第\ref{sec:dofa}章）は、よく一緒に起こることを強め、入力を圧縮する。二人目は\emph{報酬}である。\nt{DOPA}は全員に一つの数、「期待より良かったか悪かったか」を配る。運動には三人目の教師、\emph{誤差}が必要である。手がカップから左へ2センチ外れた。これは「悪かった」ではなく、各出力にどちらへどれだけ間違えたかを告げるベクトルである。エンジニアならこれを教師あり学習と呼ぶだろう。
+
+二人目と三人目の教師の違いは、全員に1本の配線か、出力ごとに専用の配線かの違いである。命題~\ref{prop:broadcastcost}では、一つの共通の数による学習は、ノイズが結果に影響するニューロンが一つ増えるごとに遅くなった。一方、各出力 $i$ が自分の誤差 $e_i$ を受け取るなら、重みは最も単純な規則で変えられる：
+\begin{empheq}[box=\keybox]{equation}
+\frac{\dd w_{ij}}{\dd t} \;=\; -\eta\,e_i(t)\,x_j(t) .
+\label{eq:lms}
+\end{empheq}
+これは適応フィルタの技術で古くから知られた最小二乗則（LMS則）である~\cite{WidrowHoff1960}。重みは自分の入力と自分の出力の誤差との積に比例して変わり、平均すると二乗誤差の勾配をたどる。第\ref{sec:dofa}章のような探索のためのノイズは要らない。補正の方向は誤差の配線を通じて直接届く。そして他の出力の誤差はシナプスに来ないので、速さは出力の数とともに落ちない。
+
+\begin{keyblock}
+\begin{proposition}[三人の教師]
+\label{prop:teachers}
+ヘッブ則は教師なしで、よく起こることを教える。\nt{DOPA}の信号は網全体に一つの数で、得になることを教え、ニューロンが増えるごとに遅くなる。各出力への誤差の配線は規則~\eqref{eq:lms}によって正確さを教え、その速さは出力の数によらない。三つ目の方法の代償は、出力ごとの専用配線と、正解を知っている誰かである。
+\end{proposition}
+\end{keyblock}
+
+\section{誤差の配線}
+
+運動について正解を知りうるのは誰か。センサ自身である。手が目標から左へずれたなら、それを目と第\ref{sec:sensors}章の伸張センサが伝える。必要なのは、この誤差を正しい出力へ届ける回路である。
+
+脳には、まさにこのために作られたように見える領域がある~\cite{Marr1969,Albus1971}。その回路は異様なほど規則正しく、ほとんど結晶のようで、その中に規則~\eqref{eq:lms}を容易に見てとれる（図~\ref{fig:errorwire}）。
+
+\emph{入力の拡張層。} 指令と体の状態についての信号は、小さな\nt{GLUT}ニューロンの巨大な層に届く。その数は約700億で、脳の残り全部を合わせたより多い~\cite{Azevedo2009}。各ニューロンはいくつかの入力を混ぜ合わせ、信号は非常に長いベクトルに展開される。エンジニアにはなじみの手法である。入力の次元を上げると、新しい空間ではほとんどどんな望みの関係も単純な重み付き和で得られる~\cite{Cover1965}。
+
+\emph{出力ニューロン。} 重み付き和を計算するのは約3000万個の大きな出力ニューロンで~\cite{Andersen1992cereb}、それぞれが拡張層から10万ほどの入力を持つ。そしてこれらは\nt{GABA}ニューロンである。学習の結果は興奮ではなく抑制として先へ送られる。第\ref{sec:gaba}章の禁止と同じである。
+
+\emph{誤差の配線。} 各出力ニューロンは、もう一つ特別な入力を受ける。ちょうど1本の\nt{GLUT}の配線で、めったに発火しない（毎秒1回ほど）が、発火するたびに出力ニューロンに強力なバーストを起こす~\cite{Ito2001}。これが $e_i$ である。バーストの確率は運動誤差の方向に依存する~\cite{Herzfeld2018}。誤差のバーストと入力の活動が一致すると、その入力は弱まる。まさに\eqref{eq:lms}の項 $-\eta\,e_i x_j$ である。
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  gran/.style={circle,draw,thick,fill=blue!6,minimum size=0.32cm,inner sep=0pt},
+  outn/.style={circle,draw,very thick,fill=red!10,minimum size=1.1cm,inner sep=0pt,font=\scriptsize},
+  inh/.style={-{Bar[width=7pt]},very thick,red!70!black}]
+% inputs
+\foreach \y/\lab in {1.6/{指令},0.4/{体の状態}}{
+  \draw[->,thick,blue!60!black] (-0.6,\y) node[left,font=\scriptsize,black] {\lab} -- (0.35,\y);}
+% expansion layer
+\foreach \i in {0,...,11}{\node[gran] (g\i) at ({0.8+0.28*mod(\i,2)},{-0.3+0.23*\i}) {};}
+\foreach \i in {0,...,11}{\pgfmathsetmacro{\yy}{mod(\i,3)>0 ? 1.6 : 0.4}\draw[gray!60!black] (0.35,\yy) -- (g\i);}
+\node[font=\scriptsize,align=center] at (0.95,-1.05) {拡張層\\$\sim7\cdot10^{10}$ \nt{GLUT}};
+% parallel wires to the output neuron
+\foreach \i in {0,...,11}{\draw[->,gray!70!black] (g\i.east) -- (4.1,{1.0+0.07*(\i-5.5)});}
+\node[outn] (P) at (4.6,1.0) {\nt{GABA}};
+\node[font=\scriptsize,align=center,above=2pt] at (P.north) {出力ニューロン\\$\sim10^5$ 個の入力 $x_j$、重み $w_{ij}$};
+\draw[inh] (P) -- (6.8,1.0) node[right,font=\scriptsize,align=left] {運動への\\補正};
+% error wire
+\draw[->,very thick,red!70!black,densely dashed] (4.6,-1.4) node[below,font=\scriptsize,black,align=center] {1本の誤差の配線 $e_i$\\\nt{GLUT}、$\sim1$ 回/s} -- (P.south);
+\end{tikzpicture}
+\caption{脳が実装していると思われる教師あり学習の回路。指令と体の状態は\nt{GLUT}ニューロンの巨大な層によって長いベクトル $x_j$ に展開され、出力\nt{GABA}ニューロンがそれを重み $w_{ij}$ で足し合わせる。ただ1本の誤差の配線が $e_i$ を運ぶ。誤差と活動中の入力が一致すると、規則~\eqref{eq:lms}のとおり、その入力の重みが弱まる。}
+\label{fig:errorwire}
+\end{figure}
+
+一つの難しさは第\ref{sec:dofa}章でおなじみである。誤差は、それを招いた入力より後に届く。外れたことが見えるのは指令の数十〜数百ミリ秒後である。したがってシナプスは自分が活動していたことを覚えていなければならない。規則~\eqref{eq:threefactor}と同じく適格度トレースが必要である。そして実験によれば、このトレースの長さは課題ごとのフィードバックの遅延に合わせてある。誤差が100ミリ秒後に届くところでは、誤差の100ミリ秒前に活動していた入力が最も強く弱められる~\cite{Suvrathan2016}。
+
+\begin{keyblock}
+\begin{proposition}[誤差の配線]
+\label{prop:errorwire}
+図~\ref{fig:errorwire}の回路では、各出力ニューロンはちょうど1本の誤差の配線を受け、誤差と入力が一致するとその入力が弱まる。これは、巨大な次元に拡張された入力に適用した最小二乗則~\eqref{eq:lms}である。回路の構成と一致による弱化は測定されている。回路全体が教師あり学習として働くというのは、有力な仮説である。
+\end{proposition}
+\end{keyblock}
+
+\section{適応フィルタとしての内部モデル}
+
+このような回路は何を学ぶのか。最も自然な答えは予測である。入力として指令 $u(t)$ が、拡張層のように時定数の異なるフィルタの組を通って来るとする：$x_j(t)=(g_j*u)(t)$。出力はそれらの重み付き和で、センサが伝えるであろう値の予測である：
+\begin{empheq}[box=\keybox]{equation}
+\hat y(t) \;=\; \sum_j w_j\,(g_j*u)(t), \qquad e(t) \;=\; \hat y(t) - y(t) ,
+\label{eq:adaptivefilter}
+\end{empheq}
+そして重みは\eqref{eq:lms}によって学習される。これは\emph{適応フィルタ}である。未知の系を再現するように、自分の伝達関数を自ら調整する回路である~\cite{Fujita1982}。ここでの未知の系は、質量、弾性、遅延を持つ自分自身の体である。学習したフィルタこそが第\ref{sec:muscles}章の内部モデルであり、センサを待たずに、センサが何を伝えるかを告げる。
+
+このモデルは二重に役に立つ。第一に、その予測を遅れたフィードバックの代わりに使えば、安定条件~\eqref{eq:delaystable}に手を縛られなくなる。モデルにもとづいて素早く修正できる。第二に、予測と実際の差は\emph{予期しないこと}の信号である。マシンが自分でしたことはすべてモデルが予測して差し引き、残るのは世界がしたことである。ある仮説によれば、自分で自分をくすぐれないのはそのためである~\cite{Blakemore1998}。
+
+\section{世界が変わるとき：速い過程と遅い過程}
+
+この回路を、簡単に行える実験で試してみよう。人が目標に手を伸ばしているとき、世界が不意に変わる。例えば手に横向きの力がかかる。最初の数回の動きは外れ、やがて外れは小さくなる。力を取り除くと、手はまず\emph{反対の}方向に外れる。モデルが力を学習し、それを補償し続けているのである。これは、単に「うまくできるようになった」のではなく、モデルが学習されたことの直接の証拠である。
+
+実験はさらに微妙なことも示す。二つの過程が同時に学習している。速く学び速く忘れる速い過程と、ゆっくり学び長く覚えている遅い過程である~\cite{Smith2006}。補正は動きのたびに、出来事ごとに更新される：
+\begin{empheq}[box=\keybox]{equation}
+e = p - (x_f + x_s), \qquad x_f \leftarrow A_f\,x_f + B_f\,e, \qquad x_s \leftarrow A_s\,x_s + B_s\,e ,
+\label{eq:tworate}
+\end{empheq}
+ここで $p$ は外乱、$x_f$ と $x_s$ は二つの過程が学習した補正、$A$ は補正が次の動きまでどれだけ保たれるか、$B$ は誤差からどれだけ強く学ぶかである。速い過程では $B$ が大きく、$A$ は1よりかなり小さい。遅い過程ではその逆である。
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=0.034cm,y=1.9cm]
+\draw[->,gray!70!black] (0,0) -- (355,0) node[right,font=\small,black] {動き};
+\draw[->,gray!70!black] (0,-1.15) -- (0,1.25);
+\foreach \v in {-1,1}{\draw[gray!60!black] (-3,\v) -- (3,\v); \node[left,font=\scriptsize] at (0,\v) {$\v$};}
+\foreach \n in {100,200,300}{\draw[gray!60!black] (\n,-0.04) -- (\n,0.04); \node[below,font=\scriptsize] at (\n,0) {\n};}
+\draw[thin,gray!70!black] plot file {figures/tworate_p.dat};
+\draw[thick,orange!85!black] plot file {figures/tworate_fast.dat};
+\draw[thick,blue!60!black] plot file {figures/tworate_slow.dat};
+\draw[very thick,black] plot file {figures/tworate_net.dat};
+\node[font=\scriptsize,gray!50!black] at (120,1.12) {外乱 $p$};
+\node[font=\scriptsize,black,anchor=west] at (238,0.52) {和：復帰};
+\node[font=\scriptsize,blue!60!black,anchor=west] at (150,0.39) {遅い $x_s$};
+\node[font=\scriptsize,orange!85!black,anchor=west] at (60,0.08) {速い $x_f$};
+\draw[densely dashed,gray!60!black] (226,-1.15) -- (226,1.25);
+\node[font=\scriptsize,align=center,anchor=south west] at (228,-1.1) {誤差は\\もう来ない};
+\end{tikzpicture}
+\caption{モデル~\eqref{eq:tworate}による二つの学習過程、$A_f=0.92$, $B_f=0.1$, $A_s=0.996$, $B_s=0.02$。外乱 $p=1$ で200回の動き、次に和がゼロに戻るまで逆向きの $p=-1$ で6回。破線の後は誤差が届かなくなり、和はひとりでに古い補正へ戻る。速い過程は逆向きの外乱を忘れ、遅い過程は順向きの外乱を覚えている。}
+\label{fig:tworate}
+\end{figure}
+
+モデル~\eqref{eq:tworate}は、それなしでは理解しにくい実験を説明する（図~\ref{fig:tworate}）。我々の計算では、外乱のもとでの200回の動きで補正の和は $0.84$ に達し、その大部分 $0.63$ を遅い過程が担う。次に逆向きの外乱での6回の動きが和をゼロに戻す。速い過程はマイナスの $-0.53$ に行き、遅い過程はまだプラスの $0.46$ にある。ここで誤差を伝えるのをやめると、速い過程は数十回の動きで自分の補正を忘れ、遅い過程ははるかに長く保つので、和は40回の動きで\emph{ひとりでに} $0.37$ まで上がる。訓練なしに古い技能が戻ってくる。この自発的回復はヒトで測定されている。一つの過程のモデルではこれは出せない。誤差がなければ単にゼロへ減衰するだけである。
+
+なぜ過程が二つなのか。もっともらしい工学的な答えを、第\ref{sec:acet}章の最適フィルタが与える。体はさまざまな理由でさまざまな速さで変わる。筋肉は数分で疲れ、数か月で成長し衰える。外乱に速いものと遅いものがあるなら、最良の推定は時定数の異なる二つのフィルタからなり、それぞれが自分の外乱を捉える~\cite{Kording2007}。速い過程は一時的な補正、「腕が疲れた」であり、遅い過程は「腕が変わった」である。これはまだ仮説だが、1日で学んだ技能が翌日までに一部失われる理由と、2回目にはより速く学べる理由を説明する。
+
+\section{まとめ}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{3.0cm}>{\raggedright}p{4.6cm}>{\raggedright\arraybackslash}p{5.2cm}}
+\toprule
+回路は何をするか & どうやって & 分かっていること \\
+\midrule
+教師ありで学ぶ & 各出力への誤差の配線、規則~\eqref{eq:lms} & 回路の構成と一致による弱化は測定済み；教師あり学習は有力な仮説 \\
+入力を拡張する & 700億個の\nt{GLUT}ニューロン & ニューロン数は測定済み；拡張の役割は理論 \\
+誤差の遅延を考慮する & 遅延に合わせた適格度トレース & 測定済み \\
+内部モデルを作る & 適応フィルタ~\eqref{eq:adaptivefilter} & 十分な根拠のある仮説 \\
+二つのテンポで学ぶ & 速い過程と遅い過程~\eqref{eq:tworate} & 後効果と自発的回復は測定済み；二つの過程はモデル \\
+\bottomrule
+\end{tabular}
+\caption{マシンは動き方をどう学ぶか。}
+\label{tab:motorlearning}
+\end{table}
+
+これでマシンには三人の教師がそろった（表~\ref{tab:motorlearning}）。ヘッブはよく起こることを圧縮し、\nt{DOPA}は一つの数で得になるものを選ぶことを教え、誤差の配線は正確さを教える。しかも速く教える。各出力に自分の誤差が届くからである。脳はおそらく三つすべてを使い、それぞれを最も安上がりな場所で使っている。ブロードキャスト信号は少数の決定に、専用の配線は、正解をセンサ自身が伝える体の精密な調整に。
+
+\section{問題}
+
+\begin{exercise}[\lvlA]
+\label{ex:15:1}
+\emph{誤差の配線を持つ回路の容量。} 回路に $10^5$ 個の入力を持つ出力ニューロンが $3\cdot10^7$ 個あり、それぞれに専用の誤差の配線（$1$~スパイク/s）がある。$n$ 個の入力を持つニューロンは $\approx2n$ 個のベクトルの任意のラベル付けを学習できる~\cite{Cover1965}。(a)~回路はいくつの連想を保持するか。(b)~$\Delta t=10\ms$ で\eqref{eq:spikeentropy}により、ニューロンの容量を満たす最短の時間を見積もれ。
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:15:2}
+\emph{最小二乗則の速さ。} 規則~\eqref{eq:lms}のモードは速さ $\eta\lambda_k(C)$ で減衰する。白色ノイズ上の5個のフィルタ~\eqref{eq:adaptivefilter}では $C_{jk}=2\sqrt{\tau_j\tau_k}/(\tau_j+\tau_k)$ である。$\tau_j$ が $2$ 倍ずつ（$10$--$160\ms$）増える場合と $4$ 倍ずつ増える場合に、最も速い速さと最も遅い速さの比を求めよ。
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:15:3}
+\emph{二つの過程の解析。} 図~\ref{fig:tworate}のパラメータでモデル~\eqref{eq:tworate}を $\mathbf x_{n+1}=M\mathbf x_n+\mathbf b\,p$ の形に書け。(a)~$M$ の固有値から、動きの回数で測った時定数を求めよ。(b)~一定の $p=1$ での定常な $x_f$, $x_s$ とその和を求めよ。
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:15:4}
+\emph{シミュレーション：2回目はより速い。} \texttt{models/\allowbreak motor\_learning.py} のパラメータでモデル~\eqref{eq:tworate}を使い、$p=1$ で $x_f+x_s\ge0.8$ になるまでの動きの回数を求めよ。(a)~未学習のマシン。(b)~図~\ref{fig:tworate}のように、$p=1$ で $200$ 回動いた後、和がゼロになるまで逆向きの外乱を加えた後。一つの過程のモデルは、このように速くなりうるか。
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:15:5}
+\emph{内部モデルを持つ制御器。} 対象 $\dd x/\dd t=ku$ は遅延 $d$ で観測される。制御器 $u=-G\hat x$ は $\hat x(t)=x(t-d)+\hat k\int_{t-d}^{t}u\,\dd s$ と予測する。(a)~$\hat k=k=1$, $d=150\ms$ で、時定数 $20\ms$ を与える $G$ を求め、限界~\eqref{eq:delaystable}と比べよ。(b)~$\hat k=0.4k$ でこの系は安定か。
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:15:6}
+\emph{適応フィルタが筋肉を学ぶ。} 対象は面積1の単収縮~\eqref{eq:twitch}、$T_c=50\ms$。フィルタ~\eqref{eq:adaptivefilter}は $\tau_j=12.5$, $25$, $50$, $100$, $200\ms$ のRC回路。入力は $10\ms$ ごとに新しい正規乱数。$\eta=50$ と $200$ で、規則~\eqref{eq:lms}が誤差を $0.5\%$ まで下げるのに何秒かかるか。$300$~s 後でも重みが最良値から遠いのはなぜか。
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:15:7}
+\emph{最適フィルタとしての二つの過程。} 外乱は過程 $p^{f,s}_{n+1}=A_{f,s}\,p^{f,s}_n+w^{f,s}_n$（ノイズの分散 $q_f$, $q_s$）の和で、誤差は分散 $R$ のノイズとともに観測される。カルマンフィルタは\eqref{eq:tworate}を与える。$A_f=0.92$, $A_s=0.996$ から $B_f=0.1$, $B_s=0.02$ が出るのは、$q_f/R$, $q_s/R$ がいくつのときか。$q_s$ を4倍にすると $B_f$, $B_s$ はどう変わるか。
+\end{exercise}
