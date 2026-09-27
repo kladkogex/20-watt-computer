@@ -11,7 +11,14 @@
 <meta property="og:title" content="Компьютер на 20 ваттах / The 20-Watt Computer">
 <meta property="og:description" content="Free textbook: how the brain computes, for engineers. Circuits, codes, learning rules, energy; runnable models and a neuron breadboard.">
 <meta property="og:url" content="https://kladkogex.github.io/20-watt-computer/">
-<meta property="og:image" content="https://raw.githubusercontent.com/kladkogex/20-watt-computer/master/assets/cover.png">
+<meta property="og:image" content="https://kladkogex.github.io/20-watt-computer/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Your brain runs on 20 watts. Here is its datasheet. The 20-Watt Computer, a free textbook for engineers.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://kladkogex.github.io/20-watt-computer/og-card.png">
+<meta name="twitter:title" content="The 20-Watt Computer: how the brain computes, for engineers">
+<meta name="twitter:description" content="Free textbook: circuits, codes, learning rules and energy. Every number from a model you can run, plus a neuron breadboard.">
 <meta name="citation_title" content="Компьютер на 20 ваттах. Как вычисляет мозг: количественный подход для инженеров">
 <meta name="citation_author" content="Kladko, Konstantin">
 <meta name="citation_publication_date" content="2026">
@@ -22,7 +29,7 @@
 <style>
 :root{
   --bg:#EDF1F5; --panel:#F8FAFC; --grid:#DDE4EC; --ink:#15202B; --muted:#586677; --line:#C6D0DB;
-  --glut:#2F5DA8; --gaba:#BF3A2B; --spike:#C98A06;
+  --glut:#2F5DA8; --gaba:#BF3A2B; --spike:#C98A06; --side:260px;
   --sans:"IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --cond:"IBM Plex Sans Condensed", "Arial Narrow", system-ui, sans-serif;
   --mono:"IBM Plex Mono", ui-monospace, Menlo, monospace;
@@ -33,22 +40,46 @@
 :root[data-theme="dark"]{ color-scheme:dark; --bg:#10161D; --panel:#161E27; --grid:#1C2631; --ink:#E4E9EF; --muted:#93A1B1; --line:#2E3C4B; --glut:#86ACEA; --gaba:#F08C7F; --spike:#F2C14E; }
 :root[data-theme="light"]{color-scheme:light}
 *{box-sizing:border-box}
-html{background:var(--bg);min-height:100%}
-body{margin:0;min-height:100vh;color:var(--ink);font:16px/1.55 var(--sans);padding-inline:16px;padding-block:20px 40px;
-  background-color:var(--bg);
-  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
-  background-size:24px 24px}
-.wrap{max-width:980px;margin:0 auto;display:flex;flex-direction:column;gap:28px}
-header.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
-.brand{font:600 12px/1 var(--cond);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
-.langs{display:flex;gap:6px}
+html,body{height:100%}
+body{margin:0;color:var(--ink);background:var(--bg);font:16px/1.55 var(--sans)}
+a{color:inherit}
 .chip{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:6px;padding:5px 10px;font:600 13px/1.2 var(--cond);letter-spacing:.04em;cursor:pointer}
 .chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
-.chip:focus-visible,a:focus-visible{outline:2px solid var(--spike);outline-offset:2px}
+.chip.theme{min-width:2.2em}
+:focus-visible{outline:2px solid var(--spike);outline-offset:2px}
+
+/* layout: a menu on the left, the content on the right */
+.app{display:grid;grid-template-columns:var(--side) 1fr;height:100%}
+.side{background:var(--panel);border-right:1px solid var(--line);display:flex;flex-direction:column;min-height:0}
+.side-head{padding:16px 16px 10px;display:flex;flex-direction:column;gap:10px;border-bottom:1px solid var(--line)}
+.logo{font:700 20px/1.1 var(--cond);text-decoration:none;color:var(--ink)}
+.logo .w{color:var(--spike)}
+.tools{display:flex;gap:6px;flex-wrap:wrap}
+.star{display:flex;align-items:center;justify-content:space-between;gap:8px;text-decoration:none;border:1px solid var(--ink);border-radius:8px;padding:7px 10px;font:600 14px/1.2 var(--cond);letter-spacing:.02em}
+.star:hover{background:var(--ink);color:var(--bg)}
+.star .count{font:500 13px var(--mono);color:var(--muted)}
+.star:hover .count{color:var(--bg)}
+nav.menu{overflow-y:auto;padding:8px 8px 24px;flex:1;min-height:0}
+nav.menu .grp{font:600 11px/1 var(--cond);letter-spacing:.12em;text-transform:uppercase;color:var(--spike);padding:14px 8px 6px}
+nav.menu a{display:grid;grid-template-columns:1.8em 1fr;gap:4px;padding:5px 8px;border-radius:6px;text-decoration:none;font-size:14px;line-height:1.3;color:var(--ink)}
+nav.menu a .n{font:500 12px/1.5 var(--mono);color:var(--muted)}
+nav.menu a:hover{background:var(--bg)}
+nav.menu a[aria-current="page"]{background:var(--ink);color:var(--bg)}
+nav.menu a[aria-current="page"] .n{color:var(--bg);opacity:.7}
+.nt{font:700 .92em var(--cond);letter-spacing:.02em}
+main{min-width:0;min-height:0;position:relative}
+iframe#pane{border:0;width:100%;height:100%;display:block;background:var(--bg)}
+.mobilebar{display:none}
+
+/* home view */
+.home{height:100%;overflow-y:auto;padding:28px 32px 48px;
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:24px 24px}
+.home .inner{max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:24px}
 .hero{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:28px 24px;display:flex;flex-direction:column;gap:14px}
-h1{font:700 clamp(34px,6vw,58px)/1.02 var(--cond);margin:0;text-wrap:balance}
+.brand{font:600 12px/1 var(--cond);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+h1{font:700 clamp(34px,5.5vw,58px)/1.02 var(--cond);margin:0;text-wrap:balance}
 h1 .w{color:var(--spike)}
-.sub{font:600 clamp(17px,2.4vw,22px)/1.3 var(--cond);color:var(--muted);margin:0;text-wrap:balance}
+.sub{font:600 clamp(17px,2.2vw,22px)/1.3 var(--cond);color:var(--muted);margin:0;text-wrap:balance}
 .lead{margin:0;max-width:62ch}
 .actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}
 .btn{display:inline-flex;flex-direction:column;gap:2px;text-decoration:none;border:1px solid var(--ink);border-radius:8px;padding:10px 14px;color:var(--ink);background:transparent;min-width:180px}
@@ -57,122 +88,217 @@ h1 .w{color:var(--spike)}
 .btn.primary{background:var(--ink);color:var(--bg)}
 .btn.primary span{color:var(--bg);opacity:.75}
 .facts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
-@media (max-width:720px){.facts{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .fact{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px 14px;display:flex;flex-direction:column;gap:2px}
 .fact b{font:500 26px/1.1 var(--mono);font-variant-numeric:tabular-nums}
 .fact span{font:600 12px/1.3 var(--cond);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
-h2{font:700 24px/1.2 var(--cond);margin:0}
-.toc{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px 20px;display:flex;flex-direction:column;gap:12px}
-ol.chapters{margin:0;padding:0;list-style:none;columns:2;column-gap:28px}
-@media (max-width:720px){ol.chapters{columns:1}}
-ol.chapters li{break-inside:avoid;display:grid;grid-template-columns:2.2em 1fr;gap:6px;padding:5px 0;border-bottom:1px solid var(--line)}
-ol.chapters .n{font:500 13px/1.6 var(--mono);color:var(--muted)}
-.part{font:600 11px/1 var(--cond);letter-spacing:.12em;text-transform:uppercase;color:var(--spike);padding-top:10px;border:0!important;display:block!important;break-after:avoid-column;page-break-after:avoid}
-.note{font-size:14px;color:var(--muted)}
+.note{font-size:14px;color:var(--muted);margin:0}
 .note a{color:var(--ink)}
-ol.chapters a{color:var(--ink);text-decoration:none}
-ol.chapters a:hover{text-decoration:underline;text-underline-offset:3px}
+.starcta{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.starcta p{margin:0;max-width:52ch}
 footer{font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:12px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
-footer a{color:var(--ink)}
-.nt{font:700 .92em var(--cond);letter-spacing:.02em}
+
+@media (max-width:860px){
+  .app{grid-template-columns:1fr;grid-template-rows:auto 1fr}
+  .mobilebar{display:flex;align-items:center;gap:10px;padding:8px 16px;padding-top:calc(8px + env(safe-area-inset-top,0px));background:var(--panel);border-bottom:1px solid var(--line)}
+  .mobilebar .logo{font-size:17px;flex:1}
+  .side{position:fixed;inset:0 auto 0 0;width:min(86vw,320px);z-index:10;transform:translateX(-100%);transition:transform .2s;box-shadow:0 0 0 100vmax rgba(0,0,0,0)}
+  body.menu-open .side{transform:none;box-shadow:0 0 0 100vmax rgba(0,0,0,.35)}
+  .home{padding:20px 16px 40px}
+  .facts{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <header class="top">
-    <div class="brand" data-ru="Бесплатный учебник" data-en="A free textbook">Бесплатный учебник</div>
-    <div class="langs" role="group" aria-label="Language">
-      <button class="chip" id="lang-ru" type="button">RU</button>
-      <button class="chip" id="lang-en" type="button">EN</button>
-      <button class="chip theme" id="theme" type="button" aria-label="Light or dark theme" title="Light / dark">☾</button>
+<div class="app">
+  <div class="mobilebar">
+    <button class="chip" id="menu-btn" type="button" aria-label="Menu" aria-expanded="false">☰</button>
+    <a class="logo" href="#home"><span class="w">20</span> <span data-ru="Компьютер на 20 ваттах" data-en="The 20-Watt Computer">Компьютер на 20 ваттах</span></a>
+  </div>
+
+  <aside class="side" id="side">
+    <div class="side-head">
+      <a class="logo" href="#home" data-ru='Компьютер на <span class="w">20</span> ваттах' data-en='The <span class="w">20</span>-Watt Computer'>Компьютер на <span class="w">20</span> ваттах</a>
+      <div class="tools" role="group" aria-label="Language and theme">
+        <button class="chip" id="lang-ru" type="button">RU</button>
+        <button class="chip" id="lang-en" type="button">EN</button>
+        <button class="chip theme" id="theme" type="button" aria-label="Light or dark theme" title="Light / dark">☾</button>
+      </div>
+      <a class="star" href="https://github.com/kladkogex/20-watt-computer" target="_blank" rel="noopener"><span data-ru="★ Звезда на GitHub" data-en="★ Star on GitHub">★ Звезда на GitHub</span><span class="count" id="stars"></span></a>
     </div>
-  </header>
+    <nav class="menu" id="menu" aria-label="Book"></nav>
+  </aside>
 
-  <section class="hero">
-    <h1 data-ru='Компьютер на <span class="w">20</span> ваттах' data-en='The <span class="w">20</span>-Watt Computer'>Компьютер на <span class="w">20</span> ваттах</h1>
-    <p class="sub" data-ru="Как вычисляет мозг: количественный подход для инженеров" data-en="How the Brain Computes: A Quantitative Approach for Engineers">Как вычисляет мозг: количественный подход для инженеров</p>
-    <p class="lead" data-ru="Мозг глазами инженера: схемы, сигналы, коды, правила обучения и энергия. Каждое число в книге получено из небольшой программы, которую можно запустить и изменить, а каждое главное утверждение сверено с опытом."
-       data-en="The brain as an engineer sees it: circuits, signals, codes, learning rules and energy. Every number in the book comes from a small program you can run and change, and every major claim is checked against experiments.">Мозг глазами инженера: схемы, сигналы, коды, правила обучения и энергия. Каждое число в книге получено из небольшой программы, которую можно запустить и изменить, а каждое главное утверждение сверено с опытом.</p>
-    <div class="actions">
-      <a class="btn primary" href="read/00.html"><b data-ru="Читать онлайн" data-en="Read online">Читать онлайн</b><span data-ru="каждая глава коротко и полностью" data-en="each chapter short or in full">каждая глава коротко и полностью</span></a>
-      <a class="btn" href="pdf/20-watt-computer-ru.pdf"><b data-ru="Скачать книгу" data-en="Download the book">Скачать книгу</b><span data-ru="PDF · 249 страниц · по-русски" data-en="PDF · 249 pages · Russian">PDF · 249 страниц · по-русски</span></a>
-      <a class="btn" href="pdf/20-watt-computer-ru-paperback.pdf"><b data-ru="Карманная версия" data-en="Paperback edition">Карманная версия</b><span data-ru="PDF · без формул, с рисунками · 90 страниц" data-en="PDF · no formulas, with drawings · 90 pages">PDF · без формул, с рисунками · 90 страниц</span></a>
-      <a class="btn" href="breadboard/"><b data-ru="Макетная плата" data-en="Neuron breadboard">Макетная плата</b><span data-ru="собери схему из нейронов" data-en="wire up neurons yourself">собери схему из нейронов</span></a>
-      <a class="btn" href="https://github.com/kladkogex/20-watt-computer"><b data-ru="Исходники" data-en="Source">Исходники</b><span>github.com/kladkogex</span></a>
-    </div>
-  </section>
-
-  <section class="facts" aria-label="In numbers">
-    <div class="fact"><b>22</b><span data-ru="главы" data-en="chapters">главы</span></div>
-    <div class="fact"><b>~160</b><span data-ru="задач с ответами" data-en="exercises with answers">задач с ответами</span></div>
-    <div class="fact"><b>~370</b><span data-ru="проверенных источников" data-en="checked references">проверенных источников</span></div>
-    <div class="fact"><b>10</b><span data-ru="моделей на Python" data-en="Python models">моделей на Python</span></div>
-  </section>
-
-  <section class="toc" id="toc" aria-labelledby="toc-h">
-    <h2 id="toc-h" data-ru="Содержание" data-en="Contents">Содержание</h2>
-    <ol class="chapters" id="chapters"></ol>
-    <p class="note" data-ru='<a href="read/00.html">Как читать эту книгу</a>. Приложения: <a href="read/a.html">вещества, которые не задают тип нейрона</a>; <a href="read/b.html">обозначения</a>; <a href="read/c.html">ответы к задачам</a>; <a href="read/d.html">экспериментальное приложение</a> с источником для каждого главного утверждения; <a href="read/refs.html">литература</a>.'
-       data-en='<a href="read/00.html">How to read this book</a>. Appendices: <a href="read/a.html">substances that do not define a neuron type</a>; <a href="read/b.html">notation</a>; <a href="read/c.html">answers to exercises</a>; <a href="read/d.html">an experimental supplement</a> with a source for every major claim; <a href="read/refs.html">references</a>.'>Приложения.</p>
-    <p class="note" data-ru="Английское издание готовится; текст книги пока по-русски." data-en="The English edition is in progress; the text of the book is in Russian for now.">Английское издание готовится; текст книги пока по-русски.</p>
-  </section>
-
-  <footer>
-    <span data-ru="Константин Кладько" data-en="Konstantin Kladko">Константин Кладько</span>
-    <a href="https://github.com/kladkogex/20-watt-computer" data-ru="Исходный текст и модели на GitHub" data-en="Source text and models on GitHub">Исходный текст и модели на GitHub</a>
-    <span data-ru='Текст — <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.ru">CC BY-NC-SA 4.0</a>, программы — MIT' data-en='Text: <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>; code: MIT'>Текст — <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.ru">CC BY-NC-SA 4.0</a>, программы — MIT</span>
-  </footer>
+  <main id="main">
+    <section class="home" id="home-view">
+      <div class="inner">
+        <section class="hero">
+          <div class="brand" data-ru="Бесплатный учебник" data-en="A free textbook">Бесплатный учебник</div>
+          <h1 data-ru='Компьютер на <span class="w">20</span> ваттах' data-en='The <span class="w">20</span>-Watt Computer'>Компьютер на <span class="w">20</span> ваттах</h1>
+          <p class="sub" data-ru="Как вычисляет мозг: количественный подход для инженеров" data-en="How the Brain Computes: A Quantitative Approach for Engineers">Как вычисляет мозг: количественный подход для инженеров</p>
+          <p class="lead" data-ru="Мозг глазами инженера: схемы, сигналы, коды, правила обучения и энергия. Каждое число в книге получено из небольшой программы, которую можно запустить и изменить, а каждое главное утверждение сверено с опытом."
+             data-en="The brain as an engineer sees it: circuits, signals, codes, learning rules and energy. Every number in the book comes from a small program you can run and change, and every major claim is checked against experiments.">Мозг глазами инженера.</p>
+          <div class="actions">
+            <a class="btn primary" href="#read/00"><b data-ru="Читать онлайн" data-en="Read online">Читать онлайн</b><span data-ru="каждая глава коротко и полностью" data-en="each chapter short or in full">каждая глава коротко и полностью</span></a>
+            <a class="btn" href="pdf/20-watt-computer-ru.pdf"><b data-ru="Скачать книгу" data-en="Download the book">Скачать книгу</b><span data-ru="PDF · 249 страниц · по-русски" data-en="PDF · 249 pages · Russian">PDF · 249 страниц · по-русски</span></a>
+            <a class="btn" href="pdf/20-watt-computer-ru-paperback.pdf"><b data-ru="Карманная версия" data-en="Paperback edition">Карманная версия</b><span data-ru="PDF · без формул, с рисунками · 90 страниц" data-en="PDF · no formulas, with drawings · 90 pages">PDF · без формул, с рисунками · 90 страниц</span></a>
+            <a class="btn" href="#breadboard"><b data-ru="Макетная плата" data-en="Neuron breadboard">Макетная плата</b><span data-ru="собери схему из нейронов" data-en="wire up neurons yourself">собери схему из нейронов</span></a>
+          </div>
+        </section>
+        <section class="facts" aria-label="In numbers">
+          <div class="fact"><b>22</b><span data-ru="главы" data-en="chapters">главы</span></div>
+          <div class="fact"><b>~160</b><span data-ru="задач с ответами" data-en="exercises with answers">задач с ответами</span></div>
+          <div class="fact"><b>~370</b><span data-ru="проверенных источников" data-en="checked references">проверенных источников</span></div>
+          <div class="fact"><b>10</b><span data-ru="моделей на Python" data-en="Python models">моделей на Python</span></div>
+        </section>
+        <section class="starcta">
+          <p data-ru="Книга бесплатная и открытая. Если она вам пригодилась, поставьте ей звезду на GitHub: так её найдут другие инженеры, и так вы узнаете о новых главах и переводах."
+             data-en="The book is free and open. If it is useful to you, star it on GitHub: that is how other engineers find it, and how you hear about new chapters and translations.">.</p>
+          <a class="btn primary" href="https://github.com/kladkogex/20-watt-computer" target="_blank" rel="noopener"><b data-ru="★ Поставить звезду" data-en="★ Star on GitHub">★</b><span>github.com/kladkogex/20-watt-computer</span></a>
+        </section>
+        <p class="note" data-ru="Английское издание и переводы на китайский, японский, корейский, испанский и португальский готовятся; текст книги пока по-русски." data-en="English, Chinese, Japanese, Korean, Spanish and Portuguese editions are in progress; the text of the book is in Russian for now.">.</p>
+        <footer>
+          <span data-ru="Константин Кладько" data-en="Konstantin Kladko">Константин Кладько</span>
+          <a href="https://github.com/kladkogex/20-watt-computer" data-ru="Исходный текст и модели на GitHub" data-en="Source text and models on GitHub">GitHub</a>
+          <span data-ru='Текст — <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.ru">CC BY-NC-SA 4.0</a>, программы — MIT' data-en='Text: <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>; code: MIT'>CC BY-NC-SA 4.0 · MIT</span>
+        </footer>
+      </div>
+    </section>
+    <iframe id="pane" title="Book" hidden></iframe>
+  </main>
 </div>
 
 <script>
 (function(){
   "use strict";
-  const CH=[
-    [null,"Основа","Foundations"],
-    [1,"Типы нейронов","Neuron types"],
-    [2,'Что вычисляют <span class="nt">ГЛУТ</span>-нейроны','What <span class="nt">ГЛУТ</span> neurons compute'],
-    [3,'<span class="nt">ГЛУТ</span> и <span class="nt">ГАМК</span> вместе','<span class="nt">ГЛУТ</span> and <span class="nt">ГАМК</span> together'],
-    [4,"Азбука Морзе: язык нейронов","Morse code: the language of neurons"],
-    [null,"Широковещательные каналы","Broadcast channels"],
-    [5,'Что вычисляют <span class="nt">СЕРО</span>-нейроны','What <span class="nt">СЕРО</span> neurons compute'],
-    [6,'Сети, которые учатся: добавляем <span class="nt">ДОФА</span>','Networks that learn: adding <span class="nt">ДОФА</span>'],
-    [7,"Другие теории обучения на дофамине","Alternative theories of dopamine learning"],
-    [8,'Когда искать, а когда решать: <span class="nt">НОРА</span>','When to search and when to decide: <span class="nt">НОРА</span>'],
-    [9,'Когда писать, а когда читать: <span class="nt">АЦЕТ</span>','When to write and when to read: <span class="nt">АЦЕТ</span>'],
-    [10,"Вся машина","The whole machine"],
-    [null,"Входы и выходы","Inputs and outputs"],
-    [11,"Входы: глаза, уши и другие датчики","Inputs: eyes, ears and other sensors"],
-    [12,"Распознавание изображений и видео","Image and video recognition"],
-    [13,"Выходы: как мозг управляет мышцами","Outputs: how the brain controls muscles"],
-    [14,"Боль: сигнал тревоги","Pain: the alarm signal"],
-    [15,"Как машина учится двигаться","How the machine learns to move"],
-    [16,"Второй выход: химия тела","The second output: body chemistry"],
-    [null,"Лаборатория","The lab"],
-    [17,"Отладка машины","Debugging the machine"],
-    [18,"Типы нейронов по электрической функции","Neuron types by electrical function"],
-    [19,"Нейроны по числу дендритов","Neurons by number of dendrites"],
-    [20,"Что делают нейроны во сне","What neurons do during sleep"],
-    [21,"Машина из живых нейронов","Machines made of living neurons"],
-    [22,"DishBrain","DishBrain"]
+  const REPO = "kladkogex/20-watt-computer";
+  // [route, number or null, ru, en]; null route = a group heading
+  const MENU = [
+    ["home", null, "Главная", "Home"],
+    ["read/00", "0", "Как читать эту книгу", "How to read this book"],
+    [null, null, "Основа", "Foundations"],
+    ["read/01", 1, "Типы нейронов", "Neuron types"],
+    ["read/02", 2, 'Что вычисляют <span class="nt">ГЛУТ</span>-нейроны', 'What <span class="nt">ГЛУТ</span> neurons compute'],
+    ["read/03", 3, '<span class="nt">ГЛУТ</span> и <span class="nt">ГАМК</span> вместе', '<span class="nt">ГЛУТ</span> and <span class="nt">ГАМК</span> together'],
+    ["read/04", 4, "Азбука Морзе: язык нейронов", "Morse code: the language of neurons"],
+    [null, null, "Широковещательные каналы", "Broadcast channels"],
+    ["read/05", 5, 'Что вычисляют <span class="nt">СЕРО</span>-нейроны', 'What <span class="nt">СЕРО</span> neurons compute'],
+    ["read/06", 6, 'Сети, которые учатся: <span class="nt">ДОФА</span>', 'Networks that learn: <span class="nt">ДОФА</span>'],
+    ["read/07", 7, "Другие теории обучения на дофамине", "Other theories of dopamine learning"],
+    ["read/08", 8, 'Когда искать, а когда решать: <span class="nt">НОРА</span>', 'Search or decide: <span class="nt">НОРА</span>'],
+    ["read/09", 9, 'Когда писать, а когда читать: <span class="nt">АЦЕТ</span>', 'Write or read: <span class="nt">АЦЕТ</span>'],
+    ["read/10", 10, "Вся машина", "The whole machine"],
+    [null, null, "Входы и выходы", "Inputs and outputs"],
+    ["read/11", 11, "Входы: глаза, уши и датчики", "Inputs: eyes, ears, sensors"],
+    ["read/12", 12, "Распознавание изображений", "Image and video recognition"],
+    ["read/13", 13, "Выходы: мышцы", "Outputs: muscles"],
+    ["read/14", 14, "Боль: сигнал тревоги", "Pain: the alarm signal"],
+    ["read/15", 15, "Как машина учится двигаться", "How the machine learns to move"],
+    ["read/16", 16, "Второй выход: химия тела", "The second output: body chemistry"],
+    [null, null, "Лаборатория", "The lab"],
+    ["read/17", 17, "Отладка машины", "Debugging the machine"],
+    ["read/18", 18, "Нейроны как приборы", "Neurons as devices"],
+    ["read/19", 19, "Нейроны по числу дендритов", "Neurons by number of dendrites"],
+    ["read/20", 20, "Что делают нейроны во сне", "What neurons do during sleep"],
+    ["read/21", 21, "Машина из живых нейронов", "Machines made of living neurons"],
+    ["read/22", 22, "DishBrain", "DishBrain"],
+    [null, null, "Приложения", "Appendices"],
+    ["read/a", "A", "Вещества, не задающие тип", "Other substances"],
+    ["read/b", "B", "Обозначения", "Notation"],
+    ["read/c", "C", "Ответы к задачам", "Answers"],
+    ["read/d", "D", "Экспериментальное приложение", "Experimental supplement"],
+    ["read/refs", "", "Литература", "References"],
+    [null, null, "Ещё", "More"],
+    ["breadboard", "⌁", "Макетная плата", "Neuron breadboard"],
+    ["pdf/20-watt-computer-ru.pdf", "↓", "PDF: полная книга", "PDF: full book"],
+    ["pdf/20-watt-computer-ru-paperback.pdf", "↓", "PDF: карманная версия", "PDF: paperback"],
+    ["https://github.com/" + REPO, "★", "Исходники на GitHub", "Source on GitHub"],
   ];
-  let lang="ru";
-  try{ lang=localStorage.getItem("20w-lang")||((navigator.language||"").toLowerCase().startsWith("ru")?"ru":"en"); }catch(e){ lang=(navigator.language||"").toLowerCase().startsWith("ru")?"ru":"en"; }
-  function render(){
-    document.documentElement.lang=lang;
-    document.querySelectorAll("[data-ru]").forEach(el=>{ el.innerHTML=el.dataset[lang]; });
-    document.getElementById("lang-ru").setAttribute("aria-pressed",lang==="ru");
-    document.getElementById("lang-en").setAttribute("aria-pressed",lang==="en");
-    const ol=document.getElementById("chapters"); ol.innerHTML="";
-    CH.forEach(([n,ru,en])=>{ const li=document.createElement("li");
-      if(n===null){ li.className="part"; li.innerHTML=lang==="ru"?ru:en; }
-      else li.innerHTML=`<span class="n">${n}</span><a href="read/${String(n).padStart(2,"0")}.html">${lang==="ru"?ru:en}</a>`;
-      ol.appendChild(li); });
-    document.title=lang==="ru"?"Компьютер на 20 ваттах":"The 20-Watt Computer";
+  const store = {get(k){try{return localStorage.getItem(k)}catch(e){return null}}, set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+  let lang = store.get("20w-lang") || ((navigator.language||"").toLowerCase().startsWith("ru") ? "ru" : "en");
+  const menu = document.getElementById("menu"), pane = document.getElementById("pane"), home = document.getElementById("home-view");
+
+  function renderMenu(){
+    menu.innerHTML = "";
+    MENU.forEach(([route, n, ru, en]) => {
+      if (route === null) { const d = document.createElement("div"); d.className = "grp"; d.innerHTML = lang === "ru" ? ru : en; menu.appendChild(d); return; }
+      const a = document.createElement("a");
+      const external = route.startsWith("http") || route.startsWith("pdf/");
+      a.href = external ? route : "#" + route;
+      if (route.startsWith("http")) { a.target = "_blank"; a.rel = "noopener"; }
+      a.dataset.route = route;
+      a.innerHTML = `<span class="n">${n === null ? "" : n}</span><span>${lang === "ru" ? ru : en}</span>`;
+      menu.appendChild(a);
+    });
+    markCurrent();
   }
-  function set(l){ lang=l; try{ localStorage.setItem("20w-lang",l); }catch(e){} render(); }
-  document.getElementById("lang-ru").onclick=()=>set("ru");
-  document.getElementById("lang-en").onclick=()=>set("en");
-  render();
+  function markCurrent(){
+    const r = currentRoute().page;
+    menu.querySelectorAll("a[data-route]").forEach(a => a.toggleAttribute("aria-current", a.dataset.route === r) || (a.dataset.route === r && a.setAttribute("aria-current", "page")));
+    menu.querySelectorAll("a[data-route]").forEach(a => { if (a.dataset.route === r) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); });
+  }
+  function currentRoute(){
+    const h = decodeURIComponent(location.hash.replace(/^#\/?/, ""));
+    if (!h || h === "home" || h === "toc") return {page: "home"};
+    const m = h.match(/^read\/([0-9]{2}|[a-d]|refs)(?:\/(.*))?$/);
+    if (m) return {page: "read/" + m[1], src: "read/" + m[1] + ".html" + (m[2] ? "#" + m[2] : "")};
+    if (h === "breadboard" || h.startsWith("breadboard")) return {page: "breadboard", src: "breadboard/"};
+    return {page: "home"};
+  }
+  let lastSrc = null;
+  function show(){
+    const r = currentRoute();
+    document.body.classList.remove("menu-open");
+    document.getElementById("menu-btn").setAttribute("aria-expanded", "false");
+    if (r.page === "home") { pane.hidden = true; home.hidden = false; }
+    else {
+      home.hidden = true; pane.hidden = false;
+      // don't reload the frame when the change came from inside it
+      const inFrame = (() => { try { const l = pane.contentWindow.location; return l.pathname.endsWith("/" + r.src.split("#")[0]) || (r.page === "breadboard" && l.pathname.endsWith("/breadboard/")); } catch(e) { return false; } })();
+      if (!inFrame || r.src.includes("#")) { if (r.src !== lastSrc) { pane.src = r.src; lastSrc = r.src; } }
+    }
+    markCurrent();
+    const cur = menu.querySelector('a[aria-current="page"]');
+    document.title = (r.page === "home" || !cur ? "" : cur.textContent.replace(/^\S+\s/, "").trim() + " · ") + (lang === "ru" ? "Компьютер на 20 ваттах" : "The 20-Watt Computer");
+  }
+  // keep the address and the menu in step when the reader follows links inside the frame
+  pane.addEventListener("load", () => {
+    try {
+      const p = pane.contentWindow.location.pathname;
+      const m = p.match(/\/read\/([0-9]{2}|[a-d]|refs)\.html$/);
+      const route = m ? "read/" + m[1] : (p.endsWith("/breadboard/") ? "breadboard" : null);
+      if (route && currentRoute().page !== route) { lastSrc = pane.getAttribute("src"); history.replaceState(null, "", "#" + route); markCurrent(); }
+    } catch(e) {}
+  });
+  window.addEventListener("hashchange", show);
+
+  function setLang(l){
+    lang = l; store.set("20w-lang", l);
+    document.documentElement.lang = l;
+    document.querySelectorAll("[data-ru]").forEach(el => { el.innerHTML = el.dataset[l]; });
+    document.getElementById("lang-ru").setAttribute("aria-pressed", l === "ru");
+    document.getElementById("lang-en").setAttribute("aria-pressed", l === "en");
+    renderMenu(); show();
+  }
+  document.getElementById("lang-ru").onclick = () => setLang("ru");
+  document.getElementById("lang-en").onclick = () => setLang("en");
+  document.getElementById("menu-btn").onclick = () => {
+    const open = document.body.classList.toggle("menu-open");
+    document.getElementById("menu-btn").setAttribute("aria-expanded", open);
+  };
+  document.addEventListener("keydown", e => { if (e.key === "Escape") document.body.classList.remove("menu-open"); });
+  document.addEventListener("click", e => { if (document.body.classList.contains("menu-open") && !e.target.closest(".side") && !e.target.closest("#menu-btn")) document.body.classList.remove("menu-open"); });
+
+  // live star count (cached for the session)
+  (function(){
+    const el = document.getElementById("stars");
+    const put = n => { el.textContent = n > 0 ? n.toLocaleString() : ""; };
+    try { const c = sessionStorage.getItem("20w-stars"); if (c !== null) { put(+c); return; } } catch(e) {}
+    fetch("https://api.github.com/repos/" + REPO).then(r => r.ok ? r.json() : null).then(j => {
+      if (!j) return; put(j.stargazers_count); try { sessionStorage.setItem("20w-stars", j.stargazers_count); } catch(e) {}
+    }).catch(() => {});
+  })();
+
+  setLang(lang === "en" ? "en" : "ru");
 })();
 </script>
 <script>

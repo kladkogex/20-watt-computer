@@ -778,4 +778,5 @@ if(location.hash==="#selftest"){
 } else renderAll();
 })();
 (function(){var b=document.getElementById("theme");if(!b)return;var r=document.documentElement;function cur(){var t=r.getAttribute("data-theme");if(t)return t;return window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";}function show(){b.textContent=cur()==="dark"?"☀":"☾";b.setAttribute("aria-pressed",cur()==="dark");}b.onclick=function(){var t=cur()==="dark"?"light":"dark";r.setAttribute("data-theme",t);try{localStorage.setItem("20w-theme",t);}catch(e){}show();};if(window.matchMedia)matchMedia("(prefers-color-scheme: dark)").addEventListener("change",show);show();})();
+window.addEventListener("storage",function(e){if(e.key==="20w-theme"&&(e.newValue==="light"||e.newValue==="dark"))document.documentElement.setAttribute("data-theme",e.newValue);});
 </script>

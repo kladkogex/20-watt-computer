@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
 <meta charset="utf-8">
-<script>try{var t=localStorage.getItem("20w-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>
+<script>try{var t=localStorage.getItem("20w-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);}catch(e){}if(window.self!==window.top)document.documentElement.classList.add("embedded");</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>{{TITLE}} · Компьютер на 20 ваттах</title>
 <meta name="description" content="{{DESC}}">
@@ -12,6 +12,14 @@
 <meta property="og:description" content="{{DESC}}">
 <meta property="og:url" content="{{CANON}}">
 <meta property="og:locale" content="ru_RU">
+<meta property="og:image" content="https://kladkogex.github.io/20-watt-computer/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Your brain runs on 20 watts. Here is its datasheet. The 20-Watt Computer, a free textbook for engineers.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://kladkogex.github.io/20-watt-computer/og-card.png">
+<meta name="twitter:title" content="{{TITLE}} · The 20-Watt Computer">
+<meta name="twitter:description" content="{{DESC}}">
 <script type="application/ld+json">{{JSONLD}}</script>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap">
 <link rel="stylesheet" href="book.css">
@@ -46,6 +54,7 @@
 {{SHORT}}
   </article>
 
+  <aside class="starline"><span data-ru="Книга бесплатная и открытая. Если глава была полезной, поставьте книге звезду на GitHub: так её найдут другие." data-en="The book is free and open. If this chapter was useful, star the book on GitHub so others can find it.">Книга бесплатная и открытая.</span> <a href="https://github.com/kladkogex/20-watt-computer" target="_blank" rel="noopener" data-ru="★ Звезда на GitHub" data-en="★ Star on GitHub">★ Звезда на GitHub</a></aside>
   <nav class="pager">
     <a class="prev" href="{{PREV}}"><span data-ru="← Назад" data-en="← Previous">← Назад</span><b>{{PREV_TITLE}}</b></a>
     <a class="next" href="{{NEXT}}"><span data-ru="Дальше →" data-en="Next →">Дальше →</span><b>{{NEXT_TITLE}}</b></a>
@@ -93,6 +102,9 @@
   setMode(store.get("20w-mode") || "full", false);
   follow();
   window.addEventListener("hashchange", follow);
+  // links that leave the book open in the whole window when the page sits inside the reader
+  if (document.documentElement.classList.contains("embedded"))
+    document.querySelectorAll('a[href^="../"], a[href^="http"]').forEach(a => { a.target = a.href.startsWith(location.origin) ? "_top" : "_blank"; });
 
   // interface language (the text itself is Russian)
   function setLang(l){
@@ -104,6 +116,10 @@
   document.getElementById("lang-ru").onclick = () => setLang("ru");
   document.getElementById("lang-en").onclick = () => setLang("en");
   setLang(store.get("20w-lang") === "en" ? "en" : "ru");
+  window.addEventListener("storage", e => {
+    if (e.key === "20w-lang" && (e.newValue === "ru" || e.newValue === "en")) setLang(e.newValue);
+    if (e.key === "20w-theme" && (e.newValue === "light" || e.newValue === "dark")) document.documentElement.setAttribute("data-theme", e.newValue);
+  });
 })();
 </script>
 <script>

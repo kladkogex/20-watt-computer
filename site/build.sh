@@ -5,12 +5,14 @@ set -euo pipefail
 rm -rf _site
 mkdir -p _site/breadboard _site/pdf
 cp site/index.html _site/
+cp site/og-card.png _site/
 cp ru/20-watt-computer-ru.pdf ru/20-watt-computer-ru-paperback.pdf _site/pdf/
 # breadboard.html is a page fragment (title, styles, markup, script); wrap it into a full document
 {
   printf '<!doctype html>\n<html lang="ru">\n<head>\n<meta charset="utf-8">\n'
   printf '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n'
   printf '%s\n' '<script>try{var t=localStorage.getItem("20w-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>'
+  printf '%s\n' '<meta property="og:title" content="Neuron breadboard: build the machine yourself">' '<meta property="og:description" content="Wire up spiking neurons in your browser: 13 challenges from logic gates to dopamine learning, scored in neurons, spikes and picojoules.">' '<meta property="og:image" content="https://kladkogex.github.io/20-watt-computer/og-card.png">' '<meta name="twitter:card" content="summary_large_image">'
   printf '<style>[hidden]{display:none!important}body{margin:0}</style>\n</head>\n<body>\n'
   cat site/breadboard/breadboard.html
   printf '\n</body>\n</html>\n'
