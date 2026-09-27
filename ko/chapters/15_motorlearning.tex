@@ -1,0 +1,178 @@
+\chapter{기계는 움직임을 어떻게 배우는가}
+\chaptermark{기계는 움직임을 어떻게 배우는가}
+\label{sec:motorlearning}
+
+\section{세 교사}
+
+\ref{sec:muscles}장에서 우리는 기계가 근육을 어떻게 움직이는지 보았고, 한 가설에서 멈췄다. 빠르고 정확한 움직임에는 명령의 결과를 예측하는 몸의 내부 모델이 필요하다는 가설이다~\cite{WolpertGhahramani2000}. 이 모델은 어디서 오는가? 배워야 하고, 지금까지 우리가 배운 방식과는 다르게 배워야 한다.
+
+이 책에는 이미 두 교사가 있었다. 첫째는 \emph{교사 없음}이다. 헵 규칙(\ref{sec:dofa}장)은 자주 함께 일어나는 것을 강화하고 입력을 압축한다. 둘째는 \emph{보상}이다. \nt{DOPA}는 모두에게 하나의 수, 곧 “기대보다 좋은가 나쁜가”를 보낸다. 움직임에는 셋째 교사, \emph{오차}가 필요하다. 손이 컵을 왼쪽으로 2센티미터 빗나갔다. 이것은 “나쁘다”가 아니라 각 출력에게 어느 쪽으로 얼마나 틀렸는지 알려 주는 벡터이다. 엔지니어라면 이것을 지도 학습이라고 부를 것이다.
+
+둘째 교사와 셋째 교사의 차이는 모두에게 전선 하나와 출력마다 따로 전선 하나의 차이이다. 명제~\ref{prop:broadcastcost}에서 하나의 공통 수에 의한 학습은 잡음이 결과에 영향을 주는 뉴런이 하나 늘 때마다 느려졌다. 그러나 각 출력 $i$가 자기 오차 $e_i$를 받으면, 가중치는 가장 단순한 규칙으로 바꿀 수 있다.
+\begin{empheq}[box=\keybox]{equation}
+\frac{\dd w_{ij}}{\dd t} \;=\; -\eta\,e_i(t)\,x_j(t) .
+\label{eq:lms}
+\end{empheq}
+이것은 적응 필터 기술에서 오래전부터 알려진 최소 제곱 규칙이다~\cite{WidrowHoff1960}. 가중치는 자기 입력과 자기 출력의 오차의 곱에 비례해 변하고, 평균적으로 오차 제곱의 기울기를 따라 내려간다. \ref{sec:dofa}장에서처럼 탐색용 잡음은 필요 없다. 보정의 방향이 오차 전선을 따라 곧바로 온다. 그리고 다른 출력의 오차는 시냅스에 오지 않으므로, 속도는 출력 수가 늘어도 떨어지지 않는다.
+
+\begin{keyblock}
+\begin{proposition}[세 교사]
+\label{prop:teachers}
+헵 규칙은 교사 없이 자주 일어나는 것을 가르친다. \nt{DOPA} 신호는 네트워크 전체에 하나의 수로 이로운 것을 가르치며, 뉴런이 늘 때마다 느려진다. 출력마다 가는 오차 전선은 규칙~\eqref{eq:lms}에 따라 정확한 것을 가르치며, 속도는 출력 수와 무관하다. 셋째 방식의 대가는 출력마다 따로 가는 전선과, 정답을 아는 누군가이다.
+\end{proposition}
+\end{keyblock}
+
+\section{오차 전선}
+
+움직임의 정답을 누가 알 수 있을까? 센서 자신이다. 손이 목표에서 왼쪽으로 벗어나면 눈과 \ref{sec:sensors}장의 신장 센서가 그것을 알린다. 이 오차를 알맞은 출력으로 배달하는 회로가 필요하다.
+
+뇌에는 바로 이 일에 맞춰 만들어진 것으로 보이는 영역이 있다~\cite{Marr1969,Albus1971}. 그 회로는 이례적으로 규칙적이어서 거의 결정 같고, 그 안에서 규칙~\eqref{eq:lms}를 쉽게 알아볼 수 있다(그림~\ref{fig:errorwire}).
+
+\emph{입력 확장층.} 명령과 몸 상태에 대한 신호가 작은 \nt{GLUT} 뉴런으로 된 거대한 층에 들어온다. 이 뉴런은 약 700억 개로, 뇌의 나머지 전부를 합친 것보다 많다~\cite{Azevedo2009}. 각 뉴런은 몇 개의 입력을 섞고, 신호는 매우 긴 벡터로 펼쳐진다. 엔지니어에게 익숙한 기법이다. 입력의 차원을 높이면 새 공간에서는 거의 어떤 원하는 관계라도 단순한 가중합으로 얻을 수 있다~\cite{Cover1965}.
+
+\emph{출력 뉴런.} 가중합은 약 3000만 개의 큰 출력 뉴런이 계산하며~\cite{Andersen1992cereb}, 각각 확장층으로부터 10만 개 정도의 입력을 받는다. 그리고 이들은 \nt{GABA} 뉴런이다. 학습 결과는 흥분이 아니라 억제로, \ref{sec:gaba}장의 금지처럼 전달된다.
+
+\emph{오차 전선.} 각 출력 뉴런은 특별한 입력을 하나 더 받는다. 정확히 하나의 \nt{GLUT} 전선인데, 초당 약 한 번으로 드물게 동작하지만 동작할 때마다 출력 뉴런에 강력한 폭발을 일으킨다~\cite{Ito2001}. 이것이 바로 $e_i$이다. 폭발의 확률은 움직임 오차의 방향에 따라 달라진다~\cite{Herzfeld2018}. 오차 폭발이 입력 활동과 겹치면 그 입력이 약해진다. \eqref{eq:lms}의 항 $-\eta\,e_i x_j$ 그대로이다.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  gran/.style={circle,draw,thick,fill=blue!6,minimum size=0.32cm,inner sep=0pt},
+  outn/.style={circle,draw,very thick,fill=red!10,minimum size=1.1cm,inner sep=0pt,font=\scriptsize},
+  inh/.style={-{Bar[width=7pt]},very thick,red!70!black}]
+% inputs
+\foreach \y/\lab in {1.6/{명령},0.4/{몸 상태}}{
+  \draw[->,thick,blue!60!black] (-0.6,\y) node[left,font=\scriptsize,black] {\lab} -- (0.35,\y);}
+% expansion layer
+\foreach \i in {0,...,11}{\node[gran] (g\i) at ({0.8+0.28*mod(\i,2)},{-0.3+0.23*\i}) {};}
+\foreach \i in {0,...,11}{\pgfmathsetmacro{\yy}{mod(\i,3)>0 ? 1.6 : 0.4}\draw[gray!60!black] (0.35,\yy) -- (g\i);}
+\node[font=\scriptsize,align=center] at (0.95,-1.05) {확장층\\$\sim7\cdot10^{10}$ \nt{GLUT}};
+% parallel wires to the output neuron
+\foreach \i in {0,...,11}{\draw[->,gray!70!black] (g\i.east) -- (4.1,{1.0+0.07*(\i-5.5)});}
+\node[outn] (P) at (4.6,1.0) {\nt{GABA}};
+\node[font=\scriptsize,align=center,above=2pt] at (P.north) {출력 뉴런\\입력 $x_j$ $\sim10^5$개, 가중치 $w_{ij}$};
+\draw[inh] (P) -- (6.8,1.0) node[right,font=\scriptsize,align=left] {움직임\\보정};
+% error wire
+\draw[->,very thick,red!70!black,densely dashed] (4.6,-1.4) node[below,font=\scriptsize,black,align=center] {오차 전선 하나 $e_i$\\\nt{GLUT}, 초당 $\sim1$회} -- (P.south);
+\end{tikzpicture}
+\caption{뇌가 구현하는 것으로 보이는 지도 학습 회로. 명령과 몸 상태는 \nt{GLUT} 뉴런의 거대한 층에서 긴 벡터 $x_j$로 펼쳐진다. 출력 \nt{GABA} 뉴런은 이를 가중치 $w_{ij}$로 더한다. 유일한 오차 전선이 $e_i$를 가져온다. 오차가 활성 입력과 겹치면 규칙~\eqref{eq:lms}에서처럼 그 입력의 가중치가 약해진다.}
+\label{fig:errorwire}
+\end{figure}
+
+한 가지 어려움은 \ref{sec:dofa}장에서 익숙하다. 오차는 그것을 일으킨 입력보다 늦게 온다. 빗나감은 명령 뒤 수십--수백 밀리초가 지나서야 보인다. 따라서 시냅스는 자기가 활성이었음을 기억해야 한다. 규칙~\eqref{eq:threefactor}에서처럼 적격 흔적이 필요하다. 그리고 실험으로 보면 이 흔적의 길이는 과제마다 되먹임 지연에 맞춰져 있다. 오차가 100밀리초 뒤에 오는 곳에서는 그보다 100밀리초 앞서 활성이었던 입력이 가장 강하게 약해진다~\cite{Suvrathan2016}.
+
+\begin{keyblock}
+\begin{proposition}[오차 전선]
+\label{prop:errorwire}
+그림~\ref{fig:errorwire}의 회로에서 각 출력 뉴런은 정확히 하나의 오차 전선을 받고, 오차와 입력이 겹치면 그 입력이 약해진다. 이것은 거대한 차원으로 확장된 입력에 적용한 최소 제곱 규칙~\eqref{eq:lms}이다. 회로의 구조와 겹칠 때의 약화는 측정되었다. 회로 전체가 지도 학습으로 동작한다는 것은 유력한 가설이다.
+\end{proposition}
+\end{keyblock}
+
+\section{적응 필터로서의 내부 모델}
+
+이런 회로는 무엇을 배우는가? 가장 자연스러운 답은 예측이다. 확장층에서처럼 시간 상수가 서로 다른 필터 묶음을 거친 명령 $u(t)$가 입력으로 들어온다고 하자: $x_j(t)=(g_j*u)(t)$. 출력은 그 가중합, 곧 센서가 알려 줄 것에 대한 예측이다.
+\begin{empheq}[box=\keybox]{equation}
+\hat y(t) \;=\; \sum_j w_j\,(g_j*u)(t), \qquad e(t) \;=\; \hat y(t) - y(t) ,
+\label{eq:adaptivefilter}
+\end{empheq}
+가중치는 \eqref{eq:lms}에 따라 학습한다. 이것이 \emph{적응 필터}이다. 미지의 시스템을 재현하도록 자기 전달 함수를 스스로 맞추는 회로이다~\cite{Fujita1982}. 여기서 미지의 시스템은 질량, 탄성, 지연을 가진 자기 몸이다. 학습된 필터가 바로 \ref{sec:muscles}장의 내부 모델이다. 센서를 기다리지 않고 센서가 무엇을 알려 줄지 말해 준다.
+
+이런 모델은 두 번 쓸모 있다. 첫째, 그 예측을 늦게 오는 되먹임 대신 넣을 수 있고, 그러면 안정 조건~\eqref{eq:delaystable}이 더 이상 손발을 묶지 않는다. 모델에 따라 빠르게 바로잡을 수 있다. 둘째, 예측한 것과 받은 것의 차이는 \emph{예상 밖}의 것에 대한 신호이다. 기계가 스스로 한 일은 모두 모델이 예측해 빼냈고, 남는 것은 세상이 한 일이다. 그래서 한 가설에 따르면 우리는 스스로를 간지럽힐 수 없다~\cite{Blakemore1998}.
+
+\section{세상이 바뀔 때: 빠른 것과 느린 것}
+
+쉽게 해 볼 수 있는 실험으로 회로를 확인하자. 사람이 목표를 향해 손을 뻗는데 세상이 갑자기 바뀐다. 예를 들어 팔에 옆으로 힘이 가해진다. 처음 움직임들은 빗나가고, 그다음 빗나감이 줄어든다. 힘을 없애면 손은 처음에 \emph{반대쪽}으로 빗나간다. 모델이 힘을 배웠고 계속 그것을 보상하는 것이다. 이것은 그냥 “잘되기 시작했다”가 아니라 모델이 학습되었다는 직접 증거이다.
+
+실험은 더 미묘한 것도 보여 준다. 두 과정이 동시에 학습한다. 빨리 배우고 빨리 잊는 빠른 과정과, 천천히 배우고 오래 기억하는 느린 과정이다~\cite{Smith2006}. 보정은 매 움직임 뒤에, 사건 단위로 갱신된다.
+\begin{empheq}[box=\keybox]{equation}
+e = p - (x_f + x_s), \qquad x_f \leftarrow A_f\,x_f + B_f\,e, \qquad x_s \leftarrow A_s\,x_s + B_s\,e ,
+\label{eq:tworate}
+\end{empheq}
+여기서 $p$는 섭동, $x_f$와 $x_s$는 두 과정이 학습한 보정, $A$는 보정이 다음 움직임까지 얼마나 유지되는지, $B$는 오차로부터 얼마나 강하게 배우는지이다. 빠른 과정은 $B$가 크고 $A$는 1보다 눈에 띄게 작다. 느린 과정은 반대이다.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=0.034cm,y=1.9cm]
+\draw[->,gray!70!black] (0,0) -- (355,0) node[right,font=\small,black] {움직임};
+\draw[->,gray!70!black] (0,-1.15) -- (0,1.25);
+\foreach \v in {-1,1}{\draw[gray!60!black] (-3,\v) -- (3,\v); \node[left,font=\scriptsize] at (0,\v) {$\v$};}
+\foreach \n in {100,200,300}{\draw[gray!60!black] (\n,-0.04) -- (\n,0.04); \node[below,font=\scriptsize] at (\n,0) {\n};}
+\draw[thin,gray!70!black] plot file {figures/tworate_p.dat};
+\draw[thick,orange!85!black] plot file {figures/tworate_fast.dat};
+\draw[thick,blue!60!black] plot file {figures/tworate_slow.dat};
+\draw[very thick,black] plot file {figures/tworate_net.dat};
+\node[font=\scriptsize,gray!50!black] at (120,1.12) {섭동 $p$};
+\node[font=\scriptsize,black,anchor=west] at (238,0.52) {합: 복귀};
+\node[font=\scriptsize,blue!60!black,anchor=west] at (150,0.39) {느린 $x_s$};
+\node[font=\scriptsize,orange!85!black,anchor=west] at (60,0.08) {빠른 $x_f$};
+\draw[densely dashed,gray!60!black] (226,-1.15) -- (226,1.25);
+\node[font=\scriptsize,align=center,anchor=south west] at (228,-1.1) {오차가\\더 없음};
+\end{tikzpicture}
+\caption{모델~\eqref{eq:tworate}에 따른 두 학습 과정, $A_f=0.92$, $B_f=0.1$, $A_s=0.996$, $B_s=0.02$. 섭동 $p=1$로 이백 번 움직인 뒤, 합이 0으로 돌아올 때까지 반대 섭동 $p=-1$로 여섯 번 움직인다. 파선 뒤로는 오차가 더 이상 들어오지 않고, 합은 스스로 옛 보정 쪽으로 돌아간다. 빠른 과정은 반대 섭동을 잊었고, 느린 과정은 원래 섭동을 기억한다.}
+\label{fig:tworate}
+\end{figure}
+
+모델~\eqref{eq:tworate}는 이것 없이는 이해하기 어려운 실험을 설명한다(그림~\ref{fig:tworate}). 우리 계산에서 섭동이 있는 이백 번의 움직임 동안 보정의 합은 $0.84$에 이르고, 그 대부분인 $0.63$을 느린 과정이 쥐고 있다. 이어서 반대 섭동으로 여섯 번 움직이면 합이 0으로 돌아온다. 빠른 과정은 음수 $-0.53$으로 갔고, 느린 과정은 아직 양수 $0.46$이다. 이제 오차를 알려 주지 않으면 빠른 과정은 수십 번의 움직임 동안 자기 보정을 잊고, 느린 과정은 훨씬 오래 걸리며, 합은 마흔 번의 움직임 동안 \emph{저절로} $0.37$까지 올라간다. 옛 기술이 아무 훈련 없이 돌아오는 것이다. 이런 자발적 회복은 사람에서 측정되었다. 과정이 하나인 모델은 이것을 줄 수 없다. 오차가 없으면 그냥 0으로 감쇠한다.
+
+왜 과정이 둘일까? \ref{sec:acet}장의 최적 필터가 그럴듯한 공학적 답을 준다. 몸은 여러 원인으로 여러 속도로 변한다. 근육은 몇 분 만에 지치고, 몇 달에 걸쳐 자라거나 약해진다. 교란에 빠른 것과 느린 것이 있다면, 가장 좋은 추정은 시간 상수가 다른 두 필터로 이루어지고, 각 필터가 자기 교란을 잡는다~\cite{Kording2007}. 빠른 과정은 일시적 보정, 곧 “팔이 지쳤다”이고, 느린 과정은 “팔이 달라졌다”이다. 아직 가설이지만, 하루에 배운 기술이 다음 날까지 일부 사라지는 이유와 두 번째에는 더 빨리 배워지는 이유를 설명한다.
+
+\section{정리}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{3.0cm}>{\raggedright}p{4.6cm}>{\raggedright\arraybackslash}p{5.2cm}}
+\toprule
+회로가 하는 일 & 방법 & 알려진 것 \\
+\midrule
+교사와 함께 배움 & 출력마다 가는 오차 전선, 규칙~\eqref{eq:lms} & 회로 구조와 겹칠 때의 약화는 측정됨; 지도 학습은 유력한 가설 \\
+입력을 확장함 & \nt{GLUT} 뉴런 700억 개 & 뉴런 수는 측정됨; 확장의 역할은 이론 \\
+오차의 지연을 고려함 & 지연에 맞춘 적격 흔적 & 측정됨 \\
+내부 모델을 만듦 & 적응 필터~\eqref{eq:adaptivefilter} & 근거가 탄탄한 가설 \\
+두 속도로 배움 & 빠른 과정과 느린 과정~\eqref{eq:tworate} & 후효과와 자발적 복귀는 측정됨; 두 과정은 모델 \\
+\bottomrule
+\end{tabular}
+\caption{기계는 움직임을 어떻게 배우는가.}
+\label{tab:motorlearning}
+\end{table}
+
+이제 기계에는 세 교사가 있다(표~\ref{tab:motorlearning}). 헵은 자주 일어나는 것을 압축하고, \nt{DOPA}는 하나의 수로 이로운 것을 고르도록 가르치며, 오차 전선은 정확성을 가르친다. 그리고 각 출력에 자기 오차가 가므로 빨리 가르친다. 뇌는 셋을 모두 쓰는 것으로 보이며, 각각을 가장 싼 곳에서 쓴다. 브로드캐스트 신호는 몇 안 되는 결정에, 개별 전선은 정답을 센서가 직접 알려 주는 몸의 정밀 조정에 쓴다.
+
+\section{연습문제}
+
+\begin{exercise}[\lvlA]
+\label{ex:15:1}
+\emph{오차 전선 회로의 용량.} 회로에 입력이 $10^5$개씩인 출력 뉴런 $3\cdot10^7$개가 있고, 각각 자기 오차 전선(초당 $1$회)을 갖는다. 입력이 $n$개인 뉴런은 벡터 $\approx2n$개의 임의의 표지를 학습한다~\cite{Cover1965}. (가)~회로는 연합을 몇 개 저장하는가? (나)~$\Delta t=10\ms$에서 \eqref{eq:spikeentropy}로 뉴런의 용량을 채우는 최소 시간을 추정하라.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:15:2}
+\emph{최소 제곱 규칙의 속도.} 규칙~\eqref{eq:lms}의 모드는 속도 $\eta\lambda_k(C)$로 감쇠한다. 백색 잡음 위의 필터~\eqref{eq:adaptivefilter} 다섯 개에 대해 $C_{jk}=2\sqrt{\tau_j\tau_k}/(\tau_j+\tau_k)$이다. $\tau_j$가 $2$배씩($10$--$160\ms$), 그리고 $4$배씩 커질 때 가장 빠른 속도와 가장 느린 속도의 비를 구하라.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:15:3}
+\emph{두 과정의 분석.} 그림~\ref{fig:tworate}의 매개변수로 모델~\eqref{eq:tworate}를 $\mathbf x_{n+1}=M\mathbf x_n+\mathbf b\,p$로 쓰라. (가)~$M$의 고윳값으로부터 움직임 단위의 시간 상수를 구하라. (나)~일정한 $p=1$에서 정상 상태의 $x_f$, $x_s$와 그 합을 구하라.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:15:4}
+\emph{시뮬레이션: 두 번째는 더 빠르다.} \texttt{models/\allowbreak motor\_learning.py}의 매개변수로 모델~\eqref{eq:tworate}에서 $p=1$일 때 $x_f+x_s\ge0.8$이 될 때까지의 움직임 수를 구하라. (가)~학습하지 않은 기계; (나)~그림~\ref{fig:tworate}에서처럼 $p=1$로 $200$번 움직이고 합이 0이 될 때까지 반대 섭동을 준 뒤. 과정이 하나인 모델도 이렇게 빨라질 수 있는가?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:15:5}
+\emph{내부 모델을 가진 조절기.} 대상 $\dd x/\dd t=ku$는 지연 $d$를 두고 관측된다. 조절기 $u=-G\hat x$는 $\hat x(t)=x(t-d)+\hat k\int_{t-d}^{t}u\,\dd s$로 예측한다. (가)~$\hat k=k=1$, $d=150\ms$에서 시간 상수 $20\ms$를 주는 $G$를 구하고 한계~\eqref{eq:delaystable}와 비교하라. (나)~$\hat k=0.4k$일 때 회로는 안정한가?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:15:6}
+\emph{적응 필터가 근육을 배운다.} 대상은 넓이가 1인 연축~\eqref{eq:twitch}, $T_c=50\ms$이다. 필터~\eqref{eq:adaptivefilter}는 $\tau_j=12.5$, $25$, $50$, $100$, $200\ms$인 RC 회로이고, 입력은 $10\ms$마다 새로운 정규 난수이다. $\eta=50$과 $200$에서 규칙~\eqref{eq:lms}가 오차를 $0.5\%$로 낮추는 데 몇 초가 걸리는가? 왜 $300$~s 뒤에도 가중치는 최적과 거리가 먼가?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:15:7}
+\emph{최적 필터로서의 두 과정.} 섭동은 잡음 분산이 $q_f$, $q_s$인 과정 $p^{f,s}_{n+1}=A_{f,s}\,p^{f,s}_n+w^{f,s}_n$의 합이고, 오차는 분산 $R$의 잡음과 함께 관측된다. 칼만 필터는~\eqref{eq:tworate}를 준다. $A_f=0.92$, $A_s=0.996$에서 $B_f=0.1$, $B_s=0.02$가 나오는 $q_f/R$, $q_s/R$은? $q_s$를 네 배로 하면 $B_f$, $B_s$는 어떻게 바뀌는가?
+\end{exercise}

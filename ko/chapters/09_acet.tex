@@ -1,0 +1,191 @@
+\chapter{언제 쓰고 언제 읽을까: \nt{ACET}를 더하다}
+\chaptermark{\nt{ACET}를 더하다}
+\label{sec:acet}
+
+\section{무엇이 빠져 있는가}
+
+메모리 칩에는 주소선과 데이터선 말고도 선이 하나 더 있다. 쓰기 허용 신호다. 이 신호가 꺼져 있으면 메모리는 읽히기만 하고, 켜지면 데이터선에 실린 값이 기록된다. 이런 선이 없으면 메모리는 작동하지 않는다. 읽을 때마다 무언가를 함께 쓴다면, 읽은 내용이 잘못 읽은 것까지 포함해 곧바로 다시 기록되기 때문이다.
+
+뇌에서는 이 문제가 칩보다 더 절실하다. \ref{sec:glutcomputer}장에서 메모리는 자기 연결로 켜진 상태를 유지하는 \nt{GLUT} 뉴런 집단이었다(그림~\ref{fig:bistable}). \ref{sec:dofa}장에서는 이 연결이 작동하는 도중에 헤브 규칙으로 학습한다는 것을 보았다. 즉 같은 시냅스가 옛것을 저장하면서 새것도 받아들이며, 따로 떨어진 쓰기 단계는 클록과 마찬가지로 없다. 네트워크는 보이는 것을 기억해야 할 순간과 아는 것을 떠올려야 할 순간을 무엇으로 구별할까? \ref{sec:neurontypes}장에서 우리는 이 선을 \nt{ACET}가 맡는다고 가정했다. 이 장에서는 그런 선이 어떻게 작동해야 하는지, 그리고 왜 그것 없이는 안 되는지 확인한다.
+
+\section{전선 하나의 세 가지 작용}
+
+뇌 안에서 작동하는 아세틸콜린 뉴런은 많지 않으며, 몇 개의 작은 집단에 모여 있고, 그 출력은 피질 전체로 퍼진다. \nt{DOPA}, \nt{NORA}와 같은 브로드캐스트 채널이다. 피질의 아세틸콜린 수준은 주의 깊게 깨어 있을 때 높고 서파 수면에서 낮다~\cite{Hasselmo1999}. 도파민과 마찬가지로 신호의 의미는 수신자의 수용체가 정한다(명제~\ref{prop:receptor}). 아세틸콜린에는 채널을 여는 빠른 수용체도, 세포 안의 반응을 일으키는 느린 수용체도 있다. 여기서 중요한 작용은 세 가지다.
+
+\emph{첫째, 내부 연결을 약하게 한다.} 후각 피질 절편 실험에서 아세틸콜린은 한 영역 안 뉴런 사이의 연결을 통한 전달을 강하게 억제하고, 바깥에서 그 영역으로 들어오는 입력은 거의 건드리지 않았다~\cite{HasselmoBower1992}.
+
+\emph{둘째, 입력을 강하게 한다.} 아세틸콜린은 뉴런의 흥분성을 높이고 일부 입력 경로의 전달을 쉽게 한다. 감각 기관에서 온 신호가 네트워크 자체의 활동보다 커진다~\cite{Hasselmo2006}.
+
+\emph{셋째, 가중치 변화를 쉽게 한다.} 아세틸콜린 수준이 높으면 연결이 더 쉽게 바뀐다~\cite{Hasselmo2006}.
+
+엔지니어에게 이 세 작용은 하나의 동작이다. “읽기” 모드에서 “쓰기” 모드로의 전환이다. 네트워크는 자기 자신의 말을 듣지 않고 입력을 듣기 시작하며, 들은 것을 기억한다.
+
+\section{완성하는 네트워크}
+
+서로 연결된 \nt{GLUT} 뉴런 $N$개를 생각하자. 이들의 연결에 헤브 규칙으로 몇 개의 패턴, 즉 동시에 활성인 뉴런 $pN$개의 집합을 저장한다~\cite{Hebb1949}. 이런 네트워크에 패턴의 절반을 주면 연결이 나머지 절반을 흥분시킨다. 네트워크는 그림~\ref{fig:bistable}의 집단이 스스로를 유지했듯이 일부로부터 패턴을 \emph{완성}한다. 이것이 연상 메모리다. 내용의 일부가 주소 역할을 한다. \ref{sec:gaba}장에서처럼 \nt{GABA}는 활성 뉴런의 총수를 $pN$ 근처로 유지해 두 패턴이 함께 켜지지 못하게 한다.
+
+아세틸콜린 수준을 $0$에서 $1$ 사이의 $a$로 나타내고, 그 세 작용을 모델에 곧바로 적자.
+\begin{empheq}[box=\keybox]{equation}
+\tau\frac{\dd r_i}{\dd t} = -r_i + F\Bigl(\tfrac{1+a}{2}\,x_i + (1-a)\sum_j W_{ij}\,r_j - g\Bigr),
+\qquad
+\frac{\dd W_{ij}}{\dd t} = \eta\,a\,(r_i-p)(r_j-p) .
+\label{eq:acetnet}
+\end{empheq}
+여기서 $r_i$는 뉴런 $i$의 발화율, $x_i$는 감각 기관에서 오는 입력, $F$는 문턱값이 있는 전달 특성, $g$는 활성 뉴런이 $pN$보다 많아지면 커지는 \nt{GABA}의 전체 억제다. 인수 $\frac{1+a}{2}$는 입력 증폭, $1-a$는 내부 연결의 약화, $\eta a$는 학습률이다. 두 번째 식은 드문 패턴에 알맞은 형태로 쓴 헤브 규칙~\eqref{eq:hebb}이다~\cite{Tsodyks1988}. 두 뉴런이 모두 평소보다 활발하면 가중치가 커지고, 한쪽만 활발하면 작아진다. 가중치의 음수 부분은 언제나처럼 \nt{GABA} 중개 뉴런이 맡는다. 클록은 없다. 뉴런도 가중치도 연속적으로 변한다.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  nrn/.style={circle,draw,very thick,fill=blue!6,minimum size=0.8cm,inner sep=0pt,font=\small},
+  acet/.style={circle,draw,very thick,double,double distance=1.2pt,fill=orange!15,minimum size=1.35cm,inner sep=0pt,font=\scriptsize},
+  bc/.style={->,thick,densely dashed,orange!85!black}]
+\foreach \i/\y in {1/2.4,2/1.2,3/0}{
+  \node[nrn] (N\i) at (3,\y) {$r_\i$};
+  \draw[->,thick,blue!60!black] (0,\y) node[left,black] {\small $x_\i$} -- (N\i);}
+\node[left,align=right,font=\small] at (-0.5,1.2) {감각\\기관에서};
+\draw[->,thick,gray!60!black] (N1) to[bend left=30] (N2);
+\draw[->,thick,gray!60!black] (N2) to[bend left=30] (N1);
+\draw[->,thick,gray!60!black] (N2) to[bend left=30] (N3);
+\draw[->,thick,gray!60!black] (N3) to[bend left=30] (N2);
+\draw[->,thick,gray!60!black] (N1.east) .. controls (4.6,2.0) and (4.6,0.4) .. (N3.east);
+\node[right,font=\small,gray!40!black,align=left] at (4.7,1.2) {내부\\연결 $W$};
+\node[acet] (A) at (1.2,-1.9) {\nt{ACET}};
+\draw[bc] (A) -- (1.6,-0.15);
+\node[font=\small,orange!60!black,anchor=east] at (0.95,-0.9) {$+$ 입력};
+\draw[bc] (A) -- (4.3,0.6);
+\node[font=\small,orange!60!black,anchor=west] at (4.3,0.1) {$-$ 내부 연결, $+$ 학습률};
+\node[right,font=\small,align=left] at (2.2,-1.9) {높은 수준: “쓰기”\\낮은 수준: “읽기”};
+\end{tikzpicture}
+\caption{쓰기 허용 선으로서의 \nt{ACET}. 뉴런 $r_i$는 감각 기관에서 입력 $x_i$를 받고(파란 화살표), 패턴이 저장된 내부 연결 $W$(회색)를 통해 서로를 흥분시킨다. 아세틸콜린(점선 화살표)은 식~\eqref{eq:acetnet}에서처럼 입력을 강하게 하고, 내부 연결을 약하게 하며, 가중치 변화를 쉽게 한다.}
+\label{fig:acetnet}
+\end{figure}
+
+\section{쓰기와 읽기는 서로 방해한다}
+
+쓰기와 읽기가 실제로 충돌하는 과제로 모델~\eqref{eq:acetnet}을 시험해 보자. 뉴런 $200$개로 된 네트워크가 이미 활성 뉴런 $20$개짜리 패턴 다섯 개를 저장하고 있다. 이제 여섯 번째 패턴을 기억해야 하는데, 이 패턴은 옛 패턴 하나와 절반이 겹친다. 뉴런 열 개를 공유한다. 이런 일은 늘 일어난다. 새 방은 익숙한 방과 닮았고, 새 얼굴은 옛 얼굴과 닮았다.
+
+\emph{낮은 $a$에서의 쓰기.} 먼저 아세틸콜린의 처음 두 작용을 세 번째 작용과 떼어 놓자. 학습률은 최대로 두고, 입력 증폭과 내부 연결 약화만 바뀌게 한다. $a=0$이면 입력이 공유 뉴런 열 개를 켜고, 이들이 내부 연결을 통해 \emph{옛} 패턴의 나머지 절반을 켠다. \nt{GABA}는 둘이 동시에 켜져 있지 못하게 하므로, 자기 연결의 지원을 받는 옛 패턴이 입력에만 의지하는 새 패턴을 밀어낸다. 네트워크는 눈앞에 있는 것이 아니라 기억하는 것을 본다. 그리고 헤브 규칙은 본 것을 성실하게 기록한다.
+
+결국 새 패턴은 전혀 기억되지 않는다. 새 패턴의 고유한 절반을 주어도 네트워크는 아무것도 떠올리지 못한다. 옛 패턴은 망가진다. 고유한 절반으로 불러내면 평균적으로 남의 뉴런 열 개 중 여섯 개를 끌고 나온다. $a=0.1$에서는 새 패턴이 기억되긴 하지만 옛 패턴과 합쳐지고, 손상은 오히려 더 심하다. 둘 다 자기 절반으로 불러내면 남의 뉴런을 약 여덟 개씩 끌고 나온다. $a=0.2$부터는 쓰기가 깨끗하다. 떠올릴 때 끼어드는 뉴런이 하나 미만이다(실행 10회 평균).
+
+\emph{실제 학습률로 쓰기.} 이제 아세틸콜린이 식~\eqref{eq:acetnet}에서처럼 학습률도 정한다고 하자. 한 번 제시로 새 패턴이 완전히 기억되는 것은 $a\ge0.9$일 때뿐이다. $a=0.75$에서는 10분의 8이 기억되고, $a\le0.5$에서는 전혀 기억되지 않는다.
+
+\emph{읽기.} 패턴 다섯 개가 깨끗하게 기록된 네트워크에 패턴의 절반을 주었다가 그것마저 치운다. $a\le0.2$에서는 네트워크가 패턴을 완전히 완성하고 스스로 유지한다. $a=0.3$에서는 거의 완전히 완성한다. $a\ge0.4$에서는 내부 연결이 너무 약해져 힌트가 사라진 뒤 활동이 꺼진다(그림~\ref{fig:acetsim}).
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=9cm,y=3.2cm]
+\draw[->,gray!70!black] (0,0) -- (1.1,0) node[right,black] {\small $a$};
+\draw[->,gray!70!black] (0,0) -- (0,1.2);
+\foreach \x in {0,0.2,0.4,0.6,0.8,1.0}{\draw[gray!60!black] (\x,-0.02) -- (\x,0.02); \node[below,font=\scriptsize] at (\x,0) {$\x$};}
+\foreach \y in {0,0.5,1}{\draw[gray!60!black] (-0.01,\y) -- (0.01,\y); \node[left,font=\scriptsize] at (0,\y) {$\y$};}
+\node[rotate=90,font=\small] at (-0.1,0.6) {복원된 패턴의 비율};
+\draw[very thick,blue!60!black] plot[mark=*,mark size=1.6pt] coordinates {(0,1.00) (0.1,1.00) (0.2,1.00) (0.3,0.96) (0.4,0.04) (0.5,0.00) (0.75,0.00) (1.0,0.00)};
+\draw[very thick,red!70!black] plot[mark=*,mark size=1.6pt] coordinates {(0.1,0.00) (0.2,0.00) (0.3,0.00) (0.5,0.00) (0.75,0.80) (0.9,1.00) (1.0,1.00)};
+\node[font=\small,blue!60!black,anchor=west,align=left] at (0.03,0.5) {읽기:\\절반으로\\패턴 복원};
+\node[font=\small,red!70!black,anchor=east,align=right] at (1.0,0.35) {쓰기:\\새 패턴을\\한 번에};
+\end{tikzpicture}
+\caption{모델~\eqref{eq:acetnet}: 뉴런 $200$개, 패턴당 활성 뉴런 $20$개, 실행 10회 평균. 파란 점은 읽기다. 힌트를 치운 뒤 절반으로부터 패턴의 몇 분의 몇이 복원되는지를 나타낸다. 빨간 점은 쓰기다. 아세틸콜린이 학습률도 정할 때, 옛 패턴과 절반이 닮은 새 패턴이 한 번 제시 뒤 얼마나 떠올려지는지를 나타낸다. 읽기는 $a\le0.3$에서, 쓰기는 $a\ge0.9$에서 작동한다.}
+\label{fig:acetsim}
+\end{figure}
+
+\begin{keyblock}
+\begin{proposition}[쓰기와 읽기는 서로 다른 모드를 요구한다]
+\label{prop:writeread}
+같은 연결이 옛것을 저장하면서 새것을 학습하고, 아세틸콜린이 학습률도 정하는 모델~\eqref{eq:acetnet}에서는 쓰기와 읽기가 모두 똑같이 잘 되는 수준 $a$가 없다. 쓰려면 내부 연결을 약하게 해야 한다. 그러지 않으면 네트워크는 입력이 아니라 떠올린 것을 기록한다. 읽으려면 내부 연결을 강하게 해야 한다. 그러지 않으면 일부로부터 패턴을 완성하지 못한다. 스위치가 필요하며, 브로드캐스트 전선 하나가 그 역할을 할 수 있다.
+\end{proposition}
+\end{keyblock}
+
+아세틸콜린이 학습률을 바꾸지 않는다면 두 일 모두에 좁은 띠 $0.2\le a\le0.3$이 쓸 만할 것이다. 그러나 그러면 네트워크는 읽을 때마다 학습하게 되고, 읽은 것을 그 오류까지 포함해 다시 기록하게 된다. 학습하는 동안 내부 연결을 억제한다는 발상 자체는 절편 측정을 바탕으로 만든 모델에서 가져왔다~\cite{HasselmoAndersonBower1992}. 위의 수치는 우리의 단순화된 모델에 관한 것이다. 뇌에서 모드의 경계가 정확히 어디에 있는지는 알려져 있지 않다.
+
+\section{눈을 얼마나 믿을 것인가}
+
+“쓰기/읽기” 스위치는 더 일반적인 질문의 극단적인 경우다. 입력을 얼마나 믿고 기억을 얼마나 믿을 것인가? 이 질문에는 엔지니어들이 가진 정확한 답이 있으며, 그 답은 왜 전선 하나가 모드와 학습률을 동시에 조절하는지를 밝혀 준다.
+
+네트워크가 천천히 떠도는 양 $s(t)$를 추적한다고 하자. 1초마다 그 분산은 $q$만큼 커진다. 감각 기관은 $y(t)=s(t)+$(세기 $R$인 잡음)을 알려 준다. 연속 시간에서의 최선 추정 $\hat s$는 칼만--뷰시 필터가 준다~\cite{KalmanBucy1961}.
+\begin{empheq}[box=\keybox]{equation}
+\frac{\dd\hat s}{\dd t} \;=\; \frac{P}{R}\,\bigl(y-\hat s\bigr),
+\qquad
+\frac{\dd P}{\dd t} \;=\; q-\frac{P^2}{R} ,
+\label{eq:kalman}
+\end{empheq}
+여기서 $P$는 추정 오차의 분산, 즉 네트워크가 자기가 아는 것을 얼마나 확신하지 못하는지다. 첫 번째 식은 뉴런 모델~\eqref{eq:glutneuron}의 막과 같은 RC 회로이지만, 시간 상수 $R/P$가 변한다. 네트워크가 확신하지 못하면 $P$가 크고 시간 상수가 작아서 추정이 입력을 빠르게 따라간다. 이것이 “쓰기”다. 확신하면 $P$가 작고, 추정은 입력을 거의 듣지 않고 기억을 붙든다. 이것이 “읽기”다.
+
+정상 상태에서 $P=\sqrt{qR}$이고 기억의 시간 상수는 $\sqrt{R/q}$이다. 세계가 100초에 1단위씩 움직여 $q=0.01$이고 감각 잡음이 $R=1$이면, 기억은 약 10초를 유지해야 한다.
+
+여기서 핵심은 수 하나 $P/R$가 두 가지를 한꺼번에 정한다는 점이다. 기억에 대한 입력의 가중치와, 저장된 추정이 바뀌는 속도다. 이것이 바로 식~\eqref{eq:acetnet}에서 아세틸콜린이 하는 일이다. 가설에 따르면~\cite{YuDayan2005} 아세틸콜린이 네트워크에 알리는 것이 $P$와 비슷한 양, 즉 네트워크가 미리 알고 있는 \emph{예상된} 불확실성이다. 이 채널이 늘 느린 것은 아니다. \nt{ACET} 뉴런의 일부는 보상과 처벌에 20밀리초 남짓 만에 응답하며, 강화가 뜻밖일수록 더 강하게 응답한다~\cite{Hangya2015}.
+
+\begin{keyblock}
+\begin{proposition}[입력 가중치와 학습률을 위한 손잡이 하나]
+\label{prop:kalman}
+최적 필터~\eqref{eq:kalman}에서 입력이 기억과 섞이는 가중치와 학습률은 같은 양 $P/R$이다. 그러므로 둘을 신호 하나로 조절하는 것이 합리적이다. 세계의 성질이 변하지 않으면 이 신호는 일정한 수준 $\sqrt{q/R}$에 이르며, 세계의 성질이 바뀔 때만 조정하면 된다.
+\end{proposition}
+\end{keyblock}
+
+명제의 두 번째 문장은 \ref{sec:nora}장의 결과를 설명한다. 거기서 뜻밖의 일에 따라 학습률을 조정하는 방식은 최선의 고정값을 이기지 못했다. 변화의 성질이 변하지 않는 세계에서는 최선의 학습률이 곧 고정값이다. 이득은 세계가 갑자기 달라질 때 생긴다. 그러면 추정은 갑자기 입력에서 멀어지는데, $P$는 그 사실을 모른다. 올바른 행동은 $P$를 급격히 올려 쓰기 모드로 넘어가는 것이다. \ref{sec:nora}장에서 논의한 가설에 따르면 이런 \emph{예상치 못한} 변화를 알리는 것은 \nt{NORA}다~\cite{YuDayan2005}. 분업은 자연스럽다. \nt{NORA}는 세계가 바뀌었음을 알아채고, \nt{ACET}는 새 상황을 학습할 때까지 네트워크를 쓰기 모드로 유지한다.
+
+\section{읽기 모드로서의 수면}
+
+아세틸콜린 수준이 높은 것이 쓰기 모드라면, 낮을 때 네트워크는 무엇을 할까? 서파 수면에서는 아세틸콜린 수준이 떨어지고, 내부 연결이 억제에서 풀려나며, 감각 기관에서 오는 입력은 거의 없다. 읽기 모드의 네트워크가 힌트 없이 저장된 것을 재생한다. 활동 기록에 따르면 낮에 함께 작동한 뉴런들은 서파 수면에서 다시 함께 발화하며~\cite{WilsonMcNaughton1994}, 순서까지 같다~\cite{Skaggs1996}. 가설에 따르면~\cite{Hasselmo1999} 이 재생이 낮에 빠르게 학습한 것을 장기 기억으로 옮겨 쓴다(짧은 재생 폭발을 인위적으로 늘리면 기억이 좋아진다~\cite{FernandezRuiz2019}). 낮에는 입력에서 쓰고, 밤에는 안에서 다시 쓴다. 엔지니어에게는 낮에 빠른 버퍼에 쓰고 밤에 그것을 느린 영구 메모리로 내보내는 것과 비슷하다.
+
+\section{정리}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{3.2cm}>{\raggedright}p{4.2cm}>{\raggedright\arraybackslash}p{6.0cm}}
+\toprule
+\nt{ACET}가 하는 일 & 방법 & 알려진 것 \\
+\midrule
+내부 연결을 약하게 한다 & 식~\eqref{eq:acetnet}의 인수 $1-a$ & 절편에서 측정됨 \\
+입력을 강하게 한다 & 인수 $\frac{1+a}{2}$ & 흥분성과 입력 경로 전달의 증가는 측정됨 \\
+학습을 쉽게 한다 & 학습률 $\eta a$ & 측정됨 \\
+“쓰기/읽기”를 전환한다 & 명제~\ref{prop:writeread} & 모델에서 나옴; 모드의 직접 측정은 없음 \\
+예상된 불확실성을 알린다 & 식~\eqref{eq:kalman}의 $P$ & 가설 \\
+수면 중 재생을 위해 네트워크를 풀어 준다 & 서파 수면에서 낮은 $a$ & 수면 중 낮은 수준과 재생은 측정됨; 장기 기억으로의 재기록은 가설 \\
+\bottomrule
+\end{tabular}
+\caption{\nt{GLUT}, \nt{GABA}, \nt{DOPA}, \nt{NORA}로 된 네트워크에 \nt{ACET}가 더하는 것.}
+\label{tab:acet}
+\end{table}
+
+\nt{DOPA}는 네트워크에 가중치를 어느 쪽으로 바꿀지를, \nt{NORA}는 아는 것을 얼마나 과감하게 쓸지를, \nt{ACET}는 세계를 들을지 자신을 들을지를 알려 준다(표~\ref{tab:acet}). 이것이 표~\ref{tab:types}의 마지막 브로드캐스트 제어선이다. 쓰기 허용 신호다. 이것이 없다면, 패턴을 읽는 바로 그 연결에 패턴을 저장하는 메모리는 읽을 때마다 스스로를 망가뜨릴 것이다.
+
+\section{연습문제}
+
+\begin{exercise}[\lvlA]
+\label{ex:09:1}
+\emph{얼마나 기억할까.} $q=0.01$, $R=1$인 필터~\eqref{eq:kalman}는 약 $10$~s를 기억한다. (가)~센서 잡음의 진폭이 두 배가 되었을 때, (나)~세계가 백 배 빨리 떠돌게 되었을 때 $P_\infty$와 기억 $\sqrt{R/q}$를 구하라. (다)~네트워크가 1분을 기억하려면 잡음이 몇 배 커져야 하는가?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:09:2}
+\emph{변화 뒤의 쓰기 모드.} 세계가 바뀌어 $q=0.01$, $R=1$인 필터~\eqref{eq:kalman}의 불확실성이 $P_0\to\infty$로 뛰었다. (가)~$P$는 어떤 시간 상수로 $P_\infty$로 돌아가는가? (나)~몇 초 뒤에 학습률이 정상 상태 값보다 $10\,\%$ 이하로만 크게 되는가?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:09:3}
+\emph{고정 학습률.} 네트워크는 $\dd\hat s/\dd t=(y-\hat s)/T$로 학습한다. 세계는 $\dd s/\dd t=w$로 떠돌고 $y=s+n$이며, $w$와 $n$은 세기 $q$와 $R$인 백색 잡음이다. 최선의 $T$와 그때의 오차 분산을 구하라. $T$가 $2$배, $10$배 틀리면 분산은 몇 배가 되는가?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:09:4}
+\emph{쓰기의 경계는 어디인가.} \texttt{models/\allowbreak acet\_memory.py}에서 문턱값은 $\theta=0.35$, 패턴 내부 가중치는 $w=0.041$(이상적으로는 $0.045$)이다. 새 패턴은 옛 패턴과 뉴런 $m=10$개를 공유한다. 식~\eqref{eq:acetnet}에서 $a$가 얼마일 때 옛 패턴의 나머지 뉴런이 이 $m$개로부터 켜지지 않는가(문턱값은 날카롭다)?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:09:5}
+\emph{시뮬레이션: 메모리 용량.} \texttt{models/\allowbreak acet\_memory.py}의 함수 \texttt{read\_sweep}를 고쳐, $a=1$에서 패턴 $M$개($M$은 $5$부터 $100$까지)를 쓰고 $a=0$에서 처음 열 개를 절반으로부터 읽어라. 어떤 $M$에서 오류가 나타나며, 한계 $M_{\max}$는 $N$과 $p$에 어떻게 의존하는가?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:09:6}
+\emph{설계: 새지 않는 쓰기.} 학습률이 $\eta a$이면 네트워크는 읽을 때도 학습한다. $a\le0.3$에서 0이고 $a\ge0.9$에서 $\eta a$ 못지않은 단조 함수 $\eta(a)\le\eta$를 제안하라. 확인해 보라. 남의 뉴런 세 개가 섞인 힌트로 $a=0.2$에서 $20$번 읽은 뒤, 그중 몇 개가 패턴에 들어갔는가?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:09:7}
+\emph{밤에 버퍼를 어떻게 옮겨 쓸까.} (가)~수면 중 $a=0.05$이고 재생은 $0.1\,\text{s}$ 지속되며, 낮에는 $a=1$에서 $0.2\,\text{s}$이다. 학습률이 $\eta a$일 때와 연습문제~\ref{ex:09:6}의 $\eta(a)$일 때, 낮의 한 번 제시만큼 가중치를 바꾸려면 재생이 몇 번 필요한가? (나)~저장소는 버퍼보다 $100$배 느리게 학습하고 밤마다 패턴을 $0.1\,\text{s}$씩 $20$번 듣는다. 몇 밤이 필요한가?
+\end{exercise}

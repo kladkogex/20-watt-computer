@@ -1,0 +1,175 @@
+\chapter{두 번째 출력: 뇌는 어떻게 몸의 화학을 조절하는가}
+\chaptermark{화학적 출력}
+\label{sec:chemoutput}
+
+\section{빠른 출력과 느린 출력}
+
+\ref{sec:muscles}장에서 우리는 기계의 빠른 출력인 근육을 보았다. 그러나 기계에는 느린 두 번째 출력도 있다. 뇌는 체온, 심박수, 몸속 물과 당의 양을 필요한 범위 안에 유지하고, 몸을 달리기나 잠에 대비시킨다. 이를 위해 뇌는 관절을 움직이는 대신 화학 신호를 내보낸다. 경로는 두 가지다. 첫째는 내장 기관, 즉 심장, 혈관, 장, 샘으로 곧장 가는 신경이다. 둘째는 혈액이다. 일부 뉴런과 샘은 물질을 이웃 세포와의 틈이 아니라 곧바로 혈류로 내보낸다.
+
+혈액은 이 책에 등장한 버스 가운데 가장 넓게 방송하는 버스다. \ref{sec:serocomputer}--\ref{sec:acet}장의 브로드캐스트 채널은 신호를 뇌의 넓은 영역에 보냈다. 혈액은 신호를 몸의 모든 세포에 보낸다. 혈액은 약 1분 만에 몸을 한 바퀴 돌므로, 메시지는 수십 초 안에 모든 곳에 닿고 물질이 분해될 때까지 몇 분에서 몇 시간 동안 유지된다. 이런 방송에는 주소가 전혀 없다. 명제~\ref{prop:receptor}에서처럼 메시지의 의미는 수신자가 정한다. 그 물질에 대한 수용체를 가진 세포만 반응한다.
+
+\section{가속 페달과 브레이크: 기관으로 가는 두 가닥의 전선}
+
+가장 좋은 예는 심장이다. 심장에는 \ref{sec:serocomputer}장의 \nt{SERO} 뉴런처럼 자체 페이스메이커가 있다. 페이스메이커는 스스로 리듬을 만들며, 신경을 모두 끊어도 심장은 1분에 약 100번 뛴다. 뇌는 리듬을 만들지 않고 조정만 한다. 그것도 부호가 반대인 두 가닥의 전선으로 한다(그림~\ref{fig:gasbrake}). 한 전선으로는 \nt{NORA}가 온다. 이것이 리듬을 빠르게 하는 \emph{가속 페달}이다. 다른 전선으로는 \nt{ACET}이 온다. 이것이 리듬을 늦추는 \emph{브레이크}다. 대략
+\begin{empheq}[box=\keybox]{equation}
+f \;\approx\; f_0 \;+\; a_S\,S \;-\; a_P\,P ,
+\label{eq:gasbrake}
+\end{empheq}
+이다. 여기서 $f_0\approx100$회/분은 페이스메이커의 고유 리듬이고, $S$와 $P$는 가속 페달과 브레이크의 활동이다. 쉬고 있을 때는 브레이크가 밟혀 있어서 심장은 보통 1분에 60--70번쯤 뛴다. 운동할 때는 브레이크를 놓고 가속 페달을 밟는다.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  blk/.style={draw,very thick,rounded corners=2pt,align=center,font=\small},
+  pace/.style={circle,draw,very thick,double,double distance=1.2pt,minimum size=1.8cm,inner sep=0pt,font=\scriptsize,fill=red!8,align=center},
+  inh/.style={-{Bar[width=7pt]},thick,red!70!black}]
+\node[blk,fill=blue!5,text width=1.6cm] (B) at (0,0) {뇌의\\명령};
+\node[pace] (H) at (6.2,0) {페이스\\메이커};
+\draw[->,very thick,orange!85!black] (B.north east) to[bend left=20] node[above,font=\scriptsize,black,align=center] {\nt{NORA}: 가속 페달, 수 초} (H.north west);
+\draw[inh,very thick,blue!60!black] (B.south east) to[bend right=20] node[below,font=\scriptsize,black,align=center] {\nt{ACET}: 브레이크, 1초 미만} (H.south west);
+\draw[->,very thick] (H) -- (8.4,0) node[right,font=\small] {박동수 $f$};
+\node[blk,fill=orange!10,text width=1.6cm] (A) at (0,-2.6) {\nt{ADRE}\\혈액으로};
+\draw[->,thick,orange!85!black] (B) -- (A);
+\foreach \y/\lab in {-2.0/{심장},-2.6/{혈관},-3.2/{간, 근육}}{
+  \draw[->,thick,densely dashed,orange!85!black] (A.east) -- (4.3,\y) node[right,font=\scriptsize,black] {\lab};}
+\end{tikzpicture}
+\caption{심장 페이스메이커로 가는 부호가 반대인 두 가닥의 전선: 가속 페달 \nt{NORA}는 느리고 브레이크 \nt{ACET}은 빠르다. 아래는 같은 가속 페달을 브로드캐스트 버스로 보내는 경로다. \nt{ADRE} 세포가 아드레날린을 혈액으로 내보내면, 알맞은 수용체를 가진 모든 기관이 신호를 받는다(점선 화살표).}
+\label{fig:gasbrake}
+\end{figure}
+
+이것은 \ref{sec:glutcomputer}장의 두 전선 부호이자 \ref{sec:muscles}장의 근육 쌍이다. 다만 이제 전선이 관절이 아니라 페이스메이커의 템포를 조절한다. 그리고 두 전선은 속도가 다르다. 둘 다 저역 통과 필터처럼 작동하지만, 브레이크는 가속 페달보다 몇 배 빠르게 변화를 통과시킨다~\cite{Berger1989}. \nt{ACET}의 경로는 짧다. 수용체와 결합한 단백질이 세포 안의 2차 전달자 없이 칼륨 채널을 직접 연다~\cite{Logothetis1987gbg}. 반면 \nt{NORA}는 세포 안의 연쇄 반응을 거쳐 작용한다. 엔지니어라면 속도가 다른 두 액추에이터를 쓰는 기법을 알아볼 것이다. 빠른 쪽은 즉각적인 미세 조정을 맡고, 느린 쪽은 크고 오래가는 변화를 맡는다.
+
+여기서 \nt{ADRE}도 제 역할을 찾는다. 표~\ref{tab:types}에서는 뇌 안에서 \nt{ADRE}의 역할이 불분명하다고 적었다. 뇌 밖에서는 분명하다. 가속 페달 경로의 세포 일부는 기관으로 전선을 보내지 않고 아드레날린을 곧바로 혈액으로 내보낸다. 이것은 같은 가속 페달이지만 브로드캐스트 버스를 탄다. 수십 초 안에 심장, 혈관, 간, 근육에 한꺼번에 닿고 몇 분 동안 유지된다. 주소가 있는 가속 페달 \nt{NORA}는 기관 하나를 조정하고, 브로드캐스트 가속 페달 \nt{ADRE}는 몸 전체를 달리기 모드로 전환한다.
+
+\section{되먹임이 걸린 캐스케이드}
+
+많은 호르몬은 샘 하나가 아니라 캐스케이드가 분비한다. 뇌 바닥에 있는 작은 뉴런 무리가 첫 번째 신호를 혈액으로 내보낸다. 이 신호는 중간 샘이 두 번째 신호를 내보내게 하고, 두 번째 신호는 최종 샘이 호르몬을 내보내게 한다. 몸에 작용하는 것은 이 호르몬이다. 그리고 최종 호르몬은 앞 단계로 돌아가 그 단계들을 억제한다. 그 결과 음의 되먹임으로 감싼 3단 증폭기, 즉 식~\eqref{eq:feedback}의 \nt{SERO} 시스템과 같은 레벨 조절기가 된다.
+
+각 단을 시상수 $\tau$와 이득 $g$를 가진 RC 회로로, 되먹임을 계수 $k$로 나타내자.
+\begin{equation}
+\tau\,\frac{\dd x_1}{\dd t} = -x_1 + g\bigl[u - k\,x_3\bigr]_+ ,\qquad
+\tau\,\frac{\dd x_2}{\dd t} = -x_2 + g\,x_1 ,\qquad
+\tau\,\frac{\dd x_3}{\dd t} = -x_3 + g\,x_2 ,
+\label{eq:cascade}
+\end{equation}
+여기서 $u$는 뇌의 명령, $x_3$은 최종 호르몬의 농도다. 루프 이득은 $K=g^3k$이다. 평형에서 $x_3=g^3u/(1+K)$이며, 되먹임이 있는 모든 조절기처럼 루프 이득이 크면 농도가 각 단 이득의 편차에 둔감해진다. 그러나 각 단은 위상을 늦춘다. 주파수 $\omega=\sqrt3/\tau$에서 같은 단 세 개를 합치면 위상이 반 바퀴 늦어지고 진폭은 8분의 1로 줄어든다. 여기서 제어 이론의 고전적인 결과가 나온다.
+\begin{empheq}[box=\keybox]{equation}
+K \;<\; 8 ,
+\label{eq:cascadestable}
+\end{empheq}
+그렇지 않으면 조절기는 주기 약 $2\pi\tau/\sqrt3\approx3.6\,\tau$로 진동하기 시작한다.
+
+\begin{keyblock}
+\begin{proposition}[정밀도 대 안정성]
+\label{prop:cascade}
+비례 되먹임이 걸린 3단 캐스케이드에서 농도 오차는 $1/(1+K)$이고, 캐스케이드는 $K<8$일 때만 안정하다. 따라서 이런 조절기는 농도를 약 10퍼센트보다 정확하게 유지하지 못한다. 이득을 높이려 하면 조절기는 발진기로 바뀐다.
+\end{proposition}
+\end{keyblock}
+
+우리는 이를 모델~\eqref{eq:cascade}로 확인했다(그림~\ref{fig:cascade}). $K=4$에서는 켜진 뒤 농도가 조금 흔들리다가 자리를 잡는다. $K=7$에서도 자리를 잡지만 느리다. $K=12$에서는 진동이 잦아들지도 않고 끝없이 커지지도 않는다. 각 단은 음의 신호를 낼 수 없으므로, 캐스케이드는 평균 농도의 $0.83$배와 $1.24$배 사이를 오가는 일정한 맥동에 들어가며 주기는 $3.7$--$3.9\,\tau$이다.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=0.3cm,y=1.2cm]
+\draw[->,gray!70!black] (0,0) -- (41.5,0) node[right,font=\small,black] {$t/\tau$};
+\draw[->,gray!70!black] (0,0) -- (0,2.8) node[left,font=\small,black] {$x_3/x_3^*$};
+\foreach \t in {0,10,20,30,40}{\draw[gray!60!black] (\t,-0.05) -- (\t,0.05); \node[below,font=\scriptsize] at (\t,0) {\t};}
+\foreach \f in {1,2}{\draw[gray!60!black] (-0.3,\f) -- (0.3,\f); \node[left,font=\scriptsize] at (0,\f) {\f};}
+\draw[densely dashed,gray!60!black] (0,1) -- (40,1);
+\draw[thick,blue!60!black] plot file {figures/cascade_K4.dat};
+\draw[thick,red!70!black] plot file {figures/cascade_K12.dat};
+\node[font=\scriptsize,blue!60!black,anchor=west] at (16,0.55) {$K=4$: 자리를 잡는다};
+\node[font=\scriptsize,red!70!black,anchor=west] at (16,1.75) {$K=12$: 맥동한다};
+\end{tikzpicture}
+\caption{식~\eqref{eq:cascade}에 따른 되먹임이 걸린 3단 캐스케이드. 최종 호르몬의 농도를 평형값 $x_3^*$에 대한 비로 나타냈다. 루프 이득이 8보다 작으면 농도가 자리를 잡고, 8보다 크면 캐스케이드가 스스로 일정한 맥동을 만든다.}
+\label{fig:cascade}
+\end{figure}
+
+실제 캐스케이드 호르몬은 정말로 맥동하며 분비된다. 예를 들어 스트레스 호르몬의 농도는 약 1시간 주기로 오르내린다. 한 가설에 따르면 이 맥동은 단계 사이의 지연된 되먹임 자체가 만들어 내며, 따로 리듬 발생기가 필요하지 않다~\cite{Walker2010}. 이는 명제~\ref{prop:ei}의 \nt{GLUT}--\nt{GABA} 루프와 조건~\eqref{eq:delaystable}의 근육 신장 루프에서 진동이 생긴 이유와 같다. 지연되는 음의 되먹임이다.
+
+\section{호르몬의 펄스 부호}
+
+맥동은 부작용일 뿐 아니라 부호가 되기도 한다. 생식을 조절하는 뉴런은 자신의 신호를 대략 1시간에 한 번씩 짧은 분량으로 나누어 혈액에 내보낸다. 수신 샘에 같은 신호를 분량으로 나누지 않고 연속으로 주면, 샘은 펄스를 받을 때처럼 제대로 일하지 않고 아예 멈춘다. 다시 1시간에 한 번씩 분량으로 주면 작동이 회복된다~\cite{Belchetz1978}. 즉 수신자는 농도가 아니라 분량의 \emph{빈도}를 읽는다.
+
+엔지니어에게 여기에는 수수께끼가 없다. 물질이 오래 작용하면 지쳐서 반응을 멈추는 수용체는 \ref{sec:code}장의 고갈되는 시냅스~\eqref{eq:depression}처럼 고역 통과 필터다. 연속 신호는 막고 변화는 통과시킨다. 이런 수신자에게는 펄스로만 무언가를 전달할 수 있으므로, 정보는 농도에서 분량의 빈도와 모양으로 옮겨 간다. 게다가 분량의 빈도가 다르면 같은 샘 안의 서로 다른 세포에 다르게 작용하므로, 화학 회선 하나로 둘 이상의 값을 보낼 수 있다. \ref{sec:dofaalt}장에서 \nt{DOPA} 전선 하나로 빠른 성분과 느린 성분이 함께 전달된 것과 같다.
+
+\section{일주기 리듬: 모드를 바꾸는 느린 발진기}
+
+몸에서 가장 느린 리듬은 하루 주기의 리듬이다. 이 리듬은 세포 안의 지연된 음의 되먹임이 만든다. 유전자가 단백질을 만들고, 그 단백질이 몇 시간 늦게 자기 생산을 억제한다~\cite{TakahashiJS2017}. 다시 지연되는 음의 되먹임이 나온다. 이 책에서 네 번째다. 그리고 다시 리듬이 생기는데, 이번에는 주기가 약 하루다. 주 발진기는 뇌 바닥에 있는 수만 개의 뉴런으로 이루어진 작은 무리이며, 이들의 리듬이 몸의 나머지 세포를 동기화한다.
+
+사람에서 이 발진기의 고유 주기는 정확히 하루가 아니라 평균 $24.18$시간이다~\cite{Czeisler1999}. 날마다 눈의 센서에서 오는 빛이 발진기를 맞춰 준다(\ref{sec:sensors}장). 전자 공학자에게 이것은 \emph{위상 고정 루프}다. 고유 주파수 $\omega_0$인 발진기가 주파수 $\omega$인 외부 신호에 맞춰지며, 위상차 $\varphi$는 다음 식을 따른다.
+\begin{empheq}[box=\keybox]{equation}
+\frac{\dd\varphi}{\dd t} \;=\; (\omega-\omega_0) \;-\; K_\varphi\,\sin\varphi .
+\label{eq:pll}
+\end{empheq}
+$|\omega-\omega_0|<K_\varphi$이면 고정이 유지된다. 주기 $24.18$시간인 발진기는 날마다 약 11분씩 옮겨져야 하며, 보통은 아침 햇빛만으로 충분하다. 극야나 빛이 없는 동굴에서는 맞춤이 없으므로 리듬은 고유 주기로 흘러간다.
+
+일주기 발진기는 컴퓨터의 클록 발진기가 아니다. 계산 단계를 세지도 않고 뉴런의 스파이크를 동기화하지도 않는다. 이 발진기는 \emph{모드}를 바꾼다. 잠과 깨어 있음, 호르몬 농도, 체온, 먹을 준비를 바꾼다. 이것은 \ref{sec:serocomputer}--\ref{sec:acet}장의 레지스터와 같은 종류의 느린 브로드캐스트 레지스터다. 다만 그 값이 태양에 맞춘 일정표에 따라 바뀐다.
+
+\begin{keyblock}
+\begin{proposition}[화학적 출력]
+\label{prop:chemoutput}
+기계의 느린 출력은 빠른 출력과 같은 부품으로 만들어진다. 기관은 부호가 반대이고 속도가 다른 두 가닥의 전선, 즉 가속 페달 \nt{NORA}와 브레이크 \nt{ACET}을 받고, 몸 전체는 아드레날린 \nt{ADRE}를 비롯한 혈액의 브로드캐스트 신호를 한꺼번에 받는다. 호르몬 농도는 음의 되먹임이 걸린 캐스케이드가 유지하며, 그 정밀도는 안정성에 제한된다. 일부 호르몬은 분량의 빈도로 부호화된다. 일주기 리듬은 빛에 위상 고정되는 느린 발진기다. 경로의 구조, 분량 실험, 주기 실험은 측정되었다. 캐스케이드의 맥동을 되먹임 자체로 설명하는 것은 가설이다.
+\end{proposition}
+\end{keyblock}
+
+\section{요약}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{3.1cm}>{\raggedright}p{4.8cm}>{\raggedright\arraybackslash}p{4.9cm}}
+\toprule
+화학적 출력이 하는 일 & 방법 & 알려진 것 \\
+\midrule
+기관을 조정한다 & 가속 페달 \nt{NORA}와 브레이크 \nt{ACET}~\eqref{eq:gasbrake} & 측정됨; 브레이크가 가속 페달보다 빠르다 \\
+몸 전체를 달리기 모드로 바꾼다 & 혈액 속 아드레날린 \nt{ADRE} & 측정됨 \\
+호르몬 농도를 유지한다 & 되먹임이 걸린 캐스케이드, $K<8$~\eqref{eq:cascadestable} & 캐스케이드와 되먹임은 측정됨; 루프 자체가 만드는 맥동은 가설 \\
+분량의 빈도로 전달한다 & 고역 통과 필터로서의 지친 수용체 & 분량 의존성은 측정됨 \\
+하루 동안 모드를 바꾼다 & 빛에 위상 고정되는 발진기~\eqref{eq:pll} & 주기와 빛에 의한 맞춤은 측정됨 \\
+\bottomrule
+\end{tabular}
+\caption{기계는 몸의 화학을 어떻게 조절하는가.}
+\label{tab:chemoutput}
+\end{table}
+
+기계에는 출력이 두 개 있다(표~\ref{tab:chemoutput}). 빠른 출력은 근육이다. 밀리초 단위이고, 주소가 있으며, 관절 하나하나로 간다. 느린 출력은 몸의 화학이다. 초, 분, 하루 단위이고, 두 가닥의 전선으로 기관에, 혈액으로 모든 곳에 한꺼번에 간다. 두 출력의 부품은 같다. 부호가 반대인 두 전선, 페이스메이커, 되먹임과 그 지연이다. 기계 내부를 이루는 부품도 바로 이것들이다.
+
+\section{연습문제}
+
+\begin{exercise}[\lvlA]
+\label{ex:16:1}
+\emph{필터로서의 혈액.} 호르몬은 반감기 $t_{1/2}=10$~min으로 혈액에서 제거되고, $T=60$~min마다 짧은 분량으로 분비된다. 농도의 최댓값은 최솟값의 몇 배이고, 분량의 기본 고조파는 몇 배로 감쇠하는가? $t_{1/2}$가 얼마일 때 최댓값이 최솟값의 2배에 불과한가?
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:16:2}
+\emph{일주기 위상 고정.} 발진기~\eqref{eq:pll}의 고유 주기는 $24.18$~h이고, 빛은 위상을 하루에 최대 1시간 옮긴다: $K_\varphi=2\pi/24$~rad/day. 정상 상태 위상차 $\varphi^*$를 분 단위로, 그리고 이완 시간을 구하라. 외부 신호가 $\pm6$~h 도약한 뒤 불일치가 1시간 아래로 줄어드는 데 며칠이 걸리는가?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:16:3}
+\emph{정밀도 대 안정성.} 선형화한 캐스케이드~\eqref{eq:cascade}를 같은 단 $n$개로 늘렸다. 임계 이득 $K_c(n)$과, $n=3$과 $n=6$에서 달성할 수 있는 최소 오차 $1/(1+K_c)$를 구하라. $n\to\infty$일 때 이 오차는 어디로 수렴하는가?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:16:4}
+\emph{가속 페달과 브레이크.} 식~\eqref{eq:gasbrake}에서 가속 페달과 브레이크의 기여는 $\tau_S=2$~s와 $\tau_P=0.4$~s인 RC 회로의 출력이고, 명령은 각각 분당 $80$회와 $60$회를 넘지 않는다. $f_0=100$이고, 안정 시 브레이크 $35$, 가속 페달 $0$, $f=65$이다. $f=120$에 도달하는 데 얼마나 걸리는가? 브레이크를 놓지 않고 가속 페달만 쓰면 어떤가?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:16:5}
+\emph{모델링: 지연이 있는 캐스케이드.} \texttt{models/\allowbreak chem\_models.py}의 함수 \texttt{cascade}를 복사해(파일은 실행하지 말 것) 되먹임에 지연 $d$를 넣어라. 첫 단이 $x_3(t-d)$를 본다. $d/\tau=0$, $0.5$, $1$, $2$에서 $K_c$와 경계에서의 주기를 구하고, $0.9K_c$와 $1.1K_c$에서 시뮬레이션으로 확인하라.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:16:6}
+\emph{분량을 읽는 수신자.} 수용체가 지친다: $y=[c-a]_+$, $\tau_a\,\dd a/\dd t=c-a$, $\tau_a=30$~min. 호르몬은 평균 용량 $\bar c$는 같게, 한 번에 $6$~min씩 주기 $T$로 들어온다. $T=15$, $60$, $120$~min과 $T\to\infty$에서 평균 반응을 구하라. 농도가 $\bar c$로 일정하면 반응은 얼마인가?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:16:7}
+\emph{발진기인가, 되먹임인가?} 캐스케이드~\eqref{eq:cascade}의 지연된 되먹임이 만드는 맥동과 별도의 페이스메이커가 만드는 맥동을 구별하는 실험을 제안하라. $K$를 1.5배밖에 바꿀 수 없고 주기를 $5\%$ 정확도로 측정한다면, 주기의 이동으로 두 가설을 구별할 수 있는가?
+\end{exercise}

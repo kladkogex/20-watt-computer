@@ -1,0 +1,194 @@
+\chapter{잠자는 동안 뉴런은 무엇을 하는가}
+\chaptermark{수면}
+\label{sec:sleep}
+
+\section{수면은 꺼짐이 아니라 다른 모드다}
+
+꺼진 컴퓨터를 본 엔지니어는 아무것도 하지 않는다고 말할 것이다. 잠든 뇌는 그렇지 않다. 잠자는 동안에도 뉴런은 조용하지 않다. 깊은 잠에서 피질은 스파이크를 내고, 렘수면에서는 낮과 거의 같은 만큼 낸다. 바뀌는 것은 뉴런이 \emph{일하는지}가 아니라 \emph{어떻게} 일하는지다. 수면은 기계의 모드 묶음이며, 이 모드를 바꾸는 것은 낮과 같은 브로드캐스트 채널이다.
+
+모드마다 “레지스터 상태”를 적을 수 있다(표~\ref{tab:sleepmodes}). 낮에는 \nt{ACET}, \nt{NORA}, \nt{SERO}가 일하고, 센서가 연결되어 있으며, 근육이 명령을 따른다. 느리고 깊은 서파 수면에서는 세 채널이 모두 잠잠해지고 감각 기관의 입력이 약해진다~\cite{Hasselmo1999}. 피질의 아세틸콜린 방출이 떨어지고, \nt{NORA} 뉴런과 \nt{SERO} 뉴런은 낮보다 드물게 스파이크를 낸다~\cite{Marrosu1995,AstonJonesBloom1981,McGintyHarper1976}. 렘수면의 그림은 기묘하다. \nt{ACET}은 다시 낮 수준으로 오르지만~\cite{Marrosu1995}, \nt{NORA}와 \nt{SERO}는 거의 완전히 입을 다문다~\cite{AstonJonesBloom1981,McGintyHarper1976,JacobsAzmitia1992}. 렘수면에서 몸의 근육은 꺼져 있다. 근육을 제어하는 \nt{ACET} 뉴런이 \nt{GABA}와 \nt{GLYC}를 통해 강하게 억제된다~\cite{BrooksPeever2012}. \ref{sec:gaba}장의 금지와 같은 것이지만, 출력 전체에 한꺼번에 걸린다.
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{3.1cm}>{\raggedright}p{2.9cm}>{\raggedright}p{3.2cm}>{\raggedright\arraybackslash}p{3.4cm}}
+\toprule
+& 각성 & 서파 수면 & 렘수면 \\
+\midrule
+\nt{ACET} (쓰기, \ref{sec:acet}장) & 높음 & 낮음 & 높음 \\
+\nt{NORA} (이득, \ref{sec:nora}장) & 중간, 폭발적 발화 & 낮음 & 거의 조용 \\
+\nt{SERO} (\ref{sec:serocomputer}장) & 중간 & 낮음 & 거의 조용 \\
+센서 입력 & 연결됨 & 약해짐 & 약해짐 \\
+근육 출력 & 연결됨 & 약해짐 & 억제로 꺼짐 \\
+피질 활동 & 고름 & 느린 시소: 활동---침묵 & 낮처럼 고름 \\
+\bottomrule
+\end{tabular}
+\caption{세 모드에서 기계의 레지스터 상태. 모든 행은 측정되었다. \nt{ACET}, \nt{NORA}, \nt{SERO}의 수준은 수면 단계별 직접 기록으로 측정되었다~\cite{Marrosu1995,AstonJonesBloom1981,McGintyHarper1976}.}
+\label{tab:sleepmodes}
+\end{table}
+
+\section{언제 잘까: 히스테리시스가 있는 릴레이}
+
+기계가 언제 수면으로 전환할지는 무엇이 정할까? 두 부분으로 된 간단한 회로가 잘 들어맞는다~\cite{Borbely1982}. 첫 부분은 \emph{수면 압력} $S$다. 깨어 있는 동안 쌓이고 자는 동안 풀린다. 낮에 충전되고 밤에 방전되는 커패시터다.
+\begin{empheq}[box=\keybox]{equation}
+\frac{\dd S}{\dd t} \;=\; \frac{1-S}{\tau_r}\ \ \text{(각성)},\qquad
+\frac{\dd S}{\dd t} \;=\; -\frac{S}{\tau_d}\ \ \text{(수면)} .
+\label{eq:sleeppressure}
+\end{empheq}
+둘째 부분은 문턱값 두 개다. 기계는 $S$가 위 문턱값 $H(t)$에 이르면 잠들고, 아래 문턱값 $L(t)$까지 내려가면 깬다. 두 문턱값은 \ref{sec:chemoutput}장의 일주기 리듬에 맞춰 부드럽게 오르내린다. 그 결과는 히스테리시스가 있는 릴레이, 즉 \ref{sec:bistable}절의 슈미트 트리거이며, 커패시터와 함께 일주기 리듬~\eqref{eq:pll}에 위상이 맞춰지는 이완 발진기가 된다.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=0.16cm,y=4.2cm]
+\foreach \a/\b in {0/4.3,21.2/29.3,45.4/53.4,69.5/72}{\fill[blue!8] (\a,0) rectangle (\b,1);}
+\draw[->,gray!70!black] (0,0) -- (75,0) node[right,font=\small,black] {$t$, h};
+\draw[->,gray!70!black] (0,0) -- (0,1.08) node[left,font=\small,black] {$S$};
+\foreach \t in {0,24,48,72}{\draw[gray!60!black] (\t,-0.02) -- (\t,0.02); \node[below,font=\scriptsize] at (\t,0) {\t};}
+\draw[thick,densely dashed,red!70!black] plot file {figures/sleep_H.dat};
+\draw[thick,densely dashed,green!45!black] plot file {figures/sleep_L.dat};
+\draw[very thick,blue!60!black] plot file {figures/sleep_S.dat};
+\node[font=\scriptsize,red!70!black,anchor=west] at (73,0.72) {$H$: 잠들기};
+\node[font=\scriptsize,green!45!black,anchor=west] at (73,0.24) {$L$: 깨기};
+\node[font=\scriptsize,blue!60!black] at (25.25,0.93) {수면};
+\node[font=\scriptsize,blue!60!black] at (49.4,0.93) {수면};
+\end{tikzpicture}
+\caption{$\tau_r=18.2$~h, $\tau_d=4.2$~h에서의 수면 압력 $S$~\eqref{eq:sleeppressure}. 낮에는 $S$가 위 문턱값 $H$까지 충전되고, 밤에는(색칠한 부분) 아래 문턱값 $L$까지 방전된다. 두 문턱값은 일주기 리듬과 함께 오르내린다. 기계는 스스로 약 $16$시간 각성, $8$시간 수면의 체제에 이른다.}
+\label{fig:twoprocess}
+\end{figure}
+
+보통 값 $\tau_r=18.2$~h, $\tau_d=4.2$~h를 넣은 우리 모델에서 기계는 스스로 $16.1$시간 각성과 $8.0$시간 수면에 이른다(그림~\ref{fig:twoprocess}). 모델은 이상해 보이는 현상도 설명한다. 40시간 동안 자지 않으면 압력은 $0.90$까지 오르지만, 모델에서 회복 수면은 평소보다 하루 더 긴 것이 아니라 $8.8$시간뿐이다. 방전은 지수적이어서 높은 충전은 빨리 빠진다. “빚”은 수면의 길이가 아니라 깊이로 갚는다.
+
+물리적으로 $S$ 역할을 하는 것은 무엇일까? 유력한 후보는 부록~\ref{sec:othermediators}의 “부하 계수기” 아데노신이다. 아데노신 농도는 깨어 있는 동안 오르고 자는 동안 떨어진다~\cite{PorkkaHeiskanen1997,Dunwiddie2001}. 수면 압력이 바로 아데노신이고 다른 무엇도 아니라는 것은 가설이다.
+
+\section{서파 수면: 이완 발진기가 된 네트워크 전체}
+
+깊은 잠에서 피질 뉴런은 무리 전체가 번갈아 일한다. 1초에 한 번보다 드물게, 수백 밀리초 동안 함께 켜지고(\emph{활동 상태}) 함께 조용해진다(\emph{침묵 상태}). 이 시소의 주파수는 $1$~Hz 아래이고, 마취 상태에서는 대개 $0.3$--$0.4$~Hz다~\cite{Steriade1993}. 이 느린 시소는 이미 가진 부품으로 만들 수 있다. 자신에게 강한 되먹임을 거는 \nt{GLUT} 뉴런 무리, 즉 안정한 상태가 둘인 \ref{sec:glutcomputer}장의 기억을 가져와서, \ref{sec:muscles}장의 리듬 발생기에서처럼 느린 피로를 더하자.
+\begin{empheq}[box=\keybox]{equation}
+\tau\,\frac{\dd r}{\dd t} = -r + F\bigl(w\,r + I - a\bigr),
+\qquad
+\tau_a\,\frac{\dd a}{\dd t} = -a + b\,r .
+\label{eq:updown}
+\end{empheq}
+무리는 켜지고, 일하고, 지친다. 피로 $a$가 위 상태를 잠식하면 무리는 침묵으로 떨어진다. 침묵하는 동안 피로가 풀리면 아래 상태가 사라지고 무리는 다시 켜진다. 수면 압력과 같은 이완 발진기이지만 약 8만 배 빠르다.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=2.9cm,y=1.0cm]
+\begin{scope}[yshift=1.9cm]
+\draw[->,gray!70!black] (0,0) -- (4.1,0);
+\draw[->,gray!70!black] (0,0) -- (0,1.25) node[left,font=\small,black] {$r$};
+\draw[thick,blue!60!black] plot file {figures/updown_sleep.dat};
+\node[font=\scriptsize,anchor=west] at (4.15,0.5) {수면: $b=5$};
+\end{scope}
+\draw[->,gray!70!black] (0,0) -- (4.1,0) node[right,font=\small,black] {$t$, s};
+\draw[->,gray!70!black] (0,0) -- (0,1.25) node[left,font=\small,black] {$r$};
+\draw[thick,red!70!black] plot file {figures/updown_wake.dat};
+\node[font=\scriptsize,anchor=west] at (4.15,0.5) {낮: $b=1$};
+\foreach \t in {0,1,2,3,4}{\draw[gray!60!black] (\t,-0.05) -- (\t,0.05); \node[below,font=\scriptsize] at (\t,0) {\t};}
+\end{tikzpicture}
+\caption{두 모드에 있는 같은 무리~\eqref{eq:updown}: $w=5$, $I=2$, $\theta=2.5$, $\tau=10\ms$, $\tau_a=0.3$~s. 피로가 강하면($b=5$, 서파 수면처럼) 무리는 주기 $1.1$~s로 활동과 침묵 사이를 오간다(모델의 값; 피질에서 주기는 1초보다 길고, 마취 상태에서는 약 $3$~s). 피로를 약하게 하면($b=1$, 아세틸콜린이 이렇게 작용한다) 같은 무리가 고르게 일한다.}
+\label{fig:updown}
+\end{figure}
+
+그러면 무엇이 네트워크를 시소에서 낮의 고른 작동으로 옮길까? 아세틸콜린은 뉴런에서 피로를 만드는 느린 전류를 억누른다~\cite{McCormick1992}. 우리 모델에서 피로가 강한 $b=5$일 때 무리는 주기 $1.1$~s로 오간다. 측정된 시소보다 빠르지만 크기 수준은 같다. 정수 개의 주기에 걸쳐 평균하면 시간의 약 $35\%$ 동안 일한다. 피로가 약한 $b=1$에서는 같은 무리가 고르게 일한다(그림~\ref{fig:updown}). 레지스터 하나, 즉 \nt{ACET} 수준이 발진기를 증폭기로 바꾼다. 수면 중에는 느린 시소 위에 초당 $7$--$15$번 진동하는 더 빠른 리듬의 폭발도 얹힌다. 이것은 피질과 중간 중계 핵 사이의 \nt{GLUT}--\nt{GABA} 루프가 만들며~\cite{SteriadeMcCormickSejnowski1993}, \ref{sec:gaba}장의 리듬과 친척이다.
+
+\section{재생: 하루를 빨리 감기}
+
+\ref{sec:acet}장에서 우리는 서파 수면에서 낮에 함께 일한 뉴런들이 같은 순서로 다시 함께 발화하는 것을 보았다. 공학적인 세부 하나를 더하자. 재생은 \emph{빨리 감기}로 진행된다. 낮에 몇 초 걸린 순서가 잠자는 동안 10분의 몇 초 만에 재생된다~\cite{Nadasdy1999}. 해마에서는 약 20배~\cite{LeeWilson2002}, 피질에서는 6--7배 빠르다~\cite{Euston2007}. 게다가 아무 때나 재생되는 것이 아니다. 한 영역의 짧은 재생 폭발은 피질의 활동-침묵 시소와 빠른 리듬 폭발에 맞춰진다. 이 맞물림을 인위적으로 강화하면 기억이 좋아진다~\cite{Maingret2016}. 이는 이미 우연의 일치가 아니라 인과 관계다.
+
+기계는 왜 하루를 빨리 감을까? 엔지니어는 \emph{파국적 망각}이라는 어려움을 안다. 새것을 하나씩 차례로 배우는 네트워크는 옛것을 망가뜨린다. 해결책은 \emph{섞기}다. 새것을 옛것과 섞어, 조금씩, 여러 번 배우는 것이다. 두 학습 시스템 가설~\cite{McClelland1995}에 따르면 빠른 기억은 하루를 통째로 기록하고, 잠자는 동안 그것을 느린 피질에 조금씩, 섞어서, 여러 번 재생해 준다. 이것은 \ref{sec:acet}장의 “빠른 버퍼 --- 느린 저장소” 쌍과 같고, \ref{sec:motorlearning}장의 빠른 학습자와 느린 학습자 쌍과도 같다. 재생과 그 맞물림은 측정되었다. 그 목적이 느린 기억의 섞어 배우기라는 것은 근거가 탄탄한 가설이다.
+
+\section{가중치의 재정규화}
+
+낮에는 \ref{sec:dofa}장의 헤브 규칙이 주로 연결을 강화한다. 강화만 하면 가중치가 커지고, 에너지 소비도 함께 커지며 민감도는 떨어진다. 모든 입력이 강한 뉴런은 입력을 구별하지 못하게 된다. \emph{시냅스 항상성} 가설~\cite{TononiCirelli2014}에 따르면 수면은 무엇보다 가중치를 작동 수준으로 되돌리는 데 필요하다. 모든 연결이 같은 비율로 약해지므로 연결 사이의 \emph{비}, 즉 배운 것은 보존된다. 엔지니어에게 이것은 규칙~\eqref{eq:oja}과 같은 정규화이지만, 동작 중이 아니라 따로 떼어 둔 시간에 한다.
+
+직접 측정은 이와 모순되지 않는다. 생쥐에서 피질 시냅스의 접촉 면적은 깨어 있은 뒤보다 잔 뒤에 약 $18\%$ 작고, 감소는 크기에 비례하며, 가장 크고 안정된 접촉은 거의 바뀌지 않는다~\cite{deVivo2017}. 가중치의 스케일링은 측정되었다. 그것이 수면의 주된 과제라는 것은 가설이다.
+
+\section{렘수면: 입력과 출력에서 분리된 기계}
+
+렘수면에서 피질은 낮과 거의 같이 일하지만, 감각 기관의 입력은 약해지고 근육 출력은 억제로 꺼진다. 엔지니어에게 익숙한 모드다. \emph{벤치 시험}이다. 회로는 최대 출력으로 동작하지만, 입력은 내부 발생기에 물려 있고 출력은 아무것도 망가뜨리지 않도록 액추에이터에서 분리되어 있다. 한 가설에 따르면 꿈은 바로 낮 동안 모은 세계 모델을 이렇게 내부에서 돌려 보는 것이다. 이때 네트워크가 정확히 무엇을 하는지, 학습을 하는지는 알려지지 않았다. 여기서 측정된 것은 표~\ref{tab:sleepmodes}에 적은 것뿐이다. 어느 채널이 켜져 있고 어느 채널이 조용한지, 그리고 출력이 막혀 있다는 것이다.
+
+\section{유지 보수와 국소 수면}
+
+오랫동안 잠자는 동안 세포 사이 틈이 넓어져 뇌가 대사 산물을 더 빨리 씻어 낸다고 여겨졌다~\cite{Xie2013}. 다른 방법으로 세척을 잰 최근 실험은 반대 결과를 얻었다. 잠자는 동안 세척이 더 느리다~\cite{Miao2024}. 이 문제는 지금 열려 있으며, 우리도 열어 둔다.
+
+더 확실한 사실이 있다. 수면은 기계 전체가 아니라 국소 네트워크의 성질이다. 동물을 오래 재우지 않으면, 동물이 깨어 움직이는 동안에도 피질의 일부 영역이 서파 수면에서처럼 잠깐 침묵으로 빠지고, 그 순간 동물은 더 자주 실수한다~\cite{Vyazovskiy2011}. 네트워크 하나하나가 스스로 지치고 스스로 전환한다. 전체 모드는 브로드캐스트 채널이 모든 네트워크를 한꺼번에 전환할 때 생긴다.
+
+\begin{keyblock}
+\begin{proposition}[모드 묶음으로서의 수면]
+\label{prop:sleep}
+잠자는 동안 뉴런은 꺼지지 않는다. 브로드캐스트 채널이 기계를 다른 모드로 옮긴다. 언제 잘지는 일주기 리듬에 맞춰진 히스테리시스 릴레이~\eqref{eq:sleeppressure}가 정한다. 서파 수면에서 네트워크는 이완 발진기~\eqref{eq:updown}가 되어 하루를 빨리 감아 재생한다. 렘수면에서는 입력과 출력에서 분리된 채 일한다. 모드, 재생, 가중치 스케일링은 측정되었다. 그 목적, 즉 섞어 배우기와 재정규화는 근거가 탄탄한 가설이다.
+\end{proposition}
+\end{keyblock}
+
+\section{요약}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{3.2cm}>{\raggedright}p{4.4cm}>{\raggedright\arraybackslash}p{5.2cm}}
+\toprule
+일어나는 일 & 방법 & 알려진 것 \\
+\midrule
+모드 전환 & 레지스터 \nt{ACET}, \nt{NORA}, \nt{SERO}(표~\ref{tab:sleepmodes}) & 측정됨 \\
+언제 잘까 & 커패시터 $S$와 히스테리시스 릴레이~\eqref{eq:sleeppressure} & 모델이 실험을 잘 기술함; $S$로서의 아데노신은 가설 \\
+느린 시소 & 되먹임과 피로가 있는 무리~\eqref{eq:updown} & 시소는 측정됨; 모델은 가장 단순한 회로 \\
+하루 빨리 감기 & $6$--$20$배 빠르고 시소에 맞물린 재생 & 측정됨; 맞물림을 강화하면 기억이 좋아짐 \\
+재생은 왜 & 느린 기억의 섞어 배우기 & 근거가 탄탄한 가설 \\
+가중치 재정규화 & 수면 중 연결의 스케일링 & 접촉 감소는 측정됨; 수면의 주된 역할이라는 것은 가설 \\
+렘수면 & 입력과 출력을 분리한 채 동작 & 모드는 측정됨; 목적은 알려지지 않음 \\
+세척 & 세포 사이 틈의 확장 & 상반된 결과 \\
+국소 수면 & 개별 영역이 침묵으로 빠진다 & 측정됨 \\
+\bottomrule
+\end{tabular}
+\caption{잠자는 동안 뉴런이 하는 일.}
+\label{tab:sleep}
+\end{table}
+
+표~\ref{tab:sleep}이 이 장을 요약한다. 수면은 기계 작동의 휴지가 아니라 동작 중의 유지 보수로 드러났다. 같은 브로드캐스트 채널에 의한 모드 전환, 걸음 리듬과 같은 부품으로 만든 발진기, 느린 기억을 위한 하루 빨리 감기, 가중치 재정규화다. 낮에 기계는 기록하고, 밤에는 기록한 것을 다시 쓰고 정리한다.
+
+\section{연습문제}
+
+\begin{exercise}[\lvlA]
+\label{ex:20:1}
+\emph{일주기 리듬이 없는 릴레이.} 문턱값이 일정하다고 하자: $H=0.67$, $L=0.17$(그림~\ref{fig:twoprocess} 모델 문턱값의 평균). $\tau_r=18.2$~h, $\tau_d=4.2$~h에서 \eqref{eq:sleeppressure}로부터 각성과 수면의 길이, 발진기의 주기를 유도하라. 문턱값이 오르내리는 모델은 왜 $16.1+8.0=24$~h에 이르는가? 이 효과는 \ref{sec:chemoutput}장의 어느 소자에 해당하는가?
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:20:2}
+\emph{수면 빚.} 압력 $S_0$에서 시작한 수면은 $t_s=\tau_d\ln(S_0/L)$ 동안 이어진다. $\tau_d=4.2$~h, $L$은 깰 때의 아래 문턱값이다. (a)~$40$~h 동안 자지 않은 뒤 $S_0=0.90$이고 수면은 $8.8$~h였다. $L$은 얼마였는가? 평소의 $L\approx0.092$이면 수면은 얼마나 이어졌겠는가? (b)~하룻밤 사이 시냅스 접촉 면적이 $18\%$ 줄어든다. 낮 동안 가중치는 얼마나 커져야 하는가?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:20:3}
+\emph{문턱값 설계.} $\tau_r=18.2$~h, $\tau_d=4.2$~h인 릴레이~\eqref{eq:sleeppressure}가 정확히 $16$~h 각성과 $8$~h 수면을 내도록 일정한 문턱값 $H$와 $L$을 고르라. 어느 날 밤 $4$시간 만에 깨웠다면, 이 기계는 문턱값이 오르내리는 기계보다 무엇이 나쁜가?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:20:4}
+\emph{느린 시소의 주기.} 모델~\eqref{eq:updown}에서 $F(x)=1/\bigl(1+e^{-(x-\theta)/k}\bigr)$, $w=5$, $I=2$, $\theta=2.5$, $k=0.25$, $b=5$, $\tau\ll\tau_a=0.3$~s. (a)~곡선 $r=F(wr+I-a)$에서 활동과 침묵이 사라지는 전환점 $a_{\text{상}}$과 $a_{\text{하}}$를 구하라. (b)~활동에서 $r\approx1$, 침묵에서 $r\approx0$으로 보고 주기와 활동 비율을 구하라.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:20:5}
+\emph{시소는 언제 꺼지는가.} 연습문제~\ref{ex:20:4}의 모델에서 고정점은 곡선 $a=wr+I-F^{-1}(r)$과 직선 $a=br$의 교점이다. 교점이 전환점 사이의 가운데 가지에 있는 동안 진동이 일어난다. $b$가 얼마일 때 그런가? \nt{ACET}은 $b$를 바꿔 어떻게 발진기를 증폭기로 바꾸는가?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:20:6}
+\emph{모델링: 빚인가, 위상인가.} \texttt{sleep\_models.py}에서 $48$~h 뒤의 첫 깸을 잡고, 기계를 $D=24$, $32$, $40$, $48$, $64$~h 동안 깨어 있게 하라(\texttt{stay\_awake}, \texttt{days=8}). 각 $D$에서 회복 수면은 얼마나 이어지는가? 그 길이는 무엇이 정하는가?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:20:7}
+\emph{모델링: 망각과 섞기.} 선형 뉴런 $y=\mathbf w\cdot\mathbf x$, $n=40$이 규칙 $\mathbf w\leftarrow\mathbf w-0.5\,(y-y^*)\,\mathbf x$로 배운다. 과제 A와 B는 각각 패턴 $10$개, $x_j\sim\mathcal N(0,1/n)$, $y^*=\pm1$. A를 $200$ 에포크, 이어서 B를 $200$ 에포크 학습한 뒤 A에 대한 평균제곱오차는? A와 B를 섞어 $200$ 에포크 학습한 뒤에는?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:20:8}
+\emph{탐구: 섞기인가, 재정규화인가?} 연습문제~\ref{ex:20:7}의 뉴런에 문턱값을 두고, 밤의 두 절차를 생각하자: (i)~모든 가중치에 $0.82$를 곱한다; (ii)~옛 패턴을 새 패턴과 섞어 반복한다. 각각은 가중치의 비와 뉴런의 응답에 무엇을 하는가? 잠든 뒤 시냅스 크기로 두 가설을 어떻게 구별하겠는가?
+\end{exercise}

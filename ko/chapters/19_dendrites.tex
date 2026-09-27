@@ -1,0 +1,167 @@
+\chapter{가지돌기 개수에 따른 뉴런}
+\chaptermark{가지돌기 개수}
+\label{sec:dendrites}
+
+\section{회로 매개변수로서의 입력 개수}
+
+\ref{sec:neurontypes}장에서는 뉴런을 출력이 무엇을 내보내는지에 따라, \ref{sec:eetypes}장에서는 어떤 소자로 동작하는지에 따라 분류했다. 엔지니어라면 곧바로 알아챌 세 번째 특징도 있다. 뉴런에 \emph{입력이 몇 개 있는가}이다. 입력은 가지돌기가 모은다. 가지돌기는 다른 세포의 축삭이 달라붙는 가지다(\ref{sec:dofa}장, \ref{sec:weightstore}절). 어떤 뉴런에는 가지돌기가 아예 없고, 어떤 뉴런에는 한두 개가 있으며, 또 어떤 뉴런에는 입력 10만 개를 모으는 나무가 있다. 전자 공학자에게 이것은 입력 부하 능력, 즉 팬인(fan-in)이며, 거의 언제나 과제에 맞춰져 있다.
+
+가지돌기의 개수와 크기가 왜 그렇게 중요한지는 간단한 추정으로 알 수 있다. 막은 단위 면적당 커패시턴스가 $c_m\approx1$~\textmu F/cm$^2$인 커패시터이며, 가지돌기를 포함한 뉴런의 면적 $A$가 클수록 전압을 $\Delta V$만큼 올리는 데 더 많은 전하가 필요하다. 누설을 무시하면 입력 전류 $I$가 이 일을 하는 데 걸리는 시간은 다음과 같다.
+\begin{empheq}[box=\keybox]{equation}
+t \;\approx\; \frac{c_m\,A\,\Delta V}{I} .
+\label{eq:dendriteload}
+\end{empheq}
+짧은 가지돌기가 몇 개 달린 작은 뉴런은 면적이 약 $2\cdot10^{-5}$~cm$^2$이고 커패시턴스는 약 $20$~pF이다. 전류가 몇 나노암페어인 큰 시냅스 하나가 이 뉴런을 10분의 1밀리초도 안 되어 $20\mV$ 올린다. 큰 나무를 가진 뉴런은 면적이 열다섯 배쯤 크고 커패시턴스는 약 $300$~pF이다. 전류가 약 $0.1$~nA인 보통 시냅스라면 이 뉴런을 충전하는 데 $60\ms$가 걸릴 것이다. 누설 시상수보다 훨씬 길므로, 결국 끝내 충전하지 못한다. 이런 뉴런에는 동시에 오는 입력 수십 개가 필요하다. 여기서 수치는 크기 수준일 뿐이지만 결론은 수치에 좌우되지 않는다. \emph{입력이 적으면 빠르고 정확하며, 입력이 많으면 느리고 합으로 동작한다}.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  soma/.style={circle,draw,very thick,fill=blue!6,minimum size=0.55cm,inner sep=0pt},
+  ax/.style={->,very thick,red!70!black},
+  den/.style={very thick,blue!60!black}]
+% 0 dendrites: sensor on a line
+\begin{scope}[xshift=0cm]
+\draw[den,decorate,decoration={snake,amplitude=1pt,segment length=4pt}] (-0.9,0) -- (0,0);
+\node[font=\scriptsize] at (-0.9,0.3) {센서};
+\draw[ax] (0,0) -- (1.0,0);
+\draw[thick] (0.1,0) -- (0.1,0.45);
+\node[soma,minimum size=0.4cm] at (0.1,0.65) {};
+\node[font=\scriptsize,align=center] at (0.05,-0.75) {$0$\\센서 달린 선로};
+\end{scope}
+% 1 dendrite
+\begin{scope}[xshift=3.3cm]
+\draw[den] (-0.9,0) -- (-0.28,0);
+\node[soma] at (0,0) {};
+\draw[ax] (0.28,0) -- (0.9,0);
+\node[font=\scriptsize,align=center] at (0,-0.75) {$1$\\버퍼, 리피터};
+\end{scope}
+% 2 dendrites: one per ear
+\begin{scope}[xshift=6.2cm]
+\draw[den] (-0.28,0) -- (-0.9,0); \draw[den] (0.28,0) -- (0.9,0);
+\node[soma] at (0,0) {};
+\draw[ax] (0,-0.28) -- (0,-0.6);
+\node[font=\scriptsize] at (-0.9,0.25) {왼쪽}; \node[font=\scriptsize] at (0.9,0.25) {오른쪽};
+\node[font=\scriptsize,align=center] at (0,-1.0) {$2$\\시간 AND};
+\end{scope}
+% ~4 short dendrites: mixer
+\begin{scope}[xshift=9.0cm]
+\foreach \a in {45,135,225,315}{\draw[den] (\a:0.28) -- (\a:0.7); \fill[blue!60!black] (\a:0.72) circle (0.06);}
+\node[soma] at (0,0) {};
+\draw[ax] (0.28,0) -- (1.0,0);
+\node[font=\scriptsize,align=center] at (0,-1.0) {$\sim4$\\믹서};
+\end{scope}
+% many: summing tree
+\begin{scope}[xshift=12.0cm]
+\foreach \a in {60,90,120}{\draw[den] (0,0.28) -- ++(\a:0.55) coordinate (b); \foreach \d in {-20,20}{\draw[den] (b) -- ++(\a+\d:0.35);}}
+\foreach \a in {-120,-60}{\draw[den] (0,-0.28) -- ++(\a:0.45);}
+\node[soma] at (0,0) {};
+\draw[ax] (0.28,0) -- (1.0,0);
+\node[font=\scriptsize,align=center] at (0,-1.0) {$10^4$--$10^5$\\가산기};
+\end{scope}
+\end{tikzpicture}
+\caption{입력 개수에 따른 다섯 부류. 파란색은 가지돌기(입력), 빨간색은 축삭(출력)이다. 입력이 적을수록 뉴런은 개별 신호를 더 빠르고 정확하게 전달하고, 많을수록 더 잘 더하고 분류한다. 세포 모양을 그린 것이 아니라 도식이다.}
+\label{fig:dendriteclasses}
+\end{figure}
+
+\section{가지돌기 0개: 선로 끝의 센서}
+
+촉각, 통증, 근육 신장을 감지하는 감각 뉴런(\ref{sec:sensors}, \ref{sec:pain}, \ref{sec:muscles}장)은 세포체에 가지돌기가 하나도 없다. 축삭은 세포체에서 가지 하나로 나와 곧 둘로 갈라진다. 한 가지는 피부나 근육으로 가고 그 끝이 곧 센서다. 다른 가지는 척수로 간다. 스파이크는 세포체를 거치지 않고 센서에서 곧장 척수로 달린다. 엔지니어에게 이것은 먼 끝에 센서가 달린 통신 선로이고, 세포체는 전원 장치처럼 옆에 매달려 있다. 세포체는 선로에 전력을 대지만 전송에는 참여하지 않는다. 이득은 속도와 신뢰성이다. 경로 어디에도 신호를 합산하고 전달할지 다시 결정해야 하는 곳이 없다.
+
+빛과 소리의 센서는 더 극단적인 경우다. 이들은 입력을 모으는 뉴런이 아니라 변환기 자체이며, 입력은 시냅스가 아니라 수용체 단백질이다(그림~\ref{fig:transducer}).
+
+\section{가지돌기 1개: 버퍼}
+
+가지돌기 하나와 축삭 하나를 가진 뉴런은 입력 선로 하나를 받아 그대로 넘긴다. 후각 뉴런이 그렇다. 하나뿐인 가지돌기가 코의 표면으로 나가며 한 종류의 수용체만 지닌다~\cite{Mombaerts2004}. 망막에서 빛 센서와 눈의 출력 뉴런 사이에 있는 전달 세포, 귀의 센서를 뇌와 잇는 뉴런도 그렇다. 엔지니어라면 이들을 버퍼나 리피터라고 부를 것이다. 이들은 계산하지 않고 신호 하나를 배달하며, 때로는 \ref{sec:sensors}장에서처럼 센서의 매끄러운 전압을 스파이크로 바꾸는 식으로 신호의 형태를 바꾼다.
+
+\section{가지돌기 2개: 시간 AND}
+
+소리의 방향을 정하는 동시성 검출기(그림~\ref{fig:itd})는 포유류에서 흔히 서로 반대쪽을 향한 가지돌기를 정확히 두 개 가진다. 한쪽에는 왼쪽 귀의 입력이, 다른 쪽에는 오른쪽 귀의 입력이 온다~\cite{Grothe2010}. 왜 입력을 떼어 놓을까? 식~\eqref{eq:shunt}을 떠올려 보자. 막의 한 부위에서 흥분성 채널이 많이 열리면 그곳의 전압은 평형 전위에 가까워지고, 다음 입력은 점점 적게 보탠다. 그래서 한쪽 귀에서 온 입력이 한 가지돌기에 많이 모이면 그 가지돌기는 포화되어, 그것만으로는 뉴런을 문턱값까지 끌어올리지 못한다. 반면 각 가지돌기에서 하나씩 온 입력은 거의 선형으로 더해진다. 가지돌기 두 개는 뉴런을 더 엄격한 AND로 만든다. 신호가 양쪽에서 함께 왔을 때만 발화하라. 모델에서 이런 분리가 실제로 동시성 검출을 개선한다는 것이 밝혀졌다~\cite{AgmonSnir1998}.
+
+\section{짧은 가지돌기 몇 개: 믹서와 중계기}
+
+\emph{믹서.} \ref{sec:motorlearning}장의 운동 학습 회로에서는 약 700억 개의 작은 \nt{GLUT} 뉴런이 입력을 아주 긴 벡터로 확장한다. 이들 각각은 짧은 가지돌기가 약 네 개뿐이고, 가지돌기마다 입력 하나의 말단을 감싸는 “발톱”으로 끝난다. 따라서 믹서 하나는 많은 입력 가운데 약 네 개만 보고, 자기 네 입력에 대한 작은 AND 소자로 동작한다. 입력 선로 $M$개에서 서로 다른 네 개 묶음을 $\binom{M}{4}$가지 고를 수 있다. $M=100$이면 거의 400만 가지다. 왜 이렇게 많이 필요할까? 입력이 $n$개인 문턱 소자는 무작위 패턴을 최대
+\begin{empheq}[box=\keybox]{equation}
+P_{\max} \;\approx\; 2n
+\label{eq:cover}
+\end{empheq}
+개까지 두 부류로 올바르게 나눌 수 있다~\cite{Cover1965}. 같은 회로의 출력 뉴런은 믹서에서 약 $10^5$개의 입력을 받으므로, \eqref{eq:cover}에 따라 상한은 서로 다른 대응 약 $2\cdot10^5$개다. 이것은 이상적인 소자의 한계다. 흥분성 시냅스처럼 모든 가중치가 양수이고 잡음에 대한 여유가 필요하면, 같은 뉴런에 대한 추정은 약 $4\cdot10^4$개의 대응이다~\cite{Brunel2004}. 입력이 적은 믹서는 바로 큰 가산기가 서로 다르고 거의 독립인 입력을 많이 갖게 하려고 필요하다~\cite{Marr1969,Albus1971}.
+
+\emph{중계기.} 귀에서 방향 검출기로 가는 경로에는 짧은 가지돌기가 몇 개뿐인 뉴런이 있다. 이들은 거대한 시냅스를 몇 개만 받고, 어떤 뉴런은 사실상 하나만 받는다. \eqref{eq:dendriteload}에 따르면 이것이 딱 필요한 구성이다. 커패시턴스는 작고 전류는 크므로, 뉴런은 입력 스파이크마다 1밀리초도 안 되어 발화하며 시간 정밀도를 거의 잃지 않는다. 이런 중계기 가운데 하나는 \nt{GLUT}를 받아 \nt{GLYC}를 낸다. 수십 마이크로초 정밀도의 인버터로, 방향 검출기에 빠른 억제를 공급한다~\cite{BorstSoria2012}.
+
+\section{입력 수천 개: 가산기와 분류기}
+
+반대쪽 끝에는 입력이 1만 개쯤인 피질의 \nt{GLUT} 뉴런과, 입력이 10만 개인 운동 학습 회로의 출력 \nt{GABA} 뉴런이 있다. 이런 뉴런은 \eqref{eq:dendriteload}에 따라 느리고 개별 입력에 반응할 수 없다. 이들은 더한다. \ref{sec:glutcomputer}장의 적분 뉴런이며, 분류기를 만드는 바로 그 가산기다. 큰 나무는 새로운 것도 보탠다. 나무의 가지는 각자 문턱값을 가진 별도의 하위 회로로 동작하므로, 뉴런 하나가 작은 다층 네트워크처럼 행동한다~\cite{Beniaguev2021,Gidon2020}.
+
+\section{출력이기도 한 가지돌기}
+
+축삭이 아예 없고 가지돌기가 입력이자 출력인 뉴런도 있다. 이 뉴런은 신호를 받고 스스로 신경전달물질을 내보낸다. 가장 많이 연구된 예는 운동 방향 판별에 참여하는 망막의 \nt{GABA} 뉴런이다(\ref{sec:gaba}장, 그림~\ref{fig:direction}). 이런 뉴런에서는 가지 하나하나가 스스로 세포체에서 자기 끝 쪽으로 가는 움직임에 반응하고, 그 끝에서 억제를 낸다~\cite{Euler2002}. 뉴런 하나가 가지마다 하나씩, 독립된 방향 검출기 여러 개다. 엔지니어에게 이것은 소자 하나가 아니라 패키지 하나에 채널이 여럿 든 칩이다.
+
+\section{요약}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{1.9cm}>{\raggedright}p{3.4cm}>{\raggedright}p{2.6cm}>{\raggedright}p{1.8cm}>{\raggedright\arraybackslash}p{3.8cm}}
+\toprule
+가지돌기 & 예 & 소자 & 입력 & 알려진 것 \\
+\midrule
+$0$ & 촉각, 통증, 신장 센서 & 끝에 센서가 달린 선로 & --- & 확립됨 \\
+$1$ & 후각 뉴런, 망막의 전달 세포, 귀의 뉴런 & 버퍼, 리피터 & $1$--소수 & 확립됨 \\
+$2$ & 소리 방향 검출기 & 시간 AND & 두 다발 & 구조는 확립됨; 입력 분리의 이득은 모델에서 입증 \\
+$\sim4$ & 운동 학습 회로의 믹서 & 작은 AND 소자 & $\sim4$ & 확립됨; 입력 확장의 역할은 근거가 탄탄한 가설 \\
+소수, 짧음 & 귀에서 오는 경로의 중계기 & 중계기, 인버터 & $1$--몇 개의 거대 시냅스 & 확립됨 \\
+수천 & 피질의 \nt{GLUT} 뉴런, 운동 학습의 출력 뉴런 & 가산기, 분류기 & $10^4$--$10^5$ & 확립됨; 하위 회로로서의 가지는 개별 사례에서 측정 \\
+출력 가지돌기 & 망막의 방향 \nt{GABA} 뉴런 & 다채널 칩 & 많음 & 측정됨 \\
+\bottomrule
+\end{tabular}
+\caption{가지돌기 개수에 따른 뉴런.}
+\label{tab:dendrites}
+\end{table}
+
+\begin{keyblock}
+\begin{proposition}[입력 개수는 과제를 따른다]
+\label{prop:dendrites}
+센서, 중계기, 동시성 검출기처럼 개별 신호의 속도와 정밀도가 필요한 곳에서는 뉴런의 가지돌기가 적고 입력이 적으며 시냅스가 크다. 작은 커패시턴스~\eqref{eq:dendriteload}는 빨리 충전된다. 더하고 분류해야 하는 곳에서는 뉴런이 입력 수천 개를 가진 큰 나무를 갖는다. 부류의 구조는 측정되었다. 계산적 설명은 근거가 탄탄하지만 많은 부류에서는 아직 가설이다.
+\end{proposition}
+\end{keyblock}
+
+표~\ref{tab:dendrites}는 앞의 두 분류, 즉 신경전달물질에 따른 분류(표~\ref{tab:types})와 소자에 따른 분류(표~\ref{tab:eetypes})를 보완한다. 세 분류 모두 같은 소자를 다른 쪽에서 본다. 무엇을 내보내는지, 무엇을 계산하는지, 얼마나 많이 듣는지다.
+
+\section{연습문제}
+
+\begin{exercise}[\lvlA]
+\label{ex:19:1}
+\emph{큰 뉴런에는 입력이 몇 개 필요한가.} $C=300$~pF, $\tau_m=20\ms$인 뉴런이 각각 $0.1$~nA의 전류원인 시냅스를 받고, 문턱값은 휴지 상태보다 $20\mV$ 높다. (a)~문턱값에 아예 도달하려면, $10\ms$ 안에, $5\ms$ 안에 도달하려면 시냅스 몇 개가 동시에 작동해야 하는가? (b)~$C=20$~pF인 뉴런은 $4$~nA 시냅스 하나로 얼마 만에 문턱값에 도달하는가?
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:19:2}
+\emph{왜 네 개인가.} 믹서는 $M=100$개 가운데 $k$개 선로에 대한 AND이고, 패턴에서 선로의 절반이 활성이며, 믹서는 $7\cdot10^{10}$개다. (a)~$k=2$, $4$, $40$일 때 패턴에 반응하는 믹서는 몇 개인가? (b)~믹서는 직접 선로 $M=100$개에 비해 입력 $10^5$개인 출력 뉴런의 대응 수~\eqref{eq:cover}를 몇 배 늘리는가?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:19:3}
+\emph{$2n$은 어디서 오는가.} 원점을 지나는 초평면은 $n$차원 공간에서 일반 위치에 있는 점 $P$개를 $C(P,n)=2\sum_{k=0}^{n-1}\binom{P-1}{k}$가지 방식으로 두 부류로 나눈다. (a)~$P=2n$이면 $2^P$개 분할 가운데 정확히 절반이 분리 가능함을 증명하라. (b)~$n=100$, $P=180$과 $220$에서 분리 가능한 비율은 얼마인가?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:19:4}
+\emph{엄격한 AND로서의 가지돌기 두 개.} 가지돌기는 누설 $g_L$인 구획이고, 입력 하나가 그 위에 전위 $E_E$인 컨덕턴스 $g_0=0.5\,g_L$을 연다. 세포체는 $\kappa(V_1+V_2)$를 보고, 문턱값은 $\theta=1.1\,\kappa E_E$이다. 왜 한 가지돌기에 입력이 아무리 많아도 뉴런이 발화하지 않는가? 각 가지돌기에 입력이 몇 개 필요한가?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:19:5}
+\emph{중계기 설계.} 스파이크 지터는 $\sigma_t=\sigma_V/\dot V$이고, $\dot V$는 문턱값에서의 전압 기울기다. 잡음 $\sigma_V=1\mV$에서 $\sigma_t\le20$~\textmu s가 필요하다. 누설은 무시하라. $C=300$~pF인 뉴런에는 $0.1$~nA의 동기 시냅스가 몇 개 필요한가? $C=20$~pF이고 $4$~nA 시냅스가 하나인 뉴런의 지터는?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:19:6}
+\emph{모델링: 긴 가지돌기의 충전.} 끝이 닫힌 길이 $L=\ell/\lambda$의 수동 케이블 $\tau_m\partial_tV=\lambda^2\partial_x^2V-V+i/g$를 시뮬레이션하라($40$개 구획, 오일러법). 먼 끝에 짧은 전류 펄스를 넣는다. $L=0.2$, $1$, $2$에서 가까운 끝은 언제, 같은 전하를 가지돌기 전체에 고르게 퍼뜨렸을 때 전압의 몇 분의 몇까지 오르는가?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:19:7}
+\emph{탐구: 최적의 입력 개수.} 커패시턴스는 $C=C_0+nc_s$이고, 전류 $I_s$인 입력 $m$개가 동시에 작동하며, 뉴런은 대응 $P\approx2n$개를 기억한다~\eqref{eq:cover}. $m$이 일정할 때와 비율 $m=\varphi n$이 일정할 때 응답 시간은 $P$에 어떻게 의존하는가? 비용 기준을 제안하고 중계기와 분류기의 최적 $n$을 구하라.
+\end{exercise}

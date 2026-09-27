@@ -1,0 +1,280 @@
+\chapter{\nt{GLUT}와 \nt{GABA}의 협업}
+\label{sec:gaba}
+
+\section{게임의 규칙}
+
+\nt{GLUT} 뉴런만으로 된 네트워크는 고를 줄도, 기억을 초기화할 줄도, 활동이 사태로 번지지 않게 붙잡을 줄도 모른다. 모두 단조성 때문이다(명제~\ref{prop:monotone}). 여기에 수가 두 번째로 많은 유형인 \nt{GABA} 뉴런을 더하자. 규칙은 전과 같다. 살아 있는 몸에서 일어나는 일만 허용하고, 클록 신호는 없다.
+
+뉴런 모델은 \eqref{eq:glutneuron}와 같지만, \nt{GABA} 뉴런에서 온 스파이크는 수신자의 전압을 올리지 않고 내린다. 이제 가중치에는 두 부호가 있고, 부호는 송신자가 정한다. 규칙~\eqref{eq:dalesign}이다.
+
+회로의 파라미터 몇 가지. 피질 뉴런의 5분의 1에서 4분의 1이 \nt{GABA} 뉴런이다~\cite{Hendry1987}. 출력은 짧아서, 먼 영역이 아니라 이웃을 억제한다. 억제는 1밀리초 뒤에 도착해 몇 밀리초 동안 지속된다. 입력이 없으면 \nt{GABA} 뉴런은 침묵한다. 누군가를 억제하려면 자신이 먼저 흥분을 받아야 하며, 보통 같은 네트워크의 \nt{GLUT} 뉴런에게서 받는다.
+
+그래서 \nt{GLUT} 뉴런 $A$에서 뉴런 $B$로 가는 음의 연결은 중개자를 거쳐야 한다. $A$가 \nt{GABA} 뉴런을 흥분시키고, 그 뉴런이 $B$를 억제한다. 부호를 바꾸는 값은 뉴런 하나와 지연 하나, 약 1밀리초이다.
+
+억제에서는 연결이 \emph{누구에게서} 오는지뿐 아니라 \emph{어디에} 붙는지도 중요하다. 붙는 자리가 연결이 하는 일을 상당 부분 결정한다~\cite{Markram2004}. \nt{GLUT} 출력은 주로 수신자의 입력 가지, 즉 \emph{가지돌기}에 붙어 데이터를 나른다. 이런 입력 하나하나는 합의 한 항이다. 뉴런 세포체에 붙는 출력은 합 전체에 작용한다. 많은 빠른 \nt{GABA} 뉴런이 이런 식으로 수신자의 응답을 나누고, 수신자가 언제 발화할지를 정한다. 수신자의 스파이크가 생겨나는 자리에 붙는 출력은 최종 결정권, 즉 출력 전체에 대한 금지이다. 그리고 다른 뉴런의 전선 말단에 붙는 출력은 입력 선로 하나의 방출 확률 $p$를 바꾸고 나머지는 건드리지 않는다~\cite{Rudomin1999}. \ref{sec:pain}장의 통증 관문이 특히 이렇게 작동한다. 뇌 바깥에서는 출력이 근육 섬유(\ref{sec:muscles}장)와 장기(\ref{sec:chemoutput}장)에 붙으며, 어떤 출력은 아무 데도 붙지 않고 신경전달물질을 조직 공간이나 혈액으로 내보낸다(\ref{sec:serocomputer}장과~\ref{sec:chemoutput}장).
+
+\section{NOT과 금지}
+
+이제 NOT을 만들 수 있는가? 거의 그렇다. 입력이 조용할 때 작동하는 뉴런은 어디선가 흥분을 얻어야 한다. 살아 있는 뇌에는 그것이 있다. 모든 뉴런에는 다른 뉴런 수천 개에서 오는 배경 활동이 끊임없이 들어온다. 배경이 뉴런 $Y$를 작동 상태로 유지하고, 입력 $x$가 \nt{GABA} 중개자를 거쳐 그것을 억제한다고 하자. 이것이 NOT이다.
+
+그러나 더 유용한 것은 \emph{금지}, 곧 `$a$, 단 $b$일 때는 아님'이다.
+\begin{empheq}[box=\keybox]{equation}
+y \;=\; a \wedge \bar b .
+\label{eq:veto}
+\end{empheq}
+뉴런 $Y$는 $a$에서 흥분을, $b$가 흥분시키는 \nt{GABA} 뉴런에서 억제를 받는다. 여기서는 배경이 필요 없다. 흥분은 $a$ 자신이 준다. 금지와 OR로 모든 것을 조립할 수 있다. 예를 들어 배타적 OR는 $x\oplus y=(x\wedge\bar y)\vee(\bar x\wedge y)$로, 금지 뉴런 둘, \nt{GABA} 중개자 둘, OR 뉴런 하나이다.
+
+\begin{keyblock}
+\begin{proposition}[\nt{GLUT}+\nt{GABA}의 완전성]
+\label{prop:gabacomplete}
+\nt{GLUT} 뉴런과 \nt{GABA} 뉴런으로 된 네트워크는 입력의 어떤 논리 함수든 계산할 수 있으며, 각 비트는 전선 한 가닥으로 전달된다. 이를 위해 \ref{sec:glutcomputer}장의 `켜짐--꺼짐' 센서는 더 이상 필요 없다. 모든 입력이 조용할 때 1을 내야 하는 함수라면 배경 활동의 원천이 필요하다.
+\end{proposition}
+\end{keyblock}
+
+증명: 상수 1이 있으면 금지~\eqref{eq:veto}와 OR는 함수적으로 완전하다. NOT $x$는 `1, 단 $x$일 때는 아님'이라는 금지이기 때문이다. 그리고 모든 입력이 조용할 때 0을 내는 함수는 1 없이도 금지와 OR로 조립된다.
+
+\section{운동 방향}
+
+\ref{sec:glutcomputer}장의 시간 속 AND처럼, 시간 속의 금지는 운동 방향 검출기를 준다.
+
+이웃한 두 센서 $A$와 $B$가 서로 $\Delta x$ 떨어져 있다고 하자. 출력 뉴런 $Y$는 $B$에서 흥분을, $A$에서는 \nt{GABA} 중개자를 거쳐 지연 $d$로 억제를 받는다(그림~\ref{fig:direction}). 속도 $v$로 $A$에서 $B$로 달리는 빛 점은 시각 $0$에 $A$를 지나고, 억제는 시각 $d$에 $Y$에 이른다. 빛 점은 시각 $\Delta x/v$에 $B$를 지나고, 그때 흥분이 도착한다. 이 두 시각이 창~\eqref{eq:window}의 정밀도 안에서 일치하면 억제가 흥분을 끄고 $Y$는 침묵한다. 이는 대략 다음 속도에서 일어난다.
+\begin{empheq}[box=\keybox]{equation}
+v^* \;=\; \frac{\Delta x}{d} .
+\label{eq:vstar}
+\end{empheq}
+$B$에서 $A$로 움직일 때는 $B$에서 오는 흥분이 시각 $0$에 도착하고, $A$에서 오는 억제는 $Y$가 이미 발화한 뒤인 시각 $\Delta x/v+d$에야 도착한다.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  nrn/.style={circle,draw,very thick,fill=blue!6,minimum size=0.9cm,inner sep=0pt},
+  gab/.style={nrn,fill=red!10},
+  inh/.style={-{Bar[width=7pt]},thick,red!70!black}]
+\node[nrn] (A) at (0,2) {$A$};
+\node[nrn] (B) at (3,2) {$B$};
+\node[gab] (G) at (0.9,0.6) {\small \nt{GABA}};
+\node[nrn] (Y) at (3,-0.6) {$Y$};
+\draw[->,thick] (A) -- (G);
+\draw[inh] (G) -- node[below left=-2pt] {\scriptsize 지연 $d$} (Y);
+\draw[->,thick] (B) -- (Y);
+\draw[->,very thick,red!70!black] (Y) -- (4.6,-0.6) node[right,black] {\small 출력};
+\draw[->,thick,orange!85!black] (-0.6,2.9) -- (3.6,2.9) node[right,black] {\small 침묵};
+\draw[<-,thick,orange!85!black] (-0.6,3.4) -- (3.6,3.4) node[right,black] {\small 응답};
+\foreach \yy/\dd in {2.9/-1,3.4/1}{
+  \foreach \k in {1,2,3}{\draw[orange!70!yellow,line width=0.8pt] (1.5+\dd*0.12+\dd*0.13*\k,\yy+0.1-0.1*\k+0.1) -- ++(\dd*0.25,0);}
+  \fill[yellow!70!orange,draw=orange!70!black] (1.5,\yy) circle (0.14);}
+\node[font=\scriptsize,align=center] at (1.5,3.95) {빛 점};
+\end{tikzpicture}
+\caption{운동 방향 검출기. $B$는 $Y$를 흥분시키고, $A$는 \nt{GABA} 중개자를 거쳐 지연 $d$로 $Y$를 억제한다. $A$에서 $B$로 약 $\Delta x/d$의 속도로 움직이면 억제가 흥분을 끈다. 반대로 움직이면 억제가 늦는다. 짧은 줄이 달린 노란 점은 센서 위를 달리는 빛이다.}
+\label{fig:direction}
+\end{figure}
+
+망막에서 운동 방향 선택성은 바로 이렇게 만들어지는 것으로 보인다. 운동이 응답을 일으켜서는 안 되는 쪽에서 오는 비대칭 억제이다~\cite{Barlow1965}.
+
+\section{뺄셈인가 나눗셈인가}
+
+지금까지 억제는 뺄셈을 했다. 실제로는 더 섬세하다.
+
+시냅스는 채널을 연다. 즉 컨덕턴스를 켠다. 흥분성 시냅스의 평형 전위는 문턱값보다 훨씬 위, 휴지 전위보다 약 $70\mV$ 위에 있다. 열린 채널은 전압을 위로 끌어올린다. 억제성 \nt{GABA} 시냅스의 채널은 염소를 통과시키며, 염소의 평형 전위는 휴지 전위 근처에 있다. 그래서 열린 채널은 전압을 아래로가 아니라 \emph{휴지 전위 쪽으로} 끈다. 전압을 휴지 전위에서부터 재면, 누설 컨덕턴스 $g_L$, 흥분성 컨덕턴스 $g_E$, 억제성 컨덕턴스 $g_I$를 가진 막의 정상 상태 전압은 다음과 같다.
+\begin{empheq}[box=\keybox]{equation}
+V_\infty \;=\; \frac{g_E\,E_E}{g_L+g_E+g_I} ,
+\label{eq:shunt}
+\end{empheq}
+여기서 $E_E\approx70\mV$는 흥분성 시냅스의 평형 전위이다. 이것은 전압 분배기에 대한 옴의 법칙이다. $g_E$는 $E_E$ 쪽으로, $g_L$과 $g_I$는 0 쪽으로 끈다.
+
+$g_I$는 분자에 음의 부호로 있지 않고 분모에 있다. 억제는 흥분에서 \emph{빼지} 않고 흥분을 \emph{나눈다}(그림~\ref{fig:shunt}). 이런 억제를 분로 억제라고 한다. 열린 염소 채널이 막을 단락시키기 때문이다. 네트워크에게 이것은 이득 조절이다. $g_I$가 이웃의 총활동에 비례하면, 각 뉴런은 자기 입력의 절대 세기가 아니라 전체 활동 가운데 그 입력이 차지하는 몫에 응답한다. 총활동으로 나누는 이런 연산은 뇌의 여러 부위에서 나타나며, 뇌의 표준 연산 가운데 하나로 여겨진다~\cite{Carandini2012}. 같은 네트워크가 약한 입력에서도 강한 입력에서도 작동한다.
+
+단서가 있다. 식~\eqref{eq:shunt}는 스파이크를 내지 않는 뉴런에 관한 것이다. 발화하는 뉴런에서는 전압이 늘 문턱값 근처에 머물러 억제성 컨덕턴스를 지나는 전류가 거의 일정하므로, 분로는 스파이크 \emph{발화율}에 주로 뺄셈으로 작용한다~\cite{HoltKoch1997}. 뉴런에 균형 잡힌 흥분성, 억제성 배경 컨덕턴스를 함께 더해 주면, 즉 살아 있는 피질의 흔들리는 균형 체제와 같으면 발화율이 나누어진다~\cite{Chance2002}. 그러니 뇌는 나눗셈을 분로 하나에서가 아니라 억제와 배경 잡음의 조합에서 얻는다~\cite{Carandini2012}.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=1.25cm,y=0.05cm]
+\draw[->,gray!70!black] (0,0) -- (5.4,0) node[right,black] {\small $g_E/g_L$};
+\draw[->,gray!70!black] (0,0) -- (0,68) node[above,black] {\small $V_\infty$, mV};
+\foreach \v in {20,40,60}{\draw[gray!60!black] (-0.05,\v) -- (0.05,\v) node[left=3pt,font=\scriptsize] {\v};}
+\foreach \x in {1,2,3,4,5}{\draw[gray!60!black] (\x,-1.5) -- (\x,1.5) node[below=5pt,font=\scriptsize] {\x};}
+\draw[very thick,blue!60!black] plot[domain=0:5,samples=60] (\x,{70*\x/(1+\x)});
+\draw[very thick,red!70!black] plot[domain=0:5,samples=60] (\x,{70*\x/(3+\x)});
+\draw[thick,densely dashed,gray!50!black] plot[domain=0.56:5,samples=60] (\x,{70*\x/(1+\x)-25});
+\node[right,font=\small,blue!60!black] at (5.02,58.3) {억제 없음};
+\node[right,font=\small,red!70!black] at (5.02,45.5) {나눗셈: $g_I=2g_L$};
+\node[right,font=\small,gray!40!black] at (5.02,32.5) {$25\mV$ 뺄셈};
+\end{tikzpicture}
+\caption{분로 억제는 전압에서 빼지 않고 전압을 나눈다. 파란 곡선은 억제가 없을 때의 정상 상태 전압~\eqref{eq:shunt}, 빨간 곡선은 억제성 컨덕턴스 $g_I=2g_L$이 있을 때이다. 빨간 곡선은 파란 곡선을 가로로 세 배 늘인 것과 같다. 입력을 $1+g_I/g_L=3$으로 나눈 셈이다. 파선은 일정한 $25\mV$를 빼는 억제이다. 곡선 전체가 내려갈 뿐 기울기는 변하지 않는다.}
+\label{fig:shunt}
+\end{figure}
+
+두 번째 결과도 있다. 막의 시간 상수는 $\tau_{\text{eff}}=C/(g_L+g_E+g_I)$이고, 억제는 이것을 줄인다. 일치 창~\eqref{eq:window}는 $\tau$에 비례하므로, 흥분과 함께 온 억제는 \emph{창을 좁힌다}. 입력이 뉴런을 직접 흥분시키면서 동시에 1밀리초 지연으로 \nt{GABA} 중개자를 거쳐 억제하는 회로는 뇌에서 가장 흔한 회로 가운데 하나이다. 뉴런은 처음 1--2밀리초 안에 온 것에만 응답할 시간이 있다~\cite{Pouille2001}.
+
+\section{선택}
+
+이제 \nt{GLUT} 네트워크에 가장 부족했던 것, 여럿 가운데 하나를 고르는 일이다. 입력이 $I_1$과 $I_2$인 \nt{GLUT} 뉴런 무리 둘을 잡자. 각 무리는 자기 \nt{GABA} 중개자를 거쳐 세기 $\beta$로 상대를 억제한다(그림~\ref{fig:wta}). 발화율 $r_1,r_2$에 대해 다음을 얻는다.
+\begin{equation}
+\tau\,\frac{\dd r_1}{\dd t} = -r_1 + \bigl[I_1-\beta r_2\bigr]_+ ,\qquad
+\tau\,\frac{\dd r_2}{\dd t} = -r_2 + \bigl[I_2-\beta r_1\bigr]_+ ,
+\label{eq:wta}
+\end{equation}
+여기서 $[u]_+=\max(u,0)$이다. 발화율은 음수가 될 수 없다.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  nrn/.style={circle,draw,very thick,fill=blue!6,minimum size=0.9cm,inner sep=0pt},
+  gab/.style={nrn,fill=red!10,minimum size=0.75cm},
+  inh/.style={-{Bar[width=7pt]},thick,red!70!black}]
+\node[nrn] (E1) at (0,0) {$r_1$};
+\node[nrn] (E2) at (4,0) {$r_2$};
+\node[gab] (G1) at (1.4,1.1) {};
+\node[gab] (G2) at (2.6,-1.1) {};
+\draw[->,thick] (E1) -- (G1); \draw[inh] (G1) -- (E2);
+\draw[->,thick] (E2) -- (G2); \draw[inh] (G2) -- (E1);
+\draw[->,thick,blue!60!black] (-1.6,0) node[left,black] {$I_1$} -- (E1);
+\draw[->,thick,blue!60!black] (5.6,0) node[right,black] {$I_2$} -- (E2);
+\end{tikzpicture}
+\caption{둘 중 하나 고르기. \nt{GLUT} 뉴런 무리 둘(파란색)이 \nt{GABA} 중개자(빨간색)를 거쳐 서로를 억제한다.}
+\label{fig:wta}
+\end{figure}
+
+두 뉴런이 모두 작동하는 동안 시스템~\eqref{eq:wta}는 선형이며, 그 거동은 두 고윳값이 정한다. 두 발화율이 같은 방향으로 벗어날 때는 $-(1+\beta)/\tau$, 반대 방향으로 벗어날 때는 $-(1-\beta)/\tau$이다. 억제가 약하면($\beta<1$) 두 고윳값 모두 음수이다. 두 뉴런이 다 작동하고, 억제는 약한 쪽을 조금 누를 뿐이다. 억제가 강하면($\beta>1$) 두 번째 고윳값이 양수가 된다. $r_1$과 $r_2$ 사이의 차이는 무엇이든 한 뉴런이 완전히 침묵할 때까지 커진다.
+
+\begin{keyblock}
+\begin{proposition}[승자독식]
+\label{prop:wta}
+상호 억제가 1보다 강하면($\beta>1$), 두 무리가 모두 작동하는 상태는 불안정하다. 네트워크는 한 무리가 작동하고 다른 무리는 침묵하는 상태에 이른다. 발화율 $r_1=I_1$인 승자는 $I_2<\beta I_1$인 한 승리를 지킨다.
+\end{proposition}
+\end{keyblock}
+
+이것을 모델로 확인했다. $\beta=0.5$, 입력 $1.0$과 $0.9$에서는 두 무리가 모두 발화율 $0.73$과 $0.53$으로 작동한다. $\beta=2$에서 같은 입력이면 두 번째 무리는 완전히 침묵한다. 이런 선택에는 기억이 있다. 나중에 입력을 맞바꾸어도 이전 승자가 계속 승자로 남는다. $1.0<2\cdot0.9$이기 때문이다.
+
+무리가 백 개여도 마찬가지이다. 각 무리가 나머지를 억제하고, 하나만 살아남는다.
+
+\section{기억 초기화}
+
+\ref{sec:glutcomputer}장의 메모리는 피로로만 꺼졌다. 여기에 `초기화' 신호로 흥분되어 무리를 억제하는 \nt{GABA} 뉴런을 더하자. 억제가 그림~\ref{fig:bistable}의 곡선 $f(wr+I)$를 끌어내리면 위쪽 교점이 사라지고, 무리는 꺼진다. 그리고 초기화 신호가 끝난 뒤에도 아래쪽 상태에 머문다. 이제 메모리는 한 신호로 써지고 다른 신호로 지워진다. 세트 입력과 리셋 입력이 있는 플립플롭과 같다.
+
+더 멋진 방법은 이런 무리 둘을 그림~\ref{fig:wta}처럼 상호 억제로 잇고, 각각에 자기 피드백을 주는 것이다. 한 무리의 입력에 신호가 오면 셀은 그 무리의 상태로 넘어가고, 셀은 마지막 결정을 기억한다. NOR 소자 둘을 교차 연결한 래치와 똑같은 구조이다.
+
+\section{안정성과 리듬}
+
+\nt{GLUT} 네트워크의 세 번째 문제, 사태가 남았다. 자기 피드백 $w_{EE}$를 가진 \nt{GLUT} 뉴런 무리와, 첫 무리가 세기 $w_{IE}$로 흥분시키고 첫 무리를 세기 $w_{EI}$로 억제하는 \nt{GABA} 뉴런 무리를 잡자. 발화율 $E$와 $I$에 대해 다음을 얻는다.
+\begin{equation}
+\tau_E\frac{\dd E}{\dd t} = -E + w_{EE}E - w_{EI}I + h, \qquad
+\tau_I\frac{\dd I}{\dd t} = -I + w_{IE}E ,
+\label{eq:ei}
+\end{equation}
+여기서 $h$는 바깥 입력이다~\cite{WilsonCowan1972}. 억제가 없으면 $w_{EE}>1$에서 활동이 한없이 커진다. 스파이크 하나가 다음 스파이크를 하나보다 많이 낳는다. 억제가 있으면 정상 상태 발화율
+\begin{equation}
+E^* \;=\; \frac{h}{1-w_{EE}+w_{EI}w_{IE}}
+\label{eq:eistar}
+\end{equation}
+은 분모가 양수일 때 유한하다. 그러나 그것으로는 부족하다. 평형이 끌어당기기도 해야 한다. \eqref{eq:ei}의 선형 해석에서 두 조건이 나온다.
+
+\begin{keyblock}
+\begin{proposition}[안정 조건]
+\label{prop:ei}
+평형~\eqref{eq:eistar}은 억제가 다음과 같을 때 안정하다.
+\begin{enumerate}
+\item[(i)] \emph{충분히 강하다}: $w_{EI}\,w_{IE} > w_{EE}-1$;
+\item[(ii)] \emph{충분히 빠르다}: $\tau_I < \tau_E/(w_{EE}-1)$.
+\end{enumerate}
+(i)이 깨지면 활동이 사태처럼 불어난다. (i)은 성립하지만 (ii)가 깨지면 억제가 늦어 활동이 진동하기 시작한다.
+\end{proposition}
+\end{keyblock}
+
+조건~(i)은 시스템~\eqref{eq:ei} 행렬의 행렬식이고, 조건~(ii)는 그 대각합이다. 두 번째 조건의 의미는 제어기를 튜닝해 본 사람이면 누구나 안다. 늦은 피드백은 편차를 가라앉히지 않고 오히려 흔든다.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth]
+\draw[->,gray!70!black] (0,0) -- (10.9,0) node[below left,black] {\small $t$, ms};
+\draw[->,gray!70!black] (0,0) -- (0,3.3) node[left,black] {\small $E$};
+\foreach \t in {0,50,100,150}{\draw[gray!70!black] (\t*0.07,0.06) -- (\t*0.07,-0.06) node[below,font=\scriptsize] {\t};}
+\input{figures/ei_traces}
+\node[font=\small,gray!40!black,anchor=west] at (0.9,3.15) {억제 없음: 사태};
+\node[font=\small,blue!60!black,anchor=west] at (7.4,1.25) {빠른 억제};
+\node[font=\small,red!70!black,anchor=west] at (7.4,2.55) {느린 억제};
+\end{tikzpicture}
+\caption{입력을 켠 뒤, 피드백 $w_{EE}=1.5$, $\tau_E=10\ms$인 \nt{GLUT} 무리의 발화율. 억제가 없으면(파선) 활동이 한없이 커진다. 세기 $w_{EI}w_{IE}=2$, $\tau_I=2\ms$인 억제가 있으면(파란 곡선) 수준 $E^*=h/(1-1.5+2)=0.67h$에 자리 잡는다. 억제가 같되 느리면, $\tau_I=30\ms$(빨간 곡선), 활동이 진동한다.}
+\label{fig:ei}
+\end{figure}
+
+피질은 바로 이런 체제에서 작동한다고 여겨진다. 피질 자신의 피드백은 억제가 없으면 사태로 치달을 만큼 강하고, 빠른 억제만이 피질을 동작점에 붙잡아 둔다~\cite{Tsodyks1997isn}.
+
+이 체제에는 바깥에서 알아볼 수 있는 역설적인 특징이 있다~\cite{Tsodyks1997isn}. \eqref{eq:ei}에서 \nt{GABA} 무리에 바깥 입력 $h_I$를 직접 더하자. 정상 상태 발화율은 다음과 같다.
+\begin{equation}
+E^* \;=\; \frac{h-w_{EI}\,h_I}{D},\qquad
+I^* \;=\; \frac{w_{IE}\,h+(1-w_{EE})\,h_I}{D},\qquad
+D \;=\; 1-w_{EE}+w_{EI}w_{IE} .
+\label{eq:isn}
+\end{equation}
+$w_{EE}>1$이면 두 번째 식에서 $h_I$의 계수는 음수이다. \nt{GABA} 뉴런을 밀어 주면 그 발화율이 \emph{떨어진다}. 원인은 루프에 있다. 여분의 억제가 \nt{GLUT} 무리를 누르고, \nt{GLUT} 무리는 \nt{GABA} 뉴런을 덜 흥분시키며, \nt{GABA} 뉴런은 얻은 것보다 더 많이 잃는다. 그림~\ref{fig:ei}의 수치($w_{EE}=1.5$, $w_{EI}w_{IE}=2$, $D=1.5$)에서는 더한 입력 한 단위마다 $I^*$가 3분의 1 단위씩 줄어든다. 이 특징은 피질에서 발견되었다. 시각 피질 뉴런의 응답이 주변 자극으로 억눌릴 때, 그 뉴런들이 받는 억제 전류는 늘지 않고 흥분 전류와 함께 줄어든다~\cite{Ozeki2009}. 나중에 같은 특징이 피질의 여러 영역과 층에서 발견되었다~\cite{Sanzeni2020}.
+
+조건~(ii)가 깨질 때의 진동도 뇌에서 나타난다. `\nt{GLUT}가 \nt{GABA}를 흥분시키고, \nt{GABA}가 \nt{GLUT}를 억제한다'는 루프는 몇 밀리초의 지연으로 주기 $12$--$50\ms$ 정도(주파수 $20$--$80$\,Hz)의 리듬을 낳으며, 피질의 이런 빠른 리듬은 잘 알려져 있다~\cite{Cardin2009,Buzsaki2012}. 이것은 컴퓨터의 클록이 아니다. 리듬은 국소적이고 네트워크가 활성일 때만 생긴다. 그러나 몇 주기 동안 리듬은 시간을 뉴런이 발화할 수 있는 창들로 나눈다.
+
+\section{요약}
+
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{>{\raggedright}p{3.3cm}>{\raggedright}p{4.4cm}>{\raggedright\arraybackslash}p{4.4cm}}
+\toprule
+& \nt{GLUT}만 & \nt{GLUT} + \nt{GABA} \\
+\midrule
+NOT & `켜짐--꺼짐' 센서를 통해서만 & 금지 $a\wedge\bar b$; 배경 활동이 있으면 NOT \\
+비트당 전선 수 & 둘 & 하나 \\
+운동 방향 & 없음 & 지연된 금지 \\
+이득 조절 & 없음 & 나눗셈: 분로와 배경 잡음의 조합 \\
+일치 창 & $\sim\tau$ & 억제로 좁아짐 \\
+여럿 중 하나 고르기 & 없음 & 상호 억제, $\beta>1$ \\
+기억 초기화 & 피로로만 & \nt{GABA}를 거친 신호로 \\
+안정성 & 피로로만 & 빠른 음의 피드백 \\
+리듬 & 필요 없음 & 느린 억제에서 생김 \\
+\bottomrule
+\end{tabular}
+\caption{\nt{GABA}가 \nt{GLUT} 뉴런 네트워크에 더하는 것.}
+\label{tab:gaba}
+\end{table}
+
+\nt{GABA}는 네트워크에 새로운 \emph{계산}을 거의 더하지 않는다. 그것들은 모두 이중 레일 센서로도 계산할 수 있었다. 대신 \nt{GABA}는 \emph{제어}를 더한다(표~\ref{tab:gaba}). 선택, 초기화, 이득 조절, 안정성이다. 뇌에서 흥분은 데이터를 나르고, 억제는 어떤 데이터가 언제 얼마나 크게 지나갈지를 정한다. 피질 뉴런 네다섯 개 중 하나가 맡는 일로서 매우 합리적인 분업이다.
+
+\section{연습문제}
+
+\begin{exercise}[\lvlA]
+\label{ex:03:1}
+\emph{숫자로 본 분로.} $E_E=70\mV$. \eqref{eq:shunt}로 $g_E=g_L$과 $4g_L$일 때 억제가 없는 경우와 분로 $g_I=2g_L$이 있는 경우의 $V_\infty$를 구하라. $g_E=g_L$에서 분로와 같은 양을 빼는 뺄셈이라면 $g_E=4g_L$에서 $V_\infty$는 얼마인가? 분로는 일치 창을 몇 배 좁히는가?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:03:2}
+\emph{안정 조건의 유도.} 선형 시스템~\eqref{eq:ei} 행렬의 대각합과 행렬식을 구하고, 여기서 명제~\ref{prop:ei}의 두 조건을 유도하라. 조건~(ii)의 경계에서 평형은 진동하며 안정성을 잃는다. 그림~\ref{fig:ei}의 수치에서 이 진동의 주기를 구하라.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:03:3}
+\emph{지연에서 생기는 리듬.} 모델~\eqref{eq:ei}의 느린 억제를 지연 $d$가 있는 빠른 억제로 바꾸자. $\tau_E\dot E=-E(t)-GE(t-d)+h$. $\tau_E=10\ms$일 때 진동을 낳는 가장 작은 지연 $d_c$와, $G=2$와 $G=5$에서의 진동 주기를 구하라. 연습문제~\ref{ex:03:2}와 달리 이 진동은 피질의 빠른 리듬 $12$--$50\ms$에 들어가는가?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:03:4}
+\emph{모델링: 기억이 있는 선택.} $\beta=2$, $\tau=1$에서 \eqref{eq:wta}를 적분하라. (a)~$I_1=1$에서 $I_2$를 $0$에서 $3$까지 천천히 올렸다가 다시 내려라. 어떤 $I_2$에서 네트워크가 전환되는가? (b)~입력 차 $\varepsilon$이 10분의 1로 줄면, 침묵에서 출발한 결정 시간은 얼마나 늘어나는가?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:03:5}
+\emph{설계: 속도 대역 검출기.} 그림~\ref{fig:direction}의 검출기는 $A$에서 $B$로 가는 통과 시간이 $5$--$20\ms$인 움직임에서 침묵해야 한다. 지연 $d_k$인 \nt{GABA} 중개자는 $A$의 스파이크 뒤 구간 $[d_k,\,d_k+5\ms]$ 동안 $Y$를 금지한다. $B$에서 오는 흥분은 곧바로 도착한다. 중개자가 몇 개, 어떤 지연으로 필요한가?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:03:6}
+\emph{금지와 배경.} `입력마다 \nt{GABA} 중개자, $f=1$인 입력 조합마다 금지, 공통 OR'라는 일반 회로로 패리티 $x\oplus y\oplus z$를 만들면 뉴런이 몇 개 필요한가? 입력을 직접 받는 뉴런 두 개, \nt{GABA}와 \nt{GLUT}로 패리티를 만들고 가중치와 문턱값을 밝혀라.
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:03:7}
+\emph{설계: 백 중 하나 고르기.} \nt{GLUT} 무리 $100$개가 저마다 나머지 모두를 똑같이 억제해야 하지만 자기 자신은 억제하지 않아야 한다. 선형 \nt{GABA} 중개자는 무리들에게서 흥분을 받고 무리들을 억제한다. 무리들은 서로를 흥분시킬 수 있지만 자기 자신은 흥분시킬 수 없다. 중개자의 최소 개수는 얼마인가? 직접적인 흥분 연결이 전혀 없다면?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:03:8}
+\emph{탐구: 억제는 언제 역설적인가.} 그림~\ref{fig:ei}의 모델($w_{EI}=2$, $w_{IE}=1$)에서 \nt{GLUT} 무리는 전달 함수 $f(u)=[u]_+^2$를 얻었고, \nt{GABA} 무리는 선형으로 남았다. 어떤 입력 $h_c$보다 크면 \nt{GABA} 무리에 더한 입력이 그 무리 자신의 발화율을 낮추는가? 시뮬레이션으로 확인하라.
+\end{exercise}

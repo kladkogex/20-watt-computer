@@ -1,0 +1,230 @@
+\chapter{기계 전체}
+\chaptermark{기계 전체}
+\label{sec:synthesis}
+
+\section{지금까지 조립한 것}
+
+우리는 표~\ref{tab:types}에서 뉴런 유형을 하나씩 골라, 그것이 계산 기계에 무엇을 더하는지 물었다. 규칙은 매번 같았다. 살아 있는 생물에 실제로 있는 것만 쓰고, 공통 클럭은 쓰지 않는다. 이제 부품을 하나의 기계로 조립하고 함께 어떻게 동작하는지 살펴보자.
+
+\ref{sec:neurontypes}장의 그림은 확인되었고 더 정확해졌다. 거대한 주소 네트워크인 \nt{GLUT} 뉴런이 데이터를 나른다. \nt{GABA} 뉴런은 이 데이터의 흐름을 제어한다. 그리고 네트워크 위에는 네 개의 브로드캐스트 채널이 걸려 있고, 각 채널에는 자기 노브가 있다. \nt{DOPA}는 가중치 변화 중 무엇을 남길지 알려 주고, \nt{SERO}는 전체 수준과, 가설에 따르면 계획 지평을 유지하며, \nt{NORA}는 탐색과 결정 사이에서, \nt{ACET}는 쓰기와 읽기 사이에서 고른다(그림~\ref{fig:machine}).
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  blk/.style={draw,very thick,rounded corners=3pt,align=center,font=\small},
+  reg/.style={draw,very thick,double,double distance=1.2pt,circle,minimum size=1.25cm,inner sep=0pt,font=\scriptsize,fill=orange!15},
+  bc/.style={->,thick,densely dashed,orange!85!black}]
+% sensors, bus, actions
+\node[blk,fill=green!8,text width=1.7cm] (S) at (0.9,0) {센서\\\scriptsize 켜짐/꺼짐};
+\draw[very thick,rounded corners=4pt,fill=blue!5] (2.6,-1.35) rectangle (9.0,1.35);
+\node[font=\small] at (5.8,0.95) {\nt{GLUT} 버스: 데이터};
+\node[font=\scriptsize,align=center] at (4.3,0.25) {동시성, 지연,\\논리(\ref{sec:glutcomputer}장)};
+\node[font=\scriptsize,align=center] at (7.4,0.25) {기억, 부호\\(\ref{sec:code}, \ref{sec:acet}장)};
+\draw[thick,red!70!black,fill=red!8,rounded corners=2pt] (2.8,-1.15) rectangle (8.8,-0.55);
+\node[font=\scriptsize,red!60!black] at (5.8,-0.85) {\nt{GABA}(\ref{sec:gaba}장): 금지, 선택, 나눗셈, 리듬};
+\node[blk,fill=blue!5,text width=2.0cm] (A) at (10.9,0) {행동\\선택};
+\draw[->,very thick] (S) -- (2.6,0);
+\draw[->,very thick] (9.0,0) -- (A);
+\draw[->,very thick] (A) -- (12.6,0) node[right,font=\small] {근육};
+\pic[scale=1.1] at (13.2,-0.5) {spring};
+\pic[scale=1.15] at (0.4,0.85) {eyepic};
+\pic[scale=1.05] at (1.35,0.85) {speaker};
+% registers
+\node[reg] (D) at (3.4,3.2) {\nt{DOPA}};
+\node[reg] (C) at (5.6,3.2) {\nt{SERO}};
+\node[reg] (N) at (7.8,3.2) {\nt{NORA}};
+\node[reg] (H) at (10.0,3.2) {\nt{ACET}};
+\node[font=\scriptsize,align=center,above=1pt] at (D.north) {오차 $\delta$};
+\node[font=\scriptsize,align=center,above=1pt] at (C.north) {수준, $\tau_\gamma$};
+\node[font=\scriptsize,align=center,above=1pt] at (N.north) {이득 $g$};
+\node[font=\scriptsize,align=center,above=1pt] at (H.north) {쓰기 $a$};
+\draw[bc] (D.south) -- (3.4,1.35);
+\draw[bc] (C.south) -- (5.6,1.35);
+\draw[bc] (N.south) -- (7.8,1.35);
+\draw[bc] (H.south) -- (10.0,2.1) -- (8.8,1.35);
+\draw[bc] (H.south east) to[bend left=20] (A.north east);
+\draw[->,thick] (2.85,1.35) -- (2.85,2.75) -- (D.west) node[pos=0.25,left,font=\scriptsize] {$V$};
+\draw[->,thick,green!45!black] (0.4,3.2) node[left,black,font=\small] {보상 $r$} -- (2.2,3.2) -- (D.west);
+\pic[scale=0.9] at (-0.45,3.7) {juice};
+\draw[->,thick,densely dotted,gray!50!black] ([yshift=0.45cm]D.north) to[bend left=18] node[above,font=\scriptsize,black] {놀람} ([yshift=0.45cm]N.north);
+\end{tikzpicture}
+\caption{기계 전체. \nt{GLUT} 버스는 데이터를 센서에서 행동 선택으로 나르고, \nt{GABA}는 그 안의 흐름을 제어한다. 이중 원은 브로드캐스트 채널이고, 파선 화살표는 그 신호를 네트워크 전체에 보내는 것을 나타낸다. 채널마다 자기 노브가 있다. \nt{DOPA}는 보상 $r$과, 버스 안의 비평자가 내놓는 기대 $V$를 받는다(\ref{sec:dofa}장). 점선 화살표는 \nt{NORA}가 비정상적으로 큰 오차를 보고 놀람을 안다는 가설이다(\ref{sec:nora}장).}
+\label{fig:machine}
+\end{figure}
+
+\section{모든 노브를 담은 식 하나}
+
+노브들을 하나의 도식적인 식으로 모을 수 있다. 이것은 새 모델이 아니라 \ref{sec:glutcomputer}--\ref{sec:acet}장 모델의 요약이다. 각 기호는 해당 장에서 가져왔다.
+\begin{empheq}[box=\keybox]{equation}
+\begin{aligned}
+\tau\,\frac{\dd r_i}{\dd t} \;&=\; -r_i + F\Bigl(g\,\Bigl[\tfrac{1+a}{2}\,x_i + (1-a)\sum_j W_{ij}\,r_j - \sum_k M_{ik}\,q_k - \theta\Bigr]\Bigr),\\
+\frac{\dd W_{ij}}{\dd t} \;&=\; \eta\,a\,\delta(t)\,e_{ij}(t),
+\qquad \tau_e\,\frac{\dd e_{ij}}{\dd t} = -e_{ij} + r_i\,r_j,
+\qquad \delta = r + \frac{\dd V}{\dd t} - \frac{V}{\tau_\gamma} .
+\end{aligned}
+\label{eq:machine}
+\end{empheq}
+여기서 $r_i$는 \nt{GLUT} 뉴런의 발화율, $x_i$는 센서 입력, $W_{ij}\ge0$는 이들 사이의 가중치이다(\ref{sec:glutcomputer}장). $q_k$는 \nt{GABA} 뉴런의 발화율, $M_{ik}\ge0$는 그 억제의 세기이다(\ref{sec:gaba}장). $e_{ij}$는 적격 흔적, $\delta$는 \nt{DOPA}의 오차이다(\ref{sec:dofa}장). $\tau_\gamma$는 가설상 \nt{SERO}가 정하는 지평, $g$는 \nt{NORA}의 이득(\ref{sec:nora}장), $a$는 \nt{ACET}의 수준이다(\ref{sec:acet}장).
+
+\eqref{eq:machine}에 무엇이 없는지 보자. 클럭이 없다. 모든 것이 미분방정식으로 쓰여 있고, 뉴런은 저마다 스스로 변한다. 별도의 메모리가 없다. 계산에 쓰이는 바로 그 $W_{ij}$와 바로 그 활동 $r_i$가 기억한다. 대다수 시냅스에는 개별 보정이 없다. 그 학습은 국소적 적격 흔적과 하나의 공통된 수의 곱이다. 출력마다 따로 오차 전선이 가는 것은 운동을 가르치는 회로뿐이다(\ref{sec:motorlearning}장). 그리고 제어 신호는 $\delta$, $\tau_\gamma$, $g$, $a$의 네 종류뿐인데, 이것으로 뉴런 800억 개를 다룬다. 사실 각 신호는 하나의 수가 아니라 병렬 선로의 작은 다발이지만(명제~\ref{prop:bundle}), 다발 속 선로는 몇 개에 불과하다.
+
+\begin{keyblock}
+\begin{proposition}[아키텍처]
+\label{prop:architecture}
+지금 우리가 이해하는 한, 뇌라는 기계는 세 층으로 기술할 수 있다. 데이터는 \nt{GLUT} 주소 버스를 따라 흐른다. 데이터의 흐름은 주소 지정된 \nt{GABA} 뉴런이 이끌고, 제한하고, 정규화한다. 동작 모드는 몇 개의 브로드캐스트 채널이 정하는데, 각 채널은 네트워크의 넓은 영역이 공유하는 병렬 선로의 작은 다발이다. 앞의 두 층은 확고하게 확립되어 있다. 브로드캐스트 채널 사이의 역할 분담은 대부분 가설이다.
+\end{proposition}
+\end{keyblock}
+
+\section{모든 유형을 표 하나에}
+
+표~\ref{tab:synthesis}는 이 책의 모든 뉴런 유형을 정리한다. 자기 장을 갖지 못한 네 유형은 표에서 한 줄씩을 차지한다. 그중 둘은 기계의 출력을 다루는 장에서 역할을 찾았다. \nt{GLYC}은 척수의 루프에서(\ref{sec:muscles}장), \nt{ADRE}는 화학적 출력에서(\ref{sec:chemoutput}장) 역할을 한다. 나머지 둘의 계산상 역할은 단순하거나 알려져 있지 않다. 뉴런 유형을 정하지 않는 물질은 부록~\ref{sec:othermediators}에 모았다.
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{1.3cm}>{\raggedright}p{1.0cm}>{\raggedright}p{3.9cm}>{\raggedright}p{1.5cm}>{\raggedright}p{1.8cm}>{\raggedright\arraybackslash}p{3.8cm}}
+\toprule
+유형 & 장 & 무엇을 계산하는가 & 시간 & 버스 & 알려진 것 \\
+\midrule
+\nt{GLUT} & \ref{sec:glutcomputer}, \ref{sec:code}, \ref{sec:sensors}, \ref{sec:motorlearning}, \ref{sec:dendrites} & 데이터: 동시성, 지연, 논리, 기억, 순서열 & ms & 주소 & 확립됨 \\
+\nt{GABA} & \ref{sec:gaba}, \ref{sec:code}, \ref{sec:pain}, \ref{sec:motorlearning} & 흐름 제어: 금지, 선택, 나눗셈, 안정성, 리듬; 통증의 관문 & ms & 주소 & 확립됨; 발화율 나눗셈은 배경 잡음과 함께 \\
+\nt{SERO} & \ref{sec:serocomputer}, \ref{sec:pain}, \ref{sec:sleep} & 수준 조절기, 평활화; 지평 $\tau_\gamma$; 통증의 음량; 수면 모드 & 초 & 체적 & 자기 억제는 측정됨; 지평은 가설 \\
+\nt{DOPA} & \ref{sec:dofa}, \ref{sec:dofaalt} & 예측 오차 $\delta$; 느린 수준은 시간의 가격 & $0.1$\,s와 분 & 브로드캐스트 & $\delta$는 측정됨; 확장은 \ref{sec:dofaalt}장 \\
+\nt{NORA} & \ref{sec:nora}, \ref{sec:pain}, \ref{sec:chemoutput}, \ref{sec:sleep} & 이득 $g$: 탐색이냐 결정이냐; 놀람; 장기의 “가속 페달” & 초 & 브로드캐스트 & 신호 대 잡음비 증가는 측정됨; 탐색에서의 역할은 가설 \\
+\nt{ACET} & \ref{sec:acet}, \ref{sec:muscles}, \ref{sec:chemoutput}, \ref{sec:sleep} & 쓰기냐 읽기냐; 학습 속도; 근육으로의 출력; 장기의 “브레이크” & 초 & 둘 다 & 세 효과는 측정됨; 모드 전환은 가설 \\
+\nt{GLYC} & \ref{sec:muscles}, \ref{sec:pain} & 척수와 뇌간의 음의 가중치: 길항근의 금지 & ms & 주소 & 확립됨 \\
+\nt{HIST} & --- & 전역 신호 “깨어 있어라” & 느림 & 브로드캐스트 & 계산상 역할은 연구되지 않음 \\
+\nt{ADRE} & \ref{sec:chemoutput} & 혈액을 통한 온몸의 “가속 페달”; 뇌 안에서는 미상 & 느림 & 브로드캐스트 & 뇌 밖에서는 확립됨; 뇌 안의 역할은 불분명 \\
+\nt{ASPA} & --- & 약한 양의 가중치 & ms & 주소 & 역할은 논쟁 중 \\
+\bottomrule
+\end{tabular}
+\caption{이 책의 모든 뉴런 유형: 각각이 무엇을 계산하며 그것이 얼마나 알려져 있는가.}
+\label{tab:synthesis}
+\end{table}
+
+\section{노브들은 어떻게 함께 동작하는가}
+
+지금까지 각 장은 노브 하나만 돌렸다. 이제 사건 하나를 기계 전체에 걸쳐 따라가 보자(그림~\ref{fig:timeline}). 동물은 오래전에 행동 $A$가 주스를 가져온다는 것을 배웠다. 어느 순간 세상이 바뀐다. $A$는 더 이상 주스를 가져오지 않고, 동물이 거의 시도하지 않는 행동 $B$가 주스를 가져온다.
+
+\emph{오차.} $A$ 뒤에 주스가 오지 않자 \nt{DOPA} 뉴런은 발화 급감으로 응답한다. 오차 식~\eqref{eq:ctd}에 따라 $\delta<0$이다. 방금 $A$를 고른 시냅스들은 적격 흔적을 지니고 있으므로 약해진다.
+
+\emph{놀람.} 급감 한 번은 흔한 우연이다. 그러나 급감이 되풀이되고 오차가 평소보다 커진다. \ref{sec:nora}장의 가설에 따르면 이것이 바로 \nt{NORA}의 신호, 곧 세상이 바뀌었다는 신호이다. 이득 $g$가 떨어지고 선택이 부드러워지며, 잡음 때문에 $B$를 시도하는 일이 잦아진다.
+
+\emph{쓰기.} \ref{sec:acet}장의 가설에 따르면 변화 뒤에 \nt{ACET}가 올라가 네트워크를 쓰기 모드로 바꾼다. 옛 습관을 저장한 내부 연결은 약해지고, 센서 입력은 강해지며, 가중치는 쉽게 변한다.
+
+\emph{새 습관.} $B$를 시도하자 아무도 기대하지 않은 주스가 온다. 발화 급증, $\delta>0$이 일어나고 $B$를 고른 시냅스들이 강해진다. 이런 시도가 몇 번 이어지면 기대 $V$가 새 세상을 따라잡고 오차는 다시 작아진다.
+
+\emph{복귀.} 놀람이 지나가면 \nt{NORA}는 높은 이득을 되돌리고 선택은 다시 단호해진다. \nt{ACET}가 내려가고, 읽기 모드의 네트워크는 배운 것을 활용한다. 이 모든 동안 \nt{SERO}는, 가설에 따르면, 지평 $\tau_\gamma$를 정한다. 얼마나 먼 주스까지 기다릴 가치가 있는지를 정하는 것이다.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=1.1cm,y=0.95cm]
+\foreach \y/\lab in {4/{$\delta$ (\nt{DOPA})},3/{$g$ (\nt{NORA})},2/{$a$ (\nt{ACET})},1/{$B$ 선택}}{
+  \draw[gray!60!black] (0,\y-0.35) -- (10,\y-0.35);
+  \node[left,font=\scriptsize] at (0,\y) {\lab};}
+\draw[densely dashed,gray!60!black] (2,0.4) -- (2,4.55) node[above,font=\scriptsize,black] {세상이 바뀜};
+\draw[densely dashed,gray!60!black] (5,0.4) -- (5,4.55) node[above,font=\scriptsize,black] {$B$에 대한 첫 주스};
+\pic[scale=0.85] at (2,5.25) {nojuice};
+\pic[scale=0.85] at (5,5.25) {juice};
+% delta: dips after the change, burst at the first juice for B, then back to zero
+\draw[thick,red!70!black] (0,3.65) -- (2.3,3.65) -- (2.3,3.3) -- (2.5,3.3) -- (2.5,3.65) -- (3.2,3.65) -- (3.2,3.3) -- (3.4,3.3) -- (3.4,3.65) -- (4.1,3.65) -- (4.1,3.35) -- (4.3,3.35) -- (4.3,3.65) -- (5.0,3.65) -- (5.0,4.35) -- (5.2,4.35) -- (5.2,3.65) -- (5.8,3.65) -- (5.8,4.1) -- (6.0,4.1) -- (6.0,3.65) -- (6.6,3.65) -- (6.6,3.85) -- (6.8,3.85) -- (6.8,3.65) -- (10,3.65);
+% gain: high, drops after surprise, recovers
+\draw[thick,blue!60!black] (0,3.2) -- (3.0,3.2) -- (3.4,2.75) -- (5.8,2.75) -- (7.2,3.2) -- (10,3.2);
+% ACh: low, rises after the change, falls after learning
+\draw[thick,green!45!black] (0,1.75) -- (2.8,1.75) -- (3.3,2.25) -- (6.8,2.25) -- (7.8,1.75) -- (10,1.75);
+% choice of B
+\draw[thick,black] (0,0.7) -- (3.0,0.7) plot[domain=3:10,samples=40] (\x,{0.7+0.6/(1+exp(-(\x-5.3)*1.8))});
+\draw[->,gray!70!black] (0,0.2) -- (10.2,0.2) node[below left,font=\scriptsize,black] {시간};
+\end{tikzpicture}
+\caption{기계 전체를 거쳐 추적한 사건 하나. 계산 결과가 아니라 \ref{sec:dofa}--\ref{sec:acet}장의 모델과 가설에 따른 정성적 도식이다. 변화 뒤에 \nt{DOPA}는 발화 급감으로 응답한다. 가설에 따르면 급감이 되풀이되면 놀람 신호가 올라가고, \nt{NORA}는 이득을 낮추며, \nt{ACET}는 쓰기를 켠다. $B$에 대한 첫 주스는 급증을 일으키고, 선택은 $B$로 옮겨 가며, 노브들은 제자리로 돌아온다.}
+\label{fig:timeline}
+\end{figure}
+
+어느 노브도 다른 노브가 무엇을 하는지 모른다는 점에 주목하자. 각 노브는 자기 특징, 곧 오차, 오차의 비정상적인 크기, 불확실성에 반응할 뿐이다. 그런데도 동작의 순서는 저절로 짜인다. 입력이 준비되면 각 블록이 동작하는 비동기 회로와 같다. 우리가 아는 한, 이런 협조된 동작 전체는 아직 검증된 적이 없다. 노브들은 하나하나 측정되었지만, 그 공동 동작은 가설이다.
+
+\section{이 기계가 컴퓨터와 다른 점}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{2.2cm}>{\raggedright}p{4.2cm}>{\raggedright\arraybackslash}p{6.6cm}}
+\toprule
+& 일반 컴퓨터 & 뇌 \\
+\midrule
+시간 & 공통 클럭, 약 1기가헤르츠 & 공통 클럭이 없다; 뉴런은 저마다 스스로 변하고, 창은 사건과 국소 리듬이 정한다(\ref{sec:glutcomputer}, \ref{sec:gaba}, \ref{sec:code}장) \\
+소자 & 신뢰할 수 있는 이진 게이트 & 아날로그 문턱 소자; 시냅스는 스파이크 대부분을 잃는다(\ref{sec:code}장) \\
+연결의 부호 & 무엇이든 & 송신 뉴런이 정한다(\ref{sec:neurontypes}장) \\
+기억 & 프로세서와 분리 & 계산과 같은 연결 안에, 그리고 자기 유지 활동 안에(\ref{sec:glutcomputer}, \ref{sec:acet}장) \\
+학습 & 오차 역전파 & 국소 규칙, 하나의 브로드캐스트 수 $\delta$(\ref{sec:dofa}장), 운동 회로 출력으로 가는 오차 전선(\ref{sec:motorlearning}장) \\
+제어 & 레지스터와 명령 버스 & 네 개의 브로드캐스트 채널, 각각 몇 개 선로의 다발(\ref{sec:serocomputer}, \ref{sec:dofa}--\ref{sec:acet}장) \\
+에너지 & 프로세서 하나에 수십--수백 와트 & 뇌 전체에 약 $20$와트, 뉴런당 평균 초당 약 한 번의 스파이크(\ref{sec:code}장) \\
+\bottomrule
+\end{tabular}
+\caption{뇌와 일반 컴퓨터.}
+\label{tab:computer}
+\end{table}
+
+표~\ref{tab:computer}는 주요 차이를 정리한다. 각 차이는 자연이 미처 고치지 못한 결함이 아니라 하나의 설계를 이루는 부분이다. 공통 클럭이 없으니 “켜짐---꺼짐” 센서와 동시성 검출기가 필요하다. 신뢰할 수 없는 소자에는 많은 뉴런의 중복이 필요하다. 계산과 합쳐진 기억에는 쓰기가 읽기를 망치지 않도록 \nt{ACET}가 필요하다. 역방향 전선 없는 학습에는 \nt{DOPA}와 잡음이 필요하다. 그리고 초당 스파이크 한 번이라는 에너지 한계 때문에 언어 전체가 인색해져서 스파이크를 새 소식에만 쓴다.
+
+\section{우리가 모르는 것}
+
+이 요약은 우리가 모르는 것의 목록으로 끝내는 것이 가장 정직하다. 항목 하나하나가 엔지니어를 위한 과제이다.
+
+\emph{부호.} 우리는 스파이크 채널의 용량을 알고, 수신자가 메시지의 어느 부분을 읽을지 고른다는 것도 안다(\ref{sec:code}장). 그러나 피질이 스파이크의 정확한 시각을 얼마나 활용하는지, 뉴런에게 “단어”가 있는지는 알려져 있지 않다.
+
+\emph{여러 층을 거치는 학습.} 브로드캐스트 신호는 느리게 가르치고, 결과에 영향을 주는 뉴런이 하나 늘 때마다 더 느려진다(명제~\ref{prop:broadcastcost}). 그렇다면 피질이 다층 회로의 수십억 가중치를 어떻게 조정하는지는 알려져 있지 않다. 층 사이의 오차를 스파이크 버스트가 나르는 모델도 있다~\cite{Payeur2021}. 답의 일부는 뉴런 자신의 가지 안에서 이루어지는 계산에 있을지도 모른다. 거기서는 뉴런 하나가 작은 다층 네트워크처럼 행동한다. 피질 뉴런 하나의 모델 응답을 재현하려면 인공 네트워크에 다섯--여덟 층이 필요하고~\cite{Beniaguev2021}, 사람 뉴런의 가지는 배타적 논리합(XOR)까지 계산할 수 있다~\cite{Gidon2020}. 또 다른 후보는 자기 지도 학습이다. 피질이 자기 입력을 예측하도록 배운다면 오차는 각 층에서 그 자리에서 생기고, 공통 신호는 필요 없다(\ref{sec:dofa}장)~\cite{Keller2018}.
+
+\emph{브로드캐스트 채널이 실제로 전하는 것.} \nt{DOPA}에는 표준 그림과 그 여섯 가지 확장이 있다(\ref{sec:dofaalt}장). \nt{NORA}와 \nt{ACET}에는 그럴듯한 가설이 있다(\ref{sec:nora}, \ref{sec:acet}장). \nt{SERO}에는 대부분 추측뿐이다.
+
+\emph{시간 맞추기.} 우리는 함수를 계산하고, 사건으로부터 시간을 재고, 국소 리듬으로 흐름을 창으로 자르는 법을 보았다. 그러나 공통 클럭이 없는 거대한 네트워크가 멀리 떨어진 영역의 작업을 어떻게 맞추는지는 일부만 이해된다.
+
+\emph{에너지.} 모든 것에 20와트. 부호가 왜 희소해야 하는지는 이해하지만(명제~\ref{prop:economy}), 같은 일을 같은 전력으로 해내는 기계는 아직 아무도 만들지 못한다~\cite{MehonicKenyon2022}.
+
+뇌는 엔지니어가 조립하지는 않았지만, 어떤 엔지니어라도 알아볼 법칙에 따라 조립된 계산 기계이다. RC 회로, 문턱값, 되먹임, 필터, 버스, 브로드캐스트 레지스터. 그 회로도를 우리는 일부만 읽었다. 나머지는 회로도를 읽을 줄 아는 사람들이 읽을 것이다.
+
+\section{이 책의 다음 내용}
+
+이 장은 기계의 계산 핵심을 조립했다. 나머지 장은 그 바깥으로 나간다. \ref{sec:sensors}장과 \ref{sec:recognition}장은 입력을 다룬다. 센서가 빛, 소리, 분자를 어떻게 스파이크로 바꾸고, 기계가 그 속에서 사물을 어떻게 알아보는지 다룬다. \ref{sec:muscles}--\ref{sec:chemoutput}장은 출력과 그것을 떠받치는 것을 다룬다. 근육, 경보 신호로서의 통증, 개별 오차 전선에 의한 운동 학습, 몸으로 가는 느린 화학적 출력이다. \ref{sec:debugging}장은 뇌-컴퓨터 인터페이스를 포함해 기계를 밖에서 디버깅하는 법을 다룬다. \ref{sec:eetypes}장과 \ref{sec:dendrites}장은 뉴런을 다시 분류하는데, 이번에는 전기적 기능과 입력의 수에 따라 나눈다. \ref{sec:sleep}장은 세상과 연결이 끊겼을 때 기계가 하는 일을, \ref{sec:livingmachine}장과 \ref{sec:dishbrain}장은 칩 위의 살아 있는 뉴런으로 조립한 기계를 다룬다.
+
+\section{연습문제}
+
+이 장의 연습문제는 여러 장의 결과를 잇는다. 각 문제는 적어도 두 장에 기댄다.
+
+\begin{exercise}[\lvlA]
+\label{ex:10:1}
+\emph{버스와 레지스터.} 네 브로드캐스트 채널은 각각 약 다섯 선로의 다발이다(명제~\ref{prop:bundle}). 각 선로는 초당 한 번 변하고 네 단계로 구별된다. \nt{GLUT} 버스(발화율~\eqref{eq:energy}로 발화하는 뉴런 $8.6\cdot10^{10}$개, \eqref{eq:spikeentropy}에 따른 정밀도 $1\ms$)가 1초에 전송하는 것을 제어 채널로 보내려면 몇 년이 걸리는가?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:10:2}
+\emph{한 루프 위의 두 노브.} 루프~\eqref{eq:ei}에서 \eqref{eq:machine}의 노브는 흥분 쪽에 있다: $\tau_E\dot E=-E+g[(1-a)w_{EE}E-w_{EI}I+h]$, \nt{GABA}는 노브의 제어를 받지 않는다. 그림~\ref{fig:ei}의 수치에서 \nt{NORA} 버스트가 $g$를 $6$까지 올린다. 루프가 안정한 가장 작은 $a$는? \nt{NORA}와 \nt{ACET} 노브를 독립적으로 돌릴 수 있는가?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:10:3}
+\emph{브로드캐스트의 대가는 어디서 오는가.} $N$개 뉴런의 출력 $y_k=f(u_k)+\xi_k$에 분산 $\sigma^2$의 독립 가우스 잡음이 있고, $R\approx R_0+\sum_kR'_k\xi_k$이며 $R'_k$는 모두 같고, \nt{DOPA}는 $\delta=R-R_0$를 보낸다. 한 번의 시도에서 보정 $\delta\,\xi_jx_j$의 신호 대 잡음비를 구하라. 시도 횟수는 $N$에 따라 어떻게 늘어나는가?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:10:4}
+\emph{소리와 섬광 묶기.} 소리는 $5\ms$ 뒤에, 섬광은 $30\ms$에 첫 스파이크 지연~\eqref{eq:latency}($\tau=10\ms$, $U$는 $1.2\theta$에서 $4\theta$까지)을 더한 뒤에 버스에 도착한다. 각 입력의 배경 발화는 초당 스파이크 $5$개이다. 모든 대비에 대해 소리 선로의 지연과 가장 작은 동시성 창을 고르라. 배경은 초당 몇 번의 거짓 묶기를 일으키는가?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:10:5}
+\emph{시뮬레이션: 누가 변화를 알아채는가.} 비평자는 $y=s+\text{잡음}$($R=1$)을 본다. 확률 $1/200$로 $s$가 분산 $J^2=4$인 새 값으로 도약한다. $q=0$이고, $E\leftarrow0.9E+\delta^2/(P+R)$가 $20$을 넘으면 $P$를 $J^2$로 올리는 칼만 필터를 시뮬레이션하라. 그 오차는 가장 좋은 고정 $\alpha$일 때보다 얼마나 작은가?
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:10:6}
+\emph{습관을 바꾸는 데 몇 번의 시도가 드는가.} 네트워크는 $Q_A=0.8$, $Q_B=0.2$를 배웠고 \eqref{eq:softmax}에 따라 $\sigma=1$, $g=8$로 고른다. 이제 $A$는 확률 $0.2$로 주스를 준다. $Q_A\leftarrow Q_A+\alpha(r-Q_A)$이고 $Q_B$는 변하지 않는다. $\alpha=0.1$과 $0.5$일 때 $A$를 몇 번 고르고 나면 $A$를 고를 확률이 $0.6$까지 떨어지는가? \nt{NORA}가 $g$를 $2$로 낮추면?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:10:7}
+\emph{전선 대신 다발.} 출력 $y_k=w_k+\xi_k$, 보상 $R=-\sum_ky_k^2$이다. 다발의 한 선로가 $G$개 뉴런의 그룹에 그 출력의 오차를 보내고, $w_k\leftarrow w_k+\eta\,\delta_l\xi_k$이다. 가장 좋은 $\eta$에서 $\sum w_k^2=\varepsilon\sum w_k^2(0)$에 이르려면 $\approx(G+2)\ln(1/\varepsilon)$번의 시도가 필요함을 보여라. $\varepsilon=0.01$일 때, 선로 다섯 개를 가진 뉴런 $10^6$개의 회로가 3초에 한 번 시도한다면 학습에 얼마나 걸리는가?
+\end{exercise}

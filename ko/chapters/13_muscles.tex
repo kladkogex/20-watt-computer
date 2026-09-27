@@ -1,0 +1,214 @@
+\chapter{기계의 출력: 뇌는 근육을 어떻게 제어하는가}
+\chaptermark{기계의 출력}
+\label{sec:muscles}
+
+\section{빠른 출력}
+
+기계가 세상에서 빠르게 하는 일은 모두 근육으로 한다. 말, 시선, 걸음, 미소는 모두 근육의 수축이다. 두 번째 출력, 곧 느린 출력인 몸의 화학은 \ref{sec:chemoutput}장에서 다룬다. 그림~\ref{fig:machine}에서 출력은 “근육”이라는 화살표였다. 이제 그 화살표 뒤에 무엇이 있는지 보자.
+
+사슬의 마지막 고리는 \nt{ACET} 뉴런이다. 표~\ref{tab:types}에 “근육으로의 출력”이라고 적힌 바로 그 뉴런이다. 근육 섬유 하나는 정확히 그런 뉴런 하나에게서 입력을 받고, 뉴런 하나는 수백에서 이천 개 남짓의 섬유 무리를 제어한다~\cite{Feinstein1955mu}. 섬세한 조정이 필요한 근육에서는 단위가 더 작고, 다리의 큰 근육에서는 더 크다. 뉴런과 그 섬유를 합쳐 \emph{운동 단위}라고 부른다. 뇌가 따로 켤 수 있는 근육의 가장 작은 조각이다.
+
+근육 위 뉴런의 시냅스는 \ref{sec:code}장의 피질 시냅스와 전혀 다르게 만들어져 있다. 거기서는 스파이크 대부분이 사라졌다. 여기서는 스파이크 하나가 섬유를 동작시키는 데 필요한 양의 몇 배나 되는 아세틸콜린을 방출한다~\cite{WoodSlater2001}. 이것은 \emph{안전 여유}를 가진 시냅스이다. 뉴런의 스파이크 하나가 섬유의 수축 정확히 한 번이다. 기계 내부에서는 신뢰할 수 없는 연결을 허용하고 오류를 중복으로 바로잡을 수 있다. 출력에서는 오류가 곧 움직임을 대가로 치르므로, 신뢰성을 하드웨어로 곧장 사 두었다.
+
+\section{힘: 발화율과 단위의 수}
+
+스파이크 하나는 단일 수축, 곧 연축을 일으킨다. 힘은 수십 밀리초에 걸쳐 커졌다가 줄어든다. 좋은 근사식은 다음과 같다~\cite{Fuglevand1993}.
+\begin{equation}
+h(t) \;=\; F_1\,\frac{t}{T_c}\,e^{\,1-t/T_c},
+\label{eq:twitch}
+\end{equation}
+여기서 $T_c$는 상승 시간으로 $50\ms$ 정도이고, $F_1$은 연축 한 번의 힘이다. 스파이크가 더 자주 오면 연축이 합쳐진다.
+\begin{empheq}[box=\keybox]{equation}
+F(t) \;=\; \sum_k h\bigl(t-t_k\bigr) .
+\label{eq:forcesum}
+\end{empheq}
+이것은 \ref{sec:serocomputer}장에서 스파이크를 농도로 바꾸던 것과 같은 저역 통과 필터이다. 다만 이제 출력이 농도가 아니라 힘이다. 근육은 스파이크를 힘으로 바꾸는 디지털-아날로그 변환기이다(그림~\ref{fig:tetanus}). 우리 모델에서 초당 스파이크 다섯 개일 때 연축은 거의 겹치지 않고 힘은 $0.2F_1$에서 $1.1F_1$까지 오르내린다. 열다섯 개일 때는 이미 $1.8F_1$과 $2.2F_1$ 사이에 머물고, 마흔 개일 때는 거의 평탄해져 약 $5.4F_1$이 된다. 실제 근육은 스파이크가 잦으면 포화하므로, 선형 합~\eqref{eq:forcesum}은 초당 스파이크 수십 개까지만 맞다.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=20cm,y=0.55cm]
+\draw[->,gray!70!black] (0,0) -- (0.66,0) node[right,font=\small,black] {$t$, s};
+\draw[->,gray!70!black] (0,0) -- (0,6.4) node[left,font=\small,black] {$F/F_1$};
+\foreach \t in {0,0.2,0.4,0.6}{\draw[gray!60!black] (\t,-0.1) -- (\t,0.1); \node[below,font=\scriptsize] at (\t,0) {\t};}
+\foreach \f in {1,3,5}{\draw[gray!60!black] (-0.004,\f) -- (0.004,\f); \node[left,font=\scriptsize] at (0,\f) {\f};}
+\draw[thick,blue!60!black] plot file {figures/muscle_twitch_5.dat};
+\draw[thick,green!45!black] plot file {figures/muscle_twitch_15.dat};
+\draw[thick,red!70!black] plot file {figures/muscle_twitch_40.dat};
+\node[font=\scriptsize,blue!60!black,anchor=west] at (0.605,0.9) {5 Hz};
+\node[font=\scriptsize,green!45!black,anchor=west] at (0.605,2.1) {15 Hz};
+\node[font=\scriptsize,red!70!black,anchor=west] at (0.605,5.4) {40 Hz};
+\end{tikzpicture}
+\caption{디지털-아날로그 변환기로서의 근육: 운동 단위 하나의 규칙적인 스파이크에 대한 힘~\eqref{eq:forcesum}, $T_c=50\ms$. 드문 스파이크는 따로따로 연축을 일으키고, 잦은 스파이크는 고른 힘으로 합쳐진다. 그림~\ref{fig:lowpass}에서 잦은 스파이크가 고른 농도로 합쳐지는 것과 같다.}
+\label{fig:tetanus}
+\end{figure}
+
+뇌에게는 힘의 노브가 두 개 있다. 각 단위의 스파이크 발화율과, 켜진 단위의 수이다. 그리고 둘째 노브는 매우 영리하게 만들어져 있다. 근육 속 단위들은 서로 다르다. 가장 약한 단위는 가장 강한 단위보다 백 배 약하다. 점점 더 큰 힘이 필요해지면 단위들은 \emph{크기 순서대로}, 작은 것부터 큰 것으로 켜진다~\cite{Henneman1957}. 이 순서를 계산하는 주체는 없다. 작은 뉴런은 같은 공통 입력에 그냥 더 쉽게 흥분하므로, 켜지는 순서는 하드웨어 자체가 정한다.
+
+이것이 무엇을 주는가? 순서상 다음 단위가 앞 단위보다 $q$배 강하다고 하자. $q$는 1보다 조금 크다. 켜진 모든 단위의 힘은 등비수열의 합이고, 그 거의 전부가 마지막 단위들에서 온다. 그러면 새로 켜진 단위가 더하는 힘은
+\begin{empheq}[box=\keybox]{equation}
+\frac{\Delta F}{F} \;\approx\; q-1 \;=\; \text{const} ,
+\label{eq:sizeprinciple}
+\end{empheq}
+곧 힘의 단계가 힘 자체에 비례한다. 약한 힘은 작은 몫으로, 강한 힘은 큰 몫으로 조절한다. 이것은 \emph{부동소수점 수}이다. 지수는 켜진 단위의 수가 정하고, 가수는 그 스파이크 발화율이 정한다. \ref{sec:sensors}장의 센서와 같은 로그 눈금이다. 기계의 입력과 출력은 세상을 상대적인 비율로 잰다.
+
+부동소수점에는 이면이 있다. 힘의 퍼짐도 힘 자체에 비례해 커진다. 강한 움직임은 약한 움직임보다 필연적으로 덜 정밀하다. 영향력 있는 한 가설에 따르면, 신호에 의존하는 바로 이 잡음이 우리의 움직임이 매끄러운 이유를 설명한다. 매끄러운 명령이 끝점에서 가장 작은 퍼짐을 준다~\cite{HarrisWolpert1998}.
+
+\section{당기되 밀지 못한다: 관절 하나에 두 전선}
+
+근육은 당길 줄만 안다. \nt{GLUT} 뉴런이 음의 신호를 낼 수 없듯이 근육은 밀 수 없다. 해법은 \ref{sec:glutcomputer}장에서 익숙한 \emph{두 전선}이다. 관절마다 반대 방향으로 당기는 근육 한 쌍이 붙어 있다(그림~\ref{fig:antagonists}). 두 힘이 $F_1$, $F_2$이고 지레팔이 $\ell$이면, 관절의 회전력과 강성은 다음과 같다.
+\begin{empheq}[box=\keybox]{equation}
+M \;=\; \ell\,(F_1-F_2), \qquad K \;\approx\; \kappa_m\,(F_1+F_2),
+\label{eq:antagonists}
+\end{empheq}
+여기서 $\kappa_m$은 근육의 힘과 강성을 잇는 계수이다. 긴장한 근육은 이완한 근육보다 더 세게 튕긴다. 힘의 차는 회전력을, 합은 강성을 정한다~\cite{Hogan1984}. 두 전선으로 뇌는 독립된 두 양을 제어한다. 관절을 어디로 돌릴지와 얼마나 단단히 붙잡을지이다. 찻잔을 쏟지 않고 들고 있어야 할 때 우리는 두 근육을 동시에 긴장시킨다. 회전력은 같고 강성은 높아져서, 우연한 충격이 팔을 덜 흔든다.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  nrn/.style={circle,draw,very thick,minimum size=0.95cm,inner sep=0pt,font=\scriptsize},
+  inh/.style={-{Bar[width=7pt]},thick,red!70!black}]
+% the joint: a bar on a pivot, two springs pulling down on either side
+\fill[gray!30] (4.6,-0.25) -- (5.4,-0.25) -- (5,0.15) -- cycle;
+\draw[line width=3pt,gray!50!black] (2.4,0.2) -- (7.6,0.2);
+\fill[black] (5,0.2) circle (0.08);
+\draw[decorate,decoration={coil,segment length=5pt,amplitude=4pt},very thick,blue!60!black] (3.0,0.2) -- (3.0,-1.6);
+\draw[decorate,decoration={coil,segment length=5pt,amplitude=4pt},very thick,orange!85!black] (7.0,0.2) -- (7.0,-1.6);
+\draw[very thick] (2.5,-1.6) -- (3.5,-1.6); \draw[very thick] (6.5,-1.6) -- (7.5,-1.6);
+\node[font=\small,blue!60!black] at (2.35,-0.75) {$F_1$};
+\node[font=\small,orange!85!black] at (7.65,-0.75) {$F_2$};
+\draw[->,thick] (5.9,0.75) arc (60:120:1.8) node[above,font=\scriptsize,pos=0.5] {$M=\ell(F_1-F_2)$};
+% motor neurons and reflex circuit
+\node[nrn,fill=green!12] (M1) at (1.6,-3.0) {\nt{ACET}};
+\node[nrn,fill=green!12] (M2) at (8.4,-3.0) {\nt{ACET}};
+\node[nrn,fill=red!10] (G) at (5.0,-3.0) {\nt{GLYC}};
+\node[nrn,fill=blue!6] (S) at (1.6,-5.0) {\nt{GLUT}};
+\draw[->,very thick] (M1) -- (3.0,-1.7);
+\draw[->,very thick] (M2) -- (7.0,-1.7);
+\draw[->,thick] (S) -- (M1);
+\draw[->,thick] (S) -- (G);
+\draw[inh] (G) -- (M2);
+\draw[->,thick,densely dashed,gray!60!black] (3.15,-1.2) to[bend left=25] node[pos=0.35,right,font=\scriptsize,black] {신장} (S.north east);
+\draw[->,thick,blue!60!black] (-0.3,-3.0) node[left,font=\scriptsize,black,align=right] {뇌의\\명령} -- (M1);
+\draw[->,thick,blue!60!black] (10.3,-3.0) node[right,font=\scriptsize,black,align=left] {뇌의\\명령} -- (M2);
+\end{tikzpicture}
+\caption{관절 하나에 근육 둘, 그리고 가장 빠른 되먹임 루프. \nt{ACET} 뉴런은 뇌의 명령을 받아 관절을 서로 다른 방향으로 당긴다. 힘의 차는 관절을 돌리고, 합은 더 단단하게 만든다. 왼쪽 근육의 신장 센서(\nt{GLUT})는 그 근육 자신의 \nt{ACET} 뉴런을 흥분시키고, \nt{GLYC} 중개 뉴런을 거쳐 길항근의 뉴런을 억제한다. \ref{sec:gaba}장의 금지이다.}
+\label{fig:antagonists}
+\end{figure}
+
+\section{지연된 되먹임}
+
+근육은 눈을 감고 일하지 않는다. 근육마다 표~\ref{tab:sensors}에서 말한 신장 센서가 있고, 가장 짧은 루프는 척수 안에서 곧바로 닫힌다(그림~\ref{fig:antagonists}). 근육이 갑자기 늘어나면 신장 센서가 그 근육 자신의 \nt{ACET} 뉴런을 흥분시키고, 근육이 수축해 관절을 되돌린다. 동시에 억제성 중개 뉴런을 거쳐 길항근이 꺼져서 방해하지 않는다. 이 중개 뉴런이 바로 \nt{GLYC}이다. 표~\ref{tab:types}에서 자기 장을 갖지 못한 그 유형이며, 그 자리는 바로 여기, 척수의 빠른 루프이다.
+
+루프마다 지연 $d$가 있다. 팔의 척수 루프는 약 $25$--$30\ms$, 피질을 거치는 루프는 그 1.5--3배, 눈을 거치는 루프는 $100$--$200\ms$이다. 그리고 명제~\ref{prop:ei}에서 보았듯이 지연된 되먹임은 시스템을 흔든다. $d$초 전의 정보로 편차 $x$를 속도 $G$로 바로잡는 가장 단순한 조절기 $\dd x/\dd t=-G\,x(t-d)$의 안정 조건은 다음과 같다~\cite{Hayes1950}.
+\begin{empheq}[box=\keybox]{equation}
+G\,d \;<\; \frac{\pi}{2} ,
+\label{eq:delaystable}
+\end{empheq}
+경계에서 시스템은 주파수 $1/(4d)$로 진동한다. 우리는 이것을 모델로 확인했다. $d=30\ms$일 때 편차는 초당 $G=40$에서 감쇠하고, 경계 $52$를 조금 넘는 초당 $G=55$에서 커지며 진동한다.
+
+여기서 두 가지 결론이 나온다. 첫째, 루프가 길수록 더 느리게 바로잡아야 한다. 지연이 150밀리초인 눈을 거쳐서는 팔을 약 0.1초보다 빨리 바로잡을 수 없다. 그렇지 않으면 팔이 떨린다. 둘째, 척수 루프의 안정 경계 $1/(4\cdot30\ms)\approx8$ Hz는 건강한 사람 누구에게나 있는 미세 떨림의 주파수, 곧 초당 8--12회에 가깝다. 신장 루프는 이 떨림의 유력한 원천 가운데 하나이다~\cite{McAuleyMarsden2000}.
+
+그렇다면 되먹임이 늦는데 뇌는 어떻게 빠르고 정확하게 움직일까? 널리 퍼진 가설에 따르면 \emph{예측한다}. 몸의 내부 모델을 유지하며, 센서를 기다리지 않고 명령의 결과가 어떨지 계산한다~\cite{WolpertGhahramani2000}. 센서는 매 움직임이 아니라 모델을 바로잡는 데 필요하다. 엔지니어라면 이것을 상태 관측기를 갖춘 피드포워드 제어라고 부를 것이다.
+
+\section{운동 리듬 발생기}
+
+걷기, 숨쉬기, 씹기는 리듬 운동이다. 여기에 클럭이 필요할까? 아니다. 척수와 뇌간에는 리듬적인 입력이 전혀 없어도 스스로 리듬을 만들어 내는 작은 네트워크가 있다~\cite{MarderBucher2001}. 가장 단순한 그런 네트워크는 우리가 이미 가진 부품으로 조립된다. 그림~\ref{fig:wta}에서처럼 \nt{GABA} 또는 \nt{GLYC} 중개 뉴런을 거쳐 서로 억제하고, \ref{sec:glutcomputer}장의 기억처럼 천천히 지치는 \nt{GLUT} 뉴런 집단 두 개이다.
+\begin{empheq}[box=\keybox]{equation}
+\tau\,\frac{\dd r_i}{\dd t} = -r_i + \bigl[I - \beta\,r_j - a_i\bigr]_+ ,
+\qquad
+\tau_a\,\frac{\dd a_i}{\dd t} = -a_i + b\,r_i ,
+\label{eq:halfcentre}
+\end{empheq}
+여기서 $a_i$는 집단 $i$의 피로, $j$는 다른 집단이다. $\beta>1$인 상호 억제가 승자를 고른다(명제~\ref{prop:wta}). 승자는 일하면서 지친다. 피로가 입력을 잡아먹으면, 이미 쉬고 난 패자가 앞으로 치고 나와 이번에는 자기가 지치기 시작한다. 두 집단은 번갈아 일하고, 각 집단은 쌍의 자기 근육을 제어한다(그림~\ref{fig:halfcentre}).
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=3.2cm,y=2.4cm]
+\draw[->,gray!70!black] (0,0) -- (4.2,0) node[right,font=\small,black] {$t$, s};
+\draw[->,gray!70!black] (0,0) -- (0,1.2) node[left,font=\small,black] {$r$};
+\foreach \t in {0,1,2,3,4}{\draw[gray!60!black] (\t,-0.03) -- (\t,0.03); \node[below,font=\scriptsize] at (\t,0) {\t};}
+\draw[thick,blue!60!black] plot file {figures/halfcentre1.dat};
+\draw[thick,orange!85!black] plot file {figures/halfcentre2.dat};
+\node[font=\scriptsize,blue!60!black,anchor=west] at (1.6,1.28) {집단 1: “앞으로”};
+\node[font=\scriptsize,orange!85!black,anchor=west] at (2.7,1.28) {집단 2: “뒤로”};
+\end{tikzpicture}
+\caption{모델~\eqref{eq:halfcentre}에 따른 리듬 발생기: $I=1$, $\beta=2$, $b=2$, $\tau=20\ms$, $\tau_a=0.4\,\text{s}$. 상호 억제와 피로를 가진 두 집단이, 입력은 일정한데도 주기 $0.84\,\text{s}$로 번갈아 일한다.}
+\label{fig:halfcentre}
+\end{figure}
+
+우리 모델에서 입력이 일정할 때 두 집단은 주기 $0.84\,\text{s}$로 교대한다. 피로 시간 $\tau_a$의 약 두 배이다. 위에서 오는 일정한 명령 “걸어라”가 그 자리에서 리듬으로 바뀐다. 이것은 \ref{sec:gaba}장의 \nt{GLUT}--\nt{GABA} 루프 리듬과 같은 또 하나의 국소 리듬이다. 네트워크가 일할 때만 생기고, 자기가 제어하는 근육에만 박자를 준다.
+
+\begin{keyblock}
+\begin{proposition}[기계의 출력]
+\label{prop:muscles}
+뇌는 조절기의 계층으로 근육을 제어한다. 맨 위에서 행동을 고른다(\ref{sec:dofa}장). 그 아래에서 국소 발생기가 일정한 명령을 리듬으로 바꾸고, 척수의 빠른 루프가 관절을 붙잡는다. 힘은 부동소수점으로 정해진다. 지수는 크기 순서대로 켜지는 단위의 수로, 가수는 스파이크 발화율로 정한다. 각 관절은 당기는 근육 한 쌍으로 제어되며, 두 힘의 차가 회전력을, 합이 강성을 정한다. 이 장치들은 측정되었다. 뇌가 몸의 내부 모델에 기댄다는 것은 근거가 탄탄한 가설이다.
+\end{proposition}
+\end{keyblock}
+
+\section{정리}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{3.0cm}>{\raggedright}p{4.6cm}>{\raggedright\arraybackslash}p{5.2cm}}
+\toprule
+출력이 하는 일 & 방법 & 알려진 것 \\
+\midrule
+스파이크를 힘으로 바꿈 & 연축의 합~\eqref{eq:forcesum}, 저역 통과 필터 & 측정됨; 선형 합은 단순화 \\
+힘을 조절함 & 크기 순서대로 단위를 켬, 부동소수점~\eqref{eq:sizeprinciple} & 켜지는 순서는 측정됨 \\
+당길 줄만 알면서 밂 & 근육 쌍: 회전력은 차, 강성은 합~\eqref{eq:antagonists} & 측정됨 \\
+관절을 붙잡음 & 신장 루프, \nt{GLYC}를 통한 길항근 금지 & 측정됨 \\
+떨지 않음 & $Gd<\pi/2$~\eqref{eq:delaystable} & 제어 이론에서 나옴; 떨림에 대한 기여는 유력한 원인 \\
+빠르게 움직임 & 내부 모델에 의한 예측 & 근거가 탄탄한 가설 \\
+리듬 있게 걷고 숨쉼 & 리듬 발생기~\eqref{eq:halfcentre} & 발생기는 측정됨; 가장 단순한 회로는 모델 \\
+\bottomrule
+\end{tabular}
+\caption{기계는 근육을 어떻게 제어하는가.}
+\label{tab:muscles}
+\end{table}
+
+기계의 출력은 나머지 모든 것과 같은 기법으로 만들어져 있다(표~\ref{tab:muscles}). 부호 대신 두 전선, DAC 대신 저역 통과 필터, 선형 눈금 대신 로그 눈금, 클럭 발생기 대신 상호 억제와 피로이다. 입력(\ref{sec:sensors}장)과 출력은 세상을 상대적인 비율로 재고, 그 사이에서 이 책이 다루는 기계가 일한다.
+
+\section{연습문제}
+
+\begin{exercise}[\lvlA]
+\label{ex:13:1}
+\emph{숫자로 보는 부동소수점.} 근육에 힘이 $f_n=f_1q^{\,n-1}$인 운동 단위 $N=100$개가 있다. 가장 강한 단위는 가장 약한 단위보다 $100$배 강하다. (가)~$q$, 상대 단계~\eqref{eq:sizeprinciple}, 데시벨 단위의 동적 범위를 구하라. (나)~전체 힘이 같은 동일한 단위 $100$개로 된 “선형 DAC”에서 힘 $10f_1$일 때의 단계는?
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:13:2}
+\emph{안전 여유의 값.} 근육 섬유 위의 시냅스는 스파이크마다 평균 $m$인 푸아송 개수의 소포를 방출하고, 섬유는 소포 $n_{\text{th}}=20$개 이상에서 동작한다. 안전 여유는 $S=m/n_{\text{th}}$이다. 초당 스파이크 $20$개로 일하는 단위는 $S=2$와 $S=4$에서 하루에 몇 번 실패하는가?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:13:3}
+\emph{필터로서의 근육.} $T_c=50\ms$인 연축~\eqref{eq:twitch}은 선형 시스템의 임펄스 응답이다. (가)~전달 함수 $H(s)$와 차단 주파수를 구하라. (나)~규칙적인 스파이크의 발화율이 얼마일 때 힘의 맥동 폭이 평균 힘의 $10\%$가 되는가?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:13:4}
+\emph{지연보다 빨리 바로잡을 수는 없다.} 조절기 $\dd x/\dd t=-G\,x(t-d)$. (가)~편차가 진동 없이 가장 빨리 감쇠하는 것은 $Gd=1/e$일 때이며 그 속도가 $1/d$임을 보여라. (나)~척수 루프 $d=30\ms$와 눈을 거치는 루프 $d=150\ms$에 대해 이 $G$와 감쇠 시간 상수를 구하라.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:13:5}
+\emph{리듬 발생기의 주기.} $\tau\ll\tau_a$일 때 모델~\eqref{eq:halfcentre}의 주기 $T$는 방정식 $(\beta-1)(1-E^{2+b})/(\beta-E)=b\,(1-E^{1+b})/(1+b)$로 정해진다. 여기서 $E=e^{-T/(2\tau_a)}$이다. (가)~$\beta=b=2$, $\tau_a=0.4$~s일 때 $T$를 구하라. (나)~$T$가 입력 $I$와 무관하며, 리듬은 $b>\beta-1$일 때만 가능함을 보여라.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:13:6}
+\emph{발생기 시뮬레이션.} \texttt{models/\allowbreak muscle\_models.py}에서 함수 \texttt{halfcentre}를 가져와(파일 자체는 실행하지 말 것), 처음 두 주기를 버리고 $b=0.8$, $1.05$, $1.2$, $1.5$, $2$, $4$와 $I=0.5$, $1$, $2$에서 주기를 재라. 명령 “더 빨리 걸어라”가 $I$를 통해 템포를 바꿀 수 있는가?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:13:7}
+\emph{강성 대 반사.} 관절이 신장 루프로 감싸여 있다: $\dd\theta/\dd t=-a\theta(t)-G\theta(t-d)$, $a=K/B$, $d=30\ms$. 이를 연습문제~\ref{ex:13:4}로 환원해, 편차가 시간 상수 $15\ms$로 진동 없이 감쇠하는 가장 작은 $a$와 필요한 $G$를 구하라. 근육의 공동 긴장이 커지면 $G$를 어떻게 바꿔야 하는가?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:13:8}
+\emph{템포 노브.} 연습문제~\ref{ex:13:5}와~\ref{ex:13:6}에 따르면 발생기~\eqref{eq:halfcentre}의 입력 $I$는 템포가 아니라 진폭만 바꾼다. 이 책의 부품으로 모델을 최소한으로 바꿔, 어떤 $I_{\min}$ 아래에서는 리듬이 없고 그 위에서는 $I$가 커질수록 주기가 줄어들되 $I$가 세 배가 되면 적어도 절반이 되게 하라. $\tau\ll\tau_a$에서 $I_{\min}$을 구하고 시뮬레이션으로 확인하라.
+\end{exercise}

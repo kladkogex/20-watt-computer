@@ -1,0 +1,81 @@
+\chapter*{이 책을 읽는 방법}
+\addcontentsline{toc}{chapter}{이 책을 읽는 방법}
+
+이 책은 처음부터 순서대로 읽지 않아도 된다. 1--4장은 공통 기초로, 뉴런의 유형, \nt{GLUT}와 \nt{GABA}가 무엇을 계산하는지, 그리고 이들이 어떤 언어로 말하는지를 다룬다. 그다음부터 책은 여러 갈래로 나뉜다. 그림~\ref{fig:roadmap}의 지도는 어느 장이 어느 장에 기대는지 보여 준다. 장 $A$에서 장 $B$로 가는 화살표는 $B$가 $A$의 개념과 식을 사용한다는 뜻이다. 지도에는 주요 의존 관계만 표시했다. 앞 장을 가리키는 사소한 참조는 읽는 데 지장을 주지 않는다.
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[>=Stealth,scale=0.95,
+  ch/.style={draw,thick,rounded corners=3pt,align=center,font=\scriptsize,text width=1.85cm,minimum height=0.62cm,inner sep=2pt},
+  base/.style={ch,fill=blue!8}, bus/.style={ch,fill=orange!14}, sum/.style={ch,fill=gray!18},
+  io/.style={ch,fill=green!10}, sort/.style={ch,fill=cyan!8}, lab/.style={ch,fill=violet!10},
+  dep/.style={->,thick,gray!60!black}]
+% foundation
+\node[base] (c1) at (0,0) {1 뉴런의 유형};
+\node[base] (c2) at (2.3,0) {2 \nt{GLUT}};
+\node[base] (c3) at (4.6,0) {3 \nt{GLUT}와 \nt{GABA}};
+\node[base] (c4) at (6.9,0) {4 모스 부호};
+% broadcast channels and the synthesis
+\node[bus] (c5) at (4.6,-1.5) {5 \nt{SERO}};
+\node[bus] (c6) at (7.3,-1.5) {6 \nt{DOPA}};
+\node[bus] (c7) at (9.2,-0.9) {7 도파민 이론};
+\node[bus] (c8) at (9.2,-2.1) {8 \nt{NORA}};
+\node[bus] (c9) at (11.5,-2.1) {9 \nt{ACET}};
+\node[sum] (c10) at (13.8,-0.9) {10 기계 전체};
+% inputs and outputs
+\node[io] (c12) at (2.3,-4.1) {12 인식};
+\node[io] (c11) at (4.6,-4.1) {11 입력};
+\node[io] (c13) at (6.9,-4.1) {13 근육};
+\node[io] (c14) at (9.2,-3.05) {14 통증};
+\node[io] (c15) at (9.2,-4.1) {15 운동\\학습};
+\node[io] (c16) at (9.2,-5.15) {16 몸의\\화학};
+% lab, sorting, sleep
+\node[lab] (c17) at (11.5,-4.1) {17 디버깅};
+\node[lab] (c21) at (13.8,-4.1) {21 살아 있는 기계};
+\node[lab] (c22) at (13.8,-5.15) {22 DishBrain};
+\node[sort] (c18) at (11.5,-5.15) {18 계측기\\뉴런};
+\node[sort] (c19) at (13.8,-6.2) {19 가지돌기\\개수};
+\node[bus] (c20) at (11.5,-6.2) {20 수면};
+% dependencies
+\draw[dep] (c1) -- (c2); \draw[dep] (c2) -- (c3); \draw[dep] (c3) -- (c4);
+\draw[dep] (c1) -- (c5); \draw[dep] (c4) -- (c6); \draw[dep] (c5) -- (c6);
+\draw[dep] (c6) -- (c7); \draw[dep] (c6) -- (c8); \draw[dep] (c8) -- (c9);
+\draw[dep] (c7) -- (c10); \draw[dep] (c9) -- (c10);
+\draw[dep] (c4) -- (c11); \draw[dep] (c11) -- (c12); \draw[dep] (c11) -- (c13); \draw[dep] (c5) -- (c13);
+\draw[dep] (c13) -- (c14); \draw[dep] (c13) -- (c15); \draw[dep] (c13) -- (c16);
+\draw[dep] (c15) -- (c17); \draw[dep] (c9) -- (c17); \draw[dep] (c17) -- (c21); \draw[dep] (c21) -- (c22);
+\draw[dep] (c16) -- (c18); \draw[dep] (c18) -- (c19); \draw[dep] (c16) -- (c20);
+% legend
+\begin{scope}[yshift=-7.25cm]
+\foreach \s/\t [count=\i] in {base/기초, bus/채널과 모드, sum/종합, io/입력과 출력, sort/뉴런 분류, lab/실험실}{
+  \pgfmathtruncatemacro{\col}{mod(\i-1,3)}\pgfmathtruncatemacro{\row}{(\i-1)/3}
+  \node[\s,text width=0.3cm,minimum height=0.32cm] at ({\col*4.8+0.2},{-\row*0.55}) {};
+  \node[anchor=west,font=\scriptsize] at ({\col*4.8+0.55},{-\row*0.55}) {\t};}
+\end{scope}
+\end{tikzpicture}
+\caption{장 지도. 화살표는 한 장에서 그 장에 기대는 장으로 향한다. 장 사이의 나머지 참조는 안내일 뿐 의존 관계가 아니다.}
+\label{fig:roadmap}
+\end{figure}
+
+\section*{이 책을 지나는 경로}
+
+\begin{center}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{>{\raggedright}p{3.0cm}>{\raggedright}p{3.9cm}>{\raggedright\arraybackslash}p{6.4cm}}
+\toprule
+경로 & 대상 & 장 순서 \\
+\midrule
+한 쿼터 강의 & 강의자, 10주 & 1주: 1--2장; 2주: 3장; 3주: 4장; 4주: 5--6장; 5주: 7--8장; 6주: 9장; 7주: 10장; 8주: 11--12장; 9주: 13장과~15장; 10주: 17장 \\
+AI와 머신러닝 & 신경망을 알고 뇌가 어떻게 학습하는지 이해하고 싶은 사람 & 1--4, 5(훑어보기), 6, 7, 8, 9, 11(훑어보기), 12, 13(훑어보기), 15 \\
+전자공학과 하드웨어 & 회로 설계자, 뉴로모픽 칩 개발자 & 1--4, 5, 11, 13, 16, 18, 19, 17(9장과 15장은 훑어보기) \\
+뉴로인터페이스와 살아 있는 계산기 & 뇌-컴퓨터 인터페이스나 살아 있는 뉴런을 쓰는 칩을 만드는 사람 & 1, 2, 4, 11, 13, 17(9장과 15장은 훑어보기), 21, 22(12장은 훑어보기) \\
+빠른 개관 & 주말 시간이 있는 엔지니어 & 1, 2, 3, 6, 10; 6장에서 4--5장을 가리키는 참조는 문맥으로 이해할 수 있다 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+`훑어보기'란 장의 도입부, 노란 상자 안의 명제들, 마지막 요약 표만 읽어도 충분하다는 뜻이다.
+
+각 장 끝에는 연습문제가 있다. 어림 계산, 유도, 모델링, 설계 문제이며, 간단한 답은 부록~\ref{sec:answers}에 모아 두었다. 모든 기호는 부록~\ref{sec:notation}에, 각 장의 주요 명제를 뒷받침하는 실험은 부록~\ref{sec:supplement}에 정리했다. 책의 수치는 \texttt{models/} 폴더의 작은 프로그램들로 계산했다. 직접 실행하고 고쳐 볼 수 있다.

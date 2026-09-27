@@ -1,0 +1,154 @@
+\chapter{DishBrain}
+\chaptermark{DishBrain}
+\label{sec:dishbrain}
+
+\section{접시 속 네트워크가 테니스를 친다}
+
+DishBrain은 전극이 있는 칩 위에서 키운 살아 있는 뉴런 배양이 라켓 하나짜리 단순화된 테니스를 치는 테스트 벤치에 저자들이 붙인 이름이다~\cite{Kagan2022}. 살아 있는 뉴런으로 만든 기계를 다룬 실험 가운데 가장 많이 논의된 것이며(이런 기계의 개관은 \ref{sec:livingmachine}장), 이 책에는 특히 알맞다. 여기서는 작은 네트워크 전체에 손이 닿는다. 입력은 모두 실험자가 정하고, 출력은 모두 기록된다. 앞 장들의 질문, 즉 신호가 어떻게 부호화되는지, 누가 가르치는지, 프로브에 무엇이 보이는지를 눈도 근육도 \nt{DOPA} 뉴런도 없는 네트워크에 던질 수 있다. 엔지니어가 남의 테스트 벤치를 분석하듯 이 실험을 뜯어보자. 회로, 입력, 출력, 교사, 결과, 논쟁 순이다.
+
+\section{테스트 벤치}
+
+뉴런은 생쥐 태아의 피질에서 칩당 약 $800\,000$개를 얻거나, 인간 줄기세포에서 칩당 약 100만 개를 키운다. 뉴런은 몇 주 동안 칩 위에서 자라며 서로 얽혀 들어가고, 스스로 스파이크와 버스트를 내기 시작한다. 그 아래 $8$~mm$^2$ 면적에 백금 전극 $26\,000$개가 깔려 있다. 동시에 기록할 수 있는 것은 최대 $1024$개이고, 자극은 실제로 여덟 개를 통해 준다.
+
+배양 둘레에 루프가 닫혀 있다(그림~\ref{fig:dishloop}). 컴퓨터가 게임을 모의한다. 공이 날아가 벽에 튕기고, 라켓이 위아래로 움직인다. 공의 위치는 여덟 개의 `감각' 전극에 흐르는 전류로 바뀐다. 두 `운동' 영역의 스파이크를 $10\ms$ 창마다 세어 라켓을 움직인다. 매번 공을 치거나 놓친 뒤 배양은 자극을 하나 더 받는다. 이것이 피드백이다. $10\ms$ 창은 배양이 아니라 테스트 벤치 컴퓨터의 클록이다. 네트워크 자체는 이 책의 모든 네트워크처럼 여전히 비동기로 작동한다.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  blk/.style={draw,very thick,rounded corners=3pt,align=center,font=\small,minimum height=1.2cm},
+  lab/.style={font=\scriptsize,align=center}]
+\node[blk,fill=blue!6,text width=3.4cm] (C) at (0,0) {칩 위의 배양\\\scriptsize 뉴런 $\sim10^6$개, 전극 $26\,000$개};
+\node[blk,fill=orange!10,text width=3.0cm] (G) at (7.2,0) {컴퓨터:\\테니스 게임};
+\draw[->,very thick,blue!60!black] (G.north west) to[bend right=25] node[lab,above] {공: \emph{장소} --- 8개 전극 중 어느 것,\\\emph{빈도} --- 초당 4--40회} (C.north east);
+\draw[->,very thick,red!70!black] (C.south east) to[bend right=25] node[lab,below] {라켓: `위'와 `아래' 영역의\\$10\ms$당 스파이크 수} (G.south west);
+\draw[->,thick,densely dashed,green!45!black] (G.east) -- ++(0.9,0) |- ++(0,-2.6) -| node[lab,pos=0.25,below] {히트: 예측 가능한 자극, 미스: 예측 불가능한 자극} (C.south);
+\end{tikzpicture}
+\caption{DishBrain 루프. 파란 화살표는 입력이다. 공의 위치를 장소 부호와 발화율 부호로 적는다(\ref{sec:code}장). 빨간 화살표는 출력이다. 두 영역의 스파이크 수 차이가 라켓을 움직인다. 초록 점선은 랠리마다 주는 피드백으로, 테스트 벤치의 유일한 `교사'이다.}
+\label{fig:dishloop}
+\end{figure}
+
+\section{입력과 출력}
+
+\emph{입력}은 \ref{sec:code}장의 부호 두 가지로 동시에 적는다. 여덟 전극 가운데 어느 것을 자극하느냐가 공의 높이를 알려 준다. 이것은 \ref{sec:sensors}장의 센서처럼 장소 부호이다. 자극 펄스가 얼마나 자주 오느냐가 공이 얼마나 먼지를 알려 준다. 공이 먼 벽에 있으면 초당 $4$회이고, 라켓 쪽 벽에 가까워질수록 선형으로 늘어 초당 $40$회가 된다. 이것은 발화율 부호이며, 공 신호 펄스의 진폭은 $75$~mV이다. 배양은 이 부호들 가운데 어느 것도 미리 `알지' 못한다. 부호는 실험자가 정했고, 네트워크는 그것을 읽는 법을 배워야 한다.
+
+\emph{출력}은 \ref{sec:debugging}장의 인터페이스와 같은 방식으로 읽는다. 한 운동 영역의 스파이크는 라켓을 위로, 다른 영역의 스파이크는 아래로 민다. 가장 단순하게 쓰면 창마다
+\begin{empheq}[box=\keybox]{equation}
+\Delta p \;=\; c\,\bigl(n_\uparrow - n_\downarrow\bigr),
+\label{eq:dishreadout}
+\end{empheq}
+여기서 $n_\uparrow$, $n_\downarrow$는 $10\ms$ 동안 두 영역의 스파이크 수이고, $c$는 테스트 벤치의 계수이다. 이것은 \ref{sec:glutcomputer}장의 2선 부호이다. 움직임의 부호는 신호의 부호가 아니라 두 전선 가운데 어느 쪽이 더 큰 소리를 내느냐가 전한다.
+
+이런 출력의 잡음을 보자. 한 영역이 모두 합쳐 초당 $R$개의 스파이크를 낸다면, 창 $T=10\ms$ 동안 평균 $RT$개이고, \eqref{eq:rateerror}에 따라 상대 산포는 $1/\sqrt{RT}$이다. $R=1000$이면 창마다 약 $30$퍼센트, $R=100$이면 100퍼센트가 넘는다. 라켓은 떨릴 수밖에 없고, 네트워크가 배울 수 있는 방법은 하나뿐이다. 스파이크 수 차이의 \emph{평균}을 원하는 쪽으로 옮기는 것이다. \ref{sec:debugging}장의 모든 인터페이스를 제한하는 것과 같은 법칙이 이제는 루프의 양쪽에 걸린다.
+
+\section{도파민 없는 교사}
+
+이 테스트 벤치에서 가장 흥미로운 것은 교사이다. 피질 뉴런 배양에는 \nt{DOPA} 뉴런이 없고, 테스트 벤치는 `예상보다 좋다'는 신호를 전혀 보내지 않는다. 피드백은 다른 것이다. 네트워크가 공을 받아 치면 여덟 감각 전극 모두에 짧고 \emph{예측 가능한} 자극이 한꺼번에 들어간다. $75$~mV 펄스를 초당 $100$회, $0.1\,\text{s}$ 동안이다. 놓치면 저자들이 \emph{예측 불가능하다}고 부르는 자극이 4초 동안 이어진다. $150$~mV 펄스를 초당 $5$회, 무작위 시점에 무작위로 고른 전극에 준다. 그 뒤 자극 없는 4초의 휴지가 있고, 공이 다시 출발한다~\cite{Kagan2022}.
+
+저자들은 네트워크가 자기 입력이 예측 가능해지도록 행동한다는 가설에서 출발했다~\cite{Friston2010}. 엔지니어에게 의미는 간단하다. 배양이 4초의 무작위 잡음에서 벗어나는 방법은 정확히 하나, 공을 받아 치는 것이다. 같은 생각을 우리는 \ref{sec:code}장의 스파이크 절약과 \ref{sec:recognition}장의 프레임 예측에서 만났다.
+
+그런데 여기서 꼭 예측 가능성이 필요할까? 더 거친 메커니즘도 가능하다. 미스 뒤의 예측 불가능한 자극이 네트워크의 최근 변화를 그저 \emph{뒤섞고}, 히트 뒤의 잔잔한 자극은 그것을 건드리지 않는다고 하자. 네트워크의 설정을 벡터 $\boldsymbol\psi$ 하나로 나타내고, 설정 $\boldsymbol\psi$에서 네트워크가 확률 $P_{\text{miss}}(\boldsymbol\psi)$로 공을 놓친다고 하자. 흔들기가 대칭이면, 즉 $\boldsymbol\psi$에서 $\boldsymbol\psi'$로 갈 확률이 되돌아올 확률과 같으면, 정상 상태에서 각 설정을 떠나는 흐름은 들어오는 흐름과 균형을 이루고, 네트워크가 설정 $\boldsymbol\psi$에 머무는 시간의 비율은
+\begin{empheq}[box=\keybox]{equation}
+\rho(\boldsymbol\psi) \;\propto\; \frac{1}{P_{\text{miss}}(\boldsymbol\psi)} .
+\label{eq:dishdensity}
+\end{empheq}
+열 배 덜 놓치는 설정은 열 배 오래 유지된다. 가중치를 어느 쪽으로 바꿀지 네트워크에 알려 주는 것은 아무것도 없다. 좋은 설정이 덜 자주 부서질 뿐이다.
+
+우리는 배양을 두 숫자로 줄인 모델로 이것을 확인했다. 공이 높이 $y$에 오면 라켓은 점 $a\,y+b$에 오고, 빗나간 거리가 $0.1$보다 작으면 받아 친다. 미스 뒤에는 두 숫자 모두 무작위로 흔들리고, 히트 뒤에는 그대로 남는다. 랠리 $2000$번 동안 받아 친 비율은 처음 200번의 $0.21$에서 마지막 500번의 $0.38$로 올랐다(`배양' 40개, 그림~\ref{fig:dishmodel}). 흔들기를 \emph{모든} 랠리 뒤에 주면 피드백에 정보가 없고, 비율은 약 $0.12$에 머문다. 흔들기가 아예 없으면 $0.19$에 멈춰 있다. 테스트 벤치의 실험도 이와 맞는다. 세션 안의 유의미한 향상은 완전한 피드백일 때만 있었다. 자극 대신 침묵을 주었을 때도 배양은 세션 끝에 피드백이 없을 때보다 잘 쳤지만 효과가 작았다~\cite{Kagan2022}. 이 조건에서도 미스 뒤에는 긴 휴지가, 히트 뒤에는 짧은 휴지가 오므로 결과 사이의 차이가 완전히 사라지지는 않는다는 점에 주의하자.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[x=1cm,y=5cm]
+\draw[->,gray!70!black] (0,0) -- (10.6,0);
+\draw[->,gray!70!black] (0,0) -- (0,0.5) node[above,font=\small,black] {받아 친 비율};
+\foreach \v in {0.1,0.2,0.3,0.4}{\draw[gray!60!black] (-0.06,\v) -- (0.06,\v); \node[left,font=\scriptsize] at (0,\v) {\v};}
+\foreach \x/\f/\l/\lab in {1.8/0.21/0.38/{미스 뒤\\잡음},5.2/0.13/0.11/{모든 랠리 뒤\\잡음},8.6/0.19/0.19/{잡음 없음}}{
+  \fill[blue!35] (\x-0.8,0) rectangle (\x-0.05,\f);
+  \fill[red!60!black] (\x+0.05,0) rectangle (\x+0.8,\l);
+  \node[below,font=\scriptsize,align=center] at (\x,-0.01) {\lab};
+  \node[above,font=\scriptsize] at (\x-0.425,\f) {\f};
+  \node[above,font=\scriptsize] at (\x+0.425,\l) {\l};}
+\fill[blue!35] (7.4,0.47) rectangle (7.7,0.495); \node[right,font=\scriptsize] at (7.75,0.482) {처음 200};
+\fill[red!60!black] (7.4,0.41) rectangle (7.7,0.435); \node[right,font=\scriptsize] at (7.75,0.422) {마지막 500};
+\end{tikzpicture}
+\caption{`미스 때 뒤섞기' 모델(\texttt{dishbrain\_model.py}): 랠리 $2000$번의 처음과 끝에서 받아 친 비율, 모델 배양 40개의 평균. 흔들기가 히트가 아니라 미스 뒤에 올 때만 학습이 일어난다. 세션 안의 유의미한 향상이 완전한 피드백일 때만 있었던 실험과 같다.}
+\label{fig:dishmodel}
+\end{figure}
+
+\begin{keyblock}
+\begin{proposition}[뒤섞는 교사]
+\label{prop:dishscramble}
+실패가 네트워크를 흔들고 성공이 네트워크를 가만두면, 네트워크는 스스로 덜 틀리는 설정 쪽으로 표류한다. 한 설정에 머무는 시간은 실패 확률에 반비례한다~\eqref{eq:dishdensity}. 이런 학습에는 보상 신호도, 그 부호도, 예측 가능성 자체도 필요 없다. 성공 뒤의 피드백과 실패 뒤의 피드백이 다르기만 하면 된다. 배양의 행동 변화는 측정되었다. 접시 안에서 작동하는 메커니즘이 입력 예측인지 뒤섞기인지는 밝혀지지 않았다.
+\end{proposition}
+\end{keyblock}
+
+\ref{sec:dofa}장과 비교해 보자. 거기서도 잡음은 탐색 역할을 했지만, 도파민에는 부호가 있었다. 오차 $\delta$가 가중치를 어느 쪽으로 옮길지 알려 주었고, 걸음은 경사를 따랐다~\eqref{eq:perturbation}. 여기에는 부호가 없고 `두기'와 `흔들기'만 있다. 이런 탐색은 더 거칠고 느리지만 네트워크에 요구하는 것이 적다. \nt{DOPA} 뉴런도, 비평가도, 몇 초에 걸친 흔적도 필요 없다.
+
+\section{무엇을 측정했고 무엇을 두고 다투는가}
+
+게임 한 판은 $20$분이었고, 처음 $5$분과 마지막 $15$분을 비교했다. 완전한 피드백을 받은 배양에서는 랠리가 길어지고 즉시 미스가 줄었다. 세포 없는 대조, 게임 없는 대조, 컴퓨터 `라켓' 대조에서는 그런 일이 없었다. 인간 세포 배양은 평균적으로 생쥐 배양보다 오래 받아 쳤다. 향상은 통계적으로 확실하지만(생쥐 배양 9개와 인간 배양 11개, 각 그룹 100판 남짓) 작다. 네트워크는 좋은 선수가 되지 않았고, 무작위보다 조금 나아졌을 뿐이다. 향상이 확실한 것은 세션 안에서이고, 며칠에 걸친 세션 간의 안정적인 학습은 저자들도 얻지 못했다~\cite{Kagan2022}. 같은 그룹의 후속 연구는 게임 중 배양의 활동이 \emph{임계} 상태, 즉 감쇠와 사태 사이의 경계에 다가간다는 것을 발견했다. \ref{sec:gaba}장의 바로 그 경계 위의 삶이다. 가까울수록 게임을 더 잘했다~\cite{Habibollahi2023}.
+
+가장 큰 논쟁을 부른 것은 숫자가 아니라 표현이었다. 논문 제목은 접시 속 뉴런이 `지각력'(sentience)을 보인다고 주장했고, 한 무리의 연구자들이 반박했다. 닫힌 루프 안의 행동 변화는 아직 지능도 감각도 아니며, 결론은 더 겸손하게 써야 한다는 것이다~\cite{Balci2023}. 공학적으로는 두 질문이 열려 있고, 둘 다 메커니즘에 관한 것이다. 첫째, 네트워크가 학습하는가, 즉 가중치가 오래 바뀌는가, 아니면 피드백은 현재 상태를 옮길 뿐인가? 둘째, 꼭 예측 가능성이 필요한가, 아니면 명\ref{prop:dishscramble}에서처럼 성공과 실패에 대한 응답이 다르기만 하면 충분한가? 모든 전극에 손이 닿는 테스트 벤치는 두 질문 모두에 답할 수 있게 해 준다. 아마 이것이 이 테스트 벤치의 가장 큰 가치일 것이다.
+
+\input{chapters/22_dishbrain_spec}
+
+\section{정리}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{2.1cm}>{\raggedright}p{4.2cm}>{\raggedright}p{1.9cm}>{\raggedright\arraybackslash}p{4.6cm}}
+\toprule
+테스트 벤치의 부분 & 구조 & 이 책의 장 & 알려진 것 \\
+\midrule
+입력 & 장소(8개 전극 중 어느 것)와 빈도(초당 4--40회) & \ref{sec:code}, \ref{sec:sensors} & 실험자가 정함 \\
+출력 & $10\ms$ 동안 두 영역의 스파이크 수 차이~\eqref{eq:dishreadout} & \ref{sec:glutcomputer}, \ref{sec:debugging} & 실험자가 정함. 잡음은 \eqref{eq:rateerror}에 따름 \\
+교사 & 히트 뒤 예측 가능한 자극, 미스 뒤 예측 불가능한 자극. 도파민 없음 & \ref{sec:dofa} & 세션 안의 유의미한 향상은 완전한 피드백일 때만. 침묵일 때는 효과가 더 작음. 세션 간에는 불안정 \\
+메커니즘 & 입력 예측 또는 미스 때 뒤섞기~\eqref{eq:dishdensity} & \ref{sec:dofa}, \ref{sec:recognition} & 밝혀지지 않음. 둘 다 결과를 설명함 \\
+네트워크 상태 & 게임 중 임계 상태에 접근 & \ref{sec:gaba} & 게임 성적과의 관련은 측정됨 \\
+`지각력' & 저자들의 주장 & --- & 보이지 않음. 반박됨 \\
+\bottomrule
+\end{tabular}
+\caption{엔지니어의 눈으로 본 DishBrain.}
+\label{tab:dishbrain}
+\end{table}
+
+DishBrain은 가장 단순한 형태의 살아 있는 뉴런 기계이다. 입력은 부호로 주어지고, 출력은 스파이크 수로 읽히며, 교사는 성공과 실패에 대한 응답의 차이이다(표~\ref{tab:dishbrain}). 눈도 근육도 도파민도 없는 네트워크가 아주 조금 게임을 배웠고, 그것만으로도 이 네트워크는 이 책의 생각들을 시험하는 테스트 벤치가 된다. 메커니즘이 예측이든, 뒤섞기든, 제3의 무엇이든, 답은 \ref{sec:debugging}장이 권하는 방식으로 찾게 될 것이다. 마침내 전체가 보이는 기계에서 프로브와 테스트 신호와 부분 끄기로 찾는 것이다.
+
+\section{연습문제}
+
+\begin{exercise}[\lvlA]
+\label{ex:22:1}
+\emph{스파이크 수를 얼마나 옮겨야 하는가.} 두 영역이 합쳐서 초당 $R_\uparrow+R_\downarrow=2000$개의 스파이크를 내고, 흐름은 푸아송이다. (a)~$R=1000$과 $R=100$일 때 한 영역의 $10\ms$당 스파이크 수의 상대 산포는 얼마인가? (b)~공이 $1$~s 동안 날아가는 사이에 변위~\eqref{eq:dishreadout}가 더해진다. 평균 변위가 산포의 두 배가 되는 가장 작은 $R_\uparrow-R_\downarrow$는 얼마인가?
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:22:2}
+\emph{학습을 보려면 랠리가 몇 번 필요한가.} 랠리는 서로 독립이고 받아 친 비율은 이항 분포를 따른다. 받아 친 비율의 증가가 차이의 표준편차 두 배를 넘으려면 두 기간 각각에 랠리가 몇 번 필요한가? (a)~$0.20$에서 $0.25$로; (b)~모델에서처럼 $0.21$에서 $0.38$로.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:22:3}
+\emph{\eqref{eq:dishdensity}의 유도.} 설정 $\boldsymbol\psi$는 유한 집합 위를 움직인다. 미스(확률 $P(\boldsymbol\psi)>0$) 때 네트워크는 대칭 확률 $K(\boldsymbol\psi,\boldsymbol\psi')$로 $\boldsymbol\psi'$로 옮겨 가고, 히트 때는 그대로 남는다. (a)~$\rho\propto1/P$가 정상 분포임을 증명하라. (b)~$P=0.9$와 $P=0.1$인 두 설정이 있을 때 미스 비율은 얼마인가?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:22:4}
+\emph{모델의 흡수 영역.} 라켓은 $p=\min\bigl(1,\max(0,ay+b)\bigr)$에 오고, 공은 높이 $y\sim U(0,1)$에 오며, $|p-y|<h=0.1$이면 히트이다. (a)~$|b|<h$이고 $|a-1+b|<h$이면 네트워크가 모든 공을 받아 친다는 것을 증명하고, 이 영역의 넓이를 구하라. (b)~$a\sim U(-1,1)$, $b\sim U(0,1)$일 때 평균 히트 비율을 수치로 구하라.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:22:5}
+\emph{모의실험: 설정 주위의 울타리.} \texttt{dishbrain\_model.py}의 사본에서 배양 $200$개에 각각 랠리 $20\,000$번을 주라. 마지막 $500$번의 히트 비율은 얼마인가? 흔들기마다 설정을 직사각형 $a\in[-1,2]$, $b\in[-1,1]$ 안으로 잘라 넣으면 어떻게 되는가? 연습문\ref{ex:22:3}을 써서 차이를 설명하라.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:22:6}
+\emph{입력 부호 설계.} 높이 오차가 $h=0.1$보다 작으면 공을 받아 친다. 네트워크는 $T=0.25$~s 동안 입력을 읽고, 빈도 $r$까지 약 $\sqrt{rT}$개의 수준을 구별하며, 자극은 초당 $40$회를 넘지 않는다. (a)~전극 여덟 개의 장소 부호로 충분한가? (b)~전극 하나의 빈도로 높이를 전할 수 있는가?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:22:7}
+\emph{연구: 예측인가 뒤섞기인가?} 모델을 조정 가능한 숫자 $d$개($p=\sum_{i<d}a_iy^i$)로 일반화하라. 히트 비율 $0.5$에 이르기까지 필요한 랠리 수는 뒤섞기일 때와 오차 부호 규칙~\eqref{eq:perturbation}일 때 $d$에 따라 어떻게 늘어나는가? 어떤 테스트 벤치 실험이 두 가설을 가려내겠는가?
+\end{exercise}

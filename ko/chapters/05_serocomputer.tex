@@ -1,0 +1,237 @@
+\chapter{\nt{SERO} 뉴런은 무엇을 계산하는가}
+\label{sec:serocomputer}
+
+\section{첫 번째 브로드캐스트 채널}
+
+지금까지 이 책의 뉴런은 모두 주소 버스로 통신했다. \nt{GLUT}와 \nt{GABA}는 정해진 수신자에게 스파이크를 보냈고, 우리는 그런 네트워크가 무엇을 계산하며 어떤 언어로 말하는지 알아보았다. 이제 \ref{sec:buses}절에서 본 두 번째 버스, 즉 브로드캐스트 버스로 넘어간다. 그 첫 번째 채널은 \nt{SERO}이다. 이번에도 살아 있는 생물에 실제로 있는 것만 쓰기로 한다.
+
+이 장에서는 이후 모든 브로드캐스트 채널이 쓰게 될 세 가지 장치가 등장한다. 고른 배경 입력이 있으면 누가 멈추기 전까지 스스로 작동하는 뉴런, 실제로는 조직의 부피인 전선, 그리고 개별 스파이크 대신 쓰이는 느린 농도다. \ref{sec:dofa}--\ref{sec:acet}장의 \nt{DOPA}, \nt{NORA}, \nt{ACET}도 같은 부품으로 조립된다.
+
+엔지니어의 눈으로 보면 \nt{SERO} 뉴런에는 중요한 차이가 네 가지 있다.
+
+\emph{첫째, 부호는 수신자가 고른다.} 세로토닌에는 두 부호의 수용체가 모두 있으므로 규칙~\eqref{eq:dalesign}은 여기서 통하지 않는다. 부호를 정하는 것은 송신자가 아니라 수신자의 수용체다(명제~\ref{prop:receptor})~\cite{BarnesSharp1999}.
+
+\emph{둘째, \nt{SERO} 뉴런은 고른 배경 입력만 있으면 스스로 작동한다.} 깨어 있을 때 이 뉴런은 1초에 몇 번씩 고르게 스파이크를 내며, 스파이크마다 따로 밀어 줄 필요가 없다. 즉 페이스메이커다. 다만 일정한 배경 입력은 필요하다. 이 입력이 없는 뇌 절편에서는 이런 세포 대부분이 침묵한다. $\alpha_1$ 수용체를 통해 노르아드레날린을 주면 고른 리듬이 돌아오고, 이 수용체를 차단하면 리듬이 꺼진다~\cite{VandermaelenAghajanian1983}. 생체에서는 이 배경을 \nt{NORA}가 공급한다. 회로로 보면 전원이 필요한 발진기다. 전원이 있는 동안에는 억제가 멈출 때까지 스스로 돈다.
+
+\emph{셋째, 느리다.} 세로토닌 수용체는 거의 모두 대사성이다. 스스로 채널을 여는 대신 세포 안에서 연쇄 반응을 일으킨다. 그래서 응답이 느리다. 주 수용체를 통한 억제 전류는 약 1초 안에 오르고 내린다~\cite{CourtneyFord2016}. \nt{GLUT} 빠른 시냅스의 응답보다 수십 배 길다.
+
+\emph{넷째, 신경전달물질을 전선이 아니라 부피 속으로 내보낸다.} \nt{SERO} 뉴런의 출력이 닿는 영역에서 세로토닌은 좁은 틈이 아니라 세포 사이 공간으로 나와 주위로 퍼지는 경우가 많다~\cite{Bunin1998}. 수신자는 농도를 느낄 뿐, 분자가 어느 송신자에게서 왔는지는 알 수 없다.
+
+이런 시간 척도에서는 개별 스파이크가 더 이상 중요하지 않으므로, 네트워크를 발화율 $r_j$와 농도로 기술하겠다. 뉴런 $j$가 신경전달물질을 내보내는 부피 속 세로토닌 농도 $c$는 방출로 늘고, 재흡수로 신경전달물질이 빠져나가면서 줄어든다.
+\begin{empheq}[box=\keybox]{equation}
+\tau_c\,\frac{\dd c}{\dd t} \;=\; -c \;+\; \kappa\sum_j r_j ,
+\qquad
+r_i \;=\; f_i\bigl(b_i + s_i\,g\,c\bigr), \quad s_i=\pm1 .
+\label{eq:seroneuron}
+\end{empheq}
+이것은 명제~\ref{prop:reader}를 보완하는, 스파이크열을 읽는 또 하나의 방법이다. 부피는 개별 스파이크도 그 순서도 보지 못하고, 시간 $\tau_c$ 동안 평균한 발화율만 본다. 첫 번째 식은 막과 똑같은 RC 회로다. $\tau_c$는 부피 속 신경전달물질의 수명으로, 직접 측정된 적은 없고 여기서는 1초 정도로 둔다. $\kappa$는 스파이크 하나가 내놓는 신경전달물질의 양이다. 두 번째 식은 수신자를 기술한다. $b_i$는 수신자 자신의 입력으로, 페이스메이커에서는 양수다(여기에는 \nt{NORA}에서 오는 고른 배경 입력도 들어 있다). $g$는 수용체의 감도, 부호 $s_i$는 수신자가 고르며, $f_i$는 감소하지 않는 전달 특성이다.
+
+\section{뉴런 하나로 만드는 NOT}
+
+억제성 수용체를 가진 페이스메이커, $s=-1$을 생각하자. 주위에 세로토닌이 없는 동안에는 자기 입력 $b$만으로 작동한다. 세로토닌이 나타나면 입력이 $gc$만큼 줄고, $gc>b$이면 뉴런은 침묵한다. 이것이 NOT이다. 입력이 없을 때 출력이 있다. 여기에 든 뉴런은 하나뿐이다(그림~\ref{fig:serogates}). 명제~\ref{prop:monotone}은 여기에 적용되지 않는다. 그 명제는 양의 가중치를 전제로 했다.
+
+같은 페이스메이커에 서로 다른 두 부피의 세로토닌이 작용하면, 뉴런은 둘 중 하나에라도 세로토닌이 있으면 침묵한다. 이것이 NOR이며, NOR로는 어떤 논리 함수든 만들 수 있다. \nt{GLUT} 네트워크의 2선 부호는 여기서 필요 없다. 신호가 없다는 사실은 누가 멈추기 전까지 작동하는 뉴런이 계산한다.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  nrn/.style={circle,draw,very thick,fill=blue!6,minimum size=0.95cm,inner sep=0pt},
+  pace/.style={nrn,double,double distance=1.2pt},
+  inh/.style={-{Bar[width=7pt]},thick,red!70!black}]
+\node[pace] (N1) at (0,0) {};
+\draw[inh] (-1.6,0) node[left,black] {$c$} -- (N1);
+\draw[->,very thick,red!70!black] (N1) -- (1.3,0) node[right,black] {$\bar c$};
+\node[below=0.55cm] at (0,0) {\small NOT};
+\node[pace] (N2) at (5,0) {};
+\draw[inh] (3.4,0.45) node[left,black] {$c_1$} -- (N2);
+\draw[inh] (3.4,-0.45) node[left,black] {$c_2$} -- (N2);
+\draw[->,very thick,red!70!black] (N2) -- (6.3,0) node[right,black] {$\overline{c_1\vee c_2}$};
+\node[below=0.55cm] at (5,0) {\small NOR};
+\end{tikzpicture}
+\caption{\nt{SERO} 뉴런으로 만든 논리. 이중 원은 페이스메이커로, 고른 배경 입력이 있으면 억제될 때까지 스스로 작동한다. 끝에 가로줄이 있는 선은 억제성 수용체($s=-1$)이고, $c$, $c_1$, $c_2$는 수신자 주변 부피의 세로토닌 농도다. 왼쪽은 NOT, 오른쪽은 NOR이다.}
+\label{fig:serogates}
+\end{figure}
+
+\begin{keyblock}
+\begin{proposition}[\nt{SERO} 논리의 완전성]
+\label{prop:serocomplete}
+네트워크에 억제성 수용체를 가진 페이스메이커가 있고 서로 다른 부피로의 방출이 섞이지 않는다면, 네트워크~\eqref{eq:seroneuron}은 어떤 논리 함수든 계산할 수 있으며, 각 비트는 전선 하나로 전달된다.
+\end{proposition}
+\end{keyblock}
+
+논리만 놓고 보면 \nt{SERO} 네트워크는 \nt{GLUT}보다 강하다. 그러나 “서로 다른 부피로의 방출이 섞이지 않는다”는 조건은 뇌에서 성립하지 않는다(\ref{sec:volume}절).
+
+\section{음의 되먹임}
+
+세로토닌 뉴런에는 자기 자신에 붙은 억제성 수용체가 있다~\cite{Sprouse1987}. 이들이 내보낸 세로토닌은 다시 자신에게 돌아와 자신을 억누른다. 엔지니어에게는 익숙한 회로, 즉 음의 되먹임 증폭기다(그림~\ref{fig:serofeedback}).
+
+무엇이 측정되었고 무엇이 모델인지 짚어 두자. \nt{SERO} 뉴런이 모여 있는 봉선핵 자체에서는 세로토닌이 공통 부피가 아니라 시냅스를 통해 점대점으로 이웃을 억제한다. 수송체가 세로토닌을 빠르게 치워 틈 밖에 쌓이지 못하게 하기 때문이다. 한 번의 방출은 발화에 짧은 멈춤만 만들 뿐 평균 발화율은 바꾸지 않는다~\cite{CourtneyFord2016}. 따라서 아래에서 공통 부피를 통해 닫히는 고리는 모델이다. 이런 되먹임이 평균 발화율 수준에서 작동한다면 무엇을 할지 계산해 보는 것이다.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  nrn/.style={circle,draw,very thick,fill=blue!6,minimum size=0.95cm,inner sep=0pt},
+  pace/.style={nrn,double,double distance=1.2pt},
+  blk/.style={draw,very thick,rounded corners=2pt,fill=orange!10,minimum height=0.9cm,minimum width=2.2cm,align=center,font=\small},
+  inh/.style={-{Bar[width=7pt]},thick,red!70!black}]
+\node[pace] (N) at (0,0) {};
+\node[blk] (V) at (3.6,0) {부피\\$\tau_c$};
+\draw[->,very thick] (N) -- node[above] {\small $r$} (V);
+\draw[->,very thick] (V) -- (6.0,0) node[right] {\small $c$: 모든 수신자에게};
+\draw[inh] (V.south) -- ++(0,-0.9) -| node[pos=0.25,below] {\small $-g\,c$} (N.south);
+\draw[->,thick,blue!60!black] (-1.7,0) node[left,black] {\small $b$} -- (N);
+\end{tikzpicture}
+\caption{자기 신경전달물질을 통한 되먹임을 가진 \nt{SERO} 뉴런. 농도 $c$는 모든 수신자에게 가고 뉴런 자신도 억제한다. 모델에서 이것은 수준 조절기다. 뇌에서 이 고리가 그런 역할을 한다는 것은 가설이다.}
+\label{fig:serofeedback}
+\end{figure}
+
+이 고리가 무엇을 하는지 계산해 보자. 전달 특성이 선형, 즉 $u>0$에서 $f(u)=au$라 하자. 평형에서 $c=\kappa r$이고 $r=a(b-gc)$이다. 하나를 다른 하나에 대입하면
+\begin{empheq}[box=\keybox]{equation}
+r \;=\; \frac{a\,b}{1+G}, \qquad G \;=\; a\,g\,\kappa .
+\label{eq:feedback}
+\end{empheq}
+$G$는 고리 이득이다. 이것은 모든 음의 되먹임 증폭기에 쓰이는 바로 그 공식이며, 같은 두 가지 이점을 준다.
+
+\emph{편차에 대한 강인성.} 뉴런의 흥분성 $a$가 비율 $\varepsilon$만큼 변했다고 하자. 되먹임이 없다면 발화율도 같은 비율만큼 변할 것이다. 되먹임이 있고 $G\gg1$이면 발화율 $r\approx b/(g\kappa)$는 $a$에 거의 의존하지 않는다. 그 변화가 $1+G$배 작아진다. $G=9$이면 편차가 10분의 1로 줄어든다.
+
+\emph{빠르기.} $r=a(b-gc)$를 식~\eqref{eq:seroneuron}의 첫 번째 식에 대입하면 $\tau_c\,\dd c/\dd t=-(1+G)\,c+\kappa ab$가 된다. 농도는 시간 상수 $\tau_c/(1+G)$로 자기 수준에 다가간다. 되먹임이 없을 때보다 $1+G$배 빠르다.
+
+이것이 \nt{SERO} 시스템이 할 수 있는 첫 번째 계산이다. 온도 조절기가 온도를 유지하듯 뇌 전체의 세로토닌 수준을 정해진 값에 유지하는 것이다. 이는 가설이다. 실험에서 자가 억제는 아직 평균 발화율을 바꾸지 않는 짧은 멈춤으로만 보인다.
+
+\section{스파이크에서 수준으로}
+
+두 번째 계산은 식~\eqref{eq:seroneuron}의 첫 번째 식에 숨어 있다. 뉴런은 개별 스파이크를 내지만 수신자는 농도를 느끼며, 농도는 스파이크를 시간 $\tau_c$에 걸쳐 평활한다. 출처의 발화율이 변하면 농도는 늦게 따라간다.
+\begin{equation}
+c(t) \;=\; \frac{\kappa}{\tau_c}\int_{-\infty}^{t} e^{-(t-t')/\tau_c}\,\sum_j r_j(t')\,\dd t' .
+\label{eq:lowpass}
+\end{equation}
+이것은 최근 몇 $\tau_c$ 동안 출처 활동의 이동 평균, 즉 저역 통과 필터다(그림~\ref{fig:lowpass}). 가장 단순한 디지털-아날로그 변환기도 펄스를 RC 회로에 통과시켜 그 빈도를 수준으로 바꾼다. \nt{SERO} 시스템은 수십만 개의 뉴런으로 한꺼번에 같은 일을 한다.
+
+이 양은 동시에 메모리이기도 하다. 출처가 침묵한 뒤에도 농도는 $\tau_c$ 정도의 시간 동안 남아 있다. 비트가 아니라 서서히 사라지는 흔적이다.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=1.45cm,y=1cm]
+\draw[gray!70!black] (0,3.2) -- (8.1,3.2);
+\node[left,font=\small] at (-0.05,3.4) {스파이크};
+\node[above,font=\scriptsize,gray!40!black] at (1,3.65) {초당 $2$회};
+\node[above,font=\scriptsize,gray!40!black] at (3.5,3.65) {초당 $8$회};
+\node[above,font=\scriptsize,gray!40!black] at (6.5,3.65) {초당 $2$회};
+\draw[->,gray!70!black] (0,0) -- (8.3,0) node[right,black] {\small $t$};
+\draw[->,gray!70!black] (0,0) -- (0,2.75) node[left,black] {\small $c$};
+\foreach \s in {0.136,0.529,0.760,1.223,1.714,1.748,1.755,2.663,2.701,2.734,3.414,3.493,3.719,3.800,3.928,3.948,4.074,4.327,4.420,4.589,4.728,4.736,4.914,5.025,5.205,5.220,6.224,6.544,7.178}{\draw[thick,blue!60!black] (\s,3.2) -- (\s,3.6);}
+\foreach \a/\b/\v in {0.000/0.136/0.000,0.136/0.529/1.000,0.529/0.760/1.675,0.760/1.223/2.330,1.223/1.714/2.466,1.714/1.748/2.509,1.748/1.755/3.425,1.755/2.663/4.402,2.663/2.701/2.775,2.701/2.734/3.672,2.734/3.414/4.553,3.414/3.493/3.306,3.493/3.719/4.055,3.719/3.800/4.235,3.800/3.928/4.905,3.928/3.948/5.316,3.948/4.074/6.211,4.074/4.327/6.476,4.327/4.420/6.028,4.420/4.589/6.493,4.589/4.728/6.483,4.728/4.736/6.642,4.736/4.914/7.589,4.914/5.025/7.351,5.025/5.205/7.579,5.205/5.220/7.331,5.220/6.224/8.221,6.224/6.544/4.012,6.544/7.178/3.914,7.178/8.000/3.076}{\draw[very thick,orange!85!black] plot[domain=\a:\b,samples=10] (\x,{0.25*\v*exp(-(\x-\a))});}
+\foreach \s/\p/\q in {0.136/0.000/1.000,0.529/0.675/1.675,0.760/1.330/2.330,1.223/1.466/2.466,1.714/1.509/2.509,1.748/2.425/3.425,1.755/3.402/4.402,2.663/1.775/2.775,2.701/2.672/3.672,2.734/3.553/4.553,3.414/2.306/3.306,3.493/3.055/4.055,3.719/3.235/4.235,3.800/3.905/4.905,3.928/4.316/5.316,3.948/5.211/6.211,4.074/5.476/6.476,4.327/5.028/6.028,4.420/5.493/6.493,4.589/5.483/6.483,4.728/5.642/6.642,4.736/6.589/7.589,4.914/6.351/7.351,5.025/6.579/7.579,5.205/6.331/7.331,5.220/7.221/8.221,6.224/3.012/4.012,6.544/2.914/3.914,7.178/2.076/3.076}{\draw[very thick,orange!85!black] (\s,0.25*\p) -- (\s,0.25*\q);}
+\draw[thick,densely dashed,black] plot[domain=0:2,samples=30] (\x,{0.25*2*(1-exp(-\x))})
+  plot[domain=2:5,samples=40] (\x,{0.25*(8-6.271*exp(-(\x-2)))})
+  plot[domain=5:8,samples=40] (\x,{0.25*(2+5.688*exp(-(\x-5)))});
+\foreach \x in {0,2,5,8}{\draw[gray!60!black] (\x,-0.05) -- (\x,0.05) node[below=3pt,font=\scriptsize] {\x\,s};}
+\end{tikzpicture}
+\caption{스파이크에서 수준으로. 위는 \nt{SERO} 뉴런의 스파이크다. 2초 동안 드물게, 3초 동안 자주, 그다음 다시 드물게 나온다. 아래는 $\tau_c=1\,\text{s}$일 때의 세로토닌 농도~\eqref{eq:lowpass}다. 점선은 스파이크가 완벽하게 고른 간격으로 나올 때의 농도다.}
+\label{fig:lowpass}
+\end{figure}
+
+\section{전선은 곧 부피다}
+\label{sec:volume}
+
+명제~\ref{prop:serocomplete}의 조건으로 돌아가자. 가까운 곳에서 여러 송신자가 내보낸 세로토닌은 하나의 농도로 합쳐진다.
+
+\emph{여기서 전선은 섬유가 아니라 조직의 부피다.} 두 신호가 서로 다르게 남으려면, 신경전달물질이 퍼지는 거리보다 더 멀리 떨어진 영역으로 방출되어야 한다. 확산 계수가 $D$인 분자는 시간 $\tau$ 동안 다음 거리만큼 이동한다.
+\begin{empheq}[box=\keybox]{equation}
+\ell \;\sim\; \sqrt{D\,\tau}\, .
+\label{eq:diffusionlength}
+\end{empheq}
+세포 사이 틈의 굴곡은 작은 분자의 확산을 약 $2.6$배 늦춘다~\cite{Sykova2008}. 조직 속 세로토닌 자체의 확산 계수는 측정된 적이 없으므로, 분자 크기로 보아 $10^{-6}$~cm$^2$/s의 몇 배 정도로 추정하자. 신호가 $\tau\sim1$~s 동안 산다면(이것도 추정이다) $\ell\sim\sqrt{3\cdot10^{-6}}$~cm $\approx20$~\textmu m이다. 이런 네트워크에서 주소는 \emph{장소}다. 수신자는 자신이 어디에 있는지로만 신호가 누구에게서 왔는지 안다.
+
+실제 \nt{SERO} 뉴런은 이런 개별 주소가 거의 남지 않도록 생겼다. 각 뉴런의 출력은 뇌의 넓은 영역에 흩뿌려진다. 세포 하나의 가지가 서로 멀리 떨어진 여러 영역에 닿는다~\cite{GagnonParent2014}. 세포당 방출 지점은 추정으로 약 $10^5$개이며(표~\ref{tab:types}), 직접 센 적은 없다. 서로 다른 \nt{SERO} 뉴런의 “전선”은 겹치고 섞인다. 그래도 완전히 전선 하나로 합쳐지지는 않는다. \nt{SERO} 뉴런은 몇 개의 하위 시스템으로 나뉘며, 이들은 서로 다른 영역으로 출력을 보내고 같은 사건에 서로 다르게 반응한다~\cite{Ren2018}. 그러나 이런 하위 시스템은 수십만 개가 아니라 몇 개뿐이다.
+
+\begin{keyblock}
+\begin{proposition}[독립 전선의 수]
+\label{prop:volumewires}
+체적 전달을 하는 네트워크에서 독립 신호의 수는 뉴런의 수가 아니라, 뉴런들이 신경전달물질을 내보내는 크기 $\ell\sim\sqrt{D\tau}$의 서로 겹치지 않는 영역의 수로 제한된다. 각 뉴런의 출력이 큰 부피에 흩뿌려져 있으면, 네트워크 전체가 전달하는 것은 공통 변수 몇 개뿐이다.
+\end{proposition}
+\end{keyblock}
+
+그래서 명제~\ref{prop:serocomplete}의 논리 회로는 뇌에서 만들 재료가 없다. 반면 조절기~\eqref{eq:feedback}와 필터~\eqref{eq:lowpass}에는 개별 전선이 필요 없다. 공통된 양 하나면 충분하다. 필터는 목표 영역에서 측정된 부피 방출~\cite{Bunin1998}에서 바로 나온다. 수준 조절기는 가설이다.
+
+\section{계획 지평}
+\label{sec:horizon}
+
+공통된 느린 양 하나는 어디에 쓸모가 있을까? 좋은 후보는 네트워크 전체에서 같아야 하고 몇 초나 몇 분보다 빠르게 변하지 않는 매개변수다. \ref{sec:neurontypes}장에서 이미 그런 매개변수가 나왔다. 오차 식~\eqref{eq:rpe}의 계수 $\gamma$로, 미래의 보상이 즉시 받는 보상보다 얼마나 싼지를 나타낸다. 연속 시간에서는 그 자리를 \emph{지평} $\tau_\gamma$가 차지한다. 시간 $D$를 기다려야 받는 보상 $R$의 현재 가치는 $R\,e^{-D/\tau_\gamma}$이다.
+
+지평은 기다릴 가치가 있는지를 정한다. 작은 보상 $r_0$를 바로 받거나 큰 보상 $R$을 기다릴 수 있다고 하자. 다음 조건이 성립하는 동안은 기다리는 편이 이득이다.
+\begin{empheq}[box=\keybox]{equation}
+D \;<\; \tau_\gamma\,\ln\frac{R}{r_0} .
+\label{eq:patience}
+\end{empheq}
+$\tau_\gamma=2\,\text{s}$이고 나중 보상이 세 배 크다면 $2.2\,\text{s}$까지 기다릴 만하다. 지평이 두 배 길면 $4.4\,\text{s}$까지다. 인내심은 지평에 비례한다.
+
+식~\eqref{eq:patience}는 지수형 할인에 기댄다. 몇 초 지연에서 측정된 할인은 쌍곡선 $R/(1+D/\tau_\gamma)$에 더 가깝다. 원숭이에서 선택 속 지연 보상의 가치도, 그 보상을 알리는 신호에 대한 \nt{DOPA} 뉴런의 응답도 이렇게 떨어진다~\cite{KobayashiSchultz2008}. 쌍곡선에서는 조건~\eqref{eq:patience}가 $D<\tau_\gamma\,(R/r_0-1)$로 바뀐다. 보상 비에 대한 의존이 로그가 아니라 선형이 되고, 같은 수치에서 기다림의 한계는 거의 두 배로 늘어난다. 지연이 무작위이면 같은 지수 함수에서 쌍곡선이 나오며(연습문제~\ref{ex:05:7}), 인내심이 시간 척도에 비례한다는 성질은 그대로 남는다.
+
+가설에 따르면 지평을 정하는 것이 바로 \nt{SERO}다~\cite{Doya2002}. 이 역할에 필요한 것은 다 갖추었다. 네트워크 전체에 하나뿐이고 몇 초에 걸쳐 변하는 공통 수준이다. 직접적인 실험도 있다. 세로토닌 뉴런을 인위적으로 켜면 동물은 지연 보상을 포기하기 전까지 더 오래 기다리고~\cite{Miyazaki2014}, 보상이 드물어진 곳에서 보상을 얻으려고 더 오래 애쓴다~\cite{Lottem2018}. 네트워크 안에서 세로토닌 농도가 정확히 어떻게 $\tau_\gamma$로 바뀌는지는 알려져 있지 않다. 다음 장에서 지평은 \nt{DOPA}가 방송하는 오차에 들어간다.
+
+\section{정리}
+
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{>{\raggedright}p{3.6cm}>{\raggedright}p{4.3cm}>{\raggedright\arraybackslash}p{4.3cm}}
+\toprule
+& \nt{GLUT} & \nt{SERO} \\
+\midrule
+반응 시간 & 밀리초 & 1초 미만~1초 \\
+작용의 부호 & $+$만 & $+$와 $-$, 수신자가 고름 \\
+입력이 없을 때 & 침묵 & 고른 배경 입력이 있으면 스스로 작동 \\
+주소 지정 & 점대점 & 부피, 주소는 장소 \\
+NOT & “꺼짐” 검출기를 통해서만 & 뉴런 하나 \\
+메모리 & 자기 유지 활동, 피로로 꺼짐 & 농도, 시간 $\tau_c$에 걸쳐 사라짐 \\
+주요 계산 & 동시성, 지연, 논리, 순서열 & 평활화; 수준 조절과 지평 $\tau_\gamma$(가설) \\
+\bottomrule
+\end{tabular}
+\caption{\nt{GLUT} 뉴런만으로 된 네트워크와 \nt{SERO} 뉴런만으로 된 네트워크가 계산하는 것.}
+\label{tab:glutvssero}
+\end{table}
+
+논리 소자로서(표~\ref{tab:glutvssero}) \nt{SERO} 뉴런은 \nt{GLUT}보다 풍부하지만, 통신 시스템으로서는 느리고 주소가 거의 없는 브로드캐스트다. 그래서 \nt{SERO} 뉴런은 프로세서가 되려 하지 않는다. 대신 \ref{sec:neurontypes}장에서 말한 몇 가지 공통된 양을 평활하고 방송하며, 가설에 따르면 계획 지평도 그중 하나다. 페이스메이커, 부피, 느린 농도는 앞으로 세 번 더 만난다. \nt{DOPA}, \nt{NORA}, \nt{ACET}에서다.
+
+\section{연습문제}
+
+\begin{exercise}[\lvlA]
+\label{ex:05:1}
+\emph{전선은 곧 부피다.} 세로토닌에 대해 $D=3\cdot10^{-6}$~cm$^2$/s로 두자(\ref{sec:volume}절). 식~\eqref{eq:diffusionlength}로 $1\,\text{s}$ 동안 사는 신호의 $\ell$과, 신경전달물질이 $5$~cm 퍼지는 데 걸리는 시간을 구하라. 그렇다면 \nt{SERO}의 브로드캐스트를 가능하게 하는 것은 확산인가, 방출 지점 $\sim10^5$개로 갈라지는 전선인가?
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:05:2}
+\emph{수준 조절기.} 식~\eqref{eq:seroneuron}에서 $f(u)=au$일 때 상대 감도 $S=(a/r)\,\partial r/\partial a$가 $G\gg1$일 때만이 아니라 정확히 $1/(1+G)$임을 보여라. $G=9$에서 흥분성 $a$가 $20\,\%$ 늘었다. 선형화 없이 $r$은 몇 퍼센트 변하는가?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:05:3}
+\emph{고리 안의 느린 수용체.} \nt{SERO} 수용체는 지연을 두고 응답한다. $r(t)=a\bigl(b-gc(t-T)\bigr)$이고 부피는 식~\eqref{eq:seroneuron}을 따른다. $G>1$일 때 고리는 $T<T^*=\tau_c\arccos(-1/G)/\sqrt{G^2-1}$일 때만 안정함을 보여라. $\tau_c=1\,\text{s}$에서 $G=2$와 $G=9$일 때 $T^*$를 구하라. 지연이 수백 밀리초이면 편차를 얼마나 억제할 수 있는가?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:05:4}
+\emph{수준의 산탄 잡음.} 각 스파이크는 식~\eqref{eq:lowpass}에 따라 $c$에 $\tau_c=1\,\text{s}$인 지수 함수를 더한다. \nt{SERO} 뉴런 $3\cdot10^5$개가 모두 초당 $2$회의 푸아송 스파이크를 한 부피에 내보낼 때 $c$의 변동 계수를 구하라. 발화율이 초당 $4$회인 뉴런 하나로 $\mathrm{CV}=10\,\%$를 얻으려면 $\tau_c$가 얼마여야 하는가?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:05:5}
+\emph{시뮬레이션: 되먹임 대 잡음.} 발화율 $r_i=a_i[b-gc]_+$, $a_i$가 $[2.8,\,5.2]$에서 균등한 푸아송 페이스메이커 $N=50$개와 $\kappa=1/N$, $\tau_c=1\,\text{s}$인 부피~\eqref{eq:seroneuron}을 시뮬레이션하라. 되먹임($b=1$, $g=2.25$)은 $b=0.1$, $g=0$에 비해 수준 $c$의 CV를 몇 배 줄이는가? 뉴런들의 발화율도 고르게 만드는가?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:05:6}
+\emph{설계: \nt{SERO} 논리로 만드는 XOR.} 게이트는 $b-g\sum_kc_k>0$이면 $r_0$를, 아니면 $0$을 자기 부피 $\tau_c\,\dd c/\dd t=-c+\kappa r$로 내보내는 페이스메이커이며, NOR을 계산한다. 이런 게이트 다섯 개로 XOR을 만들고, $\tau_c=1\,\text{s}$, $G'=g\kappa r_0/b=2$일 때 정착 시간을 구하라.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:05:7}
+\emph{지연을 모를 때의 인내심.} (가)~동물은 기다림이 $6\,\text{s}$ 이하이면 세 배 큰 보상을 기다린다. 이는 어떤 지평 $\tau_\gamma$를 뜻하는가? (나)~지연 $D$가 평균 $\bar D$인 지수 분포를 따른다고 하자. $\bar D<\tau_\gamma(R/r_0-1)$일 때 기다리는 편이 이득임을 보이고, $\tau_\gamma=2\,\text{s}$, $R=3r_0$에서 고정 지연과 비교하라.
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:05:8}
+\emph{농도는 어떻게 지평을 정하는가.} \nt{DOPA} 뉴런은 $V$를 직접 가중치 $k_1$로 받고, $\tau_d=0.1\,\text{s}$로 평활하는 \nt{GABA} 중개 뉴런을 거쳐 가중치 $-k_2$로 받는다. 느린 $V$에 대해 합은 $(k_1-k_2)V+k_2\tau_d\dot V$이다. $\tau_\gamma=2\,\text{s}$인 식~\eqref{eq:ctd}에 맞게 $k_1$, $k_2$를 정하라. \nt{SERO}가 $k_1$에 $m$을 곱한다면, 지평을 두 배로 늘리려면 $m$을 얼마나 바꿔야 하는가?
+\end{exercise}

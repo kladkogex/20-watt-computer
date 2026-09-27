@@ -1,0 +1,168 @@
+\chapter{통증: 경보 신호}
+\chaptermark{통증}
+\label{sec:pain}
+
+\section{측정이 아니라 경보}
+
+\ref{sec:sensors}장의 센서는 모두 세상을 쟀다. 빛이 얼마나 되는지, 소리의 높이가 어떤지, 압력이 얼마인지를 쟀다. 통증은 다르게 만들어져 있다. 통증은 “저기 무엇이 있다”가 아니라 “위험하다, 모든 것을 멈춰라”를 알린다. 엔지니어에게 이것은 측정 채널이 아니라 \emph{경보 신호}이다. 기계가 지금 무슨 일을 하든 그것을 뚫고 들어가야 하는 최우선 순위의 선로이다.
+
+경보 장치는 측정 채널과 세 가지 성질에서 다르고, 통증은 세 가지를 모두 갖고 있다. 첫째, 적응으로 약해지기 어렵다. 통증 센서는 촉각 센서보다 훨씬 약하게 적응하고, 가벼운 손상 뒤에는 오히려 더 민감해진다~\cite{LaMotte1982hyper}. 강한 가열 뒤 응답이 약해지는 현상은 한 유형에서만 측정되었다~\cite{Treede1995heat}. 빛 센서는 일정한 배경에서 조용해지지만(그림~\ref{fig:adaptation}), 1분 뒤 조용해지는 경보 장치는 쓸모가 없다. 둘째, 문턱값이 높다. 통증 센서는 자극이 위험에 가까워야만 동작한다. 예를 들어 가열에 대한 문턱값은 유형에 따라 센서마다 $41^\circ$에서 $46$--$48^\circ$까지이다~\cite{Treede1995heat, Weidner1999cfib}. 셋째, 이 장에서 가장 중요한 점으로, 경보의 음량은 센서만이 아니라 기계 자신이 정한다. 같은 상처라도 상황에 따라 다르게 아프다. 이것이 어떤 익숙한 부품으로 조립되어 있는지 보자.
+
+통증 센서는 \ref{sec:sensors}장의 다른 감각 뉴런과 마찬가지로 \nt{GLUT} 뉴런이다. 그중 일부는 글루탐산과 함께 부록~\ref{sec:othermediators}의 P 물질을 방출하는데, 이 물질은 전달을 천천히 강화한다.
+
+\section{두 전선: 빠른 통증과 느린 통증}
+
+손가락을 부딪치면 통증을 두 번 느낀다. 먼저 짧고 날카로운 통증, 1초 뒤에 둔하고 오래가는 통증이다. 이것은 서로 다른 두 전선이다. 빠른 전선은 절연되어 있고 스파이크를 초속 $5$에서 $30$미터의 속도 $v$로 전도한다. 느린 전선은 가늘고 절연이 없으며 초속 $0.5$--$2$미터이다. 발에서 오는 신호는 약 1미터를 지나고, 도착 시간
+\begin{empheq}[box=\keybox]{equation}
+t \;=\; \frac{L}{v}
+\label{eq:paintime}
+\end{empheq}
+은 빠른 전선에서 수십 밀리초, 느린 전선에서 약 1초이다. 두 전선은 두 메시지를 나른다. 빠른 전선은 \emph{어디}와 \emph{언제}를 말한다. 그 스파이크는 \ref{sec:code}장의 시간 부호에서처럼 더 일찍, 더 정확하게 도착한다. 느린 전선은 \emph{얼마나 나쁜지}를 말하며, 그 길고 둔한 통증은 손상이 가실 때까지 기계를 경보 모드에 붙잡아 둔다.
+
+\section{척수의 관문}
+
+통증 신호가 처음 도착하는 곳은 척수이고, 거기서 신호는 \emph{관문}을 지난다~\cite{MelzackWall1965}. 이 관문의 구체적인 뉴런은 비교적 최근에야 발견되었다~\cite{Duan2014}. 통증을 뇌로 전달하는 출력 \nt{GLUT} 뉴런에는 통증 전선과 촉각 전선이 모인다. 그리고 그 옆에는 촉각이 흥분시키는 억제성 중개 뉴런, 곧 \nt{GABA} 또는 \nt{GLYC}가 있다(그림~\ref{fig:gate}). 촉각은 관문을 닫는다. 원래의 관문 이론~\cite{MelzackWall1965}에서는 반대로 통증이 이 중개 뉴런을 꺼서, 강한 통증은 관문을 연다. 이것은 이론의 가정이며, 발견된 관문 뉴런에서 직접 보이지는 않았다.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  nrn/.style={circle,draw,very thick,minimum size=1.0cm,inner sep=0pt,font=\scriptsize},
+  inh/.style={-{Bar[width=7pt]},thick,red!70!black},
+  bc/.style={->,thick,densely dashed,orange!85!black}]
+\node[nrn,fill=blue!6] (Z) at (6,0) {\nt{GLUT}};
+\node[nrn,fill=red!10] (Q) at (3.6,-1.6) {\nt{GABA}};
+\draw[->,very thick,red!70!black] (0,0.6) node[left,font=\small,black,align=right] {통증 $\nu$} -- (5.45,0.15);
+\draw[->,very thick,blue!60!black] (0,-2.6) node[left,font=\small,black,align=right] {촉각 $\mu$} -- (2.9,-2.0);
+\draw[->,thick,blue!60!black] (1.8,-2.35) -- (5.5,-0.35) node[pos=0.8,below right=-2pt,font=\scriptsize] {$w_{z\mu}$};
+\draw[inh] (1.6,0.5) -- (3.35,-1.1) node[pos=0.5,left=1pt,font=\scriptsize] {$w_{q\nu}$};
+\draw[inh] (Q) -- (Z) node[pos=0.5,above left=-1pt,font=\scriptsize] {$\beta$};
+\draw[->,very thick] (Z) -- (8.2,0) node[right,font=\small,align=left] {뇌로: $z$};
+\draw[bc] (6,2.1) node[above,font=\scriptsize,black,align=center] {위에서: \nt{SERO}, \nt{NORA}, 오피오이드} -- (Z.north) node[pos=0.45,right,font=\scriptsize,black] {이득 $g$};
+\end{tikzpicture}
+\caption{모델~\eqref{eq:gate}에 따른 척수의 통증 관문. 출력 \nt{GLUT} 뉴런은 통증 $\nu$와 촉각 $\mu$로부터의 약한 흥분을 받는다. 억제성 중개 뉴런(\nt{GABA} 또는 \nt{GLYC})은 촉각에 흥분하고, 관문 이론의 가정에 따르면 통증에 꺼진다. 위에서는 브로드캐스트 채널을 통해 이득 $g$가 온다.}
+\label{fig:gate}
+\end{figure}
+
+\ref{sec:gaba}장에서처럼 이것을 발화율로 쓰자. 중개 뉴런의 발화율 $q$와 출력 발화율 $z$는 다음과 같다.
+\begin{empheq}[box=\keybox]{equation}
+q \;=\; \bigl[w_{q\mu}\,\mu + q_0 - w_{q\nu}\,\nu\bigr]_+ ,
+\qquad
+z \;=\; \bigl[\,g\,(\nu + w_{z\mu}\,\mu) - \beta\,q\,\bigr]_+ ,
+\label{eq:gate}
+\end{empheq}
+여기서 $\nu$는 통증 입력, $\mu$는 촉각 입력, $w$는 연결 가중치(첫 첨자는 받는 쪽, 둘째 첨자는 보내는 쪽), $\beta$는 억제의 세기, $q_0$는 중개 뉴런 자신의 배경 활동, $g$는 위에서 정하는 이득이다(아래에서 다룬다). 이것은 \ref{sec:gaba}장의 금지~\eqref{eq:veto}, 곧 “통증, 단 촉각이 없을 때”이다. 여기에 관문 이론에서 가정으로 가져온 수정이 하나 있다. 강한 통증은 금지 뉴런을 스스로 끈다.
+
+우리는 $w_{q\mu}=1$, $q_0=0.2$, $w_{q\nu}=0.5$, $w_{z\mu}=0.3$, $\beta=1.5$로 모델을 계산했다(그림~\ref{fig:gatecurves}). 촉각이 없으면 통증은 $\nu\approx0.18$부터 통과하기 시작한다. 촉각이 있으면 문턱값이 $0.86$으로 오르고, $\nu=1$에서 출력은 $1$에서 $0.25$로 네 배 줄어든다. 그러나 강한 통증 $\nu=2$에서는 촉각이 더 이상 아무것도 바꾸지 못한다. 관문이 활짝 열렸다. 실생활에서도 그렇다. 멍든 곳을 문지르면 도움이 되지만 심한 부상에는 소용이 없다. 통증 없는 촉각은 관문을 지나지 못한다. 만지는 것만으로는 경보가 울리지 않는다.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=5.2cm,y=1.35cm]
+\draw[->,gray!70!black] (0,0) -- (2.12,0) node[right,font=\small,black] {통증 $\nu$};
+\draw[->,gray!70!black] (0,0) -- (0,4.3) node[left,font=\small,black] {$z$};
+\foreach \t in {0,0.5,1,1.5,2}{\draw[gray!60!black] (\t,-0.05) -- (\t,0.05); \node[below,font=\scriptsize] at (\t,0) {\t};}
+\foreach \f in {1,2,3,4}{\draw[gray!60!black] (-0.01,\f) -- (0.01,\f); \node[left,font=\scriptsize] at (0,\f) {\f};}
+\draw[very thick,red!70!black] plot file {figures/pain_gate_notouch.dat};
+\draw[very thick,blue!60!black] plot file {figures/pain_gate_touch.dat};
+\draw[very thick,orange!85!black,densely dashed] plot file {figures/pain_gate_sens.dat};
+\draw[very thick,red!70!black] (0.08,3.9) -- (0.2,3.9) node[right,font=\scriptsize,black] {촉각 없음};
+\draw[very thick,blue!60!black] (0.08,3.45) -- (0.2,3.45) node[right,font=\scriptsize,black] {촉각 있음};
+\draw[very thick,orange!85!black,densely dashed] (0.08,3.0) -- (0.2,3.0) node[right,font=\scriptsize,black] {감작 후, $g=2$};
+\end{tikzpicture}
+\caption{통증 세기에 따른 관문~\eqref{eq:gate}의 출력. 촉각은 문턱값을 올리고 약한 통증과 중간 통증을 누그러뜨리지만, 강한 통증은 누그러뜨리지 못한다. 감작(파선)은 이득을 두 배로 올린다. 같은 통증이 두 배 크게 전달되고 문턱값은 내려간다.}
+\label{fig:gatecurves}
+\end{figure}
+
+\section{위에서 오는 음량 노브}
+
+관문은 아래에서만 제어되지 않는다. 뇌간에서 관문으로 하행 경로가 내려와 \eqref{eq:gate}의 이득 $g$를 바꾼다. \nt{SERO}, \nt{NORA}, 그리고 부록~\ref{sec:othermediators}의 오피오이드 펩타이드이다~\cite{Fields2004}. 이들은 \ref{sec:serocomputer}--\ref{sec:acet}장과 같은 브로드캐스트 채널이며, 다만 여기서 그 노브는 경보의 음량이다. 노브는 양쪽으로 돌릴 수 있다. 같은 하행 회로가 통증을 누그러뜨릴 수도, 키울 수도 있다.
+
+기계는 왜 경보를 줄이는가? 경보는 인터럽트이고, 인터럽트가 늘 적절하지는 않기 때문이다. 포식자에게서 달아나는 동물은 다친 발 때문에 멈추면 안 된다. 먼저 달리고, 상처는 나중에 핥는다. 통증이 줄어들 것이라는 기대도 통증을 누그러뜨리며, 오피오이드 수용체를 차단하면 이 효과의 일부가 사라진다~\cite{Levine1978}. 뇌에서 계산된 기대가 오피오이드 채널을 타고 관문으로 내려가는 것이다. 이 그림 자체는 측정되었다. 뇌가 음량을 정확히 어떻게 정하는지는 가설이다.
+
+\section{감작: 학습하는 경보}
+
+손상 뒤에는 관문의 출력 뉴런이 더 민감해진다. 같은 입력이 더 큰 출력을 일으키고 문턱값은 내려간다~\cite{Woolf1983}. 모델~\eqref{eq:gate}에서 이것은 이득 $g$의 증가이며, 가장 간단한 기술은 통증 자체가 충전하는 느린 RC 회로이다.
+\begin{empheq}[box=\keybox]{equation}
+\tau_s\,\frac{\dd g}{\dd t} \;=\; -(g-1) + k_s\,z ,
+\label{eq:sensitization}
+\end{empheq}
+여기서 $\tau_s$는 민감도가 정상으로 돌아오는 시간이다. 손상 자극이 멈춘 뒤에도 감작이 유지되므로~\cite{Woolf1983}, 이 시간은 통증 자체의 지속 시간보다 길다. $k_s$는 충전의 세기이다. 조직이 손상되어 있는 동안 관문의 출력은 $g$를 1보다 높게 유지하고, 상처 근처에서 일어나는 모든 일이 더 크게 전달된다(그림~\ref{fig:gatecurves}의 파선: $g=2$에서 문턱값은 $0.11$로 내려가고 출력은 두 배가 된다). 이것은 경보 장치의 합리적인 설정이다. 손상이 낫기 전까지는 안전하게 가는 편이 낫다.
+
+엔지니어에게 이것은 느린 누설을 가진 양의 되먹임이다. 통증은 이득을 올리고, 이득은 통증을 올린다. 루프가 약하면 상처가 나았을 때 $g$는 정상으로 돌아온다. 그러나 루프가 강하면 경보 장치는 손상이 없어진 뒤에도 켜진 상태에 걸려 있을 수 있다. 그림~\ref{fig:bistable}의 강한 되먹임을 가진 집단과 같다. 모델~\eqref{eq:sensitization}은 단순화이다. 중추 감작이 존재한다는 것은 측정되었다.
+
+\section{교사이자 인터럽트로서의 통증}
+
+기계 안에서 통증은 경보 말고도 두 가지 일을 한다.
+
+\emph{교사.} 통증은 음의 보상이다. 오차 식~\eqref{eq:ctd}에 $r<0$으로 들어간다. \ref{sec:dofa}장에서 말한 모든 것이 여기서도 통한다. 통증의 전조는 미리 오차를 일으키기 시작하고, 네트워크는 통증으로 이어지는 것을 피하도록 배운다. 사람 실험은 통증으로 학습할 때의 뇌 활동이 바로 시간차 오차를 따른다는 것을 보여 주며~\cite{Seymour2004}, \nt{DOPA} 뉴런 일부는 불쾌한 사건에도 응답한다(\ref{sec:dofaalt}장).
+
+\emph{인터럽트.} 통증은 주의를 현재 과제에서 떼어 낸다. 이것은 부작용이 아니라 통증의 목적이다~\cite{EcclestonCrombez1999}. \ref{sec:nora}장에서는 같은 “인터럽트” 역할을 \nt{NORA}의 짧고 날카로운 버스트에 대해 논의했다. 그리고 가장 빠른 응답은 뇌에 닿지도 않는다. 뜨거운 것에서 손을 떼는 반응은 그림~\ref{fig:antagonists}와 같은 근육 쌍과 같은 길항근 금지로 척수 안에서 곧바로 닫힌다.
+
+\begin{keyblock}
+\begin{proposition}[경보 신호]
+\label{prop:pain}
+통증은 측정이 아니라 우선순위가 높은 경보 신호이다. 측정 채널보다 훨씬 약하게 적응하고, 두 전선(빠른 전선은 “어디”, 느린 전선은 “얼마나 나쁜지”)을 따라 가며, 촉각이 닫는(그리고 관문 이론의 가정에 따르면 강한 통증이 여는) 관문을 지나고, 그 음량은 위에서 브로드캐스트 채널이 정한다. 통증에 의한 관문 열림을 빼면 이 장치들은 측정되었다. 간단한 모델~\eqref{eq:gate}와~\eqref{eq:sensitization}은 단순화이다.
+\end{proposition}
+\end{keyblock}
+
+\section{정리}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{3.0cm}>{\raggedright}p{4.9cm}>{\raggedright\arraybackslash}p{4.9cm}}
+\toprule
+통증이 하는 일 & 방법 & 알려진 것 \\
+\midrule
+경보를 울림 & 높은 문턱값, 촉각보다 약한 적응 & 문턱값은 측정됨; 적응 비교는 추정 \\
+“어디”와 “얼마나 나쁜지”를 알림 & 속도가 다른 두 전선~\eqref{eq:paintime} & 측정됨 \\
+관문을 지남 & \nt{GABA}/\nt{GLYC}를 통한 금지~\eqref{eq:gate} & 관문은 측정됨; 통증에 의한 열림은 이론의 가정; 모델은 단순화 \\
+음량을 바꿈 & 하행 \nt{SERO}, \nt{NORA}, 오피오이드 & 측정됨; 음량 선택 규칙은 가설 \\
+손상 뒤에 학습함 & 이득의 증가~\eqref{eq:sensitization} & 감작은 측정됨; 모델은 단순화 \\
+회피를 가르침 & \eqref{eq:ctd}의 음의 보상 & 시간차 오차와의 유사성은 측정됨 \\
+작업을 중단시킴 & 주의 포획; 회피 반사 & 측정됨 \\
+\bottomrule
+\end{tabular}
+\caption{경보 신호로서의 통증.}
+\label{tab:pain}
+\end{table}
+
+통증은 우리가 이미 본 부품으로 조립되어 있다(표~\ref{tab:pain}). \nt{GLUT} 센서, 두 전선, 억제성 중개 뉴런을 통한 금지, 브로드캐스트 음량 노브, 느린 RC 회로, 예측 오차, 인터럽트이다. 새로운 것은 하나뿐이다. 통증은 기계가 음량을 스스로 정하는 유일한 입력이다. 주인이 누그러뜨릴 수도 있고 다시 설정할 수도 있는 경보 장치이다.
+
+\section{연습문제}
+
+\begin{exercise}[\lvlA]
+\label{ex:14:1}
+\emph{두 전선.} 신호는 발에서 온다, $L=1$~m. (가)~일제 사격이 같은 유형의 전선 다발을 따라 가고, 전선의 속도는 범위~\eqref{eq:paintime}를 채운다. 빠른 유형과 느린 유형에서 척수에 도착할 때 일제 사격은 얼마나 늘어나는가? (나)~$15$~m/s와 $1$~m/s 전선을 따라 오는 통증의 두 파는 차이가 $0.1$~s 이상이면 구별된다. 어떤 거리부터 합쳐지는가?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:14:2}
+\emph{촉각이 아플 때.} 본문 매개변수의 관문~\eqref{eq:gate}에서 감작에 따라 이득 $g$가 커진다. $g$가 얼마가 될 때까지 통증 없는 촉각은 어떤 세기 $\mu$에서도 관문을 지나지 못하는가? $g$가 얼마일 때 촉각 $\mu=1$이 통과하기 시작하는가?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:14:3}
+\emph{감작의 안정성.} 입력은 일정하고, 관문 출력은 $g$에 선형이다: $z=gA-C$, $A=\nu+w_{z\mu}\mu$, $C=\beta q\ge0$. (가)~모델~\eqref{eq:sensitization}의 평형 $g^*$와 그 안정 조건을 구하라. (나)~$k_s=0.5$일 때, 촉각이 없을 때와 촉각 $\mu=1$이 있을 때 모델이 폭주하기 시작하는 통증 세기를 구하라.
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:14:4}
+\emph{통증의 전조.} 시각 $0$의 신호가 시각 $T=2$~s의 통증을 예측한다. \eqref{eq:ctd}에서 $r(t)=-P\,\delta(t-T)$, $\tau_\gamma=2$~s이다. (가)~신호 시각의 $\delta$ 급변의 넓이를 구하라. (나)~시각 $t_e=1$~s의 행동이 통증을 취소한다. 이때 $\delta$ 급변은 얼마이며, 네트워크에게 무엇을 가르치는가?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:14:5}
+\emph{걸려 버리는 경보.} \texttt{models/\allowbreak pain\_gate.py}의 관문에 동역학~\eqref{eq:sensitization}과 포화 $z\le4$를 더하라. 촉각 $\mu=1$은 늘 있고, 손상 $\nu=2$는 시간 $T$ 동안 이어진 뒤 $\nu=0$이 된다. $k_s=4$, $4.6$, $5$, $6$, $8$일 때, 그 뒤에도 경보가 켜진 채로 남는 가장 작은 $T$($\tau_s$ 단위)를 시뮬레이션으로 구하라.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:14:6}
+\emph{관문 설계.} $\beta=1.5$, $w_{z\mu}=0.3$, $g=1$에서, 통증 문턱값이 촉각 없이 $0.2$, 촉각 $\mu=1$과 함께 $1.0$이고, $\nu_\times=2.5$에서 촉각이 통증을 더 이상 누그러뜨리지 않도록 \eqref{eq:gate}의 $q_0$, $w_{q\nu}$, $w_{q\mu}$를 고르라. 이득 $g$가 얼마가 될 때까지 통증 없는 촉각이 관문을 지나지 못하는가?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:14:7}
+\emph{음량 노브.} 작업은 단위 시간당 가치 $V$를 가져오고, 손상 $\nu$를 안고 일하는 비용은 $c\nu$이므로, $\nu>V/c$이면 중단하는 편이 이득이다. 통증은 $z>\theta=0.5$일 때 작업을 중단시킨다. (가)~$V/c=0.25$, $0.5$, $2$일 때 촉각 없는 관문~\eqref{eq:gate}에서 이 문턱값을 주는 이득 $g^*$는? (나)~기계는 이 책의 어떤 신호로 $V$와 $c$를 추정할 수 있을까?
+\end{exercise}

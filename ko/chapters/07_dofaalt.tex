@@ -1,0 +1,218 @@
+\chapter{도파민에 기반한 현대의 대안 학습 이론}
+\chaptermark{\nt{DOPA}의 다른 이론들}
+\label{sec:dofaalt}
+
+\section{전선에는 실제로 무엇이 흐르는가}
+
+\ref{sec:dofa}장에서 \nt{DOPA} 시스템은 전선 하나였고, 그 전선으로는 수 하나, 곧 보상 예측 오차 $\delta$~\eqref{eq:ctd}가 흘렀다. 이 그림은 많은 것을 설명한다. 그러나 도파민을 정밀하게 측정할수록 그림에 들어맞지 않는 것이 더 많이 발견된다. 어떤 뉴런은 불쾌한 자극에 보상처럼 반응한다. 동물이 목표를 향해 달리는 동안에는 예상 밖의 일이 전혀 없는데도 도파민 농도가 오른다. \nt{DOPA} 뉴런들은 저마다 다르게 행동한다.
+
+엔지니어에게 이 발견들은 모두 한 가지 질문으로 모인다. \emph{브로드캐스트 버스 위의 신호는 어떤 형식인가?} 수 하나인가, 벡터인가? 전선 위의 신호는 하나인가, 주파수로 나뉜 여러 개인가? $\delta$처럼 미래를 말하는가, 과거를 말하는가? 아래에서 현대의 답 여섯 가지를 살펴본다. 각각에 대해 측정된 것과 추정된 것을 구분한다.
+
+\section{수 하나가 아니라 분포}
+
+오차~\eqref{eq:ctd}는 비평자에게 보상의 \emph{평균} 기대값을 가르친다. 그런데 확실한 주스 반 방울과 확률 1/2의 주스 한 방울은 평균이 같다. 둘을 구분하려면 보상의 분포 전체가 필요하다.
+
+가장 단순한 문제를 보자. 예고 신호 뒤에 크기가 무작위인 보상 $r$가 온다. \nt{DOPA} 뉴런이 많고, $i$번째 뉴런은 저마다 자기 추정값 $V_i$를 맡아서 보상 순간의 오차가 $\delta_i=r-V_i$라고 하자. 또 각 뉴런은 양의 오차를 가중치 $\alpha_i^+$로, 음의 오차를 가중치 $\alpha_i^-$로 반영한다고 하자. 보상이 올 때마다 추정값은 다음만큼 이동한다.
+\begin{equation}
+\Delta V_i \;=\; \eta\,\bigl(\alpha_i^+\,[\delta_i]_+ \;-\; \alpha_i^-\,[-\delta_i]_+\bigr).
+\label{eq:asymmetric}
+\end{equation}
+평균적으로 양의 보정과 음의 보정이 균형을 이루면 추정값은 더 변하지 않는다.
+\begin{empheq}[box=\keybox]{equation}
+\alpha_i^+\,\bigl\langle[r-V_i]_+\bigr\rangle \;=\; \alpha_i^-\,\bigl\langle[V_i-r]_+\bigr\rangle ,
+\qquad
+\kappa_i \;=\; \frac{\alpha_i^+}{\alpha_i^++\alpha_i^-} .
+\label{eq:expectile}
+\end{empheq}
+$\kappa_i=1/2$이면 보통의 평균이다. $\kappa_i>1/2$이면 뉴런은 “낙관론자”다. 그 추정값은 분포의 위쪽 끝으로 치우친다. $\kappa_i<1/2$이면 “비관론자”다.
+
+예를 들어 크기 $1$인 주스 방울이 확률 $1/2$로 온다고 하자. 그러면~\eqref{eq:expectile}는 $\kappa_i\cdot\tfrac12(1-V_i)=(1-\kappa_i)\cdot\tfrac12V_i$, 곧 $V_i=\kappa_i$를 준다(그림~\ref{fig:expectiles}). $\kappa_i$가 서로 다른 뉴런 집합은 통계학에서 분위수 집합이 분포를 기록하듯 보상 분포를 기록한다.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=7cm,y=3cm]
+\draw[->,gray!70!black] (-0.08,0) -- (1.15,0) node[right,black] {\small 보상};
+\draw[->,gray!70!black] (-0.08,0) -- (-0.08,0.75) node[left,black] {\small 확률};
+\fill[blue!25] (-0.03,0) rectangle (0.03,0.5);
+\fill[blue!25] (0.97,0) rectangle (1.03,0.5);
+\node[below,font=\small] at (0,0) {$0$};
+\node[below,font=\small] at (1,0) {$1$};
+\node[left,font=\scriptsize] at (-0.08,0.5) {$1/2$};
+\foreach \k/\c/\lab/\h in {0.2/blue!60!black/{비관론자, $\kappa=0.2$}/0.62, 0.5/gray!50!black/{평균, $\kappa=0.5$}/0.42, 0.8/red!70!black/{낙관론자, $\kappa=0.8$}/0.22}{
+  \draw[very thick,\c] (\k,0) -- (\k,\h);
+  \node[above,font=\scriptsize,\c] at (\k,\h) {\lab};}
+\end{tikzpicture}
+\caption{\nt{DOPA} 뉴런 집합이 기록한 보상 분포. 보상은 확률 $1/2$로 $0$ 또는 $1$이다(파란 막대). 비율 $\kappa$를 가진 뉴런은 추정값 $V=\kappa$에 도달한다~\eqref{eq:expectile}.}
+\label{fig:expectiles}
+\end{figure}
+
+측정된 것: \nt{DOPA} 뉴런마다 “반전점”, 곧 반응이 급증에서 급감으로 바뀌는 보상 크기가 다르다. 그리고 양의 오차와 음의 오차에 대한 반응 비대칭이 큰 뉴런일수록 더 큰 보상에서 반전한다. 이는~\eqref{eq:expectile}가 요구하는 그대로다~\cite{Dabney2020}. 뉴런 집단의 반응으로부터 분포의 모양을 복원할 수 있다. 이 편차가 부수 효과가 아니라 주된 기능이라는 것은 가설이다.
+
+\begin{keyblock}
+\begin{proposition}[비대칭에서 나오는 분포]
+\label{prop:expectile}
+\nt{DOPA} 뉴런들이 양의 오차를 반영하는 비율 $\kappa_i$에서 서로 다르면, 그 추정값들은 보상 분포의 서로 다른 점~\eqref{eq:expectile}으로 수렴한다. 뉴런 집단은 평균이 아니라 분포를 전달하며, 따라서 위험도 전달한다.
+\end{proposition}
+\end{keyblock}
+
+\section{오차만이 아니라 중요도}
+
+오차 식~\eqref{eq:ctd}에 따르면 전기 충격이나 쓴맛 같은 불쾌한 사건은 급감을 일으켜야 한다. 기대보다 나빴기 때문이다. 일부 \nt{DOPA} 뉴런은 실제로 그렇게 반응하지만, 다른 뉴런들은 불쾌한 사건에 보상처럼 \emph{급증}으로 반응한다~\cite{Matsumoto2009}. 이 뉴런들이 알리는 것은 오차의 부호가 아니라 무언가 \emph{중요한} 일, 곧 예상 밖이고 강하며 주의가 필요한 일이 일어났다는 사실이다~\cite{BrombergMartin2010}.
+
+엔지니어는 이것을 두 신호로 생각하면 편하다. 첫째는 부호 있는 오차 $\delta$로, 가중치를 어느 쪽으로 바꿀지 알려 준다. 둘째는 그 크기 $|\delta|$ 또는 사건의 새로움으로, 가중치를 \emph{얼마나 크게} 바꿀지, 곧 학습률을 알려 준다. 예상 밖의 사건 뒤에는 더 빨리 배워야 한다. 의미로 보면 이는 \ref{sec:neurontypes}장의 노르아드레날린 이득에 가깝다.
+
+세 번째 방식도 있다. 별도의 축을 위한 별도의 전선이다. 행동 선택 영역 가운데 하나로 가는 \nt{DOPA} 뉴런들은 보상이 아니라 자극의 새로움과 세기에 반응하며, 동물이 위험을 피하도록 배우는 데 필요하다~\cite{Menegas2018}. 이 전선으로 흐르는 것은 “더 좋다, 더 나쁘다”가 아니라 “위험하다, 아니다”이다.
+
+측정된 것: \nt{DOPA} 뉴런 집단마다 불쾌한 자극과 새로운 자극에 다르게 반응하고, 출력마다 가르치는 내용이 다르다. 뇌가 중요도 신호를 정확히 어떻게 쓰는지, 곧 학습률로 쓰는지, 주의 신호로 쓰는지, 위험 축의 별도 오차로 쓰는지는 논쟁 중이다.
+
+\section{가르치는 것만이 아니라 재촉하는 것}
+
+도파민에는 즉각적인 작용도 있다. 도파민이 많을수록 동물은 더 기꺼이, 더 빨리 행동한다. 이것을 학습과 어떻게 양립시킬까?
+
+엔지니어의 답은 \emph{주파수 분할}이다. 수백 밀리초 길이의 빠른 급증과 급감은 $\delta$를 싣고 학습시킨다. 몇 분에 걸쳐 변하는 느린 수준은 다른 양, 곧 단위 시간당 평균 보상 $\bar R$를 싣는다~\cite{Niv2007}. 시간 $\tau_a$ 동안 수행한 행동이 노력 $C/\tau_a$를 요구한다고 하자. 빠를수록 비싸다. 대신 지체하는 매초는 $\bar R$, 곧 그 시간에 얻을 수 있었던 보상만큼의 비용이 든다. 총비용 $C/\tau_a+\bar R\,\tau_a$는 다음에서 최소가 된다.
+\begin{empheq}[box=\keybox]{equation}
+\tau_a^{*} \;=\; \sqrt{\frac{C}{\bar R}} .
+\label{eq:vigor}
+\end{empheq}
+환경이 풍요로울수록 시간은 비싸지고 빨리 행동하는 편이 이득이다. $\bar R$가 두 배가 되면 행동 시간은 $\sqrt2\approx1.4$배 줄어든다. 여기서 $\bar R$는 \ref{sec:dofa}장에서 빼 주었던 바로 그 기대 보상이다.
+
+목적지에서의 도파민 방출은 스파이크 발화율이 변하지 않아도 달라질 수 있다. 출력 말단의 국소 신호가 방출을 조절하기 때문이다~\cite{Mohebi2019}. 그러나 느린 성분은 스파이크 자체에도 있다. 다음 절의 실험에서는 보상에 다가갈 때의 완만한 상승이 \nt{DOPA} 뉴런의 발화율에서도 보인다~\cite{Kim2020}. 따라서 느린 수준은 스파이크 발화율과 방출의 국소 조절이라는 두 원천에서 합쳐지며, 어느 쪽이 주된지는 출력과 과제에 따라 다른 것으로 보인다.
+
+\begin{keyblock}
+\begin{proposition}[한 전선 위의 두 신호]
+\label{prop:multiplex}
+\nt{DOPA} 시스템은 시간 척도로 나뉜 적어도 두 가지 양을 전달한다. 학습시키는 빠른 오차 $\delta$와, 시간의 가격~\eqref{eq:vigor}을 정하고 그로써 행동 속도를 정하는 느린 수준이다. 빠른 성분과 느린 성분이 다르게 행동한다는 것은 측정되었다. 느린 성분이 정확히 $\bar R$라는 것은 가설이다.
+\end{proposition}
+\end{keyblock}
+
+\section{다가갈수록 오르는 신호}
+
+동물이 복도를 따라 먼 보상을 향해 달리면, 목표가 가까워지는 몇 초 동안 행동 선택 영역의 도파민 농도가 완만하게 오른다~\cite{Hamid2016}. \ref{sec:dofa}장에 따르면 이런 일은 없어야 한다. 모든 것이 계획대로 진행되므로 $\delta$는 0이어야 한다.
+
+첫째 설명: 이 상승은 $\delta$가 아니라 기대 $V$ 자체, 곧 앞 절의 “목표가 가까우니 힘을 낼 만하다”라는 신호다~\cite{Hamid2016}. 둘째 설명은 $\delta$를 유지한다~\cite{Kim2020}. 기대가 정확하다면 보상 $R$로 가는 길에서 지평 $\tau_\gamma$일 때 기대는 $V=Re^{-(T-t)/\tau_\gamma}$로 자라고, 오차 식~\eqref{eq:ctd}에 따라 $\dd V/\dd t-V/\tau_\gamma=0$이다. 그런데 멀리서는 기대가 과소평가되어 있다가 다가갈수록 추정이 정확해진다고 하자. 그러면 기대는 더 가파르게, 예를 들어 $\tau_v<\tau_\gamma$인 $V=Re^{-(T-t)/\tau_v}$로 자라고,
+\begin{empheq}[box=\keybox]{equation}
+\delta(t) \;=\; \frac{\dd V}{\dd t}-\frac{V}{\tau_\gamma} \;=\; V\Bigl(\frac{1}{\tau_v}-\frac{1}{\tau_\gamma}\Bigr) \;>\; 0 .
+\label{eq:ramp}
+\end{empheq}
+오차는 양수이고 $V$와 함께 커진다. 바로 그 완만한 상승이다(그림~\ref{fig:ramp}). $\tau_\gamma=4\,\text{s}$, $\tau_v=1\,\text{s}$이면 초당 $\delta=0.75\,V$가 된다. 이 가설은 가상 복도에서 동물을 목표 쪽으로 순간 이동시켜 검증되었다. 도파민은 완만한 수준이 아니라 도함수에 걸맞게 급증으로 반응했다~\cite{Kim2020}.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=1.6cm,y=2.6cm]
+\draw[->,gray!70!black] (-4.2,0) -- (0.5,0) node[below left,black] {\small $t$};
+\draw[->,gray!70!black] (-4.2,0) -- (-4.2,1.2);
+\foreach \x/\l in {-4/{$T-4$},-2/{$T-2$},0/{$T$}}{\draw[gray!60!black] (\x,-0.03) -- (\x,0.03); \node[below,font=\scriptsize] at (\x,0) {\l\,s};}
+\draw[thick,densely dashed,gray!60!black] plot[domain=-4:0,samples=40] (\x,{exp(\x/4)});
+\draw[very thick,blue!60!black] plot[domain=-4:0,samples=60] (\x,{exp(\x)});
+\draw[very thick,red!70!black] plot[domain=-4:0,samples=60] (\x,{0.75*exp(\x)});
+\node[anchor=south east,font=\small,gray!50!black] at (-1.3,0.77) {$\tau_v=\tau_\gamma$일 때 $V$: $\delta=0$};
+\node[right,font=\small,blue!60!black] at (0.05,1.0) {$\tau_v=1\,\text{s}$일 때 $V$};
+\node[right,font=\small,red!70!black] at (0.05,0.72) {\eqref{eq:ramp}의 $\delta$};
+\end{tikzpicture}
+\caption{보상에 다가갈 때의 도파민 상승을 예측 오차로 본 그림, $\tau_\gamma=4\,\text{s}$. 점선은 지평이 요구하는 그대로 자라는 기대($\delta=0$), 파란 선은 더 가파르게 자라는 기대, 빨간 선은 오차~\eqref{eq:ramp}이다.}
+\label{fig:ramp}
+\end{figure}
+
+측정된 것: 완만한 상승은 도파민 농도에도, \nt{DOPA} 뉴런의 스파이크 발화율에도 있다~\cite{Kim2020}. 그리고 환경의 순간적 도약은 도파민의 도약을 일으킨다. 두 설명 중 어느 것이 옳은지, 또는 출력마다 둘 다 옳은지는 논쟁 중이다.
+
+\section{뒤돌아보기}
+
+위의 이론은 모두 \emph{앞}을 본다. 현대 이론 가운데 하나는 방향을 뒤집는다~\cite{Jeong2022}. 뇌가 예고 신호로 보상을 예측하도록 배우는 것이 아니라, 보상을 받은 뒤 \emph{뒤돌아본다}고 하자. 어떤 사건이 다른 사건보다 더 자주 보상에 앞섰는가? 이 연관의 척도는 두 확률의 차이다.
+\begin{empheq}[box=\keybox]{equation}
+M \;=\; P(\text{보상 전의 예고 신호}) \;-\; P(\text{무작위 구간의 예고 신호}) .
+\label{eq:retro}
+\end{empheq}
+예고 신호가 보상 없이도 자주 나타나면 둘째 항이 커지고 연관은 약해진다. 이 이론에서 도파민이 알리는 것은 예측 오차가 아니라, 주어진 사건이 보상의 \emph{원인}일 가능성이 얼마나 되는가이다.
+
+뒤돌아보기 메커니즘에는 \ref{sec:dofa}장의 3요소 규칙과 같은 것이 필요하다. 보상 순간에 그 앞에 무엇이 있었는지 읽어 낼 수 있도록, 모든 사건은 사라져 가는 흔적을 남겨야 한다. 차이는 시냅스가 아니라 \nt{DOPA}가 전달하는 내용에 있다.
+
+이론~\eqref{eq:retro}과 오차~\eqref{eq:ctd}가 서로 다른 것을 예측하는 실험에서, 도파민 방출은 여러 경우 앞의 이론을 따랐다~\cite{Jeong2022}. 그러나 다른 실험에서는 학습 중 도파민 반응이 보상 순간에서 예고 신호 순간으로 점차 옮겨 갔다. 오차~\eqref{eq:ctd}에 의한 학습이 요구하는 그대로다~\cite{Amo2022}. 어느 이론이 뇌를 기술하는지는 아직 모른다.
+
+\section{보상에 대한 오차만이 아니다}
+
+마지막 확장은 오차가 \emph{무엇에 대한} 것인가에 관한 것이다. 기대한 주스를 가치는 같지만 맛이 다른 주스로 바꾸면, 가치는 변하지 않았으므로 오차~\eqref{eq:ctd}는 0이다. 그런데 \nt{DOPA} 뉴런은 이런 교체에 반응한다~\cite{Takahashi2017}. 또 인위적으로 일으킨 도파민 급증은 보상이 전혀 없어도 두 중립 자극 사이의 연관을 동물에게 가르칠 수 있다~\cite{Sharpe2017}. \nt{DOPA}는 보상뿐 아니라 \emph{무엇이} 일어날지에 대한 예측 오차도 알리는 것으로 보인다.
+
+형식적으로 이는~\eqref{eq:ctd}의 단순한 일반화다. 보상 흐름 $r$ 하나 대신 맛, 장소, 소리 같은 사건의 특징 집합 $\varphi_k$를 두고, 각각에 대해 고유한 기대 $M_k$와 고유한 오차를 둔다~\cite{Gardner2018}.
+\begin{empheq}[box=\keybox]{equation}
+\delta_k(t) \;=\; \varphi_k(t) \;+\; \frac{\dd M_k}{\dd t} \;-\; \frac{M_k}{\tau_\gamma} ,
+\qquad k=1,\dots,K .
+\label{eq:vectortd}
+\end{empheq}
+보상은 특징 가운데 하나일 뿐이다. 오차 벡터는 무엇이 좋은지뿐 아니라 무엇 다음에 무엇이 오는지, 곧 세계 모델도 가르친다.
+
+\nt{DOPA} 뉴런의 이질성도 이와 부합한다. 한 과제에서 뉴런마다 서로 다른 양을 싣는다. 어떤 뉴런은 보상과, 어떤 뉴런은 움직임과, 또 어떤 뉴런은 주의가 향하는 방향과 연관된다~\cite{Engelhard2019}.
+
+\begin{keyblock}
+\begin{proposition}[전선 대신 케이블 다발]
+\label{prop:bundle}
+\nt{DOPA} 시스템의 신호는 수 하나가 아니다. 그것은 뉴런에 걸쳐(분포~\eqref{eq:expectile}, 서로 다른 특징~\eqref{eq:vectortd}, 별도의 위험 축) 그리고 시간에 걸쳐(빠른 오차와 느린 수준~\eqref{eq:vigor}) 나뉘어 있다. 스칼라 오차~\eqref{eq:ctd}는 이 신호의 1차 근사다. 문턱값이 있는 가산기가 뉴런의 1차 근사인 것과 같다.
+\end{proposition}
+\end{keyblock}
+
+\section{요약}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{2.5cm}>{\raggedright}p{3.2cm}>{\raggedright}p{3.6cm}>{\raggedright\arraybackslash}p{4.2cm}}
+\toprule
+이론 & 전선에 흐르는 것 & 핵심 측정 & 알려진 것 \\
+\midrule
+예측 오차(\ref{sec:dofa}장) & 스칼라 $\delta$~\eqref{eq:ctd} & 급증, 예고 신호로의 이동, 급감 & 측정됨; 1차 근사 \\
+분포 & 비대칭이 서로 다른 $\delta_i$의 집합 & 뉴런마다 다른 반전점 & 실험과 부합; 편차의 역할은 가설 \\
+중요도 & $|\delta|$, 새로움; 위험 축 & 일부 뉴런의 불쾌 자극에 대한 급증 & 측정됨; 쓰임새는 논쟁 중 \\
+시간의 가격 & 느린 수준 $\bar R$ & 도파민이 행동을 빠르게 함; 느린 성분은 출력 말단의 방출과 스파이크 발화율 모두에 있음 & 빠른 성분과 느린 성분의 분리는 측정됨; $\bar R$는 가설 \\
+다가갈수록 상승 & 추정이 정확해질 때의 $V$ 또는 $\delta$~\eqref{eq:ramp} & 완만한 상승, 복도에서 순간 이동 시 도약 & 상승은 측정됨; 설명은 논쟁 중 \\
+뒤돌아보기 & 인과 연관의 척도~\eqref{eq:retro} & 두 이론의 예측이 갈리는 실험 & 결과가 서로 모순됨 \\
+오차 벡터 & 특징별 $\delta_k$~\eqref{eq:vectortd} & 맛 교체에 대한 반응; 보상 없는 학습 & 측정됨; 벡터 형태는 가설 \\
+\bottomrule
+\end{tabular}
+\caption{\nt{DOPA} 시스템이 전달하는 것: \ref{sec:dofa}장의 표준 그림과 그 현대적 확장.}
+\label{tab:dofaalt}
+\end{table}
+
+표~\ref{tab:dofaalt}의 이론들은 서로를 배제하지 않는다. 거의 모두가 예측 오차를 기반으로 유지하면서 그 형식을 넓힌다. 예측 오차와 진지하게 경쟁하는 것은 뒤돌아보기뿐이며, 이 논쟁은 실험이 결정할 것이다. 엔지니어에게 결론은 간단하다. 전선이 실제로는 수신처가 서로 다른 여러 전선이라면, 명제~\ref{prop:broadcastcost}의 브로드캐스트 비용은 줄어든다.
+
+\section{연습문제}
+
+\begin{exercise}[\lvlA]
+\label{ex:07:1}
+\emph{주스 한 방울의 분포 점.} 크기 $1$인 주스가 확률 $p=0.2$로 오고, 그렇지 않으면 보상은 $0$이다. \eqref{eq:expectile}로 $\kappa_i=0.2$, $0.5$, $0.8$일 때의 $V_i$를 구하라. 이 보상의 중앙값은 얼마이며, 점~\eqref{eq:expectile}는 분위수와 어떻게 다른가?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:07:2}
+\emph{두 뉴런으로 분포 복원.} 보상은 $0$ 또는 $x$이고, $x$의 확률은 $p$이다. 규칙~\eqref{eq:asymmetric}을 따르는 두 뉴런이 $V(1/2)=0.25$와 $V(0.8)=0.5$를 알렸다. $p$, $x$와 보상의 표준편차를 복원하라. $\kappa=0.2$인 뉴런은 무엇을 알리겠는가?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:07:3}
+\emph{시뮬레이션: 비대칭에서 나오는 분포.} $\kappa_i=0.1,\dots,0.9$이고 규칙~\eqref{eq:asymmetric}, $\alpha_i^+=2\kappa_i$, $\alpha_i^-=2(1-\kappa_i)$를 따르는 \nt{DOPA} 뉴런 아홉 개를, $[0,1]$에서 균등한 보상으로 시뮬레이션하라. $V_i$의 흩어짐은 $\eta$에 어떻게 의존하며, 이 분포를 같은 확률의 두 방울 $0.25$와 $0.75$와 구별하려면 어떤 $\eta$가 필요한가?
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:07:4}
+\emph{시간의 가격.} (가)~\eqref{eq:vigor}를 유도하고 최적점에서의 총비용을 구하라. (나)~뇌가 $\bar R$를 $k$배 틀리게 추정했다. $k=2$와 $k=4$일 때 상대 초과 비용을 구하라. 느린 도파민 수준은 $\bar R$를 얼마나 정확히 알려야 하는가?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:07:5}
+\emph{순간 이동 시의 급증.} 기대가 $\tau_v=1\,\text{s}$, $\tau_\gamma=4\,\text{s}$로~\eqref{eq:ramp}를 따라 자란다. 동물을 $T-2\,\text{s}$ 지점에서 $T-1\,\text{s}$ 지점으로 순간 이동시킨다. $\delta$ 급증의 면적을 $R$의 비율로 구하고, 그것이 이동 전 램프의 몇 초 분량을 대신하는지 구하라. 도파민이 $V$ 자체를 알린다면 순간 이동은 무엇을 보여 주겠는가?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:07:6}
+\emph{설계: 전선 위의 두 신호.} \nt{DOPA} 전선에 초당 $s=1/60$ Hz씩 오르는 수준과 스파이크 $A=3$개짜리 사건이 흐른다. 흔적 $\tau_e=1\,\text{s}$인 시냅스는 발화율에서 $\tau_f$로 평활한 그 복사본을 뺀다. 사건의 손실이 $10\,\%$ 이하이고, 흔적 시간 동안 수준의 기여가 사건 기여의 $10\,\%$ 미만이 되는 $\tau_f$는?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:07:7}
+\emph{실험 설계: 뒤돌아보기 대 오차.} 한 구간에 예고 신호가 확률 $0.1$로 나타나고, 그 뒤 보상이 확률 $0.8$로 온다. (가)~예고 신호 없는 보상을 구간당 $0.08$ 추가할 때, (나)~보상 없이 예고 신호 빈도를 두 배로 할 때 $\Delta P=P(\text{보상}\mid\text{예고})-P(\text{보상}\mid\text{없음})$와~\eqref{eq:retro}의 $M$을 비교하라.
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:07:8}
+\emph{케이블 다발과 브로드캐스트 비용.} 연습문제~\ref{ex:06:8}의 모델에서 $N$개 뉴런이 저마다 전선을 가진 $K$개 그룹으로 나뉘고, 각 전선에는 다른 그룹 오차의 비율 $\rho$가 새어 든다. 학습 상수가 $N/K+2+\rho^2N(1-1/K)$임을 보여라. $K\to\infty$, $N=10^{10}$, $\rho=0.01$일 때 이는 몇 번의 시도를 주는가?
+\end{exercise}

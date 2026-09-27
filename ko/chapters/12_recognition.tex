@@ -1,0 +1,225 @@
+\chapter{이미지와 영상의 인식}
+\chaptermark{인식}
+\label{sec:recognition}
+
+\section{과제: 픽셀이 달라도 같은 것}
+
+\ref{sec:sensors}장은 영상을 기계의 입력까지 가져왔다. 눈의 출력 뉴런 약 백만 개, 주로 가장자리와 변화를 전하는 압축된 흐름이다. 그러나 센서와 행동 사이에는 지금까지 말하지 않은 단계가 있다. 그림 속 고양이는 픽셀의 집합이 아니다. 고양이를 반 프레임 옮기고, 돌리고, 멀리 떨어뜨리고, 조명을 절반 끄면 거의 모든 픽셀이 달라지지만, 답 “고양이”는 그대로여야 한다. 엔지니어는 이것을 \emph{불변성}이라고 부른다. 분류기의 답은 이동, 크기, 회전, 조명에 따라 바뀌면 안 된다.
+
+어려움은 간단한 실험에서 잘 드러난다. $24$개 점으로 된 1차원 “망막”과, 어디에나 놓일 수 있는 다섯 점짜리 도형 두 개를 생각하자. 입력을 한 위치에 기억된 견본과 비교하는 분류기는 $49$--$52\%$의 경우에 맞힌다. 동전 던지기와 같다. 이동은 픽셀 단위 비교를 완전히 무너뜨린다. 다른 회로가 필요하다.
+
+\section{단계들의 파이프라인}
+
+뇌가 이 일을 얼마나 빨리 하는지는 \ref{sec:code}장에서 이미 안다. 순간적으로 보여 준 그림 속 동물은 약 $150\ms$ 만에 인식되고, 신호는 약 열 개의 단계를 단계당 $10$--$20\ms$씩 거친다~\cite{Thorpe1996}. 각 단계에서 뉴런은 스파이크를 0개 또는 1개 낼 시간밖에 없다. 따라서 빠른 인식은 오래 숙고하거나 되풀이하지 않는, 파이프라인을 한 번 통과하는 것이다. 문제는 각 단계가 무엇을 하느냐이다.
+
+시각의 첫 단계들에서 얻은 측정이 시사하는 답은~\cite{HubelWiesel1962} 번갈아 나오는 두 연산으로 이루어진다(그림~\ref{fig:conveyor}).
+
+\emph{선택성.} $S$ 단계의 뉴런은 입력의 작은 영역을 보고, 거기에 특정한 부분들의 조합이 있을 때만 발화한다. 이 가장자리가 있고 그 옆에 저 가장자리가 있을 때이다. 이것은 부분들의 AND이다. 어느 한 부분만으로는 넘을 수 없는 문턱값을 가진, \ref{sec:glutcomputer}장의 문턱 뉴런이다.
+
+\emph{불변성.} $C$ 단계의 뉴런은 같은 조합을 서로 다른 위치에서 찾는 많은 $S$ 뉴런의 출력을 모으고, 그 조합이 어디에서든 발견되면 발화한다. 이것은 위치들에 대한 OR, 더 정확히는 최댓값의 선택이다.
+
+1차원 모델에서 두 연산은 다음과 같이 쓴다.
+\begin{empheq}[box=\keybox]{equation}
+s_{f,p} \;=\; \Bigl[\sum_i t_{f,i}\,x_{p+i} - \theta\Bigr]_+ ,
+\qquad
+c_f \;=\; \max_p\, s_{f,p} ,
+\label{eq:scstage}
+\end{empheq}
+여기서 $x$는 입력, $t_{f,i}$는 특징 $f$의 견본, $p$는 위치, $\theta$는 문턱값이다. 첫 식은 응답을 선택적으로, 둘째 식은 위치와 무관하게 만든다. 많은 입력 중 최댓값은 \ref{sec:gaba}장의 수단으로 얻는다. 상호 억제는 가장 강한 입력만 남기고(명제~\ref{prop:wta}), 전체 활동에 의한 나눗셈은 밝기가 달라도 응답을 고르게 한다~\cite{Carandini2012}.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  px/.style={draw,minimum size=0.36cm,inner sep=0pt},
+  on/.style={px,fill=blue!55!black},
+  snode/.style={circle,draw,very thick,minimum size=0.62cm,inner sep=0pt,font=\scriptsize,fill=blue!6},
+  cnode/.style={circle,draw,very thick,minimum size=0.8cm,inner sep=0pt,font=\scriptsize,fill=red!10}]
+% two inputs: the same shape at two positions
+\foreach \row/\sh/\lab in {0/1/{프레임 1},1/7/{프레임 2}}{
+  \begin{scope}[yshift=-\row*1.0cm]
+  \node[left,font=\scriptsize] at (-0.25,0) {\lab};
+  \foreach \i in {0,...,13}{\node[px] at (\i*0.4,0) {};}
+  \foreach \d in {0,1,3,4}{\node[on] at ({(\sh+\d)*0.4},0) {};}
+  \end{scope}}
+% S stage: detectors of the shape at several positions
+\foreach \k in {0,...,5}{
+  \node[snode] (S\k) at ({0.8+0.8*\k},1.7) {$S$};}
+\node[font=\scriptsize,left] at (-0.25,1.7) {$S$ 단계: 부분들의 AND};
+\draw[->,thick,blue!60!black] (1.2,0.25) -- (S1.south);
+\draw[->,thick,orange!85!black] (3.6,0.25) -- (S4.south);
+\node[font=\scriptsize,blue!60!black,anchor=east] at (1.25,0.85) {프레임 1};
+\node[font=\scriptsize,orange!85!black,anchor=west] at (3.9,0.85) {프레임 2};
+% C stage
+\node[cnode] (C) at (2.8,3.25) {$C$};
+\node[font=\scriptsize,left] at (-0.25,3.25) {$C$ 단계: 위치들에 대한 OR};
+\foreach \k in {0,...,5}{\draw[->,gray!60!black] (S\k.north) -- (C);}
+\draw[->,very thick,red!70!black] (C.north) -- ++(0,0.6) node[above,font=\scriptsize,black] {두 프레임 모두에서 “도형이 있다”};
+% next stages
+\draw[decorate,decoration={brace,amplitude=5pt},gray!60!black] (6.3,1.4) -- (6.3,-1.3);
+\node[right,font=\scriptsize,align=left] at (6.5,0.05) {같은 물체,\\다른 픽셀};
+\draw[->,thick,densely dashed,gray!60!black] (3.6,3.25) -- (5.9,3.25) node[right,font=\scriptsize,black,align=left] {다음 $S$, $C$ 쌍:\\더 크고, 더 복잡하고,\\더 불변적};
+\end{tikzpicture}
+\caption{파이프라인의 단계 한 쌍. $S$ 뉴런들은 같은 부분 조합을 서로 다른 위치에서 찾는다. $C$ 뉴런은 그 조합이 어디에서든 발견되면 응답한다~\eqref{eq:scstage}. 프레임 1과 프레임 2의 도형은 서로 다른 $S$ 뉴런을 흥분시키지만 같은 $C$ 뉴런을 흥분시킨다. 다음 단계 쌍들은 점점 더 크고 복잡한 조합에 대해 같은 일을 되풀이한다.}
+\label{fig:conveyor}
+\end{figure}
+
+같은 1차원 모델에서 단계 쌍~\eqref{eq:scstage}는 도형을 어느 위치에서나 오류 없이 인식하고, 입력의 각 점을 확률 $0.1$로 무작위로 뒤집으면 $86\%$, 확률 $0.2$로 뒤집으면 $70\%$의 경우에 인식한다. 동전은 여전히 절반이다. 이런 쌍 여러 개를 위로 쌓아 보자. 첫 쌍은 가장자리를, 다음 쌍은 가장자리의 조합을, 더 위는 물체의 부분을, 맨 위는 물체 전체를 찾는다. 쌍을 하나 지날 때마다 조합은 커지고, 답은 물체가 어디에 어떻게 놓였는지에 점점 덜 좌우된다~\cite{Riesenhuber1999}.
+
+\begin{keyblock}
+\begin{proposition}[선택성과 불변성의 파이프라인]
+\label{prop:conveyor}
+빠른 인식은 열 개쯤의 단계를 한 번 통과하는 것이다. 각 단계 쌍에서 부분들의 AND~\eqref{eq:scstage}는 응답을 선택적으로 만들고, 위치들에 대한 OR은 이동과 무관하게 만든다. 이 두 연산을 번갈아 하면 물체를 구별하면서도 물체가 어디에 어떻게 보이는지에 거의 좌우되지 않는 답이 나온다. 첫 단계들의 구조와 통과 속도는 측정되었다. 사슬 전체가 이 두 연산으로 환원된다는 것은 단순화이다.
+\end{proposition}
+\end{keyblock}
+
+이 구조가 낯익어 보인다면 그럴 만하다. 바로 이 교대, 곧 모든 위치에서 특징을 찾고 이웃 위치들을 합치는 방식을 엔지니어들이 인공 \emph{합성곱} 신경망으로 옮겼다~\cite{Fukushima1980}. 그리고 최근에는 반대 방향으로 갔다. 물체 인식을 학습한 합성곱 신경망이 시각의 윗단계 뉴런 응답을 가장 잘 설명하는 모델로 드러났다~\cite{Yamins2014}. 맨 위의 결과는 간단히 읽힌다. 마지막 단계 뉴런 약 백 개의 발화율을 합친 것으로부터, 선형 판정 블록이 제시 후 0.1초 만에 물체를 알아본다~\cite{Hung2005}. 이것은 \ref{sec:code}장의 집단 발화율 부호이다.
+
+\section{없는 교사: 영상으로 배우기}
+
+합성곱 신경망은 이름표가 붙은 수백만 장의 그림으로 학습한다. 뇌에게는 거의 아무도 이름표를 주지 않는다. 아이는 물체를 몇 시간씩 보지만 “컵”이라는 말은 가끔 듣는다. 그렇다면 $C$ 단계는 어떤 $S$ 뉴런들을 합쳐야 할지 어떻게 알까? “여기 있는 이 도형”과 “저기 있는 이 도형”을 합치려면 그것이 같은 도형이라는 것을 이미 알아야 한다.
+
+실마리는 영상 자체가 준다. 세상은 연속적으로 변한다. 시야 속 물체는 움직이고, 돌고, 조명이 바뀌는 동안에도 같은 물체로 남고, 시선이 다른 물체로 옮겨 가는 일은 가끔뿐이다. \emph{느리게} 변하는 것은 대개 물체에 속하고, 빠르게 변하는 것은 물체의 위치와 모습에 속한다~\cite{WiskottSejnowski2002}. 따라서 $C$ 뉴런에게는 \ref{sec:dofa}장의 흔적을 가진 헵 규칙이면 충분하다. 동시에 온 것만이 아니라 잇달아 온 것을 연결하면 된다~\cite{Foldiak1991}.
+\begin{empheq}[box=\keybox]{equation}
+\tau_{\text{tr}}\,\frac{\dd\bar y_k}{\dd t} \;=\; -\bar y_k + y_k ,
+\qquad
+\frac{\dd\mathbf w_k}{\dd t} \;=\; \eta\,\bar y_k\,\bigl(\mathbf x - \mathbf w_k\bigr) .
+\label{eq:traceinvariance}
+\end{empheq}
+여기서 $y_k$는 억제를 통한 경쟁에서 이긴 $C$ 뉴런 $k$의 활동, $\bar y_k$는 그 흔적으로 규칙~\eqref{eq:threefactor}에서와 같은 RC 회로이며, $\mathbf x$는 $S$ 뉴런들의 출력이다. 물체의 첫 모습에서 이긴 뉴런은 둘째 모습이 올 때에도 그것을 기억하고 있어서, 그 모습도 자기 쪽으로 끌어당긴다.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=1.0cm,y=1.0cm]
+\foreach \i/\lab in {0/1,1/2,2/3,3/4}{
+  \node[draw,thick,fill=blue!8,minimum width=0.9cm,minimum height=0.55cm,font=\scriptsize] at (\i+0.5,2.2) {$A$(\lab)};}
+\foreach \i/\lab in {0/4,1/3,2/2,3/1}{
+  \node[draw,thick,fill=orange!12,minimum width=0.9cm,minimum height=0.55cm,font=\scriptsize] at (\i+6.5,2.2) {$B$(\lab)};}
+\node[font=\scriptsize,gray!40!black] at (5.0,2.2) {휴지};
+\draw[->,gray!70!black] (0,0) -- (10.4,0) node[below left,font=\scriptsize,black] {시간};
+% traces
+\draw[thick,blue!60!black] (0,0.05) .. controls (0.4,1.2) and (0.8,1.3) .. (1.2,1.35) -- (4,1.4) .. controls (4.6,0.5) and (5.2,0.15) .. (6,0.08) -- (10,0.05);
+\draw[thick,orange!85!black] (0,0.05) -- (6,0.05) .. controls (6.4,1.2) and (6.8,1.3) .. (7.2,1.35) -- (10,1.4);
+\node[font=\scriptsize,blue!60!black,anchor=west] at (1.4,1.65) {흔적 $\bar y_1$: $A$가 지나가는 내내 유지};
+\node[font=\scriptsize,orange!85!black,anchor=west] at (7.2,1.65) {흔적 $\bar y_2$};
+\draw[decorate,decoration={brace,amplitude=4pt},gray!60!black] (4.0,2.6) -- (0,2.6);
+\draw[decorate,decoration={brace,amplitude=4pt,mirror},gray!60!black] (0,-0.35) -- (4,-0.35) node[midway,below=4pt,font=\scriptsize,black] {$A$의 모든 모습이 뉴런 1과 연결된다};
+\end{tikzpicture}
+\caption{영상이 불변성을 가르치는 방식, 도식. 물체 $A$가 네 위치를 지나가고, 휴지가 있은 뒤 물체 $B$가 온다. $A$의 첫 모습에서 이긴 뉴런의 흔적~\eqref{eq:traceinvariance}은 지나가는 내내 유지되어, $A$의 모든 모습이 한 뉴런과 연결된다. 휴지가 흔적을 지우므로 $B$는 다른 뉴런에게 간다.}
+\label{fig:tracevideo}
+\end{figure}
+
+우리는 이것을 모델로 확인했다(그림~\ref{fig:tracevideo}). $C$ 뉴런 두 개가 $S$ 뉴런 $16$개의 입력을 놓고 경쟁한다. 두 도형이 각각 여덟 위치에 있다. 도형은 모든 위치를 위치당 $50\ms$씩 지나가고, $0.3\,\text{s}$ 휴지 뒤 다음 무작위 도형이 온다. 이름표는 전혀 없다. 흔적이 짧으면($\tau_{\text{tr}}=5\ms$) 뉴런들은 입력을 \emph{위치}에 따라 나누고, 답은 동전보다 나을 것 없이 도형과 일치한다. 열 번 실행한 평균이 $52\%$이다. 흔적이 한 위치의 제시 시간과 비슷하면, 곧 $\tau_{\text{tr}}\approx20\ms$부터는 각 뉴런이 자기 도형의 \emph{모든} 위치를 모은다($20$, $50$, $200\ms$에서 열 번 실행 모두). 불변성이 영상만으로 학습된 것이다. 물체 사이의 휴지가 중요하다. 휴지가 없으면 흔적이 다음 물체로 흘러 들어가 둘을 뒤섞는다.
+
+같은 현상이 실험에서도 보인다. 눈이 한 곳에서 다른 곳으로 도약하는 동안 실험에서 몰래 물체를 바꿔치기하면, 윗단계 뉴런들은 한두 시간 만에 바꿔치기한 물체에 원래 물체처럼 응답하기 시작한다. 잇달아 온 것을 연결하는 것이다~\cite{LiDiCarlo2008}. 뇌의 불변성은 실제로 시간의 연속성에서 학습된다. 이 규칙이 시각 학습 전체를 얼마나 설명하는지는 가설이다.
+
+\section{영상은 곧 움직임이다}
+
+영상은 학습을 위한 프레임의 흐름일 뿐 아니라 그 자체가 과제이다. 무엇이, 어디로, 얼마나 빨리 움직이는가. 첫걸음은 익숙하다. \ref{sec:gaba}장의 방향 검출기이다(그림~\ref{fig:direction}). 여기서는 지연된 억제가 한 방향의 움직임을 지운다. 이런 검출기는 시야 전체에 퍼져 있고, 그다음은 형태 특징과 똑같이 다룬다. 같은 방향의 검출기 여러 개를 서로 다른 위치에서 모으는 단계는 큰 물체의 움직임에, 그 물체가 어디에 있든 응답한다. 이것은 같은 AND와 OR의 쌍~\eqref{eq:scstage}이며, 다만 특징이 “가장자리”가 아니라 “시간 $d$ 동안 옮겨 간 가장자리”일 뿐이다.
+
+영상은 또 예측 가능하다. 다음 프레임은 이전 프레임과 거의 같다. \emph{예측 부호화} 가설에 따르면 윗단계는 아랫단계에 예측을 보내고, 위로는 주로 오차, 곧 예측이 고려하지 못한 것이 올라간다~\cite{RaoBallard1999}. 이것은 명제~\ref{prop:economy}와 같은 스파이크 절약이다. 이미 아는 것이 아니라 새 소식에 값을 치른다. 개별 관찰은 이 가설과 부합하지만, 파이프라인의 일반 구조로서는 증명되지 않았다.
+
+\section{뇌와 합성곱 신경망}
+
+유사성은 어디까지 가는가? 물체 하나를 빠르게 인식하는 데서는 정말 깊다~\cite{Yamins2014}. 그러나 뇌에는 단순한 합성곱 신경망에 없는 것도 있다.
+
+\emph{되먹임.} 뇌의 파이프라인은 순방향만이 아니다. 단계마다 뒤로, 옆으로 가는 연결이 있다. 가려지거나 조명이 나쁜 어려운 그림에서는 윗단계의 응답이 더 늦게 형성되고, 이 늦은 응답은 순방향 네트워크보다 되먹임 네트워크로 더 잘 기술된다~\cite{Kar2019}. 한 번의 통과로 쉬운 경우를 풀고, 어려운 경우에는 여러 바퀴가 필요하다.
+
+\emph{강건성.} 인공 네트워크는 눈에 띄지 않는 픽셀 위조로 속일 수 있다~\cite{Szegedy2014}. 사람이 보지 못하는 변화가 “판다”를 “긴팔원숭이”로 바꾼다~\cite{Goodfellow2015}. 사람의 시각은 이런 위조에 훨씬 강하지만 무적은 아니다. 여러 네트워크를 한꺼번에 속이는 그림은 짧게 보여 주면 사람의 선택도 옮겨 놓는다~\cite{Elsayed2018}. 강건성이 왜 이렇게 다른지는 열린 문제이다. 후보는 잡음, 전체 활동에 의한 나눗셈, 되먹임이다.
+
+\emph{교사.} 네트워크에는 이름표 붙은 예가 수백만 개 필요하고, 뇌에는 주로 이름표 없는 영상~\eqref{eq:traceinvariance}과 무엇이 중요한지에 대한 \nt{DOPA}의 약간의 힌트면 된다.
+
+\emph{에너지.} 뇌 전체가 약 $20$와트이고(명제~\ref{prop:economy}) 인식은 그중 일부만 쓴다. 학습된 합성곱 신경망은 그래픽 가속기에서 수백 와트를 쓴다.
+
+\section{착시: 기계는 어디서, 왜 틀리는가}
+\label{sec:illusions}
+
+남의 회로를 이해하려는 엔지니어는 회로에 특이한 신호를 넣고 어디서 틀리는지 본다. 시각에 대해서는 이런 신호가 오래전에 고안되었다. 바로 착시이다. 착시는 고장이 아니다. 착시 하나하나는 기계의 특정 메커니즘을 가리킨다. 그 메커니즘은 보통 환경에서는 올바로 동작하지만, 특별히 고른 그림 앞에서는 정체를 드러낸다.
+
+\emph{합리적 기대.} 입력에는 잡음이 있고, 기계는 세상에서 흔히 일어나는 것으로 그 입력을 보충한다. 느린 움직임은 빠른 움직임보다 흔하다. 입력을 믿기 어려울 때, 예를 들어 그림의 대비가 낮을 때 속도 추정은 느린 쪽으로 치우치고, 흐린 물체는 선명한 물체보다 느리게 움직이는 것처럼 보인다~\cite{Weiss2002}. 많은 밝기 착시도 같은 식으로 설명된다. 우리는 픽셀의 밝기가 아니라, 그 밝기가 과거에 대개 어떤 표면에 해당했는지를 본다~\cite{Purves2011}. 어떤 사람에게는 흰색과 금색으로, 다른 사람에게는 파란색과 검은색으로 보이는 드레스 사진도 같은 메커니즘이다. 그림이 모호하고, 사람들은 무의식적으로 가정하는 조명에서 서로 갈린다~\cite{LaferSousa2015,Wallisch2017}. 사람 사이의 차이는 측정되었다. 뇌가 여기서 확률론의 규칙에 따라 입력과 기대를 결합한다는 것은 근거가 탄탄한 가설이다.
+
+\emph{이득 조절.} 폭포를 1분 동안 바라본 뒤 움직이지 않는 바위를 보라. 바위가 위로 떠오른다. “아래” 채널과 “위” 채널은 \eqref{eq:dualrail}에서처럼 전선 한 쌍이다. 이득 조절~\eqref{eq:nakarushton}이 지친 채널을 약하게 만들어 쌍의 균형이 옮겨 간 것이다. 주변이 중심의 모습을 바꾸는 기울기 착시와 대비 착시는 \ref{sec:gaba}장에서처럼 이웃 활동에 의한 나눗셈으로 설명된다~\cite{Schwartz2009}. 조심해야 한다는 교훈적인 예도 있다. 격자의 흰 줄이 교차하는 곳의 어두운 점은 오랫동안 단순한 이웃 억제로 설명되었지만, 변형한 격자로 한 실험은 이 설명이 통하지 않음을 보였다~\cite{SchillerCarvey2005}.
+
+\emph{지연 보상.} 눈에서 윗단계까지 가는 데는 수십 밀리초가 걸리고, 그 사이에 움직이는 물체는 이미 옮겨 간다. 물체 옆에 정지한 점이 번쩍이면, 둘이 일치했는데도 물체가 섬광보다 앞서 있는 것처럼 보인다~\cite{Nijhawan1994}. 한 설명에 따르면 기계는 지연을 보상하려고 움직임을 앞으로 연장한다. \ref{sec:muscles}장에서와 같다. 되먹임이 늦으면 예측해야 한다. 이 착시에는 설명이 여럿 있고 논쟁은 끝나지 않았다.
+
+\emph{시간 부호의 오류.} 색 전환이 날카로운 고리로 된 정지 그림이 돌아가는 것처럼 보인다. 대비가 강한 부분은 흐린 부분보다 빨리 처리되고, 지연의 차이~\eqref{eq:latency}를 방향 검출기가 움직임으로 읽는다~\cite{Conway2005}. 착시를 일으키는 것은 작은 불수의적 눈 도약과 눈 깜박임이다. 도약할 때마다 입력이 새로 고쳐지고, 검출기는 다시 “움직임”을 본다~\cite{OteroMillan2012}. 이것은 \ref{sec:code}장의 시간 부호를 잘못 읽은 것이다.
+
+\emph{한 그림 속 두 그림.} 한 면으로 우리를 보다가 다른 면으로 보는 정육면체 골격, 또는 두 눈에 보여 준 서로 다른 그림. 지각은 몇 초마다 뒤바뀐다. 가장 좋은 모델은 두 해석 사이의 상호 억제, 느린 피로, 잡음이다~\cite{MorenoBote2007}. 곧 \ref{sec:muscles}장에서 걸음의 리듬을 만든 바로 그 회로~\eqref{eq:halfcentre}이다. 전환 시간은 잡음과 피로가 정한다. 모델~\cite{MorenoBote2007}에 따르면 주된 역할은 잡음이 하고 피로는 거들 뿐이다.
+
+인공 네트워크는 어떨까? 영상의 다음 프레임을 예측하도록 학습한 네트워크는 같은 정지 고리에서 회전을 보고, 대조 그림에서는 보지 않는다~\cite{Watanabe2018}. 이미지의 잡음을 없애고 선명도를 높이도록 학습한 네트워크는 사람과 같은 색 착시와 밝기 착시에 넘어간다~\cite{GomezVilla2020}. 그러므로 착시의 일부는 신경 조직의 특성이 아니라 기계가 배우는 과제 자체의 결과이다. 어떤 착시가 뇌에만 있는지는 어떤 시각 모델에게나 좋은 검사이다.
+
+\begin{keyblock}
+\begin{proposition}[메커니즘의 지문으로서의 착시]
+\label{prop:illusions}
+착시는 보통 세상에서 쓸모 있는 메커니즘이 특이한 입력을 받을 때 생긴다. 기대가 믿기 어려운 입력을 이기고, 이득 조절이 채널 쌍을 옮기고, 지연 보상이 물체를 앞으로 끌어가고, 지연 차이가 움직임으로 읽히고, 잡음과 피로를 동반한 상호 억제가 뒤바뀐다. 착시 하나하나는 자기 메커니즘을 가리키는 시험 신호이다. 착시 자체는 측정되었다. 그 설명은 근거가 탄탄한 것부터 논쟁 중인 것까지 있다.
+\end{proposition}
+\end{keyblock}
+
+\section{정리}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{3.0cm}>{\raggedright}p{4.6cm}>{\raggedright\arraybackslash}p{5.2cm}}
+\toprule
+기계가 하는 일 & 방법 & 알려진 것 \\
+\midrule
+$150\ms$ 만에 인식 & 열 개쯤의 단계를 한 번 통과 & 속도는 측정됨 \\
+응답을 선택적으로 & 부분들의 AND, $S$ 단계~\eqref{eq:scstage} & 첫 단계들에서 측정됨 \\
+응답을 불변으로 & 위치들에 대한 OR, $C$ 단계; 억제와 나눗셈 & 첫 단계들에서 측정됨; 윗단계에서는 단순화 \\
+답을 냄 & 마지막 단계 뉴런 약 백 개의 발화율, 선형 판독 & 측정됨 \\
+이름표 없이 학습 & 연속 영상에 흔적을 가진 헵 규칙~\eqref{eq:traceinvariance} & 물체 바꿔치기가 응답을 바꿈은 측정됨; 주된 규칙으로서는 가설 \\
+움직임을 봄 & 방향 검출기, 이어서 같은 AND/OR 쌍 & 측정됨 \\
+예측 가능한 것을 아낌 & 위로 예측 오차가 올라감 & 가설 \\
+어려운 경우를 품 & 되먹임, 여러 바퀴 & 늦은 응답과 되먹임의 역할은 측정됨 \\
+예측 가능하게 틀림 & 착시: 기대, 이득 조절, 지연, 잡음과 피로를 동반한 상호 억제 & 착시는 측정됨; 설명은 근거 있는 것부터 논쟁 중인 것까지 \\
+\bottomrule
+\end{tabular}
+\caption{기계는 이미지와 영상을 어떻게 인식하는가.}
+\label{tab:recognition}
+\end{table}
+
+인식은 우리가 이미 가진 부품으로 조립된다(표~\ref{tab:recognition}). 문턱값은 부분들의 AND를, 상호 억제는 위치들에 대한 OR을, 나눗셈은 밝기와의 무관함을, 흔적을 가진 헵 규칙은 없는 교사를 대신한다. 엔지니어들은 시각에서 선택성과 불변성의 교대를 가져와 그 위에 합성곱 신경망을 세웠다. 반대로 뇌는 가장 중요한 것을 아직 내주지 않았다. 이름표 없는 영상으로, 거의 에너지를 쓰지 않고 배우는 능력이다.
+
+\section{연습문제}
+
+\begin{exercise}[\lvlA]
+\label{ex:12:1}
+\emph{한 단계에서의 발화율.} 파이프라인의 한 단계는 $15\ms$ 걸리고, 뉴런은 초당 스파이크 $20$개로 발화하며, 잡음은 $c=0.1$로 상관되어 있다~\eqref{eq:correlated}. 뉴런 백 개 집단의 발화율 상대 오차는 얼마이며, 집단이 한없이 클 때의 극한은? 한 단계에서 발화율의 몇 단계를 구별할 수 있는가?
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:12:2}
+\emph{인식 한 번의 에너지.} $150\ms$ 동안의 한 번 통과에서 뉴런 $10^7$개씩인 열 단계가 비용 $10^{-10}$~J인 스파이크를 최대 하나씩 낸다. (가)~인식은 이 $150\ms$ 동안 뇌 전체 에너지의 몇 분의 몇을 쓰는가? (나)~그림을 $10\ms$에 인식하는 $300$~W 가속기는 몇 배를 쓰는가?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:12:3}
+\emph{$S$ 단계의 문턱값.} $24$개 점의 “망막”, 도형 $A=11011$과 $B=10101$, 견본~\eqref{eq:scstage}은 도형의 1에서 $+1$, 0에서 $-1$이다. (가)~$S$ 뉴런이 뒤집힌 점 하나는 봐주되 다른 도형에는 침묵하는 문턱값은? (나)~$100\times100$ 그림에서 $5\times5$ 특징 열 개에 $S$ 뉴런이 몇 개 필요한가?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:12:4}
+\emph{두 그림 중 하나는 얼마나 오래 가는가.} 전환 회로~\eqref{eq:halfcentre}에서 $\tau\ll\tau_a$이고, 집단~1이 이기는 동안 $r_2=0$, $r_1=I-a_1$이다. (가)~$I=1$, $\beta=2$, $b=2$, $\tau_a=0.4\,\text{s}$일 때 승리 지속 시간을 구하라. (나)~어떤 $\tau_a$라야 그림이 3초마다 바뀌는가?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:12:5}
+\emph{시뮬레이션: 불변성의 대가.} \texttt{models/\allowbreak recognition\_models.py}의 함수 \texttt{two\_stage}($4000$번 시행)로, $N=24$에서 $S$, $C$ 단계 쌍이 네 번에 한 번 틀리는 점 뒤집기 확률 $p$를 구하라. $p=0.1$에서 $N=8$부터 $N=192$까지 정답 비율은 어떻게 변하는가?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:12:6}
+\emph{시뮬레이션: 흔적의 창.} \texttt{models/\allowbreak recognition\_models.py}의 \texttt{trace\_learning}을 휴지 $0.3\,\text{s}$로 열 번 실행해, $5\ms$에서 $2\,\text{s}$까지의 $\tau_{\text{tr}}$ 중 어느 값에서 모든 실행이 불변성을 오류 없이 학습하는지 구하라. 이 창의 상한은 어디서 오는가?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:12:7}
+\emph{어디서든 움직임.} $0.1^\circ$ 간격으로 늘어선 이웃 점들에 \ref{sec:gaba}장의 방향 검출기가 있다. 지연 $d$를 가진 $A$로부터의 억제는, 둘의 시간 차가 $5\ms$ 이내이면 $B$로부터의 흥분을 지운다. 그 위에 $C$ 단계가 있다. 초당 $5$에서 $20^\circ$ 속도의 역방향 움직임에서 $C$가 침묵하려면 어떤 지연이 필요한가?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:12:8}
+\emph{픽셀 위조.} 깨끗한 도형에서 모델 \texttt{two\_stage}($N=24$)의 답을 바꾸려면 점 몇 개를 뒤집어야 하는가? 역시 이동 불변인 분류기 “입력의 1이 $3.5$개보다 많으면 $A$”라면? $p=0.1$에서 이 분류기의 정답 비율은, 단계 쌍의 $0.86$과 비교해 얼마인가?
+\end{exercise}

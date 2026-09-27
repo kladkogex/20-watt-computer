@@ -1,0 +1,331 @@
+\chapter{뉴런의 유형}
+\label{sec:neurontypes}
+
+\section{블랙박스로서의 뉴런}
+
+뉴런 860억 개가 든 자루를 받았다고 하자~\cite{Azevedo2009}. 이것을 몇 무더기로 나누라고 하면 어떻게 하겠는가?
+
+낯선 칩이 가득 든 자루를 받은 엔지니어라면 패키지 모양으로 분류하지 않을 것이다. 그는 이렇게 물을 것이다. 이 부품에는 입력이 몇 개이고 출력이 몇 개이며, 출력으로 무엇을 내보내는가? 뉴런도 그렇게 회로도의 블록으로 그려 보자(그림~\ref{fig:blackbox}).
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=1cm,y=1cm]
+% the box
+\node[draw,very thick,minimum width=2.6cm,minimum height=2.6cm,fill=blue!6] (N) at (0,0) {};
+\node at (0,0.55) {\small 뉴런};
+\node at (0,-0.15) {$\displaystyle u=\sum_i w_i x_i$};
+\node at (0,-0.8) {\small $y=\Theta(u-\theta)$};
+% inputs
+\foreach \k/\y/\lab in {1/1.05/{x_1},2/0.55/{x_2},3/0.05/{x_3}}{
+  \draw[->,thick,blue!60!black] (-4.2,\y) -- (-1.3,\y);
+  \node[left] at (-4.2,\y) {$\lab$};
+  \node[above,blue!60!black] at (-2.1,\y-0.06) {\scriptsize $w_{\k}$};}
+\node at (-4.45,-0.4) {$\vdots$};
+\node at (-2.1,-0.4) {$\vdots$};
+\draw[->,thick,blue!60!black] (-4.2,-1.05) -- (-1.3,-1.05);
+\node[left] at (-4.2,-1.05) {$x_n$};
+\node[above,blue!60!black] at (-2.1,-1.11) {\scriptsize $w_{n}$};
+\draw[decorate,decoration={brace,amplitude=5pt},gray!60!black] (-4.9,-1.2) -- (-4.9,1.2);
+\node[left,align=right,gray!40!black] at (-5.1,0) {\small 입력\\[-2pt]\small $n\sim10^3$--$10^5$개};
+% single output wire, then fan-out
+\draw[very thick,red!70!black] (1.3,0) -- (3.2,0);
+\foreach \x in {1.6,2.2,2.34,2.9}{\draw[thick,red!70!black] (\x,0) -- (\x,0.4);}
+\node[above right,font=\tiny\itshape,gray!30!black,inner sep=1pt] at (1.42,0.45) {딸깍\dots\ 딸깍-딸깍\dots};
+\node[below,red!70!black,align=center] at (2.25,-0.05) {\scriptsize 출력 $y$ 하나};
+\fill[red!70!black] (3.2,0) circle (0.06);
+\foreach \y in {1.3,0.65,0,-0.65,-1.3}{
+  \draw[->,thick,red!70!black] (3.2,0) -- (5.0,\y);}
+\draw[decorate,decoration={brace,amplitude=5pt},gray!60!black] (5.3,1.45) -- (5.3,-1.45);
+\node[right,align=left,gray!40!black] at (5.5,0) {\small $y$의 복사본이\\[-2pt]\small 다른 뉴런\\[-2pt]\small $10^3$--$10^4$개로};
+\end{tikzpicture}
+\caption{엔지니어의 눈으로 본 뉴런. 입력 $x_i$가 많고 각각 자기 가중치 $w_i$를 가진다. 안에서는 가중합 $u$를 문턱값 $\theta$와 비교한다($\Theta$는 계단 함수로, 인수가 양수이면 $1$, 아니면 $0$이다). 출력 $y$는 하나이며, 스파이크의 열이 가지를 치며 복제되어 수천 개의 수신자에게 전달된다.}
+\label{fig:blackbox}
+\end{figure}
+
+블록의 출력은 숫자가 아니라 짧은 전압 스파이크의 열이다. `딸깍', 쉼, `딸깍-딸깍', 긴 쉼. 스파이크는 모두 높이가 같으므로 모든 정보는 스파이크가 \emph{언제} 일어나는지에 담겨 있다. 블록 안에는, 거칠게 1차 근사로 말하면, 가산기와 비교기가 있다. 입력에 가중치를 곱해 더하고, 그 합이 문턱값을 넘으면 블록은 스파이크를 낸다. 다음 장에서는 이것을 연속 시간에서 제대로 동작하는 모델로 바꿀 것이다.
+
+출력은 하나지만 전선은 가지를 치고, 가지마다 \emph{똑같은} 신호 복사본이 흐른다. 전자공학에서는 이것을 팬아웃(fan-out)이라고 부른다. 대뇌 피질 뉴런의 팬아웃은 수천 정도이다. 칩 안의 논리 게이트는 보통 다른 게이트 몇 개만 구동한다.
+
+그렇다면 출력 전선을 따라 수신자에게 \emph{무엇이} 전달되는가? 스파이크는 각 가지의 끝까지 달려가 거기서 화학 신호로 바뀐다. 가지 끝은 세포 사이의 좁은 틈으로 특정 물질, 즉 \emph{신경전달물질}을 조금 뿜어내고, 이 물질이 수신자의 입력 전류를 바꾼다. 바로 여기에 분류 기준이 있다. \emph{뉴런의 출력이 어떤 신경전달물질을 내보내는가}이다.
+
+\section{출력 하나, 신호 유형 하나}
+
+분류가 의미를 가지려면 뉴런마다 출력 유형이 하나뿐이어야 한다. 정말 그런가? 실험에 따르면 거의 그렇다.
+
+\begin{keyblock}
+\begin{proposition}[뉴런 하나, 출력 유형 하나]
+\label{prop:dale}
+거의 모든 뉴런에는 주된 신경전달물질이 하나 있고, 뉴런은 출력의 모든 가지에서 그것을 내보낸다. 따라서 뉴런의 유형은 주된 신경전달물질로 정해진다~\cite{Strata1999}.
+\end{proposition}
+\end{keyblock}
+
+뉴런의 유형은 \emph{주된 신경전달물질 영어 이름의 처음 네 글자}로 표시하기로 하자. 예를 들어 주된 신경전달물질이 글루탐산(glutamate)인 뉴런은 \nt{GLUT} 뉴런이다. 모든 유형은 표~\ref{tab:types}에 모아 두었다.
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{1.0cm}>{\raggedright}p{2.05cm}>{\raggedright}p{1.75cm}>{\raggedright}p{1.6cm}>{\centering}p{0.7cm}>{\raggedright}p{1.55cm}>{\raggedright}p{1.8cm}>{\raggedright\arraybackslash}p{3.2cm}}
+\toprule
+유형 & 주된 신경전달물질 & 버스 & 속도 & 부호 & 뇌 속 뉴런 수 & 뉴런당 출력 수 & 계산에서의 역할 \\
+\midrule
+\nt{GLUT} & 글루탐산 & 주소 & 빠름과 느림 & $+$ & $\sim8\cdot10^{10}$ & $\sim10^4$ & 주된 양의 가중치 \\
+\nt{GABA} & GABA & 주소 & 빠름과 느림 & $-$ & $\sim3\cdot10^{9}$ & $10^3$--$10^4$ & 주된 음의 가중치 \\
+\nt{GLYC} & 글리신 & 주소 & 빠름 & $-$ & $10^6$--$10^7$ & $10^2$--$10^3$ & 척수와 뇌줄기의 음의 가중치; 글루탐산 수용체 중 하나의 두 번째 열쇠 \\
+\nt{ACET} & 아세틸콜린 & 둘 다 & 빠름과 느림 & $\pm$ & $\sim10^6$ & 근육: $10$--$10^3$; 뇌: $\sim10^5$ & 근육으로 가는 출력; 뇌에서는 학습률(가설) \\
+\nt{DOPA} & 도파민 & 브로드캐스트 & 느림 & $\pm$ & $\sim5\cdot10^{5}$ & $10^5$--$10^6$ & 보상 예측 오차 $\delta$ \\
+\nt{SERO} & 세로토닌 & 브로드캐스트 & 느림(수용체 한 종류는 빠름) & $\pm$ & $\sim3\cdot10^{5}$ & $\sim10^5$ & 계획 지평(가설) \\
+\nt{HIST} & 히스타민 & 브로드캐스트 & 느림 & $+$ & $\sim6\cdot10^{4}$ & 추정치 없음 & 전역 신호 `깨어 있어라' \\
+\nt{NORA} & 노르아드레날린 & 브로드캐스트 & 느림 & $\pm$ & $\sim5\cdot10^{4}$ & $\sim10^5$ & 이득(가설) \\
+\nt{ADRE} & 아드레날린 & 브로드캐스트 & 느림 & $\pm$ & $\sim10^4$ & 추정치 없음 & 뉴런이 적다; 뇌에서의 역할은 불분명 \\
+\nt{ASPA} & 아스파르트산 & 주소 & 빠름 & $+$ & 추정치 없음 & 추정치 없음 & 약한 양의 가중치; 역할은 논쟁 중 \\
+\bottomrule
+\end{tabular}
+\caption{뉴런의 유형. 뇌 속 뉴런 수가 많은 순서로 나열했다. \emph{버스}: 주소 버스는 신경전달물질을 특정 수신자로 가는 좁은 틈에 내보내는 방식이고, 브로드캐스트는 소수의 원천 뉴런 집단이 넓은 영역에 내보내는 방식이다(\ref{sec:buses}절). \emph{속도}: 빠름은 이온성 수용체를 거쳐 밀리초 단위, 느림은 대사성 수용체를 거쳐 수백 밀리초 이상이다. \emph{부호}는 통상적인 부호이다. 최종 부호는 수신자가 정하며(\ref{sec:receiver}절), $\pm$는 두 부호가 모두 나타난다는 뜻이다. \emph{뇌 속 뉴런 수}는 사람의 뇌 전체에 있는 해당 유형 뉴런의 수를 자릿수 수준으로 나타낸 것이다. 뉴런은 모두 약 $8.6\cdot10^{10}$개이다~\cite{Azevedo2009}. \nt{GLUT} 뉴런의 거의 전부, 약 $7\cdot10^{10}$개는 소뇌의 작은 입력 뉴런이다. \nt{GLUT}와 \nt{GABA}의 수는 이 집계와 피질 속 \nt{GABA} 뉴런의 비율에서 얻었다~\cite{Hendry1987}. 수가 적은 유형 가운데 직접 센 것은 \nt{HIST}~\cite{Airaksinen1991}와 \nt{DOPA} 뉴런의 두 집단 중 큰 쪽~\cite{Pakkenberg1991}뿐이므로, \nt{DOPA}의 값은 하한이다. \nt{SERO}는 두 부분 집계의 합이다~\cite{Baker1990,Baker1991}. \nt{NORA}, \nt{GLYC}, \nt{ACET}, \nt{ADRE}의 수는 직접 세지 않은 거친 자릿수 추정치이다. \emph{뉴런당 출력 수}는 뉴런 하나가 가진 시냅스 말단, 즉 출력 전선의 가지에서 신경전달물질을 내보내는 자리(그림~\ref{fig:blackbox})의 수를 자릿수 수준으로 나타낸 것이다. 브로드캐스트 유형의 말단은 직접 세지 않았다. \nt{DOPA}의 값은 출력 전선 하나의 가지가 표적 영역의 얼마만큼을 덮는지에서 유도했고~\cite{Matsuda2009}, 나머지 유형의 추정은 더 거칠다. \nt{ACET}에는 두 경우가 있다. 근육을 제어하는 뉴런과 뇌 속의 브로드캐스트 뉴런이다.}
+\label{tab:types}
+\end{table}
+
+% the pie is a table-type float with a figure caption, so it can never float ahead of Table~\ref{tab:types}
+\begin{table}[tb]
+\makeatletter\def\@captype{figure}\makeatother
+\centering
+\definecolor{vizglut}{HTML}{2A78D6}
+\definecolor{vizgaba}{HTML}{E34948}
+\definecolor{vizrest}{HTML}{8A8986}
+\begin{tikzpicture}[>=Stealth]
+% pie: GLUT 96.4 %, GABA 3.6 % (13.0 degrees), the rest 0.006 % (a hairline at 0 degrees)
+\fill[vizglut] (0,0) -- (13:1.9) arc (13:360:1.9) -- cycle;
+\fill[vizgaba] (0,0) -- (0:1.9) arc (0:13:1.9) -- cycle;
+\draw[white,line width=1pt] (0,0) -- (13:1.9);
+\draw[vizrest,line width=1.2pt] (0,0) -- (0:1.9);
+\node[white,align=center,font=\small] at (190:0.95) {\nt{GLUT}\\$96.4\,\%$};
+\draw[gray!60!black] (6.5:1.75) -- (2.05,2.1);
+\node[anchor=west,font=\small] at (2.05,2.1) {\nt{GABA} $3.6\,\%$};
+% zoom box for the remaining types
+\draw[densely dashed,vizrest] (1.9,0) -- (3.1,1.65);
+\draw[densely dashed,vizrest] (1.9,0) -- (3.1,-2.2);
+\draw[vizrest,rounded corners=3pt] (3.1,-2.2) rectangle (10.1,1.65);
+\node[anchor=west,font=\scriptsize] at (3.2,1.4) {나머지 전부 합쳐서: $\approx0.006\,\%$; 로그 눈금};
+\foreach \code/\lg/\y/\val/\lx in {GLYC/6.477/1.0/{$10^6$--$10^7$}/4.05,ACET/6.0/0.6/{$\sim10^6$}/3.0,DOPA/5.699/0.2/{$\sim5\cdot10^5$}/2.699,SERO/5.477/-0.2/{$\sim3\cdot10^5$}/2.477,HIST/4.778/-0.6/{$\sim6\cdot10^4$}/1.778,NORA/4.699/-1.0/{$\sim5\cdot10^4$}/1.699,ADRE/4.0/-1.4/{$\sim10^4$}/1.0}{
+  \node[anchor=east,font=\scriptsize] at (4.35,\y) {\nt{\code}};
+  \fill[vizrest] (4.45,\y-0.13) rectangle ({4.45+\lg-3},\y+0.13);
+  \node[anchor=west,font=\scriptsize] at ({4.5+\lx},\y) {\val};}
+\draw[vizrest,thick] (7.45,1.0) -- (8.45,1.0);
+\draw[vizrest,thick] (7.45,0.92) -- (7.45,1.08);
+\draw[vizrest,thick] (8.45,0.92) -- (8.45,1.08);
+\draw[gray!60!black] (4.45,-1.72) -- (8.45,-1.72);
+\foreach \e in {3,4,5,6,7}{
+  \draw[gray!60!black] ({4.45+\e-3},-1.72) -- ({4.45+\e-3},-1.66);
+  \node[below,font=\scriptsize] at ({4.45+\e-3},-1.72) {$10^{\e}$};}
+\end{tikzpicture}
+\caption{표~\ref{tab:types}의 추정치로 본 뇌 속 뉴런 유형의 비율. 원은 거의 전부 \nt{GLUT}가 차지한다. \nt{GABA}는 좁은 부채꼴이고, 나머지 유형은 모두 합쳐도 경계선 위의 머리카락 한 올이다. 오른쪽은 그 머리카락을 확대해 뉴런 수를 로그 눈금으로 나타낸 것이다. \nt{GLYC}의 막대는 범위 $10^6$--$10^7$의 가운데까지 그렸고, 선분은 범위 전체를 보여 준다. \nt{ASPA}는 추정치가 없어 그림에 넣지 않았다.}
+\label{fig:typepie}
+\end{table}
+
+이 무더기들이 얼마나 불균등한지는 그림~\ref{fig:typepie}에 나와 있다. 뉴런 천 개 가운데 $964$개가 \nt{GLUT}, $36$개가 \nt{GABA}이고, 나머지 유형을 모두 합쳐도 십만 개 중 여섯 개 정도이다.
+
+GABA는 원래 네 글자로 된 약칭이다. 주된 신경전달물질이 되는 일이 거의 없는 물질, 즉 신경펩타이드, 기체, 지질, 퓨린은 따로 코드를 받지 않는다. 이들은 부록~\ref{sec:othermediators}에서 다룬다. 명제~\ref{prop:dale}의 `거의'라는 말은 중요하다. 많은 뉴런이 주된 신경전달물질과 함께 보조 물질을 내보낸다~\cite{Yao2023}. 어떤 뉴런은 두 번째 빠른 신경전달물질을, 그것도 반대 부호의 것을 내보낸다. \nt{DOPA} 뉴런의 일부는 GABA도 내보낸다~\cite{Tritsch2012}. 또 어떤 뉴런은 같은 출력의 서로 다른 가지에서 서로 다른 신경전달물질을 내보낸다~\cite{Zhang2015}. 이 모든 것이 측정되었으므로 `뉴런 하나, 신경전달물질 하나'는 예외가 있는 규칙이지 법칙이 아니다. 그래도 첫 번째 분류로서는 검증을 견뎌 낸다. 발현하는 유전자에 따라 뉴런을 5000개가 넘는 무리로 나눈 생쥐 뇌 세포 아틀라스에서도, 뉴런의 큰 부류는 여전히 무엇보다 주된 신경전달물질에 따라 갈린다~\cite{Yao2023}.
+
+이 규칙에는 뇌를 인공 신경망과 곧바로 구별해 주는 결과가 있다. 인공 신경망에서는 같은 뉴런이 한 수신자에게는 양의 가중치를, 다른 수신자에게는 음의 가중치를 가질 수 있다. 가중치 $w_{ij}$는 행렬 속의 숫자일 뿐이다. 뇌에서는 작용의 부호가 주로 신경전달물질로 정해지고, 뉴런의 신경전달물질은 하나이다. 따라서 뉴런 $j$가 한 수신자를 흥분시키면 다른 모든 수신자도 흥분시킨다. 뉴런 $j$에서 나가는 가중치 행렬의 \emph{열} 전체가 같은 부호를 가진다.
+\begin{empheq}[box=\keybox]{equation}
+\operatorname{sign} w_{ij} \;=\; s_j \quad\text{모든 수신자 } i\text{에 대해}, \qquad s_j\in\{+1,-1\}.
+\label{eq:dalesign}
+\end{empheq}
+뉴런은 흥분성($s_j=+1$)과 억제성($s_j=-1$)으로 나뉘며, 이것은 연결이 아니라 뉴런 자체의 성질이다. 흥분성 뉴런에서 음의 연결이 필요하면 중개자를 거쳐야 한다. 흥분성 뉴런이 억제성 뉴런을 흥분시키고, 억제성 뉴런이 표적을 억제한다. 한 단계만큼 지연된 음의 가중치이다.
+
+알려진 신경전달물질은 백 가지가 넘지만, 뇌가 하는 일의 거의 전부는 여섯 가지 남짓에 기대고 있으며, 이들은 전혀 다른 두 부류로 나뉜다.
+
+\section{두 가지 버스: 주소 버스와 브로드캐스트}
+\label{sec:buses}
+
+컴퓨터 네트워크에는 메시지를 전달하는 방법이 두 가지 있다. 첫째는 \emph{주소 지정} 방식, 즉 유니캐스트(unicast)이다. 패킷이 한 송신자에서 특정 수신자로 빠르게 가고, 다른 누구도 그것을 보지 못한다. 둘째는 \emph{브로드캐스트}(broadcast)이다. 송신자가 메시지 하나를 네트워크의 모든 노드에 한꺼번에 보낸다. 뉴런은 두 방식을 모두 쓰며, 신경전달물질은 정확히 이 기준으로 나뉜다(그림~\ref{fig:phone_radio}).
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,scale=0.95]
+% ---- unicast: point-to-point wiring
+\node[above] at (2.0,3.3) {\small \textbf{주소 버스}: 글루탐산과 GABA};
+\foreach \i in {0,...,4}{
+  \fill[blue!60!black] (0.2+0.9*\i,2.5) circle (0.1);
+  \fill[blue!60!black] (0.2+0.9*\i,0.6) circle (0.1);}
+\foreach \a/\b in {0/0,0/1,1/1,1/3,2/2,3/2,3/4,4/4,2/0}{
+  \draw[->,blue!60!black] (0.2+0.9*\a,2.38) -- (0.2+0.9*\b,0.72);}
+\fill[red!70!black] (1.1,1.55) circle (0.09);
+\pic[scale=1.2] at (1.75,1.9) {letter};
+\draw[->,red!70!black,thick] (1.1,1.55) -- (0.28,0.7);
+\draw[->,red!70!black,thick] (1.1,1.55) -- (1.95,0.72);
+\node[align=center,below] at (2.0,0.2) {\small 뉴런 수십억 개,\\[-2pt]\small 저마다 자기 수신자가 있다,\\[-2pt]\small 시간: 밀리초};
+% ---- broadcast: one small source, global targets
+\begin{scope}[xshift=7.2cm]
+\node[above] at (1.8,3.3) {\small \textbf{브로드캐스트}: 도파민, \dots};
+\foreach \i in {0,...,8}{\fill[blue!60!black] (-0.2+0.5*\i,2.75) circle (0.08);}
+\fill[orange!85!black] (1.8,0.35) ellipse (0.35 and 0.18);
+\pic[scale=1.5] at (2.7,0.75) {mast};
+\foreach \x in {-0.2,0.3,0.8,1.3,1.8,2.3,2.8,3.3,3.8}{
+  \draw[->,orange!85!black] (1.8,0.5) .. controls (1.8,1.3) and (\x,1.6) .. (\x,2.62);}
+\node[align=center,below] at (1.8,0.1) {\small 뉴런 수천--수십만 개,\\[-2pt]\small 모두에게 같은 메시지,\\[-2pt]\small 시간: 수백 밀리초 이상};
+\end{scope}
+\end{tikzpicture}
+\caption{두 가지 전송 방식. 왼쪽은 주소 버스로, 봉투에 주소를 적은 우편과 비슷하다. 뉴런 하나와 그 수신자 둘을 빨간색으로 표시했다. 오른쪽은 브로드캐스트로, 라디오 방송국과 같다. 작은 원천 뉴런 집단이 있고, 모두가 같은 메시지를 받는다.}
+\label{fig:phone_radio}
+\end{figure}
+
+\emph{주소 버스}는 글루탐산과 GABA이다. 압도적 다수의 뉴런이 이 둘을 내보낸다. 각 출력은 특정 세포로 이어지고, 신경전달물질은 접촉부의 좁은 틈 안에서만, 그것도 빠르게 작용한다. 1밀리초 만에 수신자의 이온 채널이 열리고, 몇 밀리초면 모든 것이 끝난다. 이것은 \emph{데이터} 버스이다. 뇌가 계산하는 내용이 이 버스로 전달된다.
+
+\emph{브로드캐스트 버스}는 도파민, 세로토닌, 노르아드레날린, 그리고 부분적으로 아세틸콜린이다. 이들을 내보내는 것은 아주 작은 뉴런 집단이지만, 각 뉴런의 출력은 믿기 어려울 만큼 넓게 가지를 친다. 신경전달물질은 좁은 틈보다는 세포 사이 공간으로 방출되는 경우가 많고, 거기서 퍼져 나가 주변의 모든 세포에 작용한다. 작용은 느리다. 채널을 직접 여는 대신 수신자 안에서 화학 반응의 연쇄를 시작한다. 이 버스로는 데이터가 아니라 넓은 영역에 공통인 \emph{제어 파라미터}가 전달되며, 이것이 네트워크의 작동 모드를 바꾼다. 이득, 학습률, `잘했다'는 신호 같은 것이다. 그래서 이런 신경전달물질을 \emph{신경조절물질}이라고 부른다. 오랫동안 이런 채널 하나하나가 뇌 전체에 대해 숫자 하나라고 여겨졌다. 최근의 측정은 그림을 다듬었다. 채널은 전선 한 가닥이 아니라 병렬 선로 몇 가닥을 묶은 작은 다발이다. 한 신경전달물질의 원천 뉴런들은 하위 시스템으로 나뉘어 저마다 자기 수신자와 자기 메시지를 가지며, 그 자리에서 얼마나 방출할지는 국소 신호로도 조정된다~\cite{Ren2018,Poe2020}. 이런 선로의 수는 수십억이 아니라 몇 개에서 수십 개이므로, 채널은 여전히 브로드캐스트이다.
+
+이 장에서 그림 하나만 가져가야 한다면 바로 이것이다. 뇌는 주소 지정 방식으로 데이터를 전달하는 거대한 네트워크이고, 그 위에 제어 신호를 싣는 브로드캐스트 채널 몇 개가 걸려 있다. 프로그래머라면 익숙한 구조를 알아볼 것이다. 계산이 있고, 그 위에 각각 네트워크의 넓은 영역에 공통인 제어 변수 몇 개가 있다.
+
+\section{\nt{GLUT}: 양의 가중치}
+
+글루탐산은 뇌의 주된 흥분성 신경전달물질이다. 뉴런의 출력이 글루탐산을 내보내면 수신자에서 채널이 열려 나트륨이 안으로 들어오고, 수신자의 막전압이 올라가 스스로 스파이크를 낼 가능성이 커진다. 그림~\ref{fig:blackbox}의 언어로 말하면 이것은 \emph{양의} 가중치 $w_i>0$을 가진 입력이다.
+
+글루탐산은 누가 내보내는가? 데이터를 먼 거리로 전달하는 거의 모든 뉴런이다. 피질 뉴런의 4분의 3에서 5분의 4, 그리고 뇌의 여러 영역을 잇는 뉴런 대부분이 여기에 속한다. 뇌의 네트워크는 무엇보다 글루탐산 연결의 네트워크이다.
+
+공학적 세부 사항 하나. 방출 직후 틈 속 글루탐산 농도는 수천 배로 치솟아 약 1밀리몰에 이르고, 약 1밀리초의 시간 상수로 떨어진다~\cite{Clements1992}. 글루탐산이 틈 밖으로 퍼져 나가고, 특수한 펌프 단백질이 그것을 다시 세포 안으로 퍼 올리기 때문이다. 왜 그럴까? 통신 선로에서 기호 하나를 보낼 때마다 신호를 0으로 되돌리는 것과 같은 이유이다. 신경전달물질을 치우지 않으면 다음 스파이크는 `통화 중'인 선로에 도착하고, 몇 밀리초 간격의 스파이크들이 서로 뭉개진다.
+
+\section{\nt{GABA}: 음의 가중치}
+
+모든 가중치가 양수인 네트워크를 상상해 보자. 평균적으로 스파이크 하나가 다음 스파이크를 하나보다 많이 낳으면, 활동은 지수적으로 늘어나 몇 단계 만에 네트워크 전체를 뒤덮는다. 전자공학자라면 이득이 1보다 큰 양의 피드백 루프를 알아볼 것이다. 회로는 포화로 치닫는다. 이를 막으려면 음의 가중치가 필요하다. 그 주된 원천은 감마-아미노뷰티르산, 줄여서 GABA이다.
+
+GABA는 수신자에서 염화 이온을 통과시키는 채널을 연다. 염소의 평형 전위는 휴지 전위 근처나 그보다 약간 아래에 있으므로, 열린 염소 채널은 막을 휴지 전위 근처에 붙잡아 두고 전압이 문턱값까지 오르지 못하게 한다. 이것은 \emph{음의} 가중치 $w_i<0$을 가진 입력이다. 피질 뉴런의 5분의 1에서 4분의 1이 GABA 뉴런이다~\cite{Hendry1987}. 이들의 출력은 짧고, 가장 가까운 이웃을 억제한다.
+
+뇌에서 억제는 단순한 뺄셈보다 훨씬 많은 일을 한다. 억제는 네트워크 전체를 동작점에 붙잡아 두는 음의 피드백으로 작동한다. 정상적으로 작동하는 피질에서는 뉴런으로 들어오는 흥분성 전류와 억제성 전류가 거의 정확히 균형을 이룬다고 여겨진다. 이 체제는 이론으로 예측되었고~\cite{vanVreeswijk1996} 살아 있는 피질의 전류 측정에서도 보이며~\cite{Haider2006}, 뉴런은 늘 문턱값 근처에 머문다. 불안정한 점 근처에서 강한 음의 피드백으로 안정화된 회로는 작은 신호에 빠르고 민감하게 반응한다. 오래된 공학 기법이다.
+
+\section{\nt{DOPA}: 오차 신호}
+
+첫 번째 브로드캐스트 채널은 도파민이다. 사람의 도파민 뉴런은 50만 개 정도, 대략 17만 개 중 하나이다. 이것은 두 집단 중 큰 쪽에서 센 수이므로~\cite{Pakkenberg1991} 하한이다. 이들의 출력은 행동을 고르는 영역들로 퍼져 나간다.
+
+이 채널은 무엇을 전달하는가? 보상을 받는 동물에서 도파민 뉴런의 스파이크를 기록한 실험이 답을 준다~\cite{Schultz1997}. 동물에게 이따금 예고 없이 주스 한 방울을 주면, 도파민 뉴런은 짧은 스파이크 버스트로 응답한다. 그다음에는 주스를 주기 전에 전등을 켜는데, 언제나 주스보다 1초 앞서 켠다. 동물이 이 관계를 익히면 뉴런은 \emph{전등}에 버스트로 응답하기 시작하고, 제때 정확히 온 주스 자체에는 전혀 응답하지 않는다. 그리고 전등을 켠 뒤 주스를 주지 않으면, 주스가 와야 했던 순간에 뉴런은 \emph{잠잠해지고} 발화율이 평소보다 떨어진다.
+
+세 경우를 모두 설명하는 규칙은 이것이다(그림~\ref{fig:rpe}). 뉴런은 얼마나 좋은지가 아니라 \emph{기대보다 얼마나 좋은지 또는 나쁜지}를 알린다.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=3.4cm,y=1cm]
+\foreach \y/\lab in {2.8/{예고 없는 주스},1.4/{전등 뒤의 주스},0/{전등, 그러나 주스 없음}}{
+  \draw[gray!70!black] (0,\y) -- (3,\y);
+  \draw[densely dotted,gray!60!black] (0,\y+0.3) -- (3,\y+0.3);
+  \node[left,align=right,font=\small] at (-0.03,\y+0.35) {\lab};}
+% row 1: juice without a cue -> burst at the juice
+\draw[very thick,orange!85!black] plot[domain=0:3,samples=120] (\x,{2.8+0.3+0.75*exp(-((\x-2.08)/0.07)^2)});
+\pic[scale=0.8] at (2,2.58) {juice};
+% row 2: cue then juice -> burst at the cue, nothing at the juice
+\draw[very thick,orange!85!black] plot[domain=0:3,samples=120] (\x,{1.4+0.3+0.75*exp(-((\x-1.08)/0.07)^2)});
+\pic[scale=0.85] at (1,1.15) {lamp}; \pic[scale=0.85] at (2,1.15) {juice};
+% row 3: cue, juice omitted -> burst at the cue, dip when the juice was due
+\draw[very thick,orange!85!black] plot[domain=0:3,samples=120] (\x,{0.3+0.75*exp(-((\x-1.08)/0.07)^2)-0.28*exp(-((\x-2.1)/0.12)^2)});
+\pic[scale=0.85] at (1,-0.25) {lamp}; \pic[scale=0.85] at (2,-0.25) {nojuice};
+\node[right,font=\scriptsize] at (2.36,0.1) {움푹 꺼짐};
+\node[right,font=\scriptsize] at (2.13,3.75) {깜짝!};
+\node[left,font=\scriptsize] at (0.97,2.25) {전등에 대한 버스트};
+\node[above,font=\scriptsize] at (2,1.75) {반응 없음};
+\draw[->,gray!70!black] (0,-0.75) -- (3.05,-0.75) node[right,black,font=\small] {$t$};
+\draw[gray!60!black] (1,-0.8) -- (1,-0.7) node[below=2pt,font=\scriptsize] {전등, $1\,\text{s}$};
+\draw[gray!60!black] (2,-0.8) -- (2,-0.7) node[below=2pt,font=\scriptsize] {주스, $2\,\text{s}$};
+\end{tikzpicture}
+\caption{세 실험에서 \nt{DOPA} 뉴런의 발화율(개략도, \cite{Schultz1997}에 따름). 점선은 일정한 배경 발화율이다. 전등은 신호, 물방울은 주스, 줄 그은 물방울은 약속했지만 주지 않은 주스이다. 응답은 예측 오차~\eqref{eq:rpe}이다.}
+\label{fig:rpe}
+\end{figure}
+
+강화학습~\cite{SuttonBarto2018}을 아는 프로그래머라면 이 양을 바로 알아볼 것이다. 행동을 고르는 법을 배우는 에이전트는 추정치 $V(s)$, 즉 상태 $s$에 있을 때 기대하는 보상의 양을 저장한다. 에이전트는 매 단계 뒤에 기대와 실제로 받은 것을 비교하고,
+\begin{empheq}[box=\keybox]{equation}
+\delta_t \;=\; r_t \;+\; \gamma\,V(s_{t+1}) \;-\; V(s_t) ,
+\label{eq:rpe}
+\end{empheq}
+추정치를 고친다. $V(s_t)\leftarrow V(s_t)+\alpha\,\delta_t$. 여기서 $r_t$는 받은 보상, $\gamma<1$은 할인율(미래의 보상이 즉각적인 보상보다 얼마나 덜 가치 있는가), $\alpha$는 학습률이다. 양 $\delta_t$를 \emph{시간차 오차}라고 한다.
+
+이 양은 도파민 뉴런과 똑같이 행동한다. 예고 없는 주스에서는 $V$가 아직 0이고 $r>0$이므로 $\delta>0$이다. 학습된 주스에서는 전등이 보상을 예측했으므로 주스 직전의 $V(s_t)$가 이미 $r$과 같고 $\delta=0$이다. 주스가 오지 않으면 $V(s_t)=r$인데 $r_t=0$이므로 $\delta<0$이다. 그리고 버스트가 전등으로 옮겨 가는 것은 바로 전등의 순간에 기대가 한꺼번에 올라가기 때문이다. $\gamma V(s_{t+1})-V(s_t)>0$. 여기서 단계 $t,t+1,\dots$는 알고리즘의 약속일 뿐이다. 몸에는 단계를 세는 시계가 없으며, 같은 양을 연속 시간에서 \ref{sec:dofa}장에서 얻을 것이다.
+
+따라서 도파민은 스칼라 오차 신호 $\delta$를 그것으로 학습해야 하는 모든 곳에 브로드캐스트하는 것이다. 1차 근사로는 뇌 전체에 전선 하나, 매 순간 숫자 하나이다. 이 전선이 실제로 얼마나 다발에 가까운지는 \ref{sec:dofaalt}장에서 살펴본다.
+
+\section{나머지 브로드캐스트 채널}
+
+나머지 신경조절물질에 대해서는 그 역할을 같은 전역 파라미터의 언어로 옮기는 작업 가설들만 있다~\cite{Doya2002}. 어디까지나 가설로 받아들이기 바란다.
+
+\emph{\nt{NORA}, 노르아드레날린: 이득.} 노르아드레날린 뉴런은 도파민 뉴런보다도 적어서 거칠게 추정하면 수만 개 정도이지만, 그 출력은 사실상 뇌 전체로 퍼진다. 이들은 뜻밖의 일이나 중요한 일이 생기면 급격히 활성화된다. 노르아드레날린은 수신 뉴런의 전달 특성의 기울기를 바꾼다. 약한 입력은 더 약해지고 강한 입력은 더 강해진다. 측정해 보면 수신자의 배경 스파이크가 입력에 대한 응답보다 더 강하게 억제되어 신호 대 잡음비가 올라간다~\cite{Foote1975NE}. 간단한 모델에서는 이것을 숫자 하나로 기술한다. 뉴런이 입력 전류 $u$에 발화율 $f=F\bigl(g\cdot u\bigr)$로 응답한다면, 노르아드레날린은 계수 $g$를 키운다~\cite{AstonJones2005}(자세한 내용은 \ref{sec:nora}장). $g$가 큰 네트워크는 `대비가 뚜렷하게' 작동하며 결정을 더 빨리 내린다. $g$가 작으면 `흐릿하게' 작동하며, 탐색 모드의 강화학습 에이전트처럼 여러 선택지를 더 많이 시도한다.
+
+\emph{\nt{ACET}, 아세틸콜린: 학습률.} 아세틸콜린은 네트워크가 현재 입력에 얼마나 귀 기울이고 저장된 자기 데이터에 얼마나 귀 기울일지를 조절한다. 아세틸콜린 수준이 높으면 감각 기관에서 오는 입력은 강해지고 내부의 `회상' 연결은 약해지며, 동시에 가중치가 바뀌기 쉬워진다~\cite{Hasselmo2006}. 거칠게 말해 `쓰기/읽기' 스위치이고, 그와 함께 학습률 $\alpha$이다.
+
+\emph{\nt{SERO}, 세로토닌: 계획 지평.} 세로토닌이 무엇을 전달하는지는 가장 덜 알려져 있다. 한 가설은 세로토닌을 \eqref{eq:rpe}의 할인율 $\gamma$와 연결한다. 세로토닌 수준이 높으면 지금 작은 보상을 움켜쥐기보다 큰 보상을 기다릴 준비가 되어 있다는 것이다. 세로토닌 뉴런은 고르고 느리게 작동한다. 깨어 있을 때는 초당 스파이크 몇 개를 내고, 수면의 한 단계에서는 거의 잠잠해진다~\cite{JacobsAzmitia1992}.
+
+여섯 가지 신경전달물질을 모두 표~\ref{tab:transmitters}에 모았다.
+
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{>{\raggedright}p{2.4cm}>{\raggedright}p{3.0cm}>{\raggedright}p{2.0cm}>{\raggedright\arraybackslash}p{5.2cm}}
+\toprule
+뉴런 유형 & 뉴런 비율 & 버스 & 계산에서의 역할 \\
+\midrule
+\nt{GLUT}(글루탐산) & 대다수 & 주소 & 양의 가중치, $w>0$ \\
+\nt{GABA}(GABA) & 피질의 20--25\% & 주소 & 음의 가중치, $w<0$; 안정화 \\
+\nt{DOPA}(도파민) & $\sim 6\cdot10^{-6}$ & 브로드캐스트 & 예측 오차 $\delta$ \\
+\nt{NORA}(노르아드레날린) & $\sim 6\cdot10^{-7}$ & 브로드캐스트 & 이득 $g$(가설) \\
+\nt{ACET}(아세틸콜린) & 적음 & 둘 다 & 학습률 $\alpha$; `쓰기/읽기'(가설) \\
+\nt{SERO}(세로토닌) & $\sim 3\cdot10^{-6}$ & 브로드캐스트 & 할인 $\gamma$(가설) \\
+\bottomrule
+\end{tabular}
+\caption{계산의 언어로 본 뇌의 주요 신경전달물질. 오른쪽 열은 크게 단순화한 것이다. 글루탐산, GABA, 도파민에 대해서는 믿을 만하고, 나머지는 가설이다.}
+\label{tab:transmitters}
+\end{table}
+
+\section{부호는 수신자가 정한다}
+\label{sec:receiver}
+
+글루탐산은 양의 가중치, GABA는 음의 가중치라고 말했을 때 나는 조금 속였다. 어떤 분자도 부호를 품고 있지 않다. 분자는 열쇠일 뿐이다. 그것이 붙잡혔을 때 무슨 일이 일어날지는 \emph{자물쇠}, 즉 수신 세포의 수용체가 정한다.
+
+가장 좋은 예는 도파민이다. 도파민에는 두 계열의 수용체가 있다~\cite{Beaulieu2011}. 한쪽에서는 세포의 흥분을 쉽게 하고, 다른 쪽에서는 어렵게 한다. 행동을 고르는 영역에서 어떤 뉴런은 첫 번째 유형의 수용체를, 다른 뉴런은 두 번째 유형을 지니고 있어서, 같은 도파민 신호가 한 무리는 강화하고 다른 무리는 약화한다. 네트워크의 노드마다 다르게 해석하는 브로드캐스트 패킷 하나와 같다.
+
+\begin{keyblock}
+\begin{proposition}[메시지의 의미는 수신자가 정한다]
+\label{prop:receptor}
+신경전달물질 작용의 부호와 속도는 물질 자체가 아니라 그것이 결합하는 수용체가 정한다. 수용체는 두 종류이다. \emph{이온성} 수용체는 그 자체가 이온 채널이며 1밀리초도 안 되어 열린다. 트랜지스터의 게이트처럼 전류를 직접 제어한다. \emph{대사성} 수용체는 세포 안에서 화학 반응의 연쇄를 시작하며 수백 밀리초 이상에 걸쳐 작용한다. 이것은 오히려 설정 레지스터에 값을 써서 세포의 이후 동작을 바꾸는 일에 가깝다. 주소 버스는 주로 전자를 통해, 브로드캐스트 버스는 주로 후자를 통해 말한다.
+\end{proposition}
+\end{keyblock}
+
+그렇다면 왜 `글루탐산은 흥분시킨다'고 말할 수 있는가? 실제로 만나는 글루탐산 수용체는 거의 모두 흥분성이고, GABA 수용체는 거의 모두 억제성이기 때문이다. 이것은 자연법칙이 아니라 매우 믿을 만한 관례이며, 규칙~\eqref{eq:dalesign}은 바로 이 관례에 기대고 있다.
+
+\section{가져갈 것}
+
+압도적 다수의 뉴런은 뉴런마다 한 가지 부호의 가중치를 가진 주소 지정 데이터 버스이다. 극소수는 뇌의 넓은 영역에 몇 가지 공통 제어 신호를 전달하는 브로드캐스트 채널이다. 십만 개 중 두 개 정도의 뉴런이 나머지 네트워크 전체가 어떻게 학습하고 어떤 모드로 작동할지를 좌우한다. 엔지니어에게는 놀라운 일이 아니다. 어느 컴퓨터에서나 제어 레지스터는 메모리 셀보다 비교할 수 없이 적지만, 그것 없이는 기계가 돌아가지 않는다.
+
+다음 장에서는 가장 수가 많은 유형인 \nt{GLUT} 뉴런만으로 이루어진 네트워크가 연속 시간에서 동작하면서 무엇을 계산할 수 있는지 살펴본다.
+
+\section{연습문제}
+
+\begin{exercise}[\lvlA]
+\label{ex:01:1}
+\emph{무더기와 전선.} 표~\ref{tab:types}에 따라(로그 눈금으로 범위의 가운데 값; \nt{ACET}은 출력 $10^5$개): (a)~뉴런 하나를 사람 한 명으로 치면 \nt{GLUT} 뉴런은 지구 인구의 몇 배이고, 브로드캐스트 뉴런 전체는 얼마만 한 도시인가? (b)~\nt{DOPA}, \nt{SERO}, \nt{NORA}, \nt{ACET}의 말단 비율은 뉴런 비율의 몇 배인가?
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:01:2}
+\emph{0으로 되돌리기.} 틈 속 글루탐산은 $c_0e^{-t/\tau_c}$로 줄어든다. $c_0=1\mM$, $\tau_c=1\ms$이고, 수신자는 $10$~\textmu M보다 높은 농도를 감지한다. (a)~방출 한 번 뒤 선로는 얼마 동안 `통화 중'인가? (b)~펌프가 일부 차단되어 $\tau_c=10\ms$이다. 선로가 제때 비워지는 최대 방출 빈도는 얼마인가?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:01:3}
+\emph{버스트는 어디로 옮겨 가는가.} 그림~\ref{fig:rpe}의 실험에서 전등 뒤에 간격 $\Delta$로 상태 $s_0\to\dots\to s_{K-1}$이 이어지고 $T=K\Delta$이다. 보상 $r$은 마지막 전이에서 오고, 전등의 순간은 예측할 수 없다. 학습된 $V(s_k)$와 전등에 대한 응답 $\delta$를 구하라. $\gamma=e^{-\Delta/\tau_\gamma}$로 놓고 $T=1$~s, $\Delta=0.1$~s, $\gamma=0.95$일 때 $\tau_\gamma$를 구하라.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:01:4}
+\emph{모델링: 오차로 배우기.} 연습문제~\ref{ex:01:3}의 사슬을 $K=10$, $\gamma=0.95$, $r=1$과 규칙 $V(s_t)\leftarrow V(s_t)+\alpha\delta_t$로 시뮬레이션하라. $\alpha=0.05$, $0.1$, $0.2$, $0.5$일 때 전등에 대한 응답이 주스에 대한 응답을 처음 앞지르는 시행 $n^*$는 몇 번째인가? $n^*$는 $\alpha$에 어떻게 의존하는가?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:01:5}
+\emph{설계: 숫자 하나 브로드캐스트하기.} 숫자 $\delta$를 뉴런 $10^{10}$개 모두에 전달해야 한다. 중계기를 포함한 모든 수신자는 앞 층에서 말단 $10$개를 받아야 하고, 한 단계마다 $1\ms$가 더해진다. 뉴런당 출력이 $10^4$개(\nt{GLUT})일 때와 $10^{5.5}$개(\nt{DOPA})일 때, 가장 경제적인 중계 트리에는 뉴런 몇 개와 단계 몇 개가 필요한가?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:01:6}
+\emph{균형은 왜 민감한가.} 네트워크가 \nt{GLUT} $80\,\%$, \nt{GABA} $20\,\%$로 이루어지고, 모두가 모두와 가중치 $J_E/N$과 $-J_I/N$으로 연결되어 있다. $\tau\dot r=-r+Wr+h$. $J_E=10$일 때 $W$의 유일한 0이 아닌 고윳값은 $0.5$이다. 억제 전류와 흥분 전류의 비를 구하고, 억제를 몇 퍼센트만 약화해도 네트워크가 사태(avalanche)로 치닫는지 구하라.
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:01:7}
+\emph{탐구: \nt{SERO}는 $\gamma$인가?} 연습문제~\ref{ex:01:3}에 따르면 전등에 대한 \nt{DOPA} 뉴런의 응답은 $re^{-T/\tau_\gamma}$이다. 지연 $T=1,\dots,5$~s를 각각 $n$번씩 제시하고, $\ln\delta$는 산포 $0.5$로 측정된다. $\tau_\gamma=2$~s와 $2.4$~s를 구별하려면(유의수준 $0.05$, 검정력 $0.8$) $n$이 얼마나 필요한가? $\gamma$ 말고 어떤 메커니즘이 $T$에 따라 같은 감소를 낳을 수 있는가?
+\end{exercise}

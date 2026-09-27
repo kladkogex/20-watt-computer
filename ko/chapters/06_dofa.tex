@@ -1,0 +1,362 @@
+\chapter{학습할 줄 아는 신경망: \nt{DOPA}를 더하다}
+\chaptermark{학습하는 신경망}
+\label{sec:dofa}
+
+\section{게임의 규칙}
+
+앞 장들의 모든 회로에서 가중치는 엔지니어가 정했다. 생체에는 엔지니어가 없다. 가중치는 작동하는 동안 저절로 정해져야 하고, 그 결과 신경망이 쓸모 있는 일을 해야 한다. 이것을 학습이라고 한다.
+
+기존 규칙에 하나가 더해진다. 시냅스는 자기 가중치를 스스로 바꾸며, 알 수 있는 것은 \emph{자기 주변}에서 일어나는 일뿐이다. 즉 송신자의 활동 $x$, 수신자의 활동 $y$, 그리고 시냅스까지 도달하는 물질이다. 누구도 시냅스에 개별 보정값을 보내 줄 수 없다.
+
+이 규칙은 인공 신경망의 핵심 방법인 오차 역전파를 배제한다. 역전파에서는 출력 오차가 순방향 통과가 끝난 뒤 별도의 단계에서 같은 가중치를 거쳐 신경망을 거꾸로 지나가고, 가중치 하나하나가 각자의 보정값을 받는다. 이를 위해서는 순방향 전선을 정확히 되풀이하는 역방향 전선과 공통 클록이 필요하다. 뇌에서는 둘 다 발견되지 않았다. 적어도 인공 신경망과 같은 형태로는 없다~\cite{Lillicrap2020,WhittingtonBogacz2019}.
+
+가중치의 변화는 느린 연속 과정으로 쓰겠다.
+\begin{equation}
+\frac{\dd w}{\dd t} \;=\; \eta\,\Phi(\text{시냅스가 아는 것}),
+\label{eq:plasticity}
+\end{equation}
+여기서 $\eta$는 학습률이며, 스파이크 하나가 지나가는 동안 가중치가 거의 변하지 않을 만큼 작다. 이 장 전체는 함수 $\Phi$가 어떤 모양일 수 있는지에 관한 것이다.
+
+\section{가중치는 어디에 저장되는가}
+\label{sec:weightstore}
+
+“가중치를 바꾸는” 시냅스란 무엇인가? 연결에는 두 쪽이 있다. 송신자 전선의 말단(\emph{시냅스 전} 쪽)과 수용체가 있는 수신자 막의 한 구역(\emph{시냅스 후} 쪽)이며, 그 사이에 좁은 틈이 있다. \nt{GLUT} 연결에서 수신자 막은 보통 \emph{가시}, 곧 수신자 입력 가지에 난 작은 돌기 위에 있다. 연결의 가중치는 세 인수로 나누면 편리하다~\cite{delCastillo1954}.
+\begin{empheq}[box=\keybox]{equation}
+w \;=\; N_s\,p\,A_1 .
+\label{eq:quantal}
+\end{empheq}
+여기서 $N_s$는 두 뉴런 사이의 방출 부위 수, $p$는 스파이크 하나가 한 부위에서 신경전달물질 한 꾸러미를 방출할 확률(\ref{sec:code}장의 바로 그 $p$), $A_1$은 한 꾸러미에 대한 수신자의 응답, 즉 그 꾸러미를 붙잡는 수용체의 수다. 인수 $p$는 송신자에, $A_1$은 수신자에 있고, $N_s$에는 양쪽이 모두 필요하다. 새 방출 부위가 자라나고 옛 부위가 사라지며, 이 과정은 평생 계속된다.
+
+\emph{결정은 수신자가 한다.} 전형적인 \nt{GLUT} 시냅스에서 글루탐산 수용체 가운데 하나는 두 조건이 겹칠 때만 전류를 흘린다. 송신자에서 글루탐산이 왔고, 수신자 막이 이미 흥분해 있어야 한다~\cite{Nowak1984}. 이것은 분자 하나에 내장된 헤브 규칙이며, \ref{sec:glutcomputer}장의 동시성 검출기를 시냅스 입구에 그대로 설치한 것이다. 이 수용체가 작동하면 수신자 안으로 칼슘이 들어가고, 칼슘이 가중치 변화를 일으킨다. 입력과 출력이 한꺼번에 보이는 곳은 수신자뿐이므로 결정도 수신자에서 내려진다.
+
+\emph{결정의 실행은 어느 쪽이든 할 수 있다.} 가장 많이 연구된 장기 강화는 수신자에서 일어난다. 막에 새 수용체가 끼워지고~\cite{Malinow2002} 가시가 커진다~\cite{Matsuzaki2004}. 즉 $A_1$이 커진다. 그러나 수신자는 $p$도 바꿀 수 있다. 수신자가 틈을 거쳐 송신자 쪽으로 거슬러 가는 물질을 내보내면(부록~\ref{sec:othermediators}의 역방향 채널) 송신자는 신경전달물질을 덜 방출하기 시작한다~\cite{WilsonNicoll2001}. 한편 \ref{sec:code}장의 단기 가중치 변화인 고갈과 촉진은 송신자가 자신의 최근 활동에 따라 스스로 조절하는 $p$의 변화다.
+
+엔지니어의 눈으로 보면 가중치 레지스터가 두 칩에 나뉘어 있다. 학습 규칙은 수신자가 실행하고, 그 결과는 자기 쪽에도, 역방향 채널을 통해 송신자 쪽에도 기록할 수 있다. 그래서 이 장의 규칙에서 “국소적”이라는 말은 연결의 한쪽이 아니라 연결 전체를 뜻한다.
+
+\section{교사 없이 배우기}
+
+시냅스가 할 수 있는 가장 단순한 일은 송신자와 수신자가 함께 활동할 때 강해지는 것이다.
+\begin{equation}
+\frac{\dd w}{\dd t} \;=\; \eta\,x\,y .
+\label{eq:hebb}
+\end{equation}
+이것이 헤브 규칙이다~\cite{Hebb1949}. 이 규칙은 국소적이고 클록이 필요 없다. 그러나 \ref{sec:glutcomputer}장의 \nt{GLUT} 네트워크와 같은 문제, 곧 양의 되먹임이 있다. 강한 가중치는 $y$를 키우고, 큰 $y$는 가중치를 더 키우며, 가중치는 한없이 자란다. 처방은 가중치에 대한 음의 되먹임이다. 가중치가 $y^2$에 비례해 줄어들게도 하자. 입력이 $\mathbf x$이고 출력이 선형 $y=\mathbf w\cdot\mathbf x$인 뉴런에서는 다음을 얻는다.
+\begin{empheq}[box=\keybox]{equation}
+\frac{\dd\mathbf w}{\dd t} \;=\; \eta\,y\,\bigl(\mathbf x - y\,\mathbf w\bigr) .
+\label{eq:oja}
+\end{empheq}
+이 규칙도 여전히 국소적이다. 시냅스는 자기 입력 $x_i$, 출력 $y$, 가중치 $w_i$를 안다.
+
+\begin{keyblock}
+\begin{proposition}[헤브 규칙이 찾는 것]
+\label{prop:oja}
+규칙~\eqref{eq:oja}에 따르면 가중치 벡터는 입력이 가장 크게 변하는 방향, 곧 입력 상관행렬 $C=\langle\mathbf x\mathbf x^{\mathsf T}\rangle$의 주 고유벡터 방향으로 향하며 길이가 1로 수렴한다~\cite{Oja1982}. 뉴런은 자기 입력을 가장 잘 대표하는 하나의 값으로 압축해 내보내는 법을 배운다.
+\end{proposition}
+\end{keyblock}
+
+증명. 식~\eqref{eq:oja}을 입력에 대해 평균하면 $\dd\mathbf w/\dd t=\eta\bigl(C\mathbf w-(\mathbf w^{\mathsf T}C\mathbf w)\,\mathbf w\bigr)$이다. 고정점은 단위 길이의 $C$ 고유벡터들이다. $\mathbf w$가 고윳값 $\lambda_k$를 갖는 고유벡터 $\mathbf e_k$ 근처에 있으면, 다른 벡터 $\mathbf e_j$ 방향의 작은 섭동은 $e^{\eta(\lambda_j-\lambda_k)t}$처럼 자란다. 모든 $\lambda_j<\lambda_k$인 점, 즉 주 벡터만 안정하다.
+
+스파이크의 시각을 보는 헤브 규칙도 있다. 송신자의 스파이크가 수신자의 스파이크보다 $s$밀리초 \emph{먼저} 오면 가중치는 $A_+e^{-s/\tau_+}$만큼 커지고, $s$밀리초 \emph{뒤에} 오면 $A_-e^{-s/\tau_-}$만큼 작아진다. $\tau_\pm$는 20밀리초 정도다. 이 규칙은 \nt{GLUT} 뉴런의 시냅스에서 측정되었다~\cite{BiPoo1998}. 이 규칙은 응답의 \emph{원인이었을 수 있는} 연결을 강화하고, 늦게 온 연결을 약화한다(그림~\ref{fig:stdp}). 같은 흥분 순서를 신경망에 여러 번 흘려 보내면 각 고리에서 다음 고리로 가는 연결이 저절로 자란다. 엔지니어 없이 조립된 \ref{sec:glutcomputer}장의 사슬이다.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=0.07cm,y=1.3cm]
+\draw[->,gray!70!black] (-66,0) -- (68,0) node[right,black] {\small $s$};
+\draw[->,gray!70!black] (0,-1.2) -- (0,1.35) node[above,black] {\small 가중치 변화};
+\draw[very thick,blue!60!black] plot[domain=0.5:60,samples=50] (\x,{exp(-\x/20)});
+\draw[very thick,red!70!black] plot[domain=-60:-0.5,samples=50] (\x,{-0.6*exp(\x/20)});
+\draw[blue!60!black,thick] (0.5,0) -- (0.5,1);
+\draw[red!70!black,thick] (-0.5,0) -- (-0.5,-0.6);
+\foreach \x in {-40,-20,20,40}{\draw[gray!60!black] (\x,-0.04) -- (\x,0.04);}
+\node[below,font=\scriptsize] at (20,-0.04) {$20\ms$};
+\node[above,font=\scriptsize] at (-20,0.04) {$-20\ms$};
+\node[align=left,font=\small,blue!60!black,anchor=west] at (22,0.95) {송신자가 먼저:\\ 연결 강화};
+\node[align=right,font=\small,red!70!black,anchor=east] at (-12,-0.95) {송신자가 나중:\\ 연결 약화};
+\end{tikzpicture}
+\caption{시각에 따른 헤브 규칙. 가로축은 $s=t_{\text{수신}}-t_{\text{송신}}$, 즉 수신자의 스파이크가 송신자의 스파이크보다 얼마나 늦었는지다. $\tau_\pm=20\ms$, $A_-=0.6A_+$. 폭이 수십 밀리초인 이 창은 동시성 창~\eqref{eq:window}과 같은 규모다.}
+\label{fig:stdp}
+\end{figure}
+
+그러나 이 절의 규칙들은 모두 \emph{자주} 일어나는 것을 가르칠 뿐, \emph{쓸모 있는} 것을 가르치지는 않는다. $x$와 $y$만 아는 시냅스는 그 행동이 주스를 가져왔는지 통증을 가져왔는지 모른다. 결과로부터 배우려면 시냅스에 세 번째 신호가 필요하다.
+
+\section{세 번째 인수}
+
+세 번째 신호는 \nt{DOPA}가 가져온다. 도파민 뉴런은 수 하나, 곧 보상 예측 오차 $\delta$~\eqref{eq:rpe}를 브로드캐스트한다(\ref{sec:neurontypes}장). 가중치 변화가 세 인수, 즉 송신자 활동, 수신자 활동, $\delta$의 곱에 비례한다고 하자.
+
+어려움은 보상이 신경망이 행동을 고른 순간이 아니라 수백 밀리초나 몇 초 뒤에 온다는 데 있다. $\delta$가 도착할 무렵이면 곱 $xy$는 이미 오래전에 0이고, 시냅스에는 자기가 참여했다는 기억이 필요하다. 가장 단순한 기억은 익숙한 RC 회로다.
+\begin{empheq}[box=\keybox]{equation}
+\tau_e\,\frac{\dd e}{\dd t} \;=\; -e \;+\; x\,y ,
+\qquad
+\frac{\dd w}{\dd t} \;=\; \eta\,\delta(t)\,e(t) .
+\label{eq:threefactor}
+\end{empheq}
+값 $e$를 \emph{적격 흔적}이라고 부른다~\cite{Fremaux2016}. 함께 일어난 활동은 시냅스에 표지를 남기고, 이 표지는 시간 $\tau_e$ 동안 사라진다. 그 사이에 도파민이 오면 가중치는 $\delta$의 부호대로 바뀌고, 오지 않으면 표지는 흔적 없이 사라진다(그림~\ref{fig:trace}). \nt{GLUT} 시냅스에서 측정된 결과는 이렇다. 함께 일어난 활동 뒤 1--2초 안에 온 도파민은 그 활동을 연결 강화로 바꾸고, 더 늦게 온 도파민은 그러지 못한다~\cite{Yagishita2014}. 세 번째 신호가 도파민이 아니라 수신자 자신의 강한 흥분인 경우에도 몇 초 길이의 가소성 창이 발견되었다~\cite{Bittner2017}.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=7cm,y=1cm]
+\fill[orange!12] (0.7,-0.2) rectangle (0.8,5.2);
+% rows: x*y, delta, traces, weights
+\foreach \y/\lab in {4.4/{$x\,y$},3.1/{$\delta$},1.4/{흔적 $e$},0/{가중치 $w$}}{
+  \draw[gray!70!black] (0,\y) -- (1.42,\y);
+  \node[left,font=\small] at (-0.02,\y+0.3) {\lab};}
+\draw[very thick,blue!60!black] (0,4.4) -- (0,4.9) -- (0.2,4.9) -- (0.2,4.4);
+\node[right,font=\scriptsize,blue!60!black] at (0.21,4.8) {송신자와 수신자가 함께 활동};
+\draw[very thick,orange!85!black] (0,3.1) -- (0.7,3.1) -- (0.7,3.7) -- (0.8,3.7) -- (0.8,3.1) -- (1.4,3.1);
+\node[right,font=\scriptsize,orange!85!black] at (0.81,3.6) {도파민 도착};
+% traces, each in units of its own maximum
+\draw[very thick,blue!60!black] plot[domain=0:0.2,samples=20] (\x,{1.4+1.1*(1-exp(-\x))/(1-exp(-0.2))})
+  plot[domain=0.2:1.4,samples=60] (\x,{1.4+1.1*exp(-(\x-0.2))});
+\draw[thick,densely dashed,gray!50!black] plot[domain=0:0.2,samples=30] (\x,{1.4+1.1*(1-exp(-\x/0.05))/(1-exp(-4))})
+  plot[domain=0.2:1.4,samples=80] (\x,{1.4+1.1*exp(-(\x-0.2)/0.05)});
+\node[right,font=\scriptsize,blue!60!black] at (1.0,2.15) {$\tau_e=1\,\text{s}$};
+\node[right,font=\scriptsize,gray!40!black] at (0.3,1.65) {$\tau_e=50\ms$};
+% weights
+\draw[very thick,blue!60!black] (0,0.25) -- (0.7,0.25) -- (0.8,0.8) -- (1.4,0.8) node[right,font=\scriptsize] {$\tau_e=1\,\text{s}$: 가중치 증가};
+\draw[thick,densely dashed,gray!50!black] (0,0.2) -- (1.4,0.2) node[right,font=\scriptsize,gray!40!black] {$\tau_e=50\ms$: 변화 없음};
+% time axis marks
+\foreach \x/\l in {0/0,0.2/0.2,0.7/0.7,1.4/1.4}{\draw[gray!60!black] (\x,-0.05) -- (\x,0.05) node[below=3pt,font=\scriptsize] {\l\,s};}
+\draw[<->,thick,gray!50!black] (0.2,5.35) -- node[above,font=\scriptsize,black] {보상 지연 $0.5\,\text{s}$} (0.7,5.35);
+\end{tikzpicture}
+\caption{규칙~\eqref{eq:threefactor}에 따른 적격 흔적. 함께 일어난 활동은 $0.2\,\text{s}$ 동안 이어지고, 도파민은 활동이 끝나고 0.5초 뒤에 온다. 흔적은 각자의 최댓값에 대한 비율로 나타냈다. 느린 흔적($\tau_e=1\,\text{s}$)은 이 순간에도 아직 살아 있지만, 빠른 흔적($\tau_e=50\ms$)은 이미 오래전에 사라졌다.}
+\label{fig:trace}
+\end{figure}
+
+\begin{keyblock}
+\begin{proposition}[브로드캐스트 신호에 의한 학습]
+\label{prop:threefactor}
+규칙~\eqref{eq:threefactor}은 최근 $\tau_e$ 동안 신경망의 작동에 참여한 시냅스만을, 공통 신호 $\delta$가 정한 방향으로 바꾼다. 브로드캐스트 신호와 국소적인 적격 흔적이 함께 주소 지정된 보정을 만든다. 행동과 결과 사이의 지연은 $\tau_e$를 넘지 않는 한 허용된다.
+\end{proposition}
+\end{keyblock}
+
+\section{왜 작동하는가: 탐색으로서의 잡음}
+\label{sec:dofagradient}
+
+규칙~\eqref{eq:threefactor}은 왜 더 나은 쪽으로 이끄는가? 답은 \ref{sec:code}장의 잡음에 있다. 뉴런의 출력을 $y=f(u)+\xi$라 하자. 여기서 $u=\sum_jw_jx_j$이고, $\xi$는 평균이 0이고 분산이 $\sigma^2$인 무작위 흔들림이다. 보상 $R$은 $y$에 따라 정해진다. 적격 흔적으로 $x_jy$ 전체가 아니라 그 무작위 부분 $x_j\xi$를 쓰고, 세 번째 인수로 오차 $\delta=R-\bar R$를 쓰자. $\bar R$는 기대 보상이다. 잡음이 작으면 $R\approx R\bigl(f(u)\bigr)+R'\,\xi$이므로 다음이 성립한다.
+\begin{empheq}[box=\keybox]{equation}
+\bigl\langle \delta\,\xi\,x_j \bigr\rangle \;=\; \sigma^2\,R'\,x_j \;=\; \frac{\sigma^2}{f'(u)}\,\frac{\partial\langle R\rangle}{\partial w_j} .
+\label{eq:perturbation}
+\end{empheq}
+평균 걸음은 기대 보상의 기울기 방향으로 간다~\cite{Williams1992}. 누구도 도함수를 계산하지 않았다. 신경망이 무작위로 벗어났고, 도파민이 결과가 나아졌는지 알렸으며, 참여한 시냅스들이 유리한 쪽으로 움직였다(그림~\ref{fig:perturbation}). \ref{sec:code}장에서 메시지 전달을 방해하던 잡음이 여기서는 탐색이 된다.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=2cm,y=3cm]
+\draw[->,gray!70!black] (0,0) -- (4.2,0) node[below left,font=\small,black] {출력 $y$};
+\draw[->,gray!70!black] (0,0) -- (0,1.2) node[left,font=\small,black] {보상 $R$};
+% reward hill
+\draw[very thick,blue!60!black] plot[domain=0:4,samples=60] (\x,{max(0,1-((\x-3)/2.2)^2)});
+\node[font=\scriptsize,blue!60!black,anchor=south] at (3,1.02) {최선의 출력};
+% noise around f(u)
+\draw[thick,gray!60!black] plot[domain=0.6:2.4,samples=50] (\x,{0.28*exp(-((\x-1.5)/0.3)^2/2)});
+\draw[densely dashed,gray!60!black] (1.5,0) -- (1.5,0.535);
+\node[below,font=\small] at (1.5,0) {$f(u)$};
+\node[font=\scriptsize,gray!50!black] at (1.5,-0.2) {흔들림 $\xi$};
+% expected reward
+\draw[densely dotted,gray!60!black] (0.5,0.535) node[left,font=\scriptsize,black] {$\bar R$} -- (2.1,0.535);
+% two random deviations
+\fill[green!45!black] (2.1,0.833) circle (0.035);
+\draw[very thick,green!45!black] (2.1,0.535) -- (2.1,0.833);
+\node[font=\scriptsize,green!45!black,anchor=west,align=left] at (2.18,0.6) {$\xi>0$: 더 좋음,\\ $\delta>0$};
+\fill[red!70!black] (0.9,0.089) circle (0.035);
+\draw[very thick,red!70!black] (0.9,0.535) -- (0.9,0.089);
+\node[font=\scriptsize,red!70!black,anchor=east,align=right] at (0.83,0.27) {$\xi<0$: 더 나쁨,\\ $\delta<0$};
+% resulting step
+\draw[->,very thick,orange!85!black] (1.55,0.4) -- (1.95,0.4) node[right,font=\scriptsize,black] {걸음};
+\end{tikzpicture}
+\caption{탐색으로서의 잡음~\eqref{eq:perturbation}. 뉴런의 출력은 $f(u)$ 주위에서 흔들린다. 오른쪽으로의 무작위 이탈(초록)은 기대보다 많은 보상을 주어 $\delta>0$이고, 왼쪽으로의 이탈(빨강)은 기대보다 적어 $\delta<0$이다. 두 경우 모두 곱 $\delta\,\xi$는 양수이고, 가중치는 보상이 커지는 오른쪽으로 움직인다. 평균적으로 걸음은 기울기 $R'$에 비례한다. 언덕 꼭대기에서는 양쪽 이탈이 똑같이 나쁘고, 걸음들이 서로 상쇄된다.}
+\label{fig:perturbation}
+\end{figure}
+
+\begin{keyblock}
+\begin{proposition}[역방향 전선 없는 경사 하강]
+\label{prop:gradient}
+신경망 활동에 무작위 이탈이 있고, 브로드캐스트 신호가 보상 예측 오차와 같으며 각 상황에서 평균이 0이면, 규칙~\eqref{eq:threefactor}은 평균적으로 가중치를 기대 보상의 기울기 방향으로 바꾼다. 이를 위해 역방향 전선도, 별도의 학습 단계도 필요 없다.
+\end{proposition}
+\end{keyblock}
+
+이제 도파민이 왜 보상 자체가 아니라 보상 예측의 \emph{오차}를 알리는지 분명해진다. 세 번째 인수가 보상 자체 $R\ge0$이었다면 식~\eqref{eq:perturbation}의 평균은 변하지 않겠지만 두 가지 문제가 생긴다. 첫째, 쓸모 있는 부분에 항 $\bar R\,\xi x_j$가 더해진다. 평균은 0이지만 강한 잡음이다. 둘째, 더 나쁜 문제로, 실제 시냅스는 적격 흔적 $x_jy$에서 무작위 부분과 무작위가 아닌 부분을 가려낼 수 없다. 입력이 주어지면 $x_jf(u)$는 시도마다 같은 수다. 그 상황에서 $\delta$의 평균이 0이면 흔적의 이 부분은 아무것도 바꾸지 않지만, $\delta\ge0$이면 이 부분이 신경망이 한 모든 일을, 옳은 것이든 그른 것이든, 거듭 강화한다. 그래서 $\bar R$는 평생의 평균이 아니라 \emph{주어진 상황에서의} 기대값이어야 한다. 이것을 계산하는 것은 아래에서 다룰 비평자의 몫이다.
+
+이를 모델로 확인했다. 두 \nt{GLUT} 뉴런 집단이 그림~\ref{fig:wta}처럼 상호 억제를 통해 두 행동 가운데 하나를 고른다. “시작” 신호에서 각 집단으로 가는 가중치는 처음에 같고, 누가 이길지는 잡음이 정한다. 행동 $A$는 확률 $0.8$로, 행동 $B$는 확률 $0.2$로 주스를 가져오며, 주스는 선택하고 0.5초 뒤에 온다. $\tau_e=1\,\text{s}$, $\delta=R-\bar R$일 때 500회 시도 동안 $A$를 고른 비율은 처음 100회의 $0.65$--$0.8$에서 마지막 100회의 $0.96$--$1.0$으로 올랐고, 가중치는 $0.85$--$1.35$ 범위에 머물렀다. 보상 지연보다 짧은 $\tau_e=50\ms$에서는 신경망이 아무것도 배우지 못했다. $A$를 고른 비율은 절반 근처에 머물렀다. 기대값을 빼지 않은 $\delta=R$에서도 신경망은 $A$를 고르게 되었지만, 같은 500회 동안 승자의 가중치가 천 배로 커졌고 계속 자랐다. 그리고 같은 $\delta=R$에 학습률을 열 배로 높이자, 세 번의 실행 가운데 한 번은 신경망이 처음의 무작위 선택, 그것도 더 나쁜 쪽을 영영 굳혀 버렸다.
+
+\section{전선 하나의 대가}
+
+신호 $\delta$는 모두에게 하나뿐인데, 그것이 평가하는 잡음은 결과에 영향을 주는 뉴런 $N$개 모두의 흔들림의 합이다. 각 시냅스는 $\delta$ 안에서 자기의 쓸모 있는 몫과 이웃 $N-1$개의 잡음을 함께 본다. 자기 몫을 가려내려면 많은 시도에 걸쳐 평균해야 하고, 학습 시간은 $N$에 비례해 늘어난다~\cite{Werfel2005}. 역전파는 이런 대가를 치르지 않는다.
+
+\begin{keyblock}
+\begin{proposition}[브로드캐스트의 대가]
+\label{prop:broadcastcost}
+하나의 공통 신호로 학습하는 시간은 잡음이 결과에 영향을 주는 뉴런의 수에 비례해 늘어난다. 이런 학습은 몇 가지 선택지 중에서 고르는 작은 회로에는 알맞지만, 수십억 개의 가중치를 조율하는 데에는 맞지 않는다.
+\end{proposition}
+\end{keyblock}
+
+뇌는 실제로 이렇게 일을 나누는 것으로 보인다. \nt{DOPA} 뉴런의 출력은 무엇보다 행동을 고르는 영역으로 가고(\ref{sec:neurontypes}장), 가중치의 압도적 다수가 있는 피질의 거대한 \nt{GLUT} 네트워크는 주로 외부 교사 없이 국소 규칙으로 배운다. 예전에는 이 규칙들을 헤브 규칙~\eqref{eq:oja}으로 환원했다. 지금은 피질에 고유한 목표, 곧 자기의 다음 입력을 \emph{예측하는} 목표가 있다는 증거가 늘고 있다. 그렇다면 오차는 예측한 것과 실제로 온 것의 차이로서 그 자리에서 계산되고~\cite{Keller2018}, 교사는 신경망 자체에 내장되어 있다. 세 번째 신호가 수신자 자신의 강한 흥분인 몇 초 길이의 가소성 창~\cite{Bittner2017}은 시냅스에 국소적인 오차 신호가 실제로 있음을 보여 준다. 이것이 피질의 일반 규칙인지는 가설이다.
+
+\section{오차는 어디서 오는가: 연속 시간의 비평자}
+
+남은 질문은 \nt{DOPA} 뉴런이 $\delta$를 어떻게 계산하느냐다. 강화 학습 프로그램에서는 예측 오차를 $t,t+1,\dots$ 단계로 센다. 생체에는 단계가 없으므로 오차를 연속 시간으로 쓰자~\cite{Doya2000}. $r(t)$를 보상의 흐름, $V(t)$를 앞으로 올 모든 보상의 기대값이라 하되, 더 먼 보상일수록 낮게 친다.
+\begin{equation}
+V(t) \;=\; \int_t^{\infty} e^{-(s-t)/\tau_\gamma}\,r(s)\,\dd s .
+\end{equation}
+미분하면 $\dd V/\dd t=V/\tau_\gamma-r$을 얻는다. 이 등식의 잔차가 바로 예측 오차다.
+\begin{empheq}[box=\keybox]{equation}
+\delta(t) \;=\; r(t) \;+\; \frac{\dd V}{\dd t} \;-\; \frac{V}{\tau_\gamma} .
+\label{eq:ctd}
+\end{empheq}
+상수 $\tau_\gamma$는 계획 지평선으로, 할인율 $\gamma$의 연속 버전이다. 가설에 따르면 이것을 정하는 것은 \nt{SERO}이며(\ref{sec:horizon}절), 그렇다면 식~\eqref{eq:patience}은 얼마나 기다릴 가치가 있는지를 정하는 규칙이다. 세 경우를 확인해 보자(그림~\ref{fig:ctdcases}). 주스를 약속하는 전등이 켜졌다. $V$가 계단처럼 뛰어오르고 $\dd V/\dd t$가 커서 급증이 생긴다. 약속된 주스가 왔다. $r>0$이지만 같은 순간 기대가 소진되어 $\dd V/\dd t\approx-r$이고, 급증은 없다. 주스가 오지 않았다. 기대가 보상 없이 사라져 $\dd V/\dd t<0$이고, 급락이 생긴다.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=1.15cm,y=1cm]
+\foreach \col/\ttl/\lampon/\juice in {0/{예상 못 한 주스}/0/1, 1/{약속된 주스}/1/1, 2/{주스가 오지 않음}/1/0}{
+ \begin{scope}[xshift=\col*4.6cm]
+  \node[font=\small] at (1.5,3.55) {\ttl};
+  \foreach \yy in {2.4,1.2,0}{\draw[gray!60!black] (0,\yy) -- (3.1,\yy);}
+  % reward r
+  \ifnum\juice=1
+    \fill[green!45!black] (1.95,2.4) rectangle (2.05,2.85);
+    \pic[scale=0.55] at (2.0,3.1) {juice};
+  \else
+    \pic[scale=0.55] at (2.0,3.1) {nojuice};
+  \fi
+  % expectation V and error delta
+  \ifnum\lampon=1
+    \pic[scale=0.55] at (1.0,3.1) {lamp};
+    \draw[very thick,blue!60!black] (0,1.2) -- (1,1.2) -- (1,1.45)
+      plot[domain=1:2,samples=20] (\x,{1.2+0.25*exp((\x-1)/1.5)}) -- (2,{1.2+0.25*exp(1/1.5)}) -- (2,1.2) -- (3.1,1.2);
+    \draw[very thick,red!70!black] (0,0) -- (0.95,0) -- (0.95,0.5) -- (1.05,0.5) -- (1.05,0) -- (3.1,0);
+    \ifnum\juice=0
+      \draw[very thick,red!70!black] (1.95,0) -- (1.95,-0.45) -- (2.05,-0.45) -- (2.05,0);
+      \node[font=\scriptsize,red!70!black,anchor=west] at (2.1,-0.35) {급락};
+    \else
+      \node[font=\scriptsize,gray!50!black,anchor=north,align=center] at (2.0,-0.08) {$r$과 $V$의 하락이\\ 서로 상쇄};
+    \fi
+  \else
+    \draw[very thick,blue!60!black] (0,1.2) -- (3.1,1.2);
+    \draw[very thick,red!70!black] (0,0) -- (1.95,0) -- (1.95,0.5) -- (2.05,0.5) -- (2.05,0) -- (3.1,0);
+  \fi
+  \ifnum\col=0
+    \node[font=\small,anchor=east] at (-0.1,2.55) {$r$};
+    \node[font=\small,anchor=east] at (-0.1,1.35) {$V$};
+    \node[font=\small,anchor=east] at (-0.1,0.1) {$\delta$};
+  \fi
+ \end{scope}}
+\end{tikzpicture}
+\caption{오차~\eqref{eq:ctd}의 세 경우. 위에서 아래로 보상 $r$, 기대 $V$, 오차 $\delta$다. 왼쪽에는 기대가 없어서 주스 전체가 뜻밖의 일이다. 가운데에서는 전등이 $V$를 계단처럼 끌어올린다. 이것이 $\dd V/\dd t$의 도약이고, $\delta$의 급증은 전등에서 일어난다. 그 뒤 $V$는 지평선이 요구하는 만큼 정확히 자라고 $\delta=0$이다. 주스가 오는 순간 보상 $r$과 $V$의 하락이 서로 상쇄된다. 오른쪽에서는 $V$가 보상 없이 떨어져 급락이 생긴다. 이것은 그림~\ref{fig:rpe}의 급증, 이동, 급락과 같지만, 이제는 그것들이 어디서 오는지 보인다.}
+\label{fig:ctdcases}
+\end{figure}
+
+우리가 이미 가진 회로로 식~\eqref{eq:ctd}을 계산하려면 무엇이 필요한가? 세 가지다.
+
+\emph{추정값 $V$ 자체.} 이것은 \nt{GLUT} 뉴런 집단, 곧 비평자가 내보낸다. 비평자의 가중치는 같은 규칙~\eqref{eq:threefactor}으로 같은 $\delta$를 써서 배운다. $\delta>0$이면 기대가 너무 낮았던 것이고, 그 직전에 활동한 연결이 강화된다.
+
+\emph{도함수 $\dd V/\dd t$.} 이것은 수준이 아니라 변화에 반응하는 회로라면 무엇이든 계산할 수 있다. \ref{sec:gaba}장의 방향 검출기처럼 \nt{GABA} 중개자를 거친 지연 억제와 직접 흥분을 함께 쓰는 회로, 또는 \ref{sec:code}장의 고갈되는 시냅스~\eqref{eq:depression}가 그렇다.
+
+\emph{전선 하나에 부호 싣기.} 오차는 양수일 수도 음수일 수도 있지만, 스파이크 빈도는 양수뿐이다. 해법은 \ref{sec:serocomputer}장의 \nt{SERO} 뉴런과 같다. \nt{DOPA} 뉴런은 페이스메이커다. 초당 몇 번의 고른 스파이크는 $\delta=0$을, 버스트는 $\delta>0$을, 멈춤은 $\delta<0$을 뜻한다. 음의 오차에는 여유가 더 적다. 빈도를 0 아래로 내릴 수 없기 때문이다. 실제 \nt{DOPA} 뉴런에서도 급락은 급증보다 얕다~\cite{Bayer2005}.
+
+도파민이 $\delta$처럼 행동한다는 것은 측정되었다. 뇌가 $\dd V/\dd t$를 정확히 어떻게 계산하는지는 가설이다.
+
+\section{행위자와 비평자}
+
+이제 모든 것을 합쳐 보자(그림~\ref{fig:actorcritic}). 상황 뉴런들은 \nt{GABA}를 통해 승자를 고르는 행동 집단(명제~\ref{prop:wta}), 곧 \emph{행위자}를 흥분시키고, $V$를 내보내는 비평자도 흥분시킨다~\cite{SuttonBarto2018}. \nt{DOPA} 뉴런은 보상 $r$과 $V$를 받아 식~\eqref{eq:ctd}을 계산하고, $\delta$를 행위자와 비평자의 모든 시냅스에 브로드캐스트한다.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  nrn/.style={circle,draw,very thick,fill=blue!6,minimum size=0.9cm,inner sep=0pt,font=\small},
+  gab/.style={circle,draw,very thick,fill=red!10,minimum size=0.6cm,inner sep=0pt},
+  dofa/.style={circle,draw,very thick,double,double distance=1.2pt,fill=orange!15,minimum size=1.35cm,inner sep=0pt,font=\scriptsize},
+  inh/.style={-{Bar[width=7pt]},thick,red!70!black},
+  bc/.style={->,thick,densely dashed,orange!85!black}]
+\node[nrn] (S1) at (0,2.4) {$x_1$};
+\node[nrn] (S2) at (0,1.2) {$x_2$};
+\node[nrn] (S3) at (0,0) {$x_3$};
+\node[left=0.15cm,align=right,font=\small] at (-0.5,1.2) {상황};
+\node[nrn] (A) at (4,2.6) {$A$};
+\node[nrn] (B) at (4,1.0) {$B$};
+\node[gab] (G) at (5.2,1.8) {};
+\draw[->,thick] (A) -- (G); \draw[->,thick] (B) -- (G);
+\draw[inh] (G) to[bend left=35] (A);
+\draw[inh] (G) to[bend right=35] (B);
+\node[above,font=\small] at (4.6,3.05) {행위자: 행동 선택};
+\node[nrn] (V) at (4,-1.1) {$V$};
+\node[below,font=\small] at (4,-1.6) {비평자};
+\foreach \s in {S1,S2,S3}{\foreach \t in {A,B,V}{\draw[->,gray!60!black] (\s) -- (\t);}}
+\node[dofa] (D) at (8.0,-1.1) {\nt{DOPA}};
+\draw[->,thick] (V) -- node[above,font=\scriptsize] {$V,\ \dd V/\dd t$} (D);
+\draw[->,thick,green!45!black] (10.0,-1.1) node[right,black,font=\small] {보상 $r$} -- (D);
+\pic[scale=1.1] at (10.6,-0.5) {juice};
+\draw[bc] (D.north) -- (8.0,4.0) -- node[above,font=\small,black] {$\delta$: 행위자와 비평자의 모든 시냅스로} (2.2,4.0) -- (2.2,3.0);
+\draw[bc] (D.south) -- (8.0,-2.4) -- (2.2,-2.4) -- (2.2,-0.6);
+\end{tikzpicture}
+\caption{행동 선택을 배우는 신경망. 회색 화살표는 가중치가 바뀌는 \nt{GLUT} 시냅스, 빨간 원은 \nt{GABA} 뉴런, 이중 원은 식~\eqref{eq:ctd}으로 $\delta$를 계산하는 \nt{DOPA} 페이스메이커, 점선 화살표는 $\delta$의 브로드캐스트다.}
+\label{fig:actorcritic}
+\end{figure}
+
+신경전달물질 작용의 부호는 수신자가 고르며(명제~\ref{prop:receptor}), 행동 선택 영역에서는 뉴런 일부가 한 계열의 도파민 수용체를, 다른 일부가 다른 계열의 수용체를 가진다. 뇌 절편 실험에서 도파민은 함께 일어난 활동과 맞물려 앞의 뉴런에서는 시냅스를 강화하고, 뒤의 뉴런에서는 약화한다~\cite{Shen2008}. 모델로 말하면 뒤의 뉴런에서는 식~\eqref{eq:threefactor}의 $\delta$ 부호가 뒤집혀 있다. 앞의 뉴런은 \emph{할 만한 일}을, 뒤의 뉴런은 \emph{하지 말아야 할 일}을 배운다.
+
+\section{정리}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{2.6cm}>{\raggedright}p{2.7cm}>{\raggedright}p{3.1cm}>{\raggedright\arraybackslash}p{5.0cm}}
+\toprule
+규칙 & 시냅스가 아는 것 & 신경망이 배우는 것 & 알려진 사실 \\
+\midrule
+빈도에 따른 헤브 규칙~\eqref{eq:oja} & $x$, $y$, 자기 가중치 & 입력 압축: 주 방향 & 함께 활동할 때의 강화는 측정됨. 가중치 제한 메커니즘은 연구 중 \\
+시각에 따른 헤브 규칙 & $\sim20\ms$ 안에서 $x$와 $y$의 스파이크 순서 & 인과 관계, 순서열 & \nt{GLUT} 시냅스에서 측정됨 \\
+3요소 규칙~\eqref{eq:threefactor} & $x$, $y$, 적격 흔적 $e$, 공통 신호 $\delta$ & 보상을 가져오는 행동 & 활동 뒤 몇 초 안의 도파민 효과는 측정됨. 선택 학습의 주된 메커니즘이라는 것은 근거가 탄탄한 가설 \\
+비평자~\eqref{eq:ctd} & 위와 같음 & 보상 기대 $V$ & 도파민과 $\delta$의 유사성은 측정됨. $\dd V/\dd t$를 계산하는 회로는 가설 \\
+오차 역전파 & 가중치마다의 개별 보정값 & 무엇이든 배우지만 역방향 전선과 클록이 필요 & 뇌에서 이 형태로는 발견되지 않음. 그 근사를 찾는 중 \\
+\bottomrule
+\end{tabular}
+\caption{\nt{GLUT}, \nt{GABA}, \nt{DOPA} 뉴런으로 이루어진 신경망의 학습 규칙.}
+\label{tab:learning}
+\end{table}
+
+학습 규칙은 표~\ref{tab:learning}에 정리했다. \nt{GLUT}는 데이터를 나르고, \nt{GABA}는 흐름을 제어하며, \nt{DOPA}는 신경망의 변화 가운데 어떤 것을 남길지 결정한다.
+
+\section{연습문제}
+
+\begin{exercise}[\lvlA]
+\label{ex:06:1}
+\emph{적격 흔적의 수명.} 함께 일어난 활동 $xy=1$이 $e=0$에서 시작해 $T_a=0.2\,\text{s}$ 동안 이어지고, 도파민은 활동이 끝나고 $d=0.5\,\text{s}$ 뒤에 온다. (가)~이 순간 흔적~\eqref{eq:threefactor}은 $\tau_e=1\,\text{s}$일 때가 $\tau_e=50\ms$일 때보다 몇 배 큰가? (나)~흔적이 가장 큰 $\tau_e$는 얼마인가?
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:06:2}
+\emph{헤브 규칙의 표류.} 송신자와 수신자가 각각 초당 $10$회의 독립 푸아송 스파이크열을 내고, 스파이크 쌍마다 그림~\ref{fig:stdp}의 창($\tau_\pm=20\ms$, $A_-=0.6A_+$)대로 가중치가 바뀐다. 완전히 무작위인 활동 한 시간 동안 가중치는 $A_+$의 몇 배만큼 커지는가? 표류가 사라지는 $\tau_-$는 얼마인가?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:06:3}
+\emph{공분산이 아니라 상관.} 명제~\ref{prop:oja}의 규칙은 $C=\langle\mathbf x\mathbf x^{\mathsf T}\rangle$의 주 고유벡터를 찾는다. 빈도는 양수다. $\mathbf x=\mathbf m+\mathbf n$, $\mathbf m=(\mu,0)$, 잡음의 공분산은 $\operatorname{diag}(s_1^2,s_2^2)$이다. 뉴런이 $\mathbf e_1$을 배우는 조건은? $\mu=1$, $s_1=0.1$, $s_2=0.5$이면 무엇을 배우는가?
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:06:4}
+\emph{급증 속의 지평선.} 전등이 예측할 수 없는 순간에 켜지고, 크기 $R$의 주스가 $L=1\,\text{s}$ 뒤에 온다. 식~\eqref{eq:ctd}으로 학습된 기대에서는 전등과 주스 사이에 $\delta\equiv0$임을 보이고, $\tau_\gamma=2\,\text{s}$와 $\tau_\gamma=4\,\text{s}$일 때 전등에서 생기는 급증의 넓이를 구하라.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:06:5}
+\emph{브로드캐스트의 대가는 어디서 오는가.} $N$개의 뉴런이 독립적으로 흔들리고($\xi_i\sim\mathcal N(0,\sigma^2)$), 오차는 $\delta=a\sum_i\xi_i$, 시냅스 $j$는 기울기를 $\delta\,\xi_jx_j$로 추정한다. 시도 한 번의 신호 대 잡음비를 구하라. 뉴런 하나가 $5\,\text{s}$짜리 시도 $100$회로 배운다면 $N=10^4$과 $N=10^{10}$에서는 학습에 얼마나 걸리는가?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:06:6}
+\emph{설계: $\delta$를 계산하는 회로.} \nt{DOPA} 뉴런은 $r$, 가중치 $k_1$인 $V$, 그리고 $\tau_d$로 평활한 $V$의 복사본을 가중치 $-k_2$로 받는다. (가)~느린 $V$에 대해 출력이 식~\eqref{eq:ctd}이 되도록 $k_1$, $k_2$를 정하라. (나)~$V=V_0e^{t/\tau_\gamma}$이면 참 $\delta=0$이다. $\tau_\gamma=2\,\text{s}$일 때 회로의 거짓 오차가 $V/\tau_\gamma$의 $5\,\%$ 이하가 되는 $\tau_d$는?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:06:7}
+\emph{모델링: 보상 지연의 한계.} \texttt{models/\allowbreak dofa\_learning.py}를 복사해 \texttt{run()}에 보상 지연 $d$를 넣어라. $d=0.5\,\text{s}$에서 $\tau_e=0.05$, $0.2$, $1$, $4\,\text{s}$일 때, 그리고 $\tau_e=1\,\text{s}$, $d=3\,\text{s}$일 때 $500$회 시도 중 마지막 100회에서 $A$를 고른 비율을 구하라. 보상까지 살아남는 흔적의 비율(연습문제~\ref{ex:06:1})이 얼마일 때 학습이 사라지는가?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:06:8}
+\emph{브로드캐스트의 대가를 피할 수 있는가.} 뉴런 $N$개: $y_i=w_i+\xi_i$, $\xi_i\sim\mathcal N(0,\sigma^2)$, 보상 $R=-\sum_i(y_i-w_i^*)^2$, 규칙 $\Delta w_i=\eta\,(R-\langle R\rangle)\,\xi_i$. 최적의 $\eta$에서 오차 $\sum_i(w_i-w_i^*)^2$가 $e$분의 1로 줄어드는 데 몇 번의 시도가 필요한가? $N$개 중 무작위로 고른 $m$개만 흔들리면 어떤가? 희소 탐색이 도움이 되는가?
+\end{exercise}
