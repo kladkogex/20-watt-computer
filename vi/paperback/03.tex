@@ -1,0 +1,76 @@
+\chapter{Bộ phanh}
+% full version: chapters/03_gaba.tex
+
+Hãy thêm vào cỗ máy loại nơ-ron đông thứ hai --- \nt{GABA}. Tín hiệu của chúng không đẩy nơ-ron bên cạnh tới tiếng tách mà đẩy nó ra xa. Đó là bộ phanh. Chúng không nhiều, trong vỏ não chiếm từ một phần năm đến một phần tư số nơ-ron, nhưng thiếu chúng thì cỗ máy không chạy được.
+
+Có một hạn chế: nơ-ron ``dấu cộng'' không tự mình phanh được nơ-ron bên cạnh. Nếu cần một liên kết âm, phải dựng nó qua trung gian: ``dấu cộng'' đánh thức một nơ-ron ức chế, rồi nơ-ron này phanh mục tiêu. Việc đổi dấu tốn một nơ-ron và một chút trễ.
+
+\section*{``Nhưng không nếu''}
+
+Phép toán hữu ích nhất với bộ phanh là lệnh cấm: ``kích hoạt khi có A, nhưng không nếu B đã đến''. Nơ-ron nhận cú đẩy từ A và cú phanh từ nơ-ron trung gian được B đánh thức. Từ các lệnh cấm và ``hoặc'' có thể lắp được mọi mạch logic.
+
+\pencilfig{3}{\pencilart{3}}{``A, nhưng không nếu B'': nơ-ron đỏ chặn đường của nơ-ron xanh.}
+
+Lệnh cấm theo thời gian tạo ra bộ phát hiện chuyển động mà bạn có trong mắt. Hai cảm biến cạnh nhau: một cái kích thích nơ-ron đầu ra, cái kia ức chế nó có trễ. Nếu đốm sáng chạy theo một chiều với tốc độ phù hợp, ức chế tới đúng lúc với kích thích --- và dập tắt nó. Nếu chạy theo chiều ngược lại, ức chế tới muộn, và nơ-ron kịp phát ra tiếng tách. Kết quả là một nơ-ron chỉ thấy chuyển động theo một chiều.
+
+\pencilfig{103}{%
+% sensors on top; the left one excites the output, the right one inhibits it through a GABA go-between and a delay
+\draw[dotpen=pcAmber, wash=pcAmber] (0,1.6) circle (0.16); \draw[dotpen=pcAmber, wash=pcAmber] (1.6,1.6) circle (0.16);
+\node[lbl, anchor=south] at (0.8,1.8) {hai cảm biến};
+\draw[pen=pcBlue, wash=pcBlue] (0.4,0) circle (0.24);
+\draw[arr=pcBlue] (0,1.44) -- (0.3,0.25);
+\draw[pen=pcBlue] (1.6,1.44) -- (1.6,1.18);
+\draw[penlite, fill=white] (0.95,0.9) rectangle (2.25,1.18); \node[font=\tiny\itshape, text=pcGray] at (1.6,1.04) {độ trễ};
+\draw[pen=pcBlue] (1.6,0.9) -- (1.6,0.72);
+\draw[pen=pcRed, wash=pcRed] (1.6,0.55) circle (0.17);
+\draw[pcRed, line width=0.7pt, -{Bar[width=5pt]}] (1.45,0.45) -- (0.66,0.08);
+\draw[arr] (0.4,-0.24) -- (0.4,-0.6); \node[lbl, anchor=north] at (0.4,-0.6) {đầu ra};
+% outcomes
+\begin{scope}[xshift=3.1cm]
+  \draw[dotpen=pcAmber, wash=pcAmber] (0,1.25) circle (0.1); \draw[arr=pcAmber] (0.18,1.25) -- (1.1,1.25);
+  \node[lbl, anchor=west] at (1.25,1.25) {trái sang phải: tách};
+  \draw[dotpen=pcAmber, wash=pcAmber] (1.1,0.45) circle (0.1); \draw[arr=pcAmber] (0.92,0.45) -- (0,0.45);
+  \node[lbl, anchor=west] at (1.25,0.45) {phải sang trái: im lặng};
+  \node[lbl, anchor=west, align=left] at (0,-0.35) {ức chế tới\\đúng lúc kích thích};
+\end{scope}
+}{Bộ phát hiện chuyển động: ức chế tới có trễ, và chỉ dập tắt đáp ứng khi đốm sáng chạy từ phải sang trái.}
+
+
+\section*{Phép trừ hay phép chia}
+
+Ức chế không chỉ biết trừ. Một kênh ức chế đang mở không kéo điện áp xuống, mà kéo nó \emph{về trạng thái nghỉ} --- như thể xô bị khoét thêm một lỗ nữa. Vì thế mọi dòng nước chảy vào đều làm mực nước dâng ít hơn. Ức chế không lấy đi một phần cố định của tín hiệu mà \emph{chia} nó: đó là núm chỉnh âm lượng. Nếu sức ức chế tăng cùng với tổng hoạt động xung quanh, mỗi nơ-ron phản ứng không phải với việc tín hiệu của nó mạnh bao nhiêu, mà với việc nó mạnh bao nhiêu \emph{so với các nơ-ron lân cận}. Nhờ đó cùng một mạng hoạt động được cả trong bóng tối lờ mờ lẫn dưới nắng chói. Có điều, với tần số xung, ``bộ chia'' này chỉ hoạt động gọn gàng khi đi kèm một nền nhiễu ổn định, thứ luôn có trong bộ não sống.
+
+\pencilfig{104}{%
+\foreach \dx/\t in {0/phép trừ,4.6/phép chia}{
+  \begin{scope}[xshift=\dx cm]
+  \draw[pen] (0,0) -- (3.6,0); \draw[pen] (0,0) -- (0,1.9);
+  \node[lbl, anchor=north] at (1.8,-0.05) {tín hiệu}; \node[lbl, anchor=south, rotate=90] at (-0.05,0.95) {đáp ứng};
+  \draw[pen=pcBlue] (0.4,0) -- (3.3,1.75);
+  \node[font=\small\itshape, text=pcGray, anchor=south] at (1.8,1.95) {\t};
+  \end{scope}}
+\draw[pen=pcRed, line width=0.9pt] (1.3,0) -- (3.4,1.27);
+\node[lbl, text=pcRed, anchor=west] at (2.25,0.35) {dịch};
+\begin{scope}[xshift=4.6cm]
+\draw[pen=pcRed, line width=0.9pt] (0.4,0) -- (3.3,0.8);
+\node[lbl, text=pcRed, anchor=west] at (2.0,0.25) {dốc ít hơn};
+\end{scope}
+\node[lbl, text=pcBlue, anchor=east] at (2.25,1.45) {không phanh};
+}{Màu xanh là đáp ứng của nơ-ron không có ức chế, màu đỏ là khi có ức chế. Phép trừ dịch ngưỡng; phép chia vặn nhỏ âm lượng, như núm chỉnh.}
+
+Còn một hệ quả thứ hai: lỗ thủng thừa khiến xô quên nhanh hơn. Cửa sổ mà hai tín hiệu phải lọt vào để được cộng lại bị thu hẹp. Ức chế làm các bộ phát hiện trùng khớp khắt khe hơn.
+
+\section*{Lựa chọn}
+
+Giờ đến điều chính còn thiếu: chọn một trong nhiều. Hai nhóm nơ-ron ức chế lẫn nhau. Khi ức chế còn yếu, cả hai cùng hoạt động, chỉ nhỏ hơn. Nhưng nếu nó đủ mạnh, mọi chênh lệch nhỏ đều lớn dần lên, như trên chiếc xích đu, cho tới khi một nhóm im hẳn. Kẻ thắng lấy tất. Và chiến thắng được giữ vững: để mạng đổi ý, lý lẽ mới phải mạnh hơn lý lẽ cũ một cách rõ rệt. Cỗ máy không giật mình vì mỗi tiếng sột soạt.
+
+Bộ phanh còn xóa được trí nhớ: nơ-ron ức chế, khi có tín hiệu ``đặt lại'', dập tắt đống lửa ở chương trước. Hai ô nhớ như vậy ức chế lẫn nhau là một mạch tương tự bộ chốt, nền tảng của mọi bộ nhớ máy tính.
+
+\section*{Sống bên bờ vực}
+
+Một mạng chỉ gồm ``dấu cộng'' có thể rơi vào thác lũ: mỗi xung sinh ra nhiều hơn một xung tiếp theo. Bộ phanh giữ nó ở điểm làm việc, như bộ điều chỉnh giữ nhiệt độ trong lò nướng. Có hai điều kiện: ức chế phải đủ mạnh và đủ nhanh. Nếu nó mạnh nhưng chậm, bộ điều chỉnh bắt đầu vặn quá tay --- như người vặn vòi sen mà không chờ nước nóng chảy tới. Nhiệt độ dao động qua lại. Trong bộ não, một vòng lặp ``cộng'' và ``trừ'' như vậy tạo ra một nhịp nhanh --- vài chục dao động mỗi giây.
+
+Vỏ não có lẽ sống đúng ở bờ vực: phản hồi của chính nó đủ mạnh để rơi vào thác lũ nếu không có phanh. Chỉ bộ phanh nhanh giữ được nó, và vì thế nó đáp ứng rất nhạy với những tín hiệu yếu.
+
+Kết luận của chương thật bất ngờ: bộ phanh hầu như không thêm phép tính mới nào cho cỗ máy. Chúng thêm \emph{sự điều khiển}: lựa chọn, đặt lại, chỉnh âm lượng, sự ổn định. Kích thích mang dữ liệu, ức chế quyết định dữ liệu nào được đi qua, khi nào và to đến đâu.
+
+\fullversion{3}

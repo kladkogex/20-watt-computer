@@ -1,0 +1,46 @@
+\chapter{Những chất không quyết định loại nơ-ron}
+\label{sec:othermediators}
+
+Ở chương~\ref{sec:neurontypes}, ta đã phân loại nơ-ron theo chất dẫn truyền thần kinh chính và được mười loại (bảng~\ref{tab:types}). Giờ là lúc thêm vào những điều phức tạp. Nơ-ron không chỉ nhả chất dẫn truyền chính, và trong não, ngoài các chất dẫn truyền chính còn có những chất khác hoạt động. Chúng thay đổi cách mạng truyền và lưu tín hiệu.
+
+Ngoài bus địa chỉ và bus quảng bá (mục~\ref{sec:buses}) còn có một bus thứ ba: \emph{kênh ngược}. Một số chất không do bên gửi mà do \emph{bên nhận} nhả ra, và chúng đi ngược qua khe về phía đầu ra của bên gửi, làm thay đổi lượng chất dẫn truyền mà bên gửi sẽ nhả ở lần sau. Trong mạng truyền thông, điều này giống tín hiệu xác nhận đã nhận mà bên gửi dùng để điều chỉnh việc truyền của mình. Nơ-ron dùng chính kênh này khi thay đổi trọng số liên kết: qua nó, đầu ra của bên gửi biết được hoạt động của bên nhận, tức thừa số thứ hai trong các quy tắc học của chương~\ref{sec:dofa}.
+
+Danh sách đầy đủ các chất dẫn truyền đã biết rất dài: hơn một trăm chất, phần lớn là những chuỗi protein ngắn, gọi là neuropeptide. Nhưng tất cả đều xếp được vào vài lớp, và trong mỗi lớp các chất hoạt động tương tự nhau. Những chất không bao giờ là chất dẫn truyền chính được gom trong bảng~\ref{tab:othermediators}, với đúng ba câu hỏi mà kỹ sư sẽ đặt ra: tín hiệu đi theo bus nào, tác động nhanh hay chậm, và dấu thường gặp là gì. Chúng không quyết định loại nơ-ron: chúng được nhả cùng chất dẫn truyền chính, hoặc không do nơ-ron nhả ra, hoặc đi theo chiều ngược lại.
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.12}
+\begin{tabular}{>{\raggedright}p{2.25cm}>{\raggedright}p{2.8cm}>{\raggedright}p{1.8cm}>{\raggedright}p{1.5cm}>{\centering}p{0.8cm}>{\raggedright\arraybackslash}p{4.3cm}}
+\toprule
+Lớp & Chất & Bus & Tốc độ & Dấu & Vai trò trong tính toán \\
+\midrule
+Amino acid & D-serine & cục bộ & chậm & VÀ & chìa khóa thứ hai cho thụ thể glutamate: điều kiện ``VÀ'' \\
+\midrule
+Monoamine & amine vết & quảng bá & chậm & $\pm$ & tinh chỉnh các kênh monoamine \\
+\midrule
+\multirow{2}{2.25cm}{Purine}
+ & ATP & địa chỉ & nhanh và chậm & $+$ & chất dẫn truyền đi kèm; tín hiệu giữa nơ-ron và tế bào thần kinh đệm \\
+ & adenosine & thể tích & chậm & $-$ & tích tụ khi hoạt động: bộ đếm tải~\cite{Dunwiddie2001} \\
+\midrule
+\multirow{8}{2.25cm}{Neuropeptide (hơn một trăm)}
+ & enkephalin, endorphin, dynorphin & thể tích & chậm & $-$ & kìm hãm truyền dẫn \\
+ & chất P & thể tích & chậm & $+$ & tăng cường chậm \\
+ & neuropeptide Y & thể tích & chậm & $-$ & ức chế chậm \\
+ & somatostatin & thể tích & chậm & $-$ & ức chế chậm, đi kèm GABA \\
+ & peptide ruột hoạt mạch (VIP) & thể tích & chậm & $+$ & giải ức chế: ức chế các nơ-ron ức chế \\
+ & cholecystokinin & thể tích & chậm & $\pm$ & đi kèm GABA ở một phần nơ-ron ức chế \\
+ & orexin & quảng bá & chậm & $+$ & bộ ổn định chế độ thức \\
+ & oxytocin, vasopressin & quảng bá & chậm & $\pm$ & các thiết lập hành vi toàn cục \\
+\midrule
+\multirow{2}{2.25cm}{Khí}
+ & nitơ oxit NO & ngược, thể tích & chậm & $\pm$ & đi xuyên qua màng; tín hiệu ngược khi thay đổi trọng số~\cite{Garthwaite2008} \\
+ & CO, H$_2$S & thể tích & chậm & $\pm$ & vai trò còn ít được nghiên cứu \\
+\midrule
+Lipid & endocannabinoid (anandamide, 2-AG) & ngược & chậm & $-$ & bên nhận giảm lượng nhả của bên gửi: phản hồi theo trọng số~\cite{WilsonNicoll2001} \\
+\bottomrule
+\end{tabular}
+\caption{Những chất không quyết định loại nơ-ron. \emph{Bus}, \emph{tốc độ} và \emph{dấu} như trong bảng~\ref{tab:types}; ngoài ra, bus thể tích --- chất dẫn truyền lan ra trong khoảng gian bào quanh chỗ nhả, ngược --- đi từ bên nhận ngược về bên gửi, cục bộ --- tác động gần chỗ nhả. ``VÀ'' là tín hiệu cho phép: tự nó không gây ra dòng điện, nhưng thiếu nó thì một đầu vào khác không kích hoạt được, như đầu vào thứ hai của cổng logic ``VÀ''. Neuropeptide hầu như luôn được nhả cùng chất dẫn truyền chính và chủ yếu khi tần số xung cao~\cite{vandenPol2012}.}
+\label{tab:othermediators}
+\end{table}

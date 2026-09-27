@@ -1,0 +1,81 @@
+\chapter*{Cách đọc cuốn sách này}
+\addcontentsline{toc}{chapter}{Cách đọc cuốn sách này}
+
+Không nhất thiết phải đọc sách theo thứ tự. Các chương~1--4 là nền tảng chung: các loại nơ-ron, \nt{GLUT} và \nt{GABA} tính gì và chúng nói bằng ngôn ngữ nào. Từ đó cuốn sách rẽ nhánh. Bản đồ trên hình~\ref{fig:roadmap} cho thấy chương nào dựa trên chương nào: mũi tên từ chương $A$ đến chương $B$ nghĩa là $B$ dùng các khái niệm và công thức của $A$. Bản đồ chỉ vẽ các phụ thuộc chính; những tham chiếu ngược nhỏ không cản trở việc đọc.
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[>=Stealth,scale=0.95,
+  ch/.style={draw,thick,rounded corners=3pt,align=center,font=\scriptsize,text width=1.85cm,minimum height=0.62cm,inner sep=2pt},
+  base/.style={ch,fill=blue!8}, bus/.style={ch,fill=orange!14}, sum/.style={ch,fill=gray!18},
+  io/.style={ch,fill=green!10}, sort/.style={ch,fill=cyan!8}, lab/.style={ch,fill=violet!10},
+  dep/.style={->,thick,gray!60!black}]
+% foundation
+\node[base] (c1) at (0,0) {1 Các loại\\nơ-ron};
+\node[base] (c2) at (2.3,0) {2 \nt{GLUT}};
+\node[base] (c3) at (4.6,0) {3 \nt{GLUT} và \nt{GABA}};
+\node[base] (c4) at (6.9,0) {4 Mã Morse};
+% broadcast channels and the synthesis
+\node[bus] (c5) at (4.6,-1.5) {5 \nt{SERO}};
+\node[bus] (c6) at (7.3,-1.5) {6 \nt{DOPA}};
+\node[bus] (c7) at (9.2,-0.9) {7 Các thuyết\\dopamine};
+\node[bus] (c8) at (9.2,-2.1) {8 \nt{NORA}};
+\node[bus] (c9) at (11.5,-2.1) {9 \nt{ACET}};
+\node[sum] (c10) at (13.8,-0.9) {10 Toàn bộ\\cỗ máy};
+% inputs and outputs
+\node[io] (c12) at (2.3,-4.1) {12 Nhận\\dạng};
+\node[io] (c11) at (4.6,-4.1) {11 Đầu vào};
+\node[io] (c13) at (6.9,-4.1) {13 Cơ bắp};
+\node[io] (c14) at (9.2,-3.05) {14 Đau};
+\node[io] (c15) at (9.2,-4.1) {15 Học\\vận động};
+\node[io] (c16) at (9.2,-5.15) {16 Hóa học\\cơ thể};
+% lab, sorting, sleep
+\node[lab] (c17) at (11.5,-4.1) {17 Gỡ lỗi};
+\node[lab] (c21) at (13.8,-4.1) {21 Cỗ máy\\sống};
+\node[lab] (c22) at (13.8,-5.15) {22 DishBrain};
+\node[sort] (c18) at (11.5,-5.15) {18 Nơ-ron\\dụng cụ};
+\node[sort] (c19) at (13.8,-6.2) {19 Số\\đuôi gai};
+\node[bus] (c20) at (11.5,-6.2) {20 Giấc ngủ};
+% dependencies
+\draw[dep] (c1) -- (c2); \draw[dep] (c2) -- (c3); \draw[dep] (c3) -- (c4);
+\draw[dep] (c1) -- (c5); \draw[dep] (c4) -- (c6); \draw[dep] (c5) -- (c6);
+\draw[dep] (c6) -- (c7); \draw[dep] (c6) -- (c8); \draw[dep] (c8) -- (c9);
+\draw[dep] (c7) -- (c10); \draw[dep] (c9) -- (c10);
+\draw[dep] (c4) -- (c11); \draw[dep] (c11) -- (c12); \draw[dep] (c11) -- (c13); \draw[dep] (c5) -- (c13);
+\draw[dep] (c13) -- (c14); \draw[dep] (c13) -- (c15); \draw[dep] (c13) -- (c16);
+\draw[dep] (c15) -- (c17); \draw[dep] (c9) -- (c17); \draw[dep] (c17) -- (c21); \draw[dep] (c21) -- (c22);
+\draw[dep] (c16) -- (c18); \draw[dep] (c18) -- (c19); \draw[dep] (c16) -- (c20);
+% legend
+\begin{scope}[yshift=-7.25cm]
+\foreach \s/\t [count=\i] in {base/nền tảng, bus/kênh và chế độ, sum/tổng hợp, io/đầu vào và đầu ra, sort/phân loại nơ-ron, lab/phòng thí nghiệm}{
+  \pgfmathtruncatemacro{\col}{mod(\i-1,3)}\pgfmathtruncatemacro{\row}{(\i-1)/3}
+  \node[\s,text width=0.3cm,minimum height=0.32cm] at ({\col*4.8+0.2},{-\row*0.55}) {};
+  \node[anchor=west,font=\scriptsize] at ({\col*4.8+0.55},{-\row*0.55}) {\t};}
+\end{scope}
+\end{tikzpicture}
+\caption{Bản đồ các chương. Mũi tên đi từ một chương đến chương dựa trên nó. Các tham chiếu khác giữa các chương chỉ là chỉ dẫn, không phải phụ thuộc.}
+\label{fig:roadmap}
+\end{figure}
+
+\section*{Các lộ trình đọc}
+
+\begin{center}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{>{\raggedright}p{3.0cm}>{\raggedright}p{3.9cm}>{\raggedright\arraybackslash}p{6.4cm}}
+\toprule
+Lộ trình & Dành cho ai & Các chương theo thứ tự \\
+\midrule
+khóa học một quý & giảng viên, 10 tuần & tuần 1: ch.~1--2; 2: ch.~3; 3: ch.~4; 4: ch.~5--6; 5: ch.~7--8; 6: ch.~9; 7: ch.~10; 8: ch.~11--12; 9: ch.~13 và~15; 10: ch.~17 \\
+AI và học máy & người biết mạng nơ-ron nhân tạo và muốn hiểu bộ não học như thế nào & 1--4, 5 (đọc lướt), 6, 7, 8, 9, 11 (đọc lướt), 12, 13 (đọc lướt), 15 \\
+điện tử và phần cứng & kỹ sư thiết kế mạch, người phát triển chip neuromorphic & 1--4, 5, 11, 13, 16, 18, 19, 17 (chương 9 và 15 đọc lướt) \\
+giao diện thần kinh và máy tính sống & người xây dựng giao diện não--máy tính và chip có nơ-ron sống & 1, 2, 4, 11, 13, 17 (chương 9 và 15 đọc lướt), 21, 22 (chương 12 đọc lướt) \\
+tổng quan nhanh & kỹ sư có một ngày cuối tuần & 1, 2, 3, 6, 10; các tham chiếu của chương~6 đến chương~4--5 hiểu được từ ngữ cảnh \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+``Đọc lướt'' nghĩa là: chỉ cần đọc phần đầu chương, các mệnh đề trong khung vàng và bảng tổng kết.
+
+Cuối mỗi chương có bài tập: ước tính, suy luận, mô phỏng và thiết kế; đáp án ngắn được tập hợp trong phụ lục~\ref{sec:answers}. Mọi ký hiệu nằm trong phụ lục~\ref{sec:notation}, còn các thí nghiệm làm nền cho những mệnh đề chính của từng chương nằm trong phụ lục~\ref{sec:supplement}. Các con số trong sách được tính bằng những chương trình nhỏ trong thư mục \texttt{models/}; có thể chạy và sửa chúng.

@@ -1,0 +1,123 @@
+\chapter{Các loại nơ-ron theo chức năng điện}
+\chaptermark{Nơ-ron như linh kiện}
+\label{sec:eetypes}
+
+Ở chương~\ref{sec:neurontypes} ta đã phân loại nơ-ron theo chất dẫn truyền thần kinh mà đầu ra của chúng giải phóng. Một kỹ sư điện tử sẽ phân loại khác: theo việc nơ-ron làm gì với tín hiệu của nó, tức nó hoạt động như linh kiện nào. Linh kiện chính của cuốn sách ta đã biết từ chương~\ref{sec:glutcomputer}: nơ-ron tích phân rò~\eqref{eq:glutneuron}, một mạch RC với bộ so sánh. Nhưng trong não còn có những linh kiện khác. Bảng~\ref{tab:eetypes} gom chúng thành bốn nhóm, và hầu như linh kiện nào cũng đã xuất hiện trong sách.
+
+\begin{center}
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{>{\raggedright}p{3.1cm}>{\raggedright}p{3.3cm}>{\raggedright}p{4.7cm}>{\raggedright\arraybackslash}p{2.4cm}}
+\caption{Nơ-ron như linh kiện: tên gọi, linh kiện tương ứng trong điện tử, việc linh kiện làm và nơi nó xuất hiện trong sách.}\label{tab:eetypes}\\
+\toprule
+Nơ-ron & Linh kiện & Làm gì & Ở đâu trong sách \\
+\midrule
+\endfirsthead
+\toprule
+Nơ-ron & Linh kiện & Làm gì & Ở đâu trong sách \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+\multicolumn{4}{l}{\emph{Bộ lọc và bộ tích phân}} \\
+nơ-ron tích phân rò & bộ tích phân RC với bộ so sánh & cộng các đầu vào trong cửa sổ $\tau$ và phát xung khi chạm ngưỡng & ch.~\ref{sec:glutcomputer}, \eqref{eq:glutneuron} \\
+bộ phát hiện trùng khớp & cổng AND có cửa sổ thời gian & chỉ phát xung nếu các đầu vào đến gần như cùng lúc; $\tau$ rất nhỏ & ch.~\ref{sec:glutcomputer}, \ref{sec:code}, \eqref{eq:window} \\
+nơ-ron pha (phasic) & bộ lọc thông cao, bộ phát hiện sườn & đáp ứng với thay đổi của đầu vào rồi im lặng & ch.~\ref{sec:sensors} \\
+nơ-ron thích nghi & bộ lọc thông cao có tự động điều chỉnh hệ số khuếch đại & tần số giảm khi đầu vào không đổi & ch.~\ref{sec:sensors}, \eqref{eq:nakarushton} \\
+bộ cộng hưởng & mạch dao động, bộ lọc thông dải & đáp ứng tốt nhất với đầu vào có tần số của riêng nó & mục~\ref{sec:resonator} \\
+bộ tích phân không rò & bộ tích phân dùng khuếch đại thuật toán & biến vận tốc thành vị trí và giữ vị trí đó & mục~\ref{sec:perfectint} \\
+\midrule
+\multicolumn{4}{l}{\emph{Bộ chuyển đổi}} \\
+nơ-ron trương lực (tonic) & bộ chuyển đổi điện áp--tần số & tần số bám tuyến tính theo đầu vào và hầu như không mệt & ch.~\ref{sec:code} \\
+nơ-ron phân cấp (không phát xung) & bộ khuếch đại tương tự, bộ đệm & truyền điện áp biến thiên liên tục đi một quãng ngắn & ch.~\ref{sec:sensors} \\
+nơ-ron chỉnh lưu & bộ chỉnh lưu nửa chu kỳ & tần số không bao giờ âm, $[u]_+$ & ch.~\ref{sec:glutcomputer}, \ref{sec:gaba} \\
+cặp ``bật--tắt'' & cặp bộ chỉnh lưu, mã hai dây & một bên đáp ứng với ``nhiều hơn'', bên kia với ``ít hơn'' & ch.~\ref{sec:glutcomputer}, \eqref{eq:dualrail} \\
+nơ-ron có ức chế sun & bộ chia tương tự, điều chỉnh hệ số khuếch đại & chia đầu vào chứ không trừ khỏi nó & ch.~\ref{sec:gaba}, \eqref{eq:shunt} \\
+\midrule
+\multicolumn{4}{l}{\emph{Bộ tạo dao động và thời gian}} \\
+bộ tạo nhịp & bộ dao động tích thoát, mạch đa hài & tự phát xung với tần số không đổi & ch.~\ref{sec:serocomputer}, \ref{sec:dofa} \\
+bộ tạo nhịp có đầu vào & bộ dao động điều khiển bằng điện áp & có nhịp riêng, đầu vào làm nó nhanh lên hoặc chậm lại & ch.~\ref{sec:chemoutput} \\
+nơ-ron phát chùm xung & bộ tạo chùm xung có cổng & phát các chùm xung dày, tức các ``gạch'' & ch.~\ref{sec:code}, \eqref{eq:burst} \\
+nơ-ron gắn với pha & bộ tách sóng pha, vòng khóa pha & phát xung tại một pha xác định của sóng đầu vào & ch.~\ref{sec:sensors}, \ref{sec:chemoutput} \\
+sợi trục có trễ & đường dây trễ & làm trễ tín hiệu một khoảng thời gian định trước & ch.~\ref{sec:glutcomputer}, hình~\ref{fig:itd} \\
+\midrule
+\multicolumn{4}{l}{\emph{Bộ nhớ và chuyển mạch}} \\
+nơ-ron hai trạng thái bền & trigger Schmitt, mạch chốt & một đầu vào ngắn đưa nó vào một trạng thái kéo dài & mục~\ref{sec:bistable} \\
+nơ-ron có các nhánh đuôi gai & bộ dồn kênh, một mạng nhiều lớp nhỏ & nhánh chỉ cho đầu vào đi qua nếu có đầu vào cho phép & ch.~\ref{sec:synthesis} \\
+\end{longtable}
+\end{center}
+
+Một lưu ý quan trọng hơn cả bảng: đây không phải là các tế bào khác nhau, mà là các \emph{chế độ} khác nhau. Cùng một nơ-ron có thể là bộ tích phân khi đầu vào chậm và là bộ phát hiện trùng khớp khi sự ức chế đã rút ngắn $\tau$ của nó (chương~\ref{sec:code}); là bộ tạo nhịp khi thức và là bộ thu im lặng khi ngủ. Linh kiện nào được tạo thành là do các kênh ion của màng quyết định, cùng với các kênh quảng bá điều chỉnh chúng.
+
+\section{Bốn linh kiện chưa từng có trong sách}
+
+\subsection{Bộ cộng hưởng}
+\label{sec:resonator}
+
+Một số nơ-ron có một dòng điện chậm chống lại mọi thay đổi điện áp: điện áp tăng thì dòng kéo nó xuống, điện áp giảm thì kéo lên, nhưng có trễ. Với kỹ sư điện tử, dòng như vậy hoạt động như một cuộn cảm, và cùng với điện dung của màng, chúng tạo thành một mạch dao động. Nơ-ron đáp ứng mạnh nhất với đầu vào có một tần số xác định, thường từ vài hertz đến một vài chục hertz, và yếu hơn với đầu vào chậm hơn hay nhanh hơn~\cite{HutcheonYarom2000}. Đó là một bộ lọc thông dải trong một tế bào: từ đầu vào nhiễu, nó chọn ra nhịp có tần số của riêng nó, chẳng hạn nhịp cục bộ của chương~\ref{sec:gaba}.
+
+\subsection{Bộ tích phân không rò}
+\label{sec:perfectint}
+
+Bộ tích phân rò chỉ nhớ đầu vào trong thời gian $\tau$, tức vài chục mili giây. Nhưng để đứng yên, mắt cần nhớ vị trí của nó hàng giây: lệnh ``xoay'' đến dưới dạng một vận tốc ngắn ngủi, còn mắt thì phải được giữ ở vị trí mới. Mạng giải quyết việc này bằng chính phản hồi đã tạo nên bộ nhớ ở chương~\ref{sec:glutcomputer}. Nếu một nhóm nơ-ron có hằng số thời gian $\tau$ tự kích thích chính nó với trọng số $w$, thì $\tau\,\dd r/\dd t=-r+w\,r+I$, và hằng số thời gian của nhóm bằng
+\begin{empheq}[box=\keybox]{equation}
+\tau_{\text{hd}} \;=\; \frac{\tau}{1-w} .
+\label{eq:perfectint}
+\end{empheq}
+Với $\tau=0.1\,\text{s}$ và $w=0.995$ ta được $20\,\text{s}$: một bộ tích phân gần như lý tưởng làm từ các nơ-ron mà mỗi nơ-ron tự nó quên sau một phần mười giây~\cite{Seung1996}. Cái giá là phải tinh chỉnh chính xác: với $w$ lớn hơn một chút so với một, bộ tích phân đi vào bão hòa, với $w$ nhỏ hơn một chút thì nó quên nhanh. Vì vậy một bộ tích phân như thế cần được học liên tục để tự điều chỉnh, giống như cách được mô tả ở chương~\ref{sec:motorlearning}.
+
+\subsection{Nơ-ron hai trạng thái bền}
+\label{sec:bistable}
+
+Ở các chương~\ref{sec:glutcomputer} và~\ref{sec:gaba}, flip-flop được lắp từ một nhóm nơ-ron. Nhưng cũng có flip-flop trong một tế bào. Một số nơ-ron có một dòng điện mà khi đã bật lên thì tự duy trì sự kích thích: một đầu vào ngắn đưa nơ-ron vào trạng thái hoạt động kéo dài, gọi là \emph{bình nguyên}, còn sự ức chế đưa nó trở về trạng thái nghỉ. Đó là một trigger Schmitt: nơ-ron có hai trạng thái bền và vòng trễ giữa chúng. Các nơ-ron \nt{ACET} điều khiển cơ chẳng hạn hoạt động như vậy, và tính chất này được bật bởi một kênh quảng bá: bình nguyên xuất hiện khi serotonin tới được nơ-ron~\cite{Hounsgaard1988}. Cùng một tế bào, có \nt{SERO} thì là mạch chốt, không có thì là bộ tích phân thông thường.
+
+\subsection{Bộ tích phân và bộ cộng hưởng}
+
+Lý thuyết chia các tế bào kích thích được thành hai lớp~\cite{Izhikevich2007}. \emph{Bộ tích phân} giống như một bộ dao động điều khiển bằng điện áp bắt đầu từ không: ngay trên ngưỡng một chút, nơ-ron có thể phát xung chậm tùy ý, và tần số tăng dần đều theo đầu vào. Một nơ-ron như vậy cộng mọi thứ đến với nó và truyền tốt độ lớn của đầu vào bằng tần số. \emph{Bộ cộng hưởng} giống như một bộ dao động có tần số tối thiểu: chúng không biết phát chậm, khi đầu vào ở ngưỡng thì phát ngay xung với tần số hữu hạn, và ưa đầu vào có tần số của riêng chúng. Loại thứ nhất là linh kiện tự nhiên của mã tần số ở chương~\ref{sec:code}, loại thứ hai là của mã thời gian.
+
+\begin{keyblock}
+\begin{proposition}[Một nơ-ron, nhiều linh kiện]
+\label{prop:eetypes}
+Theo chức năng điện, nơ-ron hoạt động như bộ tích phân rò và không rò, bộ phát hiện trùng khớp, bộ lọc thông cao và thông dải, bộ chuyển đổi điện áp--tần số, bộ chỉnh lưu, bộ chia, bộ dao động, đường dây trễ và flip-flop. Một tế bào cho trước trở thành linh kiện nào là do các kênh ion của nó quyết định, cùng với các kênh quảng bá điều chỉnh chúng. Bản thân các chế độ đã được đo; mức độ bộ não dùng sự tái cấu hình này để tính toán phần lớn vẫn là giả thuyết.
+\end{proposition}
+\end{keyblock}
+
+Với kỹ sư, điều này giống một mảng logic lập trình được: phần cứng chỉ có một, còn linh kiện do cấu hình quyết định. Có điều ở đây cấu hình không được thay đổi lúc nạp chương trình, mà ngay trong khi chạy, bởi các kênh quảng bá chậm đã nói đến ở các chương~\ref{sec:serocomputer}--\ref{sec:acet}.
+
+\section{Bài tập}
+
+\begin{exercise}[\lvlA]
+\label{ex:18:1}
+\emph{Dung sai của bộ tích phân không rò.} Các nơ-ron với $\tau=0.1$~s giữ vị trí mắt theo~\eqref{eq:perfectint} trong $T=1$~s với sai số không quá $5\%$ về mỗi phía. (a)~Tìm khoảng cho phép của $w$. (b)~$w$ là tổng trọng số của $K$ khớp thần kinh, mỗi khớp có sai số độc lập $10\%$. Với $K$ nào độ tản mát của tổng nằm trong dung sai?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:18:2}
+\emph{Bộ cộng hưởng như một mạch dao động.} Mô tả dòng chậm ở mục~\ref{sec:resonator} bằng biến $W$: $C\,\dd V/\dd t=-g_LV-g_wW+I$, $\tau_w\,\dd W/\dd t=V-W$. Chứng minh đây là mạch $RC$ có nhánh song song $R_w=1/g_w$, $L_w=\tau_w/g_w$, và với $C/g_L=10\ms$, $\tau_w=100\ms$, $\alpha=g_w/g_L=4$, tìm tần số cộng hưởng và độ lợi của $|Z|$ tại đó so với $|Z(0)|$.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:18:3}
+\emph{Bộ tích phân bắt đầu hoạt động như thế nào.} (a)~Nơ-ron $\tau\,\dd V/\dd t=-V+\mu$, $\tau=10\ms$, với ngưỡng $\theta$ và đặt lại về không. Với $\mu/\theta-1$ bằng bao nhiêu thì tần số là $1$~Hz? (b)~Mô hình $\tau\,\dd v/\dd t=v^2+\mu$ (xung là khi $v$ chạy tới $+\infty$, đặt lại về $-\infty$) cho tần số bao nhiêu khi $\mu=0.01$?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:18:4}
+\emph{Mô phỏng: bộ tích phân và bộ cộng hưởng.} Mô hình của bài~\ref{ex:18:2} với $g_L=1$, $\tau_m=10\ms$, $\tau_w=100\ms$, ngưỡng $1$ và đặt lại $V\to0$ ($W$ không đổi) nhận $\mu=1.5\sin2\pi ft$, $f=1$--$40$~Hz. Nơ-ron phát xung trong dải tần nào khi $\alpha=0$ và khi $\alpha=4$? So sánh với điều kiện $1.5\,|Z(f)|>1$.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:18:5}
+\emph{Mạch chốt từ một tế bào.} Nơ-ron có dòng bình nguyên: $\tau\,\dd r/\dd t=-r+F(wr+I)$, $F(x)=\min(1,\max(0,x))$, $\tau=10\ms$, $w=1.5$, nền $I=-0.2$. (a)~Xung $I=0.3$ phải kéo dài ít nhất bao lâu để đưa nơ-ron từ $r=0$ lên bình nguyên? (b)~Xung dài $I=-0.2-B$ có biên độ $B$ nhỏ nhất bằng bao nhiêu thì đưa nó về trạng thái nghỉ?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:18:6}
+\emph{Bộ tích phân tự điều chỉnh.} Khi mắt định thị, đầu vào $I=0$, cảm biến trượt cho tốc độ trôi $e=\dd r/\dd t$, và $\dd w/\dd t=-\eta\,e\,r$. Với $w=0.95$, $\tau=0.1$~s, $\langle r^2\rangle=1$, tìm $\eta$ để sau $60$~s định thị, $|1-w|$ lọt vào dung sai của bài~\ref{ex:18:1}. Điều gì hỏng nếu cũng học cả trong lúc mắt xoay?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:18:7}
+\emph{Tái cấu hình linh kiện để làm gì?} Một kênh quảng bá chuyển $\alpha$ trong mô hình của bài~\ref{ex:18:2} giữa $0$ và $4$. Bộ cộng hưởng hơn bộ tích phân bao nhiêu lần về tỉ số tín hiệu/nhiễu với một sóng sin yếu trong nhiễu trắng dòng điện ở $11$~Hz và ở $1$~Hz? Hãy nghĩ ra một bài toán mà chính việc chuyển chế độ đem lại lợi ích.
+\end{exercise}

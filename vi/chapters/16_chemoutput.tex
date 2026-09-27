@@ -1,0 +1,175 @@
+\chapter{Đầu ra thứ hai: bộ não điều khiển hóa học của cơ thể như thế nào}
+\chaptermark{Đầu ra hóa học}
+\label{sec:chemoutput}
+
+\section{Đầu ra nhanh và đầu ra chậm}
+
+Ở chương~\ref{sec:muscles} ta đã thấy đầu ra nhanh của cỗ máy: cơ bắp. Nhưng cỗ máy còn một đầu ra thứ hai, chậm hơn. Bộ não giữ nhiệt độ cơ thể, nhịp tim, lượng nước và lượng đường trong giới hạn cần thiết, chuẩn bị cho cơ thể chạy hoặc ngủ. Để làm việc đó, nó không cử động các khớp mà phát ra tín hiệu hóa học. Có hai con đường. Thứ nhất là các dây thần kinh đi thẳng tới nội tạng: tim, mạch máu, ruột, các tuyến. Thứ hai là máu: một số nơ-ron và tuyến không thả chất vào khe tới tế bào bên cạnh mà thả thẳng vào dòng máu.
+
+Máu là bus quảng bá rộng nhất trong tất cả những gì cuốn sách đã gặp. Các kênh quảng bá ở chương~\ref{sec:serocomputer}--\ref{sec:acet} gửi tín hiệu tới những vùng lớn của não; máu gửi nó tới mọi tế bào của cơ thể. Máu đi hết một vòng cơ thể trong khoảng một phút, nên thông điệp tới được mọi nơi sau vài chục giây và tồn tại hàng phút, hàng giờ cho đến khi chất bị phân hủy. Kiểu phát này hoàn toàn không có địa chỉ. Giống như trong mệnh đề~\ref{prop:receptor}, ý nghĩa của thông điệp do bên nhận chọn: chỉ những tế bào có thụ thể với chất đó mới đáp ứng.
+
+\section{Ga và phanh: hai dây dẫn tới nội tạng}
+
+Ví dụ rõ nhất là tim. Tim có bộ tạo nhịp riêng, giống như nơ-ron \nt{SERO} ở chương~\ref{sec:serocomputer}: nó tự đặt nhịp, và nếu cắt hết dây thần kinh thì tim đập khoảng một trăm lần mỗi phút. Bộ não không tạo ra nhịp mà chỉ tinh chỉnh nó, bằng hai dây dẫn trái dấu (hình~\ref{fig:gasbrake}). Một dây mang \nt{NORA}: đó là \emph{chân ga}, nó làm nhịp nhanh lên. Dây kia mang \nt{ACET}: đó là \emph{phanh}, nó làm nhịp chậm lại. Một cách thô,
+\begin{empheq}[box=\keybox]{equation}
+f \;\approx\; f_0 \;+\; a_S\,S \;-\; a_P\,P ,
+\label{eq:gasbrake}
+\end{empheq}
+trong đó $f_0\approx100$ nhịp mỗi phút là nhịp riêng của bộ tạo nhịp, $S$ và $P$ là mức hoạt động của ga và phanh. Lúc nghỉ, phanh đang được đạp, và tim thường đập khoảng sáu mươi đến bảy mươi lần mỗi phút; khi gắng sức, phanh được nhả ra và ga được đạp xuống.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  blk/.style={draw,very thick,rounded corners=2pt,align=center,font=\small},
+  pace/.style={circle,draw,very thick,double,double distance=1.2pt,minimum size=1.8cm,inner sep=0pt,font=\scriptsize,fill=red!8,align=center},
+  inh/.style={-{Bar[width=7pt]},thick,red!70!black}]
+\node[blk,fill=blue!5,text width=1.6cm] (B) at (0,0) {lệnh\\của não};
+\node[pace] (H) at (6.2,0) {bộ tạo\\nhịp};
+\draw[->,very thick,orange!85!black] (B.north east) to[bend left=20] node[above,font=\scriptsize,black,align=center] {\nt{NORA}: ga, vài giây} (H.north west);
+\draw[inh,very thick,blue!60!black] (B.south east) to[bend right=20] node[below,font=\scriptsize,black,align=center] {\nt{ACET}: phanh, dưới một giây} (H.south west);
+\draw[->,very thick] (H) -- (8.4,0) node[right,font=\small] {tần số $f$};
+\node[blk,fill=orange!10,text width=1.6cm] (A) at (0,-2.6) {\nt{ADRE}\\vào máu};
+\draw[->,thick,orange!85!black] (B) -- (A);
+\foreach \y/\lab in {-2.0/{tim},-2.6/{mạch máu},-3.2/{gan, cơ}}{
+  \draw[->,thick,densely dashed,orange!85!black] (A.east) -- (4.3,\y) node[right,font=\scriptsize,black] {\lab};}
+\end{tikzpicture}
+\caption{Hai dây dẫn trái dấu tới bộ tạo nhịp tim: ga \nt{NORA} chậm, phanh \nt{ACET} nhanh. Phía dưới là cũng chân ga ấy nhưng đi qua bus quảng bá: các tế bào \nt{ADRE} thả adrenaline vào máu, và mọi cơ quan có thụ thể phù hợp đều nhận được tín hiệu (mũi tên nét đứt).}
+\label{fig:gasbrake}
+\end{figure}
+
+Đây chính là mã hai dây của chương~\ref{sec:glutcomputer} và cặp cơ của chương~\ref{sec:muscles}, chỉ khác là giờ đây các dây không điều khiển khớp mà điều khiển nhịp độ của bộ tạo nhịp. Và hai dây có tốc độ khác nhau. Cả hai đều hoạt động như bộ lọc thông thấp, nhưng phanh truyền các thay đổi nhanh hơn ga vài lần~\cite{Berger1989}: đường đi của \nt{ACET} ngắn, protein gắn với thụ thể tự mở kênh kali, không cần chất truyền tin thứ hai bên trong tế bào~\cite{Logothetis1987gbg}, còn \nt{NORA} tác động qua một chuỗi phản ứng bên trong tế bào. Kỹ sư sẽ nhận ra ở đây thủ pháp dùng hai bộ truyền động có tốc độ khác nhau: bộ nhanh lo tinh chỉnh chính xác tức thời, bộ chậm lo những thay đổi lớn và lâu dài.
+
+Cũng ở đây \nt{ADRE} tìm thấy vai trò của mình; bảng~\ref{tab:types} từng ghi rằng vai trò của nó trong não chưa rõ. Bên ngoài não thì vai trò ấy rõ ràng. Một phần tế bào của đường ga không gửi dây dẫn tới cơ quan mà thả adrenaline thẳng vào máu. Đó vẫn là chân ga, nhưng đi qua bus quảng bá: sau vài chục giây nó tới tim, mạch máu, gan và cơ cùng một lúc và tồn tại hàng phút. Chân ga có địa chỉ \nt{NORA} tinh chỉnh một cơ quan; chân ga quảng bá \nt{ADRE} chuyển cả cơ thể sang chế độ chạy.
+
+\section{Chuỗi tầng có phản hồi}
+
+Nhiều hormone không do một tuyến tiết ra mà do một chuỗi tầng. Một nhóm nhỏ nơ-ron ở đáy não thả vào máu tín hiệu thứ nhất; tín hiệu này khiến một tuyến trung gian tiết ra tín hiệu thứ hai; tín hiệu thứ hai lại khiến tuyến cuối tiết ra hormone thực sự tác động lên cơ thể. Còn hormone cuối quay ngược về các tầng đầu và ức chế chúng. Kết quả là một bộ khuếch đại ba tầng được bao bởi phản hồi âm, tức một bộ điều chỉnh mức, giống như hệ \nt{SERO} trong công thức~\eqref{eq:feedback}.
+
+Ta mô tả mỗi tầng bằng một mạch RC với hằng số thời gian $\tau$ và hệ số khuếch đại $g$, còn phản hồi bằng hệ số $k$:
+\begin{equation}
+\tau\,\frac{\dd x_1}{\dd t} = -x_1 + g\bigl[u - k\,x_3\bigr]_+ ,\qquad
+\tau\,\frac{\dd x_2}{\dd t} = -x_2 + g\,x_1 ,\qquad
+\tau\,\frac{\dd x_3}{\dd t} = -x_3 + g\,x_2 ,
+\label{eq:cascade}
+\end{equation}
+trong đó $u$ là lệnh của não, $x_3$ là mức hormone cuối. Hệ số khuếch đại vòng là $K=g^3k$. Ở trạng thái cân bằng $x_3=g^3u/(1+K)$, và như mọi bộ điều chỉnh có phản hồi, vòng lớn làm cho mức gần như không nhạy với sự tản mát hệ số khuếch đại của các tầng. Nhưng mỗi tầng lại làm lệch pha: ở tần số $\omega=\sqrt3/\tau$, ba tầng giống nhau cộng lại cho độ lệch nửa vòng và suy giảm tám lần. Từ đó có kết quả kinh điển của lý thuyết điều khiển:
+\begin{empheq}[box=\keybox]{equation}
+K \;<\; 8 ,
+\label{eq:cascadestable}
+\end{empheq}
+nếu không, bộ điều chỉnh bắt đầu dao động, với chu kỳ khoảng $2\pi\tau/\sqrt3\approx3.6\,\tau$.
+
+\begin{keyblock}
+\begin{proposition}[Độ chính xác đổi lấy độ ổn định]
+\label{prop:cascade}
+Với chuỗi ba tầng có phản hồi tỉ lệ, sai số của mức bằng $1/(1+K)$, còn chuỗi chỉ ổn định khi $K<8$. Vì vậy một bộ điều chỉnh như thế không giữ mức chính xác hơn khoảng mười phần trăm; cố nâng hệ số khuếch đại sẽ biến nó thành bộ tạo dao động.
+\end{proposition}
+\end{keyblock}
+
+Chúng tôi đã kiểm tra điều này trên mô hình~\eqref{eq:cascade} (hình~\ref{fig:cascade}). Với $K=4$, mức dao động nhẹ sau khi bật rồi ổn định. Với $K=7$, nó cũng ổn định, nhưng chậm. Với $K=12$, dao động không tắt dần mà cũng không tăng vô hạn: một tầng không thể xuất ra tín hiệu âm, nên chuỗi đi vào các xung đều đặn giữa $0.83$ và $1.24$ lần mức trung bình, với chu kỳ $3.7$--$3.9\,\tau$.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=0.3cm,y=1.2cm]
+\draw[->,gray!70!black] (0,0) -- (41.5,0) node[right,font=\small,black] {$t/\tau$};
+\draw[->,gray!70!black] (0,0) -- (0,2.8) node[left,font=\small,black] {$x_3/x_3^*$};
+\foreach \t in {0,10,20,30,40}{\draw[gray!60!black] (\t,-0.05) -- (\t,0.05); \node[below,font=\scriptsize] at (\t,0) {\t};}
+\foreach \f in {1,2}{\draw[gray!60!black] (-0.3,\f) -- (0.3,\f); \node[left,font=\scriptsize] at (0,\f) {\f};}
+\draw[densely dashed,gray!60!black] (0,1) -- (40,1);
+\draw[thick,blue!60!black] plot file {figures/cascade_K4.dat};
+\draw[thick,red!70!black] plot file {figures/cascade_K12.dat};
+\node[font=\scriptsize,blue!60!black,anchor=west] at (16,0.55) {$K=4$: ổn định};
+\node[font=\scriptsize,red!70!black,anchor=west] at (16,1.75) {$K=12$: tạo xung};
+\end{tikzpicture}
+\caption{Chuỗi ba tầng có phản hồi theo~\eqref{eq:cascade}; mức hormone cuối tính theo tỉ lệ với mức cân bằng $x_3^*$. Khi hệ số khuếch đại vòng dưới tám, mức ổn định; trên tám, chuỗi tự tạo ra các xung đều đặn.}
+\label{fig:cascade}
+\end{figure}
+
+Các hormone của những chuỗi tầng thật quả thực được tiết theo xung: chẳng hạn mức hormone stress dao động với chu kỳ khoảng một giờ. Theo một giả thuyết, các xung này sinh ra từ chính phản hồi có trễ giữa các tầng, và không cần một bộ tạo nhịp riêng cho chúng~\cite{Walker2010}. Đó cũng là nguyên nhân dao động của vòng \nt{GLUT}--\nt{GABA} trong mệnh đề~\ref{prop:ei} và của vòng phản xạ căng cơ trong điều kiện~\eqref{eq:delaystable}: phản hồi âm bị trễ.
+
+\section{Mã xung của hormone}
+
+Xung không chỉ là tác dụng phụ mà còn có thể là mã. Các nơ-ron điều khiển sinh sản thả tín hiệu của chúng vào máu thành từng đợt ngắn, khoảng một giờ một lần. Nếu cấp cùng tín hiệu ấy cho tuyến nhận một cách liên tục thay vì từng đợt, tuyến không làm việc hết công suất như khi nhận xung mà lại im bặt; nếu lại cấp từng đợt mỗi giờ một lần, hoạt động được phục hồi~\cite{Belchetz1978}. Nghĩa là bên nhận không đọc mức mà đọc \emph{tần số} các đợt.
+
+Với kỹ sư, ở đây không có gì bí ẩn. Một thụ thể mệt đi và thôi đáp ứng khi chất tác động lâu là một bộ lọc thông cao, giống như khớp thần kinh suy giảm~\eqref{eq:depression} ở chương~\ref{sec:code}. Tín hiệu liên tục bị nó dập tắt, còn các thay đổi thì được cho qua. Với bên nhận như vậy, chỉ có thể truyền thông tin bằng xung, và thông tin chuyển từ mức sang tần số và hình dạng các đợt. Ngoài ra, các tần số đợt khác nhau tác động khác nhau lên các loại tế bào khác nhau trong cùng một tuyến, nên qua một đường hóa học có thể truyền nhiều hơn một đại lượng, giống như trên một dây \nt{DOPA} ở chương~\ref{sec:dofaalt} có cả thành phần nhanh lẫn thành phần chậm.
+
+\section{Nhịp ngày đêm: bộ tạo chế độ chậm}
+
+Nhịp chậm nhất của cơ thể là nhịp ngày đêm. Nó được sinh ra bởi phản hồi âm có trễ bên trong tế bào: các gen tạo ra protein, và sau độ trễ vài giờ, các protein này ức chế chính sự sản xuất của mình~\cite{TakahashiJS2017}. Lại là phản hồi âm có trễ, lần thứ tư trong cuốn sách này, và lại là một nhịp, lần này với chu kỳ khoảng một ngày. Bộ tạo nhịp chính là một nhóm nhỏ gồm vài chục nghìn nơ-ron ở đáy não; nhịp của chúng đồng bộ các tế bào còn lại của cơ thể.
+
+Chu kỳ riêng của bộ tạo nhịp này ở người không đúng một ngày mà trung bình là $24.18$ giờ~\cite{Czeisler1999}. Mỗi ngày nó được chỉnh lại bởi ánh sáng đến từ các cảm biến của mắt (chương~\ref{sec:sensors}). Với kỹ sư điện tử, đây là \emph{vòng khóa pha}: một bộ dao động có tần số riêng $\omega_0$ bám theo tín hiệu ngoài có tần số $\omega$, và độ lệch pha $\varphi$ tuân theo phương trình
+\begin{empheq}[box=\keybox]{equation}
+\frac{\dd\varphi}{\dd t} \;=\; (\omega-\omega_0) \;-\; K_\varphi\,\sin\varphi .
+\label{eq:pll}
+\end{empheq}
+Khóa pha được giữ nếu $|\omega-\omega_0|<K_\varphi$. Bộ tạo nhịp có chu kỳ $24.18$ giờ cần dịch mỗi ngày khoảng mười một phút; ánh sáng buổi sáng thường đủ cho mức dịch đó. Trong đêm vùng cực hay trong hang tối, không có khóa pha, và nhịp trôi theo chu kỳ riêng.
+
+Bộ tạo nhịp ngày đêm không phải là bộ tạo xung nhịp của máy tính. Nó không đếm các bước tính toán và không đồng bộ các xung của nơ-ron. Nó chuyển đổi \emph{chế độ}: ngủ và thức, mức hormone, nhiệt độ cơ thể, sự sẵn sàng ăn uống. Đó là một thanh ghi quảng bá chậm cùng loại với các thanh ghi ở chương~\ref{sec:serocomputer}--\ref{sec:acet}, chỉ khác là giá trị của nó thay đổi theo lịch trình được chỉnh theo mặt trời.
+
+\begin{keyblock}
+\begin{proposition}[Đầu ra hóa học]
+\label{prop:chemoutput}
+Đầu ra chậm của cỗ máy được lắp từ cùng những chi tiết như đầu ra nhanh. Các cơ quan nhận hai dây dẫn trái dấu và khác tốc độ, ga \nt{NORA} và phanh \nt{ACET}, còn toàn bộ cơ thể cùng lúc nhận các tín hiệu quảng bá qua máu, trong đó có adrenaline \nt{ADRE}. Mức hormone được giữ bởi các chuỗi tầng có phản hồi âm, với độ chính xác bị giới hạn bởi độ ổn định; một phần hormone được mã hóa bằng tần số các đợt; nhịp ngày đêm là một bộ tạo nhịp chậm có khóa pha theo ánh sáng. Cấu trúc các đường dẫn, các thí nghiệm với các đợt tiết và với chu kỳ đã được đo; việc giải thích xung của chuỗi tầng bằng chính phản hồi là giả thuyết.
+\end{proposition}
+\end{keyblock}
+
+\section{Tóm tắt}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{3.1cm}>{\raggedright}p{4.8cm}>{\raggedright\arraybackslash}p{4.9cm}}
+\toprule
+Đầu ra hóa học làm gì & Bằng cách nào & Điều đã biết \\
+\midrule
+tinh chỉnh các cơ quan & ga \nt{NORA} và phanh \nt{ACET}~\eqref{eq:gasbrake} & đã đo; phanh nhanh hơn ga \\
+chuyển cả cơ thể sang chế độ chạy & adrenaline \nt{ADRE} vào máu & đã đo \\
+giữ mức hormone & chuỗi tầng có phản hồi, $K<8$~\eqref{eq:cascadestable} & chuỗi tầng và phản hồi đã đo; xung do chính vòng phản hồi là giả thuyết \\
+truyền bằng tần số các đợt & thụ thể mệt đi như bộ lọc thông cao & sự phụ thuộc vào các đợt đã đo \\
+chuyển chế độ theo ngày & bộ tạo nhịp có khóa pha theo ánh sáng~\eqref{eq:pll} & chu kỳ và việc chỉnh bằng ánh sáng đã đo \\
+\bottomrule
+\end{tabular}
+\caption{Cỗ máy điều khiển hóa học của cơ thể như thế nào.}
+\label{tab:chemoutput}
+\end{table}
+
+Cỗ máy có hai đầu ra (bảng~\ref{tab:chemoutput}). Đầu ra nhanh là cơ bắp: mili giây, có địa chỉ, tới từng khớp. Đầu ra chậm là hóa học của cơ thể: giây, phút và ngày, qua hai dây dẫn tới các cơ quan và qua máu tới tất cả cùng lúc. Chi tiết của cả hai đầu ra là như nhau: hai dây dẫn trái dấu, bộ tạo nhịp, phản hồi và độ trễ của nó; và cũng chính là những chi tiết đã dựng nên cỗ máy bên trong.
+
+\section{Bài tập}
+
+\begin{exercise}[\lvlA]
+\label{ex:16:1}
+\emph{Máu như một bộ lọc.} Hormone được đào thải khỏi máu với chu kỳ bán rã $t_{1/2}=10$~phút và được tiết thành các đợt ngắn mỗi $T=60$~phút. Nồng độ cực đại lớn hơn cực tiểu bao nhiêu lần, và hài cơ bản của các đợt bị suy giảm bao nhiêu lần? Với $t_{1/2}$ nào thì cực đại chỉ gấp đôi cực tiểu?
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:16:2}
+\emph{Khóa pha ngày đêm.} Chu kỳ riêng của bộ tạo nhịp~\eqref{eq:pll} là $24.18$~giờ, ánh sáng dịch pha không quá một giờ mỗi ngày: $K_\varphi=2\pi/24$~rad/ngày. Tìm độ lệch pha xác lập $\varphi^*$ theo phút và thời gian hồi phục. Sau bao nhiêu ngày thì độ lệch sau khi tín hiệu ngoài nhảy $\pm6$~giờ sẽ nhỏ hơn một giờ?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:16:3}
+\emph{Độ chính xác đổi lấy độ ổn định.} Chuỗi~\eqref{eq:cascade} đã tuyến tính hóa được kéo dài thành $n$ tầng giống nhau. Tìm hệ số khuếch đại tới hạn $K_c(n)$ và sai số nhỏ nhất đạt được $1/(1+K_c)$ khi $n=3$ và $n=6$. Sai số này tiến tới đâu khi $n\to\infty$?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:16:4}
+\emph{Ga và phanh.} Trong~\eqref{eq:gasbrake}, phần đóng góp của ga và phanh là đầu ra của các mạch RC với $\tau_S=2$~s và $\tau_P=0.4$~s, lệnh không vượt quá $80$ và $60$ nhịp mỗi phút. Nhịp $f_0=100$; lúc nghỉ phanh $35$, ga $0$, $f=65$. Cần bao lâu để đạt $f=120$? Còn nếu không nhả phanh mà chỉ dùng ga thì sao?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:16:5}
+\emph{Mô phỏng: chuỗi tầng có trễ.} Thêm độ trễ $d$ vào phản hồi của hàm \texttt{cascade} trong \texttt{models/\allowbreak chem\_models.py} (hãy sao chép hàm, đừng chạy tệp): tầng đầu thấy $x_3(t-d)$. Tìm $K_c$ và chu kỳ tại biên khi $d/\tau=0$, $0.5$, $1$, $2$, rồi kiểm tra bằng mô phỏng tại $0.9K_c$ và $1.1K_c$.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:16:6}
+\emph{Bên nhận đọc các đợt.} Thụ thể mệt đi: $y=[c-a]_+$, $\tau_a\,\dd a/\dd t=c-a$, $\tau_a=30$~phút. Hormone đến thành các đợt dài $6$~phút với chu kỳ $T$, cùng liều trung bình $\bar c$. Tìm đáp ứng trung bình khi $T=15$, $60$, $120$~phút và $T\to\infty$. Đáp ứng bằng bao nhiêu khi nồng độ không đổi $\bar c$?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:16:7}
+\emph{Bộ tạo nhịp hay phản hồi?} Đề xuất một thí nghiệm phân biệt các xung sinh ra bởi phản hồi có trễ của chuỗi tầng~\eqref{eq:cascade} với một bộ tạo nhịp riêng. Có thể phân biệt hai giả thuyết qua sự dịch chu kỳ không, nếu $K$ chỉ thay đổi được trong phạm vi gấp rưỡi và chu kỳ đo được với độ chính xác $5\%$?
+\end{exercise}

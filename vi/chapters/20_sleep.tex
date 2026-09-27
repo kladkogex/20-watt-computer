@@ -1,0 +1,194 @@
+\chapter{Nơ-ron làm gì khi ngủ}
+\chaptermark{Giấc ngủ}
+\label{sec:sleep}
+
+\section{Ngủ không phải là tắt máy, mà là một chế độ khác}
+
+Nhìn một chiếc máy tính đã tắt, kỹ sư sẽ nói: nó không làm gì cả. Với bộ não đang ngủ thì không thể nói như vậy. Khi ngủ, nơ-ron không im lặng: trong giấc ngủ sâu, vỏ não vẫn phát xung, trong giấc ngủ REM (giấc ngủ chuyển động mắt nhanh) thì gần bằng ban ngày. Cái thay đổi không phải là nơ-ron \emph{có làm việc} hay không, mà là chúng làm việc \emph{như thế nào}. Giấc ngủ là một tập hợp các chế độ của cỗ máy, và chúng được chuyển đổi bởi chính những kênh quảng bá đã hoạt động ban ngày.
+
+Với mỗi chế độ có thể ghi ra ``trạng thái các thanh ghi'' (bảng~\ref{tab:sleepmodes}). Ban ngày \nt{ACET}, \nt{NORA} và \nt{SERO} hoạt động, các cảm biến được kết nối, cơ bắp nghe lệnh. Trong giấc ngủ sóng chậm, tức giấc ngủ sâu, cả ba kênh lắng xuống, còn đầu vào từ các giác quan bị yếu đi~\cite{Hasselmo1999}: lượng acetylcholine giải phóng trong vỏ não giảm, còn các nơ-ron \nt{NORA} và \nt{SERO} phát xung thưa hơn ban ngày~\cite{Marrosu1995,AstonJonesBloom1981,McGintyHarper1976}. Trong giấc ngủ REM, bức tranh thật lạ: \nt{ACET} lại tăng lên mức ban ngày~\cite{Marrosu1995}, còn \nt{NORA} và \nt{SERO} gần như im bặt hoàn toàn~\cite{AstonJonesBloom1981,McGintyHarper1976,JacobsAzmitia1992}. Trong giấc ngủ REM, cơ của cơ thể bị tắt: các nơ-ron \nt{ACET} điều khiển chúng bị ức chế mạnh qua \nt{GABA} và \nt{GLYC}~\cite{BrooksPeever2012}, chính là lệnh cấm ở chương~\ref{sec:gaba}, chỉ có điều được áp lên toàn bộ đầu ra cùng lúc.
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{3.1cm}>{\raggedright}p{2.9cm}>{\raggedright}p{3.2cm}>{\raggedright\arraybackslash}p{3.4cm}}
+\toprule
+& thức & ngủ sóng chậm & ngủ REM \\
+\midrule
+\nt{ACET} (ghi, ch.~\ref{sec:acet}) & cao & thấp & cao \\
+\nt{NORA} (khuếch đại, ch.~\ref{sec:nora}) & trung bình, có đợt bùng & thấp & gần như im lặng \\
+\nt{SERO} (ch.~\ref{sec:serocomputer}) & trung bình & thấp & gần như im lặng \\
+đầu vào từ cảm biến & kết nối & yếu đi & yếu đi \\
+đầu ra tới cơ & kết nối & yếu đi & bị tắt bằng ức chế \\
+hoạt động vỏ não & đều & dao động chậm: làm việc --- im lặng & đều, như ban ngày \\
+\bottomrule
+\end{tabular}
+\caption{Trạng thái các thanh ghi của cỗ máy trong ba chế độ. Mọi dòng đều đã được đo; mức \nt{ACET}, \nt{NORA} và \nt{SERO} được đo bằng các bản ghi trực tiếp theo từng giai đoạn ngủ~\cite{Marrosu1995,AstonJonesBloom1981,McGintyHarper1976}.}
+\label{tab:sleepmodes}
+\end{table}
+
+\section{Khi nào ngủ: rơ-le có vòng trễ}
+
+Điều gì quyết định khi nào cỗ máy chuyển sang ngủ? Một mạch đơn giản gồm hai phần hoạt động khá tốt~\cite{Borbely1982}. Phần thứ nhất là \emph{áp lực ngủ} $S$, tích lũy trong khi ta thức và được xả trong khi ta ngủ. Đó là một tụ điện nạp vào ban ngày và phóng vào ban đêm:
+\begin{empheq}[box=\keybox]{equation}
+\frac{\dd S}{\dd t} \;=\; \frac{1-S}{\tau_r}\ \ \text{(thức)},\qquad
+\frac{\dd S}{\dd t} \;=\; -\frac{S}{\tau_d}\ \ \text{(ngủ)} .
+\label{eq:sleeppressure}
+\end{empheq}
+Phần thứ hai là hai ngưỡng: cỗ máy ngủ khi $S$ chạm ngưỡng trên $H(t)$ và thức dậy khi $S$ hạ xuống ngưỡng dưới $L(t)$. Cả hai ngưỡng dao động nhẹ theo nhịp ngày đêm ở chương~\ref{sec:chemoutput}. Kết quả là một rơ-le có vòng trễ, tức trigger Schmitt ở mục~\ref{sec:bistable}, và cùng với tụ điện nó tạo thành một bộ dao động tích thoát, được nhịp ngày đêm khóa pha~\eqref{eq:pll}.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=0.16cm,y=4.2cm]
+\foreach \a/\b in {0/4.3,21.2/29.3,45.4/53.4,69.5/72}{\fill[blue!8] (\a,0) rectangle (\b,1);}
+\draw[->,gray!70!black] (0,0) -- (75,0) node[right,font=\small,black] {$t$, giờ};
+\draw[->,gray!70!black] (0,0) -- (0,1.08) node[left,font=\small,black] {$S$};
+\foreach \t in {0,24,48,72}{\draw[gray!60!black] (\t,-0.02) -- (\t,0.02); \node[below,font=\scriptsize] at (\t,0) {\t};}
+\draw[thick,densely dashed,red!70!black] plot file {figures/sleep_H.dat};
+\draw[thick,densely dashed,green!45!black] plot file {figures/sleep_L.dat};
+\draw[very thick,blue!60!black] plot file {figures/sleep_S.dat};
+\node[font=\scriptsize,red!70!black,anchor=west] at (73,0.72) {$H$: ngủ};
+\node[font=\scriptsize,green!45!black,anchor=west] at (73,0.24) {$L$: thức dậy};
+\node[font=\scriptsize,blue!60!black] at (25.25,0.93) {ngủ};
+\node[font=\scriptsize,blue!60!black] at (49.4,0.93) {ngủ};
+\end{tikzpicture}
+\caption{Áp lực ngủ $S$~\eqref{eq:sleeppressure} với $\tau_r=18.2$~giờ, $\tau_d=4.2$~giờ. Ban ngày $S$ nạp tới ngưỡng trên $H$, ban đêm (vùng tô màu) phóng xuống ngưỡng dưới $L$; cả hai ngưỡng dao động theo nhịp ngày đêm. Cỗ máy tự đi tới chế độ khoảng $16$ giờ thức và $8$ giờ ngủ.}
+\label{fig:twoprocess}
+\end{figure}
+
+Trong mô hình của chúng tôi, với các giá trị thông thường $\tau_r=18.2$~giờ và $\tau_d=4.2$~giờ, cỗ máy tự đi tới $16.1$ giờ thức và $8.0$ giờ ngủ (hình~\ref{fig:twoprocess}). Mô hình còn giải thích được điều có vẻ lạ: sau bốn mươi giờ không ngủ, áp lực lên tới $0.90$, nhưng giấc ngủ bù trong mô hình chỉ kéo dài $8.8$ giờ, chứ không dài hơn bình thường cả một ngày. Sự phóng điện có dạng hàm mũ, và mức nạp cao mất đi nhanh; ``món nợ'' được trả không bằng độ dài mà bằng độ sâu của giấc ngủ.
+
+Về mặt vật lý, cái gì đóng vai trò $S$? Ứng viên mạnh là adenosine, ``bộ đếm tải'' ở phụ lục~\ref{sec:othermediators}: nồng độ của nó tăng trong thời gian thức và giảm khi ngủ~\cite{PorkkaHeiskanen1997,Dunwiddie2001}. Việc áp lực ngủ chính là adenosine chứ không gì khác là giả thuyết.
+
+\section{Ngủ sóng chậm: cả mạng như một bộ dao động tích thoát}
+
+Trong giấc ngủ sâu, các nơ-ron vỏ não làm việc luân phiên theo cả nhóm: chưa tới một lần mỗi giây, chúng cùng nhau bật lên trong vài trăm mili giây (\emph{trạng thái làm việc}) rồi cùng nhau im lặng (\emph{trạng thái im lặng}): tần số của dao động này dưới $1$~Hz, khi gây mê thường là $0.3$--$0.4$~Hz~\cite{Steriade1993}. Ta có thể lắp dao động chậm này từ những chi tiết đã có. Lấy một nhóm nơ-ron \nt{GLUT} có phản hồi mạnh về chính nó, tức bộ nhớ ở chương~\ref{sec:glutcomputer} với hai trạng thái bền, và thêm vào một sự mệt mỏi chậm, như trong bộ tạo nhịp ở chương~\ref{sec:muscles}:
+\begin{empheq}[box=\keybox]{equation}
+\tau\,\frac{\dd r}{\dd t} = -r + F\bigl(w\,r + I - a\bigr),
+\qquad
+\tau_a\,\frac{\dd a}{\dd t} = -a + b\,r .
+\label{eq:updown}
+\end{empheq}
+Nhóm bật lên, làm việc và mệt đi; sự mệt mỏi $a$ ăn mòn trạng thái trên, và nhóm rơi vào im lặng; trong im lặng, sự mệt mỏi qua đi, trạng thái dưới biến mất, và nhóm lại bật lên. Kết quả là cùng một bộ dao động tích thoát như áp lực ngủ, chỉ nhanh hơn khoảng tám mươi nghìn lần.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=2.9cm,y=1.0cm]
+\begin{scope}[yshift=1.9cm]
+\draw[->,gray!70!black] (0,0) -- (4.1,0);
+\draw[->,gray!70!black] (0,0) -- (0,1.25) node[left,font=\small,black] {$r$};
+\draw[thick,blue!60!black] plot file {figures/updown_sleep.dat};
+\node[font=\scriptsize,anchor=west] at (4.15,0.5) {ngủ: $b=5$};
+\end{scope}
+\draw[->,gray!70!black] (0,0) -- (4.1,0) node[right,font=\small,black] {$t$, s};
+\draw[->,gray!70!black] (0,0) -- (0,1.25) node[left,font=\small,black] {$r$};
+\draw[thick,red!70!black] plot file {figures/updown_wake.dat};
+\node[font=\scriptsize,anchor=west] at (4.15,0.5) {ngày: $b=1$};
+\foreach \t in {0,1,2,3,4}{\draw[gray!60!black] (\t,-0.05) -- (\t,0.05); \node[below,font=\scriptsize] at (\t,0) {\t};}
+\end{tikzpicture}
+\caption{Cùng một nhóm~\eqref{eq:updown} ở hai chế độ: $w=5$, $I=2$, $\theta=2.5$, $\tau=10\ms$, $\tau_a=0.3$~s. Với mệt mỏi mạnh ($b=5$, như trong giấc ngủ sóng chậm), nhóm dao động giữa làm việc và im lặng với chu kỳ $1.1$~s (giá trị của mô hình; trong vỏ não chu kỳ dài hơn một giây, khi gây mê khoảng $3$~s). Làm yếu sự mệt mỏi ($b=1$), đúng như tác dụng của acetylcholine, và cùng nhóm ấy làm việc đều đặn.}
+\label{fig:updown}
+\end{figure}
+
+Vậy cái gì chuyển mạng từ dao động sang làm việc đều đặn ban ngày? Acetylcholine ức chế trong nơ-ron các dòng chậm gây ra mệt mỏi~\cite{McCormick1992}. Trong mô hình của chúng tôi, khi mệt mỏi mạnh, $b=5$, nhóm dao động với chu kỳ $1.1$~s, nhanh hơn dao động đo được nhưng cùng bậc, và làm việc khoảng $35\%$ thời gian nếu lấy trung bình trên một số nguyên chu kỳ; khi mệt mỏi yếu, $b=1$, cùng nhóm ấy làm việc đều đặn (hình~\ref{fig:updown}). Một thanh ghi, tức mức \nt{ACET}, chuyển bộ dao động thành bộ khuếch đại. Chồng lên dao động chậm trong giấc ngủ còn có những đợt bùng nhanh hơn của nhịp $7$--$15$ dao động mỗi giây; chúng sinh ra từ vòng \nt{GLUT}--\nt{GABA} giữa vỏ não và một nút chuyển tiếp trung gian~\cite{SteriadeMcCormickSejnowski1993}, họ hàng với nhịp ở chương~\ref{sec:gaba}.
+
+\section{Phát lại: tua nhanh một ngày}
+
+Ở chương~\ref{sec:acet} ta đã thấy rằng trong giấc ngủ sóng chậm, các nơ-ron từng làm việc cùng nhau ban ngày lại phát xung cùng nhau và theo cùng thứ tự. Ta thêm một chi tiết kỹ thuật: việc phát lại diễn ra \emph{có tua nhanh}. Một chuỗi ban ngày kéo dài vài giây được phát lại trong giấc ngủ trong vài phần mười giây~\cite{Nadasdy1999}: ở hồi hải mã nhanh hơn khoảng hai mươi lần~\cite{LeeWilson2002}, ở vỏ não nhanh hơn sáu đến bảy lần~\cite{Euston2007}. Và nó không được phát lại tùy lúc: các đợt phát lại ngắn ở một vùng khớp nhịp với dao động làm việc--im lặng và với các đợt bùng nhịp nhanh ở vỏ não. Nếu tăng cường nhân tạo sự phối hợp này, trí nhớ được cải thiện~\cite{Maingret2016}; đây đã là quan hệ nhân quả chứ không còn là trùng hợp.
+
+Vì sao cỗ máy cần tua nhanh một ngày? Kỹ sư quen với một khó khăn gọi là \emph{quên thảm khốc}: một mạng học điều mới liên tiếp, cái này rồi cái khác, sẽ làm hỏng cái cũ. Cách cứu là \emph{trộn lẫn}: học cái mới xen kẽ với cái cũ, từng phần nhỏ, nhiều lần. Giả thuyết về hai hệ thống học~\cite{McClelland1995} cho rằng bộ nhớ nhanh ghi lại cả ngày, rồi trong giấc ngủ, từng chút một, xen kẽ và nhiều lần, phát lại nó cho vỏ não chậm. Đây chính là cặp ``bộ đệm nhanh --- kho lưu trữ chậm'' ở chương~\ref{sec:acet}, và cũng là cặp người học nhanh và chậm ở chương~\ref{sec:motorlearning}. Việc phát lại và sự phối hợp của nó đã được đo; việc mục đích của nó là học trộn lẫn cho bộ nhớ chậm là một giả thuyết có cơ sở vững.
+
+\section{Chuẩn hóa lại trọng số}
+
+Ban ngày, các quy tắc Hebb ở chương~\ref{sec:dofa} chủ yếu làm mạnh các liên kết. Nếu chỉ làm mạnh, trọng số tăng lên, cùng với đó chi phí năng lượng tăng và độ nhạy giảm: một nơ-ron có mọi đầu vào đều mạnh sẽ không còn phân biệt được chúng. Theo giả thuyết \emph{cân bằng nội môi khớp thần kinh}~\cite{TononiCirelli2014}, giấc ngủ cần thiết một phần là để đưa trọng số về mức làm việc: mọi liên kết yếu đi cùng một số lần, nên \emph{tỉ lệ} giữa chúng, tức những gì đã học, được giữ nguyên. Với kỹ sư, đây là phép chuẩn hóa, như trong quy tắc~\eqref{eq:oja}, chỉ có điều không làm trong khi chạy mà làm vào một thời điểm riêng.
+
+Các phép đo trực tiếp không mâu thuẫn với điều này: ở chuột nhắt, diện tích tiếp xúc tại các khớp thần kinh vỏ não sau khi ngủ nhỏ hơn khoảng $18\%$ so với sau khi thức, mức giảm tỉ lệ với kích thước, còn các tiếp xúc lớn nhất và bền nhất hầu như không đổi~\cite{deVivo2017}. Việc co giãn trọng số đã được đo; việc đó là nhiệm vụ chính của giấc ngủ là giả thuyết.
+
+\section{Ngủ REM: cỗ máy bị ngắt khỏi đầu vào và đầu ra}
+
+Trong giấc ngủ REM, vỏ não làm việc gần như ban ngày, nhưng đầu vào từ giác quan bị yếu đi, còn đầu ra tới cơ bị ức chế tắt hẳn. Với kỹ sư, đây là một chế độ quen thuộc: \emph{thử nghiệm trên bàn thử}. Mạch chạy hết công suất, nhưng đầu vào được nối với bộ tạo tín hiệu bên trong, còn đầu ra được tách khỏi cơ cấu chấp hành để không làm hỏng gì. Theo một giả thuyết, giấc mơ chính là một lần chạy thử bên trong như vậy của mô hình thế giới được tích lũy trong ngày; mạng khi đó làm gì và có học hay không thì chưa biết. Ở đây chỉ những gì ghi trong bảng~\ref{tab:sleepmodes} là đã đo: kênh nào bật, kênh nào im, và đầu ra bị chặn.
+
+\section{Bảo trì và giấc ngủ cục bộ}
+
+Từ lâu người ta cho rằng trong khi ngủ, các khe gian bào giãn rộng và não được rửa sạch các sản phẩm trao đổi chất nhanh hơn~\cite{Xie2013}. Các thí nghiệm gần đây đo việc rửa bằng một cách khác lại thu được kết quả ngược lại: khi ngủ, việc rửa chậm hơn~\cite{Miao2024}. Câu hỏi này hiện còn mở, và chúng tôi để nó mở.
+
+Một sự thật đáng tin cậy hơn: giấc ngủ là tính chất của các mạng cục bộ, chứ không phải của toàn bộ cỗ máy cùng lúc. Nếu một con vật bị giữ thức lâu, thì từng vùng riêng lẻ của vỏ não nó, trong khi con vật vẫn thức và cử động, thỉnh thoảng rơi vào im lặng trong chốc lát như trong giấc ngủ sóng chậm, và vào những lúc ấy con vật mắc lỗi nhiều hơn~\cite{Vyazovskiy2011}. Mỗi mạng tự mệt và tự chuyển chế độ; chế độ chung xuất hiện khi các kênh quảng bá chuyển tất cả các mạng cùng lúc.
+
+\begin{keyblock}
+\begin{proposition}[Giấc ngủ như một tập hợp chế độ]
+\label{prop:sleep}
+Khi ngủ, nơ-ron không tắt: các kênh quảng bá chuyển cỗ máy sang những chế độ khác. Khi nào ngủ do một rơ-le có vòng trễ~\eqref{eq:sleeppressure} quyết định, được nhịp ngày đêm chỉnh pha. Trong giấc ngủ sóng chậm, mạng trở thành một bộ dao động tích thoát~\eqref{eq:updown} và phát lại ngày đã qua ở tốc độ tua nhanh; trong giấc ngủ REM, nó làm việc trong khi bị ngắt khỏi đầu vào và đầu ra. Các chế độ, việc phát lại và việc co giãn trọng số đã được đo; mục đích của chúng, tức học trộn lẫn và chuẩn hóa lại, là những giả thuyết có cơ sở vững.
+\end{proposition}
+\end{keyblock}
+
+\section{Tóm tắt}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{3.2cm}>{\raggedright}p{4.4cm}>{\raggedright\arraybackslash}p{5.2cm}}
+\toprule
+Điều gì diễn ra & Bằng cách nào & Điều đã biết \\
+\midrule
+đổi chế độ & các thanh ghi \nt{ACET}, \nt{NORA}, \nt{SERO} (bảng~\ref{tab:sleepmodes}) & đã đo \\
+khi nào ngủ & tụ điện $S$ và rơ-le có vòng trễ~\eqref{eq:sleeppressure} & mô hình mô tả tốt các thí nghiệm; adenosine là $S$ là giả thuyết \\
+dao động chậm & nhóm có phản hồi và mệt mỏi~\eqref{eq:updown} & dao động đã đo; mô hình là mạch đơn giản nhất \\
+tua nhanh một ngày & phát lại nhanh hơn $6$--$20$ lần, khớp nhịp với dao động & đã đo; tăng cường sự phối hợp cải thiện trí nhớ \\
+phát lại để làm gì & học trộn lẫn cho bộ nhớ chậm & giả thuyết có cơ sở vững \\
+chuẩn hóa lại trọng số & co giãn các liên kết trong khi ngủ & mức giảm tiếp xúc đã đo; vai trò chính của giấc ngủ là giả thuyết \\
+ngủ REM & làm việc với đầu vào và đầu ra bị ngắt & chế độ đã đo; mục đích chưa biết \\
+rửa sạch & giãn rộng khe gian bào & kết quả mâu thuẫn \\
+giấc ngủ cục bộ & từng vùng rơi vào im lặng & đã đo \\
+\bottomrule
+\end{tabular}
+\caption{Nơ-ron làm gì khi ngủ.}
+\label{tab:sleep}
+\end{table}
+
+Bảng~\ref{tab:sleep} tóm tắt chương. Giấc ngủ hóa ra không phải là một quãng nghỉ trong công việc của cỗ máy, mà là việc bảo trì nó ngay trong khi chạy: chuyển chế độ bằng chính các kênh quảng bá, một bộ dao động làm từ cùng những chi tiết như nhịp bước đi, tua nhanh một ngày cho bộ nhớ chậm và chuẩn hóa lại trọng số. Ban ngày cỗ máy ghi, ban đêm nó chép lại và sắp xếp những gì đã ghi.
+
+\section{Bài tập}
+
+\begin{exercise}[\lvlA]
+\label{ex:20:1}
+\emph{Rơ-le không có nhịp ngày đêm.} Cho các ngưỡng không đổi: $H=0.67$, $L=0.17$ (giá trị trung bình của các ngưỡng trong mô hình ở hình~\ref{fig:twoprocess}). Từ~\eqref{eq:sleeppressure} suy ra thời gian thức, thời gian ngủ và chu kỳ của bộ dao động khi $\tau_r=18.2$~giờ, $\tau_d=4.2$~giờ. Tại sao mô hình với ngưỡng dao động vẫn đi tới $16.1+8.0=24$~giờ? Hiệu ứng này thuộc về linh kiện nào ở chương~\ref{sec:chemoutput}?
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:20:2}
+\emph{Nợ ngủ.} Giấc ngủ bắt đầu ở áp lực $S_0$ kéo dài $t_s=\tau_d\ln(S_0/L)$, $\tau_d=4.2$~giờ, $L$ là ngưỡng dưới lúc thức dậy. (a)~Sau $40$~giờ không ngủ $S_0=0.90$, và giấc ngủ kéo dài $8.8$~giờ. $L$ bằng bao nhiêu? Với $L\approx0.092$ thông thường thì giấc ngủ kéo dài bao lâu? (b)~Qua một đêm, diện tích tiếp xúc khớp thần kinh giảm $18\%$. Trọng số phải tăng bao nhiêu trong ngày?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:20:3}
+\emph{Thiết kế ngưỡng.} Chọn các ngưỡng không đổi $H$ và $L$ sao cho rơ-le~\eqref{eq:sleeppressure} với $\tau_r=18.2$~giờ và $\tau_d=4.2$~giờ cho đúng $16$~giờ thức và $8$~giờ ngủ. Cỗ máy như vậy kém hơn cỗ máy có ngưỡng dao động ở điểm nào, nếu một đêm nó bị đánh thức sau $4$~giờ?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:20:4}
+\emph{Chu kỳ của dao động chậm.} Trong mô hình~\eqref{eq:updown}, $F(x)=1/\bigl(1+e^{-(x-\theta)/k}\bigr)$, $w=5$, $I=2$, $\theta=2.5$, $k=0.25$, $b=5$, $\tau\ll\tau_a=0.3$~s. (a)~Tìm các điểm ngoặt $a_{\text{trên}}$ và $a_{\text{dưới}}$ của đường cong $r=F(wr+I-a)$, nơi trạng thái làm việc và im lặng biến mất. (b)~Lấy $r\approx1$ khi làm việc và $r\approx0$ khi im lặng, tìm chu kỳ và tỉ lệ thời gian làm việc.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:20:5}
+\emph{Khi nào dao động tắt.} Trong mô hình của bài~\ref{ex:20:4}, điểm cân bằng nằm ở giao của đường cong $a=wr+I-F^{-1}(r)$ với đường thẳng $a=br$. Dao động xảy ra khi giao điểm nằm trên nhánh giữa, giữa hai điểm ngoặt. Điều này đúng với những $b$ nào? Bằng cách thay đổi $b$, \nt{ACET} chuyển bộ dao động thành bộ khuếch đại ra sao?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:20:6}
+\emph{Mô phỏng: nợ hay pha.} Trong \texttt{sleep\_models.py}, lấy lần thức dậy đầu tiên sau $48$~giờ và giữ cỗ máy thức trong $D=24$, $32$, $40$, $48$, $64$~giờ (\texttt{stay\_awake}, \texttt{days=8}). Giấc ngủ bù kéo dài bao lâu với mỗi $D$? Điều gì quyết định độ dài của nó?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:20:7}
+\emph{Mô phỏng: quên và trộn lẫn.} Nơ-ron tuyến tính $y=\mathbf w\cdot\mathbf x$, $n=40$, học theo quy tắc $\mathbf w\leftarrow\mathbf w-0.5\,(y-y^*)\,\mathbf x$. Các nhiệm vụ A và B có $10$ mẫu mỗi nhiệm vụ, $x_j\sim\mathcal N(0,1/n)$, $y^*=\pm1$. Sai số trung bình bình phương trên A là bao nhiêu sau $200$ epoch A rồi $200$ epoch B? Còn sau $200$ epoch A và B trộn lẫn?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:20:8}
+\emph{Nghiên cứu: trộn lẫn hay chuẩn hóa lại?} Nơ-ron của bài~\ref{ex:20:7} có ngưỡng; hai quy trình ban đêm: (i)~mọi trọng số nhân với $0.82$; (ii)~các mẫu cũ được lặp lại xen kẽ với mẫu mới. Mỗi quy trình làm gì với tỉ lệ giữa các trọng số và với đáp ứng của nơ-ron? Làm sao phân biệt hai giả thuyết theo kích thước khớp thần kinh sau khi ngủ?
+\end{exercise}

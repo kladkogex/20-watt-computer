@@ -1,0 +1,218 @@
+\chapter{Các lý thuyết hiện đại khác về học dựa trên dopamine}
+\chaptermark{Các lý thuyết khác về \nt{DOPA}}
+\label{sec:dofaalt}
+
+\section{Thực ra thứ gì chạy trên dây}
+
+Ở chương~\ref{sec:dofa}, hệ \nt{DOPA} của ta là một dây duy nhất, trên đó chạy một con số --- sai số dự đoán phần thưởng $\delta$~\eqref{eq:ctd}. Bức tranh này giải thích được nhiều điều, nhưng dopamine được đo càng chính xác thì người ta càng tìm thấy nhiều thứ không khớp với nó. Một số nơ-ron đáp ứng với điều khó chịu như với phần thưởng; nồng độ dopamine tăng trong lúc con vật chạy tới đích, dù không có gì bất ngờ xảy ra; các nơ-ron \nt{DOPA} khác nhau hành xử khác nhau.
+
+Với kỹ sư, mọi phát hiện này quy về một câu hỏi: \emph{tín hiệu trên bus quảng bá có định dạng gì?} Một con số hay một vectơ? Một tín hiệu trên dây hay nhiều tín hiệu tách theo tần số? Nó nói về tương lai, như $\delta$, hay về quá khứ? Dưới đây là sáu câu trả lời hiện đại; với mỗi câu, ta sẽ tách điều đã đo khỏi điều được giả định.
+
+\section{Không phải một con số mà là một phân bố}
+
+Sai số~\eqref{eq:ctd} dạy bộ phê bình kỳ vọng phần thưởng \emph{trung bình}. Nhưng nửa giọt nước ép chắc chắn và một giọt với xác suất một nửa có cùng trung bình. Để phân biệt chúng, cần cả phân bố của phần thưởng.
+
+Lấy bài toán đơn giản nhất: sau tín hiệu báo trước là một phần thưởng có kích thước ngẫu nhiên $r$. Giả sử có nhiều nơ-ron \nt{DOPA}, và mỗi nơ-ron, nơ-ron thứ $i$, phụ trách ước lượng $V_i$ của riêng nó, sao cho lúc có phần thưởng, sai số của nó là $\delta_i=r-V_i$. Và giả sử mỗi nơ-ron tính sai số dương với trọng số $\alpha_i^+$, sai số âm với trọng số $\alpha_i^-$. Sau mỗi phần thưởng, ước lượng dịch đi một lượng
+\begin{equation}
+\Delta V_i \;=\; \eta\,\bigl(\alpha_i^+\,[\delta_i]_+ \;-\; \alpha_i^-\,[-\delta_i]_+\bigr).
+\label{eq:asymmetric}
+\end{equation}
+Ước lượng ngừng thay đổi khi trung bình các hiệu chỉnh dương cân bằng các hiệu chỉnh âm:
+\begin{empheq}[box=\keybox]{equation}
+\alpha_i^+\,\bigl\langle[r-V_i]_+\bigr\rangle \;=\; \alpha_i^-\,\bigl\langle[V_i-r]_+\bigr\rangle ,
+\qquad
+\kappa_i \;=\; \frac{\alpha_i^+}{\alpha_i^++\alpha_i^-} .
+\label{eq:expectile}
+\end{empheq}
+Khi $\kappa_i=1/2$, đây là trung bình thông thường. Khi $\kappa_i>1/2$, nơ-ron là một ``người lạc quan'': ước lượng của nó lệch về đầu trên của phân bố; khi $\kappa_i<1/2$ --- một ``người bi quan''.
+
+Ví dụ: nước ép đến với xác suất $1/2$, kích thước giọt là $1$. Khi đó~\eqref{eq:expectile} cho $\kappa_i\cdot\tfrac12(1-V_i)=(1-\kappa_i)\cdot\tfrac12V_i$, tức là $V_i=\kappa_i$ (hình~\ref{fig:expectiles}). Một tập nơ-ron với các $\kappa_i$ khác nhau ghi lại phân bố phần thưởng, giống như một tập phân vị ghi lại một phân bố trong thống kê.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=7cm,y=3cm]
+\draw[->,gray!70!black] (-0.08,0) -- (1.15,0) node[right,black] {\small phần thưởng};
+\draw[->,gray!70!black] (-0.08,0) -- (-0.08,0.75) node[left,black] {\small xác suất};
+\fill[blue!25] (-0.03,0) rectangle (0.03,0.5);
+\fill[blue!25] (0.97,0) rectangle (1.03,0.5);
+\node[below,font=\small] at (0,0) {$0$};
+\node[below,font=\small] at (1,0) {$1$};
+\node[left,font=\scriptsize] at (-0.08,0.5) {$1/2$};
+\foreach \k/\c/\lab/\h in {0.2/blue!60!black/{bi quan, $\kappa=0.2$}/0.62, 0.5/gray!50!black/{trung bình, $\kappa=0.5$}/0.42, 0.8/red!70!black/{lạc quan, $\kappa=0.8$}/0.22}{
+  \draw[very thick,\c] (\k,0) -- (\k,\h);
+  \node[above,font=\scriptsize,\c] at (\k,\h) {\lab};}
+\end{tikzpicture}
+\caption{Phân bố phần thưởng được ghi lại bởi một tập nơ-ron \nt{DOPA}. Phần thưởng bằng $0$ hoặc $1$ với xác suất $1/2$ (các cột xanh); nơ-ron có tỷ lệ $\kappa$ đi tới ước lượng $V=\kappa$~\eqref{eq:expectile}.}
+\label{fig:expectiles}
+\end{figure}
+
+Điều đã đo: các nơ-ron \nt{DOPA} khác nhau có ``điểm đảo chiều'' khác nhau --- kích thước phần thưởng mà tại đó đáp ứng chuyển từ đỉnh vọt sang hõm sụt --- và những nơ-ron có độ bất đối xứng lớn hơn giữa đáp ứng với sai số dương và sai số âm thì đảo chiều ở phần thưởng lớn hơn, đúng như~\eqref{eq:expectile} đòi hỏi~\cite{Dabney2020}. Từ đáp ứng của một nhóm nơ-ron có thể khôi phục hình dạng của phân bố. Việc đây là chức năng chính của sự phân tán, chứ không phải hiệu ứng phụ, là giả thuyết.
+
+\begin{keyblock}
+\begin{proposition}[Phân bố từ sự bất đối xứng]
+\label{prop:expectile}
+Nếu các nơ-ron \nt{DOPA} khác nhau ở tỷ lệ $\kappa_i$ mà chúng dùng để tính sai số dương, thì các ước lượng của chúng hội tụ về những điểm khác nhau~\eqref{eq:expectile} của phân bố phần thưởng. Nhóm nơ-ron truyền đi không phải giá trị trung bình mà là phân bố, và qua đó --- rủi ro.
+\end{proposition}
+\end{keyblock}
+
+\section{Không chỉ sai số mà còn tầm quan trọng}
+
+Theo công thức sai số~\eqref{eq:ctd}, một sự kiện khó chịu --- cú sốc, vị đắng --- phải gây ra hõm sụt: kết quả tệ hơn kỳ vọng. Một phần nơ-ron \nt{DOPA} đúng là như vậy, nhưng phần khác lại đáp ứng với điều khó chịu bằng \emph{đỉnh vọt}, như với phần thưởng~\cite{Matsumoto2009}. Những nơ-ron này không báo dấu của sai số, mà báo rằng đã xảy ra điều gì đó \emph{quan trọng}: bất ngờ, mạnh, cần chú ý~\cite{BrombergMartin2010}.
+
+Với kỹ sư, tiện nhất là coi đây là hai tín hiệu. Tín hiệu thứ nhất là sai số có dấu $\delta$: thay đổi trọng số theo hướng nào. Tín hiệu thứ hai là độ lớn $|\delta|$ của nó hoặc độ mới của sự kiện: thay đổi \emph{mạnh tới mức nào}, tức là tốc độ học; sau một sự kiện bất ngờ thì phải học nhanh hơn. Về ý nghĩa, nó gần với hệ số khuếch đại do noradrenaline đặt ở chương~\ref{sec:neurontypes}.
+
+Còn có phương án thứ ba: một dây riêng cho một trục riêng. Các nơ-ron \nt{DOPA} đi tới một trong các vùng chọn hành động không đáp ứng với phần thưởng, mà với độ mới và cường độ của kích thích, và cần thiết để con vật học cách tránh điều nguy hiểm~\cite{Menegas2018}: trên dây không chạy ``tốt hơn hay tệ hơn'' mà là ``nguy hiểm hay không''.
+
+Điều đã đo: các nhóm nơ-ron \nt{DOPA} khác nhau đáp ứng khác nhau với điều khó chịu và điều mới, và các đầu ra khác nhau dạy những điều khác nhau. Não dùng tín hiệu tầm quan trọng chính xác thế nào --- như tốc độ học, như tín hiệu chú ý hay như một sai số riêng theo trục nguy hiểm --- vẫn đang được bàn cãi.
+
+\section{Không chỉ dạy mà còn thúc giục}
+
+Dopamine còn có tác động tức thời: càng nhiều dopamine, con vật hành động càng sẵn lòng và càng nhanh. Làm sao dung hòa điều này với việc học?
+
+Câu trả lời của kỹ sư là \emph{phân tách theo tần số}. Các đỉnh vọt và hõm sụt nhanh, kéo dài hàng trăm mili giây, mang $\delta$ và dạy. Mức chậm, thay đổi trong vài phút, mang một đại lượng khác --- phần thưởng trung bình trên một đơn vị thời gian $\bar R$~\cite{Niv2007}. Giả sử một hành động thực hiện trong thời gian $\tau_a$ đòi hỏi nỗ lực $C/\tau_a$: càng nhanh càng đắt. Bù lại, mỗi giây chậm trễ tốn $\bar R$ --- lượng phần thưởng có thể nhận được trong giây đó. Tổng chi phí $C/\tau_a+\bar R\,\tau_a$ nhỏ nhất khi
+\begin{empheq}[box=\keybox]{equation}
+\tau_a^{*} \;=\; \sqrt{\frac{C}{\bar R}} .
+\label{eq:vigor}
+\end{empheq}
+Môi trường càng giàu, thời gian càng đắt và hành động nhanh càng có lợi: nếu $\bar R$ tăng gấp đôi, thời gian hành động giảm $\sqrt2\approx1.4$ lần. Lưu ý rằng $\bar R$ chính là phần thưởng kỳ vọng đã được trừ đi ở chương~\ref{sec:dofa}.
+
+Lượng dopamine phóng ra ở nơi đến có thể thay đổi cả khi tần số xung không đổi: nó được điều chỉnh bởi các tín hiệu tại chỗ ngay ở đầu ra~\cite{Mohebi2019}. Nhưng thành phần chậm cũng có trong chính các xung: trong các thí nghiệm ở mục sau, sự tăng dần khi tiến gần phần thưởng cũng thấy được trong tần số của nơ-ron \nt{DOPA}~\cite{Kim2020}. Như vậy, mức chậm được tạo từ hai nguồn --- tần số xung và việc điều chỉnh lượng phóng tại chỗ --- và nguồn nào là chính dường như tùy thuộc vào đầu ra và vào nhiệm vụ.
+
+\begin{keyblock}
+\begin{proposition}[Hai tín hiệu trên một dây]
+\label{prop:multiplex}
+Hệ \nt{DOPA} truyền ít nhất hai đại lượng, tách nhau theo thời gian: sai số nhanh $\delta$ để dạy, và mức chậm đặt giá của thời gian~\eqref{eq:vigor}, qua đó đặt tốc độ hành động. Việc thành phần nhanh và thành phần chậm hành xử khác nhau đã được đo; việc thành phần chậm đúng bằng $\bar R$ là giả thuyết.
+\end{proposition}
+\end{keyblock}
+
+\section{Tăng dần khi tiến lại gần}
+
+Nếu con vật chạy dọc hành lang tới một phần thưởng ở xa, nồng độ dopamine trong vùng chọn hành động tăng dần đều trong nhiều giây khi đích đến gần hơn~\cite{Hamid2016}. Theo chương~\ref{sec:dofa}, điều này không nên xảy ra: mọi thứ diễn ra đúng kế hoạch, và $\delta$ phải bằng không.
+
+Cách giải thích thứ nhất: sự tăng này không phải là $\delta$ mà là chính kỳ vọng $V$, tín hiệu ``đích đã gần, đáng cố gắng'' ở mục trước~\cite{Hamid2016}. Cách giải thích thứ hai giữ lại $\delta$~\cite{Kim2020}. Nếu kỳ vọng đúng, thì với tầm nhìn $\tau_\gamma$, trên đường tới phần thưởng $R$ nó tăng như $V=Re^{-(T-t)/\tau_\gamma}$, và theo công thức sai số~\eqref{eq:ctd} $\dd V/\dd t-V/\tau_\gamma=0$. Nhưng giả sử từ xa kỳ vọng bị đánh giá thấp, còn khi đến gần thì ước lượng chính xác dần. Khi đó kỳ vọng tăng dốc hơn, chẳng hạn như $V=Re^{-(T-t)/\tau_v}$ với $\tau_v<\tau_\gamma$, và
+\begin{empheq}[box=\keybox]{equation}
+\delta(t) \;=\; \frac{\dd V}{\dd t}-\frac{V}{\tau_\gamma} \;=\; V\Bigl(\frac{1}{\tau_v}-\frac{1}{\tau_\gamma}\Bigr) \;>\; 0 .
+\label{eq:ramp}
+\end{empheq}
+Sai số dương và tăng cùng với $V$ --- chính là sự tăng dần đều ấy (hình~\ref{fig:ramp}). Với $\tau_\gamma=4\,\text{s}$ và $\tau_v=1\,\text{s}$, ta được $\delta=0.75\,V$ mỗi giây. Phiên bản này đã được kiểm tra trong một hành lang ảo bằng cách tức thời đưa con vật lại gần đích: dopamine đáp ứng bằng một đỉnh vọt, đúng như với một đạo hàm, chứ không phải như với một mức biến thiên đều~\cite{Kim2020}.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=1.6cm,y=2.6cm]
+\draw[->,gray!70!black] (-4.2,0) -- (0.5,0) node[below left,black] {\small $t$};
+\draw[->,gray!70!black] (-4.2,0) -- (-4.2,1.2);
+\foreach \x/\l in {-4/{$T-4$},-2/{$T-2$},0/{$T$}}{\draw[gray!60!black] (\x,-0.03) -- (\x,0.03); \node[below,font=\scriptsize] at (\x,0) {\l\,s};}
+\draw[thick,densely dashed,gray!60!black] plot[domain=-4:0,samples=40] (\x,{exp(\x/4)});
+\draw[very thick,blue!60!black] plot[domain=-4:0,samples=60] (\x,{exp(\x)});
+\draw[very thick,red!70!black] plot[domain=-4:0,samples=60] (\x,{0.75*exp(\x)});
+\node[anchor=south east,font=\small,gray!50!black] at (-1.3,0.77) {$V$ khi $\tau_v=\tau_\gamma$: $\delta=0$};
+\node[right,font=\small,blue!60!black] at (0.05,1.0) {$V$ khi $\tau_v=1\,\text{s}$};
+\node[right,font=\small,red!70!black] at (0.05,0.72) {$\delta$ theo~\eqref{eq:ramp}};
+\end{tikzpicture}
+\caption{Dopamine tăng dần khi tiến gần phần thưởng, xem như sai số dự đoán, $\tau_\gamma=4\,\text{s}$. Đường nét đứt là kỳ vọng tăng đúng như tầm nhìn đòi hỏi ($\delta=0$); đường xanh là kỳ vọng tăng dốc hơn; đường đỏ là sai số~\eqref{eq:ramp}.}
+\label{fig:ramp}
+\end{figure}
+
+Điều đã đo: sự tăng dần đều có thật --- cả trong nồng độ dopamine lẫn trong tần số xung của nơ-ron \nt{DOPA}~\cite{Kim2020} --- và những bước nhảy tức thời của bối cảnh gây ra bước nhảy dopamine. Cách giải thích nào trong hai cách là đúng --- hay cả hai đều đúng ở những đầu ra khác nhau --- vẫn đang được bàn cãi.
+
+\section{Nhìn lại phía sau}
+
+Mọi lý thuyết ở trên đều nhìn \emph{về phía trước}. Một lý thuyết hiện đại đảo ngược hướng này~\cite{Jeong2022}. Giả sử não không học cách dự đoán phần thưởng từ tín hiệu báo trước, mà sau khi nhận phần thưởng thì \emph{nhìn lại}: sự kiện nào thường đi trước nó hơn các sự kiện khác? Thước đo của mối liên hệ đó là hiệu của hai xác suất:
+\begin{empheq}[box=\keybox]{equation}
+M \;=\; P(\text{tín hiệu trước phần thưởng}) \;-\; P(\text{tín hiệu trong cửa sổ ngẫu nhiên}) .
+\label{eq:retro}
+\end{empheq}
+Nếu tín hiệu báo trước thường xuất hiện cả khi không có phần thưởng, số hạng thứ hai lớn, và mối liên hệ yếu. Trong lý thuyết này, dopamine không báo sai số dự đoán, mà báo sự kiện đã cho có khả năng là \emph{nguyên nhân} của phần thưởng đến mức nào.
+
+Cơ chế nhìn lại đòi hỏi đúng những gì quy tắc ba thừa số ở chương~\ref{sec:dofa} đòi hỏi: mỗi sự kiện phải để lại một vết mờ dần, để lúc có phần thưởng có thể đọc được điều gì đã xảy ra trước đó. Khác biệt không nằm ở khớp thần kinh mà ở điều \nt{DOPA} truyền đi.
+
+Trong những thí nghiệm mà lý thuyết~\eqref{eq:retro} và sai số~\eqref{eq:ctd} dự đoán khác nhau, lượng dopamine phóng ra trong một số trường hợp tuân theo lý thuyết thứ nhất~\cite{Jeong2022}. Nhưng trong những thí nghiệm khác, trong quá trình học, đáp ứng dopamine dịch dần từ thời điểm có phần thưởng sang thời điểm có tín hiệu báo trước --- đúng như việc học theo sai số~\eqref{eq:ctd} đòi hỏi~\cite{Amo2022}. Lý thuyết nào mô tả đúng não thì hiện chưa rõ.
+
+\section{Sai số không chỉ về phần thưởng}
+
+Sự mở rộng cuối cùng liên quan tới việc sai số là \emph{về cái gì}. Nếu thay nước ép được kỳ vọng bằng một loại khác, giá trị như nhau nhưng khác vị, thì giá trị không đổi, và sai số~\eqref{eq:ctd} bằng không. Thế nhưng nơ-ron \nt{DOPA} vẫn đáp ứng với sự thay thế đó~\cite{Takahashi2017}. Còn những đỉnh vọt dopamine được gây ra nhân tạo có thể dạy con vật mối liên hệ giữa hai kích thích trung tính, hoàn toàn không có phần thưởng~\cite{Sharpe2017}. Có vẻ như \nt{DOPA} báo sai số dự đoán không chỉ của phần thưởng, mà cả của việc \emph{điều gì} sẽ xảy ra.
+
+Về hình thức, đây là một tổng quát hóa đơn giản của~\eqref{eq:ctd}: thay cho một dòng phần thưởng $r$, ta lấy một tập đặc trưng của những gì đang diễn ra $\varphi_k$ --- vị, vị trí, âm thanh --- và với mỗi đặc trưng có một kỳ vọng $M_k$ và một sai số riêng~\cite{Gardner2018}:
+\begin{empheq}[box=\keybox]{equation}
+\delta_k(t) \;=\; \varphi_k(t) \;+\; \frac{\dd M_k}{\dd t} \;-\; \frac{M_k}{\tau_\gamma} ,
+\qquad k=1,\dots,K .
+\label{eq:vectortd}
+\end{empheq}
+Phần thưởng chỉ là một trong các đặc trưng, và vectơ sai số không chỉ dạy điều gì là tốt, mà còn dạy điều gì theo sau điều gì --- tức một mô hình thế giới.
+
+Tính không đồng nhất của các nơ-ron \nt{DOPA} phù hợp với điều này: trong cùng một nhiệm vụ, các nơ-ron khác nhau mang những đại lượng khác nhau --- một số liên quan tới phần thưởng, số khác tới chuyển động, số khác nữa tới hướng của sự chú ý~\cite{Engelhard2019}.
+
+\begin{keyblock}
+\begin{proposition}[Bó dây thay cho một dây]
+\label{prop:bundle}
+Tín hiệu của hệ \nt{DOPA} không phải là một con số. Nó được phân bố theo nơ-ron (phân bố~\eqref{eq:expectile}, các đặc trưng khác nhau~\eqref{eq:vectortd}, một trục nguy hiểm riêng) và theo thời gian (sai số nhanh và mức chậm~\eqref{eq:vigor}). Sai số vô hướng~\eqref{eq:ctd} là xấp xỉ đầu tiên của tín hiệu này, giống như bộ cộng có ngưỡng là xấp xỉ đầu tiên của nơ-ron.
+\end{proposition}
+\end{keyblock}
+
+\section{Tổng kết}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{2.5cm}>{\raggedright}p{3.2cm}>{\raggedright}p{3.6cm}>{\raggedright\arraybackslash}p{4.2cm}}
+\toprule
+Lý thuyết & Thứ chạy trên dây & Phép đo chính & Điều đã biết \\
+\midrule
+sai số dự đoán (ch.~\ref{sec:dofa}) & đại lượng vô hướng $\delta$~\eqref{eq:ctd} & đỉnh vọt, dịch sang tín hiệu báo trước, hõm sụt & đã đo; xấp xỉ đầu tiên \\
+phân bố & tập $\delta_i$ với độ bất đối xứng khác nhau & các nơ-ron khác nhau có điểm đảo chiều khác nhau & phù hợp với thí nghiệm; vai trò của sự phân tán là giả thuyết \\
+tầm quan trọng & $|\delta|$, độ mới; trục nguy hiểm & một phần nơ-ron vọt lên với điều khó chịu & đã đo; cách sử dụng đang được bàn cãi \\
+giá của thời gian & mức chậm $\bar R$ & dopamine làm hành động nhanh hơn; thành phần chậm có cả trong lượng phóng ở đầu ra lẫn trong tần số xung & sự tách nhanh và chậm đã được đo; $\bar R$ là giả thuyết \\
+tăng dần khi tiến gần & $V$ hoặc $\delta$ khi ước lượng chính xác dần~\eqref{eq:ramp} & tăng dần đều, bước nhảy khi được dời chỗ trong hành lang & sự tăng đã được đo; cách giải thích đang được bàn cãi \\
+nhìn lại phía sau & thước đo liên hệ nhân quả~\eqref{eq:retro} & thí nghiệm mà dự đoán của hai lý thuyết khác nhau & các kết quả mâu thuẫn nhau \\
+vectơ sai số & $\delta_k$ theo đặc trưng~\eqref{eq:vectortd} & đáp ứng khi đổi vị; học không có phần thưởng & đã đo; dạng vectơ là giả thuyết \\
+\bottomrule
+\end{tabular}
+\caption{Hệ \nt{DOPA} truyền gì: bức tranh chuẩn ở chương~\ref{sec:dofa} và các mở rộng hiện đại của nó.}
+\label{tab:dofaalt}
+\end{table}
+
+Các lý thuyết trong bảng~\ref{tab:dofaalt} không loại trừ nhau: hầu hết đều giữ sai số dự đoán làm nền tảng và mở rộng định dạng của nó. Chỉ có lối nhìn lại phía sau thực sự cạnh tranh với nó, và cuộc tranh luận này sẽ do thí nghiệm phân xử. Với kỹ sư, kết luận đơn giản: cái giá của quảng bá ở mệnh đề~\ref{prop:broadcastcost} giảm xuống nếu dây dẫn thực ra là nhiều dây với những đích nhận khác nhau.
+
+\section{Bài tập}
+
+\begin{exercise}[\lvlA]
+\label{ex:07:1}
+\emph{Các điểm của phân bố cho một giọt.} Nước ép kích thước $1$ đến với xác suất $p=0.2$, nếu không thì phần thưởng bằng $0$. Theo~\eqref{eq:expectile}, tìm $V_i$ cho $\kappa_i=0.2$, $0.5$, $0.8$. Trung vị của phần thưởng này bằng bao nhiêu, và điểm~\eqref{eq:expectile} khác phân vị ở chỗ nào?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:07:2}
+\emph{Phân bố từ hai nơ-ron.} Phần thưởng bằng $0$ hoặc $x$, xác suất của $x$ là $p$. Hai nơ-ron với quy tắc~\eqref{eq:asymmetric} báo $V(1/2)=0.25$ và $V(0.8)=0.5$. Khôi phục $p$, $x$ và độ lệch chuẩn của phần thưởng. Nơ-ron có $\kappa=0.2$ sẽ báo gì?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:07:3}
+\emph{Mô phỏng: phân bố từ sự bất đối xứng.} Mô phỏng chín nơ-ron \nt{DOPA} với $\kappa_i=0.1,\dots,0.9$ và quy tắc~\eqref{eq:asymmetric}, $\alpha_i^+=2\kappa_i$, $\alpha_i^-=2(1-\kappa_i)$, với phần thưởng phân bố đều trên $[0,1]$. Độ phân tán của $V_i$ phụ thuộc vào $\eta$ thế nào, và cần $\eta$ nào để phân biệt phân bố này với hai giọt đồng khả năng $0.25$ và $0.75$?
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:07:4}
+\emph{Giá của thời gian.} (a)~Suy ra~\eqref{eq:vigor} và tìm tổng chi phí tại điểm tối ưu. (b)~Não ước lượng $\bar R$ sai $k$ lần. Tìm mức trả dư tương đối khi $k=2$ và $k=4$. Mức dopamine chậm phải báo $\bar R$ chính xác tới đâu?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:07:5}
+\emph{Đỉnh vọt khi dời chỗ.} Kỳ vọng tăng theo~\eqref{eq:ramp} với $\tau_v=1\,\text{s}$, $\tau_\gamma=4\,\text{s}$; con vật được dời tức thời từ điểm $T-2\,\text{s}$ tới $T-1\,\text{s}$. Tìm diện tích đỉnh vọt $\delta$ theo tỷ lệ của $R$, và nó thay cho bao nhiêu giây của đoạn dốc trước khi dời. Việc dời chỗ sẽ cho thấy gì nếu dopamine báo chính $V$?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:07:6}
+\emph{Thiết kế: hai tín hiệu trên một dây.} Trên dây \nt{DOPA} có một mức tăng dần tới $s=1/60$ xung mỗi giây sau mỗi giây, và các sự kiện, mỗi sự kiện $A=3$ xung. Khớp thần kinh có vết $\tau_e=1\,\text{s}$ trừ khỏi tần số bản sao của nó được làm trơn với $\tau_f$. Với $\tau_f$ nào sự kiện mất không quá $10\,\%$, còn đóng góp của mức trong thời gian vết nhỏ hơn $10\,\%$ đóng góp của sự kiện?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:07:7}
+\emph{Thiết kế thí nghiệm: nhìn lại hay sai số.} Trong một cửa sổ, tín hiệu báo trước có xác suất $0.1$, sau nó có phần thưởng với xác suất $0.8$. So sánh $\Delta P=P(\text{thưởng}\mid\text{có báo})-P(\text{thưởng}\mid\text{không})$ và $M$ trong~\eqref{eq:retro}, nếu (a)~thêm phần thưởng không báo trước, $0.08$ mỗi cửa sổ; (b)~tăng gấp đôi tần suất tín hiệu không kèm thưởng.
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:07:8}
+\emph{Bó dây và cái giá của quảng bá.} Trong mô hình của bài tập~\ref{ex:06:8}, $N$ nơ-ron được chia thành $K$ nhóm, mỗi nhóm có dây riêng, và vào mỗi dây rò rỉ một tỷ lệ $\rho$ sai số của nhóm khác. Chứng minh rằng hằng số học bằng $N/K+2+\rho^2N(1-1/K)$. Nó cho bao nhiêu lượt thử khi $K\to\infty$, $N=10^{10}$ và $\rho=0.01$?
+\end{exercise}

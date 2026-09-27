@@ -1,0 +1,66 @@
+\chapter{Mã Morse}
+% full version: chapters/04_code.tex
+
+Mã Morse có hai ký hiệu --- chấm và gạch --- cùng những khoảng ngắt giữa chúng. Bảng chữ cái của nơ-ron còn nghèo hơn: chỉ một ký hiệu, một tiếng tách ngắn. Nghĩa là toàn bộ thông điệp được ghi trong các khoảng ngắt. Vậy các nơ-ron trò chuyện bằng ngôn ngữ nào?
+
+\section*{Tiếng tách nói được bao nhiêu}
+
+Hãy bắt đầu như một kỹ sư viễn thông: một kênh như thế chứa được bao nhiêu thông tin? Nếu nơi nhận phân biệt được thời điểm tiếng tách đến với độ chính xác một mili giây, một tiếng tách có thể mang khoảng tám bit. Còn nếu nơi nhận chỉ đếm xem có bao nhiêu tiếng tách trong một giây, thì từ cùng dòng đó nó chỉ rút ra được ít hơn hàng chục lần. Gần như toàn bộ dung lượng của kênh nằm ở \emph{thời gian}.
+
+\pencilfig{4}{\pencilart{4}}{Phía trên là mã Morse, phía dưới là nơ-ron: chỉ một ký hiệu, tiếng tách; toàn bộ thông điệp nằm trong các khoảng ngắt.}
+
+Nhưng kênh này nhiễu. Lạ thay, bản thân nơ-ron lại chính xác: nếu nhiều lần đưa vào nó cùng một dòng điện biến thiên, nó sẽ tách vào đúng những thời điểm như nhau với độ chính xác một mili giây. Nhiễu nằm ở các mối nối: hơn một nửa số tiếng tách chạy tới cuối dây dẫn đơn giản là bị mất --- chất dẫn truyền không phải lần nào cũng được nhả ra. Trong vỏ não sống, dòng tiếng tách trông gần như ngẫu nhiên. Đó là nhiễu --- hay là một thông điệp mà ta chưa biết đọc? Một thông điệp được nén tốt thì với người ngoài không phân biệt được với ngẫu nhiên, nên câu hỏi vẫn còn bỏ ngỏ.
+
+\section*{Chậm mà chắc}
+
+Mã đơn giản nhất là đếm tiếng tách: càng dày thì con số càng lớn. Mã này không sợ mất mát, cũng không sợ rung giật. Nhưng nó chậm. Để biết tần số với độ chính xác mười phần trăm cần một trăm tiếng tách, tức là vài giây. Trong khi đó, bạn nhận ra con vật trên bức ảnh chỉ lóe lên trong khoảnh khắc sau chừng mười lăm phần trăm giây, và tín hiệu trong lúc đó đi qua khoảng mười tầng xử lý. Ở mỗi tầng, mỗi nơ-ron chỉ kịp tách nhiều lắm là một lần.
+
+Lối thoát là dùng nhiều nơ-ron cùng lúc: không phải một người nghe đếm tiếng tách suốt một phút, mà một trăm người nghe trong một khoảnh khắc. Nhưng ở đây cũng có cái bẫy: nhiễu của các nơ-ron lân cận hơi giống nhau, như tin đồn trong đám đông. Lấy trung bình trên vài chục nơ-ron lân cận thì có ích, còn sau đó gần như hết tác dụng.
+
+\pencilfig{122}{%
+% error of the group-average rate relative to one neuron, sqrt(c + (1-c)/N): c = 0.1 (neighbours' noise
+% is slightly alike; full edition, chapter 4) and c = 0 (independent noise). x = 0.8 log2 N, y = 2.2 * error
+\draw[pen] (0,0) -- (5.9,0); \draw[pen] (0,0) -- (0,2.45);
+\foreach \x/\n in {0/1, 2.66/10, 5.31/100}{\draw[pcGray, line width=0.5pt] (\x,0) -- (\x,-0.08); \node[lbl, anchor=north] at (\x,-0.08) {\n};}
+\node[lbl, anchor=north] at (2.95,-0.38) {số nơ-ron lấy trung bình};
+\node[lbl, anchor=south, rotate=90] at (-0.1,1.2) {sai số};
+\draw[pcGray, densely dashed, line width=0.5pt] (0,0.70) -- (5.6,0.70);
+\draw[penlite=pcBlue] plot[smooth] coordinates {(0.00,2.20) (0.47,1.80) (0.80,1.56) (1.27,1.27) (1.60,1.10) (2.07,0.90) (2.40,0.78) (2.87,0.64) (3.20,0.55) (3.67,0.45) (4.00,0.39) (4.47,0.32) (4.80,0.28) (5.27,0.22) (5.60,0.19)};
+\draw[penlite=pcRed] plot[smooth] coordinates {(0.00,2.20) (0.47,1.84) (0.80,1.63) (1.27,1.39) (1.60,1.25) (2.07,1.10) (2.40,1.01) (2.87,0.92) (3.20,0.87) (3.67,0.82) (4.00,0.79) (4.47,0.76) (4.80,0.74) (5.27,0.73) (5.60,0.72)};
+\node[lbl, text=pcRed, anchor=west, align=left] at (5.7,0.74) {nhiễu giống nhau,\\như trong vỏ não};
+\node[lbl, text=pcBlue, anchor=west] at (5.7,0.19) {nhiễu độc lập};
+\node[lbl, anchor=west] at (0.9,2.15) {một nơ-ron};
+\node[lbl, anchor=north west] at (0.05,0.66) {nhỏ đi ba lần};
+}{Sai số của tần số lấy trung bình trên một nhóm nơ-ron. Nếu nhiễu độc lập, nó sẽ còn giảm tiếp. Nhiễu giống nhau của các nơ-ron lân cận chặn nó lại ở khoảng một phần ba, và giới hạn này đạt được ngay khi có vài chục nơ-ron.}
+
+\section*{Nhanh: ai tách trước}
+
+Lối thoát thứ hai là ghi con số vào thời gian. Tín hiệu mạnh khiến nơ-ron tách sớm, tín hiệu yếu --- muộn. Chỉ một tiếng tách duy nhất đã mang một con số. Nhưng đo thời gian tính từ đâu, nếu không có đồng hồ? Có thể so các nơ-ron với nhau: ai tách trước, ai tách thứ hai. Thứ tự đến của tiếng tách từ mười nơ-ron mang hơn hai mươi bit. Ngoài ra, một loạt tách chung có thể làm mốc bắt đầu --- như khoảng ngắt dài giữa các từ trong mã Morse.
+
+\pencilfig{121}{%
+% latency code: one click per neuron; the stronger the input, the earlier the click
+\foreach \y/\t/\l/\k in {1.5/1.1/{đầu vào mạnh}/1, 0.95/2.4/{vừa}/2, 0.4/4.2/{yếu}/3}{
+  \draw[pen] (0.4,\y) -- (5.1,\y);
+  \draw[pcBlue, line width=0.9pt] (\t,\y) -- (\t,\y+0.42);
+  \node[lbl, anchor=east] at (0.3,\y+0.1) {\l};
+  \draw[dotpen=pcAmber, wash=pcAmber] (5.6,\y+0.16) circle (0.17);
+  \node[font=\scriptsize, text=pcAmber!60!black] at (5.6,\y+0.16) {\k};}
+\draw[pcGray, densely dashed, line width=0.5pt] (0.55,0.25) -- (0.55,2.1);
+\node[lbl, anchor=south] at (0.55,2.1) {kích thích};
+\node[lbl, text=pcAmber!70!black, anchor=south] at (5.6,2.1) {thứ tự};
+\draw[arr] (0.7,0.05) -- (4.9,0.05); \node[lbl, anchor=north] at (2.8,0.02) {thời gian};
+}{Đầu vào mạnh --- tách sớm, đầu vào yếu --- tách muộn. Thứ tự các tiếng tách cho biết đầu vào nào mạnh hơn, ngay cả khi không biết thời điểm bắt đầu.}
+
+\section*{Mã do người nghe chọn}
+
+Cùng một chuỗi tiếng tách mang cả tần số, cả thời điểm, cả thứ tự. Điều nào trong số đó sẽ được đọc là do nơi nhận quyết định. Nơ-ron có ``lỗ thủng rộng'' ở xô tích nước chậm và chỉ nghe được tần số. Nơ-ron quên nhanh chỉ nghe được sự trùng khớp. Còn bộ phanh, như ta đã thấy, có thể chuyển nơ-ron từ chế độ này sang chế độ kia.
+
+Ngay cả các mối nối cũng lọc tín hiệu. Có mối nối mỏi nhanh và vì thế báo không phải tần số mà là \emph{sự thay đổi} của nó. Có mối nối, ngược lại, cho các chùm xung gồm vài tiếng tách liên tiếp đi qua tốt hơn: nơ-ron có thêm ``dấu gạch''. Trong khi đó các nơ-ron ức chế đặt dấu câu --- cắt dòng thành các cửa sổ và vặn nhỏ nó khi nó quá to.
+
+\section*{Ngôn ngữ tiết kiệm}
+
+Và điều cuối cùng: ngôn ngữ này đắt đỏ. Mỗi tiếng tách tốn năng lượng, mà cả bộ não chỉ tiêu thụ khoảng hai mươi oát. Nếu chia số oát này cho toàn bộ nơ-ron, trung bình mỗi nơ-ron được khoảng một tiếng tách mỗi giây. Phần lớn nơ-ron im lặng phần lớn thời gian. Mã của bộ não buộc phải keo kiệt.
+
+Trong mã Morse, chữ cái phổ biến nhất của tiếng Anh, E, chỉ là một dấu chấm: cái hay gặp thì mã hóa ngắn. Ở nơ-ron cũng tương tự: điều đã được chờ đợi chỉ tốn ít tiếng tách. Một kích thích không đổi dần dần thôi gây ra đáp ứng, các cảm biến báo về sự thay đổi, còn dopamine --- chỉ báo về điều bất ngờ. Bộ não dành tiếng tách của mình cho tin mới.
+
+\fullversion{4}

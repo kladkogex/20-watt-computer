@@ -1,0 +1,292 @@
+\chapter{Nơ-ron \nt{GLUT} tính được gì}
+\label{sec:glutcomputer}
+
+\section{Luật chơi}
+
+Ở chương~\ref{sec:neurontypes} ta đã thấy tuyệt đại đa số nơ-ron của não là \nt{GLUT}: chúng chỉ kích thích, trọng số của chúng chỉ dương. Hãy lấy bao nhiêu nơ-ron như thế cũng được và hỏi: một mạng như vậy tính được gì, nếu chỉ cho phép những gì có trong cơ thể sống?
+
+Mà trong cơ thể sống không có bộ tạo xung nhịp chuyển mạch mọi phần tử cùng lúc. Mỗi nơ-ron làm việc độc lập, trong thời gian liên tục: xung đến và đi lúc nào tùy ý, với những độ trễ khác nhau. Có \emph{đầu vào} --- các nơ-ron cảm giác, phát xung khi gặp ánh sáng, âm thanh hay áp lực --- và \emph{đầu ra} --- các nơ-ron điều khiển cơ. Ở giữa là mạng, và không ai bảo nó khi nào bắt đầu và khi nào kết thúc phép tính. Với người làm điện tử, đây là một mạch \emph{bất đồng bộ} gồm các phần tử có độ trễ không biết trước chính xác.
+
+Ta lấy mô hình nơ-ron đơn giản nhất trong số những mô hình thực sự làm việc trong thời gian liên tục. Điện áp $V$ trên màng nơ-ron lúc nghỉ bằng không. Mỗi xung đến từ nơ-ron $j$ làm nó nhảy lên một bậc $w_j\ge0$, sau đó điện áp tự rò về không với hằng số thời gian $\tau$:
+\begin{empheq}[box=\keybox]{equation}
+\tau\,\frac{\dd V}{\dd t} \;=\; -V \;+\; \tau\sum_j w_j \sum_k \delta\bigl(t-t_j^{(k)}-d_j\bigr), \qquad w_j\ge 0 .
+\label{eq:glutneuron}
+\end{empheq}
+Ở đây $t_j^{(k)}$ là các thời điểm phát xung của nơ-ron $j$, $d_j$ là độ trễ trên đường từ nó tới, $\delta$ là hàm delta, biểu thị bước nhảy tức thời. Khi $V$ đạt ngưỡng $\theta$, nơ-ron phát một xung, $V$ được đặt lại về không, và trong khoảng một mili giây nơ-ron không thể phát xung lần nữa. Các con số điển hình: $\tau$ từ một phần nhỏ của mili giây đến hai mươi mili giây tùy nơ-ron, độ trễ từ một phần nhỏ của mili giây đến hàng chục mili giây. Đây là \emph{nơ-ron tích phân rò}: một mạch RC có ngưỡng. Đây là sự đơn giản hóa có chủ ý: ở nơ-ron vỏ não, chính các nhánh đầu vào cũng phát xung cục bộ~\cite{Smith2013}, và một nơ-ron hành xử giống một mạng nhiều lớp nhỏ hơn (chương~\ref{sec:synthesis}). Với các câu hỏi của chương này, một mạch RC là đủ.
+
+Khác biệt chính so với cổng logic là sự rò: nơ-ron không nhớ xung mãi mãi mà chỉ trong khoảng $\tau$, và chỉ những gì đến trong cửa sổ đó mới được cộng lại.
+
+\section{OR và AND}
+
+Bắt đầu từ các cổng. Nếu một xung nâng điện áp vượt ngưỡng, $w\ge\theta$, nơ-ron phát xung với mỗi xung của bất kỳ đầu vào nào. Đó là \emph{OR}.
+
+AND thú vị hơn. Cho $w<\theta<2w$: một xung là không đủ, cần hai. Nhưng giờ câu hỏi ``cả hai đã đến chưa'' vô nghĩa chừng nào chưa nói \emph{trong khoảng thời gian nào}. Giả sử xung thứ nhất đến lúc $0$, còn xung thứ hai sau thời gian $\Delta$. Khi xung thứ hai đến, từ xung thứ nhất còn lại $we^{-\Delta/\tau}$, và nơ-ron phát xung nếu $we^{-\Delta/\tau}+w\ge\theta$. Từ đó có cửa sổ trùng khớp:
+\begin{empheq}[box=\keybox]{equation}
+\Delta \;\le\; \Delta_{\max} \;=\; \tau\,\ln\frac{w}{\theta-w} .
+\label{eq:window}
+\end{empheq}
+Đây không phải AND logic mà là \emph{bộ phát hiện trùng khớp}: AND theo thời gian (hình~\ref{fig:coincidence}). Khi $\theta=1.5w$, cửa sổ bằng $\tau\ln2\approx0.7\tau$. Với nơ-ron vỏ não có $\tau=10\ms$, đó là khoảng bảy mili giây. Ở các nơ-ron hệ thính giác, nơi $\tau$ nhỏ hơn một mili giây, cửa sổ co lại chỉ còn một phần nhỏ của mili giây.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=0.9cm,y=1.6cm]
+\foreach \dx/\lab/\c [count=\i] in {0.5/{trùng khớp}/red!70!black, 2.6/{không trùng khớp}/blue!60!black}{
+ \begin{scope}[xshift={(\i-1)*7.2cm}]
+  \draw[->,gray!70!black] (0,0) -- (6.3,0) node[below left,black] {\small $t$};
+  \draw[->,gray!70!black] (0,0) -- (0,1.75) node[left,black] {\small $V$};
+  \draw[densely dashed,gray!60!black] (0,1.5) -- (6.0,1.5) node[right,black] {\small $\theta$};
+  \draw[very thick,\c] (0,0) -- (1,0) -- (1,1)
+      plot[domain=1:1+\dx,samples=30] (\x,{exp(-(\x-1)/1.5)});
+  \pgfmathsetmacro{\v}{exp(-\dx/1.5)+1}
+  \draw[very thick,\c] (1+\dx,{exp(-\dx/1.5)}) -- (1+\dx,{min(\v,1.5)});
+  \ifdim\v pt<1.5pt
+    \draw[very thick,\c] plot[domain=1+\dx:6,samples=40] (\x,{\v*exp(-(\x-1-\dx)/1.5)});
+  \else
+    \draw[very thick,\c] (1+\dx,1.5) -- (1+\dx,0) -- (6,0);
+    \draw[->,thick,\c] (1+\dx,1.55) -- (1+\dx,1.72) node[above,font=\scriptsize] {xung};
+  \fi
+  \draw[->,thick] (1,-0.35) -- (1,-0.08); \draw[->,thick] (1+\dx,-0.35) -- (1+\dx,-0.08);
+  \draw[decorate,decoration={brace,amplitude=3pt,mirror}] (1,-0.42) -- (1+\dx,-0.42) node[midway,below=3pt] {\scriptsize $\Delta$};
+  \node[\c] at (3.5,-0.95) {\small \lab};
+ \end{scope}}
+\end{tikzpicture}
+\caption{Bộ phát hiện trùng khớp, ngưỡng $\theta=1.5w$. Bên trái, xung thứ hai đến sau $\Delta<\Delta_{\max}$, tổng đạt ngưỡng, nơ-ron phát xung. Bên phải, $\Delta>\Delta_{\max}$: xung thứ nhất gần như không còn lại gì, và nơ-ron im lặng.}
+\label{fig:coincidence}
+\end{figure}
+
+Một cách khác để có AND là dựa vào thời lượng chứ không phải thời điểm chính xác. Chừng nào đèn còn sáng, nơ-ron cảm giác phát xung dày và đều; nếu một đầu vào như vậy chưa đủ vượt ngưỡng mà hai thì đủ, nơ-ron hoạt động chừng nào cả hai còn hoạt động. Như vậy mạng tính theo \emph{mức}, và thời điểm đến chính xác của xung không quan trọng. Phần lớn những gì dưới đây sẽ theo đúng cách này.
+
+\section{Điều không làm được}
+
+Giờ thử làm NOT: một nơ-ron hoạt động khi đầu vào im lặng. Không được: không có xung vào thì trong~\eqref{eq:glutneuron} không có bước nhảy nào, và điện áp đứng ở không, dưới ngưỡng. Còn mạng nhiều nơ-ron thì sao? Cũng không, và điều này được chứng minh một lần cho mọi mạng.
+
+Tiện nhất là nói về tần số. Gọi $r_i$ là tần số xung của nơ-ron $i$, $I_i$ là dòng vào từ các đầu vào, còn $f_i$ là đặc tuyến truyền đạt của nó: tần số phụ thuộc vào tổng dòng vào như thế nào. Ở nơ-ron tích phân, đặc tuyến này không giảm: dòng vào càng lớn, xung càng dày. Tần số trong mạng đã đạt cân bằng thỏa mãn các phương trình
+\begin{equation}
+r_i \;=\; f_i\Bigl(\sum_j w_{ij}\,r_j + I_i\Bigr), \qquad w_{ij}\ge 0 .
+\label{eq:ratenet}
+\end{equation}
+
+\begin{keyblock}
+\begin{proposition}[Tính đơn điệu]
+\label{prop:monotone}
+Giả sử mạng~\eqref{eq:ratenet} chỉ gồm các nơ-ron \nt{GLUT} và bắt đầu từ im lặng hoàn toàn. Nếu tăng cường các đầu vào, tần số xác lập của không nơ-ron nào giảm đi. Mọi thứ một mạng như vậy tính được đều là hàm \emph{đơn điệu} của các đầu vào.
+\end{proposition}
+\end{keyblock}
+
+Chứng minh. Bắt đầu từ im lặng, $r^{(0)}=0$, và lần lượt thế tần số vào vế phải của~\eqref{eq:ratenet}: $r^{(k+1)}=F\bigl(r^{(k)}\bigr)$. Vế phải $F$ không giảm theo bất kỳ đối số nào, vì trọng số không âm và các $f_i$ không giảm. Vì $r^{(1)}\ge0=r^{(0)}$, theo quy nạp $r^{(k+1)}\ge r^{(k)}$: tần số chỉ tăng và hội tụ về nghiệm nhỏ nhất của~\eqref{eq:ratenet}. Nếu thay các đầu vào $I$ bằng những đầu vào lớn hơn $I'$, thì ở mỗi bước $r^{(k)}(I)\le r^{(k)}(I')$, và ở giới hạn cũng vậy. Mạng thật đạt cân bằng không theo từng bước mà liên tục, nhưng điều tương tự vẫn đúng: với liên kết dương, bất đẳng thức giữa hai lần chạy, nếu đúng lúc ban đầu, sẽ được giữ suốt thời gian.
+
+Với từng xung riêng lẻ, mệnh đề không đúng theo nghĩa đen: một xung vào thừa có thể khiến nơ-ron phát xung sớm hơn một chút, và vì một mili giây trơ, xung tiếp theo của nó sẽ mất. Nhưng hiệu ứng này yếu và không tin cậy, không thể dựa vào nó để tính toán. Với tần số, tính đơn điệu là chặt chẽ.
+
+Các hệ quả giống như ở mọi mạch không có bộ đảo. Không có NOT. Không có XOR: thêm đầu vào thứ hai không thể dập tắt đầu ra. Và khó chịu nhất: \emph{không thể dừng hoạt động bằng hoạt động}, chỉ có thể lấy đi cái đang duy trì nó.
+
+\section{Hai dây dẫn: bật và tắt}
+
+Lối thoát do chính cơ thể gợi ý. Ở nhiều giác quan, kích thích được truyền bởi hai tập nơ-ron: trong thị giác, một số tế bào đáp ứng khi ánh sáng mạnh lên, số khác khi ánh sáng yếu đi~\cite{Schiller1992}. Ta gọi chúng là nơ-ron \emph{bật} và nơ-ron \emph{tắt}. Thay vì một dây $x$, mạng nhận một cặp $(x,\bar x)$, và sự vắng mặt mà mạng không tính được thì chính cảm biến báo cho nó.
+
+Với cặp dây dẫn, NOT là miễn phí: chỉ cần đổi chỗ hai dây. AND và OR mỗi phép cần hai nơ-ron:
+\begin{empheq}[box=\keybox]{equation}
+\begin{aligned}
+x\wedge y \;&\to\; \bigl(\;x\wedge y,\;\; \bar x\vee\bar y\;\bigr),\\
+x\vee y \;&\to\; \bigl(\;x\vee y,\;\; \bar x\wedge\bar y\;\bigr).
+\end{aligned}
+\label{eq:dualrail}
+\end{empheq}
+Ở vế phải mọi phép toán đều đơn điệu, nên mệnh đề~\ref{prop:monotone} không bị vi phạm.
+
+Với mạch bất đồng bộ, mã hai dây còn có ưu điểm thứ hai, thậm chí quan trọng hơn. Một cặp dây có ba trạng thái: ``có'', ``không'' và, khi cả hai im lặng, \emph{``chưa có câu trả lời''}. Nơi nhận biết phép tính đã xong không phải nhờ đồng hồ mà nhờ chính tín hiệu: ở mỗi cặp có đúng một dây đã hoạt động. Giữa các lần kích thích, cảm biến im lặng, và mạng trở về trạng thái im lặng, sẵn sàng cho lần sau. Trong điện tử bất đồng bộ, thủ thuật này được dùng để xây dựng những mạch làm việc đúng với mọi độ trễ của phần tử~\cite{Sparso2001}.
+
+\begin{keyblock}
+\begin{proposition}[Tính toán bất đồng bộ]
+\label{prop:dualrail}
+Nếu mỗi đầu vào đến dưới dạng một cặp dây ``bật---tắt'', thì mạng nơ-ron \nt{GLUT} có thể tính bất kỳ hàm logic nào của các đầu vào. Kết quả cũng đến dưới dạng các cặp dây, và việc nó đã sẵn sàng thấy được qua chỗ ở mỗi cặp có một dây đã hoạt động. Không cần đồng hồ cho việc này. Cái giá là số nơ-ron tăng khoảng gấp đôi.
+\end{proposition}
+\end{keyblock}
+
+Ví dụ là XOR: ``đúng một trong hai kích thích đã thay đổi''. Dây thuận của kết quả là $(x\wedge\bar y)\vee(\bar x\wedge y)$, dây nghịch là $(x\wedge y)\vee(\bar x\wedge\bar y)$. Đó là sáu nơ-ron, và không nơ-ron nào cần đến ức chế (hình~\ref{fig:dualxor}).
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=1cm,y=1cm,
+  nrn/.style={circle,draw,very thick,fill=blue!6,minimum size=0.75cm,inner sep=0pt,font=\small},
+  inp/.style={font=\small}]
+\node[inp] (X)  at (0,3.3) {$x$};
+\node[inp] (Xb) at (0,2.2) {$\bar x$};
+\node[inp] (Y)  at (0,1.1) {$y$};
+\node[inp] (Yb) at (0,0)   {$\bar y$};
+\node[nrn] (A1) at (3.2,3.3) {$2$};
+\node[nrn] (A2) at (3.2,2.2) {$2$};
+\node[nrn] (A3) at (3.2,1.1) {$2$};
+\node[nrn] (A4) at (3.2,0)   {$2$};
+\node[nrn] (O)  at (7.2,2.75) {$1$};
+\node[nrn] (Ob) at (7.2,0.55) {$1$};
+\foreach \s/\t in {X/A1,Yb/A1,Xb/A2,Y/A2,X/A3,Y/A3,Xb/A4,Yb/A4}{\draw[->,thick,blue!60!black] (\s) -- (\t);}
+\draw[->,thick,blue!60!black] (A1) -- node[pos=0.45,above,sloped,font=\scriptsize,black] {$x\wedge\bar y$} (O);
+\draw[->,thick,blue!60!black] (A2) -- node[pos=0.45,below,sloped,font=\scriptsize,black] {$\bar x\wedge y$} (O);
+\draw[->,thick,blue!60!black] (A3) -- node[pos=0.45,above,sloped,font=\scriptsize,black] {$x\wedge y$} (Ob);
+\draw[->,thick,blue!60!black] (A4) -- node[pos=0.45,below,sloped,font=\scriptsize,black] {$\bar x\wedge\bar y$} (Ob);
+\draw[->,very thick,red!70!black] (O) -- (8.6,2.75) node[right,black] {$x\oplus y$: ``có''};
+\draw[->,very thick,red!70!black] (Ob) -- (8.6,0.55) node[right,black] {$\overline{x\oplus y}$: ``không''};
+\node[below,font=\small,gray!40!black] at (3.2,-0.55) {AND: ngưỡng $2$};
+\node[below,font=\small,gray!40!black] at (7.2,-0.55) {OR: ngưỡng $1$};
+\node[below,font=\small,gray!40!black] at (0,-0.55) {cặp dây dẫn};
+\end{tikzpicture}
+\caption{XOR trên mã hai dây, chỉ gồm các nơ-ron \nt{GLUT}. Số trong vòng tròn là ngưỡng, tính theo đơn vị trọng số của một đầu vào. Bốn nơ-ron AND nhận ra bốn tổ hợp đầu vào, hai nơ-ron OR gom chúng thành cặp dây kết quả.}
+\label{fig:dualxor}
+\end{figure}
+
+\section{Độ trễ thay cho đồng hồ}
+
+Để tính toán với thời gian, chỉ cần độ trễ trên dây dẫn và các bộ phát hiện trùng khớp. Ví dụ hay nhất là cách não xác định âm thanh đến từ đâu.
+
+Âm thanh từ một nguồn ở bên cạnh đến tai gần sớm hơn tai xa. Hiệu thời gian phụ thuộc vào hướng: từ không, khi nguồn ở ngay phía trước, đến $0.22\,\text{m}/343\,\text{m/s}\approx0.6\ms$ ở người, khi nguồn ở đúng bên cạnh. Não phân biệt được hiệu cỡ mười \emph{micro giây}~\cite{KlumppEady1956,Grothe2010}, dù bản thân nơ-ron phát xung với độ chính xác không tốt hơn một phần nhỏ của mili giây. Bằng cách nào?
+
+Kéo một dây từ tai trái dọc theo một hàng bộ phát hiện trùng khớp từ trái sang phải, và một dây từ tai phải từ phải sang trái (hình~\ref{fig:itd}). Tín hiệu chạy trên dây với vận tốc $v$. Tới bộ phát hiện đặt cách mép trái của hàng dài $L$ một khoảng $x$, tín hiệu trái đi mất thời gian $x/v$, tín hiệu phải --- $(L-x)/v$. Nếu âm thanh đến tai phải muộn hơn $\delta t$, hai tín hiệu sẽ gặp nhau đồng thời tại điểm mà
+\begin{empheq}[box=\keybox]{equation}
+\frac{x}{v} \;=\; \frac{L-x}{v} + \delta t
+\quad\Longrightarrow\quad
+x \;=\; \frac{L}{2} + \frac{v\,\delta t}{2} .
+\label{eq:itd}
+\end{empheq}
+Chỉ bộ phát hiện nào nhận được cả hai tín hiệu trong phạm vi cửa sổ~\eqref{eq:window} mới phát xung. Số thứ tự của bộ phát hiện đã phát xung chính là hướng tới nguồn. Hiệu thời gian đã biến thành \emph{vị trí}.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  nrn/.style={circle,draw,very thick,fill=blue!6,minimum size=0.7cm,inner sep=0pt}]
+\foreach \k in {0,...,6}{\node[nrn] (D\k) at (1.4*\k,0) {\scriptsize $2$};}
+\node[nrn,fill=red!15] at (D4) {\scriptsize $2$};
+\draw[->,thick,blue!60!black] (-1.4,0.9) node[left,black] {\small tai trái} -- (9.2,0.9);
+\draw[->,thick,orange!85!black] (9.8,-0.9) node[right,black] {\small tai phải} -- (-0.8,-0.9);
+\foreach \k in {0,...,6}{
+  \draw[->,blue!60!black] (1.4*\k,0.9) -- (D\k.north);
+  \draw[->,orange!85!black] (1.4*\k,-0.9) -- (D\k.south);}
+\draw[->,thick,red!70!black] (D4.north east) ++(0.1,0.05) -- ++(0.5,0.45) node[above right,font=\small,black] {phát xung};
+\node[font=\small,gray!40!black] at (4.2,-1.5) {độ trễ tăng $\longrightarrow$ \hspace{2.2cm} $\longleftarrow$ độ trễ tăng};
+\pic[scale=1.4] at (-2.3,1.75) {speaker};
+\node[font=\scriptsize,align=center] at (-2.3,2.35) {nguồn bên trái};
+\end{tikzpicture}
+\caption{Xác định hướng âm thanh. Tín hiệu từ hai tai chạy ngược chiều nhau; mỗi vòng tròn là một bộ phát hiện trùng khớp có ngưỡng $2$. Nếu âm thanh đến tai phải muộn hơn, các tín hiệu gặp nhau ở bên phải điểm giữa, theo công thức~\eqref{eq:itd}. Đầu ra của mạng là số thứ tự của nơ-ron đã phát xung. Ở đây nguồn ở bên trái: âm thanh đến tai trái sớm hơn.}
+\label{fig:itd}
+\end{figure}
+
+Ở đây không có đồng hồ, không có ức chế, thậm chí không có mã hai dây: mạng không trả lời ``có'' hay ``không'' mà chỉ ra một nơ-ron trong số nhiều nơ-ron. Một mạch như vậy gồm đường trễ và bộ phát hiện trùng khớp dường như thực sự hoạt động ở thân não thính giác của chim~\cite{Carr1990}. Độ chính xác micro giây không đến từ độ chính xác của từng nơ-ron, mà từ chỗ có nhiều bộ phát hiện và mỗi bộ theo dõi một độ trễ riêng. Ở động vật có vú, người ta không tìm thấy hàng độ trễ như vậy: ở đó cùng bài toán này dường như được giải bằng các bộ phát hiện trùng khớp được tinh chỉnh bởi sự ức chế đến đúng thời điểm từ nơ-ron \nt{GLYC}~\cite{Brand2002,Grothe2010}. Ức chế thu hẹp cửa sổ trùng khớp như thế nào, ta sẽ phân tích ở chương~\ref{sec:gaba} với ví dụ \nt{GABA}; glycine ức chế theo cùng cách, bằng cách mở kênh clo ở nơi nhận.
+
+\section{Bộ nhớ}
+
+Máy tính cần bộ nhớ. Trong một mạng như thế, bộ nhớ là hoạt động tự duy trì. Lấy một nhóm nơ-ron \nt{GLUT} liên kết chặt với nhau và mô tả nó bằng một tần số $r$ (hình~\ref{fig:recurrentgroup}a). Ở trạng thái cân bằng $r=f(wr+I)$, trong đó $w$ là độ mạnh hồi tiếp của nhóm lên chính nó, còn $I$ là dòng vào từ bên ngoài. Giải phương trình này bằng đồ thị, lấy giao điểm của đường cong $f(wr+I)$ với đường thẳng $r$ (hình~\ref{fig:bistable}).
+
+\begin{figure}[t]
+\centering
+% (b): tau dr/dt = -r + f(w r + I), f as in fig:bistable, w=1, I=0.6; Euler dt=0.001 tau.
+\begin{tikzpicture}[>=Stealth,
+  nrn/.style={circle,draw,thick,fill=blue!6,minimum size=0.5cm,inner sep=0pt}]
+\begin{scope}
+\node[font=\small] at (-0.5,1.55) {(a)};
+\foreach \k in {1,...,6}{\node[nrn] (n\k) at ({1.4+1.0*cos(60*\k)},{1.0*sin(60*\k)}) {};}
+\foreach \a/\b in {1/2,2/3,3/4,4/5,5/6,6/1,1/4,2/5,3/6}{\draw[<->,blue!60!black] (n\a) -- (n\b);}
+\foreach \k in {2,3,4}{\draw[->,thick,green!45!black] ($(n\k)+(-0.95,0)$) -- (n\k);}
+\node[font=\small,green!45!black] at (-0.35,-0.45) {$I$};
+\node[font=\Large] at (3.1,0) {$\approx$};
+\node[nrn,minimum size=0.85cm,font=\small] (R) at (4.35,-0.1) {$r$};
+\draw[->,thick,blue!60!black] (R) edge[loop above,looseness=6] node[above,font=\small] {$w$} (R);
+\draw[->,thick,green!45!black] (3.55,-0.95) node[left,font=\small] {$I$} -- (R);
+\end{scope}
+\begin{scope}[xshift=6.3cm,y=2.6cm,x=1.05cm]
+\node[font=\small] at (-0.6,1.25) {(b)};
+\draw[->,gray!70!black] (0,0) -- (7.3,0) node[below left,font=\small,black] {$t/\tau$};
+\draw[->,gray!70!black] (0,0) -- (0,1.12) node[left,font=\small,black] {$r$};
+\foreach \t in {0,2,4,6}{\draw[gray!60!black] (\t,-0.02) -- (\t,0.02); \node[below,font=\scriptsize] at (\t,0) {\t};}
+\draw[densely dotted,gray!60!black] (0,0.5) -- (7,0.5) node[right,font=\scriptsize,black,align=left] {ngưỡng\\ghi};
+\fill[green!45!black,opacity=0.25] (1,-0.2) rectangle (2,-0.13);
+\fill[gray!60!black,opacity=0.35] (1,-0.29) rectangle (1.5,-0.22);
+\draw[very thick,blue!60!black] plot coordinates {(0.0,0.002) (0.1,0.002) (0.2,0.002) (0.3,0.002) (0.4,0.002) (0.5,0.002) (0.6,0.002) (0.7,0.002) (0.8,0.002) (0.9,0.002) (1.0,0.002) (1.1,0.083) (1.2,0.165) (1.3,0.242) (1.4,0.313) (1.5,0.378) (1.6,0.437) (1.7,0.491) (1.8,0.539) (1.9,0.583) (2.0,0.623) (2.1,0.643) (2.2,0.665) (2.3,0.688) (2.4,0.71) (2.5,0.732) (2.6,0.753) (2.7,0.773) (2.8,0.792) (2.9,0.81) (3.0,0.826) (3.2,0.855) (3.4,0.88) (3.6,0.9) (3.8,0.917) (4.0,0.931) (4.4,0.953) (4.8,0.967) (5.2,0.977) (5.6,0.984) (6.0,0.988) (6.5,0.992) (7.0,0.994)};
+\draw[very thick,gray!60!black,densely dashed] plot coordinates {(0.0,0.002) (0.1,0.002) (0.2,0.002) (0.3,0.002) (0.4,0.002) (0.5,0.002) (0.6,0.002) (0.7,0.002) (0.8,0.002) (0.9,0.002) (1.0,0.002) (1.1,0.083) (1.2,0.165) (1.3,0.242) (1.4,0.313) (1.5,0.378) (1.6,0.358) (1.7,0.336) (1.8,0.313) (1.9,0.291) (2.0,0.269) (2.2,0.228) (2.4,0.191) (2.6,0.159) (2.8,0.133) (3.0,0.11) (3.2,0.091) (3.4,0.076) (3.6,0.063) (3.8,0.052) (4.0,0.043) (4.4,0.03) (4.8,0.021) (5.2,0.015) (5.6,0.011) (6.0,0.008) (6.5,0.006) (7.0,0.004)};
+\node[font=\scriptsize,blue!60!black,anchor=west] at (3.3,0.8) {dòng vào $1\tau$: đã ghi};
+\node[font=\scriptsize,gray!50!black,anchor=west] at (2.3,0.3) {dòng vào $0.5\tau$: tắt};
+\end{scope}
+\end{tikzpicture}
+\caption{Một nhóm liên kết chặt với chính nó. (a)~Nhiều nơ-ron \nt{GLUT} kích thích lẫn nhau hành xử như một nơ-ron có tần số $r$, tự kích thích chính nó với độ mạnh $w$; từ bên ngoài có dòng vào $I$. (b)~Tần số của nhóm theo thời gian khi $w=1$ và cùng đường cong $f$ như ở hình~\ref{fig:bistable}. Dòng vào $I=0.6$ được cấp trong khoảng thời gian đánh dấu bằng dải dưới trục. Nếu nó kéo dài $1\tau$, nhóm kịp vượt qua điểm không bền $r=0.5$, bùng lên và tiếp tục cháy khi dòng vào đã hết. Nếu chỉ $0.5\tau$, nhóm không với tới điểm đó và tắt trở lại: để ghi một bit, dòng vào phải kéo dài hơn khoảng $0.7\tau$.}
+\label{fig:recurrentgroup}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=5cm,y=3.2cm]
+\draw[->,gray!70!black] (0,0) -- (1.1,0) node[below left,black] {\small $r$};
+\draw[->,gray!70!black] (0,0) -- (0,1.1);
+\draw[thick,gray!60!black] (0,0) -- (1.05,1.05) node[right,black] {\small $r$};
+\draw[very thick,blue!60!black] plot[domain=0:1.05,samples=80] (\x,{1/(1+exp(-(\x-0.5)/0.08))});
+\draw[very thick,red!70!black,densely dashed] plot[domain=0:1.05,samples=80] (\x,{1/(1+exp(-(\x+0.3-0.5)/0.08))});
+\fill[blue!60!black] (0.002,0.002) circle (0.018);
+\draw[blue!60!black,fill=white,thick] (0.5,0.5) circle (0.018);
+\fill[blue!60!black] (0.998,0.998) circle (0.018);
+\node[below right,font=\small] at (0.02,0.0) {tắt};
+\node[right,font=\small] at (0.52,0.46) {không bền};
+\node[below,font=\small] at (0.99,0.96) {bật};
+\node[anchor=east,font=\small,red!70!black] at (0.19,0.62) {$f(wr+I)$};
+\node[anchor=west,font=\small,blue!60!black] at (0.45,0.1) {$f(wr)$};
+\end{tikzpicture}
+\caption{Bộ nhớ từ một nhóm nơ-ron \nt{GLUT} có hồi tiếp mạnh. Đường liền là khi không có dòng vào từ bên ngoài: hai giao điểm bền với đường thẳng $r$, ``tắt'' và ``bật'', và một giao điểm không bền ở giữa. Một dòng vào ngắn $I$ (đường nét đứt) chỉ để lại giao điểm trên.}
+\label{fig:bistable}
+\end{figure}
+
+Nếu hồi tiếp mạnh, có ba giao điểm: dưới là im lặng, trên là nhóm cháy hết cỡ, giữa là không bền. Ta được một phần tử có hai trạng thái bền, một flip-flop. Ghi số một vào nó rất dễ: một dòng vào ngắn nâng đường cong lên, giao điểm dưới biến mất, và nhóm bùng lên --- rồi vẫn cháy khi dòng vào đã hết (hình~\ref{fig:recurrentgroup}b). Dòng vào quá ngắn không kịp đưa nhóm tới điểm không bền, và nhóm tắt trở lại. Hoạt động tự duy trì như vậy, kéo dài hàng giây sau khi kích thích đã biến mất, thực sự được quan sát trong não và được coi là nền tảng của trí nhớ ngắn hạn~\cite{Wang2001}. Nhưng đó không phải cách duy nhất để nhớ trong vài giây. Bản ghi cũng có thể được lưu trong một biến chậm của chính các khớp thần kinh: sau một chùm xung, sự tạo thuận, như ở khớp thần kinh ``gạch'' của chương~\ref{sec:code}, kéo dài khoảng một giây, và giữa những đợt bùng ngắn mạng có thể gần như im lặng --- không phải flip-flop mà là một tụ điện đã nạp~\cite{Mongillo2008}. Những khoảng ``lặng'' như vậy khi giữ thông tin trong trí nhớ đã được quan sát~\cite{Stokes2015}, và lưu trữ không cần xung liên tục tốn ít năng lượng hơn. Vỏ não dùng cách nào trong trường hợp nào vẫn còn đang được bàn cãi.
+
+Vậy xóa thế nào? Theo mệnh đề~\ref{prop:monotone}, bằng hoạt động thì không thể; chỉ còn cách \emph{lấy đi} một thứ gì đó. Cách thứ nhất là lấy đi sự hỗ trợ: nếu nhóm chỉ cháy khi có dòng vào từ một nhóm khác, bộ nhớ tắt cùng với dòng vào đó. Cách thứ hai là sự mỏi. Ở khớp thần kinh thật, khi làm việc lâu, lượng chất dẫn truyền dự trữ cạn dần~\cite{Tsodyks1997}, còn ở nơ-ron, các dòng chậm làm giảm tính kích thích tăng dần lên. Hồi tiếp yếu đi, giao điểm trên biến mất, và nhóm tự tắt sau vài giây. Ta được một bộ nhớ bật bằng tín hiệu nhưng chỉ tắt theo thời gian.
+
+\section{Chuỗi}
+
+Thay cho đồng hồ có thể có một \emph{bộ định thời khởi động theo sự kiện}. Nối các nhóm nơ-ron \nt{GLUT} thành chuỗi: nhóm thứ nhất kích thích nhóm thứ hai, nhóm thứ hai kích thích nhóm thứ ba, v.v. Một tín hiệu bên ngoài làm nhóm thứ nhất bùng lên, và một làn sóng hoạt động chạy dọc chuỗi, mỗi mắt xích sau mắt xích trước một hai độ trễ và chỉ một lần: ngay sau xung, nơ-ron ở trạng thái trơ, còn làn sóng đã đi tiếp.
+
+Chuỗi như vậy đo thời gian tính từ sự kiện: mắt xích thứ $k$ đã phát xung --- nghĩa là từ lúc khởi động đã qua $k$ độ trễ. Đầu ra của chuỗi có thể đưa tới cơ để có một chuỗi cử động tự triển khai. Ở chim biết hót, trong lúc hót, từng nơ-ron \nt{GLUT} của một vùng não phát xung lần lượt nghiêm ngặt, mỗi nơ-ron ở một thời điểm riêng của bài hót --- rất giống một chuỗi như vậy~\cite{Hahnloser2002}.
+
+Khác với đồng hồ, chuỗi im lặng cho đến khi được khởi động, chạy một lần và chỉ đo thời gian cho những ai được nối với nó. Mạng vẫn không có nhịp chung.
+
+\section{Còn thiếu gì}
+
+Chỉ với nơ-ron \nt{GLUT}, không có ức chế, đã làm được nhiều thứ. Nhưng còn thiếu ba điều, và cả ba đều do mệnh đề~\ref{prop:monotone}.
+
+\emph{Lựa chọn.} Mạng phải chọn một hướng, một hành động. Nếu hai kích thích gần bằng nhau, trong mạng hình~\ref{fig:itd} cả hai đầu ra sẽ phát xung, và không có gì để dập đầu ra yếu nhường cho đầu ra mạnh.
+
+\emph{Đặt lại.} Không thể xóa bộ nhớ bằng tín hiệu.
+
+\emph{Ổn định.} Trong một mạng mà liên kết không hình thành theo thiết kế của kỹ sư, các vòng hồi tiếp dương là không tránh khỏi, và hoạt động trong đó có thể tăng như thác đổ (chương~\ref{sec:neurontypes}). Cái phanh duy nhất là sự mỏi nói trên, chậm và thô.
+
+Cả ba vấn đề được chữa bằng một liều thuốc --- một nơ-ron dập xung bằng xung. Đó là \nt{GABA}, và nó cần không phải để tính toán, mà để lựa chọn, đặt lại và giữ phép tính trong tầm kiểm soát.
+
+\section{Bài tập}
+
+\begin{exercise}[\lvlA]
+\label{ex:02:1}
+\emph{Hàng bộ phát hiện cho âm thanh.} Tín hiệu từ hai tai chạy trên các dây của hình~\ref{fig:itd} với vận tốc $5$~m/s, hiệu thời gian đến lớn nhất là $0.64\ms$. Các bộ phát hiện --- nơ-ron~\eqref{eq:glutneuron} với $\tau=0.5\ms$, $\theta=1.5w$ --- được đặt sao cho hai bộ kề nhau phân biệt được $10\,\mu\text{s}$. Hàng có bao nhiêu bộ phát hiện và bao nhiêu bộ phát xung với một âm thanh?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:02:2}
+\emph{Đầu vào không đều làm lệch cửa sổ.} Bộ phát hiện trùng khớp~\eqref{eq:glutneuron} với $\tau=0.5\ms$, $\theta=1.5$ nhận mỗi đầu vào một xung, trọng số $1$ và $0.8$. Tìm cửa sổ trùng khớp và tâm của nó. Hàng ở hình~\ref{fig:itd} sẽ sai bao nhiêu micro giây nếu đầu vào từ một tai yếu hơn tai kia $20\,\%$?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:02:3}
+\emph{Những mạng không dao động.} Mạng $\tau\dot r_i=-r_i+f_i\bigl(\textstyle\sum_jw_{ij}r_j+I_i\bigr)$ với $f_i$ không giảm và $w_{ij}\ge0$ khi $i\ne j$ là đơn điệu và không dao động bền vững. Chứng minh: qua phép thay $r_i\to\pm r_i$, mạng có số liên kết ức chế chẵn trong mỗi chu trình quy được về nó. Ức chế lẫn nhau giữa hai nhóm có thể dao động không? Vòng \nt{GLUT}--\nt{GABA}?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:02:4}
+\emph{Thiết kế: bộ cộng hai dây.} Mỗi bit được truyền bằng một cặp dây $(x,\bar x)$. Hãy xây bộ cộng đủ ba bit, cho ra các cặp $(S,\bar S)$ của tổng và $(C,\bar C)$ của số nhớ, từ nơ-ron \nt{GLUT}, chỉ rõ trọng số và ngưỡng. Hãy dùng không quá tám nơ-ron. Một mạch gồm các phần tử AND và OR như ở hình~\ref{fig:dualxor} sẽ cần bao nhiêu?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:02:5}
+\emph{Mô phỏng: ghi mất bao lâu.} Nhóm ở hình~\ref{fig:recurrentgroup}: $\tau\dot r=-r+f(r+I)$, $f(u)=1/\bigl(1+e^{-(u-0.5)/0.08}\bigr)$, trước khi ghi ở trạng thái dưới; dòng vào $I$ được cấp trong thời gian $T$. Tìm bằng số $T$ nhỏ nhất ghi được bit khi $I=0.6$, và ngưỡng $I_c$ mà dưới nó bit không được ghi với bất kỳ $T$ nào.
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:02:6}
+\emph{Chuỗi làm bộ định thời.} Mỗi mắt xích của chuỗi là $100$ nơ-ron \nt{GLUT}, độ trễ $2\ms$ với độ phân tán độc lập $0.2\ms$. (a)~Cần bao nhiêu nơ-ron để đo $1$~s, và sai số tương đối bằng bao nhiêu? Nó phụ thuộc vào khoảng thời gian thế nào? (b)~Bộ định thời thật có sai số $5\,\%$ với mọi khoảng. Nguồn phân tán nào cho ra điều đó?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:02:7}
+\emph{Nghiên cứu: flip-flop hay tụ điện.} $100$ nơ-ron giữ một bit trong $10$~s. Flip-flop: mỗi nơ-ron phát $20$ xung mỗi giây. Tụ điện: sự tạo thuận $u$ giảm với $\tau_F=1$~s, bit đọc được khi $u\ge u_{\max}/2$, làm tươi là một chùm ba xung ở mỗi nơ-ron. Tụ điện tiết kiệm hơn bao nhiêu lần, và bit sẽ ra sao sau khi nhóm bị làm câm $200\ms$?
+\end{exercise}

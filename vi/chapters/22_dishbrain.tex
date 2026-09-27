@@ -1,0 +1,154 @@
+\chapter{DishBrain}
+\chaptermark{DishBrain}
+\label{sec:dishbrain}
+
+\section{Mạng trong đĩa nuôi chơi quần vợt}
+
+DishBrain là tên các tác giả đặt cho bàn thử, trên đó một mẫu nuôi cấy nơ-ron sống, mọc trên con chip có điện cực, chơi một trò quần vợt đơn giản với một cây vợt~\cite{Kagan2022}. Đây là thí nghiệm được bàn luận nhiều nhất với cỗ máy từ nơ-ron sống (tổng quan về những cỗ máy như vậy nằm ở chương~\ref{sec:livingmachine}), và đặc biệt tiện cho cuốn sách này. Ở đây, cả mạng nhỏ đều nằm trong tầm tay: mọi đầu vào do người làm thí nghiệm đặt, mọi đầu ra đều được ghi. Mọi câu hỏi của các chương trước, như tín hiệu được mã hóa ra sao, ai dạy, đầu dò thấy gì, đều có thể đặt cho một mạng không có mắt, không có cơ và không có nơ-ron \nt{DOPA}. Ta sẽ mổ xẻ thí nghiệm như kỹ sư mổ xẻ bàn thử của người khác: sơ đồ, đầu vào, đầu ra, thầy dạy, kết quả, tranh cãi.
+
+\section{Bàn thử}
+
+Nơ-ron được lấy từ vỏ não phôi chuột, khoảng $800\,000$ tế bào mỗi chip, hoặc được nuôi từ tế bào gốc người, khoảng một triệu mỗi chip. Trong vài tuần, chúng lớn lên trên chip, mọc đan vào nhau và bắt đầu tự phát ra xung và chùm xung. Trên một diện tích $8$~mm$^2$ bên dưới chúng có $26\,000$ điện cực bạch kim; có thể ghi đồng thời tối đa $1024$ điện cực, còn kích thích trên thực tế thì qua tám điện cực.
+
+Quanh mẫu nuôi cấy là một vòng kín (hình~\ref{fig:dishloop}). Máy tính mô phỏng trò chơi: bóng bay, dội vào tường, vợt di chuyển lên xuống. Vị trí bóng được chuyển thành dòng điện trên tám điện cực ``cảm giác''. Xung từ hai vùng ``vận động'' được đếm theo cửa sổ $10\ms$ và đẩy vợt. Sau mỗi cú đỡ trúng hoặc trượt, mẫu nuôi cấy nhận thêm một kích thích nữa, tức phản hồi. Cửa sổ $10\ms$ là nhịp của máy tính trong bàn thử, không phải của mẫu nuôi cấy: bản thân mạng vẫn làm việc bất đồng bộ, như mọi mạng trong cuốn sách này.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  blk/.style={draw,very thick,rounded corners=3pt,align=center,font=\small,minimum height=1.2cm},
+  lab/.style={font=\scriptsize,align=center}]
+\node[blk,fill=blue!6,text width=3.4cm] (C) at (0,0) {mẫu nuôi cấy trên chip\\\scriptsize $\sim10^6$ nơ-ron, $26\,000$ điện cực};
+\node[blk,fill=orange!10,text width=3.0cm] (G) at (7.2,0) {máy tính:\\trò quần vợt};
+\draw[->,very thick,blue!60!black] (G.north west) to[bend right=25] node[lab,above] {bóng: \emph{vị trí} --- điện cực nào trong 8,\\\emph{tần số} --- 4--40 xung/s} (C.north east);
+\draw[->,very thick,red!70!black] (C.south east) to[bend right=25] node[lab,below] {vợt: số xung của các vùng\\``lên'' và ``xuống'' trong $10\ms$} (G.south west);
+\draw[->,thick,densely dashed,green!45!black] (G.east) -- ++(0.9,0) |- ++(0,-2.6) -| node[lab,pos=0.25,below] {trúng: kích thích đoán trước được; trượt: không đoán trước được} (C.south);
+\end{tikzpicture}
+\caption{Vòng lặp DishBrain. Mũi tên xanh lam là đầu vào: vị trí bóng được ghi bằng mã vị trí và mã tần số (chương~\ref{sec:code}). Mũi tên đỏ là đầu ra: hiệu số đếm của hai vùng đẩy vợt. Đường nét đứt xanh lục là phản hồi sau mỗi lượt đánh, ``thầy dạy'' duy nhất của bàn thử.}
+\label{fig:dishloop}
+\end{figure}
+
+\section{Đầu vào và đầu ra}
+
+\emph{Đầu vào} được ghi cùng lúc bằng hai mã của chương~\ref{sec:code}. Điện cực nào trong tám điện cực được kích thích cho biết bóng ở độ cao nào: đó là mã vị trí, như ở các cảm biến của chương~\ref{sec:sensors}. Xung kích thích đến dày hay thưa cho biết bóng còn xa bao nhiêu: $4$ xung mỗi giây khi bóng ở bức tường xa, và tăng tuyến tính tới $40$ xung mỗi giây khi bóng ở bức tường phía vợt. Đó là mã tần số; biên độ xung của bóng là $75$~mV. Mẫu nuôi cấy không ``biết'' trước mã nào: mã do người làm thí nghiệm đặt ra, và mạng phải học cách đọc nó.
+
+\emph{Đầu ra} được đọc giống như ở các giao diện của chương~\ref{sec:debugging}. Xung của một vùng vận động đẩy vợt lên, của vùng kia đẩy xuống; ở dạng đơn giản nhất, với mỗi cửa sổ
+\begin{empheq}[box=\keybox]{equation}
+\Delta p \;=\; c\,\bigl(n_\uparrow - n_\downarrow\bigr),
+\label{eq:dishreadout}
+\end{empheq}
+trong đó $n_\uparrow$, $n_\downarrow$ là số xung của hai vùng trong $10\ms$, còn $c$ là hệ số của bàn thử. Đây là mã hai dây của chương~\ref{sec:glutcomputer}: chiều chuyển động không nằm ở dấu của tín hiệu, mà ở chỗ dây nào trong hai dây ``to'' hơn.
+
+Hãy xem nhiễu của đầu ra như vậy. Nếu một vùng phát tổng cộng $R$ xung mỗi giây, thì trong cửa sổ $T=10\ms$ trung bình có $RT$ xung, và theo~\eqref{eq:rateerror}, độ tản mạn tương đối bằng $1/\sqrt{RT}$. Với $R=1000$ xung mỗi giây, con số này khoảng $30$ phần trăm ở mỗi cửa sổ; với $R=100$ thì hơn một trăm. Vợt chắc chắn sẽ rung, và mạng chỉ có một cách để học: dịch hiệu số đếm \emph{trung bình} về đúng phía. Đây cũng là những định luật giới hạn mọi giao diện ở chương~\ref{sec:debugging}, chỉ khác là giờ chúng tác động ở cả hai phía của vòng lặp.
+
+\section{Thầy dạy không có dopamine}
+
+Điều thú vị nhất ở bàn thử là thầy dạy. Mẫu nuôi cấy nơ-ron vỏ não không có nơ-ron \nt{DOPA}, và bàn thử không gửi tín hiệu ``tốt hơn mong đợi'' nào cả. Phản hồi thì khác. Mạng đỡ trúng bóng thì cả tám điện cực cảm giác cùng nhận một kích thích ngắn \emph{đoán trước được}: xung $75$~mV, $100$ xung mỗi giây trong $0.1\,\text{s}$. Mạng đỡ trượt thì trong bốn giây có một kích thích mà các tác giả gọi là \emph{không đoán trước được}: xung $150$~mV, $5$ xung mỗi giây, vào những thời điểm ngẫu nhiên, trên các điện cực chọn ngẫu nhiên; sau đó là bốn giây nghỉ không kích thích, rồi bóng xuất phát lại~\cite{Kagan2022}.
+
+Các tác giả xuất phát từ giả thuyết rằng mạng hành động sao cho đầu vào của nó trở nên dễ đoán~\cite{Friston2010}. Với kỹ sư, ý nghĩa rất đơn giản: mẫu nuôi cấy có đúng một cách để thoát khỏi bốn giây nhiễu ngẫu nhiên, đó là đỡ trúng bóng. Ta đã gặp ý tưởng này ở việc tiết kiệm xung trong chương~\ref{sec:code} và ở dự đoán khung hình trong chương~\ref{sec:recognition}.
+
+Nhưng có thật cần đến tính dễ đoán ở đây không? Cũng có thể có một cơ chế thô hơn. Giả sử kích thích không đoán trước được sau cú trượt chỉ đơn giản \emph{xáo trộn} những thay đổi gần đây trong mạng, còn kích thích êm sau cú trúng thì không đụng đến chúng. Hãy mô tả cấu hình của mạng bằng một vectơ $\boldsymbol\psi$, và giả sử ở cấu hình $\boldsymbol\psi$ mạng đỡ trượt với xác suất $P_{\text{trượt}}(\boldsymbol\psi)$. Nếu các cú hích là đối xứng, tức từ $\boldsymbol\psi$ sang $\boldsymbol\psi'$ có xác suất bằng chiều ngược lại, thì ở trạng thái dừng, dòng rời khỏi mỗi cấu hình cân bằng với dòng đi vào, và tỷ lệ thời gian mạng ở trong cấu hình $\boldsymbol\psi$ bằng
+\begin{empheq}[box=\keybox]{equation}
+\rho(\boldsymbol\psi) \;\propto\; \frac{1}{P_{\text{trượt}}(\boldsymbol\psi)} .
+\label{eq:dishdensity}
+\end{empheq}
+Cấu hình trượt ít hơn mười lần thì được giữ lâu hơn mười lần. Không ai báo cho mạng biết phải đổi trọng số theo hướng nào: các cấu hình tốt chỉ đơn giản là ít bị phá hơn.
+
+Chúng tôi đã kiểm tra điều này trên một mô hình, rút gọn mẫu nuôi cấy về hai con số: vợt đến điểm $a\,y+b$ khi bóng đến độ cao $y$, và đỡ trúng nếu lệch ít hơn $0.1$. Sau cú trượt, cả hai số nhận một cú hích ngẫu nhiên, sau cú trúng thì giữ nguyên. Qua $2000$ lượt đánh, tỷ lệ bóng đỡ trúng tăng từ $0.21$ ở hai trăm lượt đầu lên $0.38$ ở năm trăm lượt cuối (bốn mươi ``mẫu nuôi cấy'', hình~\ref{fig:dishmodel}). Nếu cú hích đến sau \emph{mỗi} lượt đánh, phản hồi không mang thông tin gì, và tỷ lệ ở quanh $0.12$; nếu hoàn toàn không có cú hích, nó đứng ở $0.19$. Thí nghiệm trên bàn thử phù hợp với điều này: mức tăng có ý nghĩa trong một phiên chỉ có khi phản hồi đầy đủ. Khi thay kích thích bằng im lặng, cuối phiên mẫu nuôi cấy vẫn chơi tốt hơn so với không có phản hồi, nhưng hiệu ứng nhỏ hơn~\cite{Kagan2022}; lưu ý rằng ngay trong điều kiện này, sau cú trượt là một khoảng nghỉ dài, còn sau cú trúng là khoảng nghỉ ngắn, nên sự khác biệt giữa hai kết cục không mất hẳn.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[x=1cm,y=5cm]
+\draw[->,gray!70!black] (0,0) -- (10.6,0);
+\draw[->,gray!70!black] (0,0) -- (0,0.5) node[above,font=\small,black] {tỷ lệ đỡ trúng};
+\foreach \v in {0.1,0.2,0.3,0.4}{\draw[gray!60!black] (-0.06,\v) -- (0.06,\v); \node[left,font=\scriptsize] at (0,\v) {\v};}
+\foreach \x/\f/\l/\lab in {1.8/0.21/0.38/{nhiễu sau\\cú trượt},5.2/0.13/0.11/{nhiễu sau\\mỗi lượt đánh},8.6/0.19/0.19/{không nhiễu}}{
+  \fill[blue!35] (\x-0.8,0) rectangle (\x-0.05,\f);
+  \fill[red!60!black] (\x+0.05,0) rectangle (\x+0.8,\l);
+  \node[below,font=\scriptsize,align=center] at (\x,-0.01) {\lab};
+  \node[above,font=\scriptsize] at (\x-0.425,\f) {\f};
+  \node[above,font=\scriptsize] at (\x+0.425,\l) {\l};}
+\fill[blue!35] (7.4,0.47) rectangle (7.7,0.495); \node[right,font=\scriptsize] at (7.75,0.482) {200 lượt đầu};
+\fill[red!60!black] (7.4,0.41) rectangle (7.7,0.435); \node[right,font=\scriptsize] at (7.75,0.422) {500 lượt cuối};
+\end{tikzpicture}
+\caption{Mô hình ``xáo trộn khi trượt'' (\texttt{dishbrain\_model.py}): tỷ lệ bóng đỡ trúng ở đầu và cuối $2000$ lượt đánh, trung bình trên bốn mươi mô hình mẫu nuôi cấy. Việc học chỉ diễn ra nếu cú hích đi sau cú trượt chứ không đi sau cú trúng, cũng như trong thí nghiệm, nơi mức tăng có ý nghĩa trong một phiên chỉ có khi phản hồi đầy đủ.}
+\label{fig:dishmodel}
+\end{figure}
+
+\begin{keyblock}
+\begin{proposition}[Thầy dạy bằng cách xáo trộn]
+\label{prop:dishscramble}
+Nếu thất bại làm mạng bị lắc, còn thành công để yên cho nó, thì mạng tự trôi về những cấu hình ít sai hơn: thời gian ở trong một cấu hình tỷ lệ nghịch với xác suất thất bại~\eqref{eq:dishdensity}. Việc học như vậy không cần tín hiệu thưởng, không cần dấu của nó, cũng không cần tính dễ đoán tự thân; chỉ cần phản hồi sau thành công và sau thất bại khác nhau. Sự thay đổi hành vi của mẫu nuôi cấy đã được đo; còn cơ chế nào hoạt động trong đĩa nuôi, dự đoán đầu vào hay xáo trộn, thì chưa được xác lập.
+\end{proposition}
+\end{keyblock}
+
+Hãy so sánh với chương~\ref{sec:dofa}. Ở đó nhiễu cũng dùng để tìm kiếm, nhưng dopamine có dấu: sai số $\delta$ cho biết phải dịch trọng số về phía nào, và bước đi theo gradient~\eqref{eq:perturbation}. Ở đây không có dấu, chỉ có ``giữ lại'' hoặc ``lắc''. Cách tìm kiếm này thô hơn và chậm hơn, nhưng đòi hỏi ở mạng ít hơn: không cần nơ-ron \nt{DOPA}, không cần bộ phê bình, không cần vết kéo dài hàng giây.
+
+\section{Đã đo được gì và tranh cãi về điều gì}
+
+Mỗi ván chơi kéo dài $20$ phút; người ta so sánh $5$ phút đầu với $15$ phút cuối. Ở các mẫu nuôi cấy có phản hồi đầy đủ, chuỗi cú đỡ trúng dài ra, còn số lần trượt ngay lập tức giảm đi; ở các đối chứng không có tế bào, không có trò chơi và với ``vợt'' do máy tính điều khiển thì không thấy gì tương tự. Mẫu nuôi cấy từ tế bào người trung bình đỡ lâu hơn mẫu của chuột. Sự cải thiện đáng tin cậy về thống kê, trên chín mẫu chuột và mười một mẫu người, với hơn một trăm ván cho mỗi nhóm, nhưng không lớn: mạng không trở thành người chơi giỏi, nó chỉ tốt hơn ngẫu nhiên một chút. Sự cải thiện đáng tin cậy trong một phiên; việc học bền vững từ phiên này sang phiên khác qua vài ngày thì các tác giả không đạt được~\cite{Kagan2022}. Trong công trình tiếp theo của cùng nhóm, người ta thấy khi chơi, hoạt động của mẫu nuôi cấy tiến gần tới chế độ \emph{tới hạn}, tức ranh giới giữa tắt dần và trận thác, chính là kiểu sống ở bờ vực trong chương~\ref{sec:gaba}, và càng gần thì chơi càng tốt~\cite{Habibollahi2023}.
+
+Tranh cãi chính không nằm ở con số, mà ở lời lẽ. Tiêu đề bài báo khẳng định rằng nơ-ron trong đĩa nuôi ``thể hiện tri giác'' (sentience), và một nhóm nhà nghiên cứu đã phản bác: thay đổi hành vi trong vòng kín chưa phải là trí tuệ hay cảm giác, và kết luận cần được phát biểu khiêm tốn hơn~\cite{Balci2023}. Từ góc nhìn kỹ thuật, còn hai câu hỏi mở, và cả hai đều về cơ chế. Thứ nhất: mạng có học không, tức trọng số của nó có thay đổi lâu dài không, hay phản hồi chỉ dịch chuyển trạng thái hiện tại của nó? Thứ hai: có thật cần đến tính dễ đoán, hay chỉ cần bất kỳ sự khác biệt nào giữa đáp ứng với thành công và với thất bại, như trong mệnh đề~\ref{prop:dishscramble}? Một bàn thử mà mọi điện cực đều trong tầm tay cho phép trả lời cả hai, và có lẽ đó là giá trị chính của nó.
+
+\input{chapters/22_dishbrain_spec}
+
+\section{Tổng kết}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{2.1cm}>{\raggedright}p{4.2cm}>{\raggedright}p{1.9cm}>{\raggedright\arraybackslash}p{4.6cm}}
+\toprule
+Khối của bàn thử & Cấu tạo & Chương & Điều đã biết \\
+\midrule
+đầu vào & vị trí (điện cực nào trong 8) và tần số (4--40 xung/s) & \ref{sec:code}, \ref{sec:sensors} & do người làm thí nghiệm đặt \\
+đầu ra & hiệu số đếm của hai vùng trong $10\ms$~\eqref{eq:dishreadout} & \ref{sec:glutcomputer}, \ref{sec:debugging} & do người làm thí nghiệm đặt; nhiễu theo~\eqref{eq:rateerror} \\
+thầy dạy & kích thích đoán trước được sau cú trúng, không đoán trước được sau cú trượt; không có dopamine & \ref{sec:dofa} & mức tăng có ý nghĩa trong một phiên chỉ khi phản hồi đầy đủ; với im lặng thì hiệu ứng nhỏ hơn; không bền vững từ phiên này sang phiên khác \\
+cơ chế & dự đoán đầu vào hoặc xáo trộn khi trượt~\eqref{eq:dishdensity} & \ref{sec:dofa}, \ref{sec:recognition} & chưa xác lập; cả hai đều giải thích được kết quả \\
+chế độ của mạng & tiến gần chế độ tới hạn khi chơi & \ref{sec:gaba} & mối liên hệ với chất lượng chơi đã đo \\
+``tri giác'' & khẳng định của tác giả & --- & chưa được chứng minh; bị phản bác \\
+\bottomrule
+\end{tabular}
+\caption{DishBrain qua con mắt kỹ sư.}
+\label{tab:dishbrain}
+\end{table}
+
+DishBrain là cỗ máy từ nơ-ron sống ở dạng đơn giản nhất: đầu vào được đặt bằng mã, đầu ra được đọc bằng phép đếm, thầy dạy là sự khác biệt giữa đáp ứng với thành công và với thất bại (bảng~\ref{tab:dishbrain}). Một mạng không có mắt, cơ và dopamine đã học chơi được một chút, và chỉ riêng điều đó đã biến nó thành bàn thử cho các ý tưởng của cuốn sách. Dù cơ chế hóa ra là gì, dự đoán, xáo trộn hay một thứ thứ ba, câu trả lời sẽ được tìm theo cách chương~\ref{sec:debugging} khuyên: bằng đầu dò, tín hiệu thử và việc tắt từng phần trên một cỗ máy mà cuối cùng ta nhìn thấy được trọn vẹn.
+
+\section{Bài tập}
+
+\begin{exercise}[\lvlA]
+\label{ex:22:1}
+\emph{Cần dịch hiệu số đếm bao nhiêu.} Hai vùng cùng phát $R_\uparrow+R_\downarrow=2000$ xung mỗi giây, các dòng xung là Poisson. (a)~Độ tản mạn tương đối của số đếm một vùng trong $10\ms$ bằng bao nhiêu khi $R=1000$ và $R=100$? (b)~Trong $1$~s bóng bay, các độ dịch~\eqref{eq:dishreadout} cộng dồn. Với $R_\uparrow-R_\downarrow$ nhỏ nhất bằng bao nhiêu thì độ dịch trung bình lớn gấp đôi độ tản mạn?
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:22:2}
+\emph{Cần bao nhiêu lượt đánh để thấy việc học.} Các lượt đánh độc lập, tỷ lệ đỡ trúng có phân phối nhị thức. Mỗi giai đoạn trong hai giai đoạn cần bao nhiêu lượt để mức tăng tỷ lệ đỡ trúng vượt hai độ lệch chuẩn của hiệu: (a)~từ $0.20$ lên $0.25$; (b)~từ $0.21$ lên $0.38$, như trong mô hình?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:22:3}
+\emph{Suy ra~\eqref{eq:dishdensity}.} Cấu hình $\boldsymbol\psi$ chạy trên một tập hữu hạn; khi trượt (xác suất $P(\boldsymbol\psi)>0$), mạng chuyển sang $\boldsymbol\psi'$ với xác suất đối xứng $K(\boldsymbol\psi,\boldsymbol\psi')$, khi trúng thì giữ nguyên. (a)~Chứng minh rằng $\rho\propto1/P$ là phân phối dừng. (b)~Tỷ lệ trượt bằng bao nhiêu khi có hai cấu hình với $P=0.9$ và $P=0.1$?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:22:4}
+\emph{Vùng hấp thụ của mô hình.} Vợt đến $p=\min\bigl(1,\max(0,ay+b)\bigr)$, bóng đến độ cao $y\sim U(0,1)$, trúng nếu $|p-y|<h=0.1$. (a)~Chứng minh rằng khi $|b|<h$ và $|a-1+b|<h$ mạng đỡ trúng mọi quả bóng, và tìm diện tích vùng này. (b)~Tìm bằng số tỷ lệ đỡ trúng trung bình khi $a\sim U(-1,1)$, $b\sim U(0,1)$.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:22:5}
+\emph{Mô phỏng: hàng rào quanh các cấu hình.} Trong một bản sao của \texttt{dishbrain\_model.py}, cho $200$ mẫu nuôi cấy mỗi mẫu $20\,000$ lượt đánh. Tỷ lệ đỡ trúng trong $500$ lượt cuối là bao nhiêu? Còn nếu sau mỗi cú hích, cắt cấu hình vào hình chữ nhật $a\in[-1,2]$, $b\in[-1,1]$? Giải thích sự khác biệt bằng bài tập~\ref{ex:22:3}.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:22:6}
+\emph{Thiết kế mã đầu vào.} Bóng được đỡ trúng nếu sai số về độ cao nhỏ hơn $h=0.1$; mạng đọc đầu vào trong $T=0.25$~s, với tần số đến $r$ phân biệt được khoảng $\sqrt{rT}$ mức, kích thích không dày quá $40$ xung mỗi giây. (a)~Mã vị trí trên tám điện cực có đủ không? (b)~Có thể truyền độ cao bằng tần số trên một điện cực không?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:22:7}
+\emph{Nghiên cứu: dự đoán hay xáo trộn?} Tổng quát hóa mô hình lên $d$ số điều chỉnh được ($p=\sum_{i<d}a_iy^i$). Số lượt đánh cần để đạt tỷ lệ đỡ trúng $0.5$ tăng theo $d$ như thế nào khi xáo trộn và khi dùng quy tắc có dấu của sai số~\eqref{eq:perturbation}? Thí nghiệm nào trên bàn thử sẽ phân biệt được hai giả thuyết?
+\end{exercise}

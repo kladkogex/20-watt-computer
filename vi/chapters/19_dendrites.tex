@@ -1,0 +1,167 @@
+\chapter{Nơ-ron theo số đuôi gai}
+\chaptermark{Số đuôi gai}
+\label{sec:dendrites}
+
+\section{Số đầu vào như một tham số của mạch}
+
+Ở chương~\ref{sec:neurontypes} ta phân loại nơ-ron theo thứ mà đầu ra của chúng giải phóng, còn ở chương~\ref{sec:eetypes} theo linh kiện mà chúng đóng vai. Còn một dấu hiệu thứ ba mà kỹ sư sẽ nhận ra ngay: \emph{nơ-ron có bao nhiêu đầu vào}. Các đầu vào được gom bởi đuôi gai, những nhánh mà sợi trục của nơ-ron khác bám vào (chương~\ref{sec:dofa}, mục~\ref{sec:weightstore}). Có nơ-ron hoàn toàn không có đuôi gai, có nơ-ron có một hoặc hai, có nơ-ron có cả một cái cây gom tới một trăm nghìn đầu vào. Với kỹ sư điện tử, đây là hệ số ghép đầu vào, fan-in, và nó hầu như luôn tương ứng với nhiệm vụ.
+
+Vì sao số lượng và kích thước đuôi gai quan trọng đến thế có thể thấy từ một ước tính đơn giản. Màng là một tụ điện với điện dung riêng $c_m\approx1$~\textmu F/cm$^2$, và diện tích $A$ của nơ-ron cùng các đuôi gai càng lớn thì càng phải mang tới nhiều điện tích để nâng điện áp lên $\Delta V$. Thời gian để dòng đầu vào $I$ làm việc đó, nếu bỏ qua rò, là
+\begin{empheq}[box=\keybox]{equation}
+t \;\approx\; \frac{c_m\,A\,\Delta V}{I} .
+\label{eq:dendriteload}
+\end{empheq}
+Một nơ-ron nhỏ với vài đuôi gai ngắn có diện tích cỡ $2\cdot10^{-5}$~cm$^2$ và điện dung khoảng $20$~pF. Một khớp thần kinh lớn với dòng vài nanoampe nâng nó lên $20\mV$ trong chưa tới một phần mười mili giây. Nơ-ron có cây lớn có diện tích lớn hơn khoảng mười lăm lần và điện dung khoảng $300$~pF; một khớp thần kinh thông thường với dòng khoảng $0.1$~nA sẽ nạp nó trong $60\ms$, lâu hơn nhiều so với hằng số thời gian rò, tức là sẽ không bao giờ nạp được. Nơ-ron như vậy cần hàng chục đầu vào đồng thời. Các con số ở đây chỉ là bậc độ lớn, nhưng kết luận không phụ thuộc vào chúng: \emph{ít đầu vào thì nhanh và chính xác, nhiều đầu vào thì chậm và theo tổng}.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  soma/.style={circle,draw,very thick,fill=blue!6,minimum size=0.55cm,inner sep=0pt},
+  ax/.style={->,very thick,red!70!black},
+  den/.style={very thick,blue!60!black}]
+% 0 dendrites: sensor on a line
+\begin{scope}[xshift=0cm]
+\draw[den,decorate,decoration={snake,amplitude=1pt,segment length=4pt}] (-0.9,0) -- (0,0);
+\node[font=\scriptsize] at (-0.9,0.3) {cảm biến};
+\draw[ax] (0,0) -- (1.0,0);
+\draw[thick] (0.1,0) -- (0.1,0.45);
+\node[soma,minimum size=0.4cm] at (0.1,0.65) {};
+\node[font=\scriptsize,align=center] at (0.05,-0.75) {$0$\\đường có cảm biến};
+\end{scope}
+% 1 dendrite
+\begin{scope}[xshift=3.3cm]
+\draw[den] (-0.9,0) -- (-0.28,0);
+\node[soma] at (0,0) {};
+\draw[ax] (0.28,0) -- (0.9,0);
+\node[font=\scriptsize,align=center] at (0,-0.75) {$1$\\bộ đệm, bộ lặp};
+\end{scope}
+% 2 dendrites: one per ear
+\begin{scope}[xshift=6.2cm]
+\draw[den] (-0.28,0) -- (-0.9,0); \draw[den] (0.28,0) -- (0.9,0);
+\node[soma] at (0,0) {};
+\draw[ax] (0,-0.28) -- (0,-0.6);
+\node[font=\scriptsize] at (-0.9,0.25) {trái}; \node[font=\scriptsize] at (0.9,0.25) {phải};
+\node[font=\scriptsize,align=center] at (0,-1.0) {$2$\\AND theo thời gian};
+\end{scope}
+% ~4 short dendrites: mixer
+\begin{scope}[xshift=9.0cm]
+\foreach \a in {45,135,225,315}{\draw[den] (\a:0.28) -- (\a:0.7); \fill[blue!60!black] (\a:0.72) circle (0.06);}
+\node[soma] at (0,0) {};
+\draw[ax] (0.28,0) -- (1.0,0);
+\node[font=\scriptsize,align=center] at (0,-1.0) {$\sim4$\\bộ trộn};
+\end{scope}
+% many: summing tree
+\begin{scope}[xshift=12.0cm]
+\foreach \a in {60,90,120}{\draw[den] (0,0.28) -- ++(\a:0.55) coordinate (b); \foreach \d in {-20,20}{\draw[den] (b) -- ++(\a+\d:0.35);}}
+\foreach \a in {-120,-60}{\draw[den] (0,-0.28) -- ++(\a:0.45);}
+\node[soma] at (0,0) {};
+\draw[ax] (0.28,0) -- (1.0,0);
+\node[font=\scriptsize,align=center] at (0,-1.0) {$10^4$--$10^5$\\bộ cộng};
+\end{scope}
+\end{tikzpicture}
+\caption{Năm lớp theo số đầu vào. Màu xanh là đuôi gai (đầu vào), màu đỏ là sợi trục (đầu ra). Đầu vào càng ít, nơ-ron truyền một tín hiệu riêng lẻ càng nhanh và chính xác; càng nhiều, nó cộng và phân lớp càng tốt. Đây là sơ đồ, không phải hình vẽ hình dạng tế bào.}
+\label{fig:dendriteclasses}
+\end{figure}
+
+\section{Không đuôi gai: cảm biến ở đầu đường truyền}
+
+Các nơ-ron cảm giác của xúc giác, cơn đau và độ căng cơ (các chương~\ref{sec:sensors}, \ref{sec:pain}, \ref{sec:muscles}) không có một đuôi gai nào trên thân tế bào. Sợi trục rời thân thành một nhánh rồi lập tức chia đôi: một nhánh đi tới da hoặc cơ, và đầu mút của nó tự làm cảm biến; nhánh kia đi vào tủy sống. Xung chạy thẳng từ cảm biến vào tủy sống, bỏ qua thân tế bào. Với kỹ sư, đây là một đường truyền có cảm biến ở đầu xa, còn thân tế bào treo bên cạnh như một bộ nguồn: nó cung cấp cho đường truyền nhưng không tham gia truyền. Lợi ích là tốc độ và độ tin cậy: trên đường đi không có chỗ nào phải cộng tín hiệu rồi quyết định lại có truyền tiếp hay không.
+
+Cảm biến ánh sáng và âm thanh là trường hợp còn cực đoan hơn: chúng không phải nơ-ron gom tín hiệu mà chính là bộ chuyển đổi, trong đó đầu vào không phải khớp thần kinh mà là một protein thụ thể (hình~\ref{fig:transducer}).
+
+\section{Một đuôi gai: bộ đệm}
+
+Nơ-ron có một đuôi gai và một sợi trục nhận một đường đầu vào và chuyển tiếp nó. Các nơ-ron khứu giác được cấu tạo như vậy: đuôi gai duy nhất vươn ra bề mặt mũi và mang một loại thụ thể duy nhất~\cite{Mombaerts2004}; các tế bào trung chuyển của võng mạc nằm giữa cảm biến ánh sáng và các nơ-ron đầu ra của mắt cũng vậy; các nơ-ron nối cảm biến của tai với não cũng vậy. Kỹ sư sẽ gọi chúng là bộ đệm hay bộ lặp: chúng không tính toán mà chuyển một tín hiệu, đôi khi thay đổi dạng của nó, chẳng hạn biến điện áp biến thiên liên tục của cảm biến thành xung, như ở chương~\ref{sec:sensors}.
+
+\section{Hai đuôi gai: AND theo thời gian}
+
+Các bộ phát hiện trùng khớp xác định hướng của âm thanh (hình~\ref{fig:itd}) ở động vật có vú thường có đúng hai đuôi gai hướng về hai phía ngược nhau: một đuôi gai nhận đầu vào từ tai trái, đuôi gai kia từ tai phải~\cite{Grothe2010}. Tại sao phải tách các đầu vào ra? Hãy nhớ lại công thức~\eqref{eq:shunt}: khi trên một đoạn màng có nhiều kênh kích thích mở, điện áp ở đó tiến gần đến điện thế cân bằng, và mỗi đầu vào tiếp theo đóng góp ngày càng ít. Vì vậy nhiều đầu vào từ một tai, dồn trên một đuôi gai, làm nó bão hòa và một mình không thể đưa nơ-ron tới ngưỡng. Còn mỗi đuôi gai một đầu vào thì cộng lại gần như tuyến tính. Hai đuôi gai biến nơ-ron thành một cổng AND chặt chẽ hơn: chỉ phát xung nếu tín hiệu đến từ cả hai phía và cùng lúc. Các mô hình đã cho thấy việc tách như vậy thực sự cải thiện khả năng phát hiện trùng khớp~\cite{AgmonSnir1998}.
+
+\section{Vài đuôi gai ngắn: bộ trộn và bộ chuyển tiếp}
+
+\emph{Bộ trộn.} Trong mạch học vận động ở chương~\ref{sec:motorlearning}, khoảng bảy mươi tỉ nơ-ron \nt{GLUT} nhỏ mở rộng đầu vào thành một vectơ rất dài. Mỗi nơ-ron chỉ có khoảng bốn đuôi gai ngắn, và mỗi đuôi gai kết thúc bằng một ``móng vuốt'' ôm lấy đầu tận cùng của một đầu vào. Như vậy, mỗi bộ trộn chỉ thấy khoảng bốn đầu vào trong số rất nhiều, và hoạt động như một cổng AND nhỏ trên bộ bốn của mình. Từ $M$ đường đầu vào có thể chọn ra $\binom{M}{4}$ bộ bốn khác nhau: với $M=100$ là gần bốn triệu. Cần nhiều như vậy để làm gì? Một phần tử ngưỡng có $n$ đầu vào có thể phân đúng thành hai lớp không quá
+\begin{empheq}[box=\keybox]{equation}
+P_{\max} \;\approx\; 2n
+\label{eq:cover}
+\end{empheq}
+mẫu ngẫu nhiên~\cite{Cover1965}. Nơ-ron đầu ra của cùng mạch đó nhận khoảng $10^5$ đầu vào từ các bộ trộn, và theo~\eqref{eq:cover}, giới hạn trên của nó là cỡ $2\cdot10^5$ phép ánh xạ khác nhau. Đó là giới hạn cho một phần tử lý tưởng: nếu mọi trọng số đều dương, như ở các khớp thần kinh kích thích, và cần có dự trữ cho nhiễu, thì ước tính cho chính nơ-ron này là khoảng $4\cdot10^4$ phép ánh xạ~\cite{Brunel2004}. Các bộ trộn với ít đầu vào tồn tại chính là để bộ cộng lớn có nhiều đầu vào khác nhau và gần như độc lập~\cite{Marr1969,Albus1971}.
+
+\emph{Bộ chuyển tiếp.} Trên đường từ tai tới các bộ phát hiện hướng có những nơ-ron với ít đuôi gai ngắn, chỉ nhận vài khớp thần kinh khổng lồ, và một số về thực chất chỉ nhận một. Theo~\eqref{eq:dendriteload}, đây đúng là điều cần thiết: điện dung nhỏ và dòng lớn, nên nơ-ron phát xung chỉ sau một phần nhỏ của mili giây kể từ mỗi xung đầu vào, hầu như không mất độ chính xác về thời gian. Một trong các bộ chuyển tiếp ấy nhận \nt{GLUT} nhưng xuất \nt{GLYC}: đó là một bộ đảo với độ chính xác vài chục micro giây, cung cấp ức chế nhanh cho các bộ phát hiện hướng~\cite{BorstSoria2012}.
+
+\section{Hàng nghìn đầu vào: bộ cộng và bộ phân lớp}
+
+Ở đầu kia của thang đo là các nơ-ron \nt{GLUT} vỏ não với khoảng mười nghìn đầu vào và các nơ-ron \nt{GABA} đầu ra của mạch học vận động với một trăm nghìn. Theo~\eqref{eq:dendriteload}, nơ-ron như vậy chậm và không thể đáp ứng với một đầu vào riêng lẻ: nó cộng. Đó là nơ-ron tích phân của chương~\ref{sec:glutcomputer} và cũng là bộ cộng dùng để dựng các bộ phân lớp. Cây lớn còn thêm một điều mới: các nhánh của nó hoạt động như những mạch con riêng với ngưỡng riêng, nên một nơ-ron hành xử như một mạng nhiều lớp nhỏ~\cite{Beniaguev2021,Gidon2020}.
+
+\section{Đuôi gai kiêm đầu ra}
+
+Có những nơ-ron hoàn toàn không có sợi trục, và đuôi gai vừa là đầu vào vừa là đầu ra: chúng nhận tín hiệu và tự giải phóng chất dẫn truyền thần kinh. Ví dụ được nghiên cứu kỹ nhất là các nơ-ron \nt{GABA} của võng mạc tham gia xác định hướng chuyển động (chương~\ref{sec:gaba}, hình~\ref{fig:direction}). Ở nơ-ron như vậy, mỗi nhánh tự đáp ứng với chuyển động từ thân tế bào về phía đầu mút của nó và phát ra ức chế từ đầu mút ấy~\cite{Euler2002}. Một nơ-ron là vài bộ phát hiện hướng độc lập, mỗi nhánh một bộ. Với kỹ sư, đây không phải là một phần tử, mà là một vi mạch nhiều kênh trong một vỏ.
+
+\section{Tóm tắt}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{1.9cm}>{\raggedright}p{3.4cm}>{\raggedright}p{2.6cm}>{\raggedright}p{1.8cm}>{\raggedright\arraybackslash}p{3.8cm}}
+\toprule
+Số đuôi gai & Ví dụ & Linh kiện & Số đầu vào & Điều đã biết \\
+\midrule
+$0$ & cảm biến xúc giác, đau, độ căng & đường truyền có cảm biến ở đầu & --- & đã xác lập \\
+$1$ & nơ-ron khứu giác, tế bào trung chuyển của võng mạc, nơ-ron tai & bộ đệm, bộ lặp & $1$ đến vài & đã xác lập \\
+$2$ & bộ phát hiện hướng âm thanh & AND theo thời gian & hai bó & cấu tạo đã xác lập; lợi ích của việc tách đầu vào được chỉ ra trên mô hình \\
+$\sim4$ & bộ trộn của mạch học vận động & cổng AND nhỏ & $\sim4$ & đã xác lập; vai trò mở rộng đầu vào là giả thuyết có cơ sở vững \\
+ít, ngắn & bộ chuyển tiếp trên đường từ tai & bộ chuyển tiếp, bộ đảo & $1$ đến vài, khổng lồ & đã xác lập \\
+hàng nghìn & nơ-ron \nt{GLUT} vỏ não, nơ-ron đầu ra học vận động & bộ cộng, bộ phân lớp & $10^4$--$10^5$ & đã xác lập; nhánh như mạch con đã đo ở một số ví dụ \\
+đuôi gai kiêm đầu ra & nơ-ron \nt{GABA} hướng ở võng mạc & vi mạch nhiều kênh & nhiều & đã đo \\
+\bottomrule
+\end{tabular}
+\caption{Nơ-ron theo số đuôi gai.}
+\label{tab:dendrites}
+\end{table}
+
+\begin{keyblock}
+\begin{proposition}[Số đầu vào đi theo nhiệm vụ]
+\label{prop:dendrites}
+Ở nơi cần tốc độ và độ chính xác của từng tín hiệu riêng lẻ, tức ở cảm biến, bộ chuyển tiếp và bộ phát hiện trùng khớp, nơ-ron có ít đuôi gai, ít đầu vào và khớp thần kinh lớn: điện dung nhỏ~\eqref{eq:dendriteload} được nạp nhanh. Ở nơi cần cộng và phân lớp, nơ-ron có cây lớn với hàng nghìn đầu vào. Cấu tạo của các lớp đã được đo; lời giải thích về tính toán có cơ sở vững, nhưng với nhiều lớp vẫn là giả thuyết.
+\end{proposition}
+\end{keyblock}
+
+Bảng~\ref{tab:dendrites} bổ sung cho hai cách phân loại trước: theo chất dẫn truyền thần kinh (bảng~\ref{tab:types}) và theo linh kiện (bảng~\ref{tab:eetypes}). Cả ba nhìn cùng một phần tử từ các phía khác nhau: nó xuất ra gì, nó tính gì và nó nghe bao nhiêu.
+
+\section{Bài tập}
+
+\begin{exercise}[\lvlA]
+\label{ex:19:1}
+\emph{Nơ-ron lớn cần bao nhiêu đầu vào.} Nơ-ron có $C=300$~pF và $\tau_m=20\ms$ nhận các khớp thần kinh là nguồn dòng $0.1$~nA mỗi khớp, ngưỡng cao hơn mức nghỉ $20\mV$. (a)~Cần bao nhiêu khớp hoạt động đồng thời để tới được ngưỡng; tới ngưỡng trong $10\ms$; trong $5\ms$? (b)~Nơ-ron có $C=20$~pF tới ngưỡng sau bao lâu với một khớp $4$~nA?
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:19:2}
+\emph{Vì sao là bốn.} Bộ trộn là cổng AND trên $k$ đường trong số $M=100$, trong một mẫu có một nửa số đường hoạt động, có $7\cdot10^{10}$ bộ trộn. (a)~Bao nhiêu bộ đáp ứng với một mẫu khi $k=2$; $4$; $40$? (b)~Bộ trộn tăng số phép ánh xạ~\eqref{eq:cover} của nơ-ron đầu ra có $10^5$ đầu vào lên bao nhiêu lần so với $M=100$ đường trực tiếp?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:19:3}
+\emph{$2n$ từ đâu ra.} Một siêu phẳng qua gốc tọa độ chia $P$ điểm ở vị trí tổng quát trong không gian $n$ chiều thành hai lớp theo $C(P,n)=2\sum_{k=0}^{n-1}\binom{P-1}{k}$ cách. (a)~Chứng minh rằng khi $P=2n$, đúng một nửa trong $2^P$ cách phân chia là tách được. (b)~Tỉ lệ tách được là bao nhiêu khi $n=100$ và $P=180$; $220$?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:19:4}
+\emph{Hai đuôi gai như một cổng AND chặt.} Đuôi gai là một đoạn có rò $g_L$, mỗi đầu vào mở trên nó độ dẫn $g_0=0.5\,g_L$ với điện thế $E_E$, thân thấy $\kappa(V_1+V_2)$, ngưỡng $\theta=1.1\,\kappa E_E$. Tại sao không có số đầu vào nào trên một đuôi gai kích hoạt được nơ-ron, và cần bao nhiêu đầu vào trên mỗi đuôi gai?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:19:5}
+\emph{Thiết kế bộ chuyển tiếp.} Độ rung pha của xung là $\sigma_t=\sigma_V/\dot V$, trong đó $\dot V$ là độ dốc điện áp gần ngưỡng. Cần $\sigma_t\le20$~\textmu s với nhiễu $\sigma_V=1\mV$; bỏ qua rò. Nơ-ron có $C=300$~pF cần bao nhiêu khớp đồng bộ $0.1$~nA mỗi khớp, và độ rung pha của nơ-ron có $C=20$~pF với một khớp $4$~nA là bao nhiêu?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:19:6}
+\emph{Mô phỏng: nạp một đuôi gai dài.} Mô phỏng cáp thụ động $\tau_m\partial_tV=\lambda^2\partial_x^2V-V+i/g$ có độ dài $L=\ell/\lambda$ với hai đầu kín ($40$ đoạn, phương pháp Euler). Một xung dòng ngắn được đưa vào đầu xa: khi nào đầu gần đạt cực đại, và đạt bao nhiêu phần so với điện áp do cùng điện tích đó trải đều trên cả đuôi gai, khi $L=0.2$; $1$; $2$?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:19:7}
+\emph{Nghiên cứu: số đầu vào tối ưu.} Điện dung $C=C_0+nc_s$, có $m$ đầu vào hoạt động đồng thời với dòng $I_s$ mỗi đầu vào, nơ-ron ghi nhớ $P\approx2n$ phép ánh xạ~\eqref{eq:cover}. Thời gian đáp ứng phụ thuộc vào $P$ thế nào khi $m$ không đổi và khi tỉ lệ $m=\varphi n$ không đổi? Đề xuất một tiêu chí chi phí và tìm $n$ tối ưu cho bộ chuyển tiếp và cho bộ phân lớp.
+\end{exercise}

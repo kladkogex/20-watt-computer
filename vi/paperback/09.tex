@@ -1,0 +1,42 @@
+\chapter{Ghi và đọc}
+% full version: chapters/09_acet.tex
+
+Trí nhớ trong bộ não có một đặc điểm bất tiện: ký ức được lưu ngay trong những liên kết dùng để làm việc. Không có ổ cứng riêng. Mỗi lần mạng hồi tưởng, nó dùng các liên kết của mình --- và mỗi lần học, nó thay đổi chúng. Làm sao ghi điều mới mà không làm hỏng điều cũ? Trong máy tính có một tín hiệu riêng cho việc này --- ``cho phép ghi''. Trong bộ não, vai trò đó có vẻ do đài phát thanh \nt{ACET} --- acetylcholine --- đảm nhận.
+
+\section*{Hai chế độ}
+
+Hãy hình dung một mạng lưu vài bức tranh: cho nó xem một nửa --- nó sẽ vẽ nốt phần còn lại. Đó là đọc. Giờ cho nó xem một bức tranh mới, giống bức cũ. Nếu mạng theo thói quen vẽ nốt, nó sẽ không thấy cái mới mà thấy cái cũ --- và học luôn cái sai. Để ghi điều mới, mạng phải tạm thời thôi tin vào trí nhớ của mình và nhìn vào thế giới.
+
+\pencilfig{9}{\pencilart{9}}{Một dây dẫn chuyển chế độ của mạng: ghi điều mới hay nhớ lại điều cũ.}
+
+Acetylcholine làm đúng điều đó, và cả ba tác dụng của nó đều đã được đo: nó làm yếu các liên kết bên trong mạng, nhờ đó mạng ``nhớ lại'', tăng cường tín hiệu đến từ các giác quan, và làm cho liên kết dễ thay đổi hơn. Nhiều acetylcholine --- chế độ ghi: mạng lắng nghe thế giới và học. Ít --- chế độ đọc: mạng dựa vào trí nhớ và vẽ nốt.
+
+Trong mô hình của chúng tôi, không có mức nào mà cả hai việc cùng chạy tốt. Để ghi, phải vặn nhỏ các liên kết bên trong, còn để đọc thì cần chúng mạnh hết cỡ. Vì vậy bắt buộc phải có công tắc.
+
+\section*{Tin vào mắt đến đâu}
+
+Các kỹ sư đã giải một bài toán tương tự từ lâu. Khi con tàu đi theo hải trình, hoa tiêu có một phép tính xem tàu lẽ ra đang ở đâu, và có những quan sát mới nhưng thiếu chính xác. Nên tin mỗi thứ bao nhiêu? Bộ lọc tối ưu trả lời: càng ít chắc chắn về phép tính thì càng tin vào quan sát. Và trong cùng công thức đó còn có điều thứ hai: càng ít chắc chắn thì càng phải học lại nhanh. Một chiếc núm điều khiển cùng lúc cả trọng số của đầu vào lẫn tốc độ học. Đó đúng là việc acetylcholine làm. Từ đó có giả thuyết: nó báo cho mạng biết mô hình thế giới của chính mạng không chắc chắn đến mức nào.
+
+\pencilfig{124}{%
+% optimal blending: the less sure the model, the more weight on the observation (and the faster it relearns)
+\foreach \dx/\wm/\we/\ttop/\bbot in {0/2.4pt/0.6pt/{mô hình chắc chắn}/{ít acetylcholine}, 4.3/0.6pt/2.4pt/{mô hình không chắc}/{nhiều acetylcholine}}{
+  \begin{scope}[xshift=\dx cm]
+  \draw[penlite=pcViolet, wash=pcViolet, rounded corners=3pt] (0,0.95) rectangle (1.3,1.45); \node[lbl, text=black] at (0.65,1.2) {trí nhớ};
+  \draw[penlite=pcBlue, wash=pcBlue, rounded corners=3pt] (0,-0.25) rectangle (1.3,0.25); \node[lbl, text=black] at (0.65,0) {mắt};
+  \draw[dotpen=pcAmber, wash=pcAmber] (2.95,0.6) circle (0.55); \node[lbl, text=black] at (2.95,0.6) {ước tính};
+  \draw[pcViolet, line width=\wm, line cap=round, -{Stealth[length=5pt]}] (1.35,1.2) -- (2.4,0.8);
+  \draw[pcBlue, line width=\we, line cap=round, -{Stealth[length=5pt]}] (1.35,0) -- (2.4,0.4);
+  \node[font=\small\itshape, text=pcGray, anchor=south] at (1.55,1.6) {\ttop};
+  \node[lbl, anchor=north] at (1.55,-0.4) {\bbot};
+  \end{scope}}
+}{Tin vào mắt đến đâu. Nếu mạng chắc chắn về mô hình thế giới của mình, ước tính gần như hoàn toàn đến từ trí nhớ. Nếu không chắc --- từ quan sát, và khi đó mạng cũng học lại nhanh hơn. Theo giả thuyết, acetylcholine vặn chiếc núm này.}
+
+\section*{Phân công lao động}
+
+Hãy nhớ lại chương trước. Khi thế giới đột ngột thay đổi, noradrenaline, theo giả thuyết, nhận ra điều bất ngờ. Còn acetylcholine giữ mạng ở chế độ ghi cho tới khi hoàn cảnh mới được học xong. Một chất báo ``có gì đó đã đổi'', chất kia báo ``ghi đi''.
+
+\section*{Ghi lại ban đêm}
+
+Trong giấc ngủ sâu, mức acetylcholine thấp. Mạng bị ngắt khỏi thế giới và ở chế độ đọc. Chính vào lúc đó, các sự kiện ban ngày được ``phát lại'' trong mạng --- điều này đã được đo. Còn việc những gì học được trong ngày khi đó được chép sang trí nhớ dài hạn là một giả thuyết hợp lý, mà chúng ta sẽ quay lại ở chương về giấc ngủ.
+
+\fullversion{9}

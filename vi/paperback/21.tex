@@ -1,0 +1,49 @@
+\chapter{Máy tính từ tế bào sống}
+% full version: chapters/21_living.tex
+
+\pencilfig{21}{\pencilart{21}}{Nơ-ron sống trên chip: bên dưới là hàng nghìn điện cực, và mỗi điện cực vừa biết nghe vừa biết nói.}
+
+Có thể chế tạo một cỗ máy không phải từ silicon mà từ nơ-ron sống không? Có thể, và người ta đã đang chế tạo nó. Nơ-ron được nuôi ngay trên một con chip có hàng nghìn điện cực --- thành một lớp phẳng hoặc thành những khối nhỏ giống một bộ não tí hon. Mỗi điện cực vừa biết nghe, vừa biết phát tín hiệu. Đây là một bàn thử với sơ đồ mở: mọi thứ đều đo được và mọi thứ đều can thiệp được. Chỉ có điều trong đó không có đài phát thanh nào --- đó là một bus dữ liệu không có thanh ghi điều khiển.
+
+\section*{Mạng tự làm gì}
+
+Khi để mặc cho chính nó, mẫu nuôi cấy thỉnh thoảng bùng lên toàn bộ: gần như mọi nơ-ron tách cùng lúc, rồi lặng đi --- với khoảng cách từ một giây đến vài phút. Đây là bộ dao động quen thuộc: mạng tự kích thích chính mình và mỏi dần, cho tới khi các mối nối khôi phục lại lượng chất dẫn truyền dự trữ.
+
+\pencilfig{129}{%
+% spike raster of 8 neurons in a culture left to itself: sparse single clicks and shared bursts
+\foreach \b in {0.9,3.1,4.0,6.6}{\fill[pcAmber, opacity=0.18] (\b-0.1,-0.15) rectangle (\b+0.32,2.95);}
+\foreach \y/\ss in {0/{0.96,1.0,1.13,2.43,3.0,3.12,3.24,4.02,4.09,4.15,6.66,6.69,6.81},
+  1/{0.46,0.88,1.0,1.05,3.09,3.2,3.94,4.04,4.37,6.65,6.71},
+  2/{0.73,0.84,0.94,1.41,3.08,3.12,3.21,4.05,4.06,4.17,6.59,6.63},
+  3/{0.89,0.93,1.06,3.1,3.19,3.28,3.89,3.94,4.13,4.2,4.31,6.63,6.65,6.78},
+  4/{0.87,0.96,3.09,3.15,3.23,3.73,3.96,4.06,4.19,5.98,6.66,6.68,6.75},
+  5/{0.44,0.92,0.97,3.05,3.22,3.27,4.01,4.07,4.17,5.76,6.57,6.73,6.75},
+  6/{0.92,1.0,1.73,2.85,3.18,3.19,4.0,4.07,6.53,6.66,6.73},
+  7/{0.87,0.92,3.13,3.13,3.27,3.99,4.06,4.17,6.44,6.61,6.72,7.13}}{
+  \foreach \s in \ss {\draw[pcBlue, line width=0.7pt] (\s,0.35*\y) -- (\s,0.35*\y+0.25);}}
+\draw[arr] (0,-0.3) -- (7.5,-0.3); \node[lbl, anchor=north] at (3.75,-0.32) {thời gian};
+\node[lbl, anchor=east, align=right] at (-0.05,1.35) {tám\\nơ-ron};
+\node[lbl, text=pcAmber!70!black, anchor=south] at (3.55,2.95) {các loạt tách chung};
+}{Mẫu nuôi cấy trên chip, để mặc cho chính nó. Tiếng tách lẻ tẻ rất hiếm, còn thỉnh thoảng gần như cả mạng bùng lên cùng lúc --- rồi lặng đi cho tới khi các mối nối khôi phục lượng dự trữ.}
+
+\section*{Thầy giáo không có dopamine}
+
+Dạy một mạng như vậy thế nào nếu không có dopamine? Những cách đầu tiên là bằng điện. Chẳng hạn: kích thích mạng cho tới khi nó cho ra đáp ứng mong muốn --- rồi dừng ngay. Đáp ứng đó được củng cố. Trong một thí nghiệm khác, mẫu nuôi cấy điều khiển một ``cơ thể'' ảo đơn giản và học cách dẫn nó tới đích. Trong tất cả các thí nghiệm này, thầy giáo là một mẫu dòng điện do kỹ sư chọn.
+
+\section*{Dopamine theo chớp sáng}
+
+Có lần người ta thử làm thầy giáo bằng hóa học. Trên một nền tảng với các khối nơ-ron sống nhỏ, người ta thêm vào dung dịch nuôi dopamine nằm trong một ``chiếc lồng'' nhạy sáng, không cho nó tác dụng. Khi mạng đáp ứng với kích thích mạnh hơn trước, nó được ``thưởng'': một chớp tia cực tím phá lồng, và dopamine thoát ra ngoài. Sau hai trăm bốn mươi lần lặp, các đáp ứng nhìn chung tăng lên. Nhưng chính các tác giả thẳng thắn viết rằng từ một thí nghiệm như vậy không thể nói nguyên nhân có phải là dopamine hay không.
+
+\section*{Cây sào trên xe đẩy}
+
+Trong một thí nghiệm gần đây, các khối nơ-ron được dạy giữ thăng bằng một cây sào trên xe đẩy --- một bài toán kinh điển cho các chương trình học. Chọn xung huấn luyện nào để đưa vào là việc của một chương trình. Các tín hiệu do chương trình chọn hiệu quả hơn tín hiệu ngẫu nhiên, nhưng sau ba phần tư giờ nghỉ, điều đã học biến mất. Còn nếu chặn các mối nối \nt{GLUT}, việc học hoàn toàn không diễn ra: điều đã học nằm chính ở đó. Còn thầy giáo thì vẫn ở bên ngoài --- chỉ có điều giờ không phải kỹ sư mà là một chương trình.
+
+\section*{Bể chứa sống}
+
+Còn một cách tiếp cận khác: hoàn toàn không dạy mạng sống. Người ta dùng nó như một ``bể chứa'' --- một hệ thống phong phú, rối rắm, mà các đáp ứng của nó được một bộ đếm điện tử đơn giản học cách giải đọc. Theo cách đó, một khối nơ-ron sống đã giúp phân biệt giọng nói. Có điều, theo lời các tác giả, các liên kết trong chính khối nơ-ron cũng thay đổi trong lúc làm việc.
+
+\section*{Cái giá và câu hỏi}
+
+Một triệu nơ-ron trên chip tiêu thụ khoảng một phần mười nghìn oát --- ít hơn nhiều so với phần điện tử xung quanh chúng. Và bàn thử không tự quyết định được thế nào là thành công: vai trò này luôn do ai đó bên ngoài đảm nhận. Và khi những hệ thống như vậy lớn dần, câu hỏi đạo đức cũng xuất hiện, mà đến nay chưa ai giải quyết.
+
+\fullversion{21}

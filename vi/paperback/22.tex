@@ -1,0 +1,53 @@
+\chapter{Nơ-ron chơi quần vợt}
+% full version: chapters/22_dishbrain.tex
+
+Thí nghiệm nổi tiếng nhất với nơ-ron sống trên chip là DishBrain, ``bộ não trong đĩa''. Khoảng một triệu nơ-ron, được nuôi trên một con chip có hai mươi sáu nghìn điện cực, đã chơi trò quần vợt đơn giản nhất trên máy tính: quả bóng bay trên màn hình, cây vợt di chuyển lên xuống.
+
+\section*{Trò chơi được tổ chức thế nào}
+
+Quả bóng đi vào mạng qua tám điện cực. Điện cực nào tách cho biết bóng ở độ cao nào. Tách dày đến đâu cho biết bóng xa hay gần: bốn lần mỗi giây khi bóng ở sát bức tường xa, và dày dần, tới bốn mươi, khi nó bay tới gần vợt. Đầu ra là hai vùng điện cực: tiếng tách ở vùng này đẩy vợt lên, ở vùng kia --- đẩy xuống. Cứ mười mili giây, máy tính đếm tiếng tách và dịch vợt. Mười mili giây này là nhịp đồng hồ của máy tính trong bàn thử, không phải của mẫu nuôi cấy: bản thân mạng hoạt động bất đồng bộ, như mọi mạng thần kinh.
+
+\pencilfig{22}{\pencilart{22}}{Quả bóng, cây vợt và một triệu nơ-ron điều khiển nó.}
+
+\section*{Thầy giáo}
+
+Không có dopamine nào. Sau một cú đánh trúng, mạng nhận một tín hiệu ngắn và hoàn toàn đoán trước được: cả tám điện cực cùng lúc, trong một phần mười giây. Sau cú trượt --- bốn giây kích thích hỗn loạn ở những chỗ ngẫu nhiên và vào những thời điểm ngẫu nhiên, rồi một khoảng nghỉ, và một lượt giao bóng mới.
+
+\section*{Kết quả ra sao}
+
+Trong một phiên hai mươi phút, các lượt đánh ở mẫu nuôi cấy sống dài hơn, còn số lượt giao bóng bị lọt thì ít đi. Điều này rõ nhất khi có phản hồi đầy đủ. Khi thay cho tín hiệu sau cú trúng và cú trượt chỉ là sự im lặng, vẫn có cải thiện nhưng yếu hơn; không có phản hồi thì không có cải thiện. Nơ-ron người chơi hơi tốt hơn nơ-ron chuột. Còn việc học kéo dài qua nhiều ngày thì hóa ra không đáng tin cậy.
+
+\section*{Vì sao mạng học được}
+
+Các tác giả giải thích kết quả như sau: mạng cố làm cho cảm giác của mình trở nên dễ đoán. Cú trượt mang lại hỗn loạn, cú trúng mang lại trật tự, và mạng thay đổi để có nhiều trật tự hơn. Nhưng cũng có một cách giải thích thực tế hơn, cũng khớp với dữ liệu: ``lắc sau cú trượt, để yên sau cú trúng''. Mỗi lần lắc lại xáo trộn các liên kết một chút một cách ngẫu nhiên. Những thiết lập làm mạng hay trượt liên tục bị xáo trộn, còn những thiết lập tốt thì được để yên. Mạng tự nhiên nán lại ở nơi ít cú trượt --- không ai dạy nó, chỉ là người ta thôi lắc nó. Trong mô hình đơn giản của chúng tôi, quy tắc này quả thật làm tăng tỷ lệ cú trúng.
+
+\pencilfig{130}{%
+% scrambler: miss probability p over one setting of the network (valley in the middle); a miss kicks the setting
+% at random, a hit leaves it alone, so the time spent at a setting is proportional to 1/p (6x more in the valley here)
+\draw[pen] (0,1.2) -- (8.2,1.2);
+\draw[penlite=pcRed] plot[smooth] coordinates {(0.0,2.46) (0.8,2.46) (1.6,2.46) (2.0,2.44) (2.4,2.41) (2.8,2.32) (3.2,2.15) (3.6,1.90) (4.0,1.62) (4.4,1.44) (4.8,1.44) (5.2,1.62) (5.6,1.90) (6.0,2.15) (6.4,2.32) (6.8,2.41) (7.2,2.44) (7.6,2.46) (8.0,2.46)};
+\node[lbl, text=pcRed, anchor=south] at (7.55,2.55) {trượt nhiều};
+\node[lbl, text=pcRed, anchor=west] at (5.3,1.45) {ít};
+% kicked balls on the slopes
+\draw[dotpen=pcBlue, wash=pcBlue] (1.3,2.68) circle (0.12);
+\draw[arr=pcGray, densely dashed] (1.35,2.82) to[bend left=50] (2.35,2.72);
+\draw[arr=pcGray, densely dashed] (1.22,2.82) to[bend right=50] (0.4,2.72);
+\draw[dotpen=pcBlue, wash=pcBlue] (6.3,2.45) circle (0.12);
+\draw[arr=pcGray, densely dashed] (6.25,2.59) to[bend right=50] (5.45,2.25);
+\node[lbl, anchor=south] at (1.3,3.05) {lắc sau cú trượt};
+% the ball left alone in the valley
+\draw[dotpen=pcBlue, wash=pcBlue] (4.6,1.66) circle (0.12);
+\node[lbl, anchor=south] at (4.6,1.95) {không bị lắc};
+% where the network spends its time (proportional to 1/p)
+\fill[pcGreen, opacity=0.22] (0,0) -- plot[smooth] coordinates {(0.0,0.18) (0.8,0.18) (1.6,0.18) (2.0,0.19) (2.4,0.19) (2.8,0.21) (3.2,0.24) (3.6,0.33) (4.0,0.55) (4.4,0.98) (4.8,0.98) (5.2,0.55) (5.6,0.33) (6.0,0.24) (6.4,0.21) (6.8,0.19) (7.2,0.19) (7.6,0.18) (8.0,0.18)} -- (8.0,0) -- cycle;
+\draw[penlite=pcGreen] plot[smooth] coordinates {(0.0,0.18) (0.8,0.18) (1.6,0.18) (2.0,0.19) (2.4,0.19) (2.8,0.21) (3.2,0.24) (3.6,0.33) (4.0,0.55) (4.4,0.98) (4.8,0.98) (5.2,0.55) (5.6,0.33) (6.0,0.24) (6.4,0.21) (6.8,0.19) (7.2,0.19) (7.6,0.18) (8.0,0.18)};
+\draw[pen] (0,0) -- (8.2,0);
+\node[lbl, text=pcGreen!60!black, anchor=west] at (5.3,0.6) {nơi mạng nán lại};
+\node[lbl, anchor=north] at (4.1,-0.03) {thiết lập của mạng};
+}{Cú trượt lắc các thiết lập của mạng một cách ngẫu nhiên, cú trúng để chúng yên. Ở nơi nhiều cú trượt, mạng không nán lại. Ở nơi ít cú trượt, người ta thôi lắc nó, và nó ở lại đó --- dù không ai dẫn nó tới.}
+
+Làm sao phân biệt hai cách giải thích? Cần một thí nghiệm chưa từng làm: sau cú trượt, đưa vào không phải tín hiệu hỗn loạn mà là tín hiệu \emph{đoán trước được}, cùng độ dài và cường độ. Nếu mạng vẫn học được như vậy, vấn đề không nằm ở tính dễ đoán, mà đơn giản ở sự khác biệt giữa ``sau cú trúng'' và ``sau cú trượt''. Thí nghiệm này vẫn đang chờ người thực hiện.
+
+Và đây là điểm cuối của hành trình. Cỗ máy hai mươi oát được lắp từ những linh kiện đơn giản, nhưng nó ghép chúng thành suy nghĩ chính xác ra sao thì chúng ta mới chỉ hiểu được một phần. Có lẽ chương tiếp theo sẽ do bạn viết.
+
+\fullversion{22}

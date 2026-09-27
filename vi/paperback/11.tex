@@ -1,0 +1,46 @@
+\chapter{Thế giới đi vào bên trong như thế nào}
+% full version: chapters/11_sensors.tex
+
+Mọi giác quan đều là một bộ chuyển đổi, như micro hay tế bào quang điện. Ánh sáng, âm thanh hay một phân tử tác động lên một protein đặc biệt trong tế bào cảm biến, protein mở ``vòi'', dòng điện chảy, và ở cuối chuỗi xuất hiện những tiếng tách đi vào mạng. Gần như mọi cảm biến đều nhả glutamate, nên các đầu vào của cỗ máy được nối thẳng vào mạng điện thoại của nó.
+
+\section*{Ở giới hạn của vật lý}
+
+Các cảm biến của bộ não làm việc sát giới hạn của những gì có thể. Cảm biến ánh sáng trong bóng tối đáp ứng với chỉ một hạt ánh sáng duy nhất. Cảm biến âm thanh nhận ra độ dịch chuyển nhỏ hơn một nanomet --- nhỏ hơn kích thước của vài nguyên tử. Trong bóng mờ, thứ giới hạn độ chính xác không còn là mắt mà là chính ánh sáng: các hạt ánh sáng đến ngẫu nhiên, và để phân biệt một sắc độ, cần tích lũy nhiều hạt hơn. Vì thế lúc chạng vạng ta nhìn chậm hơn --- mắt tích ánh sáng lâu hơn, như máy ảnh phơi sáng dài.
+
+\section*{Phơi sáng tự động}
+
+Độ rọi từ đêm đầy sao tới tuyết dưới nắng thay đổi hàng tỷ lần, độ to của âm thanh còn thay đổi nhiều hơn. Trong khi đó tần số tiếng tách chỉ thay đổi từ không đến vài trăm mỗi giây. Nhét trực tiếp cái này vào cái kia là không thể. Lời giải giống như ở máy ảnh: phơi sáng tự động. Cảm biến liên tục chỉnh độ nhạy theo mức trung bình xung quanh và không báo độ sáng, mà báo độ sáng \emph{so với nền}. Cái gì không đổi thì theo thời gian thôi gây đáp ứng, còn mỗi thay đổi thì có. Các đầu vào của cỗ máy ngay từ đầu đã nói về sự thay đổi.
+
+\pencilfig{125}{%
+% light rises in two tenfold steps, then drops a hundredfold; sensor rate = baseline + gain * (log light - adapted level),
+% the adapted level follows log light with a 0.7 s time constant; rate clipped at zero
+\draw[penlite=pcAmber] (0,1.75) -- (1.4,1.75) -- (1.4,2.1) -- (4.2,2.1) -- (4.2,2.45) -- (6.3,2.45) -- (6.3,1.75) -- (8.4,1.75);
+\node[lbl, text=pcAmber!70!black, anchor=east] at (-0.05,2.0) {ánh sáng};
+\node[lbl, anchor=south] at (2.8,2.12) {sáng hơn 10 lần}; \node[lbl, anchor=south] at (5.25,2.47) {thêm 10 lần};
+\node[lbl, anchor=south] at (7.35,1.77) {lại tối};
+\draw[pen] (0,0) -- (8.4,0);
+\draw[pcGray, densely dashed, line width=0.5pt] (0,0.32) -- (8.4,0.32);
+\draw[penlite=pcBlue] plot coordinates {(0.00,0.32) (1.26,0.32) (1.40,1.02) (1.54,0.85) (1.68,0.72) (1.82,0.62) (1.96,0.54) (2.10,0.49) (2.24,0.45) (2.38,0.41) (2.52,0.39) (2.66,0.37) (2.80,0.36) (3.08,0.34) (3.50,0.33) (4.06,0.32) (4.20,1.03) (4.34,0.85) (4.48,0.72) (4.62,0.62) (4.76,0.54) (4.90,0.49) (5.04,0.45) (5.18,0.41) (5.32,0.39) (5.46,0.37) (5.60,0.36) (5.88,0.34) (6.16,0.33) (6.30,0.00) (7.00,0.00) (7.14,0.07) (7.28,0.13) (7.42,0.18) (7.56,0.22) (7.70,0.24) (7.84,0.26) (7.98,0.28) (8.12,0.29) (8.40,0.30)};
+\node[lbl, text=pcBlue, anchor=east] at (-0.05,0.32) {đáp ứng};
+\node[lbl, anchor=north] at (6.65,-0.02) {im lặng};
+}{Ánh sáng mạnh dần theo từng bậc, mỗi bậc gấp mười lần. Cảm biến đáp lại mỗi thay đổi bằng một đỉnh vọt và nhanh chóng trở về mức cũ. Khi trời tối lại, nó im lặng một lúc.}
+
+Các kỹ sư đã lặp lại mẹo này trong camera sự kiện. Camera như vậy không chụp từng khung hình theo đồng hồ: mỗi điểm ảnh của nó tự báo ``sáng hơn rồi'' hoặc ``tối hơn rồi'' khi có gì đó thay đổi. Đó chính là cặp dây ``có'' và ``không'' ở chương hai, chỉ có điều làm bằng silicon.
+
+\section*{Mắt nén hình ảnh}
+
+Trong mắt có khoảng một trăm triệu cảm biến ánh sáng, còn dây dẫn chở hình ảnh lên não --- chỉ khoảng một triệu. Trước khi rời mắt, hình ảnh bị nén khoảng một trăm lần. Các vùng đồng đều gần như không tốn gì, thứ được truyền đi là các đường biên và sự thay đổi. Theo một ước tính làm trên mắt động vật và quy đổi sang người, mắt truyền lên não cỡ mười triệu bit mỗi giây --- như một sợi cáp mạng đời cũ.
+
+\section*{Tai là một cây đàn piano}
+
+Tai phân tách âm thanh theo tần số, giống như một kỹ sư sẽ đặt một dãy bộ lọc. Một vách ngăn đàn hồi trong tai ở những chỗ khác nhau cộng hưởng với những tần số khác nhau, và cảm biến ở mỗi đoạn lắng nghe ``phím đàn'' của riêng mình. Số thứ tự của cảm biến kích hoạt chính là cao độ.
+
+\pencilfig{11}{\pencilart{11}}{Tai được cấu tạo như một cây đàn piano chạy ngược: mỗi phím lắng nghe nốt nhạc của riêng nó.}
+
+Hơn nữa, tai không thụ động. Một phần tế bào của nó tự rung vách ngăn theo nhịp âm thanh và khuếch đại âm thanh nhỏ lên hàng nghìn lần, còn âm thanh to thì hầu như không khuếch đại. Đó là một bộ khuếch đại nằm sát ngưỡng tự kích: ở đó nó đặc biệt nhạy. Còn ở tần số thấp, các nơ-ron còn tách theo nhịp sóng, giữ lại thời điểm chính xác của âm thanh --- nhờ đó bộ não tìm ra hướng tới nguồn âm. Tần số càng cao, nơ-ron càng khó theo kịp, và chỉ còn lại mã theo vị trí.
+
+\section*{Các giác quan khác}
+
+Gần như trong mỗi giác quan đều nhận ra một mẹo từ các chương trước. Nhiệt độ được truyền bằng hai dây, riêng cho nóng và cho lạnh. Xúc giác dùng những cảm biến đáp ứng với cú chạm rồi im ngay, và những cảm biến giữ đáp ứng chừng nào còn áp lực. Còn khứu giác được tổ chức như mã vạch: con người có khoảng bốn trăm loại cảm biến khứu giác, và một mùi là một tập hợp các loại đã kích hoạt. Số tập hợp như vậy là con số thiên văn.
+
+\fullversion{11}

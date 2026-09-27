@@ -1,0 +1,128 @@
+\chapter{Gỡ lỗi cỗ máy}
+\chaptermark{Gỡ lỗi cỗ máy}
+\label{sec:debugging}
+
+\section{Gỡ lỗi một cỗ máy không có sơ đồ như thế nào}
+
+Một kỹ sư được giao một bo mạch đang chạy mà không có sơ đồ sẽ gỡ lỗi nó bằng bốn thủ pháp. Anh ta đặt \emph{đầu dò} và xem cái gì đang chạy trên dây dẫn. Anh ta \emph{đưa vào tín hiệu thử} và xem cái gì thay đổi. Anh ta \emph{ngắt} một phần mạch và xem cái gì ngừng hoạt động. Và anh ta \emph{đọc các thanh ghi điều khiển} để biết bo mạch đang làm việc ở chế độ nào. Cả cuốn sách này là một nỗ lực đọc sơ đồ của bộ não, và trong chương này ta sẽ xem các kỹ sư đã biết dùng những thủ pháp nào trong bốn thủ pháp ấy, và các chương trước nói gì về những điều nên chờ đợi.
+
+Ví dụ nổi bật nhất hiện nay của việc gỡ lỗi như vậy là các giao diện não--máy tính: những thiết bị đọc xung của nơ-ron và biến chúng thành lệnh cho các máy bên ngoài, hoặc ngược lại, đưa tín hiệu từ bên ngoài vào não. Phần lớn chương này dành cho chúng, và trước hết cho những gì công ty Neuralink đang làm.
+
+\section{Đầu dò: điện cực nghe thấy gì}
+
+Đầu dò của não là một điện cực mảnh cắm vào mô. Nó nghe thấy xung của các nơ-ron nằm trong bán kính cỡ một trăm micromét, thường là từ một đến vài nơ-ron. Một xung trên điện cực là một đỉnh nhọn vài chục đến vài trăm microvolt, dài khoảng một mili giây, và theo hình dạng của nó có thể phân biệt các nơ-ron lân cận với nhau. Nghe rõ nhất là các nơ-ron \nt{GLUT} lớn: chúng chiếm đa số trong vỏ não (bảng~\ref{tab:types}), và dòng điện của chúng mạnh hơn.
+
+Khó khăn chính lộ ra ngay. Một đầu dò tốt ngày nay có hàng trăm hoặc hàng nghìn điện cực, trong khi não có $8.6\cdot10^{10}$ nơ-ron. Ta nghe lén chừng một phần trăm triệu của cỗ máy. Vậy tại sao từ một mẫu nhỏ đến thế lại có thể hiểu được điều gì? Câu trả lời đến từ chương~\ref{sec:code}. Các nơ-ron lân cận nhiễu một cách tương quan, và việc lấy trung bình theo nhóm chạm tới một giới hạn (mệnh đề~\ref{prop:pooling}): một trăm nơ-ron mang gần bằng một nghìn. Ngoài ra, bài toán mà vỏ não vận động giải có số chiều thấp: cánh tay có ít khớp (chương~\ref{sec:muscles}), và hoạt động của hàng trăm nơ-ron điều khiển nó nằm gọn trong một không gian chỉ gồm mười đến hai mươi biến chung~\cite{Gallego2017}. Một đầu dò trên một trăm nơ-ron nghe được gần như tất cả các biến ấy. Nếu bộ não lưu một thông điệp độc lập trong mỗi nơ-ron, việc nghe lén như vậy sẽ vô ích.
+
+\section{Luồng dữ liệu: nén ngay trên đầu dò}
+
+Đầu dò tạo ra một luồng khổng lồ. Để thấy hình dạng xung, mỗi điện cực phải được số hóa khoảng $20$ nghìn lần mỗi giây với độ chính xác khoảng mười bit. Một nghìn điện cực cho
+\begin{empheq}[box=\keybox]{equation}
+\begin{aligned}
+R_{\text{thô}} \;&=\; N\,f_s\,b \;\approx\; 10^3\cdot2\cdot10^4\cdot10 \;\approx\; 2\cdot10^8\ \text{bit/s},\\
+R_{\text{xung}} \;&\approx\; N\,r\,\log_2\frac{e}{r\,\Delta t} \;\approx\; 8\cdot10^4\ \text{bit/s}.
+\end{aligned}
+\label{eq:probedata}
+\end{empheq}
+Ước tính thứ hai là dung lượng của luồng xung~\eqref{eq:spikeentropy} với $r=10$ xung mỗi giây và độ chính xác $\Delta t=1\ms$: mọi thứ thực sự có trong luồng chỉ chiếm ít hơn hai nghìn rưỡi lần. Với thiết bị cấy ghép, đây là khác biệt quyết định: không thể truyền luồng thô bằng sóng vô tuyến qua da với mức công suất cho phép bên trong đầu mà không làm nóng mô. Vì vậy thiết bị cấy ghép phải tách xung ngay trên chip cạnh các điện cực và chỉ gửi ra ngoài các sự kiện: số kênh và thời điểm xung. Mô tả đầu tiên về hệ thống Neuralink chưa đạt tới mức đó: các chip khuếch đại và số hóa tín hiệu, toàn bộ luồng thô đi qua cáp, còn xung được một chương trình bên ngoài tách ra; nén trên chip và kết nối không dây được nêu ở đó như kế hoạch~\cite{Musk2019}.
+
+Đây là một thủ pháp quen thuộc. Mắt nén tín hiệu một trăm lần trước khi gửi nó qua sợi cáp dài (chương~\ref{sec:sensors}); camera sự kiện không truyền khung hình mà truyền các thay đổi. Để vừa với đường truyền, đầu dò buộc phải làm đúng điều bộ não tự làm: nói bằng xung và chỉ nói về cái mới.
+
+\section{Neuralink làm gì}
+
+Thiết bị của Neuralink là một đầu dò được thiết kế theo những giới hạn này~\cite{Musk2019}. Thay cho mảng kim cứng là nhiều sợi mềm mảnh hơn sợi tóc với các điện cực dọc theo mỗi sợi: trong mô tả đầu tiên của hệ thống là tới $3072$ điện cực trên $96$ sợi, mỗi sợi $32$ điện cực, còn trong thiết bị đã cấy cho người, theo công bố của công ty, khoảng một nghìn kênh trên $64$ sợi. Sợi mềm ít làm tổn thương mô hơn và chịu tốt hơn việc não trong hộp sọ luôn xê dịch nhẹ. Các sợi được một robot cắm vào, tránh các mạch máu. Trong mô tả đầu tiên, như đã nói ở trên, luồng thô~\eqref{eq:probedata} đi ra ngoài qua cáp. Theo công bố của công ty, thiết bị cho người được làm khác: vỏ thiết bị nằm hoàn toàn dưới da, xung được tách bên trong, dữ liệu đi ra bằng sóng vô tuyến, năng lượng được cấp không dây.
+
+Nhiệm vụ của thiết bị đầu tiên là đọc. Các sợi được đặt vào vùng vỏ não lập kế hoạch cử động bàn tay, và bộ giải mã biến xung thành chuyển động của con trỏ trên màn hình. Một người bị liệt tay điều khiển máy tính bằng cách hình dung cử động. Bản thân ý tưởng không mới: các giao diện dùng mảng cứng khoảng một trăm điện cực từ lâu đã cho phép điều khiển con trỏ~\cite{Hochberg2006}, viết chữ bằng cách hình dung cử động tay khi viết~\cite{Willett2021}, và thậm chí chuyển những cố gắng nói thành văn bản trên màn hình với tốc độ khoảng sáu mươi từ mỗi phút~\cite{Willett2023}. Cái mới của Neuralink là kỹ thuật: số kênh, không dây, vỏ kín và việc cắm bằng robot, tức là nỗ lực tạo ra một đầu dò có thể mang nhiều năm bên ngoài phòng thí nghiệm. Theo chỗ chúng tôi biết, kết quả thử nghiệm trên người chủ yếu do chính công ty công bố, chứ không phải trong các bài báo được bình duyệt; công ty có thông báo rằng một phần các sợi đã xê dịch sau khi cắm và số kênh hoạt động giảm đi. Với việc gỡ lỗi, đây là một chuyện phiền toái bình thường: đầu dò dịch chuyển so với bo mạch thì đã nghe những dây dẫn khác.
+
+Hướng thứ hai của công ty là ghi: một thiết bị cho thị giác, đưa tín hiệu vào vỏ não thị giác của người đã mất thị lực. Về nó xem bên dưới, trong phần về ghi.
+
+\section{Đọc: bộ giải mã là bên nhận}
+
+Bộ giải mã của giao diện là bên nhận theo nghĩa của mệnh đề~\ref{prop:reader}: nó tự quyết định đọc phần nào của thông điệp. Hầu như mọi giao diện đều đọc \emph{tần số của nhóm}: đếm xung của từng kênh trong các cửa sổ vài chục mili giây và cộng chúng với các trọng số được chọn sao cho ra cử động mong muốn. Đây là mã tần số của nhóm ở mục~\ref{sec:rate}, và nó được chọn không phải ngẫu nhiên: khi mỗi cửa sổ chỉ có vài xung, tần số của một nơ-ron không xác định được, còn tổng theo một trăm nơ-ron thì đã dùng được.
+
+Rút ra được bao nhiêu thông tin? Viết chữ ``bằng bàn tay tưởng tượng'' đạt tốc độ khoảng chín mươi ký tự mỗi phút~\cite{Willett2021}, tức một ký tự rưỡi mỗi giây: ngay cả với năm bit mỗi ký tự, như thế là dưới tám bit mỗi giây. Điều khiển con trỏ, theo công bố của Neuralink, cho khoảng mười bit mỗi giây. Trong khi đó giới hạn trên~\eqref{eq:spikeentropy} cho \emph{một} nơ-ron là vài chục bit mỗi giây, cho một trăm nơ-ron là hàng nghìn. Giao diện chỉ rút ra từ các nơ-ron bị nghe lén một phần nhỏ những gì chúng có thể mang. Nút thắt không phải là dây dẫn, mà là số biến độc lập mà nhóm mang (mệnh đề~\ref{prop:pooling}) và mức độ bộ giải mã hiểu mã, thứ mà như ta đã thấy ở chương~\ref{sec:code}, vẫn chưa được giải hết.
+
+Còn một đặc điểm thứ hai, quen thuộc từ chương~\ref{sec:motorlearning}. Bộ giải mã và bộ não học lẫn nhau. Bộ não thấy con trỏ đi đâu, nhận sai số và chỉnh lệnh của mình, cũng chính là việc học vận động qua dây dẫn sai số. Còn các kỹ sư thỉnh thoảng lại chọn lại trọng số của bộ giải mã, vì các nơ-ron dưới các sợi thay đổi và các liên kết trong mạng học lại. Kết quả là hai người học điều chỉnh theo nhau; để cặp này không mất ổn định, nên tách tốc độ học của chúng ra: một bên học nhanh, bên kia học chậm.
+
+\begin{keyblock}
+\begin{proposition}[Vì sao đầu dò trên một nghìn nơ-ron hoạt động được]
+\label{prop:probe}
+Một giao diện nghe lén một phần cực nhỏ số nơ-ron vẫn có thể điều khiển cử động, vì hoạt động của nhóm có số chiều thấp và nhiễu của nó tương quan: vài trăm nơ-ron mang gần như mọi biến chung. Cũng vì lý do đó, giao diện chỉ rút ra được vài bit mỗi giây, bằng số biến độc lập trong nhiệm vụ, chứ không bằng dung lượng của luồng xung. Hoạt động của các giao diện đã được đo; bộ giải mã sẽ tốt hơn bao nhiêu khi mã được hiểu là một câu hỏi mở.
+\end{proposition}
+\end{keyblock}
+
+\section{Ghi: khó hơn đọc}
+
+Đưa tín hiệu vào cỗ máy khó hơn đọc. Một điện cực có dòng điện chạy qua kích thích không phải một nơ-ron, mà mọi nơ-ron và dây dẫn quanh nó, bất kể loại và dấu. Không thể dùng nó để ghi một mã mà trong đó điều quan trọng là nơ-ron \emph{nào} và \emph{khi nào} phát xung (chương~\ref{sec:code}): chỉ có thể đặt một cách thô \emph{ở đâu} và \emph{mạnh đến mức nào}.
+
+Với thị giác, như thế là đủ phần nào. Dòng điện qua một điện cực trong vỏ não thị giác được người đó thấy như một chấm sáng ở một vị trí xác định trong thị trường; khi các chấm được bật cùng lúc, tới mười sáu chấm một lần, một người đã mất thị lực nhận ra được một số chữ cái và phân biệt được đường biên của đồ vật~\cite{Fernandez2021}. Đó là mã theo vị trí, và nó có thể ghi được. Nhưng hãy nhớ lại chương~\ref{sec:sensors}: mắt không gửi vào não các điểm ảnh, mà gửi một mô tả đã nén: các cạnh, các thay đổi, sáng lên và tối đi, trên những dây dẫn riêng. Ghi ``các chấm sáng'' vào vỏ não là ghi điểm ảnh vào một cỗ máy đang chờ ở đầu vào một mã hoàn toàn khác. Vì vậy thị giác nhân tạo hiện nay còn thô hơn mức có thể kỳ vọng theo số điện cực. Cũng có những tín hiệu thử không cần điện cực: ảo giác thị giác đưa qua mắt một đầu vào bất thường và đẩy cỗ máy ra khỏi chế độ bình thường, và mỗi lỗi chỉ ra một cơ chế riêng (mục~\ref{sec:illusions}).
+
+\section{Điều đầu dò không thấy}
+
+Điện cực nghe được bus địa chỉ: xung của các nơ-ron \nt{GLUT}, và kém hơn, của các nơ-ron \nt{GABA} nhỏ. Nhưng ở các chương~\ref{sec:serocomputer}--\ref{sec:acet} ta đã thấy rằng chế độ làm việc của cả cỗ máy do các thanh ghi quảng bá đặt: nồng độ \nt{SERO}, \nt{DOPA}, \nt{NORA}, \nt{ACET}. Điện cực không nghe được chúng: nơ-ron nguồn rất ít, và tín hiệu của chúng không phải là xung cạnh đầu dò mà là nồng độ trong một thể tích. Một người gỡ lỗi thấy bus dữ liệu nhưng không thấy các thanh ghi điều khiển sẽ luôn ngạc nhiên: cùng một đầu vào lại cho các đáp ứng khác nhau, vì ở đâu đó $g$, $a$ hay $\tau_\gamma$ đã thay đổi. Nồng độ có thể đo bằng cảm biến hóa học ngay trong mô~\cite{Bunin1998}, nhưng các giao diện hiện chưa dùng những cảm biến như vậy. Hoàn toàn nằm ngoài tầm nhìn của đầu dò còn có đầu ra thứ hai, chậm, của cỗ máy: các hormone trong máu (chương~\ref{sec:chemoutput}); chúng được đo trong mẫu máu chứ không bằng điện cực.
+
+Đầu dò cũng không thấy các trọng số, mà chính trong chúng lưu gần như toàn bộ trí nhớ và mọi điều đã học. Chỉ có thể đoán chúng qua cách các đáp ứng thay đổi. Và nó không thấy cơn đau theo cách con người cảm thấy: ở chương~\ref{sec:pain} ta đã thấy rằng độ mạnh của tín hiệu báo động do chính cỗ máy đặt ra, bởi cổng ở tủy sống và các bộ điều chỉnh từ phía trên, nên không thể đọc từ cảm biến xem đau đến mức nào.
+
+\section{Tóm tắt: gỡ lỗi và các câu hỏi mở}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{2.2cm}>{\raggedright}p{3.6cm}>{\raggedright}p{3.4cm}>{\raggedright\arraybackslash}p{4.0cm}}
+\toprule
+Thủ pháp gỡ lỗi & Giao diện làm gì & Cuốn sách giải thích gì & Điều đã biết \\
+\midrule
+đầu dò & nghe hàng trăm đến hàng nghìn nơ-ron & số chiều thấp và nhiễu tương quan (ch.~\ref{sec:code}) & đã đo \\
+nén trên đầu dò & truyền sự kiện thay cho tín hiệu thô & dung lượng luồng xung~\eqref{eq:spikeentropy} & đã giải quyết về kỹ thuật \\
+đọc & tần số nhóm $\to$ cử động, văn bản, lời nói & bộ giải mã là bên nhận, mã tần số của nhóm & hoạt động; vài bit mỗi giây \\
+học cùng nhau & não và bộ giải mã điều chỉnh theo nhau & dây dẫn sai số (ch.~\ref{sec:motorlearning}) & quan sát được; quy tắc điều chỉnh đang được nghiên cứu \\
+ghi & dòng điện bật các chấm trong thị trường & mã vị trí ghi được, mã thời gian thì không (ch.~\ref{sec:sensors}) & các chấm đã đo; thị giác hữu ích thì chưa \\
+đọc thanh ghi & hầu như chưa làm & các kênh quảng bá (ch.~\ref{sec:serocomputer}--\ref{sec:acet}) & cảm biến hóa học có trong thí nghiệm \\
+\bottomrule
+\end{tabular}
+\caption{Gỡ lỗi cỗ máy: giao diện não--máy tính làm được gì và các chương của sách nói gì về chúng.}
+\label{tab:debugging}
+\end{table}
+
+Bảng~\ref{tab:debugging} tóm tắt chương. Giao diện não--máy tính đã biết đặt đầu dò lên bus địa chỉ và đọc từ đó vài bit mỗi giây, và việc điều này hoạt động được là nhờ số chiều thấp và nhiễu tương quan ở chương~\ref{sec:code}. Chúng mới chỉ biết ghi vào cỗ máy một cách thô, vì mã đầu vào của nó đã được nén và gửi tới từng dây dẫn riêng. Còn các thanh ghi điều khiển và trọng số, những thứ làm cho cỗ máy học được và điều chỉnh được, thì đầu dò hầu như chưa thấy.
+
+Mỗi câu hỏi mở ở chương~\ref{sec:synthesis} cũng là một bài toán cho người gỡ lỗi. Nên đọc mã nào sẽ được giải quyết khi đầu dò dày hơn và bộ giải mã biết dùng thời điểm xung chứ không chỉ tần số. Mạng nhiều lớp học như thế nào có thể kiểm tra bằng cách đặt đầu dò đồng thời vào nhiều lớp và xem đáp ứng của chúng thay đổi ra sao khi học. Các kênh quảng bá truyền gì sẽ lộ ra khi bên cạnh đầu dò điện có thêm đầu dò hóa học. Cuốn sách này là một nỗ lực đọc sơ đồ của cỗ máy qua hành vi của nó và qua những định luật mà kỹ sư nào cũng biết. Những công cụ gỡ lỗi đang được xây dựng hiện nay sẽ cho phép kiểm tra sơ đồ ấy bằng đầu dò.
+
+\section{Bài tập}
+
+\begin{exercise}[\lvlA]
+\label{ex:17:1}
+\emph{Ngân sách kênh vô tuyến.} Truyền qua da tốn $1$~nJ mỗi bit, bộ phát được tiêu thụ không quá $10$~mW. Cần công suất bao nhiêu cho luồng thô~\eqref{eq:probedata} với $N=1000$ điện cực và cho luồng xung? Luồng thô sẽ đòi hỏi năng lượng mỗi bit là bao nhiêu?
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:17:2}
+\emph{Một trăm nơ-ron chứa bao nhiêu bit.} Bộ giải mã cộng xung của $N$ nơ-ron trong các cửa sổ $50\ms$ với $r=20$~xung/s, tương quan nhiễu từng cặp $c=0.1$, tín hiệu làm tần số nhóm thay đổi $30\%$ (trung bình bình phương). Ước tính tốc độ $\tfrac12\log_2(1+\text{SNR})$ mỗi cửa sổ khi $N=10$, $100$, $1000$ và $N\to\infty$. Còn khi $c=0$, $N=1000$?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:17:3}
+\emph{Tốc độ của giao diện bàn phím.} Giao diện chọn một trong $N=32$ ký tự, một lần rưỡi mỗi giây: đúng ký tự dự định với xác suất $P$, các lỗi đồng xác suất. Nó truyền bao nhiêu bit mỗi giây khi $P=0.99$, $0.94$, $0.8$? Khi $P=0.94$ cần bao nhiêu ký tự mỗi giây để đạt $10$~bit/s?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:17:4}
+\emph{Mô phỏng: bộ giải mã nhóm.} $N$ nơ-ron với $\lambda_i=[b+m\,\mathbf v\cdot\mathbf p_i]_+$, $b=20$, $m=15$~xung/s, cửa sổ $50\ms$, $\mathbf v$ có độ lệch chuẩn $0.5$ mỗi thành phần; tất cả cùng thấy nhiễu chung, $\mathbf v+\boldsymbol\xi$, $\sigma_\xi=0.2$. Mô phỏng bộ giải mã vectơ nhóm không chệch. Với $N$ nào hai loại nhiễu bằng nhau, và $N\to\infty$ cho bao nhiêu bit mỗi thành phần mỗi cửa sổ?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:17:5}
+\emph{Hai người học.} Não xuất lệnh $m=b\,v^*$, bộ giải mã xuất $v=d\,m$, $\langle v^{*2}\rangle=1$. Sau mỗi lần thử, cả hai đi một bước gradient theo $\tfrac12(v-v^*)^2$ với tốc độ $\eta$. Mô phỏng từ $b=1.2$, $d=1$ khi $\eta=0.8$, $1.1$, $1.5$, $2$. Riêng mỗi bên ổn định khi $\eta<2$; cặp ổn định khi $\eta$ bằng bao nhiêu?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:17:6}
+\emph{Thiết kế: đường ống của đầu dò.} $1024$ kênh, mỗi kênh $20$~nghìn mẫu mỗi giây, nơ-ron $10$~xung/s, vô tuyến $1$~nJ/bit. Ngưỡng nào theo nhiễu trắng của mẫu cho không quá $0.1$~Hz xung giả mỗi kênh? Truyền số xung trong mỗi $20\ms$ bằng $2$~bit: công suất là bao nhiêu và nhỏ hơn bao nhiêu lần so với mẫu thô $10$ bit?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:17:7}
+\emph{Giới hạn tốc độ của giao diện.} Ước tính $R\le DW\log_2(1+\text{SNR})$ cho $D=10$ biến với băng thông $W=5$~Hz khi $\text{SNR}\approx0.9$ (nhiễu giống tín hiệu) và $90$ (nhiễu độc lập của $1000$ nơ-ron). Đo được khoảng $10$~bit/s. Thí nghiệm nào phân biệt được hai cách giải thích khoảng cách này: nhiễu giống tín hiệu hay chưa hiểu mã?
+\end{exercise}

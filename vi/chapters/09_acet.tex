@@ -1,0 +1,191 @@
+\chapter{Khi nào ghi, khi nào đọc: thêm \nt{ACET}}
+\chaptermark{Thêm \nt{ACET}}
+\label{sec:acet}
+
+\section{Còn thiếu gì}
+
+Một vi mạch nhớ, ngoài các dây địa chỉ và dữ liệu, còn có thêm một đường nữa --- cho phép ghi. Khi đường này tắt, bộ nhớ chỉ được đọc; khi nó bật, những gì đang có trên các đường dữ liệu được ghi vào. Không có đường này thì bộ nhớ không hoạt động: nếu mỗi lần đọc đồng thời lại ghi một thứ gì đó, thì những gì đã đọc, kể cả những gì đọc sai, lập tức bị ghi ngược trở lại.
+
+Trong não, vấn đề này còn gay gắt hơn trong vi mạch. Ở chương~\ref{sec:glutcomputer}, bộ nhớ là một nhóm nơ-ron \nt{GLUT} được chính các liên kết của nó giữ ở trạng thái bật (hình~\ref{fig:bistable}). Ở chương~\ref{sec:dofa}, ta đã thấy các liên kết này học theo quy tắc Hebb ngay trong lúc hoạt động. Như vậy, cùng những khớp thần kinh đó vừa lưu cái cũ vừa tiếp nhận cái mới, và không có pha ghi riêng, cũng như không có đồng hồ. Mạng phân biệt lúc cần ghi nhớ điều đang thấy với lúc cần nhớ lại điều đã biết bằng cách nào? Ở chương~\ref{sec:neurontypes}, ta đã giả định rằng đường này do \nt{ACET} giữ. Trong chương này, ta sẽ kiểm tra một đường như vậy phải hoạt động thế nào và vì sao không thể thiếu nó.
+
+\section{Ba tác động của một dây}
+
+Các nơ-ron acetylcholine hoạt động bên trong não không nhiều, và chúng tập trung trong vài nhóm nhỏ, còn đầu ra của chúng tỏa khắp vỏ não. Đây là một kênh quảng bá, giống như \nt{DOPA} và \nt{NORA}. Mức acetylcholine trong vỏ não cao khi thức và tập trung chú ý, và thấp trong giấc ngủ sóng chậm~\cite{Hasselmo1999}. Như với dopamine, ý nghĩa của tín hiệu do thụ thể của bên nhận quyết định (mệnh đề~\ref{prop:receptor}): acetylcholine có cả thụ thể nhanh, mở kênh, lẫn thụ thể chậm, khởi động phản ứng bên trong tế bào. Với ta, có ba tác động quan trọng.
+
+\emph{Thứ nhất: làm yếu các liên kết nội bộ.} Thí nghiệm trên lát cắt vỏ não khứu giác cho thấy acetylcholine ức chế mạnh sự truyền dẫn qua các liên kết giữa các nơ-ron trong cùng một vùng, và gần như không động tới các đầu vào đến từ bên ngoài~\cite{HasselmoBower1992}.
+
+\emph{Thứ hai: tăng cường đầu vào.} Acetylcholine làm tăng tính dễ kích thích của nơ-ron và tạo thuận cho sự truyền dẫn qua một số đường vào; tín hiệu từ các giác quan trở nên lớn hơn hoạt động riêng của mạng~\cite{Hasselmo2006}.
+
+\emph{Thứ ba: làm trọng số dễ thay đổi hơn.} Khi mức acetylcholine cao, các liên kết thay đổi dễ hơn~\cite{Hasselmo2006}.
+
+Với kỹ sư, cả ba tác động là một thao tác: chuyển từ chế độ ``đọc'' sang chế độ ``ghi''. Mạng thôi lắng nghe chính nó, bắt đầu lắng nghe đầu vào và ghi nhớ những gì nó nghe được.
+
+\section{Mạng tự điền nốt}
+
+Lấy $N$ nơ-ron \nt{GLUT} nối với nhau. Ta lưu trong các liên kết của chúng vài mẫu --- mỗi mẫu là một tập $pN$ nơ-ron cùng hoạt động --- bằng quy tắc Hebb~\cite{Hebb1949}. Nếu đưa vào mạng như vậy một nửa mẫu, các liên kết sẽ kích thích nửa còn thiếu: mạng \emph{điền nốt} mẫu từ một phần, như nhóm ở hình~\ref{fig:bistable} tự duy trì chính nó. Đó là bộ nhớ liên kết: địa chỉ là một phần của nội dung. \nt{GABA}, như ở chương~\ref{sec:gaba}, giữ tổng số nơ-ron hoạt động quanh $pN$, để hai mẫu không thể cùng sáng lên.
+
+Ký hiệu mức acetylcholine là $a$, từ $0$ tới $1$, và đưa trực tiếp ba tác động của nó vào mô hình:
+\begin{empheq}[box=\keybox]{equation}
+\tau\frac{\dd r_i}{\dd t} = -r_i + F\Bigl(\tfrac{1+a}{2}\,x_i + (1-a)\sum_j W_{ij}\,r_j - g\Bigr),
+\qquad
+\frac{\dd W_{ij}}{\dd t} = \eta\,a\,(r_i-p)(r_j-p) .
+\label{eq:acetnet}
+\end{empheq}
+Ở đây $r_i$ là tần số của nơ-ron $i$, $x_i$ là đầu vào của nó từ các giác quan, $F$ là đặc tuyến truyền đạt có ngưỡng, $g$ là ức chế chung từ \nt{GABA}, tăng lên khi số nơ-ron hoạt động nhiều hơn $pN$. Thừa số $\frac{1+a}{2}$ là sự tăng cường đầu vào, $1-a$ là sự làm yếu liên kết nội bộ, $\eta a$ là tốc độ học. Phương trình thứ hai là quy tắc Hebb~\eqref{eq:hebb} ở dạng tiện cho các mẫu thưa~\cite{Tsodyks1988}: trọng số tăng khi cả hai nơ-ron hoạt động mạnh hơn bình thường, và giảm khi chỉ một nơ-ron hoạt động. Phần trọng số âm, như mọi khi, do các trung gian \nt{GABA} đảm nhận. Không có đồng hồ: cả nơ-ron lẫn trọng số đều thay đổi liên tục.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  nrn/.style={circle,draw,very thick,fill=blue!6,minimum size=0.8cm,inner sep=0pt,font=\small},
+  acet/.style={circle,draw,very thick,double,double distance=1.2pt,fill=orange!15,minimum size=1.35cm,inner sep=0pt,font=\scriptsize},
+  bc/.style={->,thick,densely dashed,orange!85!black}]
+\foreach \i/\y in {1/2.4,2/1.2,3/0}{
+  \node[nrn] (N\i) at (3,\y) {$r_\i$};
+  \draw[->,thick,blue!60!black] (0,\y) node[left,black] {\small $x_\i$} -- (N\i);}
+\node[left,align=right,font=\small] at (-0.5,1.2) {từ các\\giác quan};
+\draw[->,thick,gray!60!black] (N1) to[bend left=30] (N2);
+\draw[->,thick,gray!60!black] (N2) to[bend left=30] (N1);
+\draw[->,thick,gray!60!black] (N2) to[bend left=30] (N3);
+\draw[->,thick,gray!60!black] (N3) to[bend left=30] (N2);
+\draw[->,thick,gray!60!black] (N1.east) .. controls (4.6,2.0) and (4.6,0.4) .. (N3.east);
+\node[right,font=\small,gray!40!black,align=left] at (4.7,1.2) {liên kết\\nội bộ $W$};
+\node[acet] (A) at (1.2,-1.9) {\nt{ACET}};
+\draw[bc] (A) -- (1.6,-0.15);
+\node[font=\small,orange!60!black,anchor=east] at (0.95,-0.9) {$+$ đầu vào};
+\draw[bc] (A) -- (4.3,0.6);
+\node[font=\small,orange!60!black,anchor=west] at (4.3,0.1) {$-$ liên kết nội bộ, $+$ tốc độ học};
+\node[right,font=\small,align=left] at (2.2,-1.9) {mức cao: ``ghi''\\mức thấp: ``đọc''};
+\end{tikzpicture}
+\caption{\nt{ACET} là đường cho phép ghi. Các nơ-ron $r_i$ nhận đầu vào $x_i$ từ các giác quan (mũi tên xanh) và kích thích lẫn nhau qua các liên kết nội bộ $W$ (màu xám), nơi lưu các mẫu. Acetylcholine (mũi tên nét đứt) tăng cường đầu vào, làm yếu liên kết nội bộ và làm trọng số dễ thay đổi hơn, như trong~\eqref{eq:acetnet}.}
+\label{fig:acetnet}
+\end{figure}
+
+\section{Ghi và đọc cản trở nhau}
+
+Hãy kiểm tra mô hình~\eqref{eq:acetnet} trên một bài toán mà ở đó ghi và đọc thực sự xung đột. Một mạng $200$ nơ-ron đã lưu năm mẫu, mỗi mẫu $20$ nơ-ron hoạt động. Giờ cần ghi nhớ mẫu thứ sáu, trùng một nửa với một mẫu cũ: chúng có chung mười nơ-ron. Chuyện này xảy ra liên tục: căn phòng mới giống một căn phòng quen, khuôn mặt mới giống một khuôn mặt cũ.
+
+\emph{Ghi khi $a$ thấp.} Trước hết, ta tách hai tác động đầu của acetylcholine khỏi tác động thứ ba: giữ tốc độ học ở mức đầy đủ, và chỉ để sự tăng cường đầu vào cùng sự làm yếu liên kết nội bộ thay đổi. Khi $a=0$, đầu vào làm sáng mười nơ-ron chung, và chúng, qua các liên kết nội bộ, làm sáng nửa còn lại của mẫu \emph{cũ}. \nt{GABA} không cho cả hai cùng sáng, và mẫu cũ, được chính các liên kết của nó nâng đỡ, đẩy lùi mẫu mới, vốn chỉ đứng được nhờ đầu vào. Mạng không thấy cái đang ở trước mắt mà thấy cái nó nhớ --- và quy tắc Hebb cần mẫn ghi lại những gì mạng thấy.
+
+Kết quả là mẫu mới hoàn toàn không được ghi nhớ: từ nửa đặc trưng của nó, mạng không nhớ lại được gì. Còn mẫu cũ thì bị hỏng: khi được gợi bằng nửa đặc trưng của mình, nó kéo theo trung bình sáu trong mười nơ-ron lạ. Khi $a=0.1$, mẫu mới đã được ghi nhớ, nhưng nó hòa lẫn với mẫu cũ, và hư hỏng còn nặng hơn: mỗi mẫu trong hai mẫu, khi được gợi bằng nửa của mình, kéo theo khoảng tám nơ-ron lạ; từ $a=0.2$ trở lên, việc ghi là sạch: số nơ-ron thừa khi nhớ lại ít hơn một (trung bình qua mười lần chạy).
+
+\emph{Ghi với tốc độ học thực.} Giờ để acetylcholine, như trong~\eqref{eq:acetnet}, đặt cả tốc độ học. Sau một lần trình bày, mẫu mới chỉ được ghi nhớ trọn vẹn khi $a\ge0.9$; khi $a=0.75$ --- được tám phần mười, khi $a\le0.5$ hoàn toàn không được ghi nhớ.
+
+\emph{Đọc.} Đưa vào mạng có năm mẫu được ghi sạch một nửa mẫu, rồi bỏ nó đi. Khi $a\le0.2$, mạng điền nốt toàn bộ mẫu và tự giữ nó; khi $a=0.3$ --- gần như toàn bộ; khi $a\ge0.4$, các liên kết nội bộ bị làm yếu quá mức, và sau khi gợi ý biến mất, hoạt động tắt dần (hình~\ref{fig:acetsim}).
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=9cm,y=3.2cm]
+\draw[->,gray!70!black] (0,0) -- (1.1,0) node[right,black] {\small $a$};
+\draw[->,gray!70!black] (0,0) -- (0,1.2);
+\foreach \x in {0,0.2,0.4,0.6,0.8,1.0}{\draw[gray!60!black] (\x,-0.02) -- (\x,0.02); \node[below,font=\scriptsize] at (\x,0) {$\x$};}
+\foreach \y in {0,0.5,1}{\draw[gray!60!black] (-0.01,\y) -- (0.01,\y); \node[left,font=\scriptsize] at (0,\y) {$\y$};}
+\node[rotate=90,font=\small] at (-0.1,0.6) {tỷ lệ mẫu được khôi phục};
+\draw[very thick,blue!60!black] plot[mark=*,mark size=1.6pt] coordinates {(0,1.00) (0.1,1.00) (0.2,1.00) (0.3,0.96) (0.4,0.04) (0.5,0.00) (0.75,0.00) (1.0,0.00)};
+\draw[very thick,red!70!black] plot[mark=*,mark size=1.6pt] coordinates {(0.1,0.00) (0.2,0.00) (0.3,0.00) (0.5,0.00) (0.75,0.80) (0.9,1.00) (1.0,1.00)};
+\node[font=\small,blue!60!black,anchor=west,align=left] at (0.03,0.5) {đọc:\\mẫu từ\\một nửa};
+\node[font=\small,red!70!black,anchor=east,align=right] at (1.0,0.35) {ghi:\\mẫu mới\\sau một lần};
+\end{tikzpicture}
+\caption{Mô hình~\eqref{eq:acetnet}: $200$ nơ-ron, mỗi mẫu $20$ nơ-ron hoạt động, trung bình qua mười lần chạy. Các điểm xanh là đọc: tỷ lệ mẫu được khôi phục từ một nửa của nó sau khi bỏ gợi ý. Các điểm đỏ là ghi: tỷ lệ của mẫu mới, giống một nửa với mẫu cũ, được nhớ lại sau một lần trình bày, nếu acetylcholine đặt cả tốc độ học. Đọc hoạt động khi $a\le0.3$, ghi --- khi $a\ge0.9$.}
+\label{fig:acetsim}
+\end{figure}
+
+\begin{keyblock}
+\begin{proposition}[Ghi và đọc đòi hỏi những chế độ khác nhau]
+\label{prop:writeread}
+Trong mô hình~\eqref{eq:acetnet}, nơi cùng những liên kết vừa lưu cái cũ vừa học cái mới, còn acetylcholine đặt cả tốc độ học, không có mức $a$ nào mà ở đó cả ghi lẫn đọc đều tốt như nhau. Để ghi, các liên kết nội bộ phải được làm yếu, nếu không mạng sẽ ghi không phải đầu vào mà là điều nó nhớ lại; để đọc, chúng phải được tăng cường, nếu không mạng không điền nốt được mẫu từ một phần. Cần một công tắc, và một dây quảng bá có thể làm công tắc đó.
+\end{proposition}
+\end{keyblock}
+
+Nếu acetylcholine không thay đổi tốc độ học, thì cho cả hai việc sẽ có một dải hẹp $0.2\le a\le0.3$. Nhưng khi đó mạng sẽ học cả trong mỗi lần đọc, tức là ghi lại những gì đã đọc cùng với các lỗi của nó. Chính ý tưởng --- ức chế các liên kết nội bộ trong lúc học --- được lấy từ các mô hình xây dựng dựa trên phép đo trên lát cắt~\cite{HasselmoAndersonBower1992}. Các con số ở trên thuộc về mô hình đơn giản hóa của chúng tôi; ranh giới giữa các chế độ trong não nằm chính xác ở đâu thì chưa rõ.
+
+\section{Tin vào mắt bao nhiêu}
+
+Công tắc ``ghi/đọc'' là trường hợp cực đoan của một câu hỏi tổng quát hơn: nên tin vào đầu vào bao nhiêu và tin vào bộ nhớ bao nhiêu? Kỹ sư có câu trả lời chính xác cho câu hỏi này, và nó làm sáng tỏ vì sao một dây điều khiển cùng lúc cả chế độ lẫn tốc độ học.
+
+Giả sử mạng theo dõi một đại lượng $s(t)$ trôi dạt chậm: mỗi giây phương sai của nó tăng thêm $q$. Các giác quan báo về $y(t)=s(t)+$nhiễu với cường độ $R$. Ước lượng tốt nhất $\hat s$ trong thời gian liên tục được cho bởi bộ lọc Kalman--Bucy~\cite{KalmanBucy1961}:
+\begin{empheq}[box=\keybox]{equation}
+\frac{\dd\hat s}{\dd t} \;=\; \frac{P}{R}\,\bigl(y-\hat s\bigr),
+\qquad
+\frac{\dd P}{\dd t} \;=\; q-\frac{P^2}{R} ,
+\label{eq:kalman}
+\end{empheq}
+trong đó $P$ là phương sai sai số của ước lượng, tức là mức độ mà chính mạng không chắc chắn về điều nó biết. Phương trình thứ nhất là cùng mạch RC như màng trong mô hình nơ-ron~\eqref{eq:glutneuron}, nhưng với hằng số thời gian $R/P$ thay đổi. Khi mạng không chắc chắn, $P$ lớn, hằng số thời gian nhỏ, và ước lượng bám nhanh theo đầu vào: đó là ``ghi''. Khi mạng chắc chắn, $P$ nhỏ, và ước lượng gần như không nghe đầu vào, bám vào bộ nhớ: đó là ``đọc''.
+
+Ở chế độ xác lập $P=\sqrt{qR}$ và hằng số thời gian của bộ nhớ bằng $\sqrt{R/q}$: nếu thế giới trôi đi một đơn vị trong một trăm giây, $q=0.01$, còn nhiễu giác quan là $R=1$, thì bộ nhớ nên nhớ khoảng mười giây.
+
+Điều chính ở đây là một con số $P/R$ đặt cùng lúc hai thứ: cả trọng số của đầu vào so với bộ nhớ, lẫn tốc độ thay đổi của ước lượng được lưu. Đây đúng là điều acetylcholine làm trong~\eqref{eq:acetnet}. Theo giả thuyết~\cite{YuDayan2005}, acetylcholine báo cho mạng một đại lượng giống như $P$ --- sự bất định \emph{được dự liệu}, loại mà mạng biết trước. Kênh này không phải lúc nào cũng chậm: một phần nơ-ron \nt{ACET} đáp ứng với phần thưởng và hình phạt trong khoảng hai chục mili giây, càng mạnh khi sự củng cố càng bất ngờ~\cite{Hangya2015}.
+
+\begin{keyblock}
+\begin{proposition}[Một núm vặn cho trọng số đầu vào và tốc độ học]
+\label{prop:kalman}
+Trong bộ lọc tối ưu~\eqref{eq:kalman}, trọng số dùng để trộn đầu vào với bộ nhớ và tốc độ học là cùng một đại lượng $P/R$. Vì vậy điều khiển chúng bằng một tín hiệu là hợp lý. Khi các tính chất của thế giới không đổi, tín hiệu này đạt một mức ổn định $\sqrt{q/R}$, và chỉ cần điều chỉnh nó khi các tính chất của thế giới thay đổi.
+\end{proposition}
+\end{keyblock}
+
+Câu thứ hai của mệnh đề giải thích kết quả ở chương~\ref{sec:nora}, nơi việc điều chỉnh tốc độ học theo sự bất ngờ không thắng được tốc độ cố định tốt nhất: trong một thế giới mà tính chất của các thay đổi không đổi, tốc độ học tốt nhất chính là một hằng số. Lợi ích xuất hiện khi thế giới đột ngột trở nên khác. Khi đó ước lượng bỗng ở xa đầu vào, còn $P$ thì không biết điều đó. Hành động đúng là tăng mạnh $P$ và qua đó chuyển sang chế độ ghi. Theo giả thuyết mà ta đã bàn ở chương~\ref{sec:nora}, thay đổi \emph{không được dự liệu} như vậy do \nt{NORA} báo~\cite{YuDayan2005}. Sự phân công khi đó là tự nhiên: \nt{NORA} nhận ra thế giới đã thay đổi, \nt{ACET} giữ mạng ở chế độ ghi cho tới khi bối cảnh mới được học xong.
+
+\section{Giấc ngủ là chế độ đọc}
+
+Nếu mức acetylcholine cao là chế độ ghi, thì mạng làm gì khi mức thấp? Trong giấc ngủ sóng chậm, mức acetylcholine giảm, các liên kết nội bộ thoát khỏi sự ức chế, đầu vào từ các giác quan gần như không có. Mạng ở chế độ đọc mà không có gợi ý sẽ phát lại những gì đã được ghi trong nó. Ghi nhận hoạt động cho thấy những nơ-ron cùng hoạt động ban ngày lại cùng phát xung trong giấc ngủ sóng chậm~\cite{WilsonMcNaughton1994}, thậm chí theo cùng thứ tự~\cite{Skaggs1996}. Theo giả thuyết~\cite{Hasselmo1999}, những lần phát lại này chép những gì học nhanh ban ngày sang bộ nhớ dài hạn (kéo dài nhân tạo các đợt phát lại ngắn làm cải thiện trí nhớ~\cite{FernandezRuiz2019}): ban ngày --- ghi từ đầu vào, ban đêm --- ghi lại từ bên trong. Với kỹ sư, điều này giống như ghi vào một bộ đệm nhanh ban ngày và đổ nó sang bộ nhớ lâu dài chậm vào ban đêm.
+
+\section{Tổng kết}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{3.2cm}>{\raggedright}p{4.2cm}>{\raggedright\arraybackslash}p{6.0cm}}
+\toprule
+\nt{ACET} làm gì & Bằng cách nào & Điều đã biết \\
+\midrule
+làm yếu liên kết nội bộ & thừa số $1-a$ trong~\eqref{eq:acetnet} & đã đo trên lát cắt \\
+tăng cường đầu vào & thừa số $\frac{1+a}{2}$ & sự tăng tính dễ kích thích và truyền dẫn qua các đường vào đã được đo \\
+tạo thuận cho việc học & tốc độ $\eta a$ & đã đo \\
+chuyển ``ghi/đọc'' & mệnh đề~\ref{prop:writeread} & suy ra từ các mô hình; chưa có phép đo trực tiếp các chế độ \\
+báo sự bất định được dự liệu & $P$ trong~\eqref{eq:kalman} & giả thuyết \\
+giải phóng mạng cho những lần phát lại trong giấc ngủ & $a$ thấp trong giấc ngủ sóng chậm & mức thấp khi ngủ và việc phát lại đã được đo; việc chép sang bộ nhớ dài hạn là giả thuyết \\
+\bottomrule
+\end{tabular}
+\caption{\nt{ACET} bổ sung gì cho mạng gồm \nt{GLUT}, \nt{GABA}, \nt{DOPA} và \nt{NORA}.}
+\label{tab:acet}
+\end{table}
+
+\nt{DOPA} cho mạng biết thay đổi trọng số theo hướng nào, \nt{NORA} --- dùng những gì nó biết quyết đoán tới mức nào, còn \nt{ACET} --- nên nghe thế giới hay nghe chính mình (bảng~\ref{tab:acet}). Đây là đường điều khiển quảng bá cuối cùng trong bảng~\ref{tab:types}: tín hiệu cho phép ghi, thiếu nó thì một bộ nhớ lưu các mẫu trong chính những liên kết mà nó dùng để đọc chúng sẽ tự làm hỏng mình sau mỗi lần đọc.
+
+\section{Bài tập}
+
+\begin{exercise}[\lvlA]
+\label{ex:09:1}
+\emph{Nhớ bao lâu.} Bộ lọc~\eqref{eq:kalman} với $q=0.01$, $R=1$ nhớ khoảng $10$~s. Tìm $P_\infty$ và thời gian nhớ $\sqrt{R/q}$, nếu (a)~biên độ nhiễu cảm biến tăng gấp đôi; (b)~thế giới trôi dạt nhanh gấp một trăm lần. (c)~Nhiễu phải tăng bao nhiêu lần để mạng nhớ được một phút?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:09:2}
+\emph{Chế độ ghi sau một thay đổi.} Thế giới đã thay đổi, và độ bất định của bộ lọc~\eqref{eq:kalman} với $q=0.01$, $R=1$ nhảy vọt lên $P_0\to\infty$. (a)~$P$ trở về $P_\infty$ với hằng số thời gian nào? (b)~Sau bao nhiêu giây tốc độ học vượt mức xác lập không quá $10\,\%$?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:09:3}
+\emph{Tốc độ học cố định.} Mạng học theo $\dd\hat s/\dd t=(y-\hat s)/T$; thế giới trôi dạt, $\dd s/\dd t=w$, $y=s+n$, trong đó $w$ và $n$ là nhiễu trắng với cường độ $q$ và $R$. Tìm $T$ tốt nhất và phương sai sai số khi đó. Nó tăng bao nhiêu lần nếu $T$ sai $2$ lần và $10$ lần?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:09:4}
+\emph{Ranh giới ghi ở đâu.} Trong \texttt{models/\allowbreak acet\_memory.py}, ngưỡng $\theta=0.35$, trọng số bên trong mẫu $w=0.041$ (lý tưởng là $0.045$). Mẫu mới có chung $m=10$ nơ-ron với mẫu cũ. Với $a$ nào trong~\eqref{eq:acetnet} các nơ-ron còn lại của mẫu cũ không bị $m$ nơ-ron này làm sáng lên (ngưỡng sắc)?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:09:5}
+\emph{Mô phỏng: dung lượng bộ nhớ.} Trong \texttt{models/\allowbreak acet\_memory.py}, sửa hàm \texttt{read\_sweep}: với $a=1$, ghi $M$ mẫu ($M$ từ $5$ tới $100$), sau đó với $a=0$ đọc mười mẫu đầu tiên từ một nửa của chúng. Với $M$ nào bắt đầu xuất hiện lỗi, và giới hạn $M_{\max}$ phụ thuộc vào $N$ và $p$ thế nào?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:09:6}
+\emph{Thiết kế: ghi không rò rỉ.} Với tốc độ học $\eta a$, mạng học cả khi đọc. Đề xuất một hàm đơn điệu $\eta(a)\le\eta$, bằng không khi $a\le0.3$ và không kém $\eta a$ khi $a\ge0.9$. Kiểm tra: sau $20$ lần đọc với $a=0.2$ và gợi ý có ba nơ-ron lạ, bao nhiêu nơ-ron lạ đã lọt vào mẫu?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:09:7}
+\emph{Chép bộ đệm vào ban đêm thế nào.} (a)~Khi ngủ $a=0.05$, mỗi lần phát lại dài $0.1\,\text{s}$, ban ngày $0.2\,\text{s}$ với $a=1$. Bao nhiêu lần phát lại tích lũy đủ thay đổi trọng số của một lần trình bày ban ngày, với tốc độ $\eta a$ và với $\eta(a)$ ở bài tập~\ref{ex:09:6}? (b)~Kho lưu trữ học chậm hơn bộ đệm $100$ lần và nghe mẫu $20$ lần mỗi đêm, mỗi lần $0.1\,\text{s}$. Cần bao nhiêu đêm?
+\end{exercise}

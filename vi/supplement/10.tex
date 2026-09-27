@@ -1,0 +1,29 @@
+\section{Chương~\ref{sec:synthesis}. Toàn bộ cỗ máy}
+
+Là chương tổng kết, chương này không đưa ra thí nghiệm mới: mỗi dòng dựa vào chương đã phân tích khẳng định đó và vào cùng các nguồn; bus \nt{GLUT} và việc điều khiển luồng bằng \nt{GABA} đã được xác lập vững chắc, còn vai trò của các kênh quảng bá và sự phối hợp giữa chúng phần lớn là giả thuyết.
+
+{\footnotesize
+\setlength{\tabcolsep}{3pt}\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{>{\raggedright}p{0.5cm}>{\raggedright}p{4.0cm}>{\raggedright}p{5.6cm}>{\raggedright}p{2.3cm}>{\raggedright\arraybackslash}p{1.7cm}}
+\toprule
+TT & Khẳng định & Thí nghiệm và điều đã đo & Nguồn & Trạng thái \\
+\midrule\endfirsthead
+\toprule
+TT & Khẳng định & Thí nghiệm và điều đã đo & Nguồn & Trạng thái \\
+\midrule\endhead
+1 & Với $8.6\cdot10^{10}$ nơ-ron chỉ có bốn loại tín hiệu điều khiển~\eqref{eq:machine} & Đếm nhân tế bào trong dịch đồng thể não (phương pháp phân đoạn đẳng hướng): nam giới trưởng thành có $86.1\pm8.1$ tỷ nơ-ron & \cite{Azevedo2009} & đã đo \\
+2 & Mệnh đề~\ref{prop:architecture}, hai lớp đầu: dữ liệu chạy trên bus địa chỉ \nt{GLUT}, dấu của liên kết do bên gửi quyết định, các nơ-ron \nt{GABA} định hướng và chuẩn hóa luồng (chương~\ref{sec:neurontypes}, \ref{sec:gaba}) & Mỗi nơ-ron có một chất dẫn truyền thần kinh chính (tổng quan các phép đo); ức chế thuận thu hẹp cửa sổ trong đó nơ-ron tháp cộng các đầu vào; phép chia cho hoạt động chung đã được đo ở nhiều vùng & \cite{Strata1999,Pouille2001,Carandini2012} & đã đo \\
+3 & Phần tử không tin cậy: khớp thần kinh làm mất phần lớn số xung (bảng~\ref{tab:computer}, chương~\ref{sec:code}) & Lát cắt hồi hải mã, kích thích tối thiểu: hơn một nửa số xung không gây đáp ứng ở CA1; đã loại trừ lỗi ngưỡng và lỗi dẫn truyền dọc sợi trục, nguyên nhân là sự giải phóng chất dẫn truyền mang tính xác suất & \cite{AllenStevens1994} & đã đo \\
+4 & Não chạy bằng $\sim20$ oát, trung bình khoảng một xung mỗi giây trên một nơ-ron (chương~\ref{sec:code}); kỹ sư chưa chế tạo được cỗ máy như vậy & Ước tính~\eqref{eq:energy} từ chi phí đã đo: khoảng $10^9$ phân tử ATP cho mỗi xung, kể cả công của khớp thần kinh (vỏ não gặm nhấm); ước tính chi tiết cho vỏ não cho tần số còn thấp hơn. Hiện trạng kỹ thuật theo một bài tổng quan & \cite{Attwell2001,Lennie2003,MehonicKenyon2022} & lý thuyết \\
+5 & Việc học của phần lớn khớp thần kinh là tích của vết cục bộ và một con số chung $\delta$ (phương trình thứ hai của~\eqref{eq:machine}, chương~\ref{sec:dofa}) & Nơ-ron \nt{DOPA} của khỉ đáp ứng với sai số dự đoán phần thưởng; trong lát cắt thể vân, dopamine làm gai lớn lên chỉ khi đến sau đầu vào glutamate $0.3$--$2$\,s; vết đã được đo & \cite{Schultz1997,Yagishita2014} & đã đo \\
+6 & Dây sai số riêng tới từng đầu ra chỉ có trong mạch học vận động (chương~\ref{sec:motorlearning}) & Tiểu não: sự trùng khớp giữa tín hiệu sợi leo và một đầu vào làm yếu đầu vào đó; ở khỉ, các xung phức của tế bào Purkinje mang hướng của sai số vận động và gây ra hiệu chỉnh & \cite{Ito2001,Herzfeld2018} & đã đo \\
+7 & Mỗi kênh quảng bá là một bó vài đường (mệnh đề~\ref{prop:bundle}) & Với \nt{DOPA}: trong cùng một nhiệm vụ, các nơ-ron khác nhau mang phần thưởng, cử động và đặc điểm kích thích; sai số nhanh và mức dopamine chậm là khác nhau. Với \nt{SERO}, \nt{NORA}, \nt{ACET}, sự phân chia như vậy ít được nghiên cứu hơn & \cite{Engelhard2019,Hamid2016,Mohebi2019} & đã đo \\
+8 & \nt{SERO}: bộ điều chỉnh mức và, theo giả thuyết, tầm nhìn $\tau_\gamma$ (chương~\ref{sec:serocomputer}) & Tự ức chế: chất chủ vận của chính thụ thể 5-HT$_{1A}$ ức chế nơ-ron serotonin của nhân đường giữa, đã đo. Tầm nhìn được đề xuất trong lý thuyết; thí nghiệm mạnh nhất: hoạt hóa quang di truyền các nơ-ron này ở chuột nhắt kéo dài thời gian chờ phần thưởng bị hoãn & \cite{Sprouse1987,Doya2002,Miyazaki2014} & giả thuyết \\
+9 & \nt{NORA}: hệ số khuếch đại $g$ chọn giữa tìm kiếm và quyết định (chương~\ref{sec:nora}) & Tăng tỷ số tín hiệu/nhiễu: ở khỉ tỉnh, noradrenaline trong vỏ não thính giác ức chế hoạt động nền mạnh hơn đáp ứng với tiếng kêu của đồng loại, đã đo; khuếch đại nhân là mô hình; vai trò trong việc chọn giữa tìm kiếm và quyết định là lý thuyết & \cite{Foote1975NE,ServanSchreiber1990,AstonJones2005} & giả thuyết \\
+10 & \nt{ACET}: chuyển giữa ghi và đọc (chương~\ref{sec:acet}) & Ba tác động (làm yếu liên kết bên trong, tăng cường đầu vào, tạo thuận lợi cho tính dẻo) đã được đo; việc chuyển chế độ được thí nghiệm với scopolamine ở người ủng hộ gián tiếp & \cite{HasselmoBower1992,Gil1997,Atri2004} & giả thuyết \\
+11 & Công thức~\eqref{eq:machine} mô tả toàn bộ cỗ máy & Đây là bản tóm tắt các mô hình của chương~\ref{sec:glutcomputer}--\ref{sec:acet}, mỗi phần dựa vào chương của nó; toàn bộ chưa được kiểm chứng bằng thí nghiệm & suy ra trong chương & giả thuyết \\
+12 & Các núm vặn phối hợp mà không cần điều khiển chung: sai số, bất ngờ, ghi, trở lại (hình~\ref{fig:timeline}) & Chưa có thí nghiệm: sơ đồ mang tính định tính. Các mắt xích riêng lẻ: lý thuyết phân công giữa \nt{NORA} và \nt{ACET}, và mối liên hệ giữa đồng tử với tốc độ học ở người & \cite{YuDayan2005,Nassar2012} & giả thuyết \\
+13 & Học theo một tín hiệu chung càng chậm khi càng nhiều nơ-ron ảnh hưởng tới kết quả (mệnh đề~\ref{prop:broadcastcost}) & Tính đường cong học của mạng tuyến tính: học bằng nhiễu loạn đầu ra chậm hơn hạ gradient một số lần bằng đúng số đầu ra & \cite{Werfel2005} & lý thuyết \\
+14 & Vỏ não chỉnh các mạch nhiều lớp thế nào thì chưa biết; các ứng viên: chùm xung, tính toán trong nhánh nơ-ron, tự học bằng dự đoán & Chùm xung làm vật mang sai số là mô hình; chỉ mạng $5$--$8$ lớp mới lặp lại được đáp ứng của mô hình chi tiết một nơ-ron vỏ não, là mô hình; xung calci trong nhánh nơ-ron vỏ não người cho ra phép HOẶC loại trừ, đã đo trên lát cắt; tự học là tổng quan các bằng chứng & \cite{Payeur2021,Beniaguev2021,Gidon2020,Keller2018} & giả thuyết \\
+\bottomrule
+\end{longtable}}

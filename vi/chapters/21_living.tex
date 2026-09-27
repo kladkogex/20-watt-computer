@@ -1,0 +1,164 @@
+\chapter{Cỗ máy từ nơ-ron sống}
+\chaptermark{Cỗ máy từ nơ-ron sống}
+\label{sec:livingmachine}
+
+\section{Bàn thử có sơ đồ hở}
+
+Ở chương~\ref{sec:debugging}, ta gỡ lỗi một cỗ máy không có sơ đồ: đầu dò nghe được một nghìn nơ-ron trong số tám mươi tỷ, phần còn lại phải đoán. Ở vào tình thế đó, kỹ sư sẽ làm một việc đơn giản: lắp một mẩu mạch nhỏ trên bo cắm thử, nơi thấy rõ từng linh kiện. Với nơ-ron cũng làm được như vậy.
+
+Nơ-ron vỏ não được tách rời rồi nuôi trên một con chip có mảng điện cực, từ vài chục đến hàng chục nghìn điện cực. Sau vài tuần, tế bào mọc nhánh và nối với nhau thành một mạng gồm hàng nghìn hoặc hàng trăm nghìn nơ-ron, phần lớn là \nt{GLUT}, cùng một tỷ lệ nhỏ hơn \nt{GABA} tùy theo mẫu: trong mẫu nuôi cấy hồi hải mã, con số này vào khoảng $6\%$ số nơ-ron~\cite{Benson1994}. Mỗi điện cực vừa nghe được, như đầu dò ở chương~\ref{sec:debugging}, vừa bơm được dòng điện, như một tín hiệu thử. Loại bàn thử thứ hai là \emph{organoid}: những khối mô thần kinh ba chiều cỡ khoảng một milimét, nuôi từ tế bào gốc người~\cite{Lancaster2013}. Trên các bàn thử này, mạng sống hoạt động được hàng tháng; có những nền tảng cho phép làm thí nghiệm trên organoid từ xa, qua mạng, liên tục hơn một trăm ngày~\cite{Jordan2024}. Lĩnh vực này được gọi là \emph{tính toán sinh học} hay \emph{trí tuệ organoid}~\cite{Smirnova2023}.
+
+Bàn thử khác bộ não ở hai điểm quan trọng. Nó rất nhỏ: số nơ-ron ít hơn một trăm nghìn lần. Và nó không có kênh quảng bá: trong mẫu nuôi cấy từ vỏ não không có nơ-ron \nt{DOPA}, \nt{SERO}, \nt{NORA} hay \nt{ACET}. Đây là một cỗ máy có bus dữ liệu và điều khiển luồng, nhưng không có thanh ghi điều khiển. Hãy xem nó làm được gì.
+
+\section{Mạng tự làm gì}
+
+Để yên, mẫu nuôi cấy không im lặng, cũng không nhiễu đều. Thỉnh thoảng gần như cả mạng bùng lên cùng lúc, thành một \emph{đợt bùng phát}, rồi lại lặng đi; khoảng cách giữa các đợt từ một giây đến vài phút, tùy mẫu~\cite{Wagenaar2006}. Với kỹ sư, đây là hình ảnh quen thuộc: một bộ khuếch đại có hồi tiếp dương mạnh và không tải sẽ biến thành bộ dao động.
+
+Cơ chế thì ta đã biết. Liên kết qua lại mạnh giữa các nơ-ron \nt{GLUT} khởi phát một trận thác, như ở chương~\ref{sec:gaba} khi các điều kiện của mệnh đề~\ref{prop:ei} bị vi phạm. Trận thác nhanh chóng làm cạn kho chất dẫn truyền thần kinh ở các khớp thần kinh~\eqref{eq:depression}, và mạng im lặng. Kho hồi phục với hằng số thời gian $\tau_{\text{ph}}$, và khi đã hồi được một tỷ lệ $x^*$ đủ cho trận thác mới thì một đợt bùng phát mới nổ ra. Khoảng cách giữa các đợt là
+\begin{empheq}[box=\keybox]{equation}
+T_{\text{đợt}} \;\approx\; \tau_{\text{ph}}\,\ln\frac{1}{1-x^*} .
+\label{eq:burstinterval}
+\end{empheq}
+Với $\tau_{\text{ph}}=0.8\,\text{s}$ từ chương~\ref{sec:code} và $x^*=0.9$, ta được khoảng hai giây, với $x^*=0.99$ thì khoảng bốn giây. Đây là ước tính mô hình với $\tau_{\text{ph}}$ của cuốn sách, và nó rơi vào đầu ngắn của dải khoảng cách đã đo. Phép đo trực tiếp trên vi mẫu nuôi cấy cho thấy kho chất dẫn truyền hồi phục sau một đợt bùng phát trong vài chục giây~\cite{CohenSegal2011}, tức là ở đó $\tau_{\text{ph}}$ lớn hơn; với $\tau_{\text{ph}}$ như vậy, công thức~\eqref{eq:burstinterval} cho vài chục giây đến vài phút, như ở những mẫu chậm. Đây là một bộ dao động tích thoát, họ hàng với bộ tạo nhịp ở chương~\ref{sec:muscles}: ở đó nó được nạp lại nhờ sự mỏi của các nhóm, còn ở đây là nhờ kho chất dẫn truyền.
+
+Các đợt bùng phát là việc mạng làm khi không có việc gì để làm. Trong bộ não sống, hình ảnh tương tự xuất hiện trong giấc ngủ sâu (chương~\ref{sec:sleep}) và trong bộ não đang phát triển, trước khi có đầu vào thật. Sự giống nhau này gợi ý nhiều điều, nhưng việc cơ chế là một vẫn chỉ là giả thuyết.
+
+\section{Dạy mạng khi không có thầy dopamine}
+
+Vì mẫu nuôi cấy không có \nt{DOPA}, tín hiệu ``tốt hơn hay tệ hơn'' phải tự ta đưa vào, bằng điện cực. Thí nghiệm cho thấy mạng trên bàn thử quả thật thay đổi đáp ứng, và điều thú vị nhất là \emph{dùng gì} để dạy nó.
+
+\emph{Người thầy im lặng.} Mạng được kích thích qua một điện cực, cứ một đến ba giây một lần, cho đến khi ở điện cực khác xuất hiện đáp ứng mong muốn sau kích thích $50\pm10\ms$. Ngay khi đáp ứng ấy xuất hiện, kích thích bị tắt trong năm phút. Sau vài chu kỳ như vậy, đáp ứng mong muốn xuất hiện ngay khi có kích thích~\cite{Shahaf2001}. Phần thưởng ở đây là sự im lặng: kích thích làm mạng lung lay, còn việc ngừng kích thích giữ nó lại ở trạng thái đã cho đáp ứng đúng. Đây là phép xuống dốc gradient qua các nhiễu loạn ngẫu nhiên ở chương~\ref{sec:dofa} (mệnh đề~\ref{prop:gradient}), trong đó vai trò của sai số do chính việc rung lắc đảm nhận: cứ lắc cho đến khi đúng thì thôi.
+
+\emph{Mạng chơi quần vợt.} Trong một thí nghiệm trên bàn thử có mảng điện cực dày, khoảng một triệu nơ-ron được nối với một trò chơi quần vợt trên máy tính có một cây vợt~\cite{Kagan2022}. Vị trí quả bóng được đưa vào bằng dòng điện qua các điện cực ``cảm giác'': bóng ở đâu thì mã hóa theo vị trí, bóng xa bao nhiêu thì mã hóa theo tần số. Hoạt động ở hai vùng ``vận động'' đẩy vợt lên hoặc xuống. Quy tắc học rất khác thường. Nếu vợt đỡ trúng bóng, mạng nhận một kích thích ngắn \emph{đoán trước được}; nếu trượt, nó nhận vài giây dòng điện ngẫu nhiên \emph{không đoán trước được}. Sau hai mươi phút chơi, các chuỗi cú đỡ trúng dài ra. Mức tăng có ý nghĩa thống kê trong một phiên chỉ có khi phản hồi đầy đủ; khi thay kích thích bằng im lặng, cuối phiên mẫu nuôi cấy cũng chơi tốt hơn so với không có phản hồi, nhưng hiệu ứng nhỏ hơn, còn việc học bền vững từ phiên này sang phiên khác qua nhiều ngày thì không có. Phân tích chi tiết thí nghiệm này nằm ở chương~\ref{sec:dishbrain}.
+
+Các tác giả giải thích kết quả bằng giả thuyết rằng mạng hành động sao cho đầu vào của nó dễ đoán~\cite{Friston2010}. Đây cũng là ý tưởng tiết kiệm xung ở chương~\ref{sec:code} và dự đoán khung hình ở chương~\ref{sec:recognition}: cỗ máy tốn ít hơn khi đầu vào đúng như chờ đợi. Nhưng cả thí nghiệm, và nhất là lời các tác giả về sự ``có tri giác'' của mẫu nuôi cấy, đã bị phê phán gay gắt: hiệu ứng nhỏ, và có thể giải thích đơn giản hơn~\cite{Balci2023}. Đánh giá công bằng là thế này: mẫu nuôi cấy trên bàn thử thay đổi hành vi dưới tác động của phản hồi, điều này đã đo được; còn việc nó học chính là để dự đoán đầu vào của mình thì là giả thuyết.
+
+\emph{Mạng điều khiển cơ thể.} Theo cách tương tự, mẫu nuôi cấy từng được nối với một ``cơ thể'' ảo đơn giản và được dạy di chuyển tới mục tiêu, bằng cách chọn mẫu kích thích huấn luyện theo không gian và thời gian~\cite{Bakkum2008}. Không thí nghiệm nào trong số này có dopamine: thầy dạy là mẫu dòng điện do kỹ sư chọn. Điều gì thay đổi khi thầy dạy là một chương trình hoặc chính dopamine được bàn ở các mục~\ref{sec:dishdopamine}--\ref{sec:cartpole}.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  blk/.style={draw,very thick,rounded corners=2pt,align=center,font=\footnotesize,minimum height=0.8cm,fill=blue!5}]
+% (a) closed loop
+\node[font=\small] at (1.5,4.3) {(a) vòng kín};
+\node[blk,text width=2.6cm] (G) at (1.5,3.3) {trò chơi: bóng và vợt};
+\draw[very thick,fill=orange!10,rounded corners=3pt] (0.5,0.2) rectangle (2.5,1.6);
+\foreach \x in {0.7,1.0,...,2.35}{\foreach \y in {0.4,0.7,1.0,1.3}{\fill[gray!60] (\x,\y) circle (0.04);}}
+\draw[->,thick,blue!60!black] (G.west) -| (-0.5,0.9) -- (0.5,0.9);
+\node[font=\scriptsize,blue!60!black,anchor=east] at (-0.6,2.1) {bóng $\to$ điện};
+\draw[->,thick,red!70!black] (2.5,0.9) -- (3.5,0.9) |- (G.east);
+\node[font=\scriptsize,red!70!black,anchor=west] at (3.6,2.1) {xung $\to$ vợt};
+\node[font=\scriptsize] at (1.5,-0.2) {nơ-ron trên mảng điện cực};
+\node[font=\scriptsize,align=center] at (1.5,-0.85) {trúng: kích thích đoán trước được\\trượt: dòng điện ngẫu nhiên};
+% (b) reservoir
+\begin{scope}[xshift=7.9cm]
+\node[font=\small] at (1.6,4.3) {(b) hồ chứa};
+\node[blk,text width=1.1cm] (X) at (-0.4,1.0) {vào\\$u(t)$};
+\draw[very thick,fill=orange!10] (1.6,1.0) circle (0.8);
+\foreach \a/\r in {20/0.35,80/0.5,150/0.3,210/0.55,280/0.4,330/0.2,110/0.15}{\fill[red!60!black] ({1.6+\r*cos(\a)},{1.0+\r*sin(\a)}) circle (0.05);}
+\node[font=\scriptsize] at (1.6,-0.2) {organoid: không có thầy};
+\node[blk,text width=1.8cm,fill=green!8] (W) at (4.0,1.0) {lớp đọc ra\\$W_{\text{ra}}$};
+\draw[->,thick] (X) -- (0.8,1.0);
+\draw[->,thick] (2.4,1.0) -- node[above,font=\scriptsize] {$\mathbf r(t)$} (W);
+\draw[->,thick] (W) -- (4.0,2.3) node[above,font=\scriptsize] {$y(t)$};
+\node[font=\scriptsize,green!40!black] at (4.0,0.3) {học có thầy};
+\end{scope}
+\end{tikzpicture}
+\caption{Hai cách buộc mạng sống tính toán. (a) Vòng kín: vị trí bóng được đưa vào bằng dòng điện, xung của các vùng vận động đẩy vợt, còn kích thích đoán trước được hoặc ngẫu nhiên sau cú đánh đóng vai thầy dạy. (b) Hồ chứa~\eqref{eq:reservoir}: organoid không nhận tín hiệu dạy nào, nó tách đầu vào thành nhiều đáp ứng phi tuyến có trí nhớ; chỉ một lớp đọc ra tuyến tính bên ngoài học theo sai số. Trong lúc đó, liên kết của chính organoid cũng thay đổi, không cần thầy.}
+\label{fig:livingmachine}
+\end{figure}
+
+\section{Hồ chứa sống}
+
+Còn một cách khác để dùng mạng sống: hoàn toàn không dạy nó. Trong kỹ thuật, cách này gọi là \emph{tính toán hồ chứa}~\cite{Maass2002,JaegerHaas2004}. Lấy một hệ phi tuyến có sẵn và có trí nhớ, hệ nào cũng được, miễn là đáp ứng của nó với đầu vào phong phú và phụ thuộc vào quá khứ gần. Đầu vào $u(t)$ kích động hệ, tạo ra vectơ đáp ứng $\mathbf r(t)$, và chỉ có lớp đọc ra tuyến tính là được huấn luyện:
+\begin{empheq}[box=\keybox]{equation}
+y(t) \;=\; W_{\text{ra}}\,\mathbf r(t) ,
+\label{eq:reservoir}
+\end{empheq}
+với trọng số được chọn theo quy tắc bình phương tối thiểu~\eqref{eq:lms} ở chương~\ref{sec:motorlearning}. Hồ chứa làm đúng việc mà các nơ-ron \nt{GLUT} nhỏ ở chương~\ref{sec:motorlearning} đã làm: tách đầu vào thành một vectơ dài, trong đó các lớp cần phân biệt trở nên tách được bằng một mặt phẳng (chương~\ref{sec:dendrites}).
+
+Một organoid trên mảng điện cực tỏ ra dùng được làm hồ chứa như vậy. Âm thanh tiếng nói, đưa vào organoid dưới dạng các mẫu dòng điện, sau khi huấn luyện một lớp đọc ra tuyến tính đã được phân biệt theo người nói với độ chính xác khoảng $78\%$~\cite{Cai2023}. Độ chính xác $78\%$ là con số do chính các tác giả công bố và báo chí nhắc lại. Kết quả hữu ích, nhưng cần hiểu ``trí khôn'' nằm ở đâu: organoid cung cấp tính phi tuyến và trí nhớ tắt dần, còn việc học theo sai số được làm bên ngoài, trên silicon (hình~\ref{fig:livingmachine}). Tuy vậy, organoid không đứng yên: theo các tác giả, trong quá trình huấn luyện, độ liên kết chức năng của chính nó thay đổi, và họ gọi đó là học không giám sát bên trong organoid~\cite{Cai2023}. Phần độ chính xác nào do thay đổi này, phần nào do lớp đọc ra, thì chưa được tách bạch.
+
+\section{Bàn thử nói gì về cỗ máy}
+
+\emph{Năng lượng.} Theo ước tính~\eqref{eq:energy}, một xung tốn khoảng $10^{-10}$~J. Một mẫu nuôi cấy một triệu nơ-ron, với tần số một xung mỗi giây, tiêu tốn cho việc truyền tín hiệu
+\begin{empheq}[box=\keybox]{equation}
+P \;\approx\; 10^{6}\times1\,\text{s}^{-1}\times10^{-10}\,\text{J} \;=\; 10^{-4}\,\text{W},
+\label{eq:dishpower}
+\end{empheq}
+tức một phần mười miliwatt. Phần điện tử kích thích, ghi và xử lý các xung này tốn nhiều hơn vài bậc độ lớn. Cũng như ở chương~\ref{sec:debugging}, nút thắt cổ chai không phải là tính toán, mà là việc kết nối với nó.
+
+\emph{Những linh kiện còn thiếu.} Bàn thử cho thấy bus \nt{GLUT} cùng điều khiển luồng \nt{GABA}, khi không có thanh ghi điều khiển, làm được bao nhiêu: tự tổ chức, tạo ra các đợt bùng phát, thay đổi đáp ứng dưới tác động của phản hồi và làm một hồ chứa tốt. Điều nó không làm được khi thiếu chúng là tự quyết định thế nào là thành công. Trên bàn thử, tín hiệu ấy do kỹ sư đưa vào, còn trong não, như ta đã thấy ở các chương~\ref{sec:dofa}--\ref{sec:acet}, là do các kênh quảng bá.
+
+\emph{Đạo đức.} Organoid được nuôi từ tế bào người, và chúng càng phức tạp thì câu hỏi liệu mô như vậy có cảm nhận được gì không càng nghiêm túc. Góc nhìn kỹ thuật gợi ý một phần câu trả lời: đau ở chương~\ref{sec:pain} không phải là tín hiệu của một cảm biến, mà là cả một hệ thống báo động có cổng, núm chỉnh âm lượng và các kênh quảng bá, những thứ bàn thử không có. Nhưng đây là lập luận chứ không phải chứng minh, và chính lĩnh vực này đề xuất tiến hành đánh giá đạo đức song song với thí nghiệm, ngay từ đầu~\cite{Smirnova2023}.
+
+\begin{keyblock}
+\begin{proposition}[Mạng sống trên bàn thử]
+\label{prop:livingmachine}
+Một mạng gồm các nơ-ron \nt{GLUT} và \nt{GABA} trên mảng điện cực tự tạo ra các đợt bùng phát~\eqref{eq:burstinterval}, thay đổi đáp ứng dưới tác động của phản hồi và có thể làm hồ chứa~\eqref{eq:reservoir} cho một lớp đọc ra được huấn luyện bên ngoài. Tất cả những điều này đã được đo. Việc mạng như vậy học theo một quy tắc chung nào đó, chẳng hạn dự đoán đầu vào của mình, là giả thuyết, còn những lời lớn về sự ``có tri giác'' của nó thì phần đông chuyên gia không chấp nhận.
+\end{proposition}
+\end{keyblock}
+
+\input{chapters/21_living_dopamine}
+
+\section{Tổng kết}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{2.8cm}>{\raggedright}p{4.2cm}>{\raggedright\arraybackslash}p{5.8cm}}
+\toprule
+Thí nghiệm & Mạng sống làm gì & Điều đã biết \\
+\midrule
+mạng không có đầu vào & đợt bùng phát cách nhau từ một giây đến vài phút~\eqref{eq:burstinterval} & đã đo; cơ chế qua sự cạn kiệt khớp thần kinh là mô hình được chấp nhận rộng rãi \\
+người thầy im lặng & đáp ứng mong muốn được củng cố khi tắt kích thích & đã đo \\
+chơi quần vợt & chuỗi cú đỡ trúng dài ra; mức tăng có ý nghĩa trong một phiên chỉ có khi phản hồi đầy đủ & thay đổi hành vi đã đo; việc học từ phiên này sang phiên khác không bền vững; độ lớn hiệu ứng và cách giải thích bằng dự đoán đầu vào còn gây tranh cãi \\
+cơ thể ảo & di chuyển tới mục tiêu khi chọn đúng mẫu kích thích & đã đo \\
+hồ chứa & tính phi tuyến và trí nhớ cho lớp đọc ra~\eqref{eq:reservoir} & đã đo; việc học theo sai số nằm bên ngoài, trên silicon; liên kết của organoid cũng thay đổi \\
+năng lượng & khoảng $10^{-4}$~W cho một triệu nơ-ron~\eqref{eq:dishpower} & ước tính theo~\eqref{eq:energy} \\
+\bottomrule
+\end{tabular}
+\caption{Những gì cỗ máy từ nơ-ron sống đã cho thấy.}
+\label{tab:livingmachine}
+\end{table}
+
+Cỗ máy từ nơ-ron sống (bảng~\ref{tab:livingmachine}) là một bàn thử cho thấy bus dữ liệu và điều khiển luồng làm được gì khi không có thanh ghi điều khiển. Chúng làm được nhiều, nhưng không tự quyết định được thế nào là tốt. Trên bàn thử, vai trò đó thuộc về kỹ sư với mẫu dòng điện của mình; trong não, thuộc về số ít dây dẫn quảng bá mà phần giữa cuốn sách đã dành để bàn.
+
+\section{Bài tập}
+
+\begin{exercise}[\lvlA]
+\label{ex:21:1}
+\emph{Khoảng cách giữa các đợt bùng phát.} Một đợt làm cạn kho về không, sau đó $\tau_{\text{ph}}\,\dd x/\dd t=1-x$, và đợt mới bắt đầu khi $x=x^*$; $\tau_{\text{ph}}=0.8$~s. (a)~Tìm khoảng cách khi $x^*=0.9$ và $0.99$. (b)~Ngưỡng $x^*$ dao động ngẫu nhiên $\pm0.005$ quanh $0.99$. Các khoảng cách nằm trong dải nào?
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:21:2}
+\emph{Năng lượng của bàn thử.} (a)~Ước tính~\eqref{eq:dishpower} cho công suất bao nhiêu với cả bộ não ($8.6\cdot10^{10}$ nơ-ron)? (b)~Bàn thử ghi $1024$ điện cực ở tần số $20$~kHz, $10$~bit mỗi mẫu. Truyền luồng dữ liệu này với $1$~nJ mỗi bit tốn gấp bao nhiêu lần công suất của chính mẫu nuôi cấy?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:21:3}
+\emph{Thiết kế: dập tắt các đợt bùng phát.} Kích thích thưa qua nhiều điện cực khiến mỗi khớp thần kinh giải phóng chất dẫn truyền với tần số $r_b$; kho tuân theo $\tau_{\text{ph}}\,\dd x/\dd t=1-x-Ur_b\tau_{\text{ph}}x$, $U=0.5$, $\tau_{\text{ph}}=0.8$~s. Với $r_b$ nhỏ nhất bằng bao nhiêu thì kho không hồi tới $x^*=0.9$; $0.99$, và khi đó khớp yếu đi bao nhiêu?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:21:4}
+\emph{Trí nhớ của hồ chứa không lớn hơn số nơ-ron.} Một hồ chứa có $N$ đầu ra $\mathbf r(t)$ nhận đầu vào trắng $u(t)$ có trung bình bằng không và phương sai đơn vị; $m_k$ là bình phương tương quan lớn nhất của lớp đọc ra $\mathbf w_k\cdot\mathbf r(t)$ với $u(t-k)$. Chứng minh rằng dung lượng nhớ $\mathrm{MC}=\sum_{k\ge0}m_k\le N$.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:21:5}
+\emph{Mô phỏng: hồ chứa trên silicon.} Hồ chứa $\mathbf r(t+1)=\tanh(W\mathbf r(t)+\mathbf v\,u(t)+\mathbf c)$, $N=30$, $W$ ngẫu nhiên với bán kính phổ $0.9$, $v_i\sim U(-0.5,0.5)$, $c_i\sim U(-0.2,0.2)$, $u\sim U(-1,1)$, lớp đọc ra là hồi quy ridge. Tìm dung lượng nhớ của bài tập~\ref{ex:21:4} khi có và không có $\tanh$. Hồ chứa nào nhớ nhiều hơn?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:21:6}
+\emph{Lớp đọc ra cho hồ chứa sống.} Organoid cho $1024$ kênh và $P=240$ bản ghi huấn luyện thuộc hai lớp. (a)~Có thể giữ lại bao nhiêu đặc trưng $n$ để, theo công thức của bài tập~\ref{ex:19:3}, một cách gán nhãn ngẫu nhiên tách được với xác suất không quá $1\%$? (b)~Độ chính xác $78\%$ trên $100$ bản ghi kiểm tra cao hơn mức đoán mò bao nhiêu sigma?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:21:7}
+\emph{Nghiên cứu: thầy dạy không có kênh quảng bá.} Hãy đề xuất một giao thức kích thích hiện thực quy tắc ba thừa số của chương~\ref{sec:dofa} trên bàn thử qua $8$--$1024$ điện cực, và một đối chứng với lớp đọc ra bị đóng băng, phân biệt việc học trọng số với sự dịch chuyển trạng thái của mạng. Kết quả nào sẽ bác bỏ giả thuyết về việc học?
+\end{exercise}

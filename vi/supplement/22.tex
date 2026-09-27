@@ -1,0 +1,29 @@
+\section{Chương~\ref{sec:dishbrain}. DishBrain}
+
+Cấu tạo của bàn thử và kết quả chơi lấy từ một công trình thực nghiệm và phần tiếp theo của nó; các công thức về nhiễu và về sự trôi tới cấu hình tốt được suy ra trong chương và kiểm tra bằng mô hình của sách, còn cơ chế học trong đĩa nuôi thì chưa được xác lập.
+
+{\footnotesize
+\setlength{\tabcolsep}{3pt}\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{>{\raggedright}p{0.5cm}>{\raggedright}p{4.0cm}>{\raggedright}p{5.6cm}>{\raggedright}p{2.3cm}>{\raggedright\arraybackslash}p{1.7cm}}
+\toprule
+TT & Khẳng định & Thí nghiệm và điều đã đo & Nguồn & Trạng thái \\
+\midrule\endfirsthead
+\toprule
+TT & Khẳng định & Thí nghiệm và điều đã đo & Nguồn & Trạng thái \\
+\midrule\endhead
+1 & Bàn thử: khoảng $800\,000$ tế bào vỏ não chuột hoặc khoảng $10^6$ tế bào người trên chip; $26\,000$ điện cực trên $8$~mm$^2$, ghi tối đa $1024$, kích thích qua $8$ & Phương pháp của công trình: chip MaxOne, $26\,000$ điện cực bạch kim trên $8$~mm$^2$, ghi $1024$ kênh, mỗi kênh $20\,000$ mẫu mỗi giây; về kỹ thuật có thể kích thích tới $32$ điện cực, kích thích độc lập được $8$; mẫu chuột được dùng từ khoảng $10$ ngày tuổi & \cite{Kagan2022} & đã đo \\
+2 & Vòng lặp với nhịp $10$~ms: xung của các vùng vận động đẩy vợt (hình~\ref{fig:dishloop}) & Xung được đếm theo cửa sổ $10$~ms; độ trễ từ xung đến kích thích đáp lại khoảng $5$~ms, do bộ đệm của thiết bị quyết định & \cite{Kagan2022} & đã đo \\
+3 & Đầu vào: mã vị trí (điện cực nào trong $8$) và mã tần số $4$--$40$~xung/s & Trong thí nghiệm chính, tần số kích thích tăng tuyến tính từ $4$~Hz khi bóng ở tường xa đến $40$~Hz ở vợt; biên độ xung của bóng là $75$~mV; xung chữ nhật hai pha & \cite{Kagan2022} & đã đo \\
+4 & Đầu ra $\Delta p=c\,(n_\uparrow-n_\downarrow)$~\eqref{eq:dishreadout}, nhiễu của số đếm mỗi cửa sổ $1/\sqrt{RT}$ & Quy tắc hiệu số của hai vùng được mô tả trong công trình (với trọng số các vùng theo hoạt động), công thức chính xác không được đưa ra. Ước tính nhiễu là hệ quả của phép đếm Poisson, được suy ra trong chương & \cite{Kagan2022}; suy ra trong chương & lý thuyết \\
+5 & Thầy dạy: sau cú trúng là kích thích đoán trước được $75$~mV, $100$~xung/s, $0.1$~s; sau cú trượt là kích thích không đoán trước được, $150$~mV, $5$~xung/s, $4$~s vào vị trí và thời điểm ngẫu nhiên, sau đó nghỉ $4$~s & Phương pháp: sau cú trúng $75$~mV, $100$~Hz, $100$~ms trên cả $8$ điện cực cùng lúc; sau cú trượt $150$~mV, $5$~Hz vào các điện cực ngẫu nhiên ở các thời điểm ngẫu nhiên trong $4$~s, sau đó $4$~s không kích thích. Mẫu nuôi cấy không có dopamine & \cite{Kagan2022} & đã đo \\
+6 & Mạng hành động sao cho đầu vào của nó trở nên dễ đoán & Nguyên lý năng lượng tự do là một đề xuất lý thuyết mà từ đó các tác giả suy ra giao thức; thí nghiệm phù hợp với nó, nhưng không phân biệt nó với các cơ chế đơn giản hơn (dòng~7--8) & \cite{Friston2010,Kagan2022} & giả thuyết \\
+7 & Nếu thất bại làm mạng bị lắc còn thành công thì không, thời gian ở một cấu hình $\rho\propto1/P_{\text{trượt}}$~\eqref{eq:dishdensity} (mệnh đề~\ref{prop:dishscramble}) & Suy ra từ cân bằng dòng trong xích Markov với các cú hích đối xứng, được chứng minh trong chương. Chưa có kiểm tra trực tiếp trên mẫu nuôi cấy & suy ra trong chương & lý thuyết \\
+8 & Mô hình ``xáo trộn khi trượt'' học được: tỷ lệ đỡ trúng $0.21\to0.38$; khi hích sau mỗi lượt đánh $\approx0.12$, không hích $0.19$ (hình~\ref{fig:dishmodel}) & Tính toán, script \texttt{models/dishbrain\_model.py}, $40$ mô hình mẫu nuôi cấy, mỗi mô hình $2000$ lượt đánh: $0.21\to0.38$; $0.13\to0.11$; $0.19\to0.19$ & --- & mô hình \\
+9 & Chuỗi cú đỡ trúng dài ra chỉ ở các mẫu sống trong vòng lặp đầy đủ; các đối chứng không học & $399$ phiên, mỗi phiên $20$~phút: $9$ mẫu chuột ($101$ phiên), $11$ mẫu người ($138$), $6$ chip chỉ có môi trường nuôi ($80$), $20$ mẫu ở trạng thái nghỉ ($42$), $3$ mô phỏng ($38$). Độ dài trung bình của lượt đánh trong $15$~phút cuối lớn hơn $5$ phút đầu chỉ ở các mẫu sống; ở tế bào không phải nơ-ron (HEK293T) và ở chip chỉ có môi trường nuôi thì không có hiệu ứng & \cite{Kagan2022} & đã đo \\
+10 & Mức tăng có ý nghĩa trong một phiên chỉ khi phản hồi đầy đủ; với im lặng thay cho kích thích, cuối phiên chơi tốt hơn so với không phản hồi, nhưng hiệu ứng nhỏ hơn & $486$ phiên trong $3$ ngày: ``kích thích'' ($n=27$), ``im lặng'' ($17$), ``không phản hồi'' ($15$). Mức tăng theo thời gian chỉ có ý nghĩa ở điều kiện ``kích thích''; cuối phiên, điều kiện ``im lặng'' hơn ``không phản hồi'' với hiệu ứng nhỏ hơn & \cite{Kagan2022} & đã đo \\
+11 & Hiệu ứng nhỏ; mạng có học lâu dài không là câu hỏi mở & Trong một phiên, sự cải thiện đáng tin cậy, nhưng theo chính các tác giả, việc học giữa các phiên qua vài ngày không được quan sát ổn định & \cite{Kagan2022} & đã đo \\
+12 & Khi chơi, mạng tiến gần chế độ tới hạn, và càng gần thì chơi càng tốt & Phân tích các trận thác hoạt động của cùng các mẫu nuôi cấy: đầu vào có cấu trúc đưa mạng tới gần chế độ tới hạn, chất lượng chơi tương quan với mức độ gần; nhưng chỉ riêng tính tới hạn, không có thông tin về hệ quả của hành động, thì chưa đủ cho việc học & \cite{Habibollahi2023} & đã đo \\
+13 & ``Tri giác'' của mẫu nuôi cấy chưa được chứng minh & Bài phản hồi của ba mươi nhà nghiên cứu: thay đổi hành vi trong vòng kín không chứng minh trí tuệ hay cảm giác; chưa có thí nghiệm nào cho thấy điều đó & \cite{Balci2023} & giả thuyết \\
+14 & Đối chứng thứ tư được đề xuất: kích thích đoán trước được sau cú trượt, cùng độ dài và năng lượng (mục~\ref{sec:dishspec}) & Thí nghiệm này chưa được tiến hành; đây là đề xuất của cuốn sách & --- & giả thuyết \\
+\bottomrule
+\end{longtable}}

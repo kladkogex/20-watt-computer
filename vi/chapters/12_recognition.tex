@@ -1,0 +1,225 @@
+\chapter{Nhận dạng hình ảnh và video}
+\chaptermark{Nhận dạng}
+\label{sec:recognition}
+
+\section{Bài toán: cùng một vật với những điểm ảnh khác nhau}
+
+Chương~\ref{sec:sensors} đã đưa hình ảnh tới đầu vào của cỗ máy: khoảng một triệu nơ-ron đầu ra của mắt, một luồng đã nén, trong đó chủ yếu truyền các cạnh và các thay đổi. Nhưng giữa cảm biến và hành động còn một bước mà ta chưa nhắc tới. Con mèo trong ảnh không phải là một tập điểm ảnh. Dịch nó đi nửa khung hình, xoay nó, đẩy nó ra xa, tắt một nửa ánh sáng: gần như mọi điểm ảnh đều khác đi, vậy mà câu trả lời ``con mèo'' phải giữ nguyên. Kỹ sư gọi đó là \emph{tính bất biến}: câu trả lời của bộ phân loại không được đổi khi dịch chuyển, co giãn, xoay và thay đổi ánh sáng.
+
+Cái khó thấy rõ qua một thí nghiệm đơn giản. Lấy một ``võng mạc'' một chiều gồm $24$ điểm và hai hình, mỗi hình năm điểm, có thể nằm ở bất kỳ đâu. Bộ phân loại so sánh đầu vào với một mẫu ghi nhớ tại một vị trí đoán đúng $49$--$52\%$ số trường hợp, ngang với tung đồng xu. Phép dịch chuyển phá hỏng hoàn toàn việc so sánh theo điểm ảnh. Cần một sơ đồ khác.
+
+\section{Dây chuyền nhiều tầng}
+
+Não làm việc này nhanh đến đâu, ta đã biết từ chương~\ref{sec:code}: con vật trong một bức ảnh chiếu chớp nhoáng được nhận ra sau khoảng $150\ms$, và tín hiệu đi qua chừng mười tầng, mỗi tầng $10$--$20\ms$~\cite{Thorpe1996}. Ở mỗi tầng, nơ-ron chỉ kịp phát không hoặc một xung. Vậy nhận dạng nhanh là một lượt đi qua dây chuyền, không có suy nghĩ lâu và lặp lại. Câu hỏi là mỗi tầng làm gì.
+
+Câu trả lời mà các phép đo ở những tầng thị giác đầu tiên gợi ý~\cite{HubelWiesel1962} gồm hai phép toán xen kẽ (hình~\ref{fig:conveyor}).
+
+\emph{Tính chọn lọc.} Nơ-ron của tầng $S$ nhìn một vùng nhỏ của đầu vào và chỉ phát xung nếu ở đó có một tổ hợp bộ phận nhất định: cạnh này, và cạnh kia bên cạnh. Đó là phép VÀ theo các bộ phận, tức nơ-ron ngưỡng của chương~\ref{sec:glutcomputer} với ngưỡng cao hơn mức mà bất kỳ bộ phận đơn lẻ nào tạo ra.
+
+\emph{Tính bất biến.} Nơ-ron của tầng $C$ gom đầu ra của nhiều nơ-ron $S$ cùng tìm một tổ hợp ở những vị trí khác nhau, và phát xung nếu tổ hợp đó có ở bất cứ đâu. Đó là phép HOẶC theo vị trí, hay chính xác hơn là chọn giá trị lớn nhất.
+
+Với mô hình một chiều, hai phép toán được viết như sau:
+\begin{empheq}[box=\keybox]{equation}
+s_{f,p} \;=\; \Bigl[\sum_i t_{f,i}\,x_{p+i} - \theta\Bigr]_+ ,
+\qquad
+c_f \;=\; \max_p\, s_{f,p} ,
+\label{eq:scstage}
+\end{empheq}
+trong đó $x$ là đầu vào, $t_{f,i}$ là mẫu của đặc trưng $f$, $p$ là vị trí, $\theta$ là ngưỡng. Biểu thức thứ nhất làm câu trả lời có tính chọn lọc, biểu thức thứ hai làm nó không phụ thuộc vị trí. Mạng lấy được giá trị lớn nhất trong nhiều đầu vào bằng các công cụ của chương~\ref{sec:gaba}: ức chế lẫn nhau giữ lại đầu vào mạnh nhất (mệnh đề~\ref{prop:wta}), còn phép chia cho hoạt động chung san bằng đáp ứng khi độ sáng khác nhau~\cite{Carandini2012}.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  px/.style={draw,minimum size=0.36cm,inner sep=0pt},
+  on/.style={px,fill=blue!55!black},
+  snode/.style={circle,draw,very thick,minimum size=0.62cm,inner sep=0pt,font=\scriptsize,fill=blue!6},
+  cnode/.style={circle,draw,very thick,minimum size=0.8cm,inner sep=0pt,font=\scriptsize,fill=red!10}]
+% two inputs: the same shape at two positions
+\foreach \row/\sh/\lab in {0/1/{khung 1},1/7/{khung 2}}{
+  \begin{scope}[yshift=-\row*1.0cm]
+  \node[left,font=\scriptsize] at (-0.25,0) {\lab};
+  \foreach \i in {0,...,13}{\node[px] at (\i*0.4,0) {};}
+  \foreach \d in {0,1,3,4}{\node[on] at ({(\sh+\d)*0.4},0) {};}
+  \end{scope}}
+% S stage: detectors of the shape at several positions
+\foreach \k in {0,...,5}{
+  \node[snode] (S\k) at ({0.8+0.8*\k},1.7) {$S$};}
+\node[font=\scriptsize,left] at (-0.25,1.7) {tầng $S$: VÀ theo bộ phận};
+\draw[->,thick,blue!60!black] (1.2,0.25) -- (S1.south);
+\draw[->,thick,orange!85!black] (3.6,0.25) -- (S4.south);
+\node[font=\scriptsize,blue!60!black,anchor=east] at (1.25,0.85) {khung 1};
+\node[font=\scriptsize,orange!85!black,anchor=west] at (3.9,0.85) {khung 2};
+% C stage
+\node[cnode] (C) at (2.8,3.25) {$C$};
+\node[font=\scriptsize,left] at (-0.25,3.25) {tầng $C$: HOẶC theo vị trí};
+\foreach \k in {0,...,5}{\draw[->,gray!60!black] (S\k.north) -- (C);}
+\draw[->,very thick,red!70!black] (C.north) -- ++(0,0.6) node[above,font=\scriptsize,black] {``có hình'' ở cả hai khung};
+% next stages
+\draw[decorate,decoration={brace,amplitude=5pt},gray!60!black] (6.3,1.4) -- (6.3,-1.3);
+\node[right,font=\scriptsize,align=left] at (6.5,0.05) {cùng một\\vật, điểm ảnh\\khác nhau};
+\draw[->,thick,densely dashed,gray!60!black] (3.6,3.25) -- (5.9,3.25) node[right,font=\scriptsize,black,align=left] {các cặp $S$, $C$ tiếp theo:\\lớn hơn, phức tạp hơn,\\bất biến hơn};
+\end{tikzpicture}
+\caption{Một cặp tầng của dây chuyền. Các nơ-ron $S$ tìm cùng một tổ hợp bộ phận ở những vị trí khác nhau; nơ-ron $C$ đáp ứng nếu tổ hợp đó có ở bất cứ đâu~\eqref{eq:scstage}. Hình ở khung 1 và ở khung 2 kích thích các nơ-ron $S$ khác nhau, nhưng cùng một nơ-ron $C$. Các cặp tầng tiếp theo lặp lại điều đó với những tổ hợp ngày càng lớn và phức tạp.}
+\label{fig:conveyor}
+\end{figure}
+
+Cũng trong mô hình một chiều ấy, cặp tầng~\eqref{eq:scstage} nhận ra hình ở bất kỳ vị trí nào mà không sai, còn nếu mỗi điểm của đầu vào bị lật ngẫu nhiên với xác suất $0.1$ thì đúng $86\%$ số trường hợp, với xác suất $0.2$ thì $70\%$. Đồng xu vẫn chỉ cho một nửa. Chồng vài cặp như vậy lên nhau: cặp đầu tìm cạnh, cặp sau tìm tổ hợp các cạnh, cao hơn nữa là bộ phận của đồ vật, trên cùng là toàn bộ đồ vật. Qua mỗi cặp, tổ hợp lớn hơn, còn câu trả lời ngày càng ít phụ thuộc vào việc đồ vật nằm ở đâu và nằm thế nào~\cite{Riesenhuber1999}.
+
+\begin{keyblock}
+\begin{proposition}[Dây chuyền chọn lọc và bất biến]
+\label{prop:conveyor}
+Nhận dạng nhanh là một lượt đi qua chừng mười tầng. Ở mỗi cặp tầng, phép VÀ theo bộ phận~\eqref{eq:scstage} làm câu trả lời có tính chọn lọc, còn phép HOẶC theo vị trí làm nó không phụ thuộc phép dịch chuyển. Xen kẽ hai phép toán này cho ra câu trả lời phân biệt được đồ vật mà gần như không phụ thuộc vào việc chúng được nhìn thấy ở đâu và thế nào. Cấu tạo của các tầng đầu và tốc độ của một lượt đã được đo; việc cả chuỗi quy về đúng hai phép toán này là một sự đơn giản hóa.
+\end{proposition}
+\end{keyblock}
+
+Nếu cấu tạo này có vẻ quen thuộc thì đúng là như vậy. Chính sự xen kẽ này (tìm đặc trưng ở mọi vị trí, rồi gộp theo các vị trí lân cận) đã được kỹ sư chuyển vào mạng nhân tạo \emph{tích chập}~\cite{Fukushima1980}. Gần đây thì đi theo chiều ngược lại: mạng tích chập được huấn luyện để nhận dạng đồ vật hóa ra là mô hình tốt nhất đã biết cho đáp ứng của nơ-ron ở các tầng thị giác cao~\cite{Yamins2014}. Kết quả ở trên cùng được đọc ra đơn giản: từ tổng tần số của chừng một trăm nơ-ron ở tầng cuối, một khối quyết định tuyến tính nhận ra đồ vật sau một phần mười giây kể từ khi hiện hình~\cite{Hung2005}. Đó là mã tần số của nhóm ở chương~\ref{sec:code}.
+
+\section{Người thầy không có mặt: học từ video}
+
+Mạng tích chập được huấn luyện trên hàng triệu bức ảnh có nhãn. Não thì hầu như không ai cho nhãn: đứa trẻ nhìn đồ vật hàng giờ, còn từ ``cái cốc'' thì thỉnh thoảng mới nghe. Vậy các tầng $C$ biết gom những nơ-ron $S$ nào từ đâu? Muốn gộp ``hình này ở đây'' với ``hình này ở kia'' thì phải biết sẵn đó là cùng một hình.
+
+Gợi ý đến từ chính video. Thế giới thay đổi liên tục: đồ vật trong trường nhìn vẫn là đồ vật đó khi nó dịch chuyển, xoay và đổi ánh sáng, và chỉ thỉnh thoảng ánh mắt mới chuyển sang vật khác. Mọi thứ thay đổi \emph{chậm} nhiều khả năng thuộc về đồ vật, còn mọi thứ thay đổi nhanh thì thuộc về vị trí và dáng vẻ của nó~\cite{WiskottSejnowski2002}. Vậy nơ-ron $C$ chỉ cần quy tắc Hebb có vết của chương~\ref{sec:dofa}: nối những gì đến liên tiếp, chứ không chỉ những gì đến đồng thời~\cite{Foldiak1991}:
+\begin{empheq}[box=\keybox]{equation}
+\tau_{\text{tr}}\,\frac{\dd\bar y_k}{\dd t} \;=\; -\bar y_k + y_k ,
+\qquad
+\frac{\dd\mathbf w_k}{\dd t} \;=\; \eta\,\bar y_k\,\bigl(\mathbf x - \mathbf w_k\bigr) .
+\label{eq:traceinvariance}
+\end{empheq}
+Ở đây $y_k$ là hoạt động của nơ-ron $C$ thứ $k$, nơ-ron đã thắng trong cuộc cạnh tranh qua ức chế, $\bar y_k$ là vết của hoạt động đó, cũng là mạch RC như trong quy tắc~\eqref{eq:threefactor}, còn $\mathbf x$ là đầu ra của các nơ-ron $S$. Nơ-ron thắng ở dáng vẻ thứ nhất của đồ vật vẫn còn nhớ điều đó khi dáng vẻ thứ hai tới, và kéo luôn cả dáng vẻ này về phía mình.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=1.0cm,y=1.0cm]
+\foreach \i/\lab in {0/1,1/2,2/3,3/4}{
+  \node[draw,thick,fill=blue!8,minimum width=0.9cm,minimum height=0.55cm,font=\scriptsize] at (\i+0.5,2.2) {$A$ ở \lab};}
+\foreach \i/\lab in {0/4,1/3,2/2,3/1}{
+  \node[draw,thick,fill=orange!12,minimum width=0.9cm,minimum height=0.55cm,font=\scriptsize] at (\i+6.5,2.2) {$B$ ở \lab};}
+\node[font=\scriptsize,gray!40!black] at (5.0,2.2) {nghỉ};
+\draw[->,gray!70!black] (0,0) -- (10.4,0) node[below left,font=\scriptsize,black] {thời gian};
+% traces
+\draw[thick,blue!60!black] (0,0.05) .. controls (0.4,1.2) and (0.8,1.3) .. (1.2,1.35) -- (4,1.4) .. controls (4.6,0.5) and (5.2,0.15) .. (6,0.08) -- (10,0.05);
+\draw[thick,orange!85!black] (0,0.05) -- (6,0.05) .. controls (6.4,1.2) and (6.8,1.3) .. (7.2,1.35) -- (10,1.4);
+\node[font=\scriptsize,blue!60!black,anchor=west] at (1.4,1.65) {vết $\bar y_1$ giữ suốt lượt đi qua của $A$};
+\node[font=\scriptsize,orange!85!black,anchor=west] at (7.2,1.65) {vết $\bar y_2$};
+\draw[decorate,decoration={brace,amplitude=4pt},gray!60!black] (4.0,2.6) -- (0,2.6);
+\draw[decorate,decoration={brace,amplitude=4pt,mirror},gray!60!black] (0,-0.35) -- (4,-0.35) node[midway,below=4pt,font=\scriptsize,black] {mọi dáng vẻ của $A$ được nối với nơ-ron 1};
+\end{tikzpicture}
+\caption{Video dạy tính bất biến như thế nào, sơ đồ. Đồ vật $A$ đi qua bốn vị trí, sau đó là quãng nghỉ, rồi đến đồ vật $B$. Vết~\eqref{eq:traceinvariance} của nơ-ron thắng ở dáng vẻ đầu tiên của $A$ được giữ suốt lượt đi qua, và mọi dáng vẻ của $A$ đều được nối với cùng một nơ-ron. Quãng nghỉ xóa vết, và $B$ thuộc về một nơ-ron khác.}
+\label{fig:tracevideo}
+\end{figure}
+
+Chúng tôi đã kiểm tra điều này trên mô hình (hình~\ref{fig:tracevideo}). Hai nơ-ron $C$ cạnh tranh giành đầu vào từ $16$ nơ-ron $S$: hai hình ở tám vị trí. Hình chạy qua mọi vị trí, mỗi vị trí $50\ms$, sau đó nghỉ $0.3\,\text{s}$ rồi đến một hình ngẫu nhiên tiếp theo. Không có nhãn nào. Nếu vết ngắn, $\tau_{\text{tr}}=5\ms$, các nơ-ron chia đầu vào theo \emph{vị trí}, và câu trả lời trùng với hình không hơn tung đồng xu: trung bình $52\%$ qua mười lần chạy. Nếu vết dài cỡ thời gian hiện một vị trí, từ $\tau_{\text{tr}}\approx20\ms$, mỗi nơ-ron gom \emph{mọi} vị trí của hình của mình (với $20$, $50$ và $200\ms$ là ở cả mười lần chạy): tính bất biến được học chỉ từ video. Quãng nghỉ giữa các đồ vật là quan trọng: không có nó, vết tràn sang đồ vật tiếp theo và làm lẫn chúng.
+
+Điều tương tự thấy được trong thực nghiệm. Nếu trong thí nghiệm, đồ vật bị đánh tráo một cách kín đáo đúng lúc mắt nhảy từ chỗ này sang chỗ khác, thì sau một hai giờ, nơ-ron ở các tầng cao bắt đầu đáp ứng với đồ vật bị tráo như với chính đồ vật cũ: chúng nối những gì đến liên tiếp~\cite{LiDiCarlo2008}. Tính bất biến trong não quả thật được học từ sự liên tục của thời gian. Quy tắc này giải thích được bao nhiêu phần của toàn bộ việc học thị giác thì vẫn là giả thuyết.
+
+\section{Video là chuyển động}
+
+Video không chỉ là luồng khung hình để học, mà bản thân nó là bài toán: cái gì đang chuyển động, về đâu và nhanh thế nào. Bước đầu tiên ta đã quen: bộ phát hiện hướng của chương~\ref{sec:gaba} (hình~\ref{fig:direction}), trong đó ức chế đến trễ dập tắt chuyển động theo một chiều. Các bộ phát hiện như vậy phủ khắp trường nhìn, và sau đó chúng được xử lý giống như đặc trưng hình dạng: các tầng gom nhiều bộ phát hiện cùng hướng ở những vị trí khác nhau sẽ đáp ứng với chuyển động của một vật lớn bất kể nó ở đâu. Đó vẫn là cặp VÀ và HOẶC~\eqref{eq:scstage}, chỉ có đặc trưng không phải ``cạnh'' mà là ``cạnh đã dịch đi sau thời gian $d$''.
+
+Video còn có thể dự đoán được: khung hình sau gần như giống khung hình trước. Theo giả thuyết \emph{mã hóa dự đoán}, các tầng trên gửi xuống tầng dưới một dự đoán, còn đi lên chủ yếu là sai số, tức phần mà dự đoán chưa tính tới~\cite{RaoBallard1999}. Đây vẫn là cách tiết kiệm xung như trong mệnh đề~\ref{prop:economy}: trả tiền cho tin mới, không trả cho những gì đã biết. Một số quan sát riêng lẻ phù hợp với giả thuyết này, nhưng như một cấu tạo chung của dây chuyền thì nó chưa được chứng minh.
+
+\section{Não và mạng tích chập}
+
+Sự giống nhau đi xa đến đâu? Với việc nhận dạng nhanh một đồ vật, nó quả thật sâu sắc~\cite{Yamins2014}. Nhưng não còn có những thứ mà mạng tích chập đơn giản không có.
+
+\emph{Phản hồi.} Dây chuyền của não không chỉ đi thẳng: mỗi tầng có liên kết ngược và liên kết ngang. Với các ảnh khó (bị che khuất, thiếu sáng), đáp ứng của các tầng trên hình thành muộn hơn, và những đáp ứng muộn này được mô tả bằng mạng có phản hồi tốt hơn mạng chỉ đi thẳng~\cite{Kar2019}. Một lượt giải quyết được các trường hợp dễ, trường hợp khó cần vài vòng.
+
+\emph{Tính bền vững.} Có thể đánh lừa mạng nhân tạo bằng cách sửa điểm ảnh mà mắt không nhận ra~\cite{Szegedy2014}: một thay đổi con người không thấy biến ``gấu trúc'' thành ``vượn''~\cite{Goodfellow2015}. Thị giác người bền vững hơn nhiều trước những kiểu sửa như vậy, nhưng không phải miễn nhiễm: ảnh đánh lừa được nhiều mạng cùng lúc, khi hiện ngắn, cũng làm lệch lựa chọn của người~\cite{Elsayed2018}. Vì sao độ bền vững khác nhau đến vậy là câu hỏi còn mở; các ứng viên là nhiễu, phép chia cho hoạt động chung và phản hồi.
+
+\emph{Người thầy.} Mạng cần hàng triệu ví dụ có nhãn, não chủ yếu cần video không nhãn~\eqref{eq:traceinvariance} và một chút gợi ý từ \nt{DOPA} về điều gì là quan trọng.
+
+\emph{Năng lượng.} Cả bộ não chỉ khoảng $20$ oát (mệnh đề~\ref{prop:economy}), và nhận dạng chỉ chiếm một phần trong đó; mạng tích chập đã huấn luyện chạy trên bộ tăng tốc đồ họa tiêu tốn hàng trăm oát.
+
+\section{Ảo giác thị giác: cỗ máy sai ở đâu và vì sao}
+\label{sec:illusions}
+
+Kỹ sư muốn hiểu một mạch của người khác sẽ đưa vào đó những tín hiệu bất thường và xem mạch sai ở đâu. Với thị giác, những tín hiệu như vậy đã được nghĩ ra từ lâu: đó là các ảo giác thị giác. Ảo giác không phải hỏng hóc. Mỗi ảo giác chỉ tới một cơ chế nhất định của cỗ máy, cơ chế vốn làm việc đúng trong hoàn cảnh bình thường, nhưng lộ ra trên một bức ảnh được chọn đặc biệt.
+
+\emph{Kỳ vọng hợp lý.} Đầu vào có nhiễu, và cỗ máy bổ sung cho nó bằng những gì thường gặp trong thế giới. Chuyển động chậm gặp nhiều hơn chuyển động nhanh; khi đầu vào không đáng tin (chẳng hạn ảnh có độ tương phản thấp), ước lượng tốc độ lệch về phía chậm, và vật mờ nhạt có vẻ chuyển động chậm hơn vật sáng rõ~\cite{Weiss2002}. Nhiều ảo giác độ sáng cũng được giải thích như vậy: ta không thấy độ sáng của điểm ảnh, mà thấy bề mặt nào thường ứng với độ sáng đó nhất trong quá khứ~\cite{Purves2011}. Bức ảnh chiếc váy mà người thấy trắng--vàng, người thấy xanh--đen cũng cùng cơ chế: bức ảnh mơ hồ, và mọi người khác nhau ở chỗ vô thức cho rằng ánh sáng chiếu vào như thế nào~\cite{LaferSousa2015,Wallisch2017}. Sự khác biệt giữa người với người đã được đo; việc não ở đây kết hợp đầu vào với kỳ vọng theo quy tắc của lý thuyết xác suất là một giả thuyết có cơ sở vững.
+
+\emph{Điều chỉnh khuếch đại.} Nhìn thác nước một phút, rồi nhìn sang những hòn đá đứng yên: đá sẽ trôi lên trên. Kênh ``xuống'' và kênh ``lên'' là một cặp dây như trong~\eqref{eq:dualrail}; điều chỉnh khuếch đại~\eqref{eq:nakarushton} đã làm dịu kênh bị mỏi, và cân bằng của cặp bị lệch. Các ảo giác độ nghiêng và độ tương phản, trong đó vùng xung quanh làm thay đổi dáng vẻ vùng trung tâm, được giải thích bằng phép chia cho hoạt động của láng giềng~\cite{Schwartz2009}, như ở chương~\ref{sec:gaba}. Cũng có một ví dụ đáng học về sự thận trọng: các đốm tối ở giao điểm của những dải trắng trong lưới từ lâu được giải thích bằng ức chế láng giềng đơn giản, nhưng thí nghiệm với lưới biến dạng cho thấy cách giải thích đó không đúng~\cite{SchillerCarvey2005}.
+
+\emph{Bù độ trễ.} Đường từ mắt lên các tầng trên mất hàng chục mili giây, và trong thời gian đó vật đang chuyển động kịp dịch đi. Nếu cạnh nó lóe lên một điểm đứng yên, vật có vẻ nằm phía trước điểm lóe, dù thật ra chúng trùng nhau~\cite{Nijhawan1994}. Theo một cách giải thích, cỗ máy ngoại suy chuyển động về phía trước để bù độ trễ, cũng như ở chương~\ref{sec:muscles}: khi phản hồi đến trễ thì phải dự đoán. Ảo giác này có nhiều cách giải thích, và tranh luận chưa ngã ngũ.
+
+\emph{Lỗi trong mã thời gian.} Một bức ảnh tĩnh gồm các vòng tròn với chuyển màu sắc nét trông như đang quay. Vùng tương phản cao được xử lý nhanh hơn vùng nhạt, và chênh lệch độ trễ~\eqref{eq:latency} được các bộ phát hiện hướng đọc thành chuyển động~\cite{Conway2005}. Ảo giác được kích hoạt bởi các cú giật mắt nhỏ không chủ ý và cái chớp mắt: mỗi cú giật làm mới đầu vào, và các bộ phát hiện lại thấy ``chuyển động''~\cite{OteroMillan2012}. Đó là mã thời gian của chương~\ref{sec:code}, bị đọc sai.
+
+\emph{Hai hình trong một.} Khung dây hình lập phương lúc quay mặt này về phía ta, lúc quay mặt kia, hoặc hai hình khác nhau ở hai mắt: tri giác nhảy qua lại vài giây một lần. Mô hình tốt nhất là ức chế lẫn nhau giữa hai cách hiểu, sự mỏi chậm và nhiễu~\cite{MorenoBote2007}, tức chính sơ đồ~\eqref{eq:halfcentre} đã tạo ra nhịp bước chân ở chương~\ref{sec:muscles}. Thời điểm chuyển do nhiễu và sự mỏi quyết định; theo mô hình~\cite{MorenoBote2007}, nhiễu đóng vai trò chính, còn sự mỏi chỉ hỗ trợ.
+
+Còn mạng nhân tạo thì sao? Mạng được huấn luyện để dự đoán khung hình tiếp theo của video thấy chuyển động quay trên chính những vòng tròn tĩnh ấy và không thấy nó trên các ảnh đối chứng~\cite{Watanabe2018}. Mạng được huấn luyện để khử nhiễu và làm nét ảnh mắc cùng những ảo giác màu sắc và độ sáng như con người~\cite{GomezVilla2020}. Vậy một phần ảo giác là hệ quả của chính bài toán mà cỗ máy học, chứ không phải của đặc điểm mô thần kinh. Ảo giác nào chỉ riêng não mới có là phép thử tốt cho bất kỳ mô hình thị giác nào.
+
+\begin{keyblock}
+\begin{proposition}[Ảo giác là dấu vết của cơ chế]
+\label{prop:illusions}
+Ảo giác nảy sinh khi một cơ chế hữu ích trong thế giới bình thường nhận một đầu vào bất thường: kỳ vọng thắng đầu vào không đáng tin, điều chỉnh khuếch đại làm lệch một cặp kênh, bù độ trễ đẩy đồ vật lên trước, chênh lệch độ trễ được đọc thành chuyển động, ức chế lẫn nhau kèm nhiễu và sự mỏi nhảy qua lại. Mỗi ảo giác là một tín hiệu thử chỉ tới cơ chế của nó. Bản thân các ảo giác đã được đo; cách giải thích chúng đi từ có cơ sở vững đến còn tranh cãi.
+\end{proposition}
+\end{keyblock}
+
+\section{Tổng kết}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{3.0cm}>{\raggedright}p{4.6cm}>{\raggedright\arraybackslash}p{5.2cm}}
+\toprule
+Cỗ máy làm gì & Bằng cách nào & Đã biết gì \\
+\midrule
+nhận ra trong $150\ms$ & một lượt qua chừng mười tầng & tốc độ đã đo \\
+làm câu trả lời chọn lọc & VÀ theo bộ phận, tầng $S$~\eqref{eq:scstage} & đã đo ở các tầng đầu \\
+làm câu trả lời bất biến & HOẶC theo vị trí, tầng $C$; ức chế và phép chia & đã đo ở các tầng đầu; với các tầng trên là đơn giản hóa \\
+đưa ra câu trả lời & tần số của chừng một trăm nơ-ron tầng cuối, đọc tuyến tính & đã đo \\
+học không cần nhãn & quy tắc Hebb có vết~\eqref{eq:traceinvariance} trên video liên tục & đánh tráo đồ vật làm đổi đáp ứng: đã đo; là quy tắc chính: giả thuyết \\
+thấy chuyển động & bộ phát hiện hướng, rồi cùng cặp VÀ/HOẶC & đã đo \\
+tiết kiệm trên phần dự đoán được & đi lên là sai số dự đoán & giả thuyết \\
+giải trường hợp khó & phản hồi, vài vòng & đáp ứng muộn và vai trò của phản hồi đã đo \\
+sai một cách dự đoán được & ảo giác: kỳ vọng, điều chỉnh khuếch đại, độ trễ, ức chế lẫn nhau kèm nhiễu và sự mỏi & ảo giác đã đo; giải thích: từ có cơ sở đến còn tranh cãi \\
+\bottomrule
+\end{tabular}
+\caption{Cỗ máy nhận dạng hình ảnh và video như thế nào.}
+\label{tab:recognition}
+\end{table}
+
+Nhận dạng được lắp từ những chi tiết ta đã có (bảng~\ref{tab:recognition}): ngưỡng cho phép VÀ theo bộ phận, ức chế lẫn nhau cho phép HOẶC theo vị trí, phép chia cho sự độc lập với độ sáng, quy tắc Hebb có vết thay cho người thầy vắng mặt. Kỹ sư đã lấy từ thị giác sự xen kẽ giữa tính chọn lọc và tính bất biến và dựng trên đó mạng tích chập; còn điều quan trọng nhất thì não vẫn chưa trao lại: khả năng học từ video không nhãn mà gần như không tốn năng lượng.
+
+\section{Bài tập}
+
+\begin{exercise}[\lvlA]
+\label{ex:12:1}
+\emph{Tần số trong một tầng.} Một tầng của dây chuyền kéo dài $15\ms$, nơ-ron phát $20$ xung mỗi giây, nhiễu tương quan với $c=0.1$~\eqref{eq:correlated}. Sai số tương đối của tần số nhóm một trăm nơ-ron bằng bao nhiêu, và giới hạn của nó khi nhóm lớn tùy ý? Trong một tầng phân biệt được bao nhiêu mức tần số?
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:12:2}
+\emph{Năng lượng của một lần nhận dạng.} Trong một lượt $150\ms$, mười tầng, mỗi tầng $10^7$ nơ-ron, phát không quá một xung, mỗi xung tốn $10^{-10}$~J. (a)~Nhận dạng tốn bao nhiêu phần năng lượng của cả bộ não trong $150\ms$ đó? (b)~Bộ tăng tốc công suất $300$~W nhận dạng một ảnh trong $10\ms$ tốn gấp bao nhiêu lần?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:12:3}
+\emph{Ngưỡng của tầng $S$.} ``Võng mạc'' $24$ điểm, hình $A=11011$ và $B=10101$, mẫu~\eqref{eq:scstage} bằng $+1$ ở các số một của hình và $-1$ ở các số không. (a)~Với ngưỡng nào thì nơ-ron $S$ bỏ qua một điểm bị lật nhưng im lặng với hình kia? (b)~Cần bao nhiêu nơ-ron $S$ cho mười đặc trưng $5\times5$ trên ảnh $100\times100$?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:12:4}
+\emph{Một trong hai hình kéo dài bao lâu.} Trong sơ đồ nhảy~\eqref{eq:halfcentre} với $\tau\ll\tau_a$, khi nhóm~1 đang thắng thì $r_2=0$ và $r_1=I-a_1$. (a)~Tìm thời gian thắng với $I=1$, $\beta=2$, $b=2$, $\tau_a=0.4\,\text{s}$. (b)~$\tau_a$ nào cho hình đổi ba giây một lần?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:12:5}
+\emph{Mô phỏng: giá của tính bất biến.} Dùng hàm \texttt{two\_stage} trong \texttt{models/\allowbreak recognition\_models.py} ($4000$ lần thử), tìm xác suất lật điểm $p$ mà tại đó cặp tầng $S$, $C$ với $N=24$ sai một phần tư số trường hợp. Tỷ lệ trả lời đúng khi $p=0.1$ thay đổi ra sao từ $N=8$ đến $N=192$?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:12:6}
+\emph{Mô phỏng: cửa sổ của vết.} Mười lần chạy \texttt{trace\_learning} trong \texttt{models/\allowbreak recognition\_models.py} với quãng nghỉ $0.3\,\text{s}$: tìm các $\tau_{\text{tr}}$ trong khoảng $5\ms$ đến $2\,\text{s}$ mà mọi lần chạy đều học tính bất biến không sai. Cận trên của cửa sổ này từ đâu mà có?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:12:7}
+\emph{Chuyển động ở bất kỳ đâu.} Trên các điểm liền kề của một dãy cách nhau $0.1^\circ$ đặt các bộ phát hiện hướng của chương~\ref{sec:gaba}: ức chế từ $A$ với độ trễ $d$ dập tắt kích thích từ $B$ nếu chúng lệch nhau không quá $5\ms$; phía trên là tầng $C$. Cần độ trễ nào để $C$ im lặng với chuyển động ngược chiều ở tốc độ từ $5$ đến $20^\circ$ mỗi giây?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:12:8}
+\emph{Sửa điểm ảnh.} Cần lật bao nhiêu điểm để đổi câu trả lời của mô hình \texttt{two\_stage} ($N=24$) trên một hình sạch? Còn bộ phân loại ``đầu vào có hơn $3.5$ số một thì là $A$'', cũng bất biến với phép dịch? Tỷ lệ trả lời đúng của nó khi $p=0.1$ là bao nhiêu, so với $0.86$ của cặp tầng?
+\end{exercise}

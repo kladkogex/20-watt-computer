@@ -1,0 +1,31 @@
+\section{Chương~\ref{sec:motorlearning}. Học vận động}
+
+Quy tắc bình phương tối thiểu và lợi ích của dây sai số riêng là các định lý; cấu tạo của sơ đồ có dây sai số, sự làm yếu khi trùng khớp, việc chỉnh vết theo độ trễ, hậu hiệu ứng và sự quay lại tự phát của kỹ năng đã được đo; việc cả sơ đồ hoạt động như học có giám sát và xây mô hình bên trong là giả thuyết hàng đầu; các con số của mô hình hai quá trình được tính theo mô hình của sách.
+
+{\footnotesize
+\setlength{\tabcolsep}{3pt}\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{>{\raggedright}p{0.5cm}>{\raggedright}p{4.0cm}>{\raggedright}p{5.6cm}>{\raggedright}p{2.3cm}>{\raggedright\arraybackslash}p{1.7cm}}
+\toprule
+TT & Khẳng định & Thí nghiệm và điều đã đo & Nguồn & Trạng thái \\
+\midrule\endfirsthead
+\toprule
+TT & Khẳng định & Thí nghiệm và điều đã đo & Nguồn & Trạng thái \\
+\midrule\endhead
+1 & Quy tắc~\eqref{eq:lms} trung bình đi theo gradient của bình phương sai số & Kết quả của lý thuyết lọc thích nghi: hiệu chỉnh tỉ lệ với đầu vào và sai số đầu ra là hạ gradient ngẫu nhiên của sai số bình phương trung bình. & \cite{WidrowHoff1960} & lý thuyết \\
+2 & Có dây sai số tới mỗi đầu ra thì tốc độ không phụ thuộc số đầu ra; với một con số chung thì tốc độ giảm theo số nơ-ron có nhiễu (mệnh đề~\ref{prop:teachers}) & Đường cong học của mạng tuyến tính: học bằng nhiễu loạn ngẫu nhiên các nơ-ron chậm hơn gradient chính xác một số lần bằng đúng số nơ-ron bị nhiễu loạn. & \cite{Werfel2005} & lý thuyết \\
+3 & Sơ đồ có dây sai số hoạt động như học có giám sát (mệnh đề~\ref{prop:errorwire}) & Các lý thuyết suy ra từ cấu trúc của sơ đồ. Các thí nghiệm ở dòng 7--10 phù hợp với chúng; việc cả sơ đồ hoạt động đúng như vậy chưa được chứng minh. & \cite{Marr1969, Albus1971} & giả thuyết \\
+4 & Lớp mở rộng: khoảng $7\cdot10^{10}$ nơ-ron \nt{GLUT} nhỏ, nhiều hơn cả phần còn lại của não & Đếm nhân trong huyền phù mô đã hòa tan: tiểu não người có $69\cdot10^9$ nơ-ron trong tổng số $86\cdot10^9$ của cả não. Phương pháp lập thể học: $101\cdot10^9$ nơ-ron nhỏ trong tiểu não của nam giới cao tuổi. & \cite{Azevedo2009, Andersen1992cereb} & đã đo \\
+5 & Nâng số chiều của đầu vào làm quan hệ cần thiết trở thành tuyến tính & Định lý về số cách phân chia: tổng có trọng số của $n$ đầu vào kèm ngưỡng hiện thực được một cách gán nhãn tùy ý cho khoảng $2n$ vectơ ở vị trí tổng quát. Việc tiểu não dùng đúng điều này là một phần của giả thuyết ở dòng~3. & \cite{Cover1965} & lý thuyết \\
+6 & Khoảng $3\cdot10^7$ nơ-ron \nt{GABA} đầu ra, mỗi nơ-ron cỡ $10^5$ đầu vào & Lập thể học tiểu não người: $30.5\cdot10^6$ nơ-ron đầu ra. Kính hiển vi điện tử, chuột cống: khoảng $1.75\cdot10^5$ đầu vào từ lớp mở rộng trên một nơ-ron đầu ra. Chất dẫn truyền ức chế của nơ-ron đầu ra: trong bài tổng quan. & \cite{Andersen1992cereb, NapperHarvey1988, Ito2001} & đã đo \\
+7 & Đúng một dây sai số cho mỗi nơ-ron đầu ra, khoảng mỗi giây một lần, mỗi lần một đợt bùng mạnh & Tổng quan các bản ghi: mỗi nơ-ron đầu ra nhận một đầu vào \nt{GLUT} từ sợi leo, gây ra xung phức với tần số cỡ $1$~Hz. & \cite{Ito2001} & đã đo \\
+8 & Xác suất của đợt bùng phụ thuộc vào hướng của sai số vận động & Khỉ, vùng vận nhãn của tiểu não, thích nghi của vận động giật nhãn cầu: hướng của sai số thị giác quyết định xác suất xung phức, độ lớn quyết định thời điểm của nó; đợt bùng làm đổi các xung đơn trong lần thử tiếp theo và dịch cử động dọc theo sai số ưa thích của tế bào. & \cite{Herzfeld2018} & đã đo \\
+9 & Sự trùng khớp giữa đợt bùng sai số và một đầu vào đang hoạt động làm yếu đầu vào đó ($-\eta e_i x_j$) & Tổng quan thí nghiệm: kích thích đồng thời đầu vào từ lớp mở rộng và dây sai số gây suy yếu lâu dài đầu vào đó; kích thích riêng một đầu vào thì không. & \cite{Ito2001} & đã đo \\
+10 & Độ dài của vết được chỉnh theo độ trễ của sai số: với độ trễ $100\ms$, đầu vào bị làm yếu mạnh nhất là đầu vào hoạt động trước đó $100\ms$ & Lát cắt và chuột nhắt sống: ở vùng phụ trách học vận nhãn, sự suy yếu được chỉnh hẹp theo khoảng cách khoảng $120\ms$ giữa đầu vào và sai số, đúng bằng thời gian tín hiệu sai số đi tới trong nhiệm vụ này; ở một vùng khác, các tế bào khác nhau được chỉnh theo các khoảng khác nhau. & \cite{Suvrathan2016} & đã đo \\
+11 & Sơ đồ là một bộ lọc thích nghi~\eqref{eq:adaptivefilter} học mô hình bên trong của cơ thể & Mô hình suy ra từ cấu trúc của sơ đồ. Chưa có thí nghiệm trực tiếp đo bộ lọc đã học như một hàm truyền của cơ thể. & \cite{Fujita1982} & giả thuyết \\
+12 & Dự đoán trừ đi hệ quả của chính cử động của mình, nên không thể tự cù mình & Người: cái chạm của chính mình ít gây nhột hơn cùng cái chạm đó của người khác; trong máy chụp, vỏ não cảm giác thân thể đáp ứng yếu hơn với cái chạm của chính mình, còn tiểu não ít hoạt động hơn khi cử động chạm vào da. Cách giải thích bằng việc trừ đi dự đoán là giả thuyết. & \cite{Blakemore1998} & giả thuyết \\
+13 & Khi có lực ngoài, độ trượt giảm dần, còn sau khi bỏ lực, tay trượt về phía ngược lại & Người với tay bằng tay cầm của robot trong trường lực: quỹ đạo trở lại thẳng; sau khi bỏ trường, hậu hiệu ứng gần như là ảnh gương của những biến dạng ban đầu; nó còn chuyển sang cả những vùng không gian không được luyện tập. & \cite{ShadmehrMussaIvaldi1994} & đã đo \\
+14 & Có hai quá trình học~\eqref{eq:tworate}; sau nhiễu loạn ngược, kỹ năng tự quay lại & Người, trường lực, sau đó một trường ngược ngắn và các lần thử có sai số bị kẹp: hiệu chỉnh tự quay về hiệu chỉnh cũ; mô hình hai quá trình tái hiện được điều này, mô hình một quá trình thì không. & \cite{Smith2006} & đã đo \\
+15 & Các con số của hình~\ref{fig:tworate}: $0.84$ (chậm $0.63$) sau $200$ cử động; $6$ cử động ngược; nhanh $-0.53$, chậm $0.46$; quay lại tới $0.37$ sau $40$ cử động & Tính theo \texttt{models/\allowbreak motor\_\allowbreak learning.py}, $A_f=0.92$, $B_f=0.1$, $A_s=0.996$, $B_s=0.02$: $0.840$ ($0.634$ và $0.205$), $6$ cử động, $-0.531$ và $0.457$, đỉnh $0.371$ ở cử động thứ $40$. & \texttt{models/\allowbreak motor\_\allowbreak learning.py} & mô hình \\
+16 & Cần hai quá trình vì cơ thể thay đổi với nhiều tốc độ khác nhau & Lý thuyết: ước lượng tối ưu khi nhiễu có nhiều thời gian sống khác nhau cho ra nhiều bộ lọc với hằng số thời gian khác nhau, và giải thích sự quay lại tự phát cũng như việc học lại nhanh hơn. & \cite{Kording2007} & giả thuyết \\
+\bottomrule
+\end{longtable}}

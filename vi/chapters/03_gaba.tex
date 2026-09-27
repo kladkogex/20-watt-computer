@@ -1,0 +1,280 @@
+\chapter{\nt{GLUT} và \nt{GABA} cùng nhau}
+\label{sec:gaba}
+
+\section{Luật chơi}
+
+Mạng chỉ gồm nơ-ron \nt{GLUT} không biết lựa chọn, không đặt lại được bộ nhớ và không giữ được hoạt động khỏi thác đổ, và tất cả là do tính đơn điệu (mệnh đề~\ref{prop:monotone}). Hãy thêm vào đó loại nơ-ron đông thứ hai --- \nt{GABA}. Luật chơi vẫn như cũ: chỉ những gì có trong cơ thể sống, và mọi thứ diễn ra trong thời gian liên tục.
+
+Mô hình nơ-ron vẫn là~\eqref{eq:glutneuron}, nhưng xung từ nơ-ron \nt{GABA} không nâng điện áp của nơi nhận mà hạ nó xuống. Giờ đây trọng số có hai dấu, và dấu do nơi gửi quyết định, theo quy tắc~\eqref{eq:dalesign}.
+
+Vài tham số của mạch. Nơ-ron \nt{GABA} chiếm từ một phần năm đến một phần tư số nơ-ron vỏ não~\cite{Hendry1987}. Đầu ra của chúng ngắn: chúng ức chế láng giềng chứ không phải những vùng xa. Ức chế đến sau một mili giây và kéo dài vài mili giây. Không có đầu vào, nơ-ron \nt{GABA} im lặng: để ức chế ai đó, chính nó phải nhận được kích thích, thường là từ các nơ-ron \nt{GLUT} của cùng mạng.
+
+Vì vậy liên kết âm từ nơ-ron \nt{GLUT} $A$ tới nơ-ron $B$ phải làm qua trung gian: $A$ kích thích một nơ-ron \nt{GABA}, và nơ-ron này ức chế $B$. Đổi dấu tốn một nơ-ron và một độ trễ, khoảng một mili giây.
+
+Với ức chế, không chỉ quan trọng liên kết đến \emph{từ ai} mà cả nó đậu \emph{vào đâu}: vị trí đậu phần lớn quyết định liên kết làm gì~\cite{Markram2004}. Đầu ra \nt{GLUT} chủ yếu đậu vào các nhánh đầu vào của nơi nhận, tức \emph{đuôi gai}, và mang dữ liệu: mỗi đầu vào như vậy là một số hạng của tổng. Đầu ra đậu vào thân nơ-ron tác động lên cả tổng: đó là cách nhiều nơ-ron \nt{GABA} nhanh chia đáp ứng của nơi nhận và quyết định khi nào nó phát xung. Đầu ra đậu vào chỗ sinh ra xung của nơi nhận là lời cuối cùng, một lệnh cấm lên toàn bộ đầu ra cùng lúc. Còn đầu ra đậu vào đầu tận cùng của dây dẫn khác thay đổi xác suất nhả $p$ của một đường vào duy nhất, không động đến các đường khác~\cite{Rudomin1999}; chẳng hạn, cổng đau ở chương~\ref{sec:pain} hoạt động như vậy. Bên ngoài não, đầu ra đậu vào sợi cơ (chương~\ref{sec:muscles}) và vào các cơ quan (chương~\ref{sec:chemoutput}), còn một số không đậu vào đâu cả mà nhả chất dẫn truyền vào thể tích mô hoặc vào máu (chương~\ref{sec:serocomputer} và~\ref{sec:chemoutput}).
+
+\section{NOT và phép cấm}
+
+Giờ có làm được NOT không? Gần như được. Một nơ-ron hoạt động khi đầu vào im lặng phải lấy kích thích từ đâu đó. Trong não sống thì có: mỗi nơ-ron liên tục nhận hoạt động nền từ hàng nghìn nơ-ron khác. Để nền giữ nơ-ron $Y$ hoạt động, còn đầu vào $x$ ức chế nó qua một trung gian \nt{GABA}. Đó là NOT.
+
+Tuy vậy, hữu ích hơn là \emph{phép cấm}: ``$a$, nhưng không khi có $b$'':
+\begin{empheq}[box=\keybox]{equation}
+y \;=\; a \wedge \bar b .
+\label{eq:veto}
+\end{empheq}
+Nơ-ron $Y$ nhận kích thích từ $a$ và ức chế từ nơ-ron \nt{GABA} do $b$ kích thích. Ở đây không cần nền: chính $a$ cung cấp kích thích. Từ phép cấm và OR có thể lắp mọi thứ. Chẳng hạn XOR: $x\oplus y=(x\wedge\bar y)\vee(\bar x\wedge y)$ --- hai nơ-ron cấm, hai trung gian \nt{GABA} và một nơ-ron OR.
+
+\begin{keyblock}
+\begin{proposition}[Tính đầy đủ của \nt{GLUT}+\nt{GABA}]
+\label{prop:gabacomplete}
+Mạng nơ-ron \nt{GLUT} và \nt{GABA} có thể tính bất kỳ hàm logic nào của các đầu vào, và mỗi bit được truyền bằng một dây. Không còn cần các cảm biến ``bật---tắt'' của chương~\ref{sec:glutcomputer} cho việc này. Nếu hàm phải cho giá trị một khi mọi đầu vào im lặng, cần một nguồn hoạt động nền.
+\end{proposition}
+\end{keyblock}
+
+Chứng minh: phép cấm~\eqref{eq:veto} cùng với OR là đầy đủ về mặt chức năng nếu có hằng một, vì NOT $x$ chính là phép cấm ``một, nhưng không khi có $x$''. Còn các hàm cho giá trị không khi mọi đầu vào im lặng thì lắp được từ phép cấm và OR mà không cần hằng một.
+
+\section{Hướng chuyển động}
+
+Phép cấm theo thời gian, cũng như AND theo thời gian ở chương~\ref{sec:glutcomputer}, cho ta một bộ phát hiện hướng chuyển động.
+
+Cho hai cảm biến kề nhau, $A$ và $B$, đặt cách nhau $\Delta x$. Nơ-ron đầu ra $Y$ nhận kích thích từ $B$ và ức chế từ $A$ qua một trung gian \nt{GABA}, với độ trễ $d$ (hình~\ref{fig:direction}). Một đốm sáng chạy với vận tốc $v$ từ $A$ sang $B$ đi qua $A$ lúc $0$, và ức chế tới $Y$ lúc $d$; nó đi qua $B$ lúc $\Delta x/v$, và kích thích tới cùng lúc đó. Nếu hai thời điểm này trùng nhau trong phạm vi cửa sổ~\eqref{eq:window}, ức chế dập tắt kích thích, và $Y$ im lặng. Điều này xảy ra ở vận tốc khoảng
+\begin{empheq}[box=\keybox]{equation}
+v^* \;=\; \frac{\Delta x}{d} .
+\label{eq:vstar}
+\end{empheq}
+Khi chuyển động từ $B$ sang $A$, kích thích từ $B$ đến lúc $0$, còn ức chế từ $A$ phải đến lúc $\Delta x/v+d$ mới tới, khi $Y$ đã phát xung.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  nrn/.style={circle,draw,very thick,fill=blue!6,minimum size=0.9cm,inner sep=0pt},
+  gab/.style={nrn,fill=red!10},
+  inh/.style={-{Bar[width=7pt]},thick,red!70!black}]
+\node[nrn] (A) at (0,2) {$A$};
+\node[nrn] (B) at (3,2) {$B$};
+\node[gab] (G) at (0.9,0.6) {\small \nt{GABA}};
+\node[nrn] (Y) at (3,-0.6) {$Y$};
+\draw[->,thick] (A) -- (G);
+\draw[inh] (G) -- node[below left=-2pt] {\scriptsize độ trễ $d$} (Y);
+\draw[->,thick] (B) -- (Y);
+\draw[->,very thick,red!70!black] (Y) -- (4.6,-0.6) node[right,black] {\small đầu ra};
+\draw[->,thick,orange!85!black] (-0.6,2.9) -- (3.6,2.9) node[right,black] {\small im lặng};
+\draw[<-,thick,orange!85!black] (-0.6,3.4) -- (3.6,3.4) node[right,black] {\small đáp ứng};
+\foreach \yy/\dd in {2.9/-1,3.4/1}{
+  \foreach \k in {1,2,3}{\draw[orange!70!yellow,line width=0.8pt] (1.5+\dd*0.12+\dd*0.13*\k,\yy+0.1-0.1*\k+0.1) -- ++(\dd*0.25,0);}
+  \fill[yellow!70!orange,draw=orange!70!black] (1.5,\yy) circle (0.14);}
+\node[font=\scriptsize,align=center] at (1.5,3.95) {đốm sáng};
+\end{tikzpicture}
+\caption{Bộ phát hiện hướng chuyển động. $B$ kích thích $Y$, $A$ ức chế nó qua một trung gian \nt{GABA} với độ trễ $d$. Khi chuyển động từ $A$ sang $B$ với vận tốc khoảng $\Delta x/d$, ức chế dập tắt kích thích; khi chuyển động ngược lại, nó đến muộn. Đốm vàng có vạch là ánh sáng chạy phía trên các cảm biến.}
+\label{fig:direction}
+\end{figure}
+
+Trong võng mạc, tính chọn lọc hướng chuyển động dường như được tạo ra đúng theo cách này: bằng ức chế bất đối xứng từ phía mà chuyển động từ đó không được gây đáp ứng~\cite{Barlow1965}.
+
+\section{Phép trừ hay phép chia}
+
+Cho đến giờ, ức chế ở ta làm phép trừ. Thực ra nó tinh tế hơn.
+
+Khớp thần kinh mở một kênh, tức là bật một độ dẫn. Ở khớp thần kinh kích thích, điện thế cân bằng nằm cao hơn ngưỡng nhiều, khoảng $70\mV$ trên mức nghỉ: kênh mở kéo điện áp lên. Ở khớp thần kinh ức chế \nt{GABA}, kênh cho clo đi qua, điện thế cân bằng của clo nằm gần mức nghỉ, và kênh mở không kéo điện áp xuống mà kéo nó \emph{về mức nghỉ}. Nếu tính điện áp từ mức nghỉ, điện áp xác lập của màng có độ dẫn rò $g_L$, độ dẫn kích thích $g_E$ và độ dẫn ức chế $g_I$ bằng
+\begin{empheq}[box=\keybox]{equation}
+V_\infty \;=\; \frac{g_E\,E_E}{g_L+g_E+g_I} ,
+\label{eq:shunt}
+\end{empheq}
+trong đó $E_E\approx70\mV$ là điện thế cân bằng của khớp thần kinh kích thích. Đây là định luật Ohm cho một bộ chia áp: $g_E$ kéo về $E_E$, còn $g_L$ và $g_I$ kéo về không.
+
+$g_I$ không đứng ở tử số với dấu trừ mà ở mẫu số: ức chế không \emph{trừ} khỏi kích thích mà \emph{chia} nó (hình~\ref{fig:shunt}). Kiểu ức chế này được gọi là ức chế sun: các kênh clo mở làm ngắn mạch màng. Với mạng, đó là điều chỉnh hệ số khuếch đại. Nếu $g_I$ tỷ lệ với tổng hoạt động của các láng giềng, mỗi nơ-ron đáp ứng không phải với độ mạnh tuyệt đối của đầu vào của nó, mà với tỷ phần của nó trong tổng hoạt động. Phép chia cho tổng hoạt động như vậy gặp ở nhiều vùng não và được coi là một trong các phép toán tiêu chuẩn của não~\cite{Carandini2012}: cùng một mạng làm việc được cả với đầu vào yếu lẫn đầu vào mạnh.
+
+Lưu ý: công thức~\eqref{eq:shunt} nói về nơ-ron không phát xung. Ở nơ-ron đang phát xung, điện áp luôn giữ gần ngưỡng, dòng qua độ dẫn ức chế gần như không đổi, và với \emph{tần số} xung, sun tác động chủ yếu bằng phép trừ~\cite{HoltKoch1997}. Tần số bị chia nếu đồng thời thêm cho nơ-ron các độ dẫn nền kích thích và ức chế cân bằng nhau, như trong chế độ cân bằng, dao động liên tục của vỏ não sống~\cite{Chance2002}. Vậy phép chia não có được không phải từ riêng một sun, mà từ ức chế cùng với nhiễu nền~\cite{Carandini2012}.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=1.25cm,y=0.05cm]
+\draw[->,gray!70!black] (0,0) -- (5.4,0) node[right,black] {\small $g_E/g_L$};
+\draw[->,gray!70!black] (0,0) -- (0,68) node[above,black] {\small $V_\infty$, mV};
+\foreach \v in {20,40,60}{\draw[gray!60!black] (-0.05,\v) -- (0.05,\v) node[left=3pt,font=\scriptsize] {\v};}
+\foreach \x in {1,2,3,4,5}{\draw[gray!60!black] (\x,-1.5) -- (\x,1.5) node[below=5pt,font=\scriptsize] {\x};}
+\draw[very thick,blue!60!black] plot[domain=0:5,samples=60] (\x,{70*\x/(1+\x)});
+\draw[very thick,red!70!black] plot[domain=0:5,samples=60] (\x,{70*\x/(3+\x)});
+\draw[thick,densely dashed,gray!50!black] plot[domain=0.56:5,samples=60] (\x,{70*\x/(1+\x)-25});
+\node[right,font=\small,blue!60!black] at (5.02,58.3) {không ức chế};
+\node[right,font=\small,red!70!black] at (5.02,45.5) {chia: $g_I=2g_L$};
+\node[right,font=\small,gray!40!black] at (5.02,32.5) {trừ $25\mV$};
+\end{tikzpicture}
+\caption{Ức chế sun chia điện áp chứ không trừ khỏi nó. Đường xanh là điện áp xác lập~\eqref{eq:shunt} khi không có ức chế, đường đỏ là khi có độ dẫn ức chế $g_I=2g_L$. Đường đỏ chính là đường xanh bị kéo giãn gấp ba theo chiều ngang: như thể đầu vào bị chia cho $1+g_I/g_L=3$. Đường nét đứt là ức chế trừ đi một lượng không đổi $25\mV$: cả đường cong hạ xuống, độ dốc không đổi.}
+\label{fig:shunt}
+\end{figure}
+
+Còn một hệ quả thứ hai. Hằng số thời gian hiệu dụng của màng là $\tau_{\text{hd}}=C/(g_L+g_E+g_I)$, và ức chế làm nó ngắn lại. Mà cửa sổ trùng khớp~\eqref{eq:window} tỷ lệ với $\tau$, nên ức chế đến cùng với kích thích \emph{thu hẹp cửa sổ}. Mạch trong đó đầu vào kích thích nơ-ron trực tiếp và đồng thời, với độ trễ một mili giây, ức chế nó qua một trung gian \nt{GABA} là một trong những mạch phổ biến nhất trong não: nơ-ron chỉ kịp đáp ứng với những gì đến trong một hai mili giây đầu tiên~\cite{Pouille2001}.
+
+\section{Lựa chọn}
+
+Giờ đến điều chính mà mạng \nt{GLUT} còn thiếu: chọn một trong nhiều. Lấy hai nhóm nơ-ron \nt{GLUT} với đầu vào $I_1$ và $I_2$. Mỗi nhóm, qua các trung gian \nt{GABA} của mình, ức chế nhóm kia với độ mạnh $\beta$ (hình~\ref{fig:wta}). Với các tần số $r_1,r_2$ ta có
+\begin{equation}
+\tau\,\frac{\dd r_1}{\dd t} = -r_1 + \bigl[I_1-\beta r_2\bigr]_+ ,\qquad
+\tau\,\frac{\dd r_2}{\dd t} = -r_2 + \bigl[I_2-\beta r_1\bigr]_+ ,
+\label{eq:wta}
+\end{equation}
+trong đó $[u]_+=\max(u,0)$: tần số không thể âm.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  nrn/.style={circle,draw,very thick,fill=blue!6,minimum size=0.9cm,inner sep=0pt},
+  gab/.style={nrn,fill=red!10,minimum size=0.75cm},
+  inh/.style={-{Bar[width=7pt]},thick,red!70!black}]
+\node[nrn] (E1) at (0,0) {$r_1$};
+\node[nrn] (E2) at (4,0) {$r_2$};
+\node[gab] (G1) at (1.4,1.1) {};
+\node[gab] (G2) at (2.6,-1.1) {};
+\draw[->,thick] (E1) -- (G1); \draw[inh] (G1) -- (E2);
+\draw[->,thick] (E2) -- (G2); \draw[inh] (G2) -- (E1);
+\draw[->,thick,blue!60!black] (-1.6,0) node[left,black] {$I_1$} -- (E1);
+\draw[->,thick,blue!60!black] (5.6,0) node[right,black] {$I_2$} -- (E2);
+\end{tikzpicture}
+\caption{Chọn một trong hai. Hai nhóm nơ-ron \nt{GLUT} (màu xanh) ức chế lẫn nhau qua các trung gian \nt{GABA} (màu đỏ).}
+\label{fig:wta}
+\end{figure}
+
+Chừng nào cả hai nơ-ron cùng hoạt động, hệ~\eqref{eq:wta} là tuyến tính, và hành vi của nó được quyết định bởi hai trị riêng: $-(1+\beta)/\tau$ cho các độ lệch cùng chiều của hai tần số và $-(1-\beta)/\tau$ cho các độ lệch ngược chiều. Với ức chế yếu, $\beta<1$, cả hai trị riêng đều âm: cả hai nơ-ron hoạt động, ức chế chỉ làm nơ-ron yếu hơn nhỏ tiếng đi. Với ức chế mạnh, $\beta>1$, trị riêng thứ hai trở thành dương: mọi chênh lệch giữa $r_1$ và $r_2$ đều tăng lên cho đến khi một nơ-ron im lặng hẳn.
+
+\begin{keyblock}
+\begin{proposition}[Kẻ thắng lấy tất]
+\label{prop:wta}
+Nếu ức chế lẫn nhau mạnh hơn một, $\beta>1$, trạng thái trong đó cả hai nhóm cùng hoạt động là không bền. Mạng đi tới trạng thái chỉ một nhóm hoạt động, nhóm kia im lặng. Kẻ thắng với tần số $r_1=I_1$ giữ được chiến thắng chừng nào $I_2<\beta I_1$.
+\end{proposition}
+\end{keyblock}
+
+Chúng tôi đã kiểm tra điều này trên mô hình. Với $\beta=0.5$ và các đầu vào $1.0$ và $0.9$, cả hai nhóm hoạt động, với tần số $0.73$ và $0.53$. Với $\beta=2$ và cùng các đầu vào đó, nhóm thứ hai im lặng hoàn toàn. Lựa chọn như vậy có bộ nhớ: nếu sau đó đổi chỗ các đầu vào, kẻ thắng cũ vẫn là kẻ thắng, vì $1.0<2\cdot0.9$.
+
+Với một trăm nhóm cũng vậy: mỗi nhóm ức chế các nhóm còn lại, chỉ một nhóm sống sót.
+
+\section{Đặt lại bộ nhớ}
+
+Bộ nhớ ở chương~\ref{sec:glutcomputer} chỉ tắt được nhờ sự mỏi. Thêm vào đó một nơ-ron \nt{GABA} được kích thích bởi tín hiệu ``đặt lại'' và ức chế nhóm. Ức chế hạ đường cong $f(wr+I)$ trên hình~\ref{fig:bistable}, giao điểm trên biến mất, và nhóm tắt --- rồi ở lại trạng thái dưới khi tín hiệu đặt lại đã hết. Giờ bộ nhớ được ghi bằng một tín hiệu và xóa bằng một tín hiệu khác, như flip-flop có đầu vào đặt và đặt lại.
+
+Hay hơn nữa là nối hai nhóm như vậy bằng ức chế lẫn nhau, như ở hình~\ref{fig:wta}, và cho mỗi nhóm hồi tiếp lên chính nó. Tín hiệu vào một trong hai nhóm chuyển ô nhớ sang trạng thái của nhóm đó, và ô nhớ ghi nhớ quyết định sau cùng. Đây là tương tự trực tiếp của mạch chốt gồm hai phần tử NOR nối chéo.
+
+\section{Ổn định và nhịp}
+
+Còn lại tai họa thứ ba của mạng \nt{GLUT} --- thác hoạt động. Lấy một nhóm nơ-ron \nt{GLUT} có hồi tiếp lên chính nó $w_{EE}$ và một nhóm nơ-ron \nt{GABA} được nhóm thứ nhất kích thích với độ mạnh $w_{IE}$ và ức chế nhóm thứ nhất với độ mạnh $w_{EI}$. Với các tần số $E$ và $I$, ta có
+\begin{equation}
+\tau_E\frac{\dd E}{\dd t} = -E + w_{EE}E - w_{EI}I + h, \qquad
+\tau_I\frac{\dd I}{\dd t} = -I + w_{IE}E ,
+\label{eq:ei}
+\end{equation}
+trong đó $h$ là đầu vào bên ngoài~\cite{WilsonCowan1972}. Không có ức chế, khi $w_{EE}>1$ hoạt động tăng không giới hạn: mỗi xung sinh ra hơn một xung tiếp theo. Có ức chế, tần số xác lập
+\begin{equation}
+E^* \;=\; \frac{h}{1-w_{EE}+w_{EI}w_{IE}}
+\label{eq:eistar}
+\end{equation}
+là hữu hạn nếu mẫu số dương. Nhưng như vậy chưa đủ: trạng thái cân bằng còn phải hút. Phân tích tuyến tính~\eqref{eq:ei} cho hai điều kiện.
+
+\begin{keyblock}
+\begin{proposition}[Điều kiện ổn định]
+\label{prop:ei}
+Trạng thái cân bằng~\eqref{eq:eistar} ổn định nếu ức chế
+\begin{enumerate}
+\item[(i)] \emph{đủ mạnh}: $w_{EI}\,w_{IE} > w_{EE}-1$;
+\item[(ii)] \emph{đủ nhanh}: $\tau_I < \tau_E/(w_{EE}-1)$.
+\end{enumerate}
+Nếu (i) bị vi phạm, hoạt động tăng như thác đổ. Nếu (i) được thỏa mãn nhưng (ii) bị vi phạm, ức chế đến muộn, và hoạt động bắt đầu dao động.
+\end{proposition}
+\end{keyblock}
+
+Điều kiện~(i) là định thức của ma trận hệ~\eqref{eq:ei}, điều kiện~(ii) là vết của nó. Ý nghĩa của điều kiện thứ hai rõ với bất kỳ ai từng chỉnh một bộ điều khiển: hồi tiếp đến muộn không dập độ lệch mà làm nó dao động mạnh thêm.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth]
+\draw[->,gray!70!black] (0,0) -- (10.9,0) node[right,black] {\small $t$, ms};
+\draw[->,gray!70!black] (0,0) -- (0,3.3) node[left,black] {\small $E$};
+\foreach \t in {0,50,100,150}{\draw[gray!70!black] (\t*0.07,0.06) -- (\t*0.07,-0.06) node[below,font=\scriptsize] {\t};}
+\input{figures/ei_traces}
+\node[font=\small,gray!40!black,anchor=west] at (1.3,3.45) {không ức chế: thác hoạt động};
+\node[font=\small,blue!60!black,anchor=west] at (7.4,1.25) {ức chế nhanh};
+\node[font=\small,red!70!black,anchor=west] at (7.4,2.55) {ức chế chậm};
+\end{tikzpicture}
+\caption{Tần số của một nhóm \nt{GLUT} có hồi tiếp $w_{EE}=1.5$, $\tau_E=10\ms$, sau khi bật đầu vào. Không có ức chế (nét đứt), hoạt động tăng không giới hạn. Với ức chế có độ mạnh $w_{EI}w_{IE}=2$ và $\tau_I=2\ms$ (đường xanh), nó đạt mức $E^*=h/(1-1.5+2)=0.67h$. Với cùng ức chế đó nhưng chậm, $\tau_I=30\ms$ (đường đỏ), hoạt động dao động.}
+\label{fig:ei}
+\end{figure}
+
+Người ta cho rằng vỏ não làm việc đúng ở chế độ này: hồi tiếp riêng của nó đủ mạnh để rơi vào thác hoạt động nếu không có ức chế, và chỉ có ức chế nhanh giữ nó ở điểm làm việc~\cite{Tsodyks1997isn}.
+
+Chế độ này có một dấu hiệu nghịch lý, nhờ đó có thể nhận ra nó từ bên ngoài~\cite{Tsodyks1997isn}. Thêm vào~\eqref{eq:ei} một đầu vào bên ngoài $h_I$ đưa thẳng tới nhóm \nt{GABA}. Các tần số xác lập trở thành
+\begin{equation}
+E^* \;=\; \frac{h-w_{EI}\,h_I}{D},\qquad
+I^* \;=\; \frac{w_{IE}\,h+(1-w_{EE})\,h_I}{D},\qquad
+D \;=\; 1-w_{EE}+w_{EI}w_{IE} .
+\label{eq:isn}
+\end{equation}
+Nếu $w_{EE}>1$, hệ số của $h_I$ trong công thức thứ hai là âm: đẩy thêm các nơ-ron \nt{GABA} --- và tần số của chúng \emph{giảm}. Nguyên nhân nằm ở vòng lặp. Ức chế thừa làm nhóm \nt{GLUT} nhỏ tiếng đi, nhóm này kích thích các nơ-ron \nt{GABA} ít hơn, và chúng mất nhiều hơn phần nhận được. Với các số liệu của hình~\ref{fig:ei} ($w_{EE}=1.5$, $w_{EI}w_{IE}=2$, $D=1.5$), mỗi đơn vị đầu vào thêm vào làm $I^*$ giảm một phần ba đơn vị. Dấu hiệu này đã được tìm thấy trong vỏ não: khi đáp ứng của nơ-ron vỏ thị giác bị kích thích xung quanh ức chế, dòng ức chế mà chúng nhận được không tăng mà giảm cùng với dòng kích thích~\cite{Ozeki2009}. Về sau, cùng dấu hiệu này đã được tìm thấy ở nhiều vùng và nhiều lớp vỏ não khác nhau~\cite{Sanzeni2020}.
+
+Dao động khi điều kiện~(ii) bị vi phạm cũng gặp trong não. Vòng ``\nt{GLUT} kích thích \nt{GABA}, \nt{GABA} ức chế \nt{GLUT}'' với độ trễ vài mili giây sinh ra một nhịp có chu kỳ cỡ $12$--$50\ms$ (tần số $20$--$80$\,Hz), và các nhịp nhanh như vậy trong vỏ não được biết rõ~\cite{Cardin2009,Buzsaki2012}. Đây không phải đồng hồ của máy tính: nhịp mang tính cục bộ và chỉ xuất hiện khi mạng hoạt động. Nhưng trong vài chu kỳ, nó chia thời gian thành những cửa sổ mà trong đó nơ-ron có thể phát xung.
+
+\section{Tổng kết}
+
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{>{\raggedright}p{3.3cm}>{\raggedright}p{4.4cm}>{\raggedright\arraybackslash}p{4.4cm}}
+\toprule
+& chỉ \nt{GLUT} & \nt{GLUT} + \nt{GABA} \\
+\midrule
+NOT & chỉ qua cảm biến ``bật---tắt'' & phép cấm $a\wedge\bar b$; NOT khi có hoạt động nền \\
+số dây cho một bit & hai & một \\
+hướng chuyển động & không & phép cấm có độ trễ \\
+điều chỉnh hệ số khuếch đại & không & phép chia: sun cùng với nhiễu nền \\
+cửa sổ trùng khớp & $\sim\tau$ & bị ức chế thu hẹp \\
+chọn một trong nhiều & không & ức chế lẫn nhau, $\beta>1$ \\
+đặt lại bộ nhớ & chỉ nhờ sự mỏi & bằng tín hiệu qua \nt{GABA} \\
+ổn định & chỉ nhờ sự mỏi & hồi tiếp âm nhanh \\
+nhịp & không cần & xuất hiện khi ức chế chậm \\
+\bottomrule
+\end{tabular}
+\caption{\nt{GABA} bổ sung gì cho mạng nơ-ron \nt{GLUT}.}
+\label{tab:gaba}
+\end{table}
+
+\nt{GABA} hầu như không bổ sung cho mạng \emph{phép tính} mới nào --- mọi thứ đó đều tính được với cảm biến hai dây --- mà bổ sung \emph{sự điều khiển} (bảng~\ref{tab:gaba}): lựa chọn, đặt lại, điều chỉnh hệ số khuếch đại và ổn định. Kích thích trong não mang dữ liệu, còn ức chế quyết định dữ liệu nào được đi qua, khi nào và to đến mức nào. Với mỗi nơ-ron thứ tư hoặc thứ năm của vỏ não, đó là một sự phân công lao động rất hợp lý.
+
+\section{Bài tập}
+
+\begin{exercise}[\lvlA]
+\label{ex:03:1}
+\emph{Sun bằng con số.} $E_E=70\mV$. Theo~\eqref{eq:shunt}, tìm $V_\infty$ khi $g_E=g_L$ và $4g_L$, không có ức chế và có sun $g_I=2g_L$. Phép trừ lấy đi ở $g_E=g_L$ đúng bằng lượng mà sun lấy đi sẽ cho $V_\infty$ bằng bao nhiêu khi $g_E=4g_L$? Sun thu hẹp cửa sổ trùng khớp bao nhiêu lần?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:03:2}
+\emph{Suy ra điều kiện ổn định.} Tìm vết và định thức của ma trận hệ tuyến tính~\eqref{eq:ei} và từ đó suy ra cả hai điều kiện của mệnh đề~\ref{prop:ei}. Ở biên của điều kiện~(ii), trạng thái cân bằng mất ổn định theo kiểu dao động. Tìm chu kỳ của các dao động đó với số liệu của hình~\ref{fig:ei}.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:03:3}
+\emph{Nhịp từ độ trễ.} Thay ức chế chậm của mô hình~\eqref{eq:ei} bằng ức chế nhanh có độ trễ $d$: $\tau_E\dot E=-E(t)-GE(t-d)+h$. Với $\tau_E=10\ms$, tìm độ trễ nhỏ nhất $d_c$ gây dao động, và chu kỳ của chúng với $G=2$ và $G=5$. Khác với bài tập~\ref{ex:03:2}, chúng có rơi vào các nhịp nhanh của vỏ não, $12$--$50\ms$, không?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:03:4}
+\emph{Mô phỏng: lựa chọn có bộ nhớ.} Tích phân~\eqref{eq:wta} với $\beta=2$, $\tau=1$. (a)~Với $I_1=1$, tăng chậm $I_2$ từ $0$ đến $3$ rồi giảm trở lại: ở những giá trị $I_2$ nào mạng chuyển trạng thái? (b)~Thời gian ra quyết định từ trạng thái im lặng tăng bao nhiêu khi hiệu các đầu vào $\varepsilon$ giảm mười lần?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:03:5}
+\emph{Thiết kế: bộ phát hiện cho một dải vận tốc.} Bộ phát hiện ở hình~\ref{fig:direction} phải im lặng khi chuyển động từ $A$ sang $B$ với thời gian chạy $5$--$20\ms$. Trung gian \nt{GABA} với độ trễ $d_k$ cấm $Y$ trên đoạn $[d_k,\,d_k+5\ms]$ sau xung của $A$; kích thích từ $B$ đến ngay. Cần bao nhiêu trung gian và với những độ trễ nào?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:03:6}
+\emph{Phép cấm và nền.} Hàm chẵn lẻ $x\oplus y\oplus z$ cần bao nhiêu nơ-ron theo sơ đồ chung ``một trung gian \nt{GABA} cho mỗi đầu vào, một phép cấm cho mỗi tổ hợp có $f=1$, một OR chung''? Hãy xây nó từ hai nơ-ron, \nt{GABA} và \nt{GLUT}, nhận đầu vào trực tiếp, chỉ rõ trọng số và ngưỡng.
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:03:7}
+\emph{Thiết kế: chọn một trong một trăm.} Mỗi nhóm trong $100$ nhóm \nt{GLUT} phải ức chế đều mọi nhóm khác, trừ chính nó. Trung gian \nt{GABA} tuyến tính do các nhóm kích thích và ức chế các nhóm; các nhóm có thể kích thích nhau, trừ chính mình. Cần ít nhất bao nhiêu trung gian? Nếu không có liên kết kích thích trực tiếp nào?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:03:8}
+\emph{Nghiên cứu: khi nào ức chế nghịch lý.} Trong mô hình hình~\ref{fig:ei} ($w_{EI}=2$, $w_{IE}=1$), nhóm \nt{GLUT} có hàm truyền $f(u)=[u]_+^2$, nhóm \nt{GABA} vẫn tuyến tính. Trên đầu vào $h_c$ nào, việc thêm đầu vào cho nhóm \nt{GABA} làm giảm chính tần số của nó? Kiểm tra bằng mô phỏng.
+\end{exercise}

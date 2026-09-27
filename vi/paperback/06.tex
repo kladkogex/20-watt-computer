@@ -1,0 +1,50 @@
+\chapter{Cỗ máy học như thế nào}
+% full version: chapters/06_dofa.tex
+
+Trong mọi mạch cho đến giờ, độ mạnh của các liên kết là do kỹ sư chọn. Trong bộ não sống không có kỹ sư nào. Các liên kết phải tự điều chỉnh, ngay trong lúc làm việc --- và sao cho cỗ máy làm được điều gì đó có ích. Đó chính là học.
+
+Hạn chế chính nghe rất khắt khe. Mỗi mối nối tự thay đổi chính mình, và nó chỉ có thể biết những gì xảy ra ngay cạnh nó: nơi gửi có hoạt động không, nơi nhận có hoạt động không và những chất nào tới được nó. Không ai có thể gửi cho mối nối một bản hiệu chỉnh riêng. Điều này loại trừ phương pháp chính để huấn luyện mạng nơ-ron nhân tạo, nơi sai số chạy ngược qua mạng và mỗi liên kết nhận được bản hiệu chỉnh riêng của mình.
+
+\section*{Cùng nhau --- nghĩa là gắn kết}
+
+Quy tắc đơn giản nhất: nếu nơi gửi và nơi nhận hoạt động cùng nhau, liên kết giữa chúng mạnh lên. Nó mang tính cục bộ và không cần đồng hồ. Một quy tắc như vậy, nếu thêm một chút quên lãng, sẽ tìm ra điều quan trọng nhất trong dòng tín hiệu --- thứ biến đổi mạnh nhất. Cũng có phiên bản nhìn vào thời điểm tiếng tách: liên kết mạnh lên nếu nơi gửi tách \emph{trước} nơi nhận, tức là có thể đã là nguyên nhân, và yếu đi nếu tách sau.
+
+Nhưng các quy tắc này có một giới hạn: chúng dạy điều \emph{hay gặp}, chứ không phải điều \emph{có ích}. Một mối nối chỉ thấy các hàng xóm của mình thì không biết hành động đã mang lại nước ép hay nỗi đau.
+
+\section*{Tín hiệu thứ ba}
+
+Tín hiệu đó do dopamine mang tới --- đài phát thanh ``tốt hơn mong đợi''. Hãy để liên kết chỉ thay đổi khi ba điều trùng nhau: nơi gửi đã hoạt động, nơi nhận đã hoạt động và dopamine đã tới.
+
+\pencilfig{6}{\pencilart{6}}{Liên kết mạnh lên khi cả hai nơ-ron cùng hoạt động và tín hiệu thứ ba tới: ``kết quả tốt hơn mong đợi''.}
+
+Nhưng có một khó khăn: phần thưởng không đến ngay mà sau một, hai giây. Đến lúc đó nơi gửi và nơi nhận đã im lặng từ lâu. Mối nối cần nhớ rằng nó đã tham gia. Và nó có trí nhớ đó: hoạt động chung để lại trong mối nối một dấu hiệu, như miếng dán tự bong ra sau một, hai giây. Dopamine tới khi miếng dán còn bám --- liên kết thay đổi. Không tới --- dấu hiệu biến mất không để lại vết. Điều này giải quyết bài toán địa chỉ: dopamine là một cho tất cả, nhưng chỉ những mối nối đang mang miếng dán mới thay đổi.
+
+\pencilfig{106}{%
+\foreach \y/\d/\t in {0/0.9/{đúng lúc: liên kết tăng},-1.3/3.3/{trễ: không gì cả}}{
+  \draw[pen] (0,\y) -- (4.6,\y);
+  \foreach \s in {0.25,0.33}{\draw[pcBlue, line width=0.8pt] (\s,\y) -- (\s,\y+0.3);}
+  \fill[pcAmber, opacity=0.25] (0.35,\y) -- plot[domain=0.35:4.5, samples=30] (\x,{\y+0.8*exp(-(\x-0.35)/0.8)}) -- (4.5,\y) -- cycle;
+  \draw[penlite=pcAmber] plot[domain=0.35:4.5, samples=30] (\x,{\y+0.8*exp(-(\x-0.35)/0.8)});
+  \draw[pcAmber!80!black, line width=0.9pt] (\d-0.1,\y+0.95) -- (\d+0.07,\y+0.62) -- (\d-0.07,\y+0.6) -- (\d+0.1,\y+0.22);
+  \draw[arr=pcAmber!80!black] (\d+0.09,\y+0.27) -- (\d+0.11,\y+0.12);
+  \node[lbl, anchor=west] at (4.7,\y+0.3) {\t};}
+\node[lbl, text=pcBlue, anchor=south west] at (0.1,0.85) {cùng hoạt động};
+\node[lbl, text=pcAmber!80!black, anchor=south] at (2.3,0.35) {dấu hiệu tan dần};
+\foreach \x/\l in {0.35/0,1.95/1,3.55/2}{\draw[pcGray, line width=0.5pt] (\x,-1.3) -- (\x,-1.38); \node[lbl, anchor=north] at (\x,-1.38) {\l~s};}
+}{Hoạt động chung để lại trong mối nối một dấu hiệu, tan đi sau một, hai giây. Dopamine chỉ thay đổi những mối nối có dấu hiệu.}
+
+\section*{Nhiễu như một cách dò tìm}
+
+Vì sao quy tắc này dẫn tới điều tốt hơn chứ không phải tới đâu cũng được? Hãy tưởng tượng bạn bị bịt mắt và đang tìm đỉnh đồi. Bạn bước một bước ngẫu nhiên, và ai đó hét lên ``cao hơn!'' hoặc ``thấp hơn!''. Nếu ``cao hơn'' --- bạn giữ bước đó. Từng bước một, bạn leo lên mà chưa một lần nhìn bản đồ. Bộ não làm đúng như vậy: các nơ-ron hơi dao động ngẫu nhiên, dopamine báo xem có tốt hơn không, và các liên kết đã tham gia dịch về phía có lợi. Nhiễu, vốn cản trở việc truyền thông điệp, ở đây trở thành sự dò tìm.
+
+Giờ thì đã rõ vì sao dopamine không báo về phần thưởng mà về \emph{sự bất ngờ}. Nếu nó chỉ hét ``nước ép!'' sau mỗi lần thành công, nó sẽ củng cố luôn mọi thứ mạng đã làm --- cả đúng lẫn sai. Trong mô hình của chúng tôi, một mạng như vậy quả thực đẩy các liên kết của nó lớn lên hàng nghìn lần, và đôi khi mắc kẹt vĩnh viễn ở lựa chọn tồi hơn. Trừ đi kỳ vọng khiến việc học trở nên công bằng.
+
+\section*{Cái giá của một dây dẫn}
+
+Học qua quảng bá có cái giá của nó. Một tín hiệu cho tất cả, mà trong đó lẫn nhiễu của mọi nơ-ron ảnh hưởng tới kết quả. Mạng càng lớn, mỗi mối nối càng mất lâu để tách ra phần của mình. Vì thế dopamine có lẽ chỉ dạy những mạch tương đối nhỏ chuyên chọn hành động, còn vỏ não khổng lồ chủ yếu học theo các quy tắc cục bộ.
+
+\section*{Ai tính sự bất ngờ}
+
+Còn lại câu hỏi: các nơ-ron dopamine tính ``tốt hơn mong đợi'' bằng cách nào? Cần một nhà phê bình --- một nhóm nơ-ron liên tục ước lượng xem còn bao nhiêu điều tốt đang chờ phía trước. Sự bất ngờ là phần thưởng nhận được cộng với mức kỳ vọng vừa nhảy vọt. Đèn bật sáng --- kỳ vọng nhảy lên, một loạt tách. Nước ép đã hứa tới --- có phần thưởng, nhưng kỳ vọng cũng cạn ngay lúc đó, không có bất ngờ. Nước ép không tới --- kỳ vọng sụp đổ vô ích, một khoảng lặng. Cả ba trường hợp ở chương một tự nhiên mà ra. Việc dopamine hành xử đúng như vậy đã được đo. Còn bộ não tính sự bất ngờ này chính xác bằng cách nào thì hiện vẫn là giả thuyết.
+
+\fullversion{6}

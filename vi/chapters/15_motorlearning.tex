@@ -1,0 +1,178 @@
+\chapter{Cỗ máy học vận động như thế nào}
+\chaptermark{Cỗ máy học vận động}
+\label{sec:motorlearning}
+
+\section{Ba người thầy}
+
+Ở chương~\ref{sec:muscles}, ta đã thấy cỗ máy điều khiển cơ ra sao, và dừng lại ở một giả thuyết: cử động nhanh và chính xác đòi hỏi một mô hình bên trong của cơ thể, dự đoán kết quả của lệnh~\cite{WolpertGhahramani2000}. Mô hình này từ đâu ra? Nó phải được học, và học theo cách khác với những gì ta đã học cho tới giờ.
+
+Sách đã có hai người thầy. Người thứ nhất là \emph{không ai cả}: quy tắc Hebb (chương~\ref{sec:dofa}) tăng cường những gì hay xuất hiện cùng nhau và nén đầu vào. Người thứ hai là \emph{phần thưởng}: \nt{DOPA} phát cho mọi nơi một con số, ``tốt hơn hay tệ hơn kỳ vọng''. Vận động cần một người thầy thứ ba: \emph{sai số}. Bàn tay với trượt cái tách hai centimét về bên trái: đó không phải là ``tệ hơn'', mà là một vectơ cho mỗi đầu ra biết nó sai về hướng nào và bao nhiêu. Kỹ sư sẽ gọi đó là học có giám sát.
+
+Khác biệt giữa người thầy thứ hai và thứ ba là khác biệt giữa một dây dùng chung cho tất cả và một dây riêng cho mỗi đầu ra. Trong mệnh đề~\ref{prop:broadcastcost}, học theo một con số chung chậm đi với mỗi nơ-ron có nhiễu ảnh hưởng tới kết quả. Còn nếu mỗi đầu ra $i$ nhận sai số riêng $e_i$ của nó, trọng số có thể thay đổi theo quy tắc đơn giản nhất:
+\begin{empheq}[box=\keybox]{equation}
+\frac{\dd w_{ij}}{\dd t} \;=\; -\eta\,e_i(t)\,x_j(t) .
+\label{eq:lms}
+\end{empheq}
+Đây là quy tắc bình phương tối thiểu, đã quen thuộc từ lâu trong kỹ thuật lọc thích nghi~\cite{WidrowHoff1960}: trọng số thay đổi tỉ lệ với tích của đầu vào của nó và sai số của đầu ra của nó, và trung bình đi theo gradient của bình phương sai số. Không cần nhiễu để dò tìm như ở chương~\ref{sec:dofa}: hướng hiệu chỉnh đến thẳng qua dây sai số. Và tốc độ không giảm theo số đầu ra, vì sai số của đầu ra khác không tới khớp thần kinh này.
+
+\begin{keyblock}
+\begin{proposition}[Ba người thầy]
+\label{prop:teachers}
+Quy tắc Hebb dạy không cần thầy những gì thường gặp; tín hiệu \nt{DOPA} dạy bằng một con số cho cả mạng những gì có lợi, và chậm dần với mỗi nơ-ron; dây sai số tới mỗi đầu ra dạy theo quy tắc~\eqref{eq:lms} những gì chính xác, với tốc độ không phụ thuộc số đầu ra. Giá của cách thứ ba là một dây riêng cho mỗi đầu ra và một ai đó biết câu trả lời đúng.
+\end{proposition}
+\end{keyblock}
+
+\section{Dây sai số}
+
+Ai có thể biết câu trả lời đúng cho một cử động? Chính các cảm biến. Nếu tay lệch sang trái so với mục tiêu, mắt và các cảm biến độ giãn ở chương~\ref{sec:sensors} sẽ báo điều đó. Cần một sơ đồ đưa sai số này tới đúng các đầu ra.
+
+Trong não có một vùng dường như được cấu tạo đúng cho việc này~\cite{Marr1969,Albus1971}. Sơ đồ của nó đều đặn khác thường, gần như tinh thể, và dễ nhận ra trong đó quy tắc~\eqref{eq:lms} (hình~\ref{fig:errorwire}).
+
+\emph{Lớp mở rộng đầu vào.} Tín hiệu về lệnh và về trạng thái cơ thể đi tới một lớp khổng lồ gồm các nơ-ron \nt{GLUT} nhỏ. Có khoảng bảy mươi tỷ nơ-ron như vậy, nhiều hơn toàn bộ phần còn lại của não cộng lại~\cite{Azevedo2009}. Mỗi nơ-ron trộn vài đầu vào, và tín hiệu được trải ra thành một vectơ rất dài. Kỹ sư quen với mẹo này: nếu nâng số chiều của đầu vào, thì trong không gian mới hầu như mọi quan hệ cần thiết đều có thể thu được bằng một tổng có trọng số đơn giản~\cite{Cover1965}.
+
+\emph{Nơ-ron đầu ra.} Tổng có trọng số được tính bởi khoảng ba mươi triệu nơ-ron đầu ra lớn~\cite{Andersen1992cereb}, mỗi nơ-ron có cỡ một trăm nghìn đầu vào từ lớp mở rộng. Và đó là các nơ-ron \nt{GABA}: kết quả học được truyền đi không bằng kích thích mà bằng ức chế, như trong phép cấm ở chương~\ref{sec:gaba}.
+
+\emph{Dây sai số.} Mỗi nơ-ron đầu ra còn nhận thêm một đầu vào đặc biệt: đúng một dây \nt{GLUT}, phát xung thưa, khoảng mỗi giây một lần, nhưng mỗi lần đều gây ra trong nơ-ron đầu ra một đợt bùng mạnh~\cite{Ito2001}. Đó chính là $e_i$: xác suất xảy ra đợt bùng phụ thuộc vào hướng của sai số vận động~\cite{Herzfeld2018}. Sự trùng khớp giữa đợt bùng sai số và hoạt động của một đầu vào làm yếu đầu vào đó, đúng như số hạng $-\eta\,e_i x_j$ trong~\eqref{eq:lms}.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  gran/.style={circle,draw,thick,fill=blue!6,minimum size=0.32cm,inner sep=0pt},
+  outn/.style={circle,draw,very thick,fill=red!10,minimum size=1.1cm,inner sep=0pt,font=\scriptsize},
+  inh/.style={-{Bar[width=7pt]},very thick,red!70!black}]
+% inputs
+\foreach \y/\lab in {1.6/{lệnh},0.4/{trạng thái cơ thể}}{
+  \draw[->,thick,blue!60!black] (-0.6,\y) node[left,font=\scriptsize,black] {\lab} -- (0.35,\y);}
+% expansion layer
+\foreach \i in {0,...,11}{\node[gran] (g\i) at ({0.8+0.28*mod(\i,2)},{-0.3+0.23*\i}) {};}
+\foreach \i in {0,...,11}{\pgfmathsetmacro{\yy}{mod(\i,3)>0 ? 1.6 : 0.4}\draw[gray!60!black] (0.35,\yy) -- (g\i);}
+\node[font=\scriptsize,align=center] at (0.95,-1.05) {lớp mở rộng\\$\sim7\cdot10^{10}$ \nt{GLUT}};
+% parallel wires to the output neuron
+\foreach \i in {0,...,11}{\draw[->,gray!70!black] (g\i.east) -- (4.1,{1.0+0.07*(\i-5.5)});}
+\node[outn] (P) at (4.6,1.0) {\nt{GABA}};
+\node[font=\scriptsize,align=center,above=2pt] at (P.north) {nơ-ron đầu ra\\$\sim10^5$ đầu vào $x_j$, trọng số $w_{ij}$};
+\draw[inh] (P) -- (6.8,1.0) node[right,font=\scriptsize,align=left] {hiệu chỉnh\\cử động};
+% error wire
+\draw[->,very thick,red!70!black,densely dashed] (4.6,-1.4) node[below,font=\scriptsize,black,align=center] {một dây sai số $e_i$\\\nt{GLUT}, $\sim1$ lần/s} -- (P.south);
+\end{tikzpicture}
+\caption{Sơ đồ học có giám sát, theo cách mà não dường như hiện thực. Lệnh và trạng thái cơ thể được một lớp khổng lồ các nơ-ron \nt{GLUT} trải thành một vectơ dài $x_j$; nơ-ron \nt{GABA} đầu ra cộng nó với các trọng số $w_{ij}$. Dây sai số duy nhất mang $e_i$ tới; sự trùng khớp giữa sai số và một đầu vào đang hoạt động làm yếu trọng số của đầu vào đó, như trong quy tắc~\eqref{eq:lms}.}
+\label{fig:errorwire}
+\end{figure}
+
+Có một khó khăn ta đã gặp ở chương~\ref{sec:dofa}: sai số đến muộn hơn đầu vào đã gây ra nó. Cú trượt được thấy sau lệnh vài chục đến vài trăm mili giây. Vậy khớp thần kinh phải nhớ rằng nó đã hoạt động: cần một vết, như trong quy tắc~\eqref{eq:threefactor}. Và theo các thí nghiệm, độ dài của vết này được chỉnh khớp với độ trễ phản hồi trong từng nhiệm vụ: ở nơi sai số đến sau một trăm mili giây, đầu vào bị làm yếu mạnh nhất là đầu vào đã hoạt động một trăm mili giây trước đó~\cite{Suvrathan2016}.
+
+\begin{keyblock}
+\begin{proposition}[Dây sai số]
+\label{prop:errorwire}
+Trong sơ đồ ở hình~\ref{fig:errorwire}, mỗi nơ-ron đầu ra nhận đúng một dây sai số, và sự trùng khớp giữa sai số và một đầu vào làm yếu đầu vào đó. Đây là quy tắc bình phương tối thiểu~\eqref{eq:lms} áp dụng cho đầu vào đã được mở rộng tới số chiều khổng lồ. Cấu tạo của sơ đồ và sự làm yếu khi trùng khớp đã được đo; việc cả sơ đồ hoạt động như học có giám sát là giả thuyết hàng đầu.
+\end{proposition}
+\end{keyblock}
+
+\section{Mô hình bên trong như một bộ lọc thích nghi}
+
+Sơ đồ như vậy học được gì? Câu trả lời tự nhiên nhất là học dự đoán. Giả sử đầu vào là lệnh $u(t)$ đi qua một bộ các bộ lọc với những hằng số thời gian khác nhau, như trong lớp mở rộng: $x_j(t)=(g_j*u)(t)$. Đầu ra là tổng có trọng số của chúng, dự đoán những gì cảm biến sẽ báo:
+\begin{empheq}[box=\keybox]{equation}
+\hat y(t) \;=\; \sum_j w_j\,(g_j*u)(t), \qquad e(t) \;=\; \hat y(t) - y(t) ,
+\label{eq:adaptivefilter}
+\end{empheq}
+còn trọng số học theo~\eqref{eq:lms}. Đây là \emph{bộ lọc thích nghi}: một sơ đồ tự chỉnh hàm truyền của mình để lặp lại một hệ chưa biết~\cite{Fujita1982}. Ở đây hệ chưa biết là chính cơ thể với khối lượng, độ đàn hồi và độ trễ của nó. Bộ lọc đã học chính là mô hình bên trong của chương~\ref{sec:muscles}: nó cho biết cảm biến sẽ báo gì mà không cần chờ chúng.
+
+Mô hình như vậy có ích theo hai cách. Thứ nhất, dự đoán của nó có thể được đưa vào thay cho phản hồi đến trễ, và khi đó điều kiện ổn định~\eqref{eq:delaystable} không còn trói tay ta nữa: có thể sửa nhanh, theo mô hình. Thứ hai, hiệu giữa điều được dự đoán và điều nhận được là tín hiệu về cái \emph{bất ngờ}. Mọi thứ cỗ máy tự làm đều đã được mô hình dự đoán và trừ đi; phần còn lại là việc thế giới làm. Vì vậy, theo một giả thuyết, ta không thể tự cù mình~\cite{Blakemore1998}.
+
+\section{Khi thế giới thay đổi: nhanh và chậm}
+
+Hãy kiểm tra sơ đồ bằng một thí nghiệm dễ làm. Một người với tay tới mục tiêu, và thế giới bất ngờ thay đổi: chẳng hạn một lực ngang tác động lên tay. Những cử động đầu tiên bị trượt, sau đó độ trượt giảm dần. Nếu bỏ lực đi, tay ban đầu trượt về phía \emph{ngược lại}: mô hình đã học lực đó và tiếp tục bù cho nó. Đây là bằng chứng trực tiếp rằng cái được học là một mô hình, chứ không đơn giản là ``đã làm được''.
+
+Thí nghiệm còn cho thấy một điều tinh tế hơn: có hai quá trình cùng học một lúc, một quá trình nhanh, học nhanh và quên nhanh, và một quá trình chậm, học chậm và nhớ lâu~\cite{Smith2006}. Các hiệu chỉnh được cập nhật sau mỗi cử động, theo sự kiện:
+\begin{empheq}[box=\keybox]{equation}
+e = p - (x_f + x_s), \qquad x_f \leftarrow A_f\,x_f + B_f\,e, \qquad x_s \leftarrow A_s\,x_s + B_s\,e ,
+\label{eq:tworate}
+\end{empheq}
+trong đó $p$ là nhiễu loạn, $x_f$ và $x_s$ là hiệu chỉnh đã học của hai quá trình, $A$ là mức hiệu chỉnh được giữ lại tới cử động sau, $B$ là mức học từ sai số. Ở quá trình nhanh, $B$ lớn còn $A$ nhỏ hơn một khá rõ; ở quá trình chậm thì ngược lại.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=0.034cm,y=1.9cm]
+\draw[->,gray!70!black] (0,0) -- (355,0) node[right,font=\small,black] {cử động};
+\draw[->,gray!70!black] (0,-1.15) -- (0,1.25);
+\foreach \v in {-1,1}{\draw[gray!60!black] (-3,\v) -- (3,\v); \node[left,font=\scriptsize] at (0,\v) {$\v$};}
+\foreach \n in {100,200,300}{\draw[gray!60!black] (\n,-0.04) -- (\n,0.04); \node[below,font=\scriptsize] at (\n,0) {\n};}
+\draw[thin,gray!70!black] plot file {figures/tworate_p.dat};
+\draw[thick,orange!85!black] plot file {figures/tworate_fast.dat};
+\draw[thick,blue!60!black] plot file {figures/tworate_slow.dat};
+\draw[very thick,black] plot file {figures/tworate_net.dat};
+\node[font=\scriptsize,gray!50!black] at (120,1.12) {nhiễu loạn $p$};
+\node[font=\scriptsize,black,anchor=west] at (238,0.52) {tổng: quay lại};
+\node[font=\scriptsize,blue!60!black,anchor=west] at (150,0.39) {chậm $x_s$};
+\node[font=\scriptsize,orange!85!black,anchor=west] at (60,0.08) {nhanh $x_f$};
+\draw[densely dashed,gray!60!black] (226,-1.15) -- (226,1.25);
+\node[font=\scriptsize,align=center,anchor=south west] at (228,-1.1) {hết\\sai số};
+\end{tikzpicture}
+\caption{Hai quá trình học theo mô hình~\eqref{eq:tworate}, $A_f=0.92$, $B_f=0.1$, $A_s=0.996$, $B_s=0.02$. Hai trăm cử động với nhiễu loạn $p=1$, sau đó sáu cử động với nhiễu loạn ngược, $p=-1$, cho tới khi tổng về không. Sau đường nét đứt, sai số không còn được đưa vào, và tổng tự quay về hiệu chỉnh cũ: quá trình nhanh đã quên nhiễu loạn ngược, quá trình chậm vẫn nhớ nhiễu loạn thuận.}
+\label{fig:tworate}
+\end{figure}
+
+Mô hình~\eqref{eq:tworate} giải thích một thí nghiệm khó hiểu nếu không có nó (hình~\ref{fig:tworate}). Trong tính toán của chúng tôi, sau hai trăm cử động có nhiễu loạn, tổng hiệu chỉnh đạt $0.84$, trong đó phần lớn do quá trình chậm giữ, $0.63$. Tiếp đó sáu cử động với nhiễu loạn ngược đưa tổng về không: quá trình nhanh đã xuống âm, $-0.53$, quá trình chậm vẫn dương, $0.46$. Nếu bây giờ thôi báo sai số, quá trình nhanh quên hiệu chỉnh của nó sau vài chục cử động, quá trình chậm lâu hơn nhiều, và tổng \emph{tự} tăng lên $0.37$ sau bốn mươi cử động: kỹ năng cũ quay lại mà không cần luyện tập gì. Sự hồi phục tự phát như vậy đã được đo ở người; mô hình một quá trình không thể cho ra điều đó: không có sai số, nó chỉ đơn giản tắt dần về không.
+
+Tại sao lại có hai quá trình? Một câu trả lời kỹ thuật hợp lý đến từ bộ lọc tối ưu ở chương~\ref{sec:acet}. Cơ thể thay đổi vì những lý do khác nhau với tốc độ khác nhau: cơ mỏi trong vài phút, lớn lên và yếu đi trong vài tháng. Nếu nhiễu có loại nhanh và loại chậm, ước lượng tốt nhất gồm hai bộ lọc với hằng số thời gian khác nhau, mỗi bộ bắt một loại~\cite{Kording2007}. Quá trình nhanh là hiệu chỉnh tạm thời, ``tay mỏi''; quá trình chậm là ``tay đã khác đi''. Đây vẫn là giả thuyết, nhưng nó giải thích vì sao một kỹ năng học trong một ngày bị mất một phần sang ngày hôm sau, và vì sao lần thứ hai học nhanh hơn.
+
+\section{Tổng kết}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{3.0cm}>{\raggedright}p{4.6cm}>{\raggedright\arraybackslash}p{5.2cm}}
+\toprule
+Sơ đồ làm gì & Bằng cách nào & Đã biết gì \\
+\midrule
+học có giám sát & dây sai số tới mỗi đầu ra, quy tắc~\eqref{eq:lms} & cấu tạo sơ đồ và sự làm yếu khi trùng khớp đã đo; học có giám sát là giả thuyết hàng đầu \\
+mở rộng đầu vào & bảy mươi tỷ nơ-ron \nt{GLUT} & số nơ-ron đã đo; vai trò của việc mở rộng là lý thuyết \\
+tính đến độ trễ của sai số & vết được chỉnh theo độ trễ & đã đo \\
+xây mô hình bên trong & bộ lọc thích nghi~\eqref{eq:adaptivefilter} & giả thuyết có cơ sở vững \\
+học với hai nhịp độ & quá trình nhanh và chậm~\eqref{eq:tworate} & hậu hiệu ứng và sự quay lại tự phát đã đo; hai quá trình là mô hình \\
+\bottomrule
+\end{tabular}
+\caption{Cỗ máy học vận động như thế nào.}
+\label{tab:motorlearning}
+\end{table}
+
+Giờ cỗ máy có ba người thầy (bảng~\ref{tab:motorlearning}). Hebb nén những gì thường gặp; \nt{DOPA} dạy chọn điều có lợi bằng một con số; dây sai số dạy sự chính xác, và dạy nhanh, vì mỗi đầu ra có sai số riêng của nó. Não dường như dùng cả ba, và dùng mỗi cách ở nơi nó rẻ nhất: tín hiệu quảng bá cho ít quyết định, dây riêng cho việc tinh chỉnh cơ thể, nơi câu trả lời đúng do chính cảm biến báo.
+
+\section{Bài tập}
+
+\begin{exercise}[\lvlA]
+\label{ex:15:1}
+\emph{Dung lượng của sơ đồ có dây sai số.} Sơ đồ có $3\cdot10^7$ nơ-ron đầu ra, mỗi nơ-ron $10^5$ đầu vào và một dây sai số riêng ($1$~xung/s). Nơ-ron có $n$ đầu vào học được mọi cách gán nhãn cho $\approx2n$ vectơ~\cite{Cover1965}. (a)~Sơ đồ lưu được bao nhiêu liên kết? (b)~Theo~\eqref{eq:spikeentropy} với $\Delta t=10\ms$, ước lượng thời gian nhỏ nhất để lấp đầy dung lượng một nơ-ron.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:15:2}
+\emph{Tốc độ của quy tắc bình phương tối thiểu.} Các mode của quy tắc~\eqref{eq:lms} tắt dần với tốc độ $\eta\lambda_k(C)$. Với năm bộ lọc~\eqref{eq:adaptivefilter} trên nhiễu trắng, $C_{jk}=2\sqrt{\tau_j\tau_k}/(\tau_j+\tau_k)$. Tìm tỷ số giữa tốc độ nhanh nhất và chậm nhất nếu các $\tau_j$ tăng theo bội $2$ ($10$--$160\ms$) và theo bội $4$.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:15:3}
+\emph{Phân tích hai quá trình.} Viết mô hình~\eqref{eq:tworate} với tham số của hình~\ref{fig:tworate} dưới dạng $\mathbf x_{n+1}=M\mathbf x_n+\mathbf b\,p$. (a)~Từ trị riêng của $M$, tìm các hằng số thời gian tính theo số cử động. (b)~Tìm $x_f$, $x_s$ ở trạng thái dừng và tổng của chúng khi $p=1$ không đổi.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:15:4}
+\emph{Mô phỏng: lần thứ hai nhanh hơn.} Theo mô hình~\eqref{eq:tworate} với tham số trong \texttt{models/\allowbreak motor\_learning.py}, tìm số cử động cho tới khi $x_f+x_s\ge0.8$ khi $p=1$: (a)~với cỗ máy chưa học; (b)~sau $200$ cử động với $p=1$ và nhiễu loạn ngược cho tới khi tổng bằng không, như trên hình~\ref{fig:tworate}. Mô hình một quá trình có tăng tốc như vậy được không?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:15:5}
+\emph{Bộ điều khiển có mô hình bên trong.} Đối tượng $\dd x/\dd t=ku$ được quan sát với độ trễ $d$; bộ điều khiển $u=-G\hat x$ dự đoán $\hat x(t)=x(t-d)+\hat k\int_{t-d}^{t}u\,\dd s$. (a)~Với $\hat k=k=1$, $d=150\ms$, tìm $G$ cho hằng số thời gian $20\ms$ và so với giới hạn~\eqref{eq:delaystable}. (b)~Sơ đồ có ổn định khi $\hat k=0.4k$ không?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:15:6}
+\emph{Bộ lọc thích nghi học cơ.} Đối tượng là cú giật~\eqref{eq:twitch} có diện tích đơn vị, $T_c=50\ms$; các bộ lọc~\eqref{eq:adaptivefilter} là mạch RC với $\tau_j=12.5$, $25$, $50$, $100$, $200\ms$; đầu vào là một số chuẩn mới sau mỗi $10\ms$. Sau bao nhiêu giây, quy tắc~\eqref{eq:lms} với $\eta=50$ và $200$ giảm sai số xuống $0.5\%$? Vì sao sau $300$~s trọng số vẫn còn xa giá trị tốt nhất?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:15:7}
+\emph{Hai quá trình như một bộ lọc tối ưu.} Nhiễu loạn là tổng các quá trình $p^{f,s}_{n+1}=A_{f,s}\,p^{f,s}_n+w^{f,s}_n$ với phương sai nhiễu $q_f$, $q_s$, sai số được quan sát với nhiễu phương sai $R$; bộ lọc Kalman cho ra~\eqref{eq:tworate}. Với $q_f/R$, $q_s/R$ nào thì từ $A_f=0.92$, $A_s=0.996$ thu được $B_f=0.1$, $B_s=0.02$? $B_f$, $B_s$ thay đổi ra sao nếu tăng $q_s$ lên bốn lần?
+\end{exercise}

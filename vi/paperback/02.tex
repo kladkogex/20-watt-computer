@@ -1,0 +1,59 @@
+\chapter{Cỗ máy không nhạc trưởng}
+% full version: chapters/02_glutcomputer.tex
+
+Máy tính của bạn có một nhạc trưởng --- bộ tạo xung nhịp. Hàng tỷ lần mỗi giây nó phất tay, và mọi phần tử của mạch cùng chuyển trạng thái một lúc, đều bước. Trong bộ não không có nhạc trưởng nào cả. Mỗi nơ-ron tự làm việc của mình: tín hiệu đến với nó lúc nào tùy lúc, và rời khỏi nó cũng lúc nào tùy lúc. Hãy xem có thể tính được gì trong một cỗ máy như vậy nếu chỉ dùng nơ-ron \nt{GLUT} --- toàn ``dấu cộng''.
+
+\section*{Cái xô thủng}
+
+Có thể hình dung nơ-ron như một cái xô bị thủng. Mỗi xung đến là một gáo nước. Nước rỉ dần qua lỗ thủng. Nếu các gáo đến dày, nước kịp dâng tới miệng --- và xô lật: nơ-ron phát ra tiếng tách, xô rỗng, mọi thứ bắt đầu lại. Nếu các gáo đến thưa, nước kịp chảy hết và không có gì xảy ra.
+
+\pencilfig{2}{\pencilart{2}}{Nơ-ron là một cái xô thủng: các giọt đầu vào đổ đầy xô, nước rỉ đi; chạm vạch --- tách.}
+
+Lỗ thủng là khác biệt chính giữa nơ-ron và cổng logic. Nơ-ron không nhớ xung đã đến mãi mãi, mà chỉ trong vài mili giây. Mọi thứ đến trong cửa sổ ấy được cộng lại; những gì đến sớm hơn thì bị quên.
+
+\section*{``Hoặc'' và ``và''}
+
+Nếu một gáo là đủ để lật xô, nơ-ron sẽ kích hoạt với bất kỳ đầu vào nào. Đó là ``hoặc''. Nếu cần hai gáo, chuyện bắt đầu thú vị: câu hỏi ``cả hai đã đến chưa?'' khi không có nhạc trưởng là vô nghĩa, chừng nào chưa nói rõ --- \emph{trong khoảng thời gian bao lâu}. Nơ-ron chỉ kích hoạt nếu hai xung đến gần như đồng thời, khi gáo thứ nhất chưa kịp rỉ hết. Đó là ``và theo thời gian'', một bộ phát hiện trùng khớp. Ở một số nơ-ron, cửa sổ này là vài mili giây, ở nơ-ron thính giác --- chỉ một phần nhỏ của mili giây.
+
+\section*{Điều mà toàn ``dấu cộng'' không làm được}
+
+Thử dựng một cổng ``không'' --- nơ-ron hoạt động khi đầu vào im lặng. Không được: sự im lặng không đổ nước vào xô. Và điều này đúng không chỉ với một nơ-ron, mà với mọi mạng chỉ gồm ``dấu cộng'': nếu tăng các đầu vào, không nơ-ron nào trong mạng như vậy lại hoạt động ít đi. Từ đó suy ra tính chất khó chịu nhất: \emph{không thể dập tắt hoạt động bằng hoạt động}. Một đám cháy đã bùng lên chỉ có thể dừng bằng một cách --- thôi ném thêm củi.
+
+Tự nhiên đã tìm ra đường vòng. Trong nhiều giác quan, cùng một kích thích được hai nhóm nơ-ron truyền đi. Trong mắt, một số tế bào báo ``sáng hơn rồi'', số khác báo ``tối hơn rồi''. Nếu thay vì một dây dẫn bạn có một cặp dây ``có'' và ``không'', thì cổng ``không'' có được miễn phí: chỉ cần đổi chỗ hai dây. Với những cặp như vậy, chỉ từ ``dấu cộng'' có thể lắp được bất kỳ mạch logic nào --- và thậm chí biết được phép tính đã xong: trong mỗi cặp có đúng một dây sáng lên. Các kỹ sư dựng các mạch bất đồng bộ theo cách này, và chúng chạy đúng với mọi độ trễ.
+
+\section*{Thời gian từ độ trễ}
+
+Không có nhạc trưởng thì không có đồng hồ chung, nhưng thời gian vẫn tính được theo cách khác. Âm thanh từ một nguồn ở bên cạnh đến tai gần sớm hơn tai xa --- chênh một phần nhỏ của mili giây. Hãy kéo một dây dẫn từ tai trái chạy từ trái sang phải dọc theo một hàng bộ phát hiện trùng khớp, và một dây từ tai phải chạy từ phải sang trái. Hai tín hiệu sẽ chạy ngược chiều nhau và gặp nhau tại điểm mà cả hai tới cùng lúc. Bộ phát hiện ở đúng chỗ đó sẽ kích hoạt. Chênh lệch thời gian đã biến thành \emph{số thứ tự} của nơ-ron kích hoạt --- tức là hướng tới nguồn âm. Độ chính xác đạt cỡ chục micro giây, dù từng nơ-ron riêng lẻ kém chính xác hơn nhiều: cứu cánh là số lượng bộ phát hiện rất lớn.
+
+\pencilfig{102}{%
+% delay line: the left-ear wire runs right along the top, the right-ear wire runs left along the bottom
+\draw[pen=pcBlue] (0,0.6) -- (5.6,0.6); \draw[pen=pcBlue] (6.0,-0.6) -- (0.4,-0.6);
+\foreach \i in {1,...,7}{
+  \pgfmathsetmacro{\x}{0.75*\i}
+  \draw[pen=pcBlue] (\x,0.6) -- (\x,0.24); \draw[pen=pcBlue] (\x,-0.6) -- (\x,-0.24);
+  \ifnum\i=5 \draw[dotpen=pcAmber, wash=pcAmber, line width=1.1pt] (\x,0) circle (0.2);
+  \else \draw[dotpen=pcBlue, wash=pcBlue] (\x,0) circle (0.2); \fi}
+\draw[arr=pcBlue] (0.95,0.78) -- (1.75,0.78); \draw[arr=pcBlue] (5.3,-0.78) -- (4.5,-0.78);
+\node[lbl, anchor=east] at (-0.05,0.6) {tai trái};
+\node[lbl, anchor=west] at (6.05,-0.6) {tai phải};
+\node[lbl, text=pcAmber!70!black, anchor=south] at (3.75,0.95) {gặp nhau ở đây};
+\draw[arr=pcAmber!70!black] (3.75,0.95) -- (3.75,0.68);
+% sound source on the left
+\draw[penlite] (-1.25,-0.25) -- (-1.05,-0.25) -- (-0.8,-0.45) -- (-0.8,0.05) -- (-1.05,-0.15) -- (-1.25,-0.15) -- cycle;
+\foreach \r in {0.2,0.35}{\draw[penlite] ($(-0.75,-0.2)+(-40:\r)$) arc (-40:40:\r);}
+\node[lbl, anchor=north] at (-0.95,-0.5) {âm từ bên trái};
+}{Âm thanh từ bên trái đến tai trái sớm hơn, tín hiệu của nó kịp chạy xa hơn, và điểm gặp nằm lệch về bên phải điểm giữa. Số thứ tự của nơ-ron kích hoạt cho biết hướng tới nguồn âm.}
+
+\section*{Trí nhớ là một đống lửa}
+
+Lấy một nhóm nơ-ron kích thích lẫn nhau mạnh. Nếu nhóm lửa cho nó bằng một tín hiệu ngắn, nó sẽ tự duy trì chính mình, như một đống lửa tự tiếp thêm củi cho mình. Tín hiệu đã hết mà nhóm vẫn cháy --- nó nhớ rằng đã có tín hiệu. Đó là một ô nhớ. Còn nếu tín hiệu quá ngắn, đống lửa không kịp bùng lên và tắt ngấm.
+
+Nhưng rắc rối ở đây: xóa trí nhớ như thế bằng cách nào? Bằng hoạt động --- không thể. Chỉ còn cách chờ cho các nơ-ron mệt và đống lửa cháy hết.
+
+\section*{Bộ hẹn giờ do sự kiện khởi động}
+
+Nối các nhóm thành chuỗi: nhóm đầu nhóm lửa cho nhóm thứ hai, nhóm thứ hai cho nhóm thứ ba. Đẩy nhóm đầu --- và một làn sóng chạy dọc chuỗi, như những quân domino đổ. Số thứ tự của quân vừa đổ cho biết đã bao lâu trôi qua kể từ cú đẩy. Đây không phải chiếc đồng hồ tích tắc suốt ngày, mà là bộ hẹn giờ được một sự kiện bật lên và chạy một lần. Ở chim biết hót, trong lúc hót, các nơ-ron của một vùng kích hoạt lần lượt theo đúng thứ tự --- rất giống một chuỗi như vậy.
+
+Vậy là từ toàn ``dấu cộng'' đã làm được nhiều thứ. Chỉ còn thiếu ba điều: chọn một trong nhiều, xóa trí nhớ theo lệnh và giữ cho mạng khỏi bốc cháy. Cả ba đều do ``dấu trừ'' mang lại --- chúng là chủ đề của chương sau.
+
+\fullversion{2}

@@ -1,0 +1,39 @@
+\chapter{Đầu ra thứ hai}
+% full version: chapters/16_chemoutput.tex
+
+Cỗ máy có hai đầu ra. Đầu ra nhanh là cơ bắp. Đầu ra chậm là hóa học của cơ thể: bộ não điều khiển tim, mạch máu, các tuyến, và qua máu gửi thông điệp tới toàn bộ cơ thể cùng lúc. Máu là bus quảng bá rộng nhất trong tất cả: một thông điệp tới được mọi tế bào trong khoảng một phút, còn ý nghĩa của nó, như mọi khi, do ``ổ khóa'' của nơi nhận quyết định.
+
+\section*{Chân ga và chân phanh}
+
+Tim tự đập, nó có máy đếm nhịp riêng. Bộ não chỉ vặn nhịp bằng hai dây dẫn trái dấu. \nt{NORA} là chân ga: tăng tốc, nhưng chậm. \nt{ACET} là chân phanh: làm chậm nhanh, vì nó không cần một chuỗi phản ứng hóa học dài. Và đến đây cuối cùng loại \nt{ADRE} cũng có việc để làm: adrenaline nhả vào máu cũng là chân ga, chỉ có điều được đạp cùng lúc cho cả cơ thể.
+
+\pencilfig{16}{\pencilart{16}}{Tim được lái bằng hai dây dẫn trái dấu: ga và phanh.}
+
+\section*{Tầng nối tầng có phản hồi}
+
+Nhiều hormone được điều khiển theo kiểu tầng nối tầng: bộ não ra lệnh cho tuyến thứ nhất, tuyến này ra lệnh cho tuyến thứ hai, tuyến thứ hai tiết hormone, và hormone báo cho bộ não rằng đã đủ rồi. Đó là một bộ ổn nhiệt ba tầng. Kỹ sư biết sơ đồ như vậy nguy hiểm ở chỗ nào: nếu làm vòng lặp quá ``nhạy'', nó sẽ bắt đầu dao động --- mức hormone không giữ yên mà lên xuống. Vì thế độ chính xác của bộ điều chỉnh như vậy có giới hạn: không thể làm nó vừa ổn định vừa rất chính xác.
+
+\pencilfig{127}{%
+% three identical first-order stages with proportional feedback: secretion = max(0, K (target - level)).
+% K = 3 settles at 3/4 of the target; K = 12 (above the stability limit K = 8) keeps oscillating. x = 0.42 t, y = 0.55 level
+\foreach \yo/\t in {1.75/{vòng yếu: êm, nhưng lệch đích}, 0/{vòng mạnh: gần đích hơn, nhưng dao động}}{
+  \draw[pen] (0,\yo) -- (8.5,\yo);
+  \draw[pcGray, densely dashed, line width=0.5pt] (0,\yo+0.55) -- (8.5,\yo+0.55);
+  \node[lbl, anchor=south west] at (2.0,\yo+0.8) {\t};}
+\node[lbl, anchor=west] at (8.55,2.3) {đích}; \node[lbl, anchor=west] at (8.55,0.55) {đích};
+\begin{scope}[yshift=1.75cm]
+\draw[penlite=pcBlue] plot[smooth] coordinates {(0.00,0.00) (0.17,0.01) (0.34,0.08) (0.50,0.19) (0.67,0.33) (0.84,0.46) (1.01,0.55) (1.18,0.59) (1.34,0.58) (1.51,0.55) (1.68,0.49) (1.85,0.43) (2.02,0.37) (2.18,0.34) (2.35,0.33) (2.52,0.34) (2.69,0.37) (2.86,0.40) (3.02,0.43) (3.19,0.44) (3.36,0.45) (3.53,0.45) (3.70,0.44) (3.86,0.42) (4.03,0.41) (4.20,0.40) (4.37,0.39) (4.54,0.39) (4.70,0.40) (4.87,0.40) (5.04,0.41) (5.38,0.42) (5.88,0.42) (6.38,0.41) (7.06,0.41) (8.40,0.41)};
+\end{scope}
+\draw[penlite=pcRed] plot[smooth] coordinates {(0.00,0.00) (0.17,0.05) (0.34,0.30) (0.50,0.68) (0.67,1.02) (0.84,1.23) (1.01,1.30) (1.18,1.26) (1.34,1.16) (1.51,1.02) (1.68,0.87) (1.85,0.72) (2.02,0.58) (2.18,0.47) (2.35,0.39) (2.52,0.38) (2.69,0.46) (2.86,0.57) (3.02,0.67) (3.19,0.71) (3.36,0.70) (3.53,0.65) (3.70,0.58) (3.86,0.50) (4.03,0.43) (4.20,0.41) (4.37,0.45) (4.54,0.53) (4.70,0.61) (4.87,0.65) (5.04,0.64) (5.21,0.60) (5.38,0.54) (5.54,0.47) (5.71,0.42) (5.88,0.42) (6.05,0.48) (6.22,0.56) (6.38,0.62) (6.55,0.64) (6.72,0.62) (6.89,0.56) (7.06,0.50) (7.22,0.44) (7.39,0.42) (7.56,0.45) (7.73,0.53) (7.90,0.60) (8.06,0.63) (8.23,0.62) (8.40,0.58)};
+\node[lbl, anchor=north] at (4.2,-0.05) {thời gian};
+}{Mô hình tầng nối tầng hormone gồm ba tầng. Phản hồi yếu làm mức hormone yên ổn, nhưng để nó thấp hơn đích khá nhiều. Phản hồi mạnh đưa nó tới gần hơn, nhưng mức hormone không còn giữ yên mà dao động.}
+
+\section*{Xung, không phải mức}
+
+Một số hormone chỉ hoạt động theo xung. Nếu đưa vào liên tục, tuyến nhận sẽ ``mỏi'' và ngừng hoạt động; nếu đưa bằng các xung ngắn mỗi giờ một lần --- nó hoạt động. Nơi nhận không đọc mức mà đọc nhịp --- như khớp thần kinh trong chương về mã Morse, thứ chỉ nghe thấy sự thay đổi.
+
+\section*{Ngày đêm}
+
+Và cuối cùng, trong cơ thể có một bộ dao động chậm với chu kỳ khoảng một ngày. Chu kỳ tự nhiên của nó hơi khác hai mươi bốn giờ, và mỗi sáng ánh sáng chỉnh lại nó, như máy thu radio dò đúng đài. Đừng nhầm nó với bộ tạo xung nhịp của máy tính: nó không đo từng bước tính toán. Nó chuyển chế độ làm việc của toàn bộ cỗ máy --- ngày và đêm, thức và ngủ.
+
+\fullversion{16}

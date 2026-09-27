@@ -1,0 +1,237 @@
+\chapter{Các nơ-ron \nt{SERO} tính toán gì}
+\label{sec:serocomputer}
+
+\section{Kênh quảng bá đầu tiên}
+
+Cho đến giờ, mọi nơ-ron trong sách đều liên lạc qua bus địa chỉ: \nt{GLUT} và \nt{GABA} gửi xung tới những đích nhận xác định, và ta đã biết một mạng như vậy tính được gì và nói bằng ngôn ngữ nào. Giờ ta chuyển sang bus thứ hai trong mục~\ref{sec:buses} --- bus quảng bá. Kênh đầu tiên của nó là \nt{SERO}. Như trước, ta chỉ cho phép mình dùng những gì có trong cơ thể sống.
+
+Chương này giới thiệu ba bộ phận mà sau đó mọi kênh quảng bá đều sẽ dùng: một nơ-ron tự hoạt động khi có dòng nền đều, cho tới khi bị chặn lại; một sợi dây thực chất là một thể tích mô; và một nồng độ biến đổi chậm thay cho từng xung riêng lẻ. \nt{DOPA}, \nt{NORA} và \nt{ACET} ở các chương~\ref{sec:dofa}--\ref{sec:acet} sẽ được lắp từ chính những chi tiết này.
+
+Nhìn từ góc độ kỹ sư, nơ-ron \nt{SERO} có bốn điểm khác biệt quan trọng.
+
+\emph{Thứ nhất: bên nhận chọn dấu.} Serotonin có thụ thể của cả hai dấu, và quy tắc~\eqref{eq:dalesign} không áp dụng ở đây: dấu không do bên gửi quyết định mà do thụ thể của bên nhận (mệnh đề~\ref{prop:receptor})~\cite{BarnesSharp1999}.
+
+\emph{Thứ hai: nơ-ron \nt{SERO} tự hoạt động nếu có nền đều.} Khi thức, nó phát xung đều đặn, vài lần mỗi giây, và không cần được kích cho từng xung: đó là một bộ tạo nhịp. Nhưng nó cần một dòng nền liên tục. Trong lát cắt não, nơi không có dòng này, phần lớn các tế bào như vậy im lặng; nhịp đều trở lại nếu đưa noradrenaline vào qua thụ thể $\alpha_1$, còn chặn các thụ thể này thì nhịp tắt~\cite{VandermaelenAghajanian1983}. Trong cơ thể, nền này đến từ \nt{NORA}. Về mặt mạch điện, đây là một bộ dao động cần nguồn nuôi: khi còn nguồn, nó tự chạy cho tới khi bị ức chế chặn lại.
+
+\emph{Thứ ba: nó chậm.} Hầu hết thụ thể serotonin là thụ thể hướng chuyển hóa: chúng không tự mở kênh mà khởi động một chuỗi phản ứng bên trong tế bào. Đáp ứng vì thế chậm: dòng ức chế qua thụ thể chính tăng lên rồi giảm đi trong khoảng một giây~\cite{CourtneyFord2016} --- lâu gấp hàng chục lần đáp ứng của khớp thần kinh \nt{GLUT} nhanh.
+
+\emph{Thứ tư: nó phóng chất dẫn truyền thần kinh không vào dây dẫn mà vào thể tích.} Ở những vùng mà đầu ra của nơ-ron \nt{SERO} đi tới, serotonin thường không thoát vào khe hẹp mà vào khoảng gian bào rồi lan ra xung quanh~\cite{Bunin1998}. Bên nhận cảm nhận nồng độ và không thể biết phân tử đến từ bên gửi nào.
+
+Với những thang thời gian như vậy, từng xung riêng lẻ không còn quan trọng, nên ta sẽ mô tả mạng bằng tần số $r_j$ và nồng độ. Nồng độ $c$ của serotonin trong thể tích mà các nơ-ron $j$ phóng chất dẫn truyền vào tăng theo lượng phóng ra và giảm vì chất dẫn truyền bị bơm ngược trở lại:
+\begin{empheq}[box=\keybox]{equation}
+\tau_c\,\frac{\dd c}{\dd t} \;=\; -c \;+\; \kappa\sum_j r_j ,
+\qquad
+r_i \;=\; f_i\bigl(b_i + s_i\,g\,c\bigr), \quad s_i=\pm1 .
+\label{eq:seroneuron}
+\end{empheq}
+Đây là thêm một cách đọc dòng xung, bổ sung cho mệnh đề~\ref{prop:reader}: thể tích không thấy từng xung, cũng không thấy thứ tự của chúng, mà chỉ thấy tần số lấy trung bình trong thời gian $\tau_c$. Phương trình thứ nhất chính là mạch RC giống như màng tế bào: $\tau_c$ là thời gian sống của chất dẫn truyền trong thể tích; nó chưa được đo trực tiếp, và ta coi nó cỡ một giây; $\kappa$ là lượng chất dẫn truyền do một xung tạo ra. Phương trình thứ hai mô tả bên nhận: $b_i$ là dòng vào riêng của nó, dương ở bộ tạo nhịp (gồm cả đầu vào nền đều từ \nt{NORA}); $g$ là độ nhạy của thụ thể; dấu $s_i$ do bên nhận chọn; $f_i$ là đặc tuyến truyền đạt không giảm.
+
+\section{NOT bằng một nơ-ron}
+
+Lấy một bộ tạo nhịp có thụ thể ức chế, $s=-1$. Khi xung quanh chưa có serotonin, nó chạy bằng dòng vào riêng $b$. Khi serotonin xuất hiện, dòng vào giảm đi $gc$, và nếu $gc>b$ thì nơ-ron im lặng. Đó là NOT: có đầu ra khi không có đầu vào. Nó chỉ tốn một nơ-ron (hình~\ref{fig:serogates}). Mệnh đề~\ref{prop:monotone} không áp dụng ở đây: nó đòi hỏi trọng số dương.
+
+Nếu cùng bộ tạo nhịp đó chịu tác động của serotonin từ hai thể tích khác nhau, nó im lặng khi có serotonin ở ít nhất một thể tích. Đó là NOR, mà từ NOR có thể lắp mọi hàm logic. Mã hai dây của mạng \nt{GLUT} không cần đến ở đây: việc không có tín hiệu được tính bởi những nơ-ron tự chạy cho tới khi bị chặn lại.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  nrn/.style={circle,draw,very thick,fill=blue!6,minimum size=0.95cm,inner sep=0pt},
+  pace/.style={nrn,double,double distance=1.2pt},
+  inh/.style={-{Bar[width=7pt]},thick,red!70!black}]
+\node[pace] (N1) at (0,0) {};
+\draw[inh] (-1.6,0) node[left,black] {$c$} -- (N1);
+\draw[->,very thick,red!70!black] (N1) -- (1.3,0) node[right,black] {$\bar c$};
+\node[below=0.55cm] at (0,0) {\small NOT};
+\node[pace] (N2) at (5,0) {};
+\draw[inh] (3.4,0.45) node[left,black] {$c_1$} -- (N2);
+\draw[inh] (3.4,-0.45) node[left,black] {$c_2$} -- (N2);
+\draw[->,very thick,red!70!black] (N2) -- (6.3,0) node[right,black] {$\overline{c_1\vee c_2}$};
+\node[below=0.55cm] at (5,0) {\small NOR};
+\end{tikzpicture}
+\caption{Logic từ các nơ-ron \nt{SERO}. Vòng tròn kép là bộ tạo nhịp: khi có dòng nền đều, nó tự chạy cho tới khi bị ức chế. Đường có vạch ngang là thụ thể ức chế, $s=-1$; $c$, $c_1$, $c_2$ là nồng độ serotonin trong các thể tích quanh bên nhận. Bên trái là NOT, bên phải là NOR.}
+\label{fig:serogates}
+\end{figure}
+
+\begin{keyblock}
+\begin{proposition}[Tính đầy đủ của logic \nt{SERO}]
+\label{prop:serocomplete}
+Nếu mạng có các bộ tạo nhịp với thụ thể ức chế và lượng phóng vào các thể tích khác nhau không trộn lẫn, thì mạng~\eqref{eq:seroneuron} có thể tính mọi hàm logic, và mỗi bit được truyền bằng một dây.
+\end{proposition}
+\end{keyblock}
+
+Về mặt logic, mạng \nt{SERO} mạnh hơn \nt{GLUT}, nhưng điều kiện ``lượng phóng vào các thể tích khác nhau không trộn lẫn'' không được thỏa mãn trong não (mục~\ref{sec:volume}).
+
+\section{Hồi tiếp âm}
+
+Các nơ-ron serotonin có thụ thể ức chế nằm ngay trên chính chúng~\cite{Sprouse1987}. Serotonin do chúng phóng ra quay trở lại chính chúng và hãm chúng lại. Với kỹ sư, đây là sơ đồ quen thuộc: bộ khuếch đại có hồi tiếp âm (hình~\ref{fig:serofeedback}).
+
+Điều gì ở đây đã được đo, điều gì là mô hình. Ngay trong nhân raphe, nơi có các nơ-ron \nt{SERO}, serotonin ức chế các nơ-ron lân cận không qua thể tích chung mà theo kiểu điểm--điểm, qua khớp thần kinh: chất vận chuyển nhanh chóng dọn nó đi và không để nó tích tụ ngoài khe. Một lần phóng đơn lẻ chỉ gây một quãng ngừng ngắn trong chuỗi phát xung, còn tần số trung bình không đổi~\cite{CourtneyFord2016}. Vì vậy vòng lặp dưới đây, khép qua thể tích chung, là một mô hình: ta tính xem hồi tiếp như thế sẽ làm gì nếu nó hoạt động ở mức tần số trung bình.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  nrn/.style={circle,draw,very thick,fill=blue!6,minimum size=0.95cm,inner sep=0pt},
+  pace/.style={nrn,double,double distance=1.2pt},
+  blk/.style={draw,very thick,rounded corners=2pt,fill=orange!10,minimum height=0.9cm,minimum width=2.2cm,align=center,font=\small},
+  inh/.style={-{Bar[width=7pt]},thick,red!70!black}]
+\node[pace] (N) at (0,0) {};
+\node[blk] (V) at (3.6,0) {thể tích\\$\tau_c$};
+\draw[->,very thick] (N) -- node[above] {\small $r$} (V);
+\draw[->,very thick] (V) -- (6.0,0) node[right] {\small $c$ --- tới mọi bên nhận};
+\draw[inh] (V.south) -- ++(0,-0.9) -| node[pos=0.25,below] {\small $-g\,c$} (N.south);
+\draw[->,thick,blue!60!black] (-1.7,0) node[left,black] {\small $b$} -- (N);
+\end{tikzpicture}
+\caption{Nơ-ron \nt{SERO} có hồi tiếp qua chính chất dẫn truyền của nó: nồng độ $c$ đi tới mọi bên nhận và ức chế chính nơ-ron đó. Trong mô hình, đây là bộ điều chỉnh mức; vai trò như vậy của vòng lặp trong não là giả thuyết.}
+\label{fig:serofeedback}
+\end{figure}
+
+Hãy tính xem vòng lặp này làm gì. Giả sử đặc tuyến truyền đạt tuyến tính, $f(u)=au$ khi $u>0$. Ở trạng thái cân bằng $c=\kappa r$ và $r=a(b-gc)$. Thế biểu thức này vào biểu thức kia, ta được
+\begin{empheq}[box=\keybox]{equation}
+r \;=\; \frac{a\,b}{1+G}, \qquad G \;=\; a\,g\,\kappa .
+\label{eq:feedback}
+\end{empheq}
+Đại lượng $G$ là hệ số khuếch đại vòng. Đây chính là công thức của mọi bộ khuếch đại có hồi tiếp âm, và nó mang lại đúng hai lợi ích quen thuộc.
+
+\emph{Bền với sai lệch.} Giả sử độ kích thích $a$ của nơ-ron thay đổi một tỷ lệ $\varepsilon$. Không có hồi tiếp, tần số cũng sẽ thay đổi đúng tỷ lệ đó. Có hồi tiếp, khi $G\gg1$, tần số $r\approx b/(g\kappa)$ gần như không phụ thuộc vào $a$: độ thay đổi của nó nhỏ hơn $1+G$ lần. Với $G=9$, sai lệch bị nén mười lần.
+
+\emph{Nhanh hơn.} Thế $r=a(b-gc)$ vào phương trình thứ nhất của~\eqref{eq:seroneuron}: ta được $\tau_c\,\dd c/\dd t=-(1+G)\,c+\kappa ab$. Nồng độ tiến tới mức của nó với hằng số thời gian $\tau_c/(1+G)$ --- nhanh hơn $1+G$ lần so với khi không có hồi tiếp.
+
+Đây là phép tính đầu tiên mà hệ \nt{SERO} có thể thực hiện: giữ mức serotonin chung trong não ở một giá trị đặt, như bộ ổn nhiệt giữ nhiệt độ. Đây là giả thuyết: trong thí nghiệm, sự tự ức chế cho đến nay chỉ thấy được dưới dạng những quãng ngừng ngắn, không làm thay đổi tần số trung bình.
+
+\section{Từ xung thành mức}
+
+Phép tính thứ hai ẩn trong phương trình thứ nhất của~\eqref{eq:seroneuron}. Nơ-ron phát ra từng xung riêng lẻ, còn bên nhận cảm nhận nồng độ, thứ làm trơn các xung trong thời gian $\tau_c$. Nếu tần số của nguồn thay đổi, nồng độ đi theo nó với độ trễ:
+\begin{equation}
+c(t) \;=\; \frac{\kappa}{\tau_c}\int_{-\infty}^{t} e^{-(t-t')/\tau_c}\,\sum_j r_j(t')\,\dd t' .
+\label{eq:lowpass}
+\end{equation}
+Đây là trung bình trượt của hoạt động các nguồn trong vài $\tau_c$ gần nhất --- một bộ lọc thông thấp (hình~\ref{fig:lowpass}). Bộ chuyển đổi số--tương tự đơn giản nhất cũng cho xung đi qua mạch RC và biến tần số của chúng thành một mức. Hệ \nt{SERO} làm điều tương tự với hàng trăm nghìn nơ-ron cùng lúc.
+
+Đại lượng này đồng thời cũng là bộ nhớ. Sau khi các nguồn đã im lặng, nồng độ còn duy trì thêm một khoảng thời gian cỡ $\tau_c$. Đó không phải là một bit, mà là một vết mờ dần.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=1.45cm,y=1cm]
+\draw[gray!70!black] (0,3.2) -- (8.1,3.2);
+\node[left,font=\small] at (-0.05,3.4) {xung};
+\node[above,font=\scriptsize,gray!40!black] at (1,3.65) {$2$ mỗi giây};
+\node[above,font=\scriptsize,gray!40!black] at (3.5,3.65) {$8$ mỗi giây};
+\node[above,font=\scriptsize,gray!40!black] at (6.5,3.65) {$2$ mỗi giây};
+\draw[->,gray!70!black] (0,0) -- (8.3,0) node[right,black] {\small $t$};
+\draw[->,gray!70!black] (0,0) -- (0,2.75) node[left,black] {\small $c$};
+\foreach \s in {0.136,0.529,0.760,1.223,1.714,1.748,1.755,2.663,2.701,2.734,3.414,3.493,3.719,3.800,3.928,3.948,4.074,4.327,4.420,4.589,4.728,4.736,4.914,5.025,5.205,5.220,6.224,6.544,7.178}{\draw[thick,blue!60!black] (\s,3.2) -- (\s,3.6);}
+\foreach \a/\b/\v in {0.000/0.136/0.000,0.136/0.529/1.000,0.529/0.760/1.675,0.760/1.223/2.330,1.223/1.714/2.466,1.714/1.748/2.509,1.748/1.755/3.425,1.755/2.663/4.402,2.663/2.701/2.775,2.701/2.734/3.672,2.734/3.414/4.553,3.414/3.493/3.306,3.493/3.719/4.055,3.719/3.800/4.235,3.800/3.928/4.905,3.928/3.948/5.316,3.948/4.074/6.211,4.074/4.327/6.476,4.327/4.420/6.028,4.420/4.589/6.493,4.589/4.728/6.483,4.728/4.736/6.642,4.736/4.914/7.589,4.914/5.025/7.351,5.025/5.205/7.579,5.205/5.220/7.331,5.220/6.224/8.221,6.224/6.544/4.012,6.544/7.178/3.914,7.178/8.000/3.076}{\draw[very thick,orange!85!black] plot[domain=\a:\b,samples=10] (\x,{0.25*\v*exp(-(\x-\a))});}
+\foreach \s/\p/\q in {0.136/0.000/1.000,0.529/0.675/1.675,0.760/1.330/2.330,1.223/1.466/2.466,1.714/1.509/2.509,1.748/2.425/3.425,1.755/3.402/4.402,2.663/1.775/2.775,2.701/2.672/3.672,2.734/3.553/4.553,3.414/2.306/3.306,3.493/3.055/4.055,3.719/3.235/4.235,3.800/3.905/4.905,3.928/4.316/5.316,3.948/5.211/6.211,4.074/5.476/6.476,4.327/5.028/6.028,4.420/5.493/6.493,4.589/5.483/6.483,4.728/5.642/6.642,4.736/6.589/7.589,4.914/6.351/7.351,5.025/6.579/7.579,5.205/6.331/7.331,5.220/7.221/8.221,6.224/3.012/4.012,6.544/2.914/3.914,7.178/2.076/3.076}{\draw[very thick,orange!85!black] (\s,0.25*\p) -- (\s,0.25*\q);}
+\draw[thick,densely dashed,black] plot[domain=0:2,samples=30] (\x,{0.25*2*(1-exp(-\x))})
+  plot[domain=2:5,samples=40] (\x,{0.25*(8-6.271*exp(-(\x-2)))})
+  plot[domain=5:8,samples=40] (\x,{0.25*(2+5.688*exp(-(\x-5)))});
+\foreach \x in {0,2,5,8}{\draw[gray!60!black] (\x,-0.05) -- (\x,0.05) node[below=3pt,font=\scriptsize] {\x\,s};}
+\end{tikzpicture}
+\caption{Từ xung thành mức. Phía trên là các xung của nơ-ron \nt{SERO}: hai giây thưa, ba giây dày, rồi lại thưa. Phía dưới là nồng độ serotonin~\eqref{eq:lowpass} với $\tau_c=1\,\text{s}$. Đường nét đứt là kết quả tương ứng nếu các xung đến hoàn toàn đều đặn.}
+\label{fig:lowpass}
+\end{figure}
+
+\section{Dây dẫn chính là thể tích}
+\label{sec:volume}
+
+Hãy quay lại điều kiện của mệnh đề~\ref{prop:serocomplete}. Serotonin do những bên gửi khác nhau phóng ra ở gần nhau cộng lại thành một nồng độ duy nhất.
+
+\emph{Dây dẫn ở đây không phải là một sợi dẫn mà là một thể tích mô.} Hai tín hiệu chỉ còn tách biệt nếu chúng được phóng vào những vùng cách nhau xa hơn quãng đường chất dẫn truyền kịp lan tới. Trong thời gian $\tau$, một phân tử có hệ số khuếch tán $D$ đi được quãng đường
+\begin{empheq}[box=\keybox]{equation}
+\ell \;\sim\; \sqrt{D\,\tau}\, .
+\label{eq:diffusionlength}
+\end{empheq}
+Độ ngoằn ngoèo của các khe gian bào làm khuếch tán của một phân tử nhỏ chậm đi khoảng $2.6$ lần~\cite{Sykova2008}, còn hệ số khuếch tán của chính serotonin trong mô chưa được đo; dựa vào kích thước phân tử, ta ước lượng nó cỡ vài đơn vị $10^{-6}$~cm$^2$/s. Nếu tín hiệu tồn tại $\tau\sim1$~s (cũng là ước lượng), thì $\ell\sim\sqrt{3\cdot10^{-6}}$~cm $\approx20\um$. Địa chỉ trong một mạng như vậy là \emph{vị trí}: bên nhận chỉ biết tín hiệu từ đâu tới qua chỗ chính nó đang nằm.
+
+Các nơ-ron \nt{SERO} thật được tổ chức sao cho gần như không còn lại những địa chỉ riêng biệt ấy. Đầu ra của mỗi nơ-ron trải rộng trên những vùng não rất lớn: các nhánh của một tế bào vươn tới nhiều vùng nằm xa nhau~\cite{GagnonParent2014}. Số vị trí phóng trên mỗi tế bào ước tính khoảng $10^5$ (bảng~\ref{tab:types}); chúng chưa được đếm trực tiếp. ``Dây dẫn'' của các nơ-ron \nt{SERO} khác nhau chồng lên nhau và trộn lẫn. Dù vậy, chúng không hoàn toàn gộp thành một dây: các nơ-ron \nt{SERO} chia thành vài phân hệ, gửi đầu ra tới những vùng khác nhau và đáp ứng khác nhau với cùng một sự kiện~\cite{Ren2018}. Nhưng số phân hệ như vậy chỉ tính bằng đơn vị, chứ không phải hàng trăm nghìn.
+
+\begin{keyblock}
+\begin{proposition}[Số dây dẫn độc lập]
+\label{prop:volumewires}
+Trong mạng truyền dẫn thể tích, số tín hiệu độc lập không bị giới hạn bởi số nơ-ron mà bởi số vùng không chồng lấn, kích thước $\ell\sim\sqrt{D\tau}$, mà chúng phóng chất dẫn truyền vào. Nếu đầu ra của mỗi nơ-ron trải trên một thể tích lớn, toàn mạng chỉ truyền được vài biến chung.
+\end{proposition}
+\end{keyblock}
+
+Vì vậy trong não không có gì để lắp các mạch logic của mệnh đề~\ref{prop:serocomplete}. Còn bộ điều chỉnh~\eqref{eq:feedback} và bộ lọc~\eqref{eq:lowpass} không cần những dây riêng: chúng chỉ cần một đại lượng chung. Bộ lọc suy trực tiếp từ việc phóng vào thể tích đã đo được ở các vùng đích~\cite{Bunin1998}; bộ điều chỉnh mức là giả thuyết.
+
+\section{Tầm nhìn hoạch định}
+\label{sec:horizon}
+
+Một đại lượng chung, biến đổi chậm, có thể dùng vào việc gì? Một ứng viên tốt là tham số phải như nhau cho toàn mạng và không thay đổi nhanh hơn trong vòng vài giây hay vài phút. Ở chương~\ref{sec:neurontypes} đã có một tham số như vậy: hệ số $\gamma$ trong công thức sai số~\eqref{eq:rpe}, cho biết phần thưởng tương lai rẻ hơn phần thưởng tức thời bao nhiêu. Trong thời gian liên tục, vị trí của nó được thay bằng \emph{tầm nhìn} $\tau_\gamma$: phần thưởng $R$ phải chờ thời gian $D$ mới đến thì hiện có giá trị $R\,e^{-D/\tau_\gamma}$.
+
+Tầm nhìn quyết định có đáng chờ hay không. Giả sử có thể lấy ngay một phần thưởng nhỏ $r_0$ hoặc chờ một phần thưởng lớn $R$. Chờ là có lợi khi
+\begin{empheq}[box=\keybox]{equation}
+D \;<\; \tau_\gamma\,\ln\frac{R}{r_0} .
+\label{eq:patience}
+\end{empheq}
+Với $\tau_\gamma=2\,\text{s}$ và phần thưởng hoãn lại lớn gấp ba, đáng chờ tới $2.2\,\text{s}$; nếu tầm nhìn dài gấp đôi thì tới $4.4\,\text{s}$. Sự kiên nhẫn tỷ lệ với tầm nhìn.
+
+Công thức~\eqref{eq:patience} dựa trên chiết khấu hàm mũ. Chiết khấu đo được ở độ trễ cỡ giây gần với hyperbol $R/(1+D/\tau_\gamma)$ hơn: ở khỉ, cả giá trị của phần thưởng hoãn lại trong lựa chọn lẫn đáp ứng của nơ-ron \nt{DOPA} với tín hiệu báo trước phần thưởng đều giảm như vậy~\cite{KobayashiSchultz2008}. Với hyperbol, điều kiện~\eqref{eq:patience} được thay bằng $D<\tau_\gamma\,(R/r_0-1)$: sự phụ thuộc vào tỷ số phần thưởng không còn là logarit mà là tuyến tính, và với cùng các con số, ngưỡng chờ dịch đi gần gấp đôi. Hyperbol thu được từ chính hàm mũ ấy nếu độ trễ là ngẫu nhiên (bài tập~\ref{ex:05:7}), và sự kiên nhẫn vẫn tỷ lệ với thang thời gian.
+
+Theo giả thuyết, chính \nt{SERO} đặt tầm nhìn~\cite{Doya2002}. Nó có đủ mọi thứ cho vai trò này: một mức chung cho toàn mạng, thay đổi trong vài giây. Cũng có những thí nghiệm trực tiếp: nếu kích hoạt nhân tạo các nơ-ron serotonin, con vật chờ phần thưởng hoãn lại lâu hơn trước khi bỏ cuộc~\cite{Miyazaki2014}, và kiên trì lâu hơn trong việc kiếm phần thưởng ở nơi nó đã trở nên hiếm~\cite{Lottem2018}. Nồng độ serotonin chuyển thành $\tau_\gamma$ bên trong mạng như thế nào thì chưa rõ. Ở chương sau, tầm nhìn sẽ đi vào sai số mà \nt{DOPA} phát đi.
+
+\section{Tổng kết}
+
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{>{\raggedright}p{3.6cm}>{\raggedright}p{4.3cm}>{\raggedright\arraybackslash}p{4.3cm}}
+\toprule
+& \nt{GLUT} & \nt{SERO} \\
+\midrule
+thời gian đáp ứng & mili giây & phần giây --- một giây \\
+dấu tác động & chỉ $+$ & $+$ và $-$, do bên nhận chọn \\
+khi không có đầu vào & im lặng & tự chạy khi có dòng nền đều \\
+định địa chỉ & điểm --- điểm & thể tích, địa chỉ là vị trí \\
+NOT & chỉ qua cảm biến ``tắt'' & một nơ-ron \\
+bộ nhớ & hoạt động tự duy trì, tắt dần vì mỏi & nồng độ, mờ dần trong thời gian $\tau_c$ \\
+phép tính chính & trùng khớp, độ trễ, logic, chuỗi & làm trơn; điều chỉnh mức và tầm nhìn $\tau_\gamma$ (giả thuyết) \\
+\bottomrule
+\end{tabular}
+\caption{Những gì mạng chỉ gồm nơ-ron \nt{GLUT} và mạng chỉ gồm nơ-ron \nt{SERO} tính được.}
+\label{tab:glutvssero}
+\end{table}
+
+Là một phần tử logic (bảng~\ref{tab:glutvssero}), nơ-ron \nt{SERO} phong phú hơn \nt{GLUT}, nhưng là một hệ liên lạc thì nó là kênh phát quảng bá: chậm và gần như không có địa chỉ. Vì vậy nó không cố làm bộ xử lý, mà làm trơn và phát đi vài đại lượng chung đã nói ở chương~\ref{sec:neurontypes} --- theo giả thuyết, trong đó có tầm nhìn hoạch định. Bộ tạo nhịp, thể tích và nồng độ chậm sẽ còn gặp lại ba lần nữa: ở \nt{DOPA}, \nt{NORA} và \nt{ACET}.
+
+\section{Bài tập}
+
+\begin{exercise}[\lvlA]
+\label{ex:05:1}
+\emph{Dây dẫn là thể tích.} Lấy $D=3\cdot10^{-6}$~cm$^2$/s cho serotonin (mục~\ref{sec:volume}). Theo~\eqref{eq:diffusionlength}, tìm $\ell$ cho tín hiệu tồn tại $1\,\text{s}$, và thời gian để chất dẫn truyền lan xa $5$~cm. Vậy tính quảng bá của \nt{SERO} nhờ khuếch tán hay nhờ dây dẫn phân nhánh với $\sim10^5$ vị trí phóng?
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:05:2}
+\emph{Bộ điều chỉnh mức.} Chứng minh rằng trong~\eqref{eq:seroneuron} với $f(u)=au$, độ nhạy tương đối $S=(a/r)\,\partial r/\partial a$ bằng đúng $1/(1+G)$, chứ không chỉ khi $G\gg1$. Với $G=9$, độ kích thích $a$ tăng $20\,\%$. Không tuyến tính hóa, $r$ thay đổi bao nhiêu phần trăm?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:05:3}
+\emph{Thụ thể chậm trong vòng lặp.} Thụ thể \nt{SERO} đáp ứng có trễ: $r(t)=a\bigl(b-gc(t-T)\bigr)$, thể tích theo~\eqref{eq:seroneuron}. Chứng minh rằng khi $G>1$, vòng lặp chỉ ổn định nếu $T<T^*=\tau_c\arccos(-1/G)/\sqrt{G^2-1}$. Tìm $T^*$ với $\tau_c=1\,\text{s}$ cho $G=2$ và $G=9$. Với độ trễ hàng trăm mili giây, sai lệch có thể được nén bao nhiêu?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:05:4}
+\emph{Nhiễu bắn của mức.} Mỗi xung cộng vào $c$ theo~\eqref{eq:lowpass} một hàm mũ với $\tau_c=1\,\text{s}$. Tìm hệ số biến thiên của $c$ nếu cả $3\cdot10^5$ nơ-ron \nt{SERO} cùng phóng xung Poisson vào một thể tích, mỗi nơ-ron $2$ xung mỗi giây. Với một nơ-ron có tần số $4$ xung mỗi giây, $\tau_c$ bằng bao nhiêu thì $\mathrm{CV}=10\,\%$?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:05:5}
+\emph{Mô phỏng: hồi tiếp chống nhiễu.} Mô phỏng $N=50$ bộ tạo nhịp Poisson với tần số $r_i=a_i[b-gc]_+$, $a_i$ phân bố đều trong $[2.8,\,5.2]$, và thể tích~\eqref{eq:seroneuron} với $\kappa=1/N$, $\tau_c=1\,\text{s}$. Hồi tiếp ($b=1$, $g=2.25$) giảm CV của mức $c$ bao nhiêu lần so với $b=0.1$, $g=0$? Nó có san bằng tần số của các nơ-ron không?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:05:6}
+\emph{Thiết kế: XOR bằng logic \nt{SERO}.} Mỗi cổng là một bộ tạo nhịp phát $r_0$ nếu $b-g\sum_kc_k>0$ và $0$ nếu ngược lại, vào thể tích riêng $\tau_c\,\dd c/\dd t=-c+\kappa r$; nó tính NOR. Lắp XOR từ năm cổng như vậy và tìm thời gian xác lập của nó với $\tau_c=1\,\text{s}$ và $G'=g\kappa r_0/b=2$.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:05:7}
+\emph{Kiên nhẫn khi độ trễ chưa biết.} (a)~Con vật chịu chờ phần thưởng lớn gấp ba nếu thời gian chờ không quá $6\,\text{s}$. Tầm nhìn $\tau_\gamma$ tương ứng là bao nhiêu? (b)~Giả sử độ trễ $D$ phân bố mũ với trung bình $\bar D$. Chứng minh rằng chờ là có lợi khi $\bar D<\tau_\gamma(R/r_0-1)$, và so sánh với độ trễ cố định khi $\tau_\gamma=2\,\text{s}$, $R=3r_0$.
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:05:8}
+\emph{Nồng độ đặt tầm nhìn thế nào.} Nơ-ron \nt{DOPA} nhận $V$ trực tiếp với trọng số $k_1$ và qua một trung gian \nt{GABA} làm trơn với $\tau_d=0.1\,\text{s}$, với trọng số $-k_2$; với $V$ chậm, tổng bằng $(k_1-k_2)V+k_2\tau_d\dot V$. Chọn $k_1$, $k_2$ khớp với~\eqref{eq:ctd} khi $\tau_\gamma=2\,\text{s}$. \nt{SERO} nhân $k_1$ với $m$: phải đổi $m$ bao nhiêu để tầm nhìn tăng gấp đôi?
+\end{exercise}

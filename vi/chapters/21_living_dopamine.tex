@@ -1,0 +1,63 @@
+\section{Dopamine theo chớp sáng}
+\label{sec:dishdopamine}
+
+Thí nghiệm trực tiếp duy nhất mà ta biết, trong đó mẫu nuôi cấy được dùng dopamine làm thầy dạy, được thực hiện trên một nền tảng organoid mà các nhà nghiên cứu kết nối từ xa~\cite{Jordan2024}. Vào dung dịch bao quanh organoid, người ta thêm dopamine nằm trong một ``lồng'' nhạy sáng: phân tử bị nhốt không tác động lên thụ thể. Nồng độ dopamine trong lồng là $1$~mM. Khi cần thưởng cho mạng, người ta chiếu tia cực tím: lồng vỡ ra, và dopamine thoát vào thể tích.
+
+Vòng lặp được bố trí như sau. Cùng một kích thích được đưa vào lặp đi lặp lại; nếu nó gây ra nhiều xung hơn trước, đèn chớp bật lên và dopamine được giải phóng. Qua $240$ lần lặp, số xung được gây ra nhìn chung tăng lên. Chính các tác giả viết rằng chỉ từ một thí nghiệm như vậy thì không thể kết luận mức tăng là do dopamine~\cite{Jordan2024}.
+
+Với kỹ sư, đây là lần thử đầu tiên lắp quy tắc ba thừa số~\eqref{eq:threefactor} trong đĩa nuôi: hoạt động của bên gửi và bên nhận để lại vết, còn tín hiệu chung quyết định có củng cố thay đổi hay không. Nhưng tín hiệu ở đây chỉ có thể dương: có thưởng hoặc không có, còn sai số âm $\delta<0$ thì thiết bị không tạo ra được. Hơn nữa, dopamine lan ra và được thu hồi chậm, giống nồng độ trong~\eqref{eq:lowpass}, nên các chớp sáng dày có thể chỉ đơn giản nâng mức chung của nó lên. Để phân biệt việc học với hiện tượng này, cần hai đối chứng: cùng số chớp sáng ở những thời điểm ngẫu nhiên, không gắn với đáp ứng của mạng, và cùng những chớp sáng ấy nhưng không có dopamine trong lồng. Cũng cần kiểm tra sau khi nghỉ: thay đổi có còn lại khi dopamine đã hết hay không.
+
+\section{Dopamine dạy silicon}
+\label{sec:biohybrid}
+
+Trong thí nghiệm ngược lại, tế bào sống dạy thiết bị điện tử~\cite{Keene2020}. Các tế bào tiết dopamine được nuôi trong một vi kênh phía trên một phần tử neuromorphic hữu cơ, tức một transistor mà độ dẫn của kênh đóng vai trò trọng số khớp thần kinh. Dopamine thoát ra từ tế bào bị oxy hóa ở điện cực của phần tử, và điều đó làm thay đổi độ dẫn. Thiết bị còn mô phỏng cả cơ chế dọn chất dẫn truyền khỏi khe khớp, nên trọng số không chỉ thay đổi được lâu dài mà còn đưa về lại được.
+
+Về mặt mạch, đây là một bộ tích phân rò với đầu vào hóa học: trọng số tích lũy dòng dopamine, còn việc ``thu hồi'' quyết định nó bị quên nhanh đến đâu, cũng là mạch RC như~\eqref{eq:lowpass}. Điều quan trọng ở đây là chiều kết nối. Đầu dò ở chương~\ref{sec:debugging} không thấy các thanh ghi quảng bá, vì chúng là hóa học. Phần tử này đọc đúng một thanh ghi hóa học và biến nó thành trọng số điện. Với giao diện não--máy tính, đây là con đường tới một cảm biến nghe được không chỉ bus dữ liệu mà cả các thanh ghi điều khiển.
+
+\section{Organoid có nơ-ron dopamine riêng}
+\label{sec:midbrainorg}
+
+Từ tế bào gốc người, ta đã biết cách nuôi những organoid giống vùng não nơi có các nơ-ron \nt{DOPA}. Trong đó có những nơ-ron dopamine hoạt động và tiết ra dopamine~\cite{Jo2016}. Những organoid như vậy được nuôi chủ yếu để nghiên cứu bệnh. Chúng tôi không tìm thấy thí nghiệm nào dùng dopamine của chúng làm thầy dạy cho một mạng khác.
+
+Với cỗ máy từ nơ-ron sống, đây chính là linh kiện còn thiếu. Bàn thử ở chương~\ref{sec:livingmachine} là bus dữ liệu và điều khiển luồng không có thanh ghi điều khiển; ở đây nguồn tín hiệu quảng bá đã có. Cái còn thiếu là bộ phê bình: một mạng tính sai số dự đoán~\eqref{eq:ctd} và điều khiển các nơ-ron này. Nối một organoid vỏ não với một organoid như vậy sao cho dopamine được tiết ra theo sai số là một bài toán mở, và hiện nó vẫn là giả thuyết, chưa phải thí nghiệm.
+
+\section{Organoid giữ thăng bằng cây sào không cần dopamine}
+\label{sec:cartpole}
+
+Thí nghiệm đầy đủ nhất trong số các thí nghiệm gần đây hoàn toàn không dùng dopamine~\cite{Robbins2026}. Organoid vỏ não chuột được nối vào vòng kín với bài toán ``cây sào trên xe đẩy'': hoạt động của organoid đẩy xe, còn vị trí cây sào được đưa trở lại bằng kích thích. Giữa các lần thử, organoid nhận những kích thích huấn luyện ngắn, tần số cao. Chọn kích thích nào là việc của một chương trình học tăng cường.
+
+Các kết quả đã được đo:
+\begin{itemize}
+\item với phần lớn organoid, tín hiệu huấn luyện do chương trình chọn cho kết quả tốt hơn so với tín hiệu chọn ngẫu nhiên hoặc không có tín hiệu;
+\item sau $45$ phút nghỉ, sự cải thiện không còn;
+\item chặn cả hai loại thụ thể glutamate, AMPA và NMDA, làm mất sự cải thiện.
+\end{itemize}
+
+Điểm cuối cho biết cái được học nằm ở đâu: trong các khớp thần kinh \nt{GLUT}, và qua chính thụ thể mà ở mục~\ref{sec:weightstore} hoạt động như bộ phát hiện trùng khớp giữa đầu vào và đầu ra. Điểm thứ hai cho thấy cái còn thiếu: có thay đổi nhanh, nhưng không có củng cố, giống người học nhanh ở chương~\ref{sec:motorlearning} mà thiếu người học chậm. Còn vai trò thầy dạy đã đổi: chương trình đã thay kỹ sư chọn mẫu dòng điện, nhưng thầy vẫn đứng ngoài đĩa nuôi.
+
+Trong các thí nghiệm sớm hơn về việc dạy mẫu nuôi cấy trên mảng điện cực, chúng tôi cũng không tìm thấy thí nghiệm nào dùng dopamine: tín hiệu dạy ở mọi nơi đều là kích thích điện.
+
+\section{Ai dạy mẫu nuôi cấy}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{2.7cm}>{\raggedright}p{2.5cm}>{\raggedright}p{3.2cm}>{\raggedright\arraybackslash}p{4.4cm}}
+\toprule
+Thí nghiệm & Ai dạy & Tín hiệu dạy & Điều đã biết \\
+\midrule
+ngừng kích thích khi có đáp ứng mong muốn & kỹ sư & kết thúc kích thích & đáp ứng được củng cố --- đã đo \\
+DishBrain (ch.~\ref{sec:dishbrain}) & kỹ sư & dòng điện đoán trước được hoặc ngẫu nhiên & mức tăng có ý nghĩa của lượt đánh trong một phiên chỉ khi phản hồi đầy đủ, với im lặng thì hiệu ứng nhỏ hơn --- đã đo; không bền vững từ phiên này sang phiên khác; nguyên nhân còn tranh luận \\
+cây sào trên xe đẩy & chương trình học tăng cường & kích thích tần số cao do chương trình chọn & tốt hơn kích thích ngẫu nhiên nhưng không giữ được sau khi nghỉ --- đã đo \\
+dopamine theo chớp sáng & quy tắc ``nhiều xung hơn --- có thưởng'' & dopamine được ánh sáng giải phóng & số xung tăng --- quan sát; vai trò của dopamine chưa được chứng minh \\
+khớp thần kinh lai sinh học & tế bào sống & dopamine từ tế bào & thay đổi lâu dài và đưa trọng số của phần tử về lại --- đã đo \\
+organoid có nơ-ron \nt{DOPA} & --- & --- & có nguồn dopamine; chưa được dùng làm thầy dạy \\
+\bottomrule
+\end{tabular}
+\caption{Ai dạy nơ-ron sống trên chip, và dạy bằng gì.}
+\label{tab:dishteachers}
+\end{table}
+
+Trong mọi thí nghiệm mà chính mẫu nuôi cấy học, thầy dạy cho đến nay vẫn ở bên ngoài (bảng~\ref{tab:dishteachers}): kỹ sư, chương trình, hoặc một quy tắc do kỹ sư đặt ra. Dopamine mới vào đĩa nuôi đúng một lần, và vai trò của nó vẫn còn phải chứng minh. Lắp trong đĩa nuôi một kênh quảng bá thực thụ, có bộ phê bình, có sai số và có vết như ở chương~\ref{sec:dofa}, là bước tiếp theo mà chưa ai làm được.

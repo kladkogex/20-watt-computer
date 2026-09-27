@@ -1,0 +1,101 @@
+\section{Đặc tả bàn thử: cách dựng lại}
+\label{sec:dishspec}
+
+Dưới đây là mọi thứ cần để dựng lại một bàn thử như vậy: thiết bị, vòng lặp, mã hóa đầu vào, đọc đầu ra, phản hồi và giao thức thí nghiệm. Mỗi tham số đều ghi rõ nguồn. ``Bài báo'' nghĩa là giá trị lấy từ văn bản công trình~\cite{Kagan2022}. ``Lựa chọn'' nghĩa là bài báo không có, và để dựng lại thì phải tự đặt; chúng tôi đề xuất giá trị mặc định và nói cách kiểm tra nó.
+
+\subsection*{Thiết bị và mẫu nuôi cấy}
+
+\begin{center}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{4.0cm}>{\raggedright}p{6.9cm}>{\raggedright\arraybackslash}p{1.6cm}}
+\toprule
+Tham số & Giá trị & Nguồn \\
+\midrule
+chip & ma trận MaxOne: $26\,000$ điện cực bạch kim trên diện tích $8$~mm$^2$ & bài báo \\
+ghi & tối đa $1024$ kênh đồng thời, $20\,000$ mẫu mỗi giây & bài báo \\
+kích thích & về kỹ thuật tối đa $32$ điện cực, trong thí nghiệm là $8$ điện cực độc lập & bài báo \\
+tế bào & vỏ não phôi chuột; nơ-ron người từ tế bào gốc (hai cách nuôi); tế bào HEK293T (không phải nơ-ron) làm đối chứng & bài báo \\
+cấy & khoảng $10^6$ tế bào mỗi chip & bài báo \\
+tuổi mẫu nuôi cấy khi làm thí nghiệm & chuột: từ $\sim10$ ngày; người: $14$--$24$ ngày hoặc $\sim80$ ngày tùy cách nuôi & bài báo \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection*{Vòng lặp và thời gian}
+
+Vòng lặp chạy theo cửa sổ $10\ms$ ($200$ mẫu): trong mỗi cửa sổ, xung trên các điện cực của vùng vận động được đếm, trò chơi được cập nhật và kích thích tiếp theo được phát ra. Độ trễ từ một xung trong mẫu nuôi cấy đến kích thích đáp lại là khoảng $5\ms$. Khi chơi, tín hiệu của mỗi điện cực đi qua bộ lọc thông cao Bessel bậc 2 với tần số cắt $100$~Hz; giá trị tuyệt đối của tín hiệu được làm trơn bằng bộ lọc thông thấp Bessel bậc 1 ở $1$~Hz, và ngưỡng xung tỷ lệ với giá trị tuyệt đối đã làm trơn này. Ngưỡng sáu độ lệch chuẩn của nền được bài báo nêu cho các phép đo hoạt động riêng lẻ, không phải cho lúc chơi. Để kích thích không bị tính là đáp ứng của mẫu nuôi cấy, mọi tín hiệu bị xóa khi có hơn $15$ xung lớn, trên $75$~mV, đến cùng lúc. Tất cả đều theo bài báo.
+
+\subsection*{Mã hóa quả bóng}
+
+\begin{center}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{3.4cm}>{\raggedright}p{7.5cm}>{\raggedright\arraybackslash}p{1.6cm}}
+\toprule
+Tham số & Giá trị & Nguồn \\
+\midrule
+vùng cảm giác & $8$ điện cực, bố trí sao cho các điện cực kề nhau ứng với các vị trí bóng kề nhau & bài báo \\
+mã vị trí & số thứ tự điện cực $k=1,\dots,8$ cho biết vị trí bóng so với tâm vợt & bài báo \\
+tọa độ nào & vị trí theo chiều dọc của bóng; để dựng lại: so với vợt, $k=\lceil 8(y-p+\tfrac12)\rceil$ khi $y-p\in[-\tfrac12,\tfrac12]$ & bài báo; công thức là lựa chọn \\
+mã tần số & tần số kích thích từ $4$ đến $40$~xung/s mang khoảng cách tới vợt & bài báo \\
+chiều của thang & $4$~xung/s khi bóng ở bức tường đối diện, tăng tuyến tính tới $40$~xung/s khi bóng ở bức tường phía vợt: $f=4+36\,(1-x/L)$, $x$ là khoảng cách tới tường phía vợt, $L$ là chiều rộng sân & bài báo \\
+dạng xung & xung chữ nhật hai pha ngắn: pha dương trước, pha âm sau & bài báo \\
+biên độ & $75$~mV; được chọn để không buộc các tế bào đang bị ức chế phải phát xung & bài báo \\
+độ dài các pha & không nêu; lấy thiết lập chuẩn của hệ thống kích thích và giữ nguyên suốt thí nghiệm & lựa chọn \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection*{Đọc vợt}
+
+Bài báo có hai vùng vận động: xung ở vùng thứ nhất đẩy vợt lên, ở vùng thứ hai đẩy xuống; đóng góp của các vùng được lấy trọng số để tính đến mật độ tế bào và mức hoạt động khác nhau~\cite{Kagan2022}. Công thức chính xác không được đưa ra. Để dựng lại, ta lấy quy tắc~\eqref{eq:dishreadout}, $\Delta p=c\,(n_\uparrow-n_\downarrow)$ cho mỗi cửa sổ $10\ms$, với trọng số cân bằng các vùng theo hoạt động trung bình lúc nghỉ (lựa chọn): $n_\uparrow$ và $n_\downarrow$ được chia cho số đếm trung bình mỗi cửa sổ của vùng mình, đo trước khi chơi. Hệ số $c$ được chọn sao cho chênh lệch một số đếm trung bình dịch vợt $1\%$ chiều cao sân mỗi cửa sổ (lựa chọn); khi đó, một vùng trội hơn liên tục sẽ đưa vợt qua cả sân trong $1$~s.
+
+Vị trí các vùng trên chip không được cho bằng tọa độ trong văn bản bài báo; chỉ có sơ đồ. Để dựng lại, chỉ cần ba nhóm điện cực không chồng lên nhau: tám điện cực cảm giác ở giữa và mỗi bên một nhóm điện cực ghi, một nhóm ``lên'', một nhóm ``xuống'' (lựa chọn).
+
+\subsection*{Trò chơi}
+
+Kích thước sân, chiều dài vợt và tốc độ bóng không được nêu trong bài báo; chỉ nói rằng bóng bay với tốc độ không đổi và dội lại từ các bức tường. Để dựng lại (lựa chọn): sân $1\times1$, vợt ở tường bên phải dài $0.2$ (trúng khi $|y-p|<0.1$, như trong mô hình~\texttt{models/dishbrain\_model.py}), bóng băng qua sân trong $1$~s. Cú trượt mà trong lượt đánh không có lần đỡ trúng nào được tính là ``ace''; lượt đánh có hơn ba cú đỡ liên tiếp là lượt ``dài'' (bài báo).
+
+\subsection*{Phản hồi}
+
+\begin{center}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{2.6cm}>{\raggedright}p{8.3cm}>{\raggedright\arraybackslash}p{1.6cm}}
+\toprule
+Sự kiện & Đưa vào gì & Nguồn \\
+\midrule
+trúng & kích thích đoán trước được: cả $8$ điện cực cảm giác cùng lúc, $75$~mV, $100$~xung/s, $100\ms$; trong thời gian này, kích thích vị trí bóng thông thường bị ngắt & bài báo \\
+trượt & kích thích không đoán trước được: $150$~mV, $5$~xung/s, $4$~s, vào các thời điểm ngẫu nhiên trên các điện cực chọn ngẫu nhiên trong số $8$; sau đó $4$~s không kích thích, và bóng xuất phát theo hướng ngẫu nhiên & bài báo \\
+luật ngẫu nhiên & không nêu; để dựng lại: thời điểm xung là dòng Poisson với tần số trung bình $5$~xung/s & lựa chọn \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection*{Giao thức và đối chứng}
+
+Một phiên kéo dài $20$~phút; so sánh $5$ phút đầu với $15$~phút cuối (bài báo). Ba thước đo kết quả: độ dài trung bình của lượt đánh, tỷ lệ ace và tỷ lệ lượt dài. Các điều kiện thí nghiệm (bài báo):
+\begin{itemize}
+\item \emph{kích thích}: vòng lặp đầy đủ, như mô tả ở trên;
+\item \emph{im lặng}: thay cho kích thích khi trúng hoặc trượt là cùng khoảng thời gian ấy không có kích thích nào, sau đó bóng xuất phát theo hướng ngẫu nhiên;
+\item \emph{không phản hồi}: sau cú trượt, bóng chỉ dội lại và bay tiếp, kích thích vị trí bóng vẫn tiếp tục;
+\item \emph{nghỉ}: trò chơi vẫn chạy và vợt di chuyển theo hoạt động, nhưng hoàn toàn không có kích thích;
+\item \emph{đối chứng}: chip chỉ có môi trường nuôi; tế bào HEK293T; ``mẫu nuôi cấy trong máy tính'', tức mô phỏng thay cho tế bào.
+\end{itemize}
+Cỡ mẫu trong loạt chính: $9$ mẫu chuột ($101$ phiên), $11$ mẫu người ($138$), $6$ chip chỉ có môi trường ($80$), $20$ mẫu ở trạng thái nghỉ ($42$), $3$ mô phỏng ($38$), tổng cộng $399$ phiên. Trong loạt về phản hồi: $486$ phiên trong $3$ ngày, mỗi ngày $3$ phiên, với các điều kiện ``kích thích'', ``im lặng'' và ``không phản hồi'' ($n=27$, $17$ và $15$). Độ dài trung bình của lượt đánh tăng từ $5$ phút đầu đến $15$ phút cuối chỉ ở các mẫu sống. Trong loạt về phản hồi, mức tăng có ý nghĩa theo thời gian chỉ có ở điều kiện ``kích thích''; cuối phiên, điều kiện ``im lặng'' vẫn hơn ``không phản hồi'', nhưng với hiệu ứng nhỏ hơn, còn việc học bền vững từ phiên này sang phiên khác trong ba ngày thì không có~\cite{Kagan2022}.
+
+\subsection*{Chu trình của bàn thử từng bước}
+
+Cứ mỗi $10\ms$, máy tính của bàn thử làm như sau.
+\begin{enumerate}
+\item Đọc số xung $n_\uparrow$, $n_\downarrow$ ở hai vùng vận động trong cửa sổ vừa qua và chuẩn hóa chúng theo số đếm trung bình của vùng lúc nghỉ.
+\item Dịch vợt một đoạn $\Delta p=c\,(n_\uparrow-n_\downarrow)$ và giới hạn nó trong mép sân.
+\item Dịch bóng một bước; cho bóng dội lại từ tường trên, tường dưới và tường trái.
+\item Nếu bóng đã tới tường phải: khi $|y-p|<0.1$ là trúng, số đếm của lượt đánh tăng một, phát kích thích trúng ($100\ms$); nếu không thì là trượt, ghi lại lượt đánh, phát kích thích trượt ($4$~s), sau đó nghỉ $4$~s, và bóng xuất phát lại.
+\item Nếu không, chọn điện cực $k$ theo vị trí dọc của bóng và tần số $f$ theo khoảng cách tới tường phía vợt, rồi đưa vào điện cực $k$ các xung hai pha $75$~mV với tần số $f$ cho đến cửa sổ tiếp theo.
+\end{enumerate}
+Như vậy là đủ để dựng một bàn thử tương thích với bàn thử đã công bố và kiểm tra câu hỏi chính của chương: dạy mẫu nuôi cấy là tính dễ đoán, hay chỉ là sự khác biệt giữa đáp ứng với cú trúng và với cú trượt. Muốn vậy, nên thêm vào ba điều kiện của bài báo một điều kiện thứ tư mà bài báo không có: sau cú trượt là kích thích \emph{đoán trước được}, cùng độ dài và năng lượng với kích thích không đoán trước được. Nếu mẫu nuôi cấy vẫn học được, thì vấn đề nằm ở sự khác biệt, không phải ở tính dễ đoán.

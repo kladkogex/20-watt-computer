@@ -1,0 +1,230 @@
+\chapter{Toàn bộ cỗ máy}
+\chaptermark{Toàn bộ cỗ máy}
+\label{sec:synthesis}
+
+\section{Chúng ta đã lắp được gì}
+
+Chúng ta lần lượt lấy từng loại nơ-ron trong bảng~\ref{tab:types} và hỏi nó bổ sung gì cho một cỗ máy tính toán. Lần nào luật chơi cũng như nhau: chỉ dùng những gì có trong cơ thể sống, và không có xung nhịp chung. Giờ hãy ráp các phần lại thành một cỗ máy và xem chúng phối hợp với nhau ra sao.
+
+Bức tranh ở chương~\ref{sec:neurontypes} đã được khẳng định và trở nên chính xác hơn. Một mạng địa chỉ khổng lồ gồm các nơ-ron \nt{GLUT} mang dữ liệu. Các nơ-ron \nt{GABA} điều khiển luồng dữ liệu đó. Còn phía trên mạng là bốn kênh quảng bá, mỗi kênh có núm vặn riêng: \nt{DOPA} cho biết nên giữ lại những thay đổi trọng số nào, \nt{SERO} giữ mức chung và, theo giả thuyết, cả tầm nhìn kế hoạch, \nt{NORA} chọn giữa tìm kiếm và quyết định, \nt{ACET} chọn giữa ghi và đọc (hình~\ref{fig:machine}).
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  blk/.style={draw,very thick,rounded corners=3pt,align=center,font=\small},
+  reg/.style={draw,very thick,double,double distance=1.2pt,circle,minimum size=1.25cm,inner sep=0pt,font=\scriptsize,fill=orange!15},
+  bc/.style={->,thick,densely dashed,orange!85!black}]
+% sensors, bus, actions
+\node[blk,fill=green!8,text width=1.7cm] (S) at (0.9,0) {cảm biến\\\scriptsize bật/tắt};
+\draw[very thick,rounded corners=4pt,fill=blue!5] (2.6,-1.35) rectangle (9.0,1.35);
+\node[font=\small] at (5.8,0.95) {bus \nt{GLUT}: dữ liệu};
+\node[font=\scriptsize,align=center] at (4.3,0.25) {trùng khớp, trễ,\\logic (ch.~\ref{sec:glutcomputer})};
+\node[font=\scriptsize,align=center] at (7.4,0.25) {bộ nhớ, mã\\(ch.~\ref{sec:code}, \ref{sec:acet})};
+\draw[thick,red!70!black,fill=red!8,rounded corners=2pt] (2.8,-1.15) rectangle (8.8,-0.55);
+\node[font=\scriptsize,red!60!black] at (5.8,-0.85) {\nt{GABA} (ch.~\ref{sec:gaba}): cấm, chọn, chia, nhịp};
+\node[blk,fill=blue!5,text width=2.0cm] (A) at (10.9,0) {chọn\\hành động};
+\draw[->,very thick] (S) -- (2.6,0);
+\draw[->,very thick] (9.0,0) -- (A);
+\draw[->,very thick] (A) -- (12.6,0) node[right,font=\small] {cơ};
+\pic[scale=1.1] at (13.2,-0.5) {spring};
+\pic[scale=1.15] at (0.4,0.85) {eyepic};
+\pic[scale=1.05] at (1.35,0.85) {speaker};
+% registers
+\node[reg] (D) at (3.4,3.2) {\nt{DOPA}};
+\node[reg] (C) at (5.6,3.2) {\nt{SERO}};
+\node[reg] (N) at (7.8,3.2) {\nt{NORA}};
+\node[reg] (H) at (10.0,3.2) {\nt{ACET}};
+\node[font=\scriptsize,align=center,above=1pt] at (D.north) {sai số $\delta$};
+\node[font=\scriptsize,align=center,above=1pt] at (C.north) {mức, $\tau_\gamma$};
+\node[font=\scriptsize,align=center,above=1pt] at (N.north) {khuếch đại $g$};
+\node[font=\scriptsize,align=center,above=1pt] at (H.north) {ghi $a$};
+\draw[bc] (D.south) -- (3.4,1.35);
+\draw[bc] (C.south) -- (5.6,1.35);
+\draw[bc] (N.south) -- (7.8,1.35);
+\draw[bc] (H.south) -- (10.0,2.1) -- (8.8,1.35);
+\draw[bc] (H.south east) to[bend left=20] (A.north east);
+\draw[->,thick] (2.85,1.35) -- (2.85,2.75) -- (D.west) node[pos=0.25,left,font=\scriptsize] {$V$};
+\draw[->,thick,green!45!black] (0.4,3.2) node[left,black,font=\small] {thưởng $r$} -- (2.2,3.2) -- (D.west);
+\pic[scale=0.9] at (-0.45,3.7) {juice};
+\draw[->,thick,densely dotted,gray!50!black] ([yshift=0.45cm]D.north) to[bend left=18] node[above,font=\scriptsize,black] {bất ngờ} ([yshift=0.45cm]N.north);
+\end{tikzpicture}
+\caption{Toàn bộ cỗ máy. Bus \nt{GLUT} mang dữ liệu từ cảm biến đến khâu chọn hành động; \nt{GABA} điều khiển luồng bên trong nó. Các vòng tròn kép là kênh quảng bá; mũi tên nét đứt là việc phát tín hiệu của chúng tới toàn mạng, mỗi kênh có núm vặn riêng. \nt{DOPA} nhận phần thưởng $r$ và kỳ vọng $V$ từ bộ phê bình nằm trong bus (ch.~\ref{sec:dofa}); mũi tên chấm là giả thuyết rằng \nt{NORA} biết về sự bất ngờ nhờ các sai số lớn bất thường (ch.~\ref{sec:nora}).}
+\label{fig:machine}
+\end{figure}
+
+\section{Một công thức cho mọi núm vặn}
+
+Có thể gom các núm vặn vào một công thức sơ đồ. Đây không phải mô hình mới mà là bản tóm tắt các mô hình của chương~\ref{sec:glutcomputer}--\ref{sec:acet}: mỗi ký hiệu lấy từ chương của nó.
+\begin{empheq}[box=\keybox]{equation}
+\begin{aligned}
+\tau\,\frac{\dd r_i}{\dd t} \;&=\; -r_i + F\Bigl(g\,\Bigl[\tfrac{1+a}{2}\,x_i + (1-a)\sum_j W_{ij}\,r_j - \sum_k M_{ik}\,q_k - \theta\Bigr]\Bigr),\\
+\frac{\dd W_{ij}}{\dd t} \;&=\; \eta\,a\,\delta(t)\,e_{ij}(t),
+\qquad \tau_e\,\frac{\dd e_{ij}}{\dd t} = -e_{ij} + r_i\,r_j,
+\qquad \delta = r + \frac{\dd V}{\dd t} - \frac{V}{\tau_\gamma} .
+\end{aligned}
+\label{eq:machine}
+\end{empheq}
+Ở đây $r_i$ là tần số phát xung của các nơ-ron \nt{GLUT}, $x_i$ là đầu vào từ cảm biến, $W_{ij}\ge0$ là trọng số giữa chúng (chương~\ref{sec:glutcomputer}); $q_k$ là tần số của các nơ-ron \nt{GABA}, $M_{ik}\ge0$ là cường độ ức chế của chúng (chương~\ref{sec:gaba}); $e_{ij}$ là vết đủ điều kiện, $\delta$ là sai số \nt{DOPA} (chương~\ref{sec:dofa}); $\tau_\gamma$ là tầm nhìn, theo giả thuyết do \nt{SERO} đặt; $g$ là hệ số khuếch đại \nt{NORA} (chương~\ref{sec:nora}); $a$ là mức \nt{ACET} (chương~\ref{sec:acet}).
+
+Hãy xem những gì không có trong~\eqref{eq:machine}. Không có nhịp đồng hồ: mọi thứ được viết bằng phương trình vi phân, và mỗi nơ-ron tự thay đổi. Không có bộ nhớ riêng: chính các $W_{ij}$ dùng để tính toán cũng làm nhiệm vụ ghi nhớ, cùng với chính hoạt động $r_i$. Không có hiệu chỉnh riêng cho tuyệt đại đa số khớp thần kinh: việc học của chúng là tích của một vết cục bộ và một con số chung duy nhất; dây sai số riêng tới từng đầu ra chỉ có trong mạch học vận động (chương~\ref{sec:motorlearning}). Và chỉ có bốn loại tín hiệu điều khiển, $\delta$, $\tau_\gamma$, $g$, $a$, cho tám mươi tỷ nơ-ron. Thật ra mỗi tín hiệu không phải một con số mà là một bó nhỏ các đường song song (mệnh đề~\ref{prop:bundle}), nhưng mỗi bó chỉ có vài đường.
+
+\begin{keyblock}
+\begin{proposition}[Kiến trúc]
+\label{prop:architecture}
+Cỗ máy não, trong chừng mực hiểu biết hiện nay, có thể mô tả bằng ba lớp. Dữ liệu chạy trên bus địa chỉ \nt{GLUT}. Các nơ-ron \nt{GABA} có địa chỉ định hướng, giới hạn và chuẩn hóa luồng dữ liệu. Chế độ làm việc do vài kênh quảng bá đặt ra, mỗi kênh là một bó nhỏ các đường song song, dùng chung cho những vùng mạng lớn. Hai lớp đầu đã được xác lập vững chắc; việc phân vai giữa các kênh quảng bá phần lớn vẫn là giả thuyết.
+\end{proposition}
+\end{keyblock}
+
+\section{Mọi loại nơ-ron trong một bảng}
+
+Bảng~\ref{tab:synthesis} tổng hợp mọi loại nơ-ron trong sách. Bốn loại không có chương riêng mỗi loại chiếm một dòng; hai trong số đó đã tìm được vai trò trong các chương về đầu ra của cỗ máy: \nt{GLYC} trong các vòng tủy sống (chương~\ref{sec:muscles}), \nt{ADRE} trong đầu ra hóa học (chương~\ref{sec:chemoutput}). Vai trò tính toán của hai loại còn lại hoặc đơn giản, hoặc chưa rõ. Các chất không quy định loại nơ-ron được tập hợp ở phụ lục~\ref{sec:othermediators}.
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{1.3cm}>{\raggedright}p{1.0cm}>{\raggedright}p{3.9cm}>{\raggedright}p{1.5cm}>{\raggedright}p{1.8cm}>{\raggedright\arraybackslash}p{3.8cm}}
+\toprule
+Loại & Chương & Tính gì & Thời gian & Bus & Đã biết gì \\
+\midrule
+\nt{GLUT} & \ref{sec:glutcomputer}, \ref{sec:code}, \ref{sec:sensors}, \ref{sec:motorlearning}, \ref{sec:dendrites} & dữ liệu: trùng khớp, trễ, logic, bộ nhớ, chuỗi & ms & địa chỉ & đã xác lập \\
+\nt{GABA} & \ref{sec:gaba}, \ref{sec:code}, \ref{sec:pain}, \ref{sec:motorlearning} & điều khiển luồng: cấm, chọn, chia, ổn định, nhịp; cổng đau & ms & địa chỉ & đã xác lập; chia tần số: cùng với nhiễu nền \\
+\nt{SERO} & \ref{sec:serocomputer}, \ref{sec:pain}, \ref{sec:sleep} & điều chỉnh mức, làm trơn; tầm nhìn $\tau_\gamma$; độ lớn của cơn đau; các chế độ ngủ & giây & thể tích & tự ức chế đã đo; tầm nhìn là giả thuyết \\
+\nt{DOPA} & \ref{sec:dofa}, \ref{sec:dofaalt} & sai số dự đoán $\delta$; mức chậm là giá của thời gian & $0.1$\,s và phút & quảng bá & $\delta$ đã đo; mở rộng: ch.~\ref{sec:dofaalt} \\
+\nt{NORA} & \ref{sec:nora}, \ref{sec:pain}, \ref{sec:chemoutput}, \ref{sec:sleep} & khuếch đại $g$: tìm kiếm hay quyết định; bất ngờ; ``chân ga'' cho các cơ quan & giây & quảng bá & tăng tỷ số tín hiệu/nhiễu đã đo; vai trò trong tìm kiếm là giả thuyết \\
+\nt{ACET} & \ref{sec:acet}, \ref{sec:muscles}, \ref{sec:chemoutput}, \ref{sec:sleep} & ghi hay đọc; tốc độ học; đầu ra tới cơ; ``phanh'' cho các cơ quan & giây & cả hai & ba hiệu ứng đã đo; chuyển chế độ là giả thuyết \\
+\nt{GLYC} & \ref{sec:muscles}, \ref{sec:pain} & trọng số âm ở tủy sống và thân não: cấm cơ đối vận & ms & địa chỉ & đã xác lập \\
+\nt{HIST} & --- & tín hiệu toàn cục ``hãy thức'' & chậm & quảng bá & vai trò tính toán chưa được nghiên cứu \\
+\nt{ADRE} & \ref{sec:chemoutput} & ``chân ga'' cho toàn thân qua máu; trong não chưa rõ & chậm & quảng bá & ngoài não đã xác lập; vai trò trong não chưa rõ \\
+\nt{ASPA} & --- & trọng số dương yếu & ms & địa chỉ & vai trò còn tranh cãi \\
+\bottomrule
+\end{tabular}
+\caption{Mọi loại nơ-ron trong sách: mỗi loại tính gì và điều đó đã được biết đến mức nào.}
+\label{tab:synthesis}
+\end{table}
+
+\section{Các núm vặn phối hợp ra sao}
+
+Cho đến giờ, mỗi chương vặn một núm. Bây giờ hãy theo dõi một sự kiện đi qua toàn bộ cỗ máy (hình~\ref{fig:timeline}). Một con vật từ lâu đã học được rằng hành động $A$ mang lại nước quả. Đến một lúc thế giới thay đổi: $A$ không còn mang lại nước quả nữa, mà hành động $B$ mới làm được điều đó, trong khi con vật hầu như không thử $B$.
+
+\emph{Sai số.} Sau $A$ không có nước quả, và các nơ-ron \nt{DOPA} đáp lại bằng một cú sụt, $\delta<0$ theo công thức sai số~\eqref{eq:ctd}. Các khớp thần kinh vừa chọn $A$ đang mang vết và bị suy yếu.
+
+\emph{Bất ngờ.} Một cú sụt chỉ là chuyện ngẫu nhiên bình thường. Nhưng các cú sụt lặp lại, và sai số trở nên lớn hơn thường lệ. Theo giả thuyết của chương~\ref{sec:nora}, đó chính là tín hiệu cho \nt{NORA}: thế giới đã thay đổi. Hệ số khuếch đại $g$ giảm, lựa chọn trở nên mềm, và nhiễu thường xuyên dẫn tới việc thử $B$ hơn.
+
+\emph{Ghi.} Theo giả thuyết của chương~\ref{sec:acet}, sau thay đổi \nt{ACET} tăng lên và đưa mạng vào chế độ ghi: các liên kết bên trong lưu giữ thói quen cũ bị làm yếu, đầu vào từ cảm biến được tăng cường, trọng số thay đổi dễ dàng.
+
+\emph{Thói quen mới.} Lần thử $B$ mang lại nước quả mà không ai chờ đợi: một đỉnh vọt, $\delta>0$, và các khớp thần kinh đã chọn $B$ được tăng cường. Vài lần thử như vậy là kỳ vọng $V$ bắt kịp thế giới mới, sai số lại nhỏ.
+
+\emph{Trở lại.} Sự bất ngờ qua đi, \nt{NORA} trả lại hệ số khuếch đại cao, lựa chọn lại cứng; \nt{ACET} hạ xuống, mạng ở chế độ đọc và dùng những gì đã học. Suốt thời gian đó, \nt{SERO}, theo giả thuyết, đặt tầm nhìn $\tau_\gamma$: phần nước quả ở xa đến mức nào thì vẫn còn đáng chờ.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=1.1cm,y=0.95cm]
+\foreach \y/\lab in {4/{$\delta$ (\nt{DOPA})},3/{$g$ (\nt{NORA})},2/{$a$ (\nt{ACET})},1/{chọn $B$}}{
+  \draw[gray!60!black] (0,\y-0.35) -- (10,\y-0.35);
+  \node[left,font=\scriptsize] at (0,\y) {\lab};}
+\draw[densely dashed,gray!60!black] (2,0.4) -- (2,4.55) node[above,font=\scriptsize,black] {thế giới đổi};
+\draw[densely dashed,gray!60!black] (5,0.4) -- (5,4.55) node[above,font=\scriptsize,black] {nước quả đầu tiên nhờ $B$};
+\pic[scale=0.85] at (2,5.25) {nojuice};
+\pic[scale=0.85] at (5,5.25) {juice};
+% delta: dips after the change, burst at the first juice for B, then back to zero
+\draw[thick,red!70!black] (0,3.65) -- (2.3,3.65) -- (2.3,3.3) -- (2.5,3.3) -- (2.5,3.65) -- (3.2,3.65) -- (3.2,3.3) -- (3.4,3.3) -- (3.4,3.65) -- (4.1,3.65) -- (4.1,3.35) -- (4.3,3.35) -- (4.3,3.65) -- (5.0,3.65) -- (5.0,4.35) -- (5.2,4.35) -- (5.2,3.65) -- (5.8,3.65) -- (5.8,4.1) -- (6.0,4.1) -- (6.0,3.65) -- (6.6,3.65) -- (6.6,3.85) -- (6.8,3.85) -- (6.8,3.65) -- (10,3.65);
+% gain: high, drops after surprise, recovers
+\draw[thick,blue!60!black] (0,3.2) -- (3.0,3.2) -- (3.4,2.75) -- (5.8,2.75) -- (7.2,3.2) -- (10,3.2);
+% ACh: low, rises after the change, falls after learning
+\draw[thick,green!45!black] (0,1.75) -- (2.8,1.75) -- (3.3,2.25) -- (6.8,2.25) -- (7.8,1.75) -- (10,1.75);
+% choice of B
+\draw[thick,black] (0,0.7) -- (3.0,0.7) plot[domain=3:10,samples=40] (\x,{0.7+0.6/(1+exp(-(\x-5.3)*1.8))});
+\draw[->,gray!70!black] (0,0.2) -- (10.2,0.2) node[below left,font=\scriptsize,black] {thời gian};
+\end{tikzpicture}
+\caption{Một sự kiện được theo dõi qua toàn bộ cỗ máy. Đây là sơ đồ định tính dựa trên các mô hình và giả thuyết của chương~\ref{sec:dofa}--\ref{sec:acet}, không phải kết quả tính toán. Sau thay đổi, \nt{DOPA} đáp lại bằng các cú sụt; theo giả thuyết, các cú sụt lặp lại làm tăng tín hiệu bất ngờ, \nt{NORA} giảm hệ số khuếch đại, \nt{ACET} bật chế độ ghi; nước quả đầu tiên nhờ $B$ tạo một đỉnh vọt, lựa chọn chuyển sang $B$, và các núm vặn trở về vị trí cũ.}
+\label{fig:timeline}
+\end{figure}
+
+Lưu ý rằng không núm vặn nào biết các núm khác đang làm gì. Mỗi núm phản ứng với dấu hiệu riêng của nó (sai số, độ lớn bất thường của sai số, sự bất định), và trình tự hành động tự hình thành, như trong một mạch bất đồng bộ, nơi mỗi khối kích hoạt khi các đầu vào của nó sẵn sàng. Theo những gì chúng tôi biết, sự phối hợp trọn vẹn như vậy chưa từng được kiểm chứng: từng núm vặn riêng lẻ đã được đo, còn hoạt động chung của chúng là giả thuyết.
+
+\section{Cỗ máy này khác máy tính ở đâu}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{2.2cm}>{\raggedright}p{4.2cm}>{\raggedright\arraybackslash}p{6.6cm}}
+\toprule
+& Máy tính thông thường & Não \\
+\midrule
+thời gian & xung nhịp chung, khoảng một gigahertz & không có đồng hồ; mỗi nơ-ron tự thay đổi, các cửa sổ do sự kiện và nhịp cục bộ đặt ra (ch.~\ref{sec:glutcomputer}, \ref{sec:gaba}, \ref{sec:code}) \\
+phần tử & cổng nhị phân tin cậy & phần tử ngưỡng tương tự; khớp thần kinh làm mất phần lớn số xung (ch.~\ref{sec:code}) \\
+dấu của liên kết & tùy ý & do nơ-ron gửi quyết định (ch.~\ref{sec:neurontypes}) \\
+bộ nhớ & tách khỏi bộ xử lý & nằm trong chính các liên kết dùng để tính toán, và trong hoạt động tự duy trì (ch.~\ref{sec:glutcomputer}, \ref{sec:acet}) \\
+học & lan truyền ngược sai số & quy tắc cục bộ, một con số quảng bá $\delta$ (ch.~\ref{sec:dofa}) và dây sai số tới các đầu ra của mạch vận động (ch.~\ref{sec:motorlearning}) \\
+điều khiển & thanh ghi và bus lệnh & bốn kênh quảng bá, mỗi kênh là một bó vài đường (ch.~\ref{sec:serocomputer}, \ref{sec:dofa}--\ref{sec:acet}) \\
+năng lượng & hàng chục đến hàng trăm oát cho một bộ xử lý & khoảng $20$ oát cho cả bộ não, trung bình khoảng một xung mỗi giây trên một nơ-ron (ch.~\ref{sec:code}) \\
+\bottomrule
+\end{tabular}
+\caption{Não và máy tính thông thường.}
+\label{tab:computer}
+\end{table}
+
+Bảng~\ref{tab:computer} tổng hợp các khác biệt chính. Mỗi khác biệt không phải là khuyết điểm mà tự nhiên chưa kịp sửa, mà là một phần của cùng một giải pháp. Không có xung nhịp chung thì cần cảm biến ``bật--tắt'' và bộ phát hiện trùng khớp. Phần tử không tin cậy thì cần sự dư thừa của nhiều nơ-ron. Bộ nhớ gộp với tính toán thì cần \nt{ACET} để việc ghi không làm hỏng việc đọc. Học mà không có dây ngược thì cần \nt{DOPA} và nhiễu. Còn giới hạn năng lượng một xung mỗi giây buộc cả ngôn ngữ phải tằn tiện và chỉ tiêu xung cho tin mới.
+
+\section{Những điều chúng ta chưa biết}
+
+Cách trung thực nhất để khép lại bản tổng kết này là liệt kê những gì chúng ta chưa biết. Mỗi mục là một bài toán cho kỹ sư.
+
+\emph{Mã.} Chúng ta biết dung lượng của kênh xung và biết rằng bên nhận chọn đọc phần nào của thông điệp (chương~\ref{sec:code}). Nhưng vỏ não tận dụng thời điểm chính xác của xung đến mức nào và nơ-ron có ``từ'' hay không thì chưa biết.
+
+\emph{Học qua nhiều lớp.} Tín hiệu quảng bá dạy chậm, và càng chậm hơn với mỗi nơ-ron có ảnh hưởng tới kết quả (mệnh đề~\ref{prop:broadcastcost}). Vậy vỏ não chỉnh hàng tỷ trọng số trong các mạch nhiều lớp như thế nào thì chưa biết; có những mô hình trong đó sai số được truyền giữa các lớp bằng các chùm xung~\cite{Payeur2021}. Có thể một phần câu trả lời nằm ở tính toán bên trong các nhánh của chính nơ-ron, nơi một nơ-ron hoạt động như một mạng nhiều lớp thu nhỏ: để lặp lại đáp ứng của mô hình một nơ-ron vỏ não, mạng nhân tạo cần năm đến tám lớp~\cite{Beniaguev2021}, còn các nhánh nơ-ron người thậm chí tính được cả phép HOẶC loại trừ~\cite{Gidon2020}. Một ứng viên khác là tự học: nếu vỏ não học dự đoán chính đầu vào của mình, sai số nảy sinh ngay tại chỗ, trong từng lớp, và không cần tín hiệu chung nào cho việc đó (chương~\ref{sec:dofa})~\cite{Keller2018}.
+
+\emph{Các kênh quảng bá thực sự truyền gì.} Với \nt{DOPA} có bức tranh chuẩn và sáu mở rộng của nó (chương~\ref{sec:dofaalt}); với \nt{NORA} và \nt{ACET} có những giả thuyết hợp lý (chương~\ref{sec:nora}, \ref{sec:acet}); với \nt{SERO} phần lớn chỉ là phỏng đoán.
+
+\emph{Đồng bộ theo thời gian.} Chúng ta đã thấy cách tính một hàm, cách đo thời gian kể từ một sự kiện và cách cắt luồng thành các cửa sổ bằng nhịp cục bộ. Nhưng một mạng khổng lồ không có xung nhịp chung phối hợp công việc của các vùng xa nhau như thế nào thì mới chỉ hiểu được một phần.
+
+\emph{Năng lượng.} Hai mươi oát cho tất cả. Chúng ta hiểu vì sao mã phải thưa (mệnh đề~\ref{prop:economy}), nhưng chưa ai biết cách chế tạo một cỗ máy làm được điều tương tự với cùng công suất~\cite{MehonicKenyon2022}.
+
+Não là một cỗ máy tính toán không do kỹ sư lắp ráp, nhưng tuân theo những định luật mà kỹ sư nào cũng nhận ra: mạch RC, ngưỡng, phản hồi, bộ lọc, bus và thanh ghi quảng bá. Sơ đồ của nó chúng ta mới đọc được một phần. Đọc nốt phần còn lại sẽ là việc của những người biết đọc sơ đồ.
+
+\section{Phần tiếp theo của cuốn sách}
+
+Chương này đã ráp xong lõi tính toán của cỗ máy. Các chương còn lại vượt ra ngoài lõi đó. Chương~\ref{sec:sensors} và~\ref{sec:recognition} nói về đầu vào: cảm biến biến ánh sáng, âm thanh và phân tử thành xung ra sao, và cỗ máy nhận ra đồ vật trong đó như thế nào. Chương~\ref{sec:muscles}--\ref{sec:chemoutput} nói về đầu ra và những gì phục vụ chúng: cơ, cơn đau như tín hiệu báo động, học vận động qua các dây sai số riêng, và đầu ra hóa học chậm vào cơ thể. Chương~\ref{sec:debugging} nói về cách gỡ lỗi cỗ máy từ bên ngoài, kể cả bằng giao diện não--máy tính. Chương~\ref{sec:eetypes} và~\ref{sec:dendrites} phân loại nơ-ron thêm một lần nữa, lần này theo chức năng điện và theo số đầu vào. Chương~\ref{sec:sleep} nói về những gì cỗ máy làm khi ngắt kết nối với thế giới, còn chương~\ref{sec:livingmachine} và~\ref{sec:dishbrain} nói về các cỗ máy lắp từ nơ-ron sống trên chip.
+
+\section{Bài tập}
+
+Bài tập của chương này kết nối kết quả của nhiều chương: mỗi bài dựa vào ít nhất hai chương.
+
+\begin{exercise}[\lvlA]
+\label{ex:10:1}
+\emph{Bus và thanh ghi.} Bốn kênh quảng bá là các bó, mỗi bó khoảng năm đường (mệnh đề~\ref{prop:bundle}); mỗi đường thay đổi mỗi giây một lần và phân biệt được bốn mức. Khâu điều khiển cần bao nhiêu năm để truyền lượng thông tin mà bus \nt{GLUT} ($8.6\cdot10^{10}$ nơ-ron với tần số~\eqref{eq:energy}, độ chính xác $1\ms$ theo~\eqref{eq:spikeentropy}) truyền trong một giây?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:10:2}
+\emph{Hai núm vặn trên một vòng.} Trong vòng~\eqref{eq:ei}, các núm vặn của~\eqref{eq:machine} tác động lên kích thích: $\tau_E\dot E=-E+g[(1-a)w_{EE}E-w_{EI}I+h]$, còn \nt{GABA} không chịu chúng điều khiển. Với số liệu của hình~\ref{fig:ei}, một chùm xung \nt{NORA} nâng $g$ lên $6$. Với $a$ nhỏ nhất bằng bao nhiêu thì vòng ổn định? Có thể vặn các núm \nt{NORA} và \nt{ACET} độc lập không?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:10:3}
+\emph{Giá của quảng bá từ đâu ra.} Đầu ra của $N$ nơ-ron là $y_k=f(u_k)+\xi_k$ với nhiễu Gauss độc lập phương sai $\sigma^2$; $R\approx R_0+\sum_kR'_k\xi_k$ với các $R'_k$ như nhau, \nt{DOPA} phát $\delta=R-R_0$. Tìm tỷ số tín hiệu/nhiễu của hiệu chỉnh $\delta\,\xi_jx_j$ trong một lần thử. Số lần thử tăng theo $N$ ra sao?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:10:4}
+\emph{Gắn âm thanh với tia chớp.} Âm thanh đến bus sau $5\ms$, tia chớp sau $30\ms$ cộng độ trễ của xung đầu tiên~\eqref{eq:latency} ($\tau=10\ms$, $U$ từ $1.2\theta$ đến $4\theta$); nền ở mỗi đầu vào là $5$ xung mỗi giây. Hãy chọn độ trễ cho đường âm thanh và cửa sổ trùng khớp nhỏ nhất cho mọi độ tương phản. Nền gây ra bao nhiêu lần gắn nhầm mỗi giây?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:10:5}
+\emph{Mô phỏng: ai nhận ra thay đổi.} Bộ phê bình thấy $y=s+\text{nhiễu}$ ($R=1$); với xác suất $1/200$, $s$ nhảy tới giá trị mới có phương sai $J^2=4$. Mô phỏng bộ lọc Kalman với $q=0$, nâng $P$ lên $J^2$ khi $E\leftarrow0.9E+\delta^2/(P+R)$ vượt $20$. Sai số của nó nhỏ hơn bao nhiêu so với khi dùng $\alpha$ hằng tốt nhất?
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:10:6}
+\emph{Bao nhiêu lần thử để đổi thói quen.} Mạng đã học $Q_A=0.8$, $Q_B=0.2$ và chọn theo~\eqref{eq:softmax}, $\sigma=1$, $g=8$. Giờ $A$ cho nước quả với xác suất $0.2$; $Q_A\leftarrow Q_A+\alpha(r-Q_A)$, $Q_B$ không đổi. Sau bao nhiêu lần chọn $A$ thì xác suất chọn $A$ giảm xuống $0.6$ khi $\alpha=0.1$ và $0.5$? Còn nếu \nt{NORA} hạ $g$ xuống $2$?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:10:7}
+\emph{Bó thay cho dây.} Đầu ra $y_k=w_k+\xi_k$, phần thưởng $R=-\sum_ky_k^2$; một đường của bó phát tới nhóm $G$ nơ-ron sai số của các đầu ra trong nhóm, $w_k\leftarrow w_k+\eta\,\delta_l\xi_k$. Chứng minh rằng với $\eta$ tốt nhất, để đạt $\sum w_k^2=\varepsilon\sum w_k^2(0)$ cần $\approx(G+2)\ln(1/\varepsilon)$ lần thử. Với $\varepsilon=0.01$, mạch $10^6$ nơ-ron trên năm đường, mỗi lần thử cách nhau ba giây, học trong bao lâu?
+\end{exercise}

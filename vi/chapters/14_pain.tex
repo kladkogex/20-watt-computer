@@ -1,0 +1,168 @@
+\chapter{Đau: tín hiệu báo động}
+\chaptermark{Đau}
+\label{sec:pain}
+
+\section{Báo động, không phải phép đo}
+
+Mọi cảm biến ở chương~\ref{sec:sensors} đều đo thế giới: bao nhiêu ánh sáng, âm cao bao nhiêu, áp lực bao nhiêu. Cơn đau được tổ chức khác. Nó không báo ``có gì ở đó'', mà báo ``nguy hiểm, bỏ hết mọi việc''. Với kỹ sư, đây không phải một kênh đo mà là một \emph{tín hiệu báo động}: một đường dây có mức ưu tiên cao nhất, phải xuyên qua được mọi công việc đang chạy của cỗ máy.
+
+Hệ báo động khác kênh đo ở ba đặc tính, và cơn đau có cả ba. Thứ nhất, khó làm nó dịu đi bằng thích nghi: cảm biến đau thích nghi yếu hơn nhiều so với cảm biến xúc giác, và sau một tổn thương nhẹ còn trở nên nhạy hơn~\cite{LaMotte1982hyper}; sự suy giảm đáp ứng sau khi bị nung nóng mạnh chỉ đo được ở một loại cảm biến đau~\cite{Treede1995heat}. Cảm biến ánh sáng im lặng trên nền không đổi (hình~\ref{fig:adaptation}), còn một hệ báo động im sau một phút thì vô dụng. Thứ hai, nó có ngưỡng cao: cảm biến đau chỉ phát xung khi tác động đã gần mức nguy hiểm, chẳng hạn với nhiệt, ngưỡng của các cảm biến khác nhau từ $41^\circ$ đến $46$--$48^\circ$, tùy loại~\cite{Treede1995heat, Weidner1999cfib}. Thứ ba, và đây là điều chính của chương này, âm lượng của báo động không chỉ do cảm biến quyết định mà còn do chính cỗ máy. Cùng một vết thương đau khác nhau trong những hoàn cảnh khác nhau. Hãy xem nó được lắp từ những chi tiết quen thuộc nào.
+
+Cảm biến đau là nơ-ron \nt{GLUT}, như các nơ-ron cảm giác khác ở chương~\ref{sec:sensors}. Một số trong đó giải phóng cùng với glutamate chất~P ở phụ lục~\ref{sec:othermediators}, chất làm tăng cường truyền dẫn một cách chậm rãi.
+
+\section{Hai dây: đau nhanh và đau chậm}
+
+Đập vào ngón tay, bạn sẽ thấy đau hai lần: trước là đau ngắn và nhói, một giây sau là đau âm ỉ và kéo dài. Đó là hai dây khác nhau. Dây nhanh có lớp cách điện và dẫn xung với tốc độ $v$ từ $5$ đến $30$ mét mỗi giây; dây chậm thì mảnh và trần, $0.5$--$2$ mét mỗi giây. Tín hiệu từ bàn chân đi khoảng một mét, và thời gian đến
+\begin{empheq}[box=\keybox]{equation}
+t \;=\; \frac{L}{v}
+\label{eq:paintime}
+\end{empheq}
+với dây nhanh là vài chục mili giây, với dây chậm là khoảng một giây. Hai dây mang hai thông điệp. Dây nhanh nói \emph{ở đâu} và \emph{khi nào}: xung của nó đến sớm hơn và chính xác hơn, như trong mã thời gian ở chương~\ref{sec:code}. Dây chậm nói \emph{tệ đến mức nào}, và cơn đau âm ỉ kéo dài của nó giữ cỗ máy ở chế độ báo động cho tới khi tổn thương qua đi.
+
+\section{Cổng trong tủy sống}
+
+Nơi đầu tiên tín hiệu đau tới là tủy sống, và ở đó nó đi qua một \emph{cổng}~\cite{MelzackWall1965}; các nơ-ron cụ thể của cổng này mới được tìm ra tương đối gần đây~\cite{Duan2014}. Trên nơ-ron \nt{GLUT} đầu ra, nơ-ron truyền cơn đau tiếp lên não, hội tụ dây đau và dây xúc giác. Còn bên cạnh là một nơ-ron trung gian ức chế, \nt{GABA} hoặc \nt{GLYC}, được xúc giác kích thích (hình~\ref{fig:gate}). Xúc giác đóng cổng lại. Trong thuyết cổng ban đầu~\cite{MelzackWall1965}, ngược lại, cơn đau tắt nơ-ron trung gian này, và đau mạnh thì mở cổng; đây là một giả định của thuyết, chưa được chứng minh trực tiếp trên các nơ-ron cổng đã tìm thấy.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  nrn/.style={circle,draw,very thick,minimum size=1.0cm,inner sep=0pt,font=\scriptsize},
+  inh/.style={-{Bar[width=7pt]},thick,red!70!black},
+  bc/.style={->,thick,densely dashed,orange!85!black}]
+\node[nrn,fill=blue!6] (Z) at (6,0) {\nt{GLUT}};
+\node[nrn,fill=red!10] (Q) at (3.6,-1.6) {\nt{GABA}};
+\draw[->,very thick,red!70!black] (0,0.6) node[left,font=\small,black,align=right] {đau $\nu$} -- (5.45,0.15);
+\draw[->,very thick,blue!60!black] (0,-2.6) node[left,font=\small,black,align=right] {chạm $\mu$} -- (2.9,-2.0);
+\draw[->,thick,blue!60!black] (1.8,-2.35) -- (5.5,-0.35) node[pos=0.8,below right=-2pt,font=\scriptsize] {$w_{z\mu}$};
+\draw[inh] (1.6,0.5) -- (3.35,-1.1) node[pos=0.5,left=1pt,font=\scriptsize] {$w_{q\nu}$};
+\draw[inh] (Q) -- (Z) node[pos=0.5,above left=-1pt,font=\scriptsize] {$\beta$};
+\draw[->,very thick] (Z) -- (8.2,0) node[right,font=\small,align=left] {lên não: $z$};
+\draw[bc] (6,2.1) node[above,font=\scriptsize,black,align=center] {từ trên: \nt{SERO}, \nt{NORA}, opioid} -- (Z.north) node[pos=0.45,right,font=\scriptsize,black] {khuếch đại $g$};
+\end{tikzpicture}
+\caption{Cổng đau trong tủy sống theo mô hình~\eqref{eq:gate}. Nơ-ron \nt{GLUT} đầu ra nhận cơn đau $\nu$ và kích thích yếu từ cái chạm $\mu$. Nơ-ron trung gian ức chế (\nt{GABA} hoặc \nt{GLYC}) được cái chạm kích thích và, theo giả định của thuyết cổng, bị cơn đau tắt đi. Từ trên, qua các kênh quảng bá, đến hệ số khuếch đại $g$.}
+\label{fig:gate}
+\end{figure}
+
+Hãy viết điều đó cho tần số, như ở chương~\ref{sec:gaba}. Tần số $q$ của nơ-ron trung gian và tần số đầu ra $z$ bằng
+\begin{empheq}[box=\keybox]{equation}
+q \;=\; \bigl[w_{q\mu}\,\mu + q_0 - w_{q\nu}\,\nu\bigr]_+ ,
+\qquad
+z \;=\; \bigl[\,g\,(\nu + w_{z\mu}\,\mu) - \beta\,q\,\bigr]_+ ,
+\label{eq:gate}
+\end{empheq}
+trong đó $\nu$ là đầu vào đau, $\mu$ là đầu vào xúc giác, $w$ là trọng số liên kết (chỉ số thứ nhất là nơi nhận, chỉ số thứ hai là nơi gửi), $\beta$ là cường độ ức chế, $q_0$ là hoạt động nền riêng của nơ-ron trung gian, $g$ là hệ số khuếch đại được đặt từ trên (sẽ nói ở dưới). Đây là phép cấm~\eqref{eq:veto} của chương~\ref{sec:gaba}: ``đau, nhưng không khi có chạm'', với một sửa đổi lấy từ thuyết cổng làm giả định: đau mạnh tự tắt nơ-ron cấm.
+
+Chúng tôi đã tính mô hình với $w_{q\mu}=1$, $q_0=0.2$, $w_{q\nu}=0.5$, $w_{z\mu}=0.3$, $\beta=1.5$ (hình~\ref{fig:gatecurves}). Không có chạm, cơn đau bắt đầu đi qua từ $\nu\approx0.18$. Có chạm, ngưỡng tăng lên $0.86$, và khi $\nu=1$ đầu ra giảm bốn lần, từ $1$ xuống $0.25$. Còn khi đau mạnh, $\nu=2$, cái chạm không thay đổi được gì nữa: cổng đã mở toang. Ngoài đời cũng vậy: xoa chỗ bị va giúp đỡ đau, còn với chấn thương nặng thì không. Bản thân cái chạm, không có đau, không đi qua được cổng: báo động không nổi lên vì một cái chạm.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=5.2cm,y=1.35cm]
+\draw[->,gray!70!black] (0,0) -- (2.12,0) node[right,font=\small,black] {đau $\nu$};
+\draw[->,gray!70!black] (0,0) -- (0,4.3) node[left,font=\small,black] {$z$};
+\foreach \t in {0,0.5,1,1.5,2}{\draw[gray!60!black] (\t,-0.05) -- (\t,0.05); \node[below,font=\scriptsize] at (\t,0) {\t};}
+\foreach \f in {1,2,3,4}{\draw[gray!60!black] (-0.01,\f) -- (0.01,\f); \node[left,font=\scriptsize] at (0,\f) {\f};}
+\draw[very thick,red!70!black] plot file {figures/pain_gate_notouch.dat};
+\draw[very thick,blue!60!black] plot file {figures/pain_gate_touch.dat};
+\draw[very thick,orange!85!black,densely dashed] plot file {figures/pain_gate_sens.dat};
+\draw[very thick,red!70!black] (0.08,3.9) -- (0.2,3.9) node[right,font=\scriptsize,black] {không chạm};
+\draw[very thick,blue!60!black] (0.08,3.45) -- (0.2,3.45) node[right,font=\scriptsize,black] {có chạm};
+\draw[very thick,orange!85!black,densely dashed] (0.08,3.0) -- (0.2,3.0) node[right,font=\scriptsize,black] {sau nhạy cảm hóa, $g=2$};
+\end{tikzpicture}
+\caption{Đầu ra của cổng~\eqref{eq:gate} theo cường độ đau. Cái chạm nâng ngưỡng và làm dịu cơn đau nhẹ và vừa, nhưng không làm dịu cơn đau mạnh. Nhạy cảm hóa (đường nét đứt) tăng hệ số khuếch đại gấp đôi: cùng một cơn đau được truyền to gấp đôi, còn ngưỡng hạ xuống.}
+\label{fig:gatecurves}
+\end{figure}
+
+\section{Núm âm lượng từ trên}
+
+Cổng không chỉ được điều khiển từ dưới. Từ thân não có các đường đi xuống tới cổng, làm thay đổi hệ số khuếch đại $g$ trong~\eqref{eq:gate}: \nt{SERO}, \nt{NORA} và các peptide opioid ở phụ lục~\ref{sec:othermediators}~\cite{Fields2004}. Đó chính là các kênh quảng bá của chương~\ref{sec:serocomputer}--\ref{sec:acet}, chỉ có điều ở đây núm vặn của chúng là âm lượng báo động. Chúng vặn được cả hai chiều: cùng những mạch đi xuống ấy có thể vừa làm dịu cơn đau, vừa khuếch đại nó.
+
+Vì sao cỗ máy lại giảm báo động? Vì báo động là một ngắt, mà ngắt không phải lúc nào cũng hợp lúc. Con vật đang chạy trốn kẻ săn mồi không được dừng lại vì một chân bị thương: chạy trước, liếm vết thương sau. Sự trông đợi được đỡ đau cũng làm dịu cơn đau, và một phần hiệu ứng này mất đi nếu chặn các thụ thể opioid~\cite{Levine1978}: kỳ vọng tính ra trong não đi xuống theo kênh opioid tới cổng. Bức tranh này tự nó đã được đo; còn não quyết định âm lượng phải bằng bao nhiêu như thế nào thì vẫn là giả thuyết.
+
+\section{Nhạy cảm hóa: hệ báo động biết học}
+
+Sau tổn thương, các nơ-ron đầu ra của cổng trở nên nhạy hơn: cùng đầu vào cho đầu ra lớn hơn, còn ngưỡng hạ xuống~\cite{Woolf1983}. Trong mô hình~\eqref{eq:gate}, đó là sự tăng của hệ số khuếch đại $g$, và mô tả đơn giản nhất của nó là một mạch RC chậm được chính cơn đau nạp:
+\begin{empheq}[box=\keybox]{equation}
+\tau_s\,\frac{\dd g}{\dd t} \;=\; -(g-1) + k_s\,z ,
+\label{eq:sensitization}
+\end{empheq}
+trong đó $\tau_s$ là thời gian để độ nhạy trở về bình thường; nó dài hơn chính cơn đau, vì nhạy cảm hóa vẫn còn sau khi kích thích gây tổn thương đã ngừng~\cite{Woolf1983}, còn $k_s$ là cường độ nạp. Chừng nào mô còn tổn thương, đầu ra của cổng giữ $g$ trên một, và mọi thứ xảy ra quanh vết thương đều được truyền to hơn (đường nét đứt trên hình~\ref{fig:gatecurves}: khi $g=2$, ngưỡng hạ xuống $0.11$, còn đầu ra tăng gấp đôi). Đó là một cách chỉnh hệ báo động hợp lý: chừng nào vết thương chưa lành, thận trọng quá vẫn hơn.
+
+Với kỹ sư, đây là phản hồi dương có rò chậm: đau làm tăng khuếch đại, khuếch đại làm tăng đau. Chừng nào vòng còn yếu, $g$ trở về bình thường khi vết thương lành. Nhưng nếu vòng mạnh, hệ báo động có thể kẹt ở trạng thái bật cả khi tổn thương không còn nữa, như nhóm có phản hồi mạnh trên hình~\ref{fig:bistable}. Mô hình~\eqref{eq:sensitization} là một sự đơn giản hóa; việc nhạy cảm hóa trung ương tồn tại thì đã được đo.
+
+\section{Cơn đau như người thầy và như một ngắt}
+
+Ngoài việc báo động, cơn đau trong cỗ máy còn hai nhiệm vụ.
+
+\emph{Người thầy.} Cơn đau là phần thưởng âm: trong công thức sai số~\eqref{eq:ctd}, nó xuất hiện dưới dạng $r<0$. Mọi điều đã nói ở chương~\ref{sec:dofa} đều đúng ở đây: tín hiệu báo trước cơn đau bắt đầu gây ra sai số từ sớm, và mạng học cách tránh những gì dẫn tới đau. Thí nghiệm trên người cho thấy hoạt động não khi học từ cơn đau đi theo đúng sai số sai phân thời gian~\cite{Seymour2004}, và một phần nơ-ron \nt{DOPA} cũng đáp ứng với các sự kiện khó chịu (chương~\ref{sec:dofaalt}).
+
+\emph{Ngắt.} Cơn đau kéo sự chú ý khỏi việc đang làm: đó là mục đích của nó, không phải tác dụng phụ~\cite{EcclestonCrombez1999}. Ở chương~\ref{sec:nora}, cùng vai trò ``ngắt'' ấy đã được bàn cho chùm xung dứt khoát của \nt{NORA}. Còn phản ứng nhanh nhất thậm chí không lên tới não: việc rụt tay khỏi vật nóng khép kín ngay trong tủy sống, bằng chính cặp cơ và chính phép cấm cơ đối vận như trên hình~\ref{fig:antagonists}.
+
+\begin{keyblock}
+\begin{proposition}[Tín hiệu báo động]
+\label{prop:pain}
+Cơn đau không phải phép đo, mà là tín hiệu báo động có mức ưu tiên cao. Nó thích nghi yếu hơn nhiều so với các kênh đo, đi theo hai dây (dây nhanh: ``ở đâu'', dây chậm: ``tệ đến mức nào''), đi qua một cổng mà cái chạm đóng lại (còn đau mạnh, theo giả định của thuyết cổng, mở ra), và âm lượng của nó do các kênh quảng bá đặt từ trên xuống. Các cơ chế này đã được đo, trừ việc cơn đau mở cổng; các mô hình đơn giản~\eqref{eq:gate} và~\eqref{eq:sensitization} là sự đơn giản hóa.
+\end{proposition}
+\end{keyblock}
+
+\section{Tổng kết}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{3.0cm}>{\raggedright}p{4.9cm}>{\raggedright\arraybackslash}p{4.9cm}}
+\toprule
+Cơn đau làm gì & Bằng cách nào & Đã biết gì \\
+\midrule
+báo động & ngưỡng cao, thích nghi yếu hơn xúc giác & ngưỡng đã đo; so sánh thích nghi là ước tính \\
+báo ``ở đâu'' và ``tệ đến mức nào'' & hai dây với tốc độ khác nhau~\eqref{eq:paintime} & đã đo \\
+đi qua cổng & cấm qua \nt{GABA}/\nt{GLYC}~\eqref{eq:gate} & cổng đã đo; cơn đau mở cổng là giả định của thuyết; mô hình là đơn giản hóa \\
+đổi âm lượng & \nt{SERO}, \nt{NORA}, opioid đi xuống & đã đo; quy tắc chọn âm lượng là giả thuyết \\
+học sau tổn thương & tăng hệ số khuếch đại~\eqref{eq:sensitization} & nhạy cảm hóa đã đo; mô hình là đơn giản hóa \\
+dạy cách tránh & phần thưởng âm trong~\eqref{eq:ctd} & sự giống sai số sai phân thời gian đã đo \\
+ngắt công việc & chiếm sự chú ý; phản xạ rụt tay & đã đo \\
+\bottomrule
+\end{tabular}
+\caption{Cơn đau như một tín hiệu báo động.}
+\label{tab:pain}
+\end{table}
+
+Cơn đau được lắp từ những chi tiết ta đã gặp (bảng~\ref{tab:pain}): cảm biến \nt{GLUT}, hai dây, phép cấm qua nơ-ron trung gian ức chế, núm âm lượng quảng bá, mạch RC chậm, sai số dự đoán và ngắt. Điều mới ở nó chỉ có một: đó là đầu vào duy nhất của cỗ máy mà âm lượng do chính cỗ máy đặt, một hệ báo động mà chủ nhân có thể vừa làm dịu, vừa chỉnh lại.
+
+\section{Bài tập}
+
+\begin{exercise}[\lvlA]
+\label{ex:14:1}
+\emph{Hai dây.} Tín hiệu đi từ bàn chân, $L=1$~m. (a)~Một đợt bùng phát đi trên một bó dây cùng loại, tốc độ của chúng phủ kín dải~\eqref{eq:paintime}. Khi tới tủy sống, đợt bùng phát giãn ra bao nhiêu với loại nhanh và loại chậm? (b)~Hai đợt đau theo dây $15$ và $1$~m/s phân biệt được khi cách nhau từ $0.1$~s. Từ khoảng cách nào thì chúng hòa làm một?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:14:2}
+\emph{Khi cái chạm gây đau.} Cổng~\eqref{eq:gate} với tham số trong bài, hệ số khuếch đại $g$ tăng khi nhạy cảm hóa. Tới $g$ nào thì cái chạm không kèm đau không qua được cổng với mọi cường độ $\mu$? Với $g$ nào thì cái chạm $\mu=1$ bắt đầu đi qua?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:14:3}
+\emph{Độ ổn định của nhạy cảm hóa.} Đầu vào không đổi, đầu ra của cổng tuyến tính theo $g$: $z=gA-C$, $A=\nu+w_{z\mu}\mu$, $C=\beta q\ge0$. (a)~Tìm điểm cân bằng $g^*$ của mô hình~\eqref{eq:sensitization} và điều kiện ổn định của nó. (b)~Với $k_s=0.5$, tìm cường độ đau mà trên đó mô hình mất kiểm soát, khi không có chạm và khi có chạm $\mu=1$.
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:14:4}
+\emph{Tín hiệu báo trước cơn đau.} Tín hiệu ở thời điểm $0$ báo trước cơn đau ở thời điểm $T=2$~s, trong~\eqref{eq:ctd} $r(t)=-P\,\delta(t-T)$, $\tau_\gamma=2$~s. (a)~Tìm diện tích của đỉnh vọt $\delta$ tại thời điểm có tín hiệu. (b)~Một hành động ở thời điểm $t_e=1$~s hủy cơn đau. Đỉnh vọt $\delta$ lúc đó bằng bao nhiêu và nó dạy mạng điều gì?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:14:5}
+\emph{Hệ báo động tự chốt.} Bổ sung cho cổng trong \texttt{models/\allowbreak pain\_gate.py} động học~\eqref{eq:sensitization} và bão hòa $z\le4$. Cái chạm $\mu=1$ luôn có, tổn thương $\nu=2$ kéo dài thời gian $T$, sau đó $\nu=0$. Bằng mô phỏng, tìm $T$ nhỏ nhất (theo đơn vị $\tau_s$) mà sau đó hệ báo động vẫn bật, với $k_s=4$, $4.6$, $5$, $6$, $8$.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:14:6}
+\emph{Thiết kế cổng.} Với $\beta=1.5$, $w_{z\mu}=0.3$, $g=1$, hãy chọn $q_0$, $w_{q\nu}$, $w_{q\mu}$ trong~\eqref{eq:gate} để ngưỡng đau là $0.2$ khi không chạm và $1.0$ khi có chạm $\mu=1$, còn cái chạm thôi làm dịu đau khi $\nu_\times=2.5$. Tới hệ số khuếch đại $g$ nào thì cái chạm không kèm đau không qua được cổng?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:14:7}
+\emph{Núm âm lượng.} Công việc mang lại giá trị $V$ trong một đơn vị thời gian, làm việc với tổn thương $\nu$ tốn $c\nu$, nên ngắt có lợi khi $\nu>V/c$; cơn đau ngắt khi $z>\theta=0.5$. (a)~Hệ số khuếch đại $g^*$ nào của cổng~\eqref{eq:gate} không có chạm cho ngưỡng này khi $V/c=0.25$, $0.5$, $2$? (b)~Cỗ máy có thể ước lượng $V$ và $c$ từ những tín hiệu nào trong sách?
+\end{exercise}

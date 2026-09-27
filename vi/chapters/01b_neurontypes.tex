@@ -1,0 +1,331 @@
+\chapter{Các loại nơ-ron}
+\label{sec:neurontypes}
+
+\section{Nơ-ron như một hộp đen}
+
+Giả sử bạn nhận được một bao tải chứa tám mươi sáu tỷ nơ-ron~\cite{Azevedo2009} và được yêu cầu chia chúng thành từng đống. Bạn sẽ làm thế nào?
+
+Một kỹ sư nhận được bao tải vi mạch lạ sẽ không phân loại chúng theo hình dạng vỏ. Anh ta sẽ hỏi: linh kiện có bao nhiêu đầu vào, bao nhiêu đầu ra, và đưa ra đầu ra cái gì. Hãy vẽ nơ-ron theo cách đó --- như một khối trên sơ đồ (hình~\ref{fig:blackbox}).
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=1cm,y=1cm]
+% the box
+\node[draw,very thick,minimum width=2.6cm,minimum height=2.6cm,fill=blue!6] (N) at (0,0) {};
+\node at (0,0.55) {\small nơ-ron};
+\node at (0,-0.15) {$\displaystyle u=\sum_i w_i x_i$};
+\node at (0,-0.8) {\small $y=\Theta(u-\theta)$};
+% inputs
+\foreach \k/\y/\lab in {1/1.05/{x_1},2/0.55/{x_2},3/0.05/{x_3}}{
+  \draw[->,thick,blue!60!black] (-4.2,\y) -- (-1.3,\y);
+  \node[left] at (-4.2,\y) {$\lab$};
+  \node[above,blue!60!black] at (-2.1,\y-0.06) {\scriptsize $w_{\k}$};}
+\node at (-4.45,-0.4) {$\vdots$};
+\node at (-2.1,-0.4) {$\vdots$};
+\draw[->,thick,blue!60!black] (-4.2,-1.05) -- (-1.3,-1.05);
+\node[left] at (-4.2,-1.05) {$x_n$};
+\node[above,blue!60!black] at (-2.1,-1.11) {\scriptsize $w_{n}$};
+\draw[decorate,decoration={brace,amplitude=5pt},gray!60!black] (-4.9,-1.2) -- (-4.9,1.2);
+\node[left,align=right,gray!40!black] at (-5.1,0) {\small $n\sim10^3$--$10^5$\\[-2pt]\small đầu vào};
+% single output wire, then fan-out
+\draw[very thick,red!70!black] (1.3,0) -- (3.2,0);
+\foreach \x in {1.6,2.2,2.34,2.9}{\draw[thick,red!70!black] (\x,0) -- (\x,0.4);}
+\node[above right,font=\tiny\itshape,gray!30!black,inner sep=1pt] at (1.42,0.45) {tách\dots\ tách-tách\dots};
+\node[below,red!70!black,align=center] at (2.25,-0.05) {\scriptsize một đầu ra $y$};
+\fill[red!70!black] (3.2,0) circle (0.06);
+\foreach \y in {1.3,0.65,0,-0.65,-1.3}{
+  \draw[->,thick,red!70!black] (3.2,0) -- (5.0,\y);}
+\draw[decorate,decoration={brace,amplitude=5pt},gray!60!black] (5.3,1.45) -- (5.3,-1.45);
+\node[right,align=left,gray!40!black] at (5.5,0) {\small bản sao của $y$\\[-2pt]\small tới $10^3$--$10^4$\\[-2pt]\small nơ-ron khác};
+\end{tikzpicture}
+\caption{Nơ-ron qua con mắt kỹ sư. Nhiều đầu vào $x_i$, mỗi đầu vào có trọng số $w_i$ riêng; bên trong là tổng có trọng số $u$ và phép so sánh với ngưỡng $\theta$ ($\Theta$ là hàm bậc thang: bằng $1$ nếu đối số dương và bằng $0$ trong trường hợp còn lại); một đầu ra $y$ là chuỗi xung, được nhân bản qua các nhánh tới hàng nghìn nơi nhận.}
+\label{fig:blackbox}
+\end{figure}
+
+Ở đầu ra của khối không phải là một con số, mà là chuỗi xung điện áp ngắn: ``tách'', khoảng lặng, ``tách-tách'', khoảng lặng dài. Mọi xung đều cao như nhau, nên toàn bộ thông tin nằm ở chỗ \emph{khi nào} chúng xuất hiện. Bên trong khối, ở phép gần đúng thô đầu tiên, là một bộ cộng và một bộ so sánh: các đầu vào được cộng với trọng số, và nếu tổng vượt ngưỡng, khối phát ra một xung. Ở chương sau ta sẽ thay nó bằng một mô hình thực sự làm việc trong thời gian liên tục.
+
+Đầu ra chỉ có một, nhưng dây dẫn phân nhánh, và mỗi nhánh mang \emph{cùng một} bản sao tín hiệu. Trong điện tử, điều này gọi là hệ số phân nhánh đầu ra, fan-out. Ở nơ-ron vỏ não, con số này cỡ vài nghìn; một cổng logic trong vi mạch thường chỉ nối tới vài cổng khác.
+
+Vậy \emph{cái gì} được truyền theo dây đầu ra tới nơi nhận? Xung chạy tới cuối mỗi nhánh và ở đó biến thành tín hiệu hóa học: nhánh nhả vào khe hẹp giữa hai tế bào một nhúm chất nhất định, \emph{chất dẫn truyền thần kinh}, làm thay đổi dòng điện vào của nơi nhận. Đây chính là tiêu chí phân loại: \emph{đầu ra của nơ-ron nhả chất dẫn truyền nào}.
+
+\section{Một đầu ra --- một loại tín hiệu}
+
+Việc phân loại chỉ có nghĩa nếu mỗi nơ-ron chỉ có một loại đầu ra. Có đúng vậy không? Thực nghiệm cho thấy gần như đúng.
+
+\begin{keyblock}
+\begin{proposition}[Một nơ-ron --- một loại đầu ra]
+\label{prop:dale}
+Hầu như mỗi nơ-ron có một chất dẫn truyền chính và nhả nó ở mọi nhánh của đầu ra. Vì vậy loại của nơ-ron được xác định bởi chất dẫn truyền chính của nó~\cite{Strata1999}.
+\end{proposition}
+\end{keyblock}
+
+Ta quy ước ký hiệu loại nơ-ron bằng \emph{bốn chữ cái đầu trong tên tiếng Anh của chất dẫn truyền chính}. Chẳng hạn, nơ-ron có chất dẫn truyền chính là glutamate là nơ-ron \nt{GLUT}. Tất cả các loại được tập hợp trong bảng~\ref{tab:types}.
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{1.0cm}>{\raggedright}p{2.05cm}>{\raggedright}p{1.75cm}>{\raggedright}p{1.6cm}>{\centering}p{0.7cm}>{\raggedright}p{1.55cm}>{\raggedright}p{1.8cm}>{\raggedright\arraybackslash}p{3.2cm}}
+\toprule
+Loại & Chất dẫn truyền chính & Bus & Tốc độ & Dấu & Số nơ-ron trong não & Số đầu ra mỗi nơ-ron & Vai trò trong tính toán \\
+\midrule
+\nt{GLUT} & glutamate & địa chỉ & nhanh và chậm & $+$ & $\sim8\cdot10^{10}$ & $\sim10^4$ & trọng số dương chính \\
+\nt{GABA} & GABA & địa chỉ & nhanh và chậm & $-$ & $\sim3\cdot10^{9}$ & $10^3$--$10^4$ & trọng số âm chính \\
+\nt{GLYC} & glycine & địa chỉ & nhanh & $-$ & $10^6$--$10^7$ & $10^2$--$10^3$ & trọng số âm ở tủy sống và thân não; chìa khóa thứ hai cho một loại thụ thể glutamate \\
+\nt{ACET} & acetylcholine & cả hai & nhanh và chậm & $\pm$ & $\sim10^6$ & tới cơ: $10$--$10^3$; trong não: $\sim10^5$ & đầu ra tới cơ; trong não là tốc độ học (giả thuyết) \\
+\nt{DOPA} & dopamine & quảng bá & chậm & $\pm$ & $\sim5\cdot10^{5}$ & $10^5$--$10^6$ & sai số dự đoán phần thưởng $\delta$ \\
+\nt{SERO} & serotonin & quảng bá & chậm (một loại thụ thể nhanh) & $\pm$ & $\sim3\cdot10^{5}$ & $\sim10^5$ & tầm nhìn lập kế hoạch (giả thuyết) \\
+\nt{HIST} & histamine & quảng bá & chậm & $+$ & $\sim6\cdot10^{4}$ & chưa có ước tính & tín hiệu toàn cục ``hãy thức'' \\
+\nt{NORA} & noradrenaline & quảng bá & chậm & $\pm$ & $\sim5\cdot10^{4}$ & $\sim10^5$ & hệ số khuếch đại (giả thuyết) \\
+\nt{ADRE} & adrenaline & quảng bá & chậm & $\pm$ & $\sim10^4$ & chưa có ước tính & ít nơ-ron; vai trò trong não chưa rõ \\
+\nt{ASPA} & aspartate & địa chỉ & nhanh & $+$ & chưa có ước tính & chưa có ước tính & trọng số dương yếu; vai trò còn tranh cãi \\
+\bottomrule
+\end{tabular}
+\caption{Các loại nơ-ron, theo số lượng nơ-ron trong não giảm dần. \emph{Bus}: địa chỉ --- chất dẫn truyền được nhả vào khe hẹp tới một nơi nhận xác định; quảng bá --- từ một nhóm nhỏ nơ-ron nguồn tới những vùng rộng lớn (mục~\ref{sec:buses}). \emph{Tốc độ}: nhanh --- qua thụ thể hướng ion, mili giây; chậm --- qua thụ thể hướng chuyển hóa, hàng trăm mili giây hoặc lâu hơn. \emph{Dấu} là dấu thường gặp; dấu cuối cùng do nơi nhận quyết định (mục~\ref{sec:receiver}), và $\pm$ nghĩa là gặp cả hai dấu. \emph{Số nơ-ron trong não} --- có bao nhiêu nơ-ron loại này trong toàn bộ não người, theo bậc độ lớn; tổng số nơ-ron khoảng $8.6\cdot10^{10}$~\cite{Azevedo2009}. Gần như toàn bộ nơ-ron \nt{GLUT} --- khoảng $7\cdot10^{10}$ --- là các nơ-ron đầu vào nhỏ của tiểu não; số \nt{GLUT} và \nt{GABA} được suy ra từ phép đếm này và tỷ lệ nơ-ron \nt{GABA} trong vỏ não~\cite{Hendry1987}. Trong các loại ít ỏi, chỉ \nt{HIST}~\cite{Airaksinen1991} và nhóm chính trong hai nhóm nơ-ron \nt{DOPA}~\cite{Pakkenberg1991} được đếm trực tiếp, nên với \nt{DOPA} đây là cận dưới; với \nt{SERO} là tổng của hai phép đếm từng phần~\cite{Baker1990,Baker1991}. Các số cho \nt{NORA}, \nt{GLYC}, \nt{ACET} và \nt{ADRE} là ước tính thô theo bậc độ lớn, không có phép đếm trực tiếp. \emph{Số đầu ra mỗi nơ-ron} --- một nơ-ron có bao nhiêu đầu tận cùng khớp thần kinh, tức là những điểm nhả chất dẫn truyền trên các nhánh của dây đầu ra (hình~\ref{fig:blackbox}), theo bậc độ lớn. Với các loại quảng bá, đầu tận cùng chưa được đếm trực tiếp: ở \nt{DOPA} con số được suy ra từ tỷ lệ vùng đích được phủ bởi sự phân nhánh của một dây đầu ra~\cite{Matsuda2009}, ở các loại còn lại ước tính còn thô hơn. \nt{ACET} có hai trường hợp: nơ-ron điều khiển cơ và nơ-ron quảng bá trong não.}
+\label{tab:types}
+\end{table}
+
+% the pie is a table-type float with a figure caption, so it can never float ahead of Table~\ref{tab:types}
+\begin{table}[tb]
+\makeatletter\def\@captype{figure}\makeatother
+\centering
+\definecolor{vizglut}{HTML}{2A78D6}
+\definecolor{vizgaba}{HTML}{E34948}
+\definecolor{vizrest}{HTML}{8A8986}
+\begin{tikzpicture}[>=Stealth]
+% pie: GLUT 96.4 %, GABA 3.6 % (13.0 degrees), the rest 0.006 % (a hairline at 0 degrees)
+\fill[vizglut] (0,0) -- (13:1.9) arc (13:360:1.9) -- cycle;
+\fill[vizgaba] (0,0) -- (0:1.9) arc (0:13:1.9) -- cycle;
+\draw[white,line width=1pt] (0,0) -- (13:1.9);
+\draw[vizrest,line width=1.2pt] (0,0) -- (0:1.9);
+\node[white,align=center,font=\small] at (190:0.95) {\nt{GLUT}\\$96.4\,\%$};
+\draw[gray!60!black] (6.5:1.75) -- (2.05,2.1);
+\node[anchor=west,font=\small] at (2.05,2.1) {\nt{GABA} $3.6\,\%$};
+% zoom box for the remaining types
+\draw[densely dashed,vizrest] (1.9,0) -- (3.1,1.65);
+\draw[densely dashed,vizrest] (1.9,0) -- (3.1,-2.2);
+\draw[vizrest,rounded corners=3pt] (3.1,-2.2) rectangle (10.1,1.65);
+\node[anchor=west,font=\scriptsize] at (3.2,1.4) {tất cả các loại còn lại: $\approx0.006\,\%$; thang logarit};
+\foreach \code/\lg/\y/\val/\lx in {GLYC/6.477/1.0/{$10^6$--$10^7$}/4.05,ACET/6.0/0.6/{$\sim10^6$}/3.0,DOPA/5.699/0.2/{$\sim5\cdot10^5$}/2.699,SERO/5.477/-0.2/{$\sim3\cdot10^5$}/2.477,HIST/4.778/-0.6/{$\sim6\cdot10^4$}/1.778,NORA/4.699/-1.0/{$\sim5\cdot10^4$}/1.699,ADRE/4.0/-1.4/{$\sim10^4$}/1.0}{
+  \node[anchor=east,font=\scriptsize] at (4.35,\y) {\nt{\code}};
+  \fill[vizrest] (4.45,\y-0.13) rectangle ({4.45+\lg-3},\y+0.13);
+  \node[anchor=west,font=\scriptsize] at ({4.5+\lx},\y) {\val};}
+\draw[vizrest,thick] (7.45,1.0) -- (8.45,1.0);
+\draw[vizrest,thick] (7.45,0.92) -- (7.45,1.08);
+\draw[vizrest,thick] (8.45,0.92) -- (8.45,1.08);
+\draw[gray!60!black] (4.45,-1.72) -- (8.45,-1.72);
+\foreach \e in {3,4,5,6,7}{
+  \draw[gray!60!black] ({4.45+\e-3},-1.72) -- ({4.45+\e-3},-1.66);
+  \node[below,font=\scriptsize] at ({4.45+\e-3},-1.72) {$10^{\e}$};}
+\end{tikzpicture}
+\caption{Tỷ lệ các loại nơ-ron trong não theo ước tính của bảng~\ref{tab:types}. Hình tròn gần như bị \nt{GLUT} chiếm trọn; \nt{GABA} là một hình quạt hẹp, còn tất cả các loại khác gộp lại chỉ là một sợi tóc ở mép. Bên phải là sợi tóc đó được phóng to, theo thang logarit của số nơ-ron; với \nt{GLYC}, cột kéo tới giữa khoảng $10^6$--$10^7$, còn đoạn thẳng biểu thị cả khoảng. \nt{ASPA} chưa có ước tính nên không có trên hình.}
+\label{fig:typepie}
+\end{table}
+
+Các đống này chênh lệch nhau đến mức nào, có thể thấy trên hình~\ref{fig:typepie}: cứ một nghìn nơ-ron thì $964$ là \nt{GLUT}, $36$ là \nt{GABA}, còn tất cả các loại khác gộp lại chỉ khoảng sáu nơ-ron trên một trăm nghìn.
+
+Tên GABA vốn đã gồm bốn chữ cái. Những chất hầu như không bao giờ là chất dẫn truyền chính --- neuropeptide, chất khí, lipid, purine --- không có mã riêng; về chúng xem phụ lục~\ref{sec:othermediators}. Chữ ``hầu như'' trong mệnh đề~\ref{prop:dale} là quan trọng. Nhiều nơ-ron nhả kèm chất dẫn truyền chính những chất phụ trợ~\cite{Yao2023}. Một số còn nhả chất dẫn truyền nhanh thứ hai, thậm chí trái dấu: một phần nơ-ron \nt{DOPA} nhả cả GABA~\cite{Tritsch2012}. Lại có những nơ-ron mà các chất dẫn truyền khác nhau đi ra từ các nhánh khác nhau của cùng một đầu ra~\cite{Zhang2015}. Tất cả những điều này đều đã được đo, nên ``một nơ-ron --- một chất dẫn truyền'' là quy tắc có ngoại lệ chứ không phải định luật. Nhưng với tư cách phép chia đầu tiên, nó đứng vững: trong bản đồ tế bào não chuột, nơi nơ-ron được chia theo các gen hoạt động trong chúng thành hơn năm nghìn nhóm, nơ-ron vẫn chia thành các lớp lớn trước hết theo chất dẫn truyền chính~\cite{Yao2023}.
+
+Quy tắc này có một hệ quả giúp phân biệt ngay bộ não với mạng nơ-ron nhân tạo. Trong mạng nhân tạo, cùng một nơ-ron có thể có trọng số dương tới nơi nhận này và trọng số âm tới nơi nhận khác: các trọng số $w_{ij}$ chỉ là những con số trong ma trận. Trong não, dấu tác động chủ yếu do chất dẫn truyền quyết định, mà mỗi nơ-ron chỉ có một chất dẫn truyền. Do đó, nếu nơ-ron $j$ kích thích một nơi nhận, nó kích thích mọi nơi nhận khác. Cả \emph{cột} ma trận trọng số đi ra từ nơ-ron $j$ cùng một dấu:
+\begin{empheq}[box=\keybox]{equation}
+\operatorname{sign} w_{ij} \;=\; s_j \quad\text{với mọi nơi nhận } i, \qquad s_j\in\{+1,-1\}.
+\label{eq:dalesign}
+\end{empheq}
+Nơ-ron chia thành nơ-ron kích thích ($s_j=+1$) và nơ-ron ức chế ($s_j=-1$), và đây là tính chất của chính nơ-ron chứ không phải của liên kết. Nếu mạng cần một liên kết âm từ nơ-ron kích thích, phải làm qua trung gian: nơ-ron kích thích kích thích một nơ-ron ức chế, và nơ-ron này ức chế đích: một trọng số âm trễ thêm một mắt xích.
+
+Người ta biết hơn một trăm chất dẫn truyền, nhưng gần như toàn bộ công việc của não dựa vào khoảng sáu chất, và chúng chia thành hai lớp hoàn toàn khác nhau.
+
+\section{Hai bus: bus địa chỉ và bus quảng bá}
+\label{sec:buses}
+
+Trong mạng máy tính có hai cách gửi thông điệp. Cách thứ nhất là \emph{gửi theo địa chỉ}, unicast: gói tin đi từ một người gửi tới một người nhận xác định, nhanh, và không ai khác thấy nó. Cách thứ hai là \emph{quảng bá}, broadcast: người gửi truyền một thông điệp tới mọi nút mạng cùng lúc. Nơ-ron dùng cả hai cách, và các chất dẫn truyền chia ra đúng theo tiêu chí này (hình~\ref{fig:phone_radio}).
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,scale=0.95]
+% ---- unicast: point-to-point wiring
+\node[above] at (2.0,3.3) {\small \textbf{Bus địa chỉ}: glutamate và GABA};
+\foreach \i in {0,...,4}{
+  \fill[blue!60!black] (0.2+0.9*\i,2.5) circle (0.1);
+  \fill[blue!60!black] (0.2+0.9*\i,0.6) circle (0.1);}
+\foreach \a/\b in {0/0,0/1,1/1,1/3,2/2,3/2,3/4,4/4,2/0}{
+  \draw[->,blue!60!black] (0.2+0.9*\a,2.38) -- (0.2+0.9*\b,0.72);}
+\fill[red!70!black] (1.1,1.55) circle (0.09);
+\pic[scale=1.2] at (1.75,1.9) {letter};
+\draw[->,red!70!black,thick] (1.1,1.55) -- (0.28,0.7);
+\draw[->,red!70!black,thick] (1.1,1.55) -- (1.95,0.72);
+\node[align=center,below] at (2.0,0.2) {\small hàng tỷ nơ-ron,\\[-2pt]\small mỗi nơ-ron có nơi nhận riêng,\\[-2pt]\small thời gian: mili giây};
+% ---- broadcast: one small source, global targets
+\begin{scope}[xshift=7.2cm]
+\node[above] at (1.8,3.3) {\small \textbf{Bus quảng bá}: dopamine, \dots};
+\foreach \i in {0,...,8}{\fill[blue!60!black] (-0.2+0.5*\i,2.75) circle (0.08);}
+\fill[orange!85!black] (1.8,0.35) ellipse (0.35 and 0.18);
+\pic[scale=1.5] at (2.7,0.75) {mast};
+\foreach \x in {-0.2,0.3,0.8,1.3,1.8,2.3,2.8,3.3,3.8}{
+  \draw[->,orange!85!black] (1.8,0.5) .. controls (1.8,1.3) and (\x,1.6) .. (\x,2.62);}
+\node[align=center,below] at (1.8,0.1) {\small hàng nghìn đến hàng trăm nghìn nơ-ron,\\[-2pt]\small một thông điệp cho tất cả,\\[-2pt]\small thời gian: hàng trăm mili giây trở lên};
+\end{scope}
+\end{tikzpicture}
+\caption{Hai cách truyền tin. Bên trái là bus địa chỉ, giống bưu điện với địa chỉ ghi trên phong bì; màu đỏ đánh dấu một nơ-ron và hai nơi nhận của nó. Bên phải là bus quảng bá, giống một đài phát thanh: một nhóm nhỏ nơ-ron nguồn, và mọi nơi đều nhận cùng một thông điệp.}
+\label{fig:phone_radio}
+\end{figure}
+
+\emph{Bus địa chỉ} là glutamate và GABA. Tuyệt đại đa số nơ-ron nhả chúng. Mỗi đầu ra dẫn tới những tế bào xác định, chất dẫn truyền chỉ tác động trong khe hẹp của điểm tiếp xúc, và tác động nhanh: trong một mili giây các kênh ion của nơi nhận mở ra, sau vài mili giây mọi thứ kết thúc. Đây là bus \emph{dữ liệu}: trên nó truyền đi những gì bộ não tính toán.
+
+\emph{Bus quảng bá} là dopamine, serotonin, noradrenaline và một phần acetylcholine. Chúng được nhả ra bởi những nhóm nơ-ron rất nhỏ, nhưng đầu ra của mỗi nơ-ron phân nhánh cực kỳ rộng. Chất dẫn truyền thường không được nhả vào khe hẹp mà vào khoảng gian bào, nơi nó loang ra và tác động lên mọi tế bào ở gần. Nó tác động chậm: không mở kênh trực tiếp mà khởi động bên trong nơi nhận một chuỗi phản ứng hóa học. Trên bus này không truyền dữ liệu mà truyền các \emph{tham số điều khiển}, chung cho những vùng lớn của mạng, làm thay đổi chế độ làm việc của nó: hệ số khuếch đại, tốc độ học, tín hiệu ``điều vừa rồi là tốt''. Vì thế các chất này được gọi là \emph{chất điều biến}. Trong một thời gian dài, người ta cho rằng mỗi kênh như vậy là một con số duy nhất cho cả bộ não. Các phép đo hiện đại đã làm rõ bức tranh: kênh không phải một dây dẫn mà là một bó nhỏ các đường song song. Các nơ-ron nguồn của cùng một chất dẫn truyền chia thành những phân hệ có nơi nhận riêng và thông điệp riêng, còn lượng chất được nhả tại chỗ còn được điều chỉnh bởi các tín hiệu cục bộ~\cite{Ren2018,Poe2020}. Số đường như vậy là vài đơn vị hoặc vài chục, chứ không phải hàng tỷ, nên kênh vẫn là kênh quảng bá.
+
+Nếu bạn chỉ cần một hình ảnh từ chương này, thì đây là nó. Bộ não là một mạng khổng lồ truyền dữ liệu theo địa chỉ, bên trên có vài kênh quảng bá mang tín hiệu điều khiển. Lập trình viên sẽ nhận ra một cấu trúc quen thuộc: phần tính toán cộng với một tập nhỏ biến điều khiển, mỗi biến dùng chung cho một vùng lớn của mạng.
+
+\section{\nt{GLUT}: trọng số dương}
+
+Glutamate là chất dẫn truyền kích thích chính của não. Khi đầu ra của nơ-ron nhả glutamate, ở nơi nhận mở ra các kênh cho natri đi vào, điện áp trên màng của nơi nhận tăng lên, và khả năng nó phát ra xung của chính mình tăng lên. Theo ngôn ngữ của hình~\ref{fig:blackbox}, đây là đầu vào có trọng số \emph{dương}, $w_i>0$.
+
+Ai nhả glutamate? Gần như tất cả những nơ-ron truyền dữ liệu đi xa: từ ba phần tư đến bốn phần năm số nơ-ron vỏ não và phần lớn các nơ-ron nối các vùng não khác nhau. Mạng của não trước hết là mạng các liên kết glutamate.
+
+Một chi tiết kỹ thuật. Sau khi được nhả, nồng độ glutamate trong khe vọt lên hàng nghìn lần, tới khoảng một milimol, rồi giảm với hằng số thời gian khoảng một mili giây~\cite{Clements1992}: glutamate khuếch tán ra khỏi khe, còn các protein bơm chuyên dụng hút nó trở lại vào tế bào. Để làm gì? Cũng như trong đường truyền, sau mỗi ký hiệu tín hiệu được đưa về không. Nếu không dọn chất dẫn truyền, xung tiếp theo sẽ tới một đường ``đang bận'', và các xung cách nhau vài mili giây sẽ dính vào nhau.
+
+\section{\nt{GABA}: trọng số âm}
+
+Hãy hình dung một mạng mà mọi trọng số đều dương. Nếu trung bình mỗi xung sinh ra hơn một xung tiếp theo, hoạt động tăng theo hàm mũ và sau vài bước lan khắp mạng. Người làm điện tử sẽ nhận ra một vòng hồi tiếp dương có hệ số khuếch đại lớn hơn một: mạch đi vào bão hòa. Để tránh điều đó cần có trọng số âm. Nguồn chính của chúng là axit gamma-aminobutyric, viết tắt là GABA.
+
+GABA mở ở nơi nhận những kênh cho ion clo đi qua. Điện thế cân bằng của clo nằm gần điện thế nghỉ hoặc thấp hơn một chút, nên các kênh clo mở giữ màng ở gần mức nghỉ và không cho điện áp tăng tới ngưỡng. Đây là đầu vào có trọng số \emph{âm}, $w_i<0$. Nơ-ron GABA chiếm từ một phần năm đến một phần tư số nơ-ron vỏ não~\cite{Hendry1987}. Đầu ra của chúng ngắn, và chúng ức chế những láng giềng gần nhất.
+
+Ức chế trong não làm nhiều hơn hẳn một phép trừ. Nó hoạt động như một vòng hồi tiếp âm giữ toàn bộ mạng ở điểm làm việc. Người ta cho rằng trong vỏ não hoạt động bình thường, dòng kích thích và dòng ức chế đi tới một nơ-ron cân bằng nhau gần như chính xác: chế độ này được lý thuyết dự đoán~\cite{vanVreeswijk1996} và thấy được trong các phép đo dòng điện ở vỏ não sống~\cite{Haider2006}, và nơ-ron luôn nằm gần ngưỡng. Một mạch được ổn định bởi hồi tiếp âm mạnh quanh một điểm không bền phản ứng nhanh và nhạy với tín hiệu nhỏ --- một thủ thuật kỹ thuật lâu đời.
+
+\section{\nt{DOPA}: tín hiệu sai số}
+
+Kênh quảng bá đầu tiên là dopamine. Ở người có cỡ nửa triệu nơ-ron dopamine, khoảng một trên một trăm bảy mươi nghìn; đó là số đếm được trong nhóm chính của hai nhóm~\cite{Pakkenberg1991}, nên đây là cận dưới. Đầu ra của chúng tỏa tới những vùng chọn hành động.
+
+Kênh này truyền gì? Câu trả lời đến từ những thí nghiệm ghi xung của nơ-ron dopamine ở con vật nhận phần thưởng~\cite{Schultz1997}. Thỉnh thoảng con vật bất ngờ được cho một giọt nước ép, và nơ-ron dopamine đáp lại bằng một chùm xung ngắn. Sau đó, trước khi cho nước ép, người ta bật một bóng đèn, luôn trước nước ép một giây. Khi con vật đã học được mối liên hệ này, nơ-ron bắt đầu đáp lại bằng chùm xung khi \emph{đèn} sáng, còn với chính giọt nước ép đến đúng hạn thì hoàn toàn không đáp lại. Còn nếu sau khi đèn sáng mà không cho nước ép, thì vào lúc lẽ ra nước ép phải đến, nơ-ron \emph{im lặng}, và tần số của chúng giảm xuống dưới mức thường.
+
+Quy tắc giải thích cả ba trường hợp (hình~\ref{fig:rpe}): nơ-ron không báo điều tốt đến mức nào, mà báo nó \emph{tốt hơn hay tệ hơn so với dự kiến} bao nhiêu.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=3.4cm,y=1cm]
+\foreach \y/\lab in {2.8/{nước ép bất ngờ},1.4/{nước ép sau đèn},0/{có đèn, không nước ép}}{
+  \draw[gray!70!black] (0,\y) -- (3,\y);
+  \draw[densely dotted,gray!60!black] (0,\y+0.3) -- (3,\y+0.3);
+  \node[left,align=right,font=\small] at (-0.03,\y+0.35) {\lab};}
+% row 1: juice without a cue -> burst at the juice
+\draw[very thick,orange!85!black] plot[domain=0:3,samples=120] (\x,{2.8+0.3+0.75*exp(-((\x-2.08)/0.07)^2)});
+\pic[scale=0.8] at (2,2.58) {juice};
+% row 2: cue then juice -> burst at the cue, nothing at the juice
+\draw[very thick,orange!85!black] plot[domain=0:3,samples=120] (\x,{1.4+0.3+0.75*exp(-((\x-1.08)/0.07)^2)});
+\pic[scale=0.85] at (1,1.15) {lamp}; \pic[scale=0.85] at (2,1.15) {juice};
+% row 3: cue, juice omitted -> burst at the cue, dip when the juice was due
+\draw[very thick,orange!85!black] plot[domain=0:3,samples=120] (\x,{0.3+0.75*exp(-((\x-1.08)/0.07)^2)-0.28*exp(-((\x-2.1)/0.12)^2)});
+\pic[scale=0.85] at (1,-0.25) {lamp}; \pic[scale=0.85] at (2,-0.25) {nojuice};
+\node[right,font=\scriptsize] at (2.36,0.1) {sụt};
+\node[right,font=\scriptsize] at (2.13,3.75) {bất ngờ!};
+\node[left,font=\scriptsize] at (0.97,2.25) {vọt lên khi có đèn};
+\node[above,font=\scriptsize] at (2,1.75) {không có gì};
+\draw[->,gray!70!black] (0,-0.75) -- (3.05,-0.75) node[right,black,font=\small] {$t$};
+\draw[gray!60!black] (1,-0.8) -- (1,-0.7) node[below=2pt,font=\scriptsize] {đèn, $1\,\text{s}$};
+\draw[gray!60!black] (2,-0.8) -- (2,-0.7) node[below=2pt,font=\scriptsize] {nước ép, $2\,\text{s}$};
+\end{tikzpicture}
+\caption{Tần số xung của nơ-ron \nt{DOPA} trong ba thí nghiệm (sơ đồ, theo~\cite{Schultz1997}). Đường chấm là tần số nền đều đặn. Bóng đèn là tín hiệu báo trước, giọt nước là nước ép, giọt nước bị gạch chéo là nước ép đã hứa nhưng không cho. Đáp ứng chính là sai số dự đoán~\eqref{eq:rpe}.}
+\label{fig:rpe}
+\end{figure}
+
+Lập trình viên quen với học tăng cường~\cite{SuttonBarto2018} sẽ nhận ra đại lượng này ngay. Một tác tử học cách chọn hành động lưu giữ ước lượng $V(s)$ --- nó kỳ vọng nhận được bao nhiêu phần thưởng khi ở trạng thái $s$. Sau mỗi bước, nó so sánh kỳ vọng với cái nhận được:
+\begin{empheq}[box=\keybox]{equation}
+\delta_t \;=\; r_t \;+\; \gamma\,V(s_{t+1}) \;-\; V(s_t) ,
+\label{eq:rpe}
+\end{empheq}
+và hiệu chỉnh ước lượng: $V(s_t)\leftarrow V(s_t)+\alpha\,\delta_t$. Ở đây $r_t$ là phần thưởng nhận được, $\gamma<1$ là hệ số chiết khấu (phần thưởng tương lai rẻ hơn phần thưởng tức thời bao nhiêu), $\alpha$ là tốc độ học. Đại lượng $\delta_t$ được gọi là \emph{sai số sai phân thời gian}.
+
+Nó hành xử đúng hệt như nơ-ron dopamine. Nước ép bất ngờ: $V$ vẫn bằng không, $r>0$, $\delta>0$. Nước ép đã học: đèn đã dự báo phần thưởng, $V(s_t)$ trước nước ép đã bằng $r$, và $\delta=0$. Nước ép không đến: $V(s_t)=r$, còn $r_t=0$, $\delta<0$. Còn chùm xung dời sang thời điểm đèn sáng, bởi chính lúc đó kỳ vọng tăng vọt: $\gamma V(s_{t+1})-V(s_t)>0$. Các bước $t,t+1,\dots$ ở đây chỉ là quy ước của thuật toán: cơ thể không có bộ đếm nhịp chia thời gian thành bước, và ở chương~\ref{sec:dofa} ta sẽ thu được cùng đại lượng đó trong thời gian liên tục.
+
+Vậy dopamine là sự phát quảng bá một tín hiệu sai số vô hướng $\delta$ tới mọi nơi cần học theo nó. Ở phép gần đúng đầu tiên, đó là một dây dẫn cho cả bộ não và một con số tại mỗi thời điểm; dây dẫn này thực ra là một bó đến mức nào, sẽ được phân tích ở chương~\ref{sec:dofaalt}.
+
+\section{Các kênh quảng bá còn lại}
+
+Với các chất điều biến còn lại, mới chỉ có những giả thuyết làm việc, chuyển vai trò của chúng sang cùng ngôn ngữ các tham số toàn cục~\cite{Doya2002}. Hãy coi chúng đúng là giả thuyết.
+
+\emph{\nt{NORA}, noradrenaline: hệ số khuếch đại.} Nơ-ron noradrenaline còn ít hơn nơ-ron dopamine, theo ước tính thô khoảng vài chục nghìn, còn đầu ra của chúng tỏa ra gần như khắp bộ não. Chúng hoạt hóa mạnh khi xảy ra điều gì bất ngờ hoặc quan trọng. Noradrenaline thay đổi độ dốc của đặc tuyến truyền đạt của các nơ-ron nhận: đầu vào yếu trở nên yếu hơn, đầu vào mạnh trở nên mạnh hơn. Điều này được đo như sau: xung nền của nơi nhận bị ức chế mạnh hơn đáp ứng với đầu vào, và tỷ số tín hiệu trên nhiễu tăng lên~\cite{Foote1975NE}. Trong mô hình đơn giản, điều này được mô tả bằng một con số: nếu nơ-ron đáp ứng dòng vào $u$ bằng tần số $f=F\bigl(g\cdot u\bigr)$, thì noradrenaline làm tăng hệ số $g$~\cite{AstonJones2005} (chi tiết ở chương~\ref{sec:nora}). Mạng có $g$ lớn làm việc ``tương phản hơn'' và ra quyết định nhanh hơn; với $g$ nhỏ --- ``mờ'' hơn và thử nhiều phương án hơn, giống một tác tử học tăng cường ở chế độ khám phá.
+
+\emph{\nt{ACET}, acetylcholine: tốc độ học.} Acetylcholine điều khiển việc mạng lắng nghe đầu vào hiện tại nhiều đến đâu và lắng nghe dữ liệu đã lưu của chính nó nhiều đến đâu. Khi mức acetylcholine cao, các đầu vào từ giác quan được tăng cường, còn các liên kết bên trong, ``hồi tưởng'', bị làm yếu đi, đồng thời việc thay đổi trọng số trở nên dễ hơn~\cite{Hasselmo2006}. Nói thô, đây là công tắc ``ghi/đọc'' và kèm theo nó là tốc độ học $\alpha$.
+
+\emph{\nt{SERO}, serotonin: tầm nhìn lập kế hoạch.} Serotonin truyền gì là điều được hiểu kém nhất. Một giả thuyết gắn nó với hệ số chiết khấu $\gamma$ trong~\eqref{eq:rpe}: mức serotonin cao tương ứng với sự sẵn lòng chờ phần thưởng lớn thay vì chộp lấy phần thưởng nhỏ ngay. Nơ-ron serotonin làm việc đều và chậm, vài xung mỗi giây khi thức, và gần như im lặng trong một pha của giấc ngủ~\cite{JacobsAzmitia1992}.
+
+Cả sáu chất dẫn truyền được tập hợp trong bảng~\ref{tab:transmitters}.
+
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{>{\raggedright}p{2.4cm}>{\raggedright}p{3.0cm}>{\raggedright}p{2.0cm}>{\raggedright\arraybackslash}p{5.2cm}}
+\toprule
+Loại nơ-ron & Tỷ lệ nơ-ron & Bus & Vai trò trong tính toán \\
+\midrule
+\nt{GLUT} (glutamate) & đa số & địa chỉ & trọng số dương, $w>0$ \\
+\nt{GABA} (GABA) & 20--25\% trong vỏ não & địa chỉ & trọng số âm, $w<0$; ổn định hóa \\
+\nt{DOPA} (dopamine) & $\sim 6\cdot10^{-6}$ & quảng bá & sai số dự đoán $\delta$ \\
+\nt{NORA} (noradrenaline) & $\sim 6\cdot10^{-7}$ & quảng bá & hệ số khuếch đại $g$ (giả thuyết) \\
+\nt{ACET} (acetylcholine) & nhỏ & cả hai & tốc độ học $\alpha$; ``ghi/đọc'' (giả thuyết) \\
+\nt{SERO} (serotonin) & $\sim 3\cdot10^{-6}$ & quảng bá & chiết khấu $\gamma$ (giả thuyết) \\
+\bottomrule
+\end{tabular}
+\caption{Các chất dẫn truyền chính của não theo ngôn ngữ tính toán. Cột bên phải là một sự đơn giản hóa mạnh: đáng tin với glutamate, GABA và dopamine, còn với các chất khác đó là giả thuyết.}
+\label{tab:transmitters}
+\end{table}
+
+\section{Dấu do nơi nhận quyết định}
+\label{sec:receiver}
+
+Tôi đã lừa bạn một chút khi nói: glutamate là trọng số dương, GABA là trọng số âm. Không phân tử nào tự mang dấu. Phân tử chỉ là một chiếc chìa khóa. Điều gì xảy ra khi nó bị bắt giữ là do \emph{ổ khóa} quyết định --- thụ thể trên tế bào nhận.
+
+Ví dụ tốt nhất là dopamine. Nó có thụ thể thuộc hai họ~\cite{Beaulieu2011}. Ở họ này nó làm tế bào dễ bị kích thích hơn, ở họ kia --- khó hơn. Trong vùng chọn hành động, một số nơ-ron mang thụ thể loại thứ nhất, số khác mang loại thứ hai, và cùng một tín hiệu dopamine đồng thời tăng cường nhóm này và làm yếu nhóm kia. Giống như một gói tin quảng bá được các nút mạng khác nhau diễn giải theo những cách khác nhau.
+
+\begin{keyblock}
+\begin{proposition}[Ý nghĩa của thông điệp do nơi nhận quyết định]
+\label{prop:receptor}
+Dấu và tốc độ tác động của một chất dẫn truyền không do bản thân chất đó quyết định, mà do thụ thể mà nó gắn vào. Thụ thể có hai loại. Thụ thể \emph{hướng ion} tự chúng là kênh ion và mở ra trong một phần nhỏ của mili giây: đó là điều khiển dòng điện trực tiếp, như cực cổng của transistor. Thụ thể \emph{hướng chuyển hóa} khởi động bên trong tế bào một chuỗi phản ứng hóa học và tác động trong hàng trăm mili giây hoặc lâu hơn: đó giống như ghi vào một thanh ghi cấu hình, làm thay đổi hoạt động tiếp theo của tế bào. Bus địa chỉ chủ yếu nói qua loại thứ nhất, bus quảng bá chủ yếu qua loại thứ hai.
+\end{proposition}
+\end{keyblock}
+
+Vậy tại sao vẫn có thể nói ``glutamate kích thích''? Bởi vì gần như mọi thụ thể glutamate gặp trong thực tế đều là thụ thể kích thích, còn gần như mọi thụ thể GABA đều là thụ thể ức chế. Đây không phải định luật tự nhiên mà là một quy ước rất đáng tin cậy, và quy tắc~\eqref{eq:dalesign} dựa trên chính quy ước đó.
+
+\section{Những điều cần nhớ}
+
+Tuyệt đại đa số nơ-ron là bus dữ liệu địa chỉ với các trọng số cùng dấu trên mỗi nơ-ron; một thiểu số nhỏ bé là các kênh quảng bá, truyền tới những vùng não lớn vài tín hiệu điều khiển chung. Khoảng hai nơ-ron trên mỗi một trăm nghìn --- và từ chúng phụ thuộc việc toàn bộ phần còn lại của mạng học ra sao và làm việc ở chế độ nào. Với kỹ sư, điều này không có gì lạ: trong bất kỳ máy tính nào, số thanh ghi điều khiển ít hơn hẳn số ô nhớ, vậy mà thiếu chúng máy không chạy được.
+
+Ở chương sau, ta sẽ kiểm tra xem một mạng chỉ gồm nơ-ron \nt{GLUT}, loại đông đảo nhất, làm việc trong thời gian liên tục, có thể tính được gì.
+
+\section{Bài tập}
+
+\begin{exercise}[\lvlA]
+\label{ex:01:1}
+\emph{Các đống và dây dẫn.} Theo bảng~\ref{tab:types} (giữa khoảng theo thang logarit; \nt{ACET} có $10^5$ đầu ra): (a)~nếu mỗi nơ-ron là một người, nơ-ron \nt{GLUT} bằng bao nhiêu lần dân số Trái Đất, và tất cả nơ-ron quảng bá bằng một thành phố cỡ nào? (b)~Tỷ lệ đầu tận cùng của \nt{DOPA}, \nt{SERO}, \nt{NORA}, \nt{ACET} lớn hơn tỷ lệ nơ-ron của chúng bao nhiêu lần?
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:01:2}
+\emph{Đưa về không.} Glutamate trong khe giảm theo $c_0e^{-t/\tau_c}$, $c_0=1\mM$, $\tau_c=1\ms$; nơi nhận nhận biết nồng độ trên $10\,\mu\text{M}$. (a)~Đường truyền ``bận'' bao lâu sau một lần nhả? (b)~Các bơm bị chặn một phần, $\tau_c=10\ms$. Đến tần số nhả nào đường truyền vẫn kịp giải phóng?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:01:3}
+\emph{Chùm xung dời đi đâu.} Trong thí nghiệm hình~\ref{fig:rpe}, sau đèn là các trạng thái $s_0\to\dots\to s_{K-1}$ với bước $\Delta$, $T=K\Delta$; phần thưởng $r$ đến ở lần chuyển cuối, thời điểm đèn sáng không dự đoán được. Tìm các $V(s_k)$ đã học và đáp ứng $\delta$ với đèn. Đặt $\gamma=e^{-\Delta/\tau_\gamma}$, tìm $\tau_\gamma$ khi $T=1$~s, $\Delta=0.1$~s, $\gamma=0.95$.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:01:4}
+\emph{Mô phỏng: học theo sai số.} Mô phỏng chuỗi của bài tập~\ref{ex:01:3} với $K=10$, $\gamma=0.95$, $r=1$ theo quy tắc $V(s_t)\leftarrow V(s_t)+\alpha\delta_t$. Ở lượt thử $n^*$ nào đáp ứng với đèn lần đầu vượt đáp ứng với nước ép khi $\alpha=0.05$, $0.1$, $0.2$, $0.5$? $n^*$ phụ thuộc vào $\alpha$ thế nào?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:01:5}
+\emph{Thiết kế: phát một con số.} Số $\delta$ cần được đưa tới cả $10^{10}$ nơ-ron; mỗi nơi nhận, kể cả các bộ chuyển tiếp, phải nhận $10$ đầu tận cùng từ lớp trước, mỗi mắt xích thêm $1\ms$. Cây chuyển tiếp tiết kiệm nhất có bao nhiêu nơ-ron và mắt xích khi mỗi nơ-ron có $10^4$ đầu ra (\nt{GLUT}) và $10^{5.5}$ (\nt{DOPA})?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:01:6}
+\emph{Vì sao trạng thái cân bằng nhạy.} Mạng có $80\,\%$ \nt{GLUT} và $20\,\%$ \nt{GABA}, mỗi nơ-ron nối với mọi nơ-ron bằng trọng số $J_E/N$ và $-J_I/N$; $\tau\dot r=-r+Wr+h$. Với $J_E=10$, trị riêng khác không duy nhất của $W$ bằng $0.5$. Tìm tỷ số dòng ức chế trên dòng kích thích, và cần làm yếu ức chế bao nhiêu phần trăm để mạng rơi vào thác hoạt động.
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:01:7}
+\emph{Nghiên cứu: \nt{SERO} có phải là $\gamma$?} Theo bài tập~\ref{ex:01:3}, đáp ứng của nơ-ron \nt{DOPA} với đèn bằng $re^{-T/\tau_\gamma}$. Độ trễ $T=1,\dots,5$~s, mỗi mức $n$ lần trình bày, $\ln\delta$ đo với độ phân tán $0.5$. Cần $n$ bao nhiêu để phân biệt $\tau_\gamma=2$~s với $2.4$~s (mức $0.05$, lực kiểm định $0.8$)? Cơ chế nào ngoài $\gamma$ cho cùng sự suy giảm theo $T$?
+\end{exercise}

@@ -1,0 +1,45 @@
+\chapter{Núm phiêu lưu}
+% full version: chapters/08_nora.tex
+
+Bạn đang chọn chỗ ăn trưa. Đến quán quen hay thử quán mới? Nếu lúc nào cũng đến quán quen, bạn sẽ không bao giờ biết ngay góc phố có chỗ ngon hơn. Nếu lúc nào cũng thử quán mới, bạn sẽ thường xuyên ăn dở. Đâu là điểm cân bằng? Bài toán này --- tìm kiếm hay dùng cái đã tìm được --- đặt ra cho mọi sinh vật biết học. Trong bộ não, có lẽ đài phát thanh \nt{NORA} --- noradrenaline --- chịu trách nhiệm cho nó.
+
+\section*{Núm độ tương phản}
+
+Noradrenaline thay đổi độ gắt trong đáp ứng của nơ-ron với tín hiệu. Khi tác động yếu, nơ-ron giống một núm chỉnh độ sáng êm: tín hiệu lớn hơn chút --- đáp ứng sáng hơn chút. Khi tác động mạnh, nó giống một công tắc: dưới ngưỡng --- im lặng, trên ngưỡng --- đáp ứng tối đa. Nói chính xác hơn, thí nghiệm cho thấy noradrenaline dập tắt tiếng lao xao nền của nơ-ron mạnh hơn là dập đáp ứng của chúng với tín hiệu thật; ``núm độ tương phản'' là một mô hình tiện lợi cho hiệu ứng này.
+
+\pencilfig{8}{\pencilart{8}}{Núm phiêu lưu: vặn sang trái --- cỗ máy thử điều mới, sang phải --- dứt khoát chọn cái đã quen.}
+
+\section*{Suy nghĩ hay quyết định}
+
+Hãy nhớ lại hai nhóm ức chế lẫn nhau ở chương ba. Khi độ tương phản thấp, cả hai cùng hoạt động, nhóm yếu hơn nhỏ hơn một chút: mạng vẫn đang ``suy nghĩ'', cân nhắc các phương án. Khi độ tương phản vượt quá một ngưỡng nhất định, mạng đột ngột chuyển sang chế độ ``đã quyết'': một nhóm thắng, nhóm kia im lặng. Một chiếc núm chuyển cỗ máy qua lại giữa suy nghĩ và quyết định.
+
+\section*{Tìm kiếm bao nhiêu thì đủ}
+
+Hãy thêm nhiễu. Khi độ tương phản thấp, nhiễu dễ dàng lấn át chênh lệch nhỏ giữa các phương án, và cỗ máy thường thử phương án không phải tốt nhất --- nó tìm kiếm. Khi độ tương phản cao, nhiễu không quyết định được gì, và cỗ máy luôn chọn cái nó cho là tốt nhất --- nó khai thác.
+
+Trong mô hình của chúng tôi, thế giới thỉnh thoảng thay đổi: phương án tốt nhất trở thành tồi nhất. Phần thắng phụ thuộc vào núm theo hình chữ U úp ngược. Độ tương phản quá thấp --- cỗ máy mò mẫm như người mù. Quá cao --- nó không nhận ra thế giới đã đổi và cứ cố chấp tới quán đã xuống cấp. Và thế giới càng hay thay đổi, mức đặt tốt nhất càng thấp: trong một thế giới biến động, tìm kiếm có lợi hơn.
+
+\pencilfig{108}{%
+% points: models/nora_explore.py, reward as a share of the best possible, gain 0.5 ... 64 (doubling); the y axis starts at 0.70, hence the break mark
+\draw[pen] (0,0) -- (6.3,0); \draw[pen] (0,0) -- (0,0.18); \draw[pen] (0,0.34) -- (0,2.4);
+\draw[pcGray, line width=0.6pt] (-0.1,0.14) -- (0.1,0.22); \draw[pcGray, line width=0.6pt] (-0.1,0.3) -- (0.1,0.38);
+\node[lbl, anchor=north] at (3.0,-0.05) {núm độ tương phản};
+\node[lbl, anchor=south, rotate=90] at (-0.1,1.3) {phần thắng};
+\draw[penlite=pcBlue] plot[smooth] coordinates {(0.00,0.55) (0.85,0.79) (1.70,1.19) (2.55,1.68) (3.40,2.00) (4.25,2.07) (5.10,2.01) (5.95,1.91)};
+\draw[penlite=pcRed] plot[smooth] coordinates {(0.00,0.55) (0.85,0.69) (1.70,0.93) (2.55,1.24) (3.40,1.40) (4.25,1.28) (5.10,1.06) (5.95,0.89)};
+\draw[dotpen=pcBlue, wash=pcBlue] (4.25,2.07) circle (0.07);
+\draw[dotpen=pcRed, wash=pcRed] (3.40,1.40) circle (0.07);
+\node[lbl, text=pcBlue, anchor=south] at (4.25,2.15) {thế giới ít thay đổi};
+\node[lbl, text=pcRed, anchor=north] at (3.40,1.30) {hay đổi};
+\node[lbl, anchor=north west, align=left] at (0.05,-0.35) {mò mẫm\\như người mù}; \node[lbl, anchor=north east, align=right] at (6.3,-0.35) {không thấy\\thay đổi};
+}{Phần thắng của mô hình ở các vị trí khác nhau của núm. Mỗi đường cong có một đỉnh; khi thế giới hay thay đổi, đỉnh thấp hơn và lệch sang trái.}
+
+\section*{Ai vặn núm}
+
+Dấu hiệu tự nhiên của sự thay đổi là điều bất ngờ: sai số trở nên lớn hơn thường lệ. Theo một giả thuyết, noradrenaline chính là thứ báo về sự thay đổi bất ngờ như vậy. Ở đây có một điểm tinh tế: mức noradrenaline nền, ổn định thì gắn nhiều hơn với sự tìm kiếm và đãng trí, còn những đợt bùng ngắn trước một sự kiện quan trọng --- với sự tập trung và quyết định. Có thể đợt bùng hoạt động như một ngắt trong máy tính: ``bỏ việc đang làm, thế giới đã đổi, lập lại kế hoạch''.
+
+Có một dấu hiệu gián tiếp của hệ thống này nhìn thấy được từ bên ngoài: đồng tử giãn ra khi có điều gì đó thay đổi bất ngờ và người ta bắt đầu học nhanh hơn. Có điều, đồng tử không chỉ theo dõi noradrenaline, nên đây là một gợi ý chứ không phải một dụng cụ đo.
+
+Và một lời thú nhận thật lòng: trong mô hình của chúng tôi, việc chỉnh núm theo sự bất ngờ chỉ thắng được rất ít so với mức đặt cố định tốt nhất. Việc chỉnh như vậy thực sự đáng giá ở đâu thì vẫn còn phải tìm hiểu.
+
+\fullversion{8}

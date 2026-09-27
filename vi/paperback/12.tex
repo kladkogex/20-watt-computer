@@ -1,0 +1,44 @@
+\chapter{Nhận ra con mèo thế nào}
+% full version: chapters/12_recognition.tex
+
+\pencilfig{12}{\pencilart{12}}{Con mèo lớn và con mèo nhỏ là hai hình ảnh hoàn toàn khác nhau trên các cảm biến của mắt, nhưng câu trả lời chỉ có một.}
+
+Con mèo trên bức ảnh có thể ở bên trái hay bên phải, gần hay xa, dưới nắng hay trong bóng râm. Mỗi lần, một hoa văn hoàn toàn khác rơi lên các cảm biến của mắt, vậy mà bạn nhận ra nó trong một phần nhỏ của giây. Đó chính là cái khó của nhận dạng: phải nhận ra cùng một thứ dưới hàng nghìn dáng vẻ khác nhau.
+
+\section*{Dây chuyền}
+
+Bộ não giải bài toán bằng một dây chuyền khoảng mười tầng, và tín hiệu đi hết nó trong mười lăm phần trăm giây. Ở mỗi tầng có hai việc. Trước tiên là ``và'': nơ-ron kích hoạt nếu các chi tiết cần thiết đứng đúng thứ tự, chẳng hạn hai đoạn thẳng gặp nhau thành một góc. Sau đó là ``hoặc trên mọi vị trí'': nơ-ron tiếp theo kích hoạt nếu góc đó có ở bất cứ đâu gần đó, không quan trọng chính xác là ở đâu. Phép thứ nhất làm cho việc nhận ra trở nên tinh tường, phép thứ hai làm nó chịu được sự dịch chuyển. Tầng này qua tầng khác, chi tiết ghép thành bộ phận, bộ phận ghép thành đồ vật, còn các dịch chuyển và tỷ lệ thì được bỏ qua.
+
+\pencilfig{112}{%
+\foreach \i/\y/\cx/\cy in {1/1.2/0.15/0.3,2/0.3/0.3/0.1,3/-0.6/0.05/0.05}{
+  \draw[penlite] (0,\y-0.3) rectangle (0.6,\y+0.3);
+  \draw[pcGray, line width=0.8pt] (\cx,\y-0.3+\cy+0.35) -- (\cx,\y-0.3+\cy) -- (\cx+0.3,\y-0.3+\cy);
+  \draw[pen=pcBlue, wash=pcBlue] (1.9,\y) circle (0.2);
+  \draw[arr] (0.65,\y) -- (1.65,\y);
+  \draw[arr=pcBlue] (2.12,\y) -- (3.62,{0.3+0.12*(2-\i)});}
+\draw[pen=pcBlue, wash=pcBlue] (3.9,0.3) circle (0.25);
+\draw[arr] (4.2,0.3) -- (5.75,0.3); \node[lbl, anchor=south] at (4.97,0.35) {thêm các tầng};
+% a small cat
+\draw[penlite] (6.3,0.3) circle (0.32);
+\draw[penlite] (6.03,0.5) -- (6.07,0.82) -- (6.23,0.6); \draw[penlite] (6.57,0.5) -- (6.53,0.82) -- (6.37,0.6);
+\node[lbl, anchor=north] at (0.3,-1.0) {hình ảnh}; \node[lbl, anchor=north, align=center] at (1.9,-1.0) {VÀ: góc\\ở chỗ này};
+\node[lbl, anchor=north, align=center] at (3.9,-1.0) {HOẶC: góc\\ở bất cứ đâu}; \node[lbl, anchor=north] at (6.3,-1.0) {mèo};
+}{Một tầng của dây chuyền: ``và'' ghép nên một góc ở một chỗ, ``hoặc'' bỏ qua việc nó nằm chính xác ở đâu.}
+
+Chính sơ đồ này đã được các mạng nơ-ron tích chập sao chép, những mạng nhận dạng hình ảnh trong điện thoại của bạn. Và chúng đáp lại tương xứng: các mạng được huấn luyện để nhận ra đồ vật dự đoán khá tốt cách các nơ-ron ở những tầng thị giác cao đáp ứng.
+
+\section*{Học từ video}
+
+Nhưng ai đã dạy bộ não? Không ai cho bạn xem một triệu bức ảnh có chú thích ``con mèo''. Một câu trả lời hợp lý là video. Thế giới trôi liên tục, và trong một phần nhỏ của giây, đồ vật hầu như không đổi, chỉ vị trí và ánh sáng của nó là đổi. Nếu liên kết mạnh lên giữa cái đang thấy bây giờ và cái vừa thấy một khoảnh khắc trước, mạng sẽ tự gắn các dáng vẻ khác nhau của cùng một đồ vật với nhau: cái chậm là đồ vật, cái nhanh là hoàn cảnh. Có một thí nghiệm, trong đó đồ vật bị đánh tráo một cách khó nhận ra trong lúc mắt chuyển động --- và nơ-ron bắt đầu coi các đồ vật khác nhau là một. Như một quy tắc chung, điều này hiện vẫn là giả thuyết.
+
+\section*{Ảo giác là dấu vết của cơ chế}
+
+Ảo giác không phải là hỏng hóc mà là dấu vết của cách cỗ máy được tạo ra. Nếu mắt nhìn lâu vào thác nước rồi nhìn sang những tảng đá đứng yên, đá sẽ ``bò'' lên trên: cặp kênh ``xuống'' và ``lên'' bị mất cân bằng vì một kênh đã mỏi. Chiếc váy nổi tiếng mà người thấy trắng-vàng, người thấy xanh-đen chia mọi người theo loại ánh sáng mà bộ não họ ngầm giả định. Những ``con rắn xoay'' được vẽ ra trông như đang chuyển động, vì vùng sáng được xử lý nhanh hơn vùng tối một chút, và chênh lệch thời gian được đọc thành chuyển động. Còn khối lập phương lúc lồi ra lúc lõm vào là hai nhóm nơ-ron cạnh tranh với nhau; theo một mô hình, việc đổi kết cục chủ yếu do nhiễu quyết định.
+
+Điều thú vị là một mạng nơ-ron được huấn luyện để dự đoán khung hình tiếp theo của video cũng ``thấy'' những con rắn xoay. Nghĩa là một số ảo giác là cái giá không tránh khỏi của khả năng dự đoán.
+
+\section*{Bộ não đối đầu mạng nơ-ron}
+
+Sự giống nhau không trọn vẹn. Bộ não chỉ cần ít ví dụ, học gần như không cần chú thích và tốn tất cả hai mươi oát. Mạng nơ-ron có thể bị đánh lừa bằng một bức ảnh bị làm giả mà con người không nhận ra. Có điều, những bức ảnh giả như vậy cũng làm con người hơi bối rối nếu chỉ cho xem trong một khoảnh khắc. Ranh giới thực sự giữa hai cỗ máy này nằm ở đâu thì người ta vẫn đang tìm hiểu.
+
+\fullversion{12}

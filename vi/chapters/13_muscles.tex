@@ -1,0 +1,214 @@
+\chapter{Đầu ra của cỗ máy: não điều khiển cơ bắp như thế nào}
+\chaptermark{Đầu ra của cỗ máy}
+\label{sec:muscles}
+
+\section{Đầu ra nhanh}
+
+Mọi việc cỗ máy làm nhanh trong thế giới, nó đều làm bằng cơ. Lời nói, ánh nhìn, bước chân, nụ cười đều là sự co cơ. Đầu ra thứ hai, chậm, là hóa học của cơ thể, được phân tích ở chương~\ref{sec:chemoutput}. Trên hình~\ref{fig:machine}, đầu ra là mũi tên ``cơ''; giờ hãy xem phía sau mũi tên đó có gì.
+
+Mắt xích cuối cùng của chuỗi là các nơ-ron \nt{ACET}, chính những nơ-ron được ghi trong bảng~\ref{tab:types} là ``đầu ra tới cơ''. Mỗi sợi cơ nhận đầu vào từ đúng một nơ-ron như vậy, còn một nơ-ron điều khiển một nhóm sợi, từ vài trăm đến vài nghìn~\cite{Feinstein1955mu}. Ở những cơ cần tinh chỉnh, đơn vị nhỏ hơn; ở các cơ lớn của chân, đơn vị lớn hơn. Nơ-ron cùng các sợi cơ của nó được gọi là \emph{đơn vị vận động}: đó là mẩu cơ nhỏ nhất mà não có thể bật riêng.
+
+Khớp thần kinh của nơ-ron lên cơ được cấu tạo hoàn toàn khác với khớp thần kinh vỏ não ở chương~\ref{sec:code}. Ở đó phần lớn số xung bị mất. Ở đây mỗi xung giải phóng lượng acetylcholine gấp vài lần mức cần để sợi cơ đáp ứng~\cite{WoodSlater2001}. Đây là khớp thần kinh có \emph{hệ số an toàn}: một xung của nơ-ron là đúng một lần co của các sợi. Bên trong cỗ máy có thể chấp nhận các liên kết không tin cậy và sửa lỗi bằng sự dư thừa; ở đầu ra, một lỗi phải trả giá bằng một cử động, và độ tin cậy được mua thẳng bằng phần cứng.
+
+\section{Lực: tần số và số đơn vị}
+
+Một xung cho một lần co đơn lẻ, gọi là cú giật: lực tăng lên trong vài chục mili giây rồi giảm xuống. Một xấp xỉ tốt cho nó là~\cite{Fuglevand1993}
+\begin{equation}
+h(t) \;=\; F_1\,\frac{t}{T_c}\,e^{\,1-t/T_c},
+\label{eq:twitch}
+\end{equation}
+trong đó $T_c$ là thời gian tăng, cỡ $50\ms$, còn $F_1$ là lực của một cú giật. Nếu xung đến dày hơn, các cú giật cộng lại:
+\begin{empheq}[box=\keybox]{equation}
+F(t) \;=\; \sum_k h\bigl(t-t_k\bigr) .
+\label{eq:forcesum}
+\end{empheq}
+Đây chính là bộ lọc thông thấp đã biến xung thành nồng độ ở chương~\ref{sec:serocomputer}, chỉ có điều đầu ra giờ không phải nồng độ mà là lực. Cơ là bộ chuyển đổi số--tương tự từ xung sang lực (hình~\ref{fig:tetanus}). Trong mô hình của chúng tôi, với năm xung mỗi giây, các cú giật hầu như không chồng lên nhau và lực nhảy từ $0.2F_1$ đến $1.1F_1$; với mười lăm xung, lực đã giữ trong khoảng $1.8F_1$ đến $2.2F_1$; với bốn mươi, lực gần như đều, khoảng $5.4F_1$. Cơ thật bão hòa khi xung dày, nên tổng tuyến tính~\eqref{eq:forcesum} chỉ đúng tới vài chục xung mỗi giây.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=20cm,y=0.55cm]
+\draw[->,gray!70!black] (0,0) -- (0.66,0) node[right,font=\small,black] {$t$, s};
+\draw[->,gray!70!black] (0,0) -- (0,6.4) node[left,font=\small,black] {$F/F_1$};
+\foreach \t in {0,0.2,0.4,0.6}{\draw[gray!60!black] (\t,-0.1) -- (\t,0.1); \node[below,font=\scriptsize] at (\t,0) {\t};}
+\foreach \f in {1,3,5}{\draw[gray!60!black] (-0.004,\f) -- (0.004,\f); \node[left,font=\scriptsize] at (0,\f) {\f};}
+\draw[thick,blue!60!black] plot file {figures/muscle_twitch_5.dat};
+\draw[thick,green!45!black] plot file {figures/muscle_twitch_15.dat};
+\draw[thick,red!70!black] plot file {figures/muscle_twitch_40.dat};
+\node[font=\scriptsize,blue!60!black,anchor=west] at (0.605,0.9) {5 xung/s};
+\node[font=\scriptsize,green!45!black,anchor=west] at (0.605,2.1) {15 xung/s};
+\node[font=\scriptsize,red!70!black,anchor=west] at (0.605,5.4) {40 xung/s};
+\end{tikzpicture}
+\caption{Cơ như một bộ chuyển đổi số--tương tự: lực~\eqref{eq:forcesum} với các xung đều đặn của một đơn vị vận động, $T_c=50\ms$. Xung thưa cho các cú giật rời rạc, xung dày hòa thành lực đều, giống như xung dày hòa thành nồng độ đều trên hình~\ref{fig:lowpass}.}
+\label{fig:tetanus}
+\end{figure}
+
+Não có hai núm vặn lực: tần số xung của mỗi đơn vị và số đơn vị được bật. Núm thứ hai được thiết kế rất khéo. Các đơn vị trong một cơ khác nhau: đơn vị yếu nhất yếu hơn đơn vị mạnh nhất cả trăm lần. Khi cần lực ngày càng lớn, các đơn vị được bật \emph{theo thứ tự kích thước}, từ nhỏ đến lớn~\cite{Henneman1957}. Không ai tính ra thứ tự đó: nơ-ron nhỏ đơn giản là dễ bị kích thích hơn bởi cùng một đầu vào chung, nên thứ tự bật do chính phần cứng quy định.
+
+Điều đó mang lại gì? Giả sử mỗi đơn vị kế tiếp theo thứ tự mạnh hơn đơn vị trước $q$ lần, với $q$ lớn hơn một một chút. Lực của mọi đơn vị đang bật là tổng của một cấp số nhân, và gần như toàn bộ rơi vào các đơn vị sau cùng. Khi đó đơn vị được bật tiếp theo thêm vào
+\begin{empheq}[box=\keybox]{equation}
+\frac{\Delta F}{F} \;\approx\; q-1 \;=\; \text{const} ,
+\label{eq:sizeprinciple}
+\end{empheq}
+nghĩa là bước lực tỉ lệ với chính lực. Khi gắng sức nhẹ, não định liều lực bằng những phần nhỏ, khi gắng sức mạnh thì bằng những phần lớn. Đó là \emph{số dấu phẩy động}: bậc độ lớn do số đơn vị được bật quyết định, còn phần định trị do tần số xung của chúng. Đây cũng là thang logarit như ở các cảm biến của chương~\ref{sec:sensors}: đầu vào và đầu ra của cỗ máy đo thế giới bằng tỷ lệ tương đối.
+
+Dấu phẩy động có mặt trái. Độ tản của lực cũng tăng tỉ lệ với chính lực: cử động mạnh chắc chắn kém chính xác hơn cử động nhẹ. Theo một giả thuyết có ảnh hưởng, chính nhiễu phụ thuộc tín hiệu này giải thích vì sao cử động của chúng ta mượt: một lệnh mượt cho độ tản nhỏ nhất ở điểm cuối~\cite{HarrisWolpert1998}.
+
+\section{Kéo chứ không đẩy: hai dây cho một khớp}
+
+Cơ chỉ biết kéo. Nó không thể đẩy, cũng như nơ-ron \nt{GLUT} không thể phát tín hiệu âm. Giải pháp đã quen từ chương~\ref{sec:glutcomputer}: \emph{hai dây}. Mỗi khớp được một cặp cơ kéo theo hai chiều ngược nhau phục vụ (hình~\ref{fig:antagonists}). Nếu lực của chúng là $F_1$ và $F_2$, còn cánh tay đòn là $\ell$, thì mô-men quay và độ cứng của khớp bằng
+\begin{empheq}[box=\keybox]{equation}
+M \;=\; \ell\,(F_1-F_2), \qquad K \;\approx\; \kappa_m\,(F_1+F_2),
+\label{eq:antagonists}
+\end{empheq}
+trong đó $\kappa_m$ là hệ số liên hệ lực của cơ với độ cứng của nó: cơ căng thì đàn hồi mạnh hơn cơ chùng. Hiệu các lực quyết định mô-men, tổng các lực quyết định độ cứng~\cite{Hogan1984}. Bằng hai dây, não điều khiển hai đại lượng độc lập: xoay khớp về đâu và giữ nó chắc đến mức nào. Khi cần cầm tách mà không làm sánh, ta căng cả hai cơ cùng lúc: mô-men vẫn thế, độ cứng cao hơn, và một cú va ngẫu nhiên ít làm lệch tay hơn.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  nrn/.style={circle,draw,very thick,minimum size=0.95cm,inner sep=0pt,font=\scriptsize},
+  inh/.style={-{Bar[width=7pt]},thick,red!70!black}]
+% the joint: a bar on a pivot, two springs pulling down on either side
+\fill[gray!30] (4.6,-0.25) -- (5.4,-0.25) -- (5,0.15) -- cycle;
+\draw[line width=3pt,gray!50!black] (2.4,0.2) -- (7.6,0.2);
+\fill[black] (5,0.2) circle (0.08);
+\draw[decorate,decoration={coil,segment length=5pt,amplitude=4pt},very thick,blue!60!black] (3.0,0.2) -- (3.0,-1.6);
+\draw[decorate,decoration={coil,segment length=5pt,amplitude=4pt},very thick,orange!85!black] (7.0,0.2) -- (7.0,-1.6);
+\draw[very thick] (2.5,-1.6) -- (3.5,-1.6); \draw[very thick] (6.5,-1.6) -- (7.5,-1.6);
+\node[font=\small,blue!60!black] at (2.35,-0.75) {$F_1$};
+\node[font=\small,orange!85!black] at (7.65,-0.75) {$F_2$};
+\draw[->,thick] (5.9,0.75) arc (60:120:1.8) node[above,font=\scriptsize,pos=0.5] {$M=\ell(F_1-F_2)$};
+% motor neurons and reflex circuit
+\node[nrn,fill=green!12] (M1) at (1.6,-3.0) {\nt{ACET}};
+\node[nrn,fill=green!12] (M2) at (8.4,-3.0) {\nt{ACET}};
+\node[nrn,fill=red!10] (G) at (5.0,-3.0) {\nt{GLYC}};
+\node[nrn,fill=blue!6] (S) at (1.6,-5.0) {\nt{GLUT}};
+\draw[->,very thick] (M1) -- (3.0,-1.7);
+\draw[->,very thick] (M2) -- (7.0,-1.7);
+\draw[->,thick] (S) -- (M1);
+\draw[->,thick] (S) -- (G);
+\draw[inh] (G) -- (M2);
+\draw[->,thick,densely dashed,gray!60!black] (3.15,-1.2) to[bend left=25] node[pos=0.35,right,font=\scriptsize,black] {độ giãn} (S.north east);
+\draw[->,thick,blue!60!black] (-0.3,-3.0) node[left,font=\scriptsize,black,align=right] {lệnh\\từ não} -- (M1);
+\draw[->,thick,blue!60!black] (10.3,-3.0) node[right,font=\scriptsize,black,align=left] {lệnh\\từ não} -- (M2);
+\end{tikzpicture}
+\caption{Hai cơ cho một khớp và vòng phản hồi nhanh nhất. Các nơ-ron \nt{ACET} nhận lệnh từ não và kéo khớp về hai phía; hiệu các lực làm khớp quay, tổng làm khớp cứng hơn. Cảm biến độ giãn (\nt{GLUT}) của cơ bên trái kích thích nơ-ron \nt{ACET} của chính cơ đó và qua nơ-ron trung gian \nt{GLYC} ức chế nơ-ron của cơ đối vận: phép cấm của chương~\ref{sec:gaba}.}
+\label{fig:antagonists}
+\end{figure}
+
+\section{Phản hồi có độ trễ}
+
+Cơ không làm việc mù quáng. Trong mỗi cơ đều có cảm biến độ giãn, như đã nói trong bảng~\ref{tab:sensors}, và vòng ngắn nhất khép kín ngay trong tủy sống (hình~\ref{fig:antagonists}). Cơ bị kéo giãn bất ngờ, thì cảm biến độ giãn kích thích nơ-ron \nt{ACET} của chính cơ đó, cơ co lại và đưa khớp về chỗ cũ. Đồng thời, qua một nơ-ron trung gian ức chế, cơ đối vận bị tắt để khỏi cản trở. Nơ-ron trung gian ấy chính là \nt{GLYC}, loại trong bảng~\ref{tab:types} không có chương riêng: chỗ của nó chính là ở đây, trong các vòng nhanh của tủy sống.
+
+Mỗi vòng có một độ trễ $d$: vòng tủy sống khoảng $25$--$30\ms$ với cánh tay, vòng qua vỏ não dài hơn một rưỡi đến ba lần, vòng qua mắt $100$--$200\ms$. Mà phản hồi có trễ, như ta đã thấy ở mệnh đề~\ref{prop:ei}, làm hệ dao động. Với bộ điều khiển đơn giản nhất, sửa độ lệch $x$ với tốc độ $G$ dựa trên thông tin cũ $d$ giây, $\dd x/\dd t=-G\,x(t-d)$, điều kiện ổn định là~\cite{Hayes1950}:
+\begin{empheq}[box=\keybox]{equation}
+G\,d \;<\; \frac{\pi}{2} ,
+\label{eq:delaystable}
+\end{empheq}
+và tại ranh giới, hệ dao động với tần số $1/(4d)$. Chúng tôi đã kiểm tra điều này trên mô hình: với $d=30\ms$, độ lệch tắt dần khi $G=40$ mỗi giây, còn khi $G=55$ mỗi giây, cao hơn ranh giới $52$ một chút, thì dao động tăng dần.
+
+Từ đó có hai hệ quả. Thứ nhất: vòng càng dài thì càng phải sửa chậm. Qua mắt, với độ trễ một trăm rưỡi mili giây, không thể chỉnh tay nhanh hơn khoảng một phần mười giây, nếu không tay sẽ run. Thứ hai: ranh giới ổn định của vòng tủy sống, $1/(4\cdot30\ms)\approx8$ dao động mỗi giây, gần với tần số run nhẹ mà người khỏe mạnh nào cũng có, tám đến mười hai dao động mỗi giây. Vòng phản xạ giãn là một trong những nguồn có khả năng gây ra cơn run này~\cite{McAuleyMarsden2000}.
+
+Vậy làm sao não cử động nhanh và chính xác khi phản hồi đến trễ? Theo một giả thuyết phổ biến, não \emph{dự đoán}: nó giữ một mô hình bên trong của cơ thể và tính trước kết quả của lệnh mà không chờ cảm biến~\cite{WolpertGhahramani2000}. Cảm biến cần để sửa mô hình, chứ không để sửa từng cử động. Kỹ sư sẽ gọi đó là điều khiển thuận kết hợp bộ quan sát trạng thái.
+
+\section{Bộ tạo nhịp vận động}
+
+Đi bộ, thở, nhai là những cử động có nhịp. Chúng có cần đồng hồ không? Không. Trong tủy sống và thân não có những mạng nhỏ tự sinh ra nhịp, kể cả khi không có gì có nhịp đi vào~\cite{MarderBucher2001}. Mạng đơn giản nhất loại này được lắp từ những chi tiết ta đã có: hai nhóm nơ-ron \nt{GLUT} ức chế nhau qua các nơ-ron trung gian \nt{GABA} hoặc \nt{GLYC}, như trên hình~\ref{fig:wta}, và mỏi dần, như bộ nhớ ở chương~\ref{sec:glutcomputer}:
+\begin{empheq}[box=\keybox]{equation}
+\tau\,\frac{\dd r_i}{\dd t} = -r_i + \bigl[I - \beta\,r_j - a_i\bigr]_+ ,
+\qquad
+\tau_a\,\frac{\dd a_i}{\dd t} = -a_i + b\,r_i ,
+\label{eq:halfcentre}
+\end{empheq}
+trong đó $a_i$ là độ mỏi của nhóm $i$, $j$ là nhóm kia. Ức chế lẫn nhau với $\beta>1$ chọn ra kẻ thắng (mệnh đề~\ref{prop:wta}). Kẻ thắng làm việc và mỏi dần; khi độ mỏi ăn hết đầu vào của nó, kẻ thua, lúc này đã nghỉ ngơi, vượt lên và đến lượt mình bắt đầu mỏi. Các nhóm làm việc luân phiên, và mỗi nhóm điều khiển một cơ của cặp (hình~\ref{fig:halfcentre}).
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=3.2cm,y=2.4cm]
+\draw[->,gray!70!black] (0,0) -- (4.2,0) node[right,font=\small,black] {$t$, s};
+\draw[->,gray!70!black] (0,0) -- (0,1.2) node[left,font=\small,black] {$r$};
+\foreach \t in {0,1,2,3,4}{\draw[gray!60!black] (\t,-0.03) -- (\t,0.03); \node[below,font=\scriptsize] at (\t,0) {\t};}
+\draw[thick,blue!60!black] plot file {figures/halfcentre1.dat};
+\draw[thick,orange!85!black] plot file {figures/halfcentre2.dat};
+\node[font=\scriptsize,blue!60!black,anchor=west] at (1.6,1.28) {nhóm 1: ``tiến''};
+\node[font=\scriptsize,orange!85!black,anchor=west] at (2.7,1.28) {nhóm 2: ``lùi''};
+\end{tikzpicture}
+\caption{Bộ tạo nhịp theo mô hình~\eqref{eq:halfcentre}: $I=1$, $\beta=2$, $b=2$, $\tau=20\ms$, $\tau_a=0.4\,\text{s}$. Hai nhóm ức chế lẫn nhau và mỏi dần làm việc luân phiên với chu kỳ $0.84\,\text{s}$, dù tín hiệu đầu vào là không đổi.}
+\label{fig:halfcentre}
+\end{figure}
+
+Trong mô hình của chúng tôi, với đầu vào không đổi, các nhóm thay phiên nhau với chu kỳ $0.84\,\text{s}$, khoảng gấp đôi thời gian mỏi $\tau_a$. Một lệnh không đổi từ trên xuống, ``đi'', được biến thành nhịp ngay tại chỗ. Đây là thêm một nhịp cục bộ, như nhịp của vòng \nt{GLUT}--\nt{GABA} ở chương~\ref{sec:gaba}: nó chỉ xuất hiện khi mạng làm việc, và chỉ giữ nhịp cho những cơ mà nó điều khiển.
+
+\begin{keyblock}
+\begin{proposition}[Đầu ra của cỗ máy]
+\label{prop:muscles}
+Não điều khiển cơ như một hệ phân cấp các bộ điều khiển. Ở trên cùng, hành động được chọn (chương~\ref{sec:dofa}); thấp hơn, các bộ tạo nhịp cục bộ biến lệnh không đổi thành nhịp, còn các vòng nhanh của tủy sống giữ các khớp. Lực được đặt theo dấu phẩy động: bậc độ lớn do số đơn vị được bật theo kích thước, phần định trị do tần số xung. Mỗi khớp được điều khiển bởi một cặp cơ kéo, hiệu lực của chúng quyết định mô-men, còn tổng quyết định độ cứng. Các cơ chế này đã được đo; việc não dựa vào một mô hình bên trong của cơ thể là một giả thuyết có cơ sở vững.
+\end{proposition}
+\end{keyblock}
+
+\section{Tổng kết}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{3.0cm}>{\raggedright}p{4.6cm}>{\raggedright\arraybackslash}p{5.2cm}}
+\toprule
+Đầu ra làm gì & Bằng cách nào & Đã biết gì \\
+\midrule
+biến xung thành lực & tổng các cú giật~\eqref{eq:forcesum}, bộ lọc thông thấp & đã đo; tổng tuyến tính là đơn giản hóa \\
+định liều lực & bật đơn vị theo kích thước, dấu phẩy động~\eqref{eq:sizeprinciple} & thứ tự bật đã đo \\
+đẩy dù chỉ biết kéo & cặp cơ: mô-men là hiệu, độ cứng là tổng~\eqref{eq:antagonists} & đã đo \\
+giữ khớp & vòng phản xạ giãn, cấm cơ đối vận qua \nt{GLYC} & đã đo \\
+không run & $Gd<\pi/2$~\eqref{eq:delaystable} & suy ra từ lý thuyết điều khiển; góp phần gây run là nguyên nhân có khả năng \\
+cử động nhanh & dự đoán theo mô hình bên trong & giả thuyết có cơ sở vững \\
+đi và thở có nhịp & bộ tạo nhịp~\eqref{eq:halfcentre} & các bộ tạo nhịp đã đo; sơ đồ đơn giản nhất là mô hình \\
+\bottomrule
+\end{tabular}
+\caption{Cỗ máy điều khiển cơ như thế nào.}
+\label{tab:muscles}
+\end{table}
+
+Đầu ra của cỗ máy được xây bằng chính những kỹ thuật như mọi phần khác (bảng~\ref{tab:muscles}): hai dây thay cho dấu, bộ lọc thông thấp thay cho DAC, thang logarit thay cho thang tuyến tính, ức chế lẫn nhau và sự mỏi thay cho bộ phát xung nhịp. Đầu vào (chương~\ref{sec:sensors}) và đầu ra đo thế giới bằng tỷ lệ tương đối, còn giữa chúng là cỗ máy mà cuốn sách này dành để nói về.
+
+\section{Bài tập}
+
+\begin{exercise}[\lvlA]
+\label{ex:13:1}
+\emph{Dấu phẩy động bằng con số.} Một cơ có $N=100$ đơn vị vận động với lực $f_n=f_1q^{\,n-1}$; đơn vị mạnh nhất mạnh gấp $100$ lần đơn vị yếu nhất. (a)~Tìm $q$, bước tương đối~\eqref{eq:sizeprinciple} và dải động tính bằng decibel. (b)~Ở lực $10f_1$, ``DAC tuyến tính'' gồm $100$ đơn vị giống nhau có cùng tổng lực có bước bằng bao nhiêu?
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:13:2}
+\emph{Giá của hệ số an toàn.} Với mỗi xung, khớp thần kinh trên sợi cơ giải phóng một số gói tuân theo phân phối Poisson với trung bình $m$, còn sợi cơ đáp ứng khi có từ $n_{\text{ngưỡng}}=20$ gói trở lên; hệ số an toàn $S=m/n_{\text{ngưỡng}}$. Một đơn vị làm việc ở $20$ xung mỗi giây gây bao nhiêu lần hỏng mỗi ngày khi $S=2$ và khi $S=4$?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:13:3}
+\emph{Cơ như bộ lọc.} Cú giật~\eqref{eq:twitch} với $T_c=50\ms$ là đáp ứng xung của một hệ tuyến tính. (a)~Tìm hàm truyền $H(s)$ và tần số cắt của nó. (b)~Với tần số xung đều bằng bao nhiêu thì biên độ dao động của lực bằng $10\%$ lực trung bình?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:13:4}
+\emph{Không sửa nhanh hơn độ trễ.} Bộ điều khiển $\dd x/\dd t=-G\,x(t-d)$. (a)~Chứng minh rằng độ lệch tắt nhanh nhất mà không dao động khi $Gd=1/e$, với tốc độ $1/d$. (b)~Tìm $G$ đó và hằng số thời gian tắt dần cho vòng tủy sống, $d=30\ms$, và cho vòng qua mắt, $d=150\ms$.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:13:5}
+\emph{Chu kỳ của bộ tạo nhịp.} Khi $\tau\ll\tau_a$, chu kỳ $T$ của mô hình~\eqref{eq:halfcentre} cho bởi phương trình $(\beta-1)(1-E^{2+b})/(\beta-E)=b\,(1-E^{1+b})/(1+b)$, với $E=e^{-T/(2\tau_a)}$. (a)~Tìm $T$ khi $\beta=b=2$, $\tau_a=0.4$~s. (b)~Chứng minh rằng $T$ không phụ thuộc đầu vào $I$, và nhịp chỉ có thể có khi $b>\beta-1$.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:13:6}
+\emph{Mô phỏng bộ tạo nhịp.} Nhập hàm \texttt{halfcentre} từ \texttt{models/\allowbreak muscle\_models.py} (đừng chạy chính tệp đó) và đo chu kỳ, bỏ hai chu kỳ đầu, khi $b=0.8$, $1.05$, $1.2$, $1.5$, $2$, $4$ và khi $I=0.5$, $1$, $2$. Lệnh ``đi nhanh hơn'' có thể đổi nhịp độ thông qua $I$ không?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:13:7}
+\emph{Độ cứng đấu với phản xạ.} Khớp nằm trong vòng phản xạ giãn: $\dd\theta/\dd t=-a\theta(t)-G\theta(t-d)$, $a=K/B$, $d=30\ms$. Hãy đưa về bài tập~\ref{ex:13:4}, tìm $a$ nhỏ nhất để độ lệch tắt không dao động với hằng số thời gian $15\ms$, và $G$ cần thiết. Nên đổi $G$ thế nào khi cơ đồng co mạnh hơn?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:13:8}
+\emph{Núm vặn nhịp độ.} Theo bài tập~\ref{ex:13:5} và~\ref{ex:13:6}, đầu vào $I$ của bộ tạo nhịp~\eqref{eq:halfcentre} chỉ đổi biên độ, không đổi nhịp độ. Hãy đề xuất thay đổi nhỏ nhất của mô hình, bằng chi tiết trong sách, để dưới một $I_{\min}$ nào đó không có nhịp, còn trên đó chu kỳ giảm khi $I$ tăng, ít nhất hai lần khi $I$ tăng gấp ba. Tìm $I_{\min}$ khi $\tau\ll\tau_a$ và kiểm tra bằng mô phỏng.
+\end{exercise}

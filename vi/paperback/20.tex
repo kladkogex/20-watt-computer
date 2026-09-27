@@ -1,0 +1,46 @@
+\chapter{Cỗ máy làm gì ban đêm}
+% full version: chapters/20_sleep.tex
+
+Giấc ngủ không phải là tắt cỗ máy mà là đổi chế độ. Điều này thấy rõ qua các đài phát thanh. Trong giấc ngủ sâu, gần như tất cả đều bị vặn nhỏ: acetylcholine, noradrenaline, serotonin. Trong giấc ngủ có mơ, acetylcholine trở lại mức ban ngày, noradrenaline và serotonin gần như im lặng, còn đầu ra tới cơ bị bộ phanh ngắt --- vì thế trong giấc ngủ ta không chạy theo cái mà ta đang chạy trốn trong mơ. Tất cả những điều này đã được đo.
+
+\section*{Khi nào đến giờ ngủ}
+
+Hãy hình dung một tụ điện được nạp cả ngày khi bạn thức và phóng điện ban đêm. Điện tích là ``áp lực ngủ''. Bạn thiếp đi khi điện tích đạt ngưỡng trên, và thức dậy khi nó giảm xuống ngưỡng dưới. Còn bản thân các ngưỡng thì nhẹ nhàng dịch lên xuống theo nhịp ngày đêm ở chương 16. Sơ đồ đơn giản như vậy tự đi đến mười sáu giờ thức và tám giờ ngủ. Và nó giải thích vì sao sau một đêm mất ngủ, ta không ngủ lâu gấp đôi mà ngủ sâu hơn: tụ điện đầy phóng điện nhanh hơn. Ứng viên cho vai trò ``điện tích'' là một chất tích tụ trong não khi làm việc; việc đó chính là chất này thì hiện vẫn là giả thuyết.
+
+\pencilfig{120}{%
+% figures/sleep_{S,H,L}.dat from models/sleep_models.py, t in hours
+\begin{scope}[x=0.1cm, y=2.6cm]
+\foreach \a/\b in {0/4.3,21.2/29.3,45.4/53.4,69.5/72}{\fill[pcBlue, opacity=0.1] (\a,0) rectangle (\b,1);}
+\draw[pen] (0,0) -- (72,0);
+\draw[penlite=pcRed, densely dashed] plot file {figures/sleep_H.dat};
+\draw[penlite=pcGreen, densely dashed] plot file {figures/sleep_L.dat};
+\draw[pcBlue, line width=1.0pt] plot file {figures/sleep_S.dat};
+\foreach \t/\l in {0/0,24/1 ngày,48/2 ngày,72/3 ngày}{\draw[pcGray, line width=0.5pt] (\t,0) -- (\t,-0.04); \node[lbl, anchor=base] at (\t,-0.16) {\l};}
+\node[lbl, text=pcBlue] at (25.25,0.93) {ngủ}; \node[lbl, text=pcBlue] at (49.4,0.93) {ngủ};
+\end{scope}
+\node[lbl, text=pcRed, anchor=west] at (7.3,2.0) {thiếp đi};
+\node[lbl, text=pcGreen!70!black, anchor=west] at (7.3,0.62) {thức dậy};
+\node[lbl, text=pcBlue, anchor=west] at (7.3,1.35) {áp lực ngủ};
+}{Áp lực ngủ tích tụ ban ngày và tan đi ban đêm; ta thiếp đi ở ngưỡng trên, thức dậy ở ngưỡng dưới, và cả hai ngưỡng dao động theo nhịp ngày đêm.}
+
+\section*{Chiếc xích đu chậm}
+
+Trong giấc ngủ sâu, cả những vùng não rộng lớn đồng loạt lúc bật lúc tắt --- chưa đến một lần mỗi giây. Đây là sơ đồ đã quen: một nhóm tự kích thích chính mình và mỏi dần là một bộ dao động. Ban ngày, acetylcholine chặn sự mỏi của nơ-ron, và cùng nhóm đó hoạt động đều đặn; ban đêm acetylcholine ít, và mạng bắt đầu đu đưa.
+
+\pencilfig{20}{\pencilart{20}}{Ban đêm mạng đu đưa chậm rãi: lúc gần như mọi nơ-ron hoạt động, lúc gần như tất cả im lặng.}
+
+\section*{Tua nhanh}
+
+Trong những nhịp đu đưa này diễn ra điều thú vị nhất. Các chuỗi kích hoạt nơ-ron đã xảy ra ban ngày được ``phát lại'' --- và nhanh gấp nhiều lần: ở vùng trí nhớ khoảng hai mươi lần, ở vỏ não vài lần. Nếu tăng cường nhân tạo sự ăn khớp giữa những lần phát lại này với nhịp đu đưa chậm, trí nhớ được cải thiện --- đây là một thí nghiệm nhân quả. Để làm gì? Một giả thuyết hợp lý: trí nhớ dài hạn chậm học từ những lần lặp lại xen lẫn với điều cũ, để cái mới không xóa mất cái trước đó. Các kỹ sư biết rõ tai họa này: một mạng nơ-ron được huấn luyện cho nhiệm vụ mới sẽ quên nhiệm vụ cũ nếu không ôn lại các ví dụ cũ.
+
+\section*{Tỉa bớt liên kết}
+
+Một điều nữa đã được đo: sau giấc ngủ, các điểm tiếp xúc giữa nơ-ron trung bình nhỏ đi --- vài phần trăm đến vài chục phần trăm, tỷ lệ với kích thước của chúng. Như thể mọi âm lượng đều được vặn nhỏ một chút bằng một động tác: tỷ lệ giữa chúng giữ nguyên, điều đã học vẫn còn, còn chỗ trống cho việc học ngày mai được giải phóng. Việc đây là nhiệm vụ chính của giấc ngủ là giả thuyết.
+
+\section*{Giấc mơ và dọn dẹp}
+
+Giấc ngủ có mơ giống một cuộc thử nghiệm trên bàn thử: cỗ máy chạy hết công suất, nhưng các đầu vào được thay bằng tín hiệu bên trong, còn đầu ra bị ngắt. Nó cần để làm gì, chúng ta không biết. Ý tưởng rằng trong giấc ngủ bộ não được ``súc rửa'' khỏi chất thải hiện còn gây tranh cãi: có thí nghiệm ủng hộ lẫn phản bác.
+
+Điều đáng kinh ngạc nhất: giấc ngủ có thể mang tính cục bộ. Sau khi thức lâu, một số vùng vỏ não của một người đang thức có thể ``ngủ gật'' trong khoảnh khắc, im bặt giữa lúc làm việc.
+
+\fullversion{20}

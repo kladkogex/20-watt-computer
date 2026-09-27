@@ -1,0 +1,177 @@
+\chapter{Đầu vào của cỗ máy: mắt, tai và các cảm biến khác được nối vào ra sao}
+\chaptermark{Đầu vào của cỗ máy}
+\label{sec:sensors}
+
+\section{Cảm biến như một bộ chuyển đổi}
+
+Trên hình~\ref{fig:machine}, dữ liệu đi vào cỗ máy từ bên trái, từ khối ``cảm biến''. Giờ hãy mở khối đó ra. Với kỹ sư, mỗi giác quan là một \emph{bộ chuyển đổi} có tầng đầu vào tương tự và bộ chuyển đổi tương tự--số ở cuối, chỉ có điều ``chữ số'' ở đầu ra không phải là con số mà là xung.
+
+Mọi giác quan đều có cùng một sơ đồ (hình~\ref{fig:transducer}). Một đại lượng vật lý (ánh sáng, áp lực, dao động, phân tử) tác động lên protein thụ thể trong màng tế bào cảm giác. Protein này hoạt động như một cái chốt: tự nó hoặc qua một chuỗi phản ứng ngắn, nó mở một kênh ion. Xuất hiện \emph{dòng thụ thể}, kéo theo một điện áp tương tự trên màng. Tiếp đó điện áp đi qua khâu điều chỉnh hệ số khuếch đại rồi vào bộ mã hóa xung, chính là nơ-ron tích phân quen thuộc~\eqref{eq:glutneuron}, biến mức thành tần số và thời điểm của xung. Đầu ra hầu như luôn giống nhau: các nơ-ron cảm giác của mắt, tai, khứu giác và da đều giải phóng glutamate, nên đầu vào được nối thẳng vào bus \nt{GLUT}.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  blk/.style={draw,very thick,rounded corners=2pt,align=center,font=\footnotesize,minimum height=1.0cm,text width=1.9cm,fill=blue!5}]
+\node[align=center,font=\small] (P) at (0.1,0) {ánh sáng, âm,\\áp lực,\\phân tử};
+\node[blk] (R) at (3.0,0) {thụ thể\\làm chốt};
+\node[blk] (G) at (6.5,0) {điều chỉnh\\khuếch đại};
+\node[blk] (E) at (10.0,0) {bộ mã hóa\\xung};
+\node[align=center,font=\small] (B) at (13.4,0) {bus\\\nt{GLUT}};
+\draw[->,very thick] (P) -- (R);
+\foreach \ic/\xx in {sun/-1.1,speaker/-0.3,press/0.5,molecule/1.3}{\pic[scale=0.85] at (\xx,1.05) {\ic};}
+\draw[->,very thick] (R) -- node[above,font=\scriptsize] {dòng} (G);
+\draw[->,very thick] (G) -- node[above,font=\scriptsize] {mức} (E);
+\draw[->,very thick,red!70!black] (E) -- node[above,font=\scriptsize,black] {xung} (B);
+\draw[decorate,decoration={brace,amplitude=5pt,mirror},gray!60!black] (1.8,-0.8) -- (7.7,-0.8) node[midway,below=5pt,font=\scriptsize,black] {phần tương tự};
+\draw[decorate,decoration={brace,amplitude=5pt,mirror},gray!60!black] (8.8,-0.8) -- (11.2,-0.8) node[midway,below=5pt,font=\scriptsize,black] {xung};
+\end{tikzpicture}
+\caption{Mọi giác quan đều là một chuỗi biến đổi. Protein thụ thể mở kênh và tạo ra dòng điện; khâu điều chỉnh khuếch đại làm dòng đó thích nghi với hoàn cảnh; bộ mã hóa~\eqref{eq:glutneuron} biến mức thành xung đi lên bus \nt{GLUT}. Ở mắt và tai, các tầng đầu tiên hoàn toàn không phát xung: tín hiệu vẫn là tương tự cho tới khi phải truyền đi xa.}
+\label{fig:transducer}
+\end{figure}
+
+Có một chi tiết mà người làm điện tử rất quen. Ở mắt và tai, các tế bào đầu tiên hoàn toàn không phát xung: chúng truyền cho tế bào bên cạnh một điện áp biến thiên liên tục, như một tầng tương tự trên bảng mạch. Xung chỉ xuất hiện ở nơi tín hiệu phải đi xa. Tín hiệu tương tự đi vài milimét đã suy giảm và nhiễm nhiễu, còn xung, như ta đã thấy ở chương~\ref{sec:neurontypes}, tới cuối dây vẫn giữ nguyên độ cao. Số hóa diễn ra ở nơi bắt đầu đường truyền dài.
+
+\section{Ở giới hạn của vật lý}
+
+Cảm biến của não làm việc sát giới hạn vật lý của độ nhạy. Trong bóng tối, cảm biến ánh sáng đáp ứng với \emph{một photon}: hấp thụ một hạt ánh sáng tạo ra dòng khoảng một picoampe, đủ nổi lên trên nhiễu của chính nó~\cite{Baylor1979}. Cảm biến âm thanh nhận ra độ dịch chuyển của bó lông cảm giác nhỏ hơn một nanomét~\cite{Hudspeth1989}.
+
+Khi ánh sáng yếu, độ chính xác bị giới hạn không phải bởi cảm biến mà bởi chính ánh sáng: photon đến ngẫu nhiên, theo dòng Poisson. Nếu trong thời gian tích lũy $T$, cảm biến nhận trung bình $N=\Phi T$ photon, thì số photon dao động cỡ $\sqrt N$. Để phần tăng $\Delta N$ nhận ra được, nó phải lớn hơn dao động này vài lần, và tỷ lệ thay đổi độ sáng phân biệt được là
+\begin{empheq}[box=\keybox]{equation}
+\frac{\Delta I}{I} \;\approx\; \frac{k}{\sqrt{\Phi\,T}} .
+\label{eq:photonnoise}
+\end{empheq}
+Đây chính là công thức cho số xung~\eqref{eq:rateerror}: nhiễu hạt của photon và nhiễu hạt của xung tuân theo cùng một định luật. Trong bóng tối, mắt chỉ có một cách tăng độ chính xác là tích lũy photon lâu hơn, và thời gian tích lũy quả thật tăng tới vài phần mười giây. Vì thế lúc chạng vạng ta nhìn chậm hơn.
+
+\section{Dải động: điều chỉnh khuếch đại}
+
+Bài toán kỹ thuật khó nhất của cảm biến là dải đo. Độ rọi từ đêm đầy sao đến tuyết dưới nắng thay đổi khoảng mười bậc độ lớn, cường độ âm từ ngưỡng nghe đến ngưỡng đau thay đổi mười hai bậc. Còn tần số xung chỉ thay đổi từ không đến vài trăm mỗi giây, chưa tới ba bậc. Không thể xếp tuyến tính một đầu vào như thế vào một đầu ra như thế.
+
+Giải pháp giống như ở mọi máy thu: \emph{tự động điều chỉnh khuếch đại}. Đáp ứng của các tế bào cảm giác ở mắt được mô tả tốt bằng công thức
+\begin{empheq}[box=\keybox]{equation}
+r \;=\; r_{\max}\,\frac{I}{I+\sigma} ,
+\label{eq:nakarushton}
+\end{empheq}
+trong đó $\sigma$ là độ sáng tại đó đáp ứng đạt một nửa~\cite{NakaRushton1966}. Tự thân~\eqref{eq:nakarushton} chỉ bao được hai đến ba bậc. Nhưng $\sigma$ không cố định: khi làm việc lâu trên nền sáng, nó tăng theo độ sáng trung bình. Đường cong đáp ứng dịch chuyển dọc trục logarit của độ sáng và luôn đặt đoạn dốc của mình vào chỗ đầu vào đang ở (hình~\ref{fig:adaptation}). Đây vẫn là phép chia cho hoạt động chung như ức chế sun ở chương~\ref{sec:gaba}~\cite{Carandini2012}, chỉ khác là mẫu số ở đây là độ sáng trung bình trong vài giây vừa qua.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=1.25cm,y=2.8cm]
+\draw[->,gray!70!black] (-2,0) -- (6.4,0) node[below left,font=\small,black] {$\log_{10} I$};
+\draw[->,gray!70!black] (-2,0) -- (-2,1.15) node[left,font=\small,black] {$r/r_{\max}$};
+\foreach \u in {-2,0,2,4,6}{\draw[gray!60!black] (\u,-0.02) -- (\u,0.02); \node[below,font=\scriptsize] at (\u,0) {$\u$};}
+\draw[densely dashed,gray!60!black] (-2,0.5) -- (6.2,0.5);
+\foreach \s/\c/\lab in {0/blue!60!black/{nền tối},2/green!45!black/{vừa},4/red!70!black/{sáng}}{
+  \pgfmathsetmacro{\lo}{max(-2,\s-3)}
+  \draw[very thick,\c] (-2,0) -- (\lo,0) plot[domain=\lo:6.2,samples=80] (\x,{1/(1+10^(\s-\x))});
+  \node[font=\scriptsize,\c,anchor=west] at (\s+0.15,0.42) {\lab};}
+\foreach \s/\ic in {0/moon,2/cloud,4/sun}{\pic at (\s+0.6,0.64) {\ic};}
+\end{tikzpicture}
+\caption{Điều chỉnh khuếch đại của cảm biến ánh sáng theo~\eqref{eq:nakarushton}. Mỗi đường cong bao hai đến ba bậc độ sáng; khi chuyển sang nền sáng hơn, $\sigma$ tăng và đường cong dịch theo trục logarit. Các đường cong dịch chuyển cùng nhau phủ kín toàn bộ dải.}
+\label{fig:adaptation}
+\end{figure}
+
+Điều chỉnh này có cái giá quen thuộc từ chương~\ref{sec:code}: cảm biến không báo độ sáng, mà báo độ sáng \emph{so với nền}. Đầu vào không đổi dần dần thôi gây ra đáp ứng, còn mỗi thay đổi thì gây ra đáp ứng. Ngay từ đầu, các đầu vào của cỗ máy đã nói về thay đổi chứ không về mức, và đó cũng là cách tiết kiệm xung như trong mệnh đề~\ref{prop:economy}~\cite{Barlow1961}. Cũng từ đây mà có các cảm biến bật và cảm biến tắt của chương~\ref{sec:glutcomputer}~\cite{Schiller1992}: loại thứ nhất báo rằng trời sáng hơn, loại thứ hai báo rằng tối hơn.
+
+Kỹ sư đã lặp lại mẹo này trong \emph{camera sự kiện}. Camera như vậy không chụp khung hình theo đồng hồ: mỗi điểm ảnh của nó tự mình, không cần xung nhịp chung, phát ra sự kiện ``sáng hơn'' hoặc ``tối hơn'' khi logarit độ sáng thay đổi một lượng định trước~\cite{Lichtsteiner2008}. Đó đúng là mã bật--tắt hai dây của chương~\ref{sec:glutcomputer}, hiện thực trên silicon, và nó cho camera dải động và tốc độ mà cảm biến ảnh thông thường không đạt được~\cite{Gallego2022}.
+
+\section{Mắt: nén xuống một sợi cáp}
+
+Mắt có khoảng $10^8$ cảm biến ánh sáng~\cite{Curcio1990}, còn số nơ-ron đầu ra đưa hình ảnh lên não chỉ khoảng một triệu. Trước khi rời mắt, tín hiệu bị nén khoảng một trăm lần. Các kỹ thuật nén chính đều quen thuộc với chúng ta. Mỗi nơ-ron đầu ra đáp ứng với hiệu giữa độ sáng ở một đốm nhỏ và độ sáng xung quanh, tức phép trừ láng giềng qua ức chế như ở chương~\ref{sec:gaba}. Những vùng đồng đều của ảnh gần như không tốn gì, còn các cạnh và thay đổi thì được truyền đi. Các nơ-ron đầu ra khác nhau được chuyên môn hóa: loại báo sáng lên, loại báo tối đi, loại báo chuyển động theo một hướng nhất định (hình~\ref{fig:direction}); ở chuột nhắt, người ta đếm được hơn ba mươi kênh đầu ra như vậy~\cite{Baden2016}.
+
+Sợi cáp thu được có băng thông bao nhiêu? Ở chuột lang, từ bản ghi các nơ-ron đầu ra, người ta đo được khoảng $875$ nghìn bit mỗi giây trên $\sim10^5$ nơ-ron như vậy; quy đổi cho một triệu nơ-ron đầu ra ở người được cỡ $10^7$ bit mỗi giây~\cite{Koch2006}, bằng một sợi cáp mạng mười megabit đời cũ. Với tần số trung bình vài xung mỗi giây trên một nơ-ron, đó là vài bit mỗi xung, đúng như kết quả ở chương~\ref{sec:code}.
+
+\section{Tai: dãy bộ lọc}
+
+Tai giải một bài toán khác: phải phân tích âm thanh theo tần số. Kỹ sư sẽ đặt một dãy bộ lọc thông dải, và tai làm đúng điều đó bằng cơ học. Dao động âm chạy dọc một vách ngăn đàn hồi có tính chất thay đổi dần theo chiều dài, và mỗi đoạn cộng hưởng ở tần số riêng. Các cảm biến nằm trên một đoạn chỉ đáp ứng với dải tần của đoạn đó (hình~\ref{fig:filterbank}). Tần số được sắp theo vị trí gần như theo logarit: mỗi quãng tám nhận một phần cảm biến tương tự nhau. Số thứ tự của cảm biến bị kích hoạt chính là tần số, tức mã vị trí của chương~\ref{sec:code}.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=1.35cm,y=2.2cm]
+\draw[->,gray!70!black] (-0.3,0) -- (7.6,0) node[above left,font=\small,black] {tần số, Hz};
+\draw[->,gray!70!black] (-0.3,0) -- (-0.3,1.15) node[left,font=\small,black] {đáp ứng};
+\foreach \k/\f in {0/125,1/250,2/500,3/1000,4/2000,5/4000,6/8000}{
+  \draw[gray!60!black] (\k,-0.02) -- (\k,0.02); \node[below,font=\scriptsize] at (\k,0) {\f};
+  \draw[thick,blue!60!black] plot[domain={max(\k-1.2,-0.3)}:{\k+0.7},samples=60] (\x,{1/(1+((\x-\k)/(\x<\k?0.45:0.2))^4)});}
+% a piano keyboard: seven white keys per octave, like the octaves on the axis
+\foreach \i in {0,...,48}{\draw[gray!50!black,fill=white,line width=0.3pt] ({\i/7},-0.44) rectangle ({(\i+1)/7},-0.26);}
+\foreach \o in {0,...,6}{\foreach \j in {0,1,3,4,5}{\fill[black] ({\o+(\j+1)/7-0.035},-0.35) rectangle ({\o+(\j+1)/7+0.035},-0.26);}}
+\end{tikzpicture}
+\caption{Tai như một dãy bộ lọc thông dải, sơ đồ. Mỗi đường cong là đáp ứng của các cảm biến trên một đoạn với âm có tần số khác nhau; các tần số trung tâm cách nhau một quãng tám, như phím đàn trên thang logarit. Bộ lọc thật có sườn tần số cao dốc và sườn tần số thấp thoải. Phía dưới là bàn phím: trên đó, cũng như trong tai, mỗi quãng tám chiếm chỗ như nhau.}
+\label{fig:filterbank}
+\end{figure}
+
+Các bộ cộng hưởng của tai không thụ động. Một phần cảm biến tự đẩy vách ngăn dao động theo nhịp âm thanh và khuếch đại các dao động yếu lên hàng nghìn lần về biên độ ($66$--$76$\,dB), còn khi âm to lên thì hệ số khuếch đại giảm~\cite{Ruggero1997,Robles2001}. Với kỹ sư, đó là bộ khuếch đại có phản hồi dương, đặt sát ranh giới tự kích, cũng là kiểu sống bên bờ vực như mạng ở chương~\ref{sec:gaba}: gần ranh giới, hệ đặc biệt nhạy với tín hiệu nhỏ. Việc nén âm lượng ở đây do chính bộ khuếch đại đó đảm nhận: âm nhỏ được khuếch đại mạnh, âm to được khuếch đại yếu.
+
+Tai còn có mã thứ hai. Ở tần số thấp, xung của nơ-ron đi cùng pha với âm: nơ-ron phát xung ở một đoạn nhất định của mỗi sóng, dù không phải ở mọi sóng. Ở chuột lang, khóa pha bắt đầu yếu đi từ khoảng $600$\,Hz và vẫn còn thấy được tới khoảng $3.5$\,kHz~\cite{PalmerRussell1986}. Nhờ đó thời điểm xung giữ được thời gian chính xác của âm, và từ đó là chênh lệch thời điểm âm đến hai tai, dựa vào đó mạng ở chương~\ref{sec:glutcomputer} tìm ra hướng~\cite{Grothe2010}. Ở tần số cao, xung không theo kịp sóng, và chỉ còn mã vị trí. Một cái tai dùng cả hai mã của chương~\ref{sec:code}: thời gian ở chỗ nơ-ron theo kịp, và vị trí ở chỗ không theo kịp.
+
+\section{Các cảm biến khác}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{1.9cm}>{\raggedright}p{2.6cm}>{\raggedright}p{4.0cm}>{\raggedright\arraybackslash}p{4.6cm}}
+\toprule
+Giác quan & Đo gì & Đầu vào được tổ chức ra sao & Kỹ thuật trong sách \\
+\midrule
+thị giác & ánh sáng & $\sim10^8$ cảm biến, nén $\sim100$ lần, $\sim10^7$ bit/s & điều chỉnh khuếch đại, trừ láng giềng, hai dây, hướng chuyển động \\
+thính giác & áp suất không khí & dãy bộ lọc cơ học, bộ khuếch đại chủ động & mã vị trí và mã thời gian, độ trễ \\
+xúc giác & áp lực, rung & cảm biến thích nghi nhanh và chậm & cặp ``bộ lọc thông cao -- bộ lọc thông thấp'' \\
+nhiệt độ & nhiệt & cảm biến nóng và lạnh riêng biệt & mã hai dây \\
+khứu giác & phân tử & $\sim400$ loại thụ thể, mỗi cảm biến một loại & mã tổ hợp: mùi là tập các loại bị kích hoạt \\
+vị giác & chất trong thức ăn & năm vị: ngọt, đắng, mặn, chua, umami & đường dây gắn nhãn; một số tế bào giải phóng ATP hoặc serotonin chứ không phải glutamate \\
+tư thế cơ thể & độ giãn của cơ & cảm biến độ dài và tốc độ giãn & phản hồi cho bộ điều khiển vận động \\
+\bottomrule
+\end{tabular}
+\caption{Các cảm biến được nối vào ra sao. Mọi cơ chế ở cột thứ ba đều đã được đo; cột bên phải nối chúng với các kỹ thuật ở những chương trước.}
+\label{tab:sensors}
+\end{table}
+
+Các giác quan còn lại được tập hợp trong bảng~\ref{tab:sensors}, và hầu như dòng nào cũng có một kỹ thuật quen thuộc từ các chương trước. Xúc giác dùng một cặp bộ lọc: một số cảm biến áp lực đáp ứng khi chạm vào rồi im ngay, số khác giữ đáp ứng chừng nào còn áp lực. Nhiệt độ được truyền qua hai dây, riêng cho nóng và cho lạnh. Đầu vào khác thường nhất là khứu giác. Người có khoảng bốn trăm loại thụ thể khứu giác, và mỗi nơ-ron khứu giác chỉ mang một loại~\cite{Mombaerts2004}. Một mùi kích hoạt không phải một loại mà cả một tập hợp, và thông điệp chính là \emph{những loại nào} đã bị kích hoạt. Với kỹ sư, đó là một vectơ nhị phân dài khoảng bốn trăm, với số giá trị khả dĩ lớn khủng khiếp.
+
+\begin{keyblock}
+\begin{proposition}[Đầu vào của cỗ máy]
+\label{prop:sensors}
+Mỗi giác quan là một bộ chuyển đổi làm việc ở giới hạn vật lý của độ nhạy, nén dải động khổng lồ bằng tự động điều chỉnh khuếch đại, và truyền trên bus \nt{GLUT} trước hết là \emph{các thay đổi}. Để làm vậy, cảm biến dùng chính những kỹ thuật của cỗ máy: mã hai dây, mã vị trí, mã thời gian và phép chia cho nền. Cấu tạo của cảm biến đã được đo; việc mã của chúng được tinh chỉnh để mang nhiều thông tin nhất trên mỗi xung là một giả thuyết có cơ sở vững.
+\end{proposition}
+\end{keyblock}
+
+Đầu vào, như mọi thứ khác, làm việc bất đồng bộ. Mỗi cảm biến phát xung khi nó có điều cần báo, và các giác quan khác nhau đến với độ trễ khác nhau: âm thanh sau vài mili giây, ánh sáng sau vài chục mili giây. Không có xung nhịp chung thì cỗ máy gộp chúng thành một bức tranh thế giới như thế nào: đó là một trong các bài toán đồng bộ theo thời gian ở chương~\ref{sec:synthesis}.
+
+\section{Bài tập}
+
+\begin{exercise}[\lvlA]
+\label{ex:11:1}
+\emph{Tích lũy photon bao lâu.} Lúc chạng vạng, cảm biến nhận $100$ photon mỗi giây; phần tăng nhận ra được nếu lớn gấp $3$ lần dao động~\eqref{eq:photonnoise}. (a)~Một cảm biến cần bao lâu để nhận ra độ sáng thay đổi $10\,\%$? (b)~Phải cộng bao nhiêu cảm biến để kịp trong $0.2\,\text{s}$, và độ phân giải không gian giảm bao nhiêu lần?
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:11:2}
+\emph{Mỗi xung mang bao nhiêu bit.} (a)~Mắt truyền $\sim10^7$ bit/s qua $10^6$ nơ-ron đầu ra với tần số $3$--$5$ xung mỗi giây. Nó dùng bao nhiêu phần dung lượng~\eqref{eq:spikeentropy} với $\Delta t=1\ms$? (b)~Một mùi bật $20$ trong $\approx400$ loại thụ thể. Tập đó mang bao nhiêu bit, và trung bình hai mùi ngẫu nhiên có bao nhiêu loại chung?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:11:3}
+\emph{Một đường cong~\eqref{eq:nakarushton} làm được gì.} (a)~Trong dải độ sáng nào đáp ứng tăng từ $10\,\%$ đến $90\,\%$ của $r_{\max}$? Đó là bao nhiêu bậc? (b)~Cần bao nhiêu vị trí của đường cong dịch chuyển để phủ mười bậc độ sáng? mười hai bậc âm lượng?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:11:4}
+\emph{Giới hạn của mã thời gian ở tai.} Chênh lệch thời điểm âm đến hai tai tối đa $0.22\,\text{m}/343\,\text{m/s}$. (a)~Xung đi cùng pha với âm: tới tần số nào thì hướng xác định từ chúng là duy nhất? (b)~Xung rung $0.5\ms$, còn cần phân biệt $20$~\textmu s. Phải lấy trung bình bao nhiêu nơ-ron, mỗi nơ-ron $100$ xung mỗi giây, trong $50\ms$?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:11:5}
+\emph{Camera sự kiện trên cáp của mắt.} Camera $10^6$ điểm ảnh, đầu ra $10^7$ bit/s, gửi một sự kiện (địa chỉ và dấu) khi $\ln I$ ở điểm ảnh thay đổi $\ln1.2$. Một cạnh dài $500$ điểm ảnh, chênh sáng $4$ lần, chạy nhanh nhất được bao nhiêu? Camera thường, $8$ bit mỗi điểm ảnh, qua cùng đầu ra đó cho bao nhiêu khung hình mỗi giây?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:11:6}
+\emph{Mô phỏng: điều chỉnh khuếch đại.} Cảm biến~\eqref{eq:nakarushton} chỉnh $\sigma$ với $\tau=1\,\text{s}$ theo logarit, $\tau\,\dd\ln\sigma/\dd t=\ln I-\ln\sigma$, hoặc tuyến tính, $\tau\,\dd\sigma/\dd t=I-\sigma$; nền nhảy $1\to100\to1$. Với mỗi luật, sau bước nhảy lên và xuống, bao nhiêu giây thì đáp ứng với phép thử $+10\,\%$ hồi phục được một nửa mức đã thích nghi?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:11:7}
+\emph{Đường cong khớp với thế giới nào.} Với nhiễu đầu ra nhỏ và không đổi, thông tin về độ sáng lớn nhất khi $r(I)=r_{\max}\Phi_I(I)$, với $\Phi_I$ là hàm phân phối của độ sáng. (a)~Đường cong~\eqref{eq:nakarushton} tối ưu cho phân phối nào, và độ tản của $\log_{10}I$ bằng bao nhiêu? (b)~Với nhiễu đầu ra Poisson thì đường cong nào tối ưu?
+\end{exercise}

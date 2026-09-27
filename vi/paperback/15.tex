@@ -1,0 +1,43 @@
+\chapter{Cỗ máy học cử động như thế nào}
+% full version: chapters/15_motorlearning.tex
+
+Chúng ta đã thấy hai cách học. Không có thầy --- ``cùng nhau nghĩa là gắn kết'' --- cỗ máy ghi nhớ những gì hay gặp. Với dopamine, nó học từ những điều bất ngờ: kết quả tốt hơn hay tệ hơn mong đợi. Nhưng khi bạn ném bóng trượt rổ, bạn không chỉ biết là kết quả tệ. Bạn biết mình trượt \emph{bao nhiêu} và \emph{về phía nào}. Đó là người thầy thứ ba --- sai số có hướng, riêng cho mỗi đầu ra.
+
+\section*{Dây dẫn sai số}
+
+Trong bộ não có một mạch riêng để học cử động, và nó được cấu tạo rất khác thường. Một số lượng khổng lồ nơ-ron \nt{GLUT} nhỏ, hàng chục tỷ, trải các tín hiệu đầu vào thành một danh sách đặc trưng rất dài. Các nơ-ron đầu ra của mạch này là nơ-ron ức chế \nt{GABA}, có hàng chục triệu, và mỗi nơ-ron nghe một trăm nghìn đầu vào. Và tới mỗi nơ-ron đầu ra có đúng một dây dẫn đặc biệt --- dây dẫn sai số. Nếu sai số tới khi một đầu vào đang hoạt động, đầu vào đó yếu đi. Đây là quy tắc kinh điển ``giảm sai số'', mà các kỹ sư dùng để huấn luyện bộ lọc thích nghi.
+
+\pencilfig{15}{\pencilart{15}}{Cú trượt không chỉ báo ``tệ'', mà còn báo ``bao nhiêu và về phía nào''.}
+
+Người thầy này nhanh hơn dopamine: mỗi đầu ra có sai số riêng, và không cần phải lọc phần của mình ra khỏi một tín hiệu chung cho tất cả. Có điều, sai số tới muộn, và mối nối lại cần một ``miếng dán'' nhớ rằng nó đã tham gia. Thí nghiệm cho thấy thời gian tồn tại của miếng dán này được chỉnh vừa khớp với độ trễ của sai số.
+
+\section*{Mô hình bên trong}
+
+Một mạch như vậy học được gì? Một mô hình của chính cơ thể: một lệnh sẽ cho kết quả gì. Có nó rồi thì không cần chờ các cảm biến chậm trễ --- có thể dự đoán kết quả từ trước. Theo một giả thuyết, đó là lý do bạn không thể tự cù lét mình: bộ não biết trước điều sắp xảy ra và trừ đi phần đã dự đoán.
+
+\section*{Học trò nhanh và học trò chậm}
+
+Hãy đeo một cặp kính làm hình ảnh lệch sang bên rồi ném phi tiêu. Những cú ném đầu tiên lệch sang một bên, nhưng sau vài chục lần bạn sẽ thích nghi. Tháo kính ra --- lại trượt, lần này về phía bên kia. Điều thú vị bắt đầu từ đây. Các thí nghiệm được mô tả tốt bằng hai học trò cùng lúc: học trò nhanh học nhanh và quên nhanh, học trò chậm học chậm nhưng nhớ lâu. Nếu sau một thời gian dài thích nghi mà học ngược lại trong chốc lát, tổng hiệu chỉnh sẽ trở về không --- nhưng sau đó kỹ năng cũ tự trồi lên một phần: học trò nhanh đã quên, còn học trò chậm vẫn nhớ. Mô hình chỉ có một học trò không làm được như vậy, còn con người thì làm được.
+
+\pencilfig{115}{%
+% figures/tworate_*.dat from models/motor_learning.py: adapt 200 throws, reverse until the sum is back to zero, then no errors at all
+\begin{scope}[x=0.026cm, y=1.45cm]
+\fill[pcGray, opacity=0.08] (220,-1.1) rectangle (226,1.1);
+\draw[pen] (0,0) -- (340,0);
+\draw[pcGray, line width=0.4pt] plot file {figures/tworate_p.dat};
+\draw[penlite=pcAmber] plot file {figures/tworate_fast.dat};
+\draw[penlite=pcBlue] plot file {figures/tworate_slow.dat};
+\draw[pcGray!40!black, line width=1.1pt] plot file {figures/tworate_net.dat};
+\draw[pcGray, densely dashed, line width=0.4pt] (226,-1.1) -- (226,1.1);
+\end{scope}
+\node[lbl, anchor=south] at (3.1,1.47) {đang đeo kính};
+\node[lbl, anchor=north west, align=left] at (6.3,-0.55) {học ngược\\chốc lát};
+\node[lbl, anchor=south west] at (6.0,1.47) {không còn sai};
+\node[lbl, text=pcBlue, anchor=north] at (4.4,0.8) {chậm};
+\node[lbl, text=pcAmber!80!black, anchor=south west] at (1.15,0.5) {nhanh};
+\node[lbl, text=pcGray!40!black, anchor=south] at (7.7,0.95) {tổng trồi lên};
+}{Hiệu chỉnh của hai học trò trong mô hình. Sau khi học ngược chốc lát, tổng bằng không, nhưng học trò chậm vẫn nhớ điều cũ, và điều đó tự trồi lên.}
+
+Vì sao lại có hai học trò? Theo giả thuyết, đây là cùng một công thức với người hoa tiêu ở chương chín: thế giới thay đổi cả nhanh lẫn chậm, và theo dõi cả hai là hợp lý.
+
+\fullversion{15}

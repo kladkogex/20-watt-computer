@@ -1,0 +1,47 @@
+\chapter{Cần bao nhiêu đầu vào}
+% full version: chapters/19_dendrites.tex
+
+Nơ-ron có những nhánh đầu vào phân nhánh --- đuôi gai. Ở một số nơ-ron, đó là cả một cái cây với hàng nghìn điểm tiếp xúc, ở số khác --- một, hai nhánh hoặc không có gì. Với kỹ sư, số đầu vào là một tham số của mạch, và nó được chọn cho vừa với nhiệm vụ.
+
+\section*{Từ không đến một trăm nghìn}
+
+Cảm biến xúc giác và cảm biến đau hoàn toàn không có đuôi gai: dây dẫn chỉ đơn giản kéo từ da vào tủy sống, còn cảm biến nằm ngay ở đầu mút của nó. Đó là một đường dây với cảm biến ở đầu xa.
+
+\pencilfig{19}{\pencilart{19}}{Nhiều đầu vào --- bộ cộng; một đầu vào khổng lồ --- bộ chuyển tiếp nhanh và chính xác.}
+
+Các nơ-ron khứu giác và các nơ-ron chuyển tín hiệu từ cảm biến của mắt và tai có một đuôi gai. Một đầu vào, một đầu ra: bộ lặp, bộ đệm.
+
+Các bộ phát hiện hướng âm thanh có hai đuôi gai hướng về hai phía, mỗi cái cho một tai. Khi tách hai đầu vào ra hai nhánh khác nhau, nơ-ron làm cho phép ``và'' khắt khe hơn: hai phần dòng điện trong cùng một nhánh sẽ cản trở nhau.
+
+Các nơ-ron nhỏ của mạch học cử động có khoảng bốn đuôi gai ngắn, mỗi cái nắm lấy một đầu vào riêng. Những nơ-ron như vậy có hàng chục tỷ, và mỗi cái chỉ cộng bốn tín hiệu. Bù lại, cùng nhau chúng trải đầu vào thành hàng triệu tổ hợp, còn nơ-ron đầu ra lớn với một trăm nghìn đầu vào chọn trong đó những tổ hợp cần thiết.
+
+Và cuối cùng, các nơ-ron với những cái cây khổng lồ và hàng nghìn đầu vào là bộ cộng và bộ phân loại, trong đó từng nhánh riêng hoạt động gần như những mạch nhỏ độc lập.
+
+\section*{Vì sao lại như vậy}
+
+Mọi thứ do việc nạp điện quyết định. Một nơ-ron nhỏ với ít đầu vào được nạp từ một mối nối lớn trong một phần nhỏ của mili giây: nơ-ron như vậy chính xác về thời gian và chuyển tín hiệu đi tiếp một cách tin cậy. Một cái cây lớn thì một mối nối không bao giờ nạp nổi --- điện tích sẽ rò mất trước. Nó cần hàng chục tín hiệu đến cùng lúc, nhưng bù lại nó có thể cộng và so sánh chúng. Ít đầu vào và mối nối lớn --- cho thời gian chính xác. Nhiều đầu vào --- cho việc tính toán.
+
+\pencilfig{128}{%
+% charging: a small neuron reaches threshold from one large synapse at once; a big tree barely moves
+% from one input and needs many inputs arriving together
+\foreach \dx/\t in {0/{ít đầu vào}, 4.3/{cây lớn}}{
+  \draw[pen] (\dx,0) -- (\dx+3.6,0);
+  \draw[pcGray, densely dashed, line width=0.5pt] (\dx,0.9) -- (\dx+3.6,0.9);
+  \node[font=\small\itshape, text=pcGray, anchor=south] at (\dx+1.8,1.75) {\t};}
+\node[lbl, anchor=east] at (-0.05,0.9) {ngưỡng};
+% small neuron
+\draw[pcBlue, line width=2pt] (0.6,-0.15) -- (0.6,-0.6);
+\draw[penlite=pcBlue] (0,0) -- (0.6,0) -- plot[domain=0.6:0.8, samples=12] (\x,{1.3*(1-exp(-(\x-0.6)/0.18))}) -- (0.8,1.6) -- (0.84,0) -- (3.5,0);
+\node[lbl, text=pcRed, anchor=west] at (0.85,1.45) {tách ngay};
+\node[lbl, text=pcBlue, anchor=north] at (0.6,-0.62) {một đầu vào lớn};
+% big tree
+\draw[pcBlue, line width=0.6pt] (4.8,-0.15) -- (4.8,-0.45);
+\foreach \s in {6.15,6.2,6.25,6.3,6.35,6.4,6.45,6.5}{\draw[pcBlue, line width=0.6pt] (\s,-0.15) -- (\s,-0.45);}
+\draw[penlite=pcBlue] (4.3,0) -- (4.8,0) -- plot[domain=4.8:6.15, samples=20] (\x,{0.16*((\x-4.8)/0.15)*exp(1-(\x-4.8)/0.15)}) -- plot[domain=6.15:6.62, samples=14] (\x,{1.25*(1-exp(-(\x-6.15)/0.4))}) -- (6.62,1.6) -- (6.66,0) -- (7.9,0);
+\node[lbl, anchor=south] at (4.95,0.2) {gần như không};
+\node[lbl, text=pcBlue, anchor=north] at (6.33,-0.47) {nhiều cùng lúc};
+}{Nơ-ron nhỏ được nạp từ một mối nối lớn trong một phần nhỏ của mili giây và tách ngay. Cái cây lớn hầu như không thay đổi vì một đầu vào: nó cần hàng chục tín hiệu đến cùng lúc.}
+
+Vậy là chúng ta có cách phân loại nơ-ron thứ ba: theo chất dẫn truyền, theo thiết bị và theo số đầu vào. Mỗi cách nhìn cùng một cỗ máy từ một phía mới.
+
+\fullversion{19}

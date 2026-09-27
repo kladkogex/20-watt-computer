@@ -1,0 +1,352 @@
+\chapter{Mã Morse: những gì ta biết về ngôn ngữ của nơ-ron \nt{GLUT} và \nt{GABA}}
+\chaptermark{Mã Morse}
+\label{sec:code}
+
+\section{Bảng chữ cái chỉ có một ký hiệu}
+
+Mã Morse có hai ký hiệu, chấm và gạch, cùng các khoảng lặng với ba độ dài giữa chúng. Như ta đã thấy ở chương~\ref{sec:neurontypes}, bảng chữ cái của nơ-ron còn nghèo hơn: chỉ có một ký hiệu. Một xung kéo dài khoảng một mili giây, và mọi xung của một nơ-ron đều giống nhau về độ cao và hình dạng. Vì thế toàn bộ thông điệp nằm trong các khoảng lặng, tức là trong dãy thời điểm $t_1,t_2,t_3,\dots$ Đó là một thứ mã không có gạch, trong đó chỉ nhịp của các chấm mang ý nghĩa (hình~\ref{fig:morse}).
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=0.08cm,y=1cm]
+% Morse letter: dot, dash, dot
+\node[left,font=\small] at (-6,2.55) {Morse:};
+\fill[black] (0,2.45) rectangle (6,2.65);
+\fill[black] (14,2.45) rectangle (32,2.65);
+\fill[black] (40,2.45) rectangle (46,2.65);
+\node[right,font=\small,gray!40!black] at (52,2.55) {chấm, gạch, chấm --- ý nghĩa ở độ dài và khoảng lặng};
+% stimulus onset
+\node[left,font=\small] at (-6,0.4) {nơ-ron:};
+\draw[->,thick,green!45!black] (0,-0.55) -- (0,-0.05);
+\node[below,font=\scriptsize,green!45!black] at (0,-0.55) {kích thích};
+\draw[gray!70!black] (0,0) -- (152,0) node[right,black] {\small $t$};
+% spikes: single ones blue, the burst red
+\foreach \s in {14,26,41,88,112,131}{\draw[very thick,blue!60!black] (\s,0) -- (\s,0.8);}
+\foreach \s in {60,63,66,69}{\draw[very thick,red!70!black] (\s,0) -- (\s,0.8);}
+% latency
+\draw[<->,thick] (0,1.1) -- node[above,font=\scriptsize] {$t_1$: thời điểm xung đầu} (14,1.1);
+% burst
+\draw[decorate,decoration={brace,amplitude=4pt},red!70!black] (58,0.95) -- (71,0.95) node[midway,above=4pt,font=\scriptsize] {chùm xung --- ``gạch''};
+% counting windows
+\foreach \a/\b/\n in {0/50/3,50/100/5,100/150/2}{
+  \draw[decorate,decoration={brace,amplitude=4pt,mirror},gray!50!black] (\a+1,-0.2) -- (\b-1,-0.2) node[midway,below=4pt,font=\small] {$n=\n$};}
+\node[font=\scriptsize,gray!40!black] at (75,-1.05) {mã tần số: số xung $n$ trong mỗi cửa sổ};
+\foreach \x in {0,50,100,150}{\draw[gray!60!black] (\x,-0.06) -- (\x,0.06);}
+\end{tikzpicture}
+\caption{Mã Morse và mã của nơ-ron. Cùng một chuỗi xung có thể đọc theo nhiều cách: đếm số xung trong các cửa sổ $50\ms$ (mục~\ref{sec:rate}), đo độ trễ $t_1$~\eqref{eq:latency}, hoặc nhận ra một chùm xung --- ``gạch''~\eqref{eq:burst}.}
+\label{fig:morse}
+\end{figure}
+
+Những khoảng lặng nào là có thể? Từ phía dưới, chúng bị giới hạn bởi thời gian trơ: sau một xung, nơ-ron không thể phát xung lại trong khoảng một mili giây, nên không có quá vài trăm xung mỗi giây. Từ phía trên, không có gì giới hạn: nơ-ron có thể im lặng hàng phút. Ở nơ-ron \nt{GLUT} vỏ não, tần số nằm trong khoảng từ một phần nhỏ của một xung đến vài chục xung mỗi giây, và phần lớn nơ-ron phần lớn thời gian làm việc ở gần giới hạn dưới.
+
+Ở các chương~\ref{sec:glutcomputer} và~\ref{sec:gaba}, ta đã tiện thể chấp nhận khi thì cách này, khi thì cách khác để ghi số bằng xung. Giờ hãy hỏi thẳng: nơ-ron \nt{GLUT} và \nt{GABA} nói với nhau bằng ngôn ngữ nào? Chưa có câu trả lời đầy đủ, ngôn ngữ này chưa được giải mã. Nhưng có một số điều về nó đã được biết chắc chắn, và gần như mọi điều đã biết đều có thể suy ra bằng cách lập luận như một kỹ sư truyền thông: dung lượng kênh, nhiễu, máy thu, giá của việc truyền.
+
+\section{Truyền được bao nhiêu}
+
+Bắt đầu từ cận trên. Giả sử nơi nhận phân biệt thời điểm xung với độ chính xác $\Delta t$: với nó, các dịch chuyển nhỏ hơn $\Delta t$ là không phân biệt được. Cắt thời gian thành các ô dài $\Delta t$, nhỏ hơn thời gian trơ, sao cho trong mỗi ô hoặc có một xung, hoặc không có xung nào (hình~\ref{fig:cells}). Với tần số trung bình $r$, xung rơi vào một ô với xác suất $p=r\Delta t$. Dòng xung mang nhiều thông tin nhất khi các ô độc lập, và khi đó mỗi ô cho entropy $-p\log_2p-(1-p)\log_2(1-p)\approx p\log_2(e/p)$ bit khi $p\ll1$. Chia cho $\Delta t$, ta được tốc độ truyền giới hạn và phần của nó trên mỗi xung~\cite{MacKay1952}:
+\begin{empheq}[box=\keybox]{equation}
+R_{\max} \;\approx\; r\,\log_2\frac{e}{r\,\Delta t}\ \ \text{bit/s},
+\qquad
+\frac{R_{\max}}{r} \;\approx\; \log_2\frac{e}{r\,\Delta t}\ \ \text{bit trên một xung}.
+\label{eq:spikeentropy}
+\end{empheq}
+Với $r=10$ xung mỗi giây và $\Delta t=1\ms$, đó là khoảng tám bit trên một xung và tám mươi bit mỗi giây.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=0.5cm,y=1cm]
+% time cut into cells of width Delta t; a cell holds one impulse or none
+\foreach \k in {0,...,23}{\draw[gray!55] (\k,0) rectangle (\k+1,0.7);}
+\foreach \k in {2,7,8,15,21}{
+  \fill[red!10] (\k,0) rectangle (\k+1,0.7);
+  \draw[very thick,red!70!black] (\k+0.5,0.05) -- (\k+0.5,0.65);}
+\foreach \k in {0,...,23}{
+  \pgfmathtruncatemacro{\bit}{(\k==2)||(\k==7)||(\k==8)||(\k==15)||(\k==21)}
+  \ifnum\bit=1 \def\bitcol{red!70!black}\else \def\bitcol{gray!60!black}\fi
+  \node[font=\scriptsize,text=\bitcol] at (\k+0.5,-0.25) {\bit};}
+\draw[<->,gray!60!black] (0,0.95) -- (1,0.95) node[midway,above,font=\scriptsize,black] {$\Delta t$};
+\node[font=\small,anchor=east] at (-0.3,0.35) {xung};
+\node[font=\small,anchor=east] at (-0.3,-0.25) {bit};
+\draw[decorate,decoration={brace,amplitude=5pt,mirror},gray!60!black] (0,-0.55) -- (24,-0.55)
+  node[midway,below=6pt,font=\scriptsize,black,align=center] {nơi nhận chỉ biết đếm: ``$n=5$'';\\ nơi nhận thấy được các ô: đúng $5$ ô nào trong $24$ ô --- tức là $\log_2\binom{24}{5}\approx15$ bit};
+\end{tikzpicture}
+\caption{Dung lượng~\eqref{eq:spikeentropy} đến từ đâu. Thời gian được cắt thành các ô dài $\Delta t$, trong mỗi ô hoặc có xung ($1$), hoặc không ($0$): dòng xung là một chuỗi nhị phân. Xung rơi vào một ô với xác suất $p=r\Delta t$. Ô càng nhỏ, chuỗi càng dài và càng nhiều bit; bộ đếm xung đánh mất gần như mọi thứ được ghi ở chỗ các số một nằm \emph{ở đâu}.}
+\label{fig:cells}
+\end{figure}
+
+Số bit trên một xung chỉ phụ thuộc logarit vào độ chính xác thời gian: với độ chính xác $10\ms$ vẫn còn khoảng năm bit trên một xung. Nhưng nếu nơi nhận chỉ đếm xung trong một giây, thì với $r=10$ nó nhận được chưa tới hai bit cho cả giây (mục~\ref{sec:rate}).
+
+\begin{keyblock}
+\begin{proposition}[Dung lượng của kênh xung]
+\label{prop:capacity}
+Một dòng xung có tần số trung bình $r$, được đọc với độ chính xác thời gian $\Delta t$, mang không quá~\eqref{eq:spikeentropy}. Gần như toàn bộ dung lượng này nằm ở \emph{thời điểm} của các xung: nơi nhận chỉ đếm xung rút ra từ cùng dòng đó ít hơn hàng chục lần so với nơi nhận phân biệt được thời điểm của chúng với độ chính xác một mili giây.
+\end{proposition}
+\end{keyblock}
+
+Đây là cận trên, không phải phép đo. Các phép đo trên nơ-ron cảm giác, mà kích thích đã biết, cho từ một đến vài bit trên một xung; trong những trường hợp tốt nhất, đó là tới một nửa giới hạn tính cho độ chính xác của chúng~\cite{Rieke1997}. Vậy ít nhất ở đầu vào của hệ thần kinh, thời điểm xung được sử dụng chứ không bị bỏ phí.
+
+\section{Kênh có nhiễu}
+
+Dung lượng~\eqref{eq:spikeentropy} được tính khi không có nhiễu. Về nơi nhiễu phát sinh, có ba sự thật đã được biết chắc chắn.
+
+\emph{Bản thân bộ tạo xung là chính xác.} Nếu nhiều lần bơm vào một nơ-ron vỏ não, được lấy ra khỏi não cùng một mẩu mô, cùng một dòng điện thay đổi nhanh theo thời gian, các xung lặp lại với độ chính xác khoảng một mili giây~\cite{Mainen1995}. Nếu dòng không đổi, thời điểm xung trôi dạt từ lần này sang lần khác: thời điểm chính xác được tạo ra bởi những biến đổi nhanh của đầu vào chứ không phải bởi chính nơ-ron.
+
+\emph{Khớp thần kinh không đáng tin cậy.} Một xung chạy tới khớp thần kinh \nt{GLUT} chỉ nhả một gói chất dẫn truyền với một xác suất $p$ nào đó. Ở các khớp thần kinh hồi hải mã, hơn một nửa số xung đơn giản là không tới được nơi nhận, và nguyên nhân chính là tính ngẫu nhiên của việc nhả chứ không phải lỗi dẫn truyền~\cite{AllenStevens1994}. Với người làm truyền thông, đây là một kênh xóa; vài khớp thần kinh giữa hai nơ-ron phần nào cứu vãn tình hình.
+
+\emph{Trong vỏ não sống, dòng xung trông ngẫu nhiên.} Các khoảng giữa các xung phân tán gần giống như ở một dòng Poisson ngẫu nhiên, còn khi lặp lại cùng một kích thích, số xung trong một cửa sổ thay đổi sao cho phương sai của nó gần bằng giá trị trung bình~\cite{Softky1993}.
+
+Một phần tử chính xác sinh ra dòng ngẫu nhiên như thế nào? Nơ-ron nhận hàng nghìn đầu vào, mỗi đầu vào không tin cậy, còn kích thích và ức chế cân bằng nhau, như ở chương~\ref{sec:gaba}. Điện áp màng dao động quanh ngưỡng, và chính các dao động đó quyết định thời điểm xung. Đó là nhiễu hay là thông điệp mà ta không biết đọc --- phần lớn vẫn là câu hỏi mở. Một phần ``nhiễu'' đã hóa ra là thông điệp: ở vỏ thị giác, một phần đáng kể độ phân tán bám theo cử động của chính con vật~\cite{Stringer2019}. Khó khăn ở đây mang tính nguyên tắc: với người không biết mã, một thông điệp được nén tốt không phân biệt được với một dòng ngẫu nhiên.
+
+\section{Tần số: chậm nhưng chắc}
+\label{sec:rate}
+
+Mã đơn giản nhất là \emph{mã tần số}: con số được ghi trong số xung mà nơ-ron phát ra trong cửa sổ $T$. Cả sự xóa lẫn sự rung của thời điểm đều không làm hại mã này. Nhưng nó có cái giá. Nếu dòng là Poisson, số xung $n$ trong cửa sổ có trung bình $rT$ và độ phân tán $\sqrt{rT}$:
+\begin{empheq}[box=\keybox]{equation}
+\frac{\sigma_n}{\bar n} \;=\; \frac{1}{\sqrt{r\,T}} .
+\label{eq:rateerror}
+\end{empheq}
+Để biết tần số với độ chính xác mười phần trăm, cần một trăm xung; với hai mươi xung mỗi giây, đó là năm giây. Hai mức kề nhau phân biệt được nếu chúng cách nhau vài độ phân tán, nên đến tần số $r$ trong thời gian $T$ phân biệt được khoảng $\sqrt{rT}$ mức: với $r=10$ và $T=1\,\text{s}$, đó là ba bốn mức, chưa tới hai bit.
+Não không làm việc chậm như vậy. Người nhận ra con vật trong một bức ảnh được chiếu chớp nhoáng, và đáp ứng trong não xuất hiện sau khoảng $150\ms$~\cite{Thorpe1996}. Theo ước tính thô, trong thời gian đó tín hiệu đi qua khoảng một chục tầng xử lý nối tiếp, mỗi tầng $10$--$20\ms$. Với tần số thông thường của vỏ não, mỗi nơ-ron kịp phát không hoặc một xung ở mỗi tầng, và tần số của nó trong cửa sổ như vậy không xác định được. Có hai lối ra: lấy nhiều nơ-ron, hoặc nhìn vào thời điểm.
+
+\emph{Nhiều nơ-ron.} Giả sử $N$ nơ-ron mang cùng một con số, và nơi nhận cộng các xung của chúng lại. Nếu nhiễu của chúng độc lập, trong~\eqref{eq:rateerror} thay cho $rT$ là $NrT$: một trăm nơ-ron với $r=20$ trong $15\ms$ cho ba mươi xung và độ chính xác khoảng hai mươi phần trăm. Không gian thay thế thời gian. Tuy nhiên, nhiễu của các nơ-ron vỏ não kề nhau không độc lập: hệ số tương quan của số xung ở một cặp láng giềng thường vào khoảng $0.1$~\cite{Zohary1994}. Nếu nó bằng $c$, phương sai của trung bình trên $N$ nơ-ron bằng
+\begin{empheq}[box=\keybox]{equation}
+\sigma^2_N \;=\; \sigma^2_1\,\frac{1+(N-1)\,c}{N}
+\;\xrightarrow[N\to\infty]{}\; c\,\sigma^2_1 .
+\label{eq:correlated}
+\end{empheq}
+
+\begin{keyblock}
+\begin{proposition}[Giới hạn của phép lấy trung bình]
+\label{prop:pooling}
+Với nhiễu tương quan, lấy trung bình trên một nhóm làm giảm sai số không quá $1/\sqrt{c}$ lần. Với $c=0.1$, đó là ba lần, và lợi ích này đạt được ngay với vài chục nơ-ron; thêm nữa cũng vô ích.
+\end{proposition}
+\end{keyblock}
+
+Không phải mọi tương quan đều có hại như nhau. Chỉ phần nhiễu chung \emph{giống chính tín hiệu} mới giới hạn độ chính xác, tức là phần làm dịch cả nhóm giống như sự thay đổi của đại lượng được đo sẽ làm dịch nó~\cite{MorenoBote2014}. Thực ra trong não có bao nhiêu nhiễu như vậy vẫn đang được làm rõ.
+
+Còn một cách khác để dùng nhiều nơ-ron: ghi con số ở chỗ nơ-ron \emph{nào} đã phát xung, như trong bộ xác định hướng âm thanh (hình~\ref{fig:itd}). Đó là mã \emph{vị trí}, đáng tin cậy nhất trong các mã đã biết: ở nơ-ron cảm giác, số thứ tự của dây dẫn cho biết điểm nào trên da bị chạm hay âm thanh cao bao nhiêu, và điều này đã được xác lập nhiều lần. Nó tốn kém về số nơ-ron nhưng nhanh: một thông điệp chỉ tốn một độ trễ.
+
+\section{Thời điểm: nhanh, nhưng tính từ đâu}
+
+Lối ra thứ hai là ghi con số vào thời điểm xung. Lấy nơ-ron~\eqref{eq:glutneuron} và từ lúc $t=0$ cấp cho nó một đầu vào không đổi đủ để nâng điện áp lên mức $U$. Điện áp tăng theo $V=U\bigl(1-e^{-t/\tau}\bigr)$ và đạt ngưỡng $\theta$ vào thời điểm
+\begin{empheq}[box=\keybox]{equation}
+t_1 \;=\; \tau\,\ln\frac{U}{U-\theta}, \qquad U>\theta .
+\label{eq:latency}
+\end{empheq}
+Đầu vào mạnh --- xung sớm, yếu --- xung muộn, dưới ngưỡng --- không có xung. Với $\tau=10\ms$, đầu vào $U=4\theta$ cho xung đầu tiên sau $2.9\ms$, $U=2\theta$ --- sau $6.9\ms$, $U=1.2\theta$ --- sau $17.9\ms$. Chỉ một xung duy nhất mang một con số.
+
+Nhưng tính $t_1$ từ thời điểm nào? Không có đồng hồ, và nơi nhận không biết kích thích bắt đầu khi nào. Có ba câu trả lời.
+
+\emph{Độ trễ tương đối.} Hai nơ-ron thấy cùng một kích thích, và hiệu độ trễ của chúng $t_1^A-t_1^B$ chỉ phụ thuộc vào đầu vào của chúng chứ không vào thời điểm bắt đầu. Các thời điểm được so sánh bởi bộ phát hiện trùng khớp có độ trễ (hình~\ref{fig:itd}). Nếu $N$ nơ-ron mỗi nơ-ron phát một xung, chính \emph{thứ tự} đến của chúng mang tới $\log_2N!$ bit: với mười nơ-ron là khoảng hai mươi hai bit, trong khi câu trả lời ``đã phát xung hay chưa'' cho không quá mười bit. Ở võng mạc, người ta đã chỉ ra rằng từ độ trễ tương đối của các xung đầu tiên của nơ-ron đầu ra có thể khôi phục hình ảnh nhanh và đáng tin cậy~\cite{Gollisch2008}.
+
+\emph{Đợt bùng phát làm dấu mở đầu từ.} Một thay đổi đột ngột của kích thích khiến rất nhiều nơ-ron phát xung gần như đồng thời. Đợt bùng phát như vậy tự nó là dấu mốc bắt đầu, như khoảng lặng dài giữa các từ trong mã Morse, và nơi nhận tính độ trễ từ đó.
+
+\emph{Nhịp cục bộ.} Ở chương~\ref{sec:gaba}, vòng \nt{GLUT}--\nt{GABA} sinh ra một nhịp cục bộ có chu kỳ $12$--$50\ms$. Đó không phải đồng hồ, nhưng trong một chu kỳ của nó, nơ-ron có đầu vào mạnh kịp phát xung sớm hơn nơ-ron có đầu vào yếu, và~\eqref{eq:latency} biến thành mã \emph{pha}: con số được ghi ở chỗ xung đến vào phần nào của chu kỳ. Mã như vậy đã được quan sát: các nơ-ron phụ trách một vị trí nhất định trong không gian phát xung ngày càng sớm hơn trong chu kỳ của một nhịp cục bộ chậm khi con vật đi qua vị trí ``của mình''~\cite{OKeefe1993}. Não dùng pha rộng rãi đến mức nào thì hiện chưa biết.
+
+\section{Mã do nơi nhận chọn}
+
+Trong một chuỗi xung có cả tần số, thời điểm và thứ tự. Cái nào trong số đó được đọc là do nơi nhận quyết định, và nó quyết định bằng một tham số --- hằng số thời gian $\tau$ của nó.
+
+Lấy trung bình phương trình~\eqref{eq:glutneuron} theo thời gian. Nếu nơ-ron nhận các dòng độc lập với tần số $r_j$, điện áp trung bình và độ dao động tương đối của nó bằng
+\begin{empheq}[box=\keybox]{equation}
+\bar V \;=\; \tau\sum_j w_j\,r_j ,
+\qquad
+\frac{\sigma_V}{\bar V} \;\approx\; \frac{1}{\sqrt{2\,r_{\text{vào}}\,\tau}} ,
+\label{eq:reader}
+\end{empheq}
+trong đó đẳng thức thứ hai được viết cho các trọng số bằng nhau, còn $r_{\text{vào}}$ là tổng tần số của mọi đầu vào. Khi $\tau$ lớn, điện áp hầu như không dao động và lặp lại tổng có trọng số của các tần số: nơi nhận là một \emph{bộ tích phân}, nó đọc tần số và quên thời điểm. Khi $\tau$ nhỏ, điện áp kịp giảm giữa các xung, và ngưỡng chỉ đạt được khi vài xung đến trong phạm vi cửa sổ~\eqref{eq:window}: nơi nhận là một \emph{bộ phát hiện trùng khớp}, nó đọc thời điểm (hình~\ref{fig:reader}). Một nghìn đầu vào, mỗi đầu vào năm xung mỗi giây, với $\tau=10\ms$ cho độ dao động khoảng mười phần trăm, gần như tích phân thuần túy. Nếu ức chế, như ở chương~\ref{sec:gaba}, rút ngắn $\tau$ xuống $2\ms$, độ dao động tăng lên hơn hai mươi phần trăm, và nơ-ron bắt đầu nhận ra các sự trùng khớp.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=0.115cm,y=1cm]
+% common input: the same spike train for both receivers
+\foreach \s in {6,21,22,38,52,55.5,59,62.5,66,69.5,73,76.5,80,83.5,87,90.5,94,97.5}{\draw[thick,gray!40!black] (\s,5.25) -- (\s,5.65);}
+\draw[gray!70!black] (0,5.25) -- (105,5.25);
+\node[left,font=\small] at (-1,5.45) {đầu vào};
+\node[above,font=\scriptsize,gray!40!black] at (13.5,5.65) {thưa};
+\node[above,font=\scriptsize,gray!40!black] at (21.5,6.0) {cặp};
+\node[above,font=\scriptsize,gray!40!black] at (75,5.65) {dày};
+% axes and thresholds
+\foreach \y/\th in {2.7/2.5,0/1.5}{
+  \draw[gray!70!black] (0,\y) -- (106,\y) node[right,black] {\small $t$};
+  \draw[densely dashed,gray!60!black] (0,\y+0.6*\th) -- (104,\y+0.6*\th) node[right,black,font=\small] {$\theta$};
+}
+\node[anchor=south west,font=\small] at (0,4.3) {$\tau=10\ms$: bộ tích phân};
+\node[anchor=south east,font=\small] at (104,1.0) {$\tau=2\ms$: bộ phát hiện trùng khớp};
+% integrator: tau=10 ms, theta=2.5w
+\begin{scope}[yshift=2.7cm]
+\foreach \a/\b/\v in {0/6/0.000,6/21/1.000,21/22/1.223,22/38/2.107,38/52/1.425,52/55.5/1.351,55.5/59/1.952,59/62.5/2.376,62.5/66/0.000,66/69.5/1.000,69.5/73/1.705,73/76.5/2.201,76.5/80/0.000,80/83.5/1.000,83.5/87/1.705,87/90.5/2.201,90.5/94/0.000,94/97.5/1.000,97.5/104/1.705}{\draw[very thick,blue!60!black] plot[domain=\a:\b,samples=14] (\x,{0.6*\v*exp(-(\x-\a)/10)});}
+\foreach \s/\p/\q in {6/0.000/1.000,21/0.223/1.223,22/1.107/2.107,38/0.425/1.425,52/0.351/1.351,55.5/0.952/1.952,59/1.376/2.376,62.5/1.674/2.500,62.5/2.500/0.000,66/0.000/1.000,69.5/0.705/1.705,73/1.201/2.201,76.5/1.551/2.500,76.5/2.500/0.000,80/0.000/1.000,83.5/0.705/1.705,87/1.201/2.201,90.5/1.551/2.500,90.5/2.500/0.000,94/0.000/1.000,97.5/0.705/1.705}{\draw[very thick,blue!60!black] (\s,0.6*\p) -- (\s,0.6*\q);}
+\foreach \s in {62.5,76.5,90.5}{\draw[->,thick,red!70!black] (\s,1.58) -- (\s,1.95);}
+\end{scope}
+% coincidence: tau=2 ms, theta=1.5w
+\begin{scope}[yshift=0cm]
+\foreach \a/\b/\v in {0/6/0.000,6/21/1.000,21/22/1.001,22/38/0.000,38/52/1.000,52/55.5/1.001,55.5/59/1.174,59/62.5/1.204,62.5/66/1.209,66/69.5/1.210,69.5/73/1.210,73/76.5/1.210,76.5/80/1.210,80/83.5/1.210,83.5/87/1.210,87/90.5/1.210,90.5/94/1.210,94/97.5/1.210,97.5/104/1.210}{\draw[very thick,blue!60!black] plot[domain=\a:\b,samples=14] (\x,{0.6*\v*exp(-(\x-\a)/2)});}
+\foreach \s/\p/\q in {6/0.000/1.000,21/0.001/1.001,22/0.607/1.500,22/1.500/0.000,38/0.000/1.000,52/0.001/1.001,55.5/0.174/1.174,59/0.204/1.204,62.5/0.209/1.209,66/0.210/1.210,69.5/0.210/1.210,73/0.210/1.210,76.5/0.210/1.210,80/0.210/1.210,83.5/0.210/1.210,87/0.210/1.210,90.5/0.210/1.210,94/0.210/1.210,97.5/0.210/1.210}{\draw[very thick,blue!60!black] (\s,0.6*\p) -- (\s,0.6*\q);}
+\foreach \s in {22}{\draw[->,thick,red!70!black] (\s,0.98) -- (\s,1.35);}
+\end{scope}
+\foreach \x in {0,50,100}{\draw[gray!60!black] (\x,-0.06) -- (\x,0.06) node[below,font=\scriptsize] {\x\,ms};}
+\end{tikzpicture}
+\caption{Cùng một đầu vào --- hai nơi nhận khác nhau. Mỗi xung nâng điện áp thêm $w$, sau đó điện áp rò đi, như trong mô hình nơ-ron~\eqref{eq:glutneuron}; mũi tên đỏ là xung của nơi nhận. Nơi nhận chậm ($\tau=10\ms$, $\theta=2.5w$) phát xung ở chỗ có \emph{nhiều} xung và không nhận ra cặp xung. Nơi nhận nhanh ($\tau=2\ms$, $\theta=1.5w$) chỉ phát xung với cặp xung trong phạm vi cửa sổ~\eqref{eq:window}, và bỏ qua dòng xung dày nhưng không trùng khớp.}
+\label{fig:reader}
+\end{figure}
+
+Các phép đo cho thấy ở vỏ não đang hoạt động, độ dẫn của màng tăng lên vài lần so với lúc nghỉ~\cite{Destexhe2003}. Vậy ở đó $\tau$ ngắn hơn, và nơ-ron vỏ não ở chế độ làm việc gần với bộ phát hiện trùng khớp hơn là với bộ tích phân.
+
+\begin{keyblock}
+\begin{proposition}[Mã do nơi nhận quyết định]
+\label{prop:reader}
+Cùng một chuỗi xung, với nơi nhận chậm mang tần số, với nơi nhận nhanh mang thời điểm, với thể tích mà chất dẫn truyền được nhả vào mang mức nồng độ được làm trơn trong vài giây (chương~\ref{sec:serocomputer}). Mã nào được dùng không do nơi gửi quyết định, mà do hằng số thời gian của nơi nhận, và hằng số này được ức chế điều chỉnh.
+\end{proposition}
+\end{keyblock}
+\section{Chấm và gạch: khớp thần kinh như một bộ lọc}
+
+Cho đến giờ, khớp thần kinh ở ta là một dây dẫn có trọng số. Thực ra đáp ứng của nó phụ thuộc vào các xung trước đó, và điều này cho ngôn ngữ của nơ-ron ký hiệu thứ hai.
+
+\emph{Cạn kiệt: khớp thần kinh truyền sự thay đổi.} Mỗi lần nhả tiêu tốn một phần $U$ lượng chất dẫn truyền sẵn sàng để nhả~\cite{Tsodyks1997}, còn lượng dự trữ phục hồi với hằng số thời gian $\tau_{\text{ph}}$ cỡ hàng trăm mili giây. Với tần số $r$, biên độ đáp ứng với một xung xác lập xấp xỉ ở mức $A(r)=A_0/(1+U r\tau_{\text{ph}})$, trong đó $A_0$ là đáp ứng của khớp thần kinh đã nghỉ ngơi. Dòng mà nơi nhận nhận được trong một đơn vị thời gian bằng
+\begin{empheq}[box=\keybox]{equation}
+r\,A(r) \;=\; \frac{A_0\,r}{1+U r\,\tau_{\text{ph}}}
+\;\xrightarrow[r\to\infty]{}\; \frac{A_0}{U\tau_{\text{ph}}} .
+\label{eq:depression}
+\end{empheq}
+Với $U=0.5$ và $\tau_{\text{ph}}=0.8\,\text{s}$, sự bão hòa bắt đầu ngay từ $1/(U\tau_{\text{ph}})=2.5$ xung mỗi giây. Nếu tần số tăng từ năm lên hai mươi, dòng xác lập chỉ tăng thêm một phần ba. Bù lại, những xung đầu tiên ở tần số mới đến khi lượng dự trữ vẫn như cũ, và dòng thoáng chốc vọt lên gấp bốn, rồi sau $\tau_{\text{ph}}/(1+Ur\tau_{\text{ph}})\approx90\ms$ thì giảm xuống (hình~\ref{fig:depression}).
+
+Khớp thần kinh như vậy không truyền tần số mà truyền \emph{sự thay đổi} của nó, về thực chất là sự thay đổi tương đối $\Delta r/r$~\cite{Abbott1997depression}. Với người làm điện tử, đây là một bộ lọc thông cao đặt ngay trên dây dẫn.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=12.5cm,y=1cm]
+% input rate
+\draw[->,gray!70!black] (0,2.6) -- (0.9,2.6) node[right,black] {\small $t$};
+\draw[->,gray!70!black] (0,2.6) -- (0,4.3) node[above,black] {\small $r$};
+\draw[very thick,blue!60!black] (0,2.9) -- (0.2,2.9) -- (0.2,3.8) -- (0.8,3.8);
+\node[left,font=\scriptsize] at (0,2.9) {$5$};
+\node[left,font=\scriptsize] at (0,3.8) {$20$};
+\node[right,font=\small,blue!60!black] at (0.4,4.1) {tần số ở đầu vào khớp thần kinh};
+% output current
+\draw[->,gray!70!black] (0,0) -- (0.9,0) node[right,black] {\small $t$};
+\draw[->,gray!70!black] (0,0) -- (0,2.45) node[left,black] {\small $rA$};
+\draw[densely dashed,gray!60!black] (0,0.667) -- (0.8,0.667);
+\draw[very thick,red!70!black] (0,0.5) -- (0.2,0.5) -- (0.2,2.0)
+   plot[domain=0.2:0.8,samples=60] (\x,{0.667+(2.0-0.667)*exp(-(\x-0.2)/0.089)});
+\node[left,font=\scriptsize] at (0,0.5) {$1.7$};
+\node[left,font=\scriptsize] at (0,2.0) {$6.7$};
+\node[right,font=\scriptsize] at (0.8,0.667) {$2.2$};
+\node[right,font=\small,red!70!black] at (0.28,1.6) {dòng tới nơi nhận: vọt lên rồi giảm trong $\approx90\ms$};
+\draw[gray!60!black] (0.2,-0.08) -- (0.2,0.08); \node[below,font=\scriptsize] at (0.2,0) {$0.2\,\text{s}$};
+\draw[gray!60!black] (0.8,-0.08) -- (0.8,0.08); \node[below,font=\scriptsize] at (0.8,0) {$0.8\,\text{s}$};
+\end{tikzpicture}
+\caption{Khớp thần kinh cạn kiệt theo công thức~\eqref{eq:depression} với $U=0.5$, $\tau_{\text{ph}}=0.8\,\text{s}$; dòng tính bằng đơn vị $A_0$ mỗi giây, đường nét đứt là dòng xác lập: nó chỉ tăng từ $1.7$ lên $2.2$, còn tại thời điểm nhảy bậc --- lên tới $6.7$. Khớp thần kinh báo cho nơi nhận rằng tần số đã thay đổi, chứ không báo tần số bằng bao nhiêu.}
+\label{fig:depression}
+\end{figure}
+
+\emph{Tạo thuận: chùm xung như một gạch.} Ở những khớp thần kinh khác, xác suất nhả thấp, nhưng sau mỗi xung nó tăng lên trong hàng chục mili giây. Một xung đơn lẻ qua khớp thần kinh như vậy thường bị mất. Còn một \emph{chùm xung} --- vài xung liên tiếp cách nhau vài mili giây --- gần như chắc chắn đi qua. Ngay cả khi không có tạo thuận, xác suất mất cả $k$ xung của chùm bằng
+\begin{empheq}[box=\keybox]{equation}
+P_{\text{mất}} \;=\; (1-p)^k ,
+\label{eq:burst}
+\end{empheq}
+với $p=0.2$, đó là $0.8$ cho một xung đơn và $0.41$ cho chùm bốn xung; tạo thuận còn làm nó giảm mạnh hơn nữa. Như vậy nơ-ron có ký hiệu thứ hai: xung đơn là chấm, chùm xung là gạch. Khớp thần kinh cạn kiệt truyền tốt nhất xung đầu tiên sau khoảng lặng; khớp thần kinh tạo thuận cho chùm xung đi qua và dập các chấm đơn lẻ. Việc chùm xung được truyền đáng tin cậy hơn đã được đo; việc não thực sự dùng chúng như một ký hiệu riêng là một giả thuyết hợp lý~\cite{Lisman1997}.
+
+\section{Nơ-ron \nt{GABA} nói thế nào}
+
+Đông nhất trong số chúng ở vỏ não là các nơ-ron nhanh~\cite{Tremblay2016}. Xung của chúng ngắn hơn xung của nơ-ron \nt{GLUT}, chúng có thể phát xung đều và lâu với tần số hàng trăm mỗi giây mà gần như không mỏi. Khớp thần kinh của chúng đáng tin cậy hơn: liên kết với mỗi nơi nhận gồm nhiều điểm nhả, và xung gần như không bao giờ bị mất. Đầu ra của chúng đậu gần chỗ sinh ra xung của nơi nhận, nên chúng không điều khiển cách nơi nhận cộng các đầu vào mà điều khiển việc nó có phát xung không và khi nào.
+
+Bản thân chúng nhận kích thích từ nhiều nơ-ron \nt{GLUT} lân cận và báo về tổng hoạt động xung quanh --- đúng thứ cần cho phép chia ở chương~\ref{sec:gaba}. Cuối cùng, các nơ-ron \nt{GABA} nhanh nối với nhau và dễ phát xung cùng lúc; chính chúng tạo ra nhịp cục bộ đã nói ở trên~\cite{Cardin2009}.
+
+Theo ngôn ngữ của mã Morse, nơ-ron \nt{GABA} không phụ trách các chữ cái mà phụ trách \emph{khoảng lặng}. Chúng cắt dòng xung \nt{GLUT} liên tục thành những cửa sổ mà trong đó nơi nhận có thể phát xung, thu hẹp cửa sổ trùng khớp và làm nhỏ tiếng cả dòng khi nó trở nên quá ồn.
+
+\begin{keyblock}
+\begin{proposition}[Phân vai]
+\label{prop:punctuation}
+Nơ-ron \nt{GLUT} mang nội dung thông điệp: \emph{cái gì} và \emph{bao nhiêu}. Nơ-ron \nt{GABA} nhanh mang phần đánh dấu của nó: \emph{khi nào} được nói và \emph{to đến đâu}; một lớp nữa, bằng cách ức chế các nơ-ron ức chế, quyết định cổng mở \emph{cho ai}. Từng phần của sự phân vai này đã được đo; như một quy tắc chung, đây là giả thuyết làm việc.
+\end{proposition}
+\end{keyblock}
+
+Có những nơ-ron \nt{GABA} khác, chậm hơn, có đầu ra đậu vào từng đầu vào riêng của nơi nhận. Chúng làm việc như phép cấm~\eqref{eq:veto} ở chương~\ref{sec:gaba}: đóng một dòng xung \nt{GLUT} mà không động đến các dòng khác.
+
+Việc chia nơ-ron \nt{GABA} thành nhanh và chậm là một bức tranh cũ, và nó chưa đầy đủ. Hiện nay trong vỏ não người ta phân biệt ít nhất ba lớp lớn~\cite{Tremblay2016}, và lớp thứ ba được cấu tạo bất ngờ: nó không ức chế nơ-ron \nt{GLUT} mà ức chế các nơ-ron \nt{GABA} khác, trước hết là những nơ-ron đóng các đầu vào~\cite{Pfeffer2013}. Ức chế sự ức chế là phủ định kép. Nơ-ron như vậy \emph{mở} cổng mà không gửi cho nơi nhận một xung kích thích nào. Nó được bật bởi tín hiệu từ những vùng vỏ não khác và bởi các kênh quảng bá, nên nó hoạt động như đầu vào cho phép của cả một vùng mạng: chừng nào nó hoạt động, các lệnh cấm được gỡ bỏ, và dòng xung đi qua~\cite{Pi2013}. Ở phụ lục~\ref{sec:othermediators}, thủ thuật này được gọi là giải ức chế.
+\section{Ngôn ngữ tiết kiệm}
+
+Điều cuối cùng được biết chắc chắn về ngôn ngữ của nơ-ron là nó đắt. Một xung, cùng với công việc của khớp thần kinh do nó gây ra, tốn khoảng $10^9$ phân tử ATP (ước tính cho vỏ não loài gặm nhấm~\cite{Attwell2001}), còn một phân tử cho khoảng $10^{-19}$ joule. Vậy một xung có giá cỡ $E_{\text{xung}}\sim10^{-10}$ joule. Cả bộ não tiêu thụ khoảng $20$ oát, và nếu một nửa dành cho việc truyền tín hiệu, $P\sim10$ oát, thì tần số trung bình của một nơ-ron là
+\begin{empheq}[box=\keybox]{equation}
+\bar r \;\approx\; \frac{P}{N\,E_{\text{xung}}}
+\;\sim\; \frac{10\ \text{W}}{8.6\cdot10^{10}\cdot10^{-10}\ \text{J}}
+\;\approx\; 1\ \text{xung mỗi giây}.
+\label{eq:energy}
+\end{empheq}
+Các ước tính chi tiết hơn cho vỏ não còn cho con số nhỏ hơn~\cite{Lennie2003}. Mã của não buộc phải \emph{thưa}: chỉ một phần nhỏ nơ-ron được phép làm việc nhanh.
+
+Từ~\eqref{eq:spikeentropy} có thể thấy điều này không tệ lắm. Với độ chính xác $1\ms$, một xung của nơ-ron làm việc với tần số $100$ mỗi giây mang không quá năm bit, còn một xung của nơ-ron làm việc mỗi giây một lần --- tới mười một bit. Nếu phải trả tiền cho từng xung, nói thưa có lợi. Vỏ não quả thực đổi độ chính xác lấy năng lượng: khi thiếu thức ăn, nơ-ron giữ nguyên tần số xung nhưng chi ít hơn cho dòng qua khớp thần kinh, và đáp ứng của chúng trở nên kém chính xác hơn~\cite{Padamsey2022}.
+
+Trong mã Morse, các chữ cái thường gặp thì ngắn: chữ cái thường gặp nhất trong văn bản tiếng Anh, E, chỉ là một chấm. Theo những gì đã biết, mã của nơ-ron tuân theo cùng quy tắc đó dưới một dạng khác: cái gì đã được dự kiến thì tốn ít xung~\cite{Barlow1961}. Với kích thích không đổi, nơ-ron dần giảm tần số, các cảm biến ở chương~\ref{sec:glutcomputer} đáp ứng với sự thay đổi chứ không phải với mức, còn nơ-ron \nt{DOPA} ở chương~\ref{sec:neurontypes} chỉ báo sai số dự đoán phần thưởng.
+
+\begin{keyblock}
+\begin{proposition}[Tiết kiệm]
+\label{prop:economy}
+Năng lượng giới hạn tần số trung bình của nơ-ron ở mức cỡ một xung mỗi giây. Vì thế ngôn ngữ của nơ-ron \nt{GLUT} là thưa và dùng xung cho tin tức: cho những gì đã thay đổi hoặc không được dự đoán. Giới hạn năng lượng đã được đo; việc mã của não được tinh chỉnh cho số bit trên mỗi joule lớn nhất là một giả thuyết có cơ sở vững chắc.
+\end{proposition}
+\end{keyblock}
+
+\section{Tổng kết}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{2.6cm}>{\raggedright}p{2.3cm}>{\raggedright}p{3.0cm}>{\raggedright}p{2.0cm}>{\raggedright\arraybackslash}p{3.6cm}}
+\toprule
+Cách ghi & Mang gì & Ai đọc & Thời gian cho một thông điệp & Điều đã biết \\
+\midrule
+số thứ tự của nơ-ron đã phát xung (mã vị trí) & giá trị nào & mọi nơi nhận; bộ phát hiện trùng khớp & một độ trễ & đã xác lập ở nơ-ron cảm giác và trong việc xác định hướng âm thanh \\
+tần số của một nơ-ron & độ lớn & bộ tích phân có $\tau$ lớn; thể tích (ch.~\ref{sec:serocomputer}) & hàng trăm ms -- vài giây & đã xác lập; quá chậm cho một tầng xử lý $10$--$20\ms$ \\
+tần số của một nhóm & độ lớn & nơ-ron có hàng nghìn đầu vào & $10$--$50\ms$ & đã xác lập; lợi ích bị tương quan giới hạn~\eqref{eq:correlated} \\
+thời điểm xung đầu tiên, thứ tự & độ lớn, thứ tự & bộ phát hiện trùng khớp có độ trễ & một độ trễ & đã xác lập ở đầu vào hệ thần kinh; ở vỏ não còn bàn cãi \\
+pha trong nhịp cục bộ & độ lớn, vị trí & các nơ-ron có chung nhịp & chu kỳ $12$--$50\ms$ và chậm hơn & quan sát được ở một số vùng; vai trò chung là giả thuyết \\
+chùm xung (``gạch'') & ``quan trọng'': chuyển phát tin cậy & khớp thần kinh tạo thuận & $\sim10\ms$ & độ tin cậy đã đo; ký hiệu riêng là giả thuyết \\
+thay đổi tần số & tin tức & khớp thần kinh cạn kiệt & $\sim0.1\,\text{s}$ & đã xác lập \\
+xung của nơ-ron \nt{GABA} nhanh & khi nào và to đến đâu & mọi nơ-ron \nt{GLUT} lân cận & $1$--$30\ms$ & nhịp và phép chia đã đo; ``dấu câu'' như một quy tắc là giả thuyết \\
+\bottomrule
+\end{tabular}
+\caption{Những cách nơ-ron \nt{GLUT} và \nt{GABA} ghi thông điệp bằng xung. Cột bên phải tách điều đã đo khỏi điều giả định.}
+\label{tab:code}
+\end{table}
+
+Bảng~\ref{tab:code} tập hợp những gì ta biết; từ đó cũng thấy được những gì ta chưa biết. Ta không biết vỏ não dùng thời điểm chính xác của xung đến mức nào, chứ không chỉ tần số của các nhóm. Ta không biết nơ-ron có ``từ'' hay không --- những tổ hợp xung ổn định của nhiều nơ-ron được đọc như một khối. Và ta không biết ngôn ngữ có giống nhau ở các phần khác nhau của não không. Mã Morse có thể học trong một buổi tối, vì bảng mã của nó đã biết. Bảng mã của ngôn ngữ nơ-ron còn phải được lập, và nhiều khả năng người lập sẽ là các kỹ sư truyền thông.
+
+\section{Bài tập}
+
+\begin{exercise}[\lvlA]
+\label{ex:04:1}
+\emph{Dung lượng bằng con số.} $\Delta t=1\ms$. (a)~Một nơ-ron có tần số $1$ xung mỗi giây cho bao nhiêu bit trên một joule, với giá một xung theo~\eqref{eq:energy}? (b)~Với $r=10$, nơi nhận chỉ đếm xung trong một giây rút ra ít hơn giới hạn~\eqref{eq:spikeentropy} bao nhiêu lần?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:04:2}
+\emph{Tần số tối ưu.} Nơ-ron tiêu thụ công suất $P_0+rE_{\text{xung}}$, trong đó $P_0$ là nửa còn lại của $20$~W chia cho mọi nơ-ron, $E_{\text{xung}}=10^{-10}$~J. Ở tần số $r$ nào, số bit trên một joule $R_{\max}(r)/(P_0+rE_{\text{xung}})$ theo~\eqref{eq:spikeentropy} với $\Delta t=1\ms$ là lớn nhất?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:04:3}
+\emph{Tương quan nào có hại.} $N=1000$ nơ-ron, phương sai $\sigma^2=1$, tương quan từng cặp $c=0.1$. Tính thông tin Fisher $\mathcal I=f'^{\mathsf T}\Sigma^{-1}f'$ ($\Sigma$ là ma trận hiệp phương sai) cho các độ dốc bằng nhau $f'=\mathbf 1$ và cho các độ dốc $\pm1$ với $\mathbf 1^{\mathsf T}f'=0$. Chúng khác nhau bao nhiêu lần?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:04:4}
+\emph{Mô phỏng: bộ phát hiện trùng khớp.} Nơ-ron~\eqref{eq:glutneuron} nhận $1000$ đầu vào Poisson, mỗi đầu vào $5$ xung mỗi giây, $w=1$; ngưỡng $\theta$ sao cho điện áp tự do vượt qua nó mỗi giây một lần. Bằng mô phỏng, tìm số đầu vào đồng thời $m$ làm nơ-ron phát xung với xác suất $1/2$ khi $\tau=10$ và $2\ms$.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:04:5}
+\emph{Thiết kế: bộ phát hiện thay đổi tương đối.} Chọn khớp thần kinh~\eqref{eq:depression} sao cho: dòng xác lập ở $40$ xung mỗi giây cao hơn không quá $10\,\%$ so với ở $10$, và sau bước nhảy lên $40$, dòng đạt mức mới với hằng số thời gian không quá $50\ms$. $\tau_{\text{ph}}$ nhỏ nhất bằng bao nhiêu và với $U$ nào?
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:04:6}
+\emph{Thời điểm xung đầu và chùm xung.} (a)~Theo~\eqref{eq:latency}, tìm đầu vào làm xung đầu tiên đến đúng sau một hằng số thời gian. Nó phụ thuộc vào gì? (b)~Với xác suất nhả $p=0.2$, chùm xung cần bao nhiêu xung để xác suất mất tất cả dưới $5\,\%$?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:04:7}
+\emph{Nghiên cứu: bao nhiêu bit nằm ở cách sắp xếp.} Nơ-ron là các ô độc lập~\eqref{eq:spikeentropy}, $r=10$, $\Delta t=1\ms$. (a)~Tách entropy của một ``từ'' gồm $20$ ô thành entropy của số xung và phần còn lại. (b)~Mô phỏng ước lượng entropy theo tần suất các từ từ $N=30$ và $10^4$ bản ghi. Nó bị ước lượng thấp đi bao nhiêu?
+\end{exercise}

@@ -1,0 +1,362 @@
+\chapter{Mạng nơ-ron biết học: thêm \nt{DOPA}}
+\chaptermark{Mạng biết học}
+\label{sec:dofa}
+
+\section{Luật chơi}
+
+Trong mọi sơ đồ ở các chương trước, trọng số do kỹ sư đặt. Trong cơ thể không có kỹ sư. Trọng số phải tự thiết lập trong quá trình hoạt động, và sao cho mạng làm được điều gì đó hữu ích. Đó chính là học.
+
+Ta thêm một quy tắc nữa vào các quy tắc cũ. Khớp thần kinh tự thay đổi trọng số của mình, và nó chỉ có thể biết những gì xảy ra \emph{ngay cạnh nó}: hoạt động của bên gửi $x$, hoạt động của bên nhận $y$ và những chất đến được chỗ nó. Không ai có thể gửi cho khớp thần kinh một hiệu chỉnh riêng.
+
+Điều này loại bỏ phương pháp chính của mạng nơ-ron nhân tạo --- lan truyền ngược sai số. Ở đó, sai số đầu ra đi ngược qua mạng theo chính các trọng số ấy, trong một pha riêng sau lượt truyền thuận, và mỗi trọng số nhận được hiệu chỉnh riêng của mình. Muốn vậy cần có dây ngược lặp lại chính xác dây thuận, và một nhịp đồng hồ chung. Trong não chưa tìm thấy cả hai thứ này, ít nhất là ở dạng như trong mạng nhân tạo~\cite{Lillicrap2020,WhittingtonBogacz2019}.
+
+Ta sẽ viết sự thay đổi trọng số như một quá trình liên tục chậm:
+\begin{equation}
+\frac{\dd w}{\dd t} \;=\; \eta\,\Phi(\text{những gì khớp thần kinh biết}),
+\label{eq:plasticity}
+\end{equation}
+trong đó $\eta$ là tốc độ học, nhỏ tới mức trong thời gian một xung trọng số gần như không đổi. Cả chương này bàn về việc hàm $\Phi$ có thể như thế nào.
+
+\section{Trọng số được lưu ở đâu}
+\label{sec:weightstore}
+
+Một khớp thần kinh ``thay đổi trọng số của mình'' là gì? Liên kết có hai phía: đầu tận cùng của dây bên gửi (phía \emph{trước khớp}) và vùng màng của bên nhận có các thụ thể (phía \emph{sau khớp}), ở giữa là một khe hẹp. Ở các liên kết \nt{GLUT}, màng bên nhận thường nằm trên một \emph{gai} --- một chỗ nhô nhỏ trên nhánh đầu vào của bên nhận. Tiện nhất là tách trọng số của liên kết thành ba thừa số~\cite{delCastillo1954}:
+\begin{empheq}[box=\keybox]{equation}
+w \;=\; N_s\,p\,A_1 .
+\label{eq:quantal}
+\end{empheq}
+Ở đây $N_s$ là số vị trí phóng giữa hai nơ-ron, $p$ là xác suất để một xung phóng ra một gói chất dẫn truyền thần kinh tại một vị trí (chính là $p$ ở chương~\ref{sec:code}), $A_1$ là đáp ứng của bên nhận với một gói, tức là có bao nhiêu thụ thể bắt được nó. Thừa số $p$ nằm ở bên gửi, $A_1$ ở bên nhận, còn $N_s$ cần cả hai phía: vị trí phóng mới mọc ra, vị trí cũ biến mất, và điều này diễn ra suốt đời.
+
+\emph{Bên nhận quyết định.} Ở một khớp thần kinh \nt{GLUT} điển hình, một trong các thụ thể glutamate chỉ dẫn dòng khi trùng hai điều kiện: glutamate đã đến từ bên gửi, và màng bên nhận đã bị kích thích~\cite{Nowak1984}. Đó là quy tắc Hebb được cài vào một phân tử --- bộ phát hiện trùng khớp ở chương~\ref{sec:glutcomputer}, đặt ngay tại đầu vào của chính khớp thần kinh. Khi được kích hoạt, thụ thể cho calci đi vào bên nhận, và calci khởi động sự thay đổi trọng số. Bên nhận là nơi duy nhất thấy được cùng lúc cả đầu vào lẫn đầu ra, nên quyết định được đưa ra ở đó.
+
+\emph{Phía nào cũng có thể thực thi quyết định.} Dạng tăng cường dài hạn được nghiên cứu kỹ nhất diễn ra ở bên nhận: các thụ thể mới được gắn vào màng~\cite{Malinow2002}, và gai lớn lên~\cite{Matsuzaki2004} --- $A_1$ tăng. Nhưng bên nhận cũng có thể đổi $p$: nó phóng ra một chất đi ngược qua khe về phía bên gửi --- kênh ngược ở phụ lục~\ref{sec:othermediators} --- và bên gửi bắt đầu phóng ít chất dẫn truyền hơn~\cite{WilsonNicoll2001}. Còn những thay đổi trọng số ngắn hạn, suy giảm và tạo thuận ở chương~\ref{sec:code}, là những thay đổi của $p$ mà bên gửi tự điều khiển theo hoạt động gần đây của nó.
+
+Với kỹ sư, thanh ghi trọng số được chia giữa hai vi mạch. Quy tắc học do bên nhận thực thi, còn kết quả thì nó có thể ghi cả ở phía mình lẫn ở bên gửi, qua kênh ngược. Vì vậy chữ ``cục bộ'' trong các quy tắc của chương này không có nghĩa là một phía của liên kết, mà là toàn bộ liên kết.
+
+\section{Học không cần thầy}
+
+Việc đơn giản nhất mà khớp thần kinh có thể làm là mạnh lên khi bên gửi và bên nhận cùng hoạt động:
+\begin{equation}
+\frac{\dd w}{\dd t} \;=\; \eta\,x\,y .
+\label{eq:hebb}
+\end{equation}
+Đây là quy tắc Hebb~\cite{Hebb1949}. Nó cục bộ và không cần đồng hồ. Nhưng nó mắc cùng một vấn đề như mạng \nt{GLUT} ở chương~\ref{sec:glutcomputer}: hồi tiếp dương. Trọng số mạnh làm $y$ lớn hơn, $y$ lớn lại làm trọng số mạnh thêm, và trọng số tăng không giới hạn. Cách chữa là hồi tiếp âm theo trọng số: cho trọng số đồng thời giảm tỷ lệ với $y^2$. Với nơ-ron có các đầu vào $\mathbf x$ và đầu ra tuyến tính $y=\mathbf w\cdot\mathbf x$, ta được
+\begin{empheq}[box=\keybox]{equation}
+\frac{\dd\mathbf w}{\dd t} \;=\; \eta\,y\,\bigl(\mathbf x - y\,\mathbf w\bigr) .
+\label{eq:oja}
+\end{empheq}
+Quy tắc vẫn cục bộ: khớp thần kinh biết đầu vào $x_i$ của nó, đầu ra $y$ và trọng số $w_i$.
+
+\begin{keyblock}
+\begin{proposition}[Quy tắc Hebb tìm ra gì]
+\label{prop:oja}
+Quy tắc~\eqref{eq:oja} đưa vectơ trọng số về độ dài đơn vị theo hướng mà các đầu vào biến thiên mạnh nhất --- về vectơ riêng chính của ma trận tương quan đầu vào $C=\langle\mathbf x\mathbf x^{\mathsf T}\rangle$~\cite{Oja1982}. Nơ-ron học cách xuất ra một đại lượng giàu thông tin nhất mà các đầu vào của nó có thể nén vào.
+\end{proposition}
+\end{keyblock}
+
+Chứng minh. Lấy trung bình~\eqref{eq:oja} theo các đầu vào: $\dd\mathbf w/\dd t=\eta\bigl(C\mathbf w-(\mathbf w^{\mathsf T}C\mathbf w)\,\mathbf w\bigr)$. Các điểm dừng là những vectơ riêng của $C$ có độ dài đơn vị. Nếu $\mathbf w$ gần vectơ riêng $\mathbf e_k$ với trị riêng $\lambda_k$, một nhiễu loạn nhỏ theo vectơ khác $\mathbf e_j$ tăng như $e^{\eta(\lambda_j-\lambda_k)t}$. Chỉ điểm mà mọi $\lambda_j<\lambda_k$ là ổn định, tức là vectơ chính.
+
+Cũng có một biến thể của quy tắc Hebb nhìn vào thời điểm của xung. Nếu xung của bên gửi đến $s$ mili giây \emph{trước} xung của bên nhận, trọng số tăng $A_+e^{-s/\tau_+}$; nếu nó đến $s$ mili giây \emph{sau}, trọng số giảm $A_-e^{-s/\tau_-}$, với $\tau_\pm$ cỡ hai mươi mili giây. Quy tắc này đã được đo trên khớp thần kinh của nơ-ron \nt{GLUT}~\cite{BiPoo1998}. Nó làm mạnh những liên kết \emph{có thể là nguyên nhân} của đáp ứng và làm yếu những liên kết đến muộn (hình~\ref{fig:stdp}). Cho một chuỗi kích thích chạy qua mạng nhiều lần, và trong mạng sẽ tự mọc ra các liên kết từ mỗi mắt xích tới mắt xích kế tiếp --- chuỗi ở chương~\ref{sec:glutcomputer}, được lắp mà không cần kỹ sư.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=0.07cm,y=1.3cm]
+\draw[->,gray!70!black] (-66,0) -- (68,0) node[right,black] {\small $s$};
+\draw[->,gray!70!black] (0,-1.2) -- (0,1.35) node[above,black] {\small thay đổi trọng số};
+\draw[very thick,blue!60!black] plot[domain=0.5:60,samples=50] (\x,{exp(-\x/20)});
+\draw[very thick,red!70!black] plot[domain=-60:-0.5,samples=50] (\x,{-0.6*exp(\x/20)});
+\draw[blue!60!black,thick] (0.5,0) -- (0.5,1);
+\draw[red!70!black,thick] (-0.5,0) -- (-0.5,-0.6);
+\foreach \x in {-40,-20,20,40}{\draw[gray!60!black] (\x,-0.04) -- (\x,0.04);}
+\node[below,font=\scriptsize] at (20,-0.04) {$20\ms$};
+\node[above,font=\scriptsize] at (-20,0.04) {$-20\ms$};
+\node[align=left,font=\small,blue!60!black,anchor=west] at (22,0.95) {bên gửi trước:\\ liên kết mạnh lên};
+\node[align=right,font=\small,red!70!black,anchor=east] at (-12,-0.95) {bên gửi sau:\\ liên kết yếu đi};
+\end{tikzpicture}
+\caption{Quy tắc Hebb theo thời gian. Trục ngang là $s=t_{\text{nhận}}-t_{\text{gửi}}$, xung của bên nhận chậm hơn xung của bên gửi bao nhiêu; $\tau_\pm=20\ms$, $A_-=0.6A_+$. Cửa sổ rộng vài chục mili giây --- cùng bậc với cửa sổ trùng khớp~\eqref{eq:window}.}
+\label{fig:stdp}
+\end{figure}
+
+Nhưng mọi quy tắc trong mục này đều dạy điều gì \emph{thường xảy ra}, chứ không dạy điều gì \emph{có ích}. Một khớp thần kinh chỉ biết $x$ và $y$ thì không biết hành động đã mang lại nước ép hay cơn đau. Muốn học từ kết quả, khớp thần kinh cần một tín hiệu thứ ba.
+
+\section{Thừa số thứ ba}
+
+Tín hiệu thứ ba do \nt{DOPA} mang đến: các nơ-ron dopamine phát quảng bá một con số duy nhất --- sai số dự đoán phần thưởng $\delta$~\eqref{eq:rpe} (chương~\ref{sec:neurontypes}). Cho sự thay đổi trọng số tỷ lệ với tích của ba thừa số: hoạt động của bên gửi, hoạt động của bên nhận và $\delta$.
+
+Khó khăn là phần thưởng không đến lúc mạng đang chọn hành động, mà sau đó hàng trăm mili giây hay vài giây. Khi $\delta$ đến, tích $xy$ đã bằng không từ lâu, và khớp thần kinh cần một bộ nhớ về việc nó đã tham gia. Bộ nhớ đơn giản nhất là mạch RC quen thuộc:
+\begin{empheq}[box=\keybox]{equation}
+\tau_e\,\frac{\dd e}{\dd t} \;=\; -e \;+\; x\,y ,
+\qquad
+\frac{\dd w}{\dd t} \;=\; \eta\,\delta(t)\,e(t) .
+\label{eq:threefactor}
+\end{empheq}
+Đại lượng $e$ được gọi là \emph{vết đủ điều kiện}~\cite{Fremaux2016}. Hoạt động đồng thời để lại trong khớp thần kinh một dấu mờ dần trong thời gian $\tau_e$. Nếu dopamine đến trong thời gian đó, trọng số thay đổi theo dấu của $\delta$; nếu không, dấu biến mất không để lại gì (hình~\ref{fig:trace}). Trên khớp thần kinh \nt{GLUT} đã đo được: dopamine đến trong vòng một--hai giây sau hoạt động đồng thời biến nó thành sự tăng cường liên kết, còn dopamine đến muộn hơn thì không~\cite{Yagishita2014}. Cửa sổ dẻo dài cỡ giây cũng đã được tìm thấy ở nơi tín hiệu thứ ba không phải là dopamine, mà là sự kích thích mạnh của chính bên nhận~\cite{Bittner2017}.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=7cm,y=1cm]
+\fill[orange!12] (0.7,-0.2) rectangle (0.8,5.2);
+% rows: x*y, delta, traces, weights
+\foreach \y/\lab in {4.4/{$x\,y$},3.1/{$\delta$},1.4/{vết $e$},0/{trọng số $w$}}{
+  \draw[gray!70!black] (0,\y) -- (1.42,\y);
+  \node[left,font=\small] at (-0.02,\y+0.3) {\lab};}
+\draw[very thick,blue!60!black] (0,4.4) -- (0,4.9) -- (0.2,4.9) -- (0.2,4.4);
+\node[right,font=\scriptsize,blue!60!black] at (0.21,4.8) {bên gửi và bên nhận cùng hoạt động};
+\draw[very thick,orange!85!black] (0,3.1) -- (0.7,3.1) -- (0.7,3.7) -- (0.8,3.7) -- (0.8,3.1) -- (1.4,3.1);
+\node[right,font=\scriptsize,orange!85!black] at (0.81,3.6) {dopamine đến};
+% traces, each in units of its own maximum
+\draw[very thick,blue!60!black] plot[domain=0:0.2,samples=20] (\x,{1.4+1.1*(1-exp(-\x))/(1-exp(-0.2))})
+  plot[domain=0.2:1.4,samples=60] (\x,{1.4+1.1*exp(-(\x-0.2))});
+\draw[thick,densely dashed,gray!50!black] plot[domain=0:0.2,samples=30] (\x,{1.4+1.1*(1-exp(-\x/0.05))/(1-exp(-4))})
+  plot[domain=0.2:1.4,samples=80] (\x,{1.4+1.1*exp(-(\x-0.2)/0.05)});
+\node[right,font=\scriptsize,blue!60!black] at (1.0,2.15) {$\tau_e=1\,\text{s}$};
+\node[right,font=\scriptsize,gray!40!black] at (0.3,1.65) {$\tau_e=50\ms$};
+% weights
+\draw[very thick,blue!60!black] (0,0.25) -- (0.7,0.25) -- (0.8,0.8) -- (1.4,0.8) node[right,font=\scriptsize] {$\tau_e=1\,\text{s}$: trọng số tăng};
+\draw[thick,densely dashed,gray!50!black] (0,0.2) -- (1.4,0.2) node[right,font=\scriptsize,gray!40!black] {$\tau_e=50\ms$: không đổi};
+% time axis marks
+\foreach \x/\l in {0/0,0.2/0.2,0.7/0.7,1.4/1.4}{\draw[gray!60!black] (\x,-0.05) -- (\x,0.05) node[below=3pt,font=\scriptsize] {\l\,s};}
+\draw[<->,thick,gray!50!black] (0.2,5.35) -- node[above,font=\scriptsize,black] {phần thưởng trễ $0.5\,\text{s}$} (0.7,5.35);
+\end{tikzpicture}
+\caption{Vết theo quy tắc~\eqref{eq:threefactor}. Hoạt động đồng thời kéo dài $0.2\,\text{s}$, dopamine đến nửa giây sau khi nó kết thúc. Các vết được vẽ theo tỷ lệ với giá trị cực đại của chính nó. Vết chậm ($\tau_e=1\,\text{s}$) lúc đó vẫn còn, vết nhanh ($\tau_e=50\ms$) đã tan từ lâu.}
+\label{fig:trace}
+\end{figure}
+
+\begin{keyblock}
+\begin{proposition}[Học bằng tín hiệu quảng bá]
+\label{prop:threefactor}
+Quy tắc~\eqref{eq:threefactor} chỉ thay đổi những khớp thần kinh đã tham gia hoạt động của mạng trong khoảng $\tau_e$ vừa qua, theo hướng do tín hiệu chung $\delta$ quy định. Tín hiệu quảng bá cùng với vết cục bộ cho ra một hiệu chỉnh có địa chỉ. Độ trễ giữa hành động và kết quả là chấp nhận được chừng nào nó không lớn hơn $\tau_e$.
+\end{proposition}
+\end{keyblock}
+
+\section{Vì sao điều này hiệu quả: nhiễu là sự tìm kiếm}
+\label{sec:dofagradient}
+
+Vì sao quy tắc~\eqref{eq:threefactor} dẫn tới kết quả tốt hơn? Câu trả lời nằm ở nhiễu trong chương~\ref{sec:code}. Giả sử đầu ra của nơ-ron là $y=f(u)+\xi$, trong đó $u=\sum_jw_jx_j$, còn $\xi$ là dao động ngẫu nhiên có trung bình bằng không và phương sai $\sigma^2$. Phần thưởng $R$ phụ thuộc vào $y$. Ta lấy làm vết không phải $x_jy$ mà là phần ngẫu nhiên của nó $x_j\xi$, và làm thừa số thứ ba là sai số $\delta=R-\bar R$, trong đó $\bar R$ là phần thưởng kỳ vọng. Khi nhiễu nhỏ $R\approx R\bigl(f(u)\bigr)+R'\,\xi$, nên
+\begin{empheq}[box=\keybox]{equation}
+\bigl\langle \delta\,\xi\,x_j \bigr\rangle \;=\; \sigma^2\,R'\,x_j \;=\; \frac{\sigma^2}{f'(u)}\,\frac{\partial\langle R\rangle}{\partial w_j} .
+\label{eq:perturbation}
+\end{empheq}
+Bước trung bình đi theo gradient của phần thưởng kỳ vọng~\cite{Williams1992}. Không ai tính đạo hàm: mạng lệch đi một cách ngẫu nhiên, dopamine báo xem kết quả có tốt hơn không, và các khớp thần kinh đã tham gia dịch về phía có lợi (hình~\ref{fig:perturbation}). Nhiễu, thứ ở chương~\ref{sec:code} cản trở việc truyền tin, ở đây trở thành sự tìm kiếm.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=2cm,y=3cm]
+\draw[->,gray!70!black] (0,0) -- (4.2,0) node[below left,font=\small,black] {đầu ra $y$};
+\draw[->,gray!70!black] (0,0) -- (0,1.2) node[left,font=\small,black] {phần thưởng $R$};
+% reward hill
+\draw[very thick,blue!60!black] plot[domain=0:4,samples=60] (\x,{max(0,1-((\x-3)/2.2)^2)});
+\node[font=\scriptsize,blue!60!black,anchor=south] at (3,1.02) {đầu ra tốt nhất};
+% noise around f(u)
+\draw[thick,gray!60!black] plot[domain=0.6:2.4,samples=50] (\x,{0.28*exp(-((\x-1.5)/0.3)^2/2)});
+\draw[densely dashed,gray!60!black] (1.5,0) -- (1.5,0.535);
+\node[below,font=\small] at (1.5,0) {$f(u)$};
+\node[font=\scriptsize,gray!50!black] at (1.5,-0.2) {dao động $\xi$};
+% expected reward
+\draw[densely dotted,gray!60!black] (0.5,0.535) node[left,font=\scriptsize,black] {$\bar R$} -- (2.1,0.535);
+% two random deviations
+\fill[green!45!black] (2.1,0.833) circle (0.035);
+\draw[very thick,green!45!black] (2.1,0.535) -- (2.1,0.833);
+\node[font=\scriptsize,green!45!black,anchor=west,align=left] at (2.18,0.6) {$\xi>0$: tốt hơn,\\ $\delta>0$};
+\fill[red!70!black] (0.9,0.089) circle (0.035);
+\draw[very thick,red!70!black] (0.9,0.535) -- (0.9,0.089);
+\node[font=\scriptsize,red!70!black,anchor=east,align=right] at (0.83,0.27) {$\xi<0$: tệ hơn,\\ $\delta<0$};
+% resulting step
+\draw[->,very thick,orange!85!black] (1.55,0.4) -- (1.95,0.4) node[right,font=\scriptsize,black] {bước};
+\end{tikzpicture}
+\caption{Nhiễu là sự tìm kiếm~\eqref{eq:perturbation}. Đầu ra của nơ-ron dao động quanh $f(u)$. Độ lệch ngẫu nhiên sang phải (màu xanh lá) cho nhiều hơn kỳ vọng, $\delta>0$; sang trái (màu đỏ) cho ít hơn, $\delta<0$. Trong cả hai trường hợp tích $\delta\,\xi$ đều dương, và trọng số dịch sang phải, về phía phần thưởng tăng. Trung bình, bước tỷ lệ với độ dốc $R'$: trên đỉnh đồi, độ lệch về cả hai phía đều tệ như nhau, và các bước triệt tiêu lẫn nhau.}
+\label{fig:perturbation}
+\end{figure}
+
+\begin{keyblock}
+\begin{proposition}[Đi theo gradient mà không cần dây ngược]
+\label{prop:gradient}
+Nếu trong mạng có những độ lệch hoạt động ngẫu nhiên, còn tín hiệu quảng bá bằng sai số dự đoán phần thưởng và trong mỗi bối cảnh có trung bình bằng không, thì quy tắc~\eqref{eq:threefactor} trung bình thay đổi trọng số theo gradient của phần thưởng kỳ vọng. Không cần dây ngược hay một pha học riêng.
+\end{proposition}
+\end{keyblock}
+
+Giờ thì rõ vì sao dopamine không báo về phần thưởng, mà về \emph{sai số} dự đoán nó. Nếu thừa số thứ ba là chính phần thưởng $R\ge0$, trung bình trong~\eqref{eq:perturbation} sẽ không đổi, nhưng sẽ nảy ra hai vấn đề. Thứ nhất, phần hữu ích bị cộng thêm số hạng $\bar R\,\xi x_j$: trung bình bằng không, nhưng là nhiễu mạnh. Thứ hai, và tệ hơn, khớp thần kinh thật không biết tách phần ngẫu nhiên khỏi phần không ngẫu nhiên trong vết $x_jy$. Với các đầu vào cho trước, $x_jf(u)$ là cùng một con số từ lượt thử này sang lượt thử khác; nếu $\delta$ trong bối cảnh này trung bình bằng không, phần đó của vết không thay đổi gì, còn khi $\delta\ge0$ nó hết lần này tới lần khác làm mạnh mọi thứ mạng đã làm --- đúng cũng như sai. Vì vậy $\bar R$ phải là kỳ vọng \emph{trong bối cảnh cụ thể}, chứ không phải trung bình cả đời. Tính nó là việc của bộ phê bình (critic), sẽ nói ở dưới.
+
+Chúng tôi đã kiểm tra điều này trên mô hình. Hai nhóm nơ-ron \nt{GLUT} chọn một trong hai hành động qua ức chế lẫn nhau, như ở hình~\ref{fig:wta}; trọng số từ tín hiệu ``bắt đầu'' tới các nhóm lúc đầu bằng nhau, và nhiễu quyết định nhóm nào thắng. Hành động $A$ mang lại nước ép với xác suất $0.8$, hành động $B$ với xác suất $0.2$, và nước ép đến nửa giây sau lựa chọn. Với $\tau_e=1\,\text{s}$ và $\delta=R-\bar R$, tỷ lệ chọn $A$ qua năm trăm lượt thử tăng từ $0.65$--$0.8$ trong trăm lượt đầu lên $0.96$--$1.0$ trong trăm lượt cuối, còn trọng số vẫn nằm trong khoảng $0.85$--$1.35$. Với $\tau_e=50\ms$, nhỏ hơn độ trễ phần thưởng, mạng không học được gì: tỷ lệ chọn $A$ vẫn quanh một nửa. Với $\delta=R$ không trừ kỳ vọng, mạng cũng bắt đầu chọn $A$, nhưng trọng số của bên thắng tăng một nghìn lần trong cùng năm trăm lượt thử và vẫn tiếp tục tăng; còn với cùng $\delta=R$ và tốc độ học lớn gấp mười, trong một trên ba lần chạy mạng đã cố định vĩnh viễn lựa chọn ngẫu nhiên đầu tiên của nó --- lựa chọn tệ hơn.
+
+\section{Cái giá của một dây dẫn}
+
+Tín hiệu $\delta$ chỉ có một cho tất cả, còn nhiễu mà nó đánh giá là tổng các dao động của cả $N$ nơ-ron ảnh hưởng tới kết quả. Mỗi khớp thần kinh thấy trong $\delta$ phần hữu ích của mình và nhiễu của $N-1$ nơ-ron lân cận. Để tách phần của mình, phải lấy trung bình qua nhiều lượt thử, và thời gian học tăng tỷ lệ với $N$~\cite{Werfel2005}. Lan truyền ngược không phải trả cái giá này.
+
+\begin{keyblock}
+\begin{proposition}[Cái giá của quảng bá]
+\label{prop:broadcastcost}
+Thời gian học bằng một tín hiệu chung tăng tỷ lệ với số nơ-ron có nhiễu ảnh hưởng tới kết quả. Cách học này phù hợp với những mạch nhỏ chọn giữa vài phương án, nhưng không phù hợp để tinh chỉnh hàng tỷ trọng số.
+\end{proposition}
+\end{keyblock}
+
+Có vẻ như não phân công đúng như vậy: đầu ra của nơ-ron \nt{DOPA} đi trước hết tới những vùng chọn hành động (chương~\ref{sec:neurontypes}), còn mạng \nt{GLUT} khổng lồ của vỏ não, nơi chứa phần lớn áp đảo các trọng số, chủ yếu học bằng các quy tắc tại chỗ, không có thầy bên ngoài. Trước đây người ta quy chúng về các quy tắc Hebb~\eqref{eq:oja}. Nay ngày càng có nhiều dữ liệu cho thấy vỏ não có mục tiêu riêng --- \emph{dự đoán} đầu vào tiếp theo của mình, và khi đó sai số được tính tại chỗ, là hiệu giữa cái được dự đoán và cái thực sự đến~\cite{Keller2018}: người thầy được cài sẵn trong chính mạng. Những cửa sổ dẻo dài cỡ giây, nơi tín hiệu thứ ba là sự kích thích mạnh của chính bên nhận~\cite{Bittner2017}, cho thấy tín hiệu sai số tại chỗ ở khớp thần kinh thực sự tồn tại. Việc đây có phải là quy tắc chung của vỏ não hay không là giả thuyết.
+
+\section{Sai số từ đâu ra: bộ phê bình trong thời gian liên tục}
+
+Còn lại câu hỏi chính các nơ-ron \nt{DOPA} tính $\delta$ thế nào. Trong các chương trình học tăng cường, sai số dự đoán được tính theo bước $t,t+1,\dots$ Trong cơ thể không có bước, nên ta viết nó trong thời gian liên tục~\cite{Doya2000}. Cho $r(t)$ là dòng phần thưởng, còn $V(t)$ là kỳ vọng của toàn bộ phần thưởng tương lai, trong đó phần càng xa càng được coi nhẹ:
+\begin{equation}
+V(t) \;=\; \int_t^{\infty} e^{-(s-t)/\tau_\gamma}\,r(s)\,\dd s .
+\end{equation}
+Lấy đạo hàm, ta được $\dd V/\dd t=V/\tau_\gamma-r$. Phần dư của đẳng thức này chính là sai số dự đoán:
+\begin{empheq}[box=\keybox]{equation}
+\delta(t) \;=\; r(t) \;+\; \frac{\dd V}{\dd t} \;-\; \frac{V}{\tau_\gamma} .
+\label{eq:ctd}
+\end{empheq}
+Hằng số $\tau_\gamma$ là tầm nhìn hoạch định, bản tương tự liên tục của hệ số $\gamma$; theo giả thuyết, nó do \nt{SERO} đặt (mục~\ref{sec:horizon}), và khi đó~\eqref{eq:patience} là quy tắc cho biết đáng chờ bao lâu. Hãy kiểm tra ba trường hợp (hình~\ref{fig:ctdcases}). Bóng đèn báo có nước ép bật sáng: $V$ tăng vọt, $\dd V/\dd t$ lớn, có đỉnh vọt. Nước ép đã hứa đến: $r>0$, nhưng kỳ vọng cũng cạn ngay lúc đó, $\dd V/\dd t\approx-r$, và không có đỉnh vọt. Nước ép không đến: kỳ vọng biến mất mà không có phần thưởng, $\dd V/\dd t<0$, có hõm sụt.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=1.15cm,y=1cm]
+\foreach \col/\ttl/\lampon/\juice in {0/{nước ép bất ngờ}/0/1, 1/{nước ép đã hứa}/1/1, 2/{nước ép không đến}/1/0}{
+ \begin{scope}[xshift=\col*4.6cm]
+  \node[font=\small] at (1.5,3.55) {\ttl};
+  \foreach \yy in {2.4,1.2,0}{\draw[gray!60!black] (0,\yy) -- (3.1,\yy);}
+  % reward r
+  \ifnum\juice=1
+    \fill[green!45!black] (1.95,2.4) rectangle (2.05,2.85);
+    \pic[scale=0.55] at (2.0,3.1) {juice};
+  \else
+    \pic[scale=0.55] at (2.0,3.1) {nojuice};
+  \fi
+  % expectation V and error delta
+  \ifnum\lampon=1
+    \pic[scale=0.55] at (1.0,3.1) {lamp};
+    \draw[very thick,blue!60!black] (0,1.2) -- (1,1.2) -- (1,1.45)
+      plot[domain=1:2,samples=20] (\x,{1.2+0.25*exp((\x-1)/1.5)}) -- (2,{1.2+0.25*exp(1/1.5)}) -- (2,1.2) -- (3.1,1.2);
+    \draw[very thick,red!70!black] (0,0) -- (0.95,0) -- (0.95,0.5) -- (1.05,0.5) -- (1.05,0) -- (3.1,0);
+    \ifnum\juice=0
+      \draw[very thick,red!70!black] (1.95,0) -- (1.95,-0.45) -- (2.05,-0.45) -- (2.05,0);
+      \node[font=\scriptsize,red!70!black,anchor=west] at (2.1,-0.35) {hõm sụt};
+    \else
+      \node[font=\scriptsize,gray!50!black,anchor=north,align=center] at (2.0,-0.08) {$r$ và mức giảm $V$\\ triệt tiêu nhau};
+    \fi
+  \else
+    \draw[very thick,blue!60!black] (0,1.2) -- (3.1,1.2);
+    \draw[very thick,red!70!black] (0,0) -- (1.95,0) -- (1.95,0.5) -- (2.05,0.5) -- (2.05,0) -- (3.1,0);
+  \fi
+  \ifnum\col=0
+    \node[font=\small,anchor=east] at (-0.1,2.55) {$r$};
+    \node[font=\small,anchor=east] at (-0.1,1.35) {$V$};
+    \node[font=\small,anchor=east] at (-0.1,0.1) {$\delta$};
+  \fi
+ \end{scope}}
+\end{tikzpicture}
+\caption{Ba trường hợp của sai số~\eqref{eq:ctd}; từ trên xuống --- phần thưởng $r$, kỳ vọng $V$ và sai số $\delta$. Bên trái không có kỳ vọng, và nước ép hoàn toàn là bất ngờ. Ở giữa, bóng đèn làm $V$ tăng vọt: đó là một bước nhảy của $\dd V/\dd t$, nên đỉnh vọt của $\delta$ rơi vào lúc đèn sáng. Sau đó $V$ tăng đúng như tầm nhìn đòi hỏi, và $\delta=0$; lúc nước ép đến, phần thưởng $r$ và mức giảm của $V$ triệt tiêu nhau. Bên phải $V$ giảm mà không có phần thưởng --- hõm sụt. Đây vẫn là đỉnh vọt, sự dịch chuyển và hõm sụt như ở hình~\ref{fig:rpe}, nhưng giờ ta thấy chúng từ đâu ra.}
+\label{fig:ctdcases}
+\end{figure}
+
+Từ những sơ đồ đã có, cần gì để tính~\eqref{eq:ctd}? Ba thứ.
+
+\emph{Chính ước lượng $V$.} Nó do một nhóm nơ-ron \nt{GLUT} --- bộ phê bình --- xuất ra, và trọng số của nhóm này học theo cùng quy tắc~\eqref{eq:threefactor} với cùng $\delta$: nếu $\delta>0$ thì kỳ vọng đã bị đánh giá thấp, và các liên kết hoạt động ngay trước đó được làm mạnh lên.
+
+\emph{Đạo hàm $\dd V/\dd t$.} Bất kỳ sơ đồ nào đáp ứng với sự thay đổi chứ không phải với mức đều tính được nó: kích thích trực tiếp cùng với ức chế có trễ qua một trung gian \nt{GABA}, như ở bộ phát hiện hướng trong chương~\ref{sec:gaba}, hoặc một khớp thần kinh suy giảm~\eqref{eq:depression} ở chương~\ref{sec:code}.
+
+\emph{Dấu trong một dây.} Sai số có thể dương hoặc âm, còn tần số xung chỉ dương. Lời giải giống như ở nơ-ron \nt{SERO} trong chương~\ref{sec:serocomputer}: nơ-ron \nt{DOPA} là một bộ tạo nhịp. Vài xung đều đặn mỗi giây của nó nghĩa là $\delta=0$, một chùm xung nghĩa là $\delta>0$, một quãng ngừng nghĩa là $\delta<0$. Sai số âm có ít chỗ hơn: tần số không thể xuống dưới không. Ở nơ-ron \nt{DOPA} thật, hõm sụt quả thực nông hơn đỉnh vọt~\cite{Bayer2005}.
+
+Việc dopamine hành xử như $\delta$ đã được đo. Não tính $\dd V/\dd t$ chính xác thế nào là giả thuyết.
+
+\section{Bộ hành động và bộ phê bình}
+
+Hãy ghép tất cả lại (hình~\ref{fig:actorcritic}). Các nơ-ron bối cảnh kích thích những nhóm hành động chọn ra bên thắng qua \nt{GABA} (mệnh đề~\ref{prop:wta}) --- đó là \emph{bộ hành động} (actor) --- và bộ phê bình xuất ra $V$~\cite{SuttonBarto2018}. Nơ-ron \nt{DOPA} nhận phần thưởng $r$ và $V$, tính~\eqref{eq:ctd} và phát $\delta$ tới mọi khớp thần kinh của bộ hành động và bộ phê bình.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  nrn/.style={circle,draw,very thick,fill=blue!6,minimum size=0.9cm,inner sep=0pt,font=\small},
+  gab/.style={circle,draw,very thick,fill=red!10,minimum size=0.6cm,inner sep=0pt},
+  dofa/.style={circle,draw,very thick,double,double distance=1.2pt,fill=orange!15,minimum size=1.35cm,inner sep=0pt,font=\scriptsize},
+  inh/.style={-{Bar[width=7pt]},thick,red!70!black},
+  bc/.style={->,thick,densely dashed,orange!85!black}]
+\node[nrn] (S1) at (0,2.4) {$x_1$};
+\node[nrn] (S2) at (0,1.2) {$x_2$};
+\node[nrn] (S3) at (0,0) {$x_3$};
+\node[left=0.15cm,align=right,font=\small] at (-0.5,1.2) {bối cảnh};
+\node[nrn] (A) at (4,2.6) {$A$};
+\node[nrn] (B) at (4,1.0) {$B$};
+\node[gab] (G) at (5.2,1.8) {};
+\draw[->,thick] (A) -- (G); \draw[->,thick] (B) -- (G);
+\draw[inh] (G) to[bend left=35] (A);
+\draw[inh] (G) to[bend right=35] (B);
+\node[above,font=\small] at (4.6,3.05) {bộ hành động: lựa chọn};
+\node[nrn] (V) at (4,-1.1) {$V$};
+\node[below,font=\small] at (4,-1.6) {bộ phê bình};
+\foreach \s in {S1,S2,S3}{\foreach \t in {A,B,V}{\draw[->,gray!60!black] (\s) -- (\t);}}
+\node[dofa] (D) at (8.0,-1.1) {\nt{DOPA}};
+\draw[->,thick] (V) -- node[above,font=\scriptsize] {$V,\ \dd V/\dd t$} (D);
+\draw[->,thick,green!45!black] (10.0,-1.1) node[right,black,font=\small] {phần thưởng $r$} -- (D);
+\pic[scale=1.1] at (10.6,-0.5) {juice};
+\draw[bc] (D.north) -- (8.0,4.0) -- node[above,font=\small,black] {$\delta$ --- tới mọi khớp thần kinh của cả hai bộ} (2.2,4.0) -- (2.2,3.0);
+\draw[bc] (D.south) -- (8.0,-2.4) -- (2.2,-2.4) -- (2.2,-0.6);
+\end{tikzpicture}
+\caption{Mạng học cách chọn hành động. Mũi tên xám là các khớp thần kinh \nt{GLUT} với trọng số thay đổi được; vòng tròn đỏ là nơ-ron \nt{GABA}; vòng tròn kép là bộ tạo nhịp \nt{DOPA}, tính $\delta$ theo~\eqref{eq:ctd}; mũi tên nét đứt là việc phát quảng bá $\delta$.}
+\label{fig:actorcritic}
+\end{figure}
+
+Dấu tác động của chất dẫn truyền do bên nhận chọn (mệnh đề~\ref{prop:receptor}), và trong vùng chọn hành động, một phần nơ-ron mang thụ thể dopamine thuộc một họ, phần còn lại thuộc họ khác. Trong thí nghiệm trên lát cắt, dopamine cùng với hoạt động đồng thời làm mạnh khớp thần kinh ở nhóm thứ nhất và làm yếu khớp thần kinh ở nhóm thứ hai~\cite{Shen2008}; trong mô hình, điều này có nghĩa là ở nhóm thứ hai, dấu của $\delta$ trong~\eqref{eq:threefactor} bị đảo. Nhóm thứ nhất học điều gì \emph{nên làm}, nhóm thứ hai học điều gì \emph{không nên làm}.
+
+\section{Tổng kết}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{2.6cm}>{\raggedright}p{2.7cm}>{\raggedright}p{3.1cm}>{\raggedright\arraybackslash}p{5.0cm}}
+\toprule
+Quy tắc & Khớp thần kinh biết gì & Mạng học gì & Điều đã biết \\
+\midrule
+Hebb theo tần số~\eqref{eq:oja} & $x$, $y$, trọng số của nó & nén đầu vào: các hướng chính & sự tăng cường khi cùng hoạt động đã được đo; cơ chế giới hạn trọng số đang được nghiên cứu \\
+Hebb theo thời gian & thứ tự xung $x$ và $y$ trong phạm vi $\sim20\ms$ & liên kết nhân quả, chuỗi & đã đo trên khớp thần kinh \nt{GLUT} \\
+ba thừa số~\eqref{eq:threefactor} & $x$, $y$, vết $e$, tín hiệu chung $\delta$ & những hành động mang lại phần thưởng & tác động của dopamine trong vài giây sau hoạt động đã được đo; vai trò cơ chế chính để học lựa chọn là giả thuyết có cơ sở vững \\
+bộ phê bình~\eqref{eq:ctd} & như trên & kỳ vọng phần thưởng $V$ & sự giống nhau giữa dopamine và $\delta$ đã được đo; sơ đồ tính $\dd V/\dd t$ là giả thuyết \\
+lan truyền ngược sai số & hiệu chỉnh riêng cho từng trọng số & mọi thứ, nhưng cần dây ngược và nhịp đồng hồ & chưa tìm thấy trong não ở dạng này; người ta tìm các dạng xấp xỉ của nó \\
+\bottomrule
+\end{tabular}
+\caption{Các quy tắc học trong mạng gồm nơ-ron \nt{GLUT}, \nt{GABA} và \nt{DOPA}.}
+\label{tab:learning}
+\end{table}
+
+Các quy tắc học được tóm tắt trong bảng~\ref{tab:learning}. \nt{GLUT} mang dữ liệu, \nt{GABA} điều khiển luồng, còn \nt{DOPA} quyết định giữ lại những thay đổi nào trong mạng.
+
+\section{Bài tập}
+
+\begin{exercise}[\lvlA]
+\label{ex:06:1}
+\emph{Vết sống bao lâu.} Hoạt động đồng thời $xy=1$ kéo dài $T_a=0.2\,\text{s}$, bắt đầu từ $e=0$, còn dopamine đến $d=0.5\,\text{s}$ sau khi nó kết thúc. (a)~Tại thời điểm đó, vết~\eqref{eq:threefactor} với $\tau_e=1\,\text{s}$ lớn hơn bao nhiêu lần so với $\tau_e=50\ms$? (b)~Với $\tau_e$ nào thì vết lớn nhất?
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:06:2}
+\emph{Độ trôi của quy tắc Hebb.} Bên gửi và bên nhận phát các dòng Poisson độc lập, mỗi bên $10$ xung mỗi giây, và mỗi cặp xung thay đổi trọng số theo cửa sổ ở hình~\ref{fig:stdp} với $\tau_\pm=20\ms$, $A_-=0.6A_+$. Sau một giờ hoạt động hoàn toàn ngẫu nhiên, trọng số tăng bao nhiêu $A_+$? Với $\tau_-$ nào thì độ trôi biến mất?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:06:3}
+\emph{Tương quan, không phải hiệp phương sai.} Quy tắc của mệnh đề~\ref{prop:oja} tìm vectơ riêng chính của $C=\langle\mathbf x\mathbf x^{\mathsf T}\rangle$. Tần số là dương: $\mathbf x=\mathbf m+\mathbf n$, $\mathbf m=(\mu,0)$, hiệp phương sai của nhiễu $\operatorname{diag}(s_1^2,s_2^2)$. Với điều kiện nào nơ-ron học được $\mathbf e_1$? Nó học được gì khi $\mu=1$, $s_1=0.1$, $s_2=0.5$?
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:06:4}
+\emph{Tầm nhìn trong đỉnh vọt.} Bóng đèn bật sáng vào một thời điểm không đoán trước được, nước ép lượng $R$ đến sau $L=1\,\text{s}$. Chứng minh rằng với kỳ vọng đã học theo~\eqref{eq:ctd}, giữa lúc đèn sáng và lúc có nước ép $\delta\equiv0$, và tìm diện tích đỉnh vọt lúc đèn sáng với $\tau_\gamma=2\,\text{s}$ và $\tau_\gamma=4\,\text{s}$.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:06:5}
+\emph{Cái giá của quảng bá từ đâu ra.} $N$ nơ-ron dao động độc lập, $\xi_i\sim\mathcal N(0,\sigma^2)$, sai số $\delta=a\sum_i\xi_i$, khớp thần kinh $j$ ước lượng gradient là $\delta\,\xi_jx_j$. Tìm tỷ số tín hiệu trên nhiễu của một lượt thử. Một nơ-ron học xong sau $100$ lượt thử, mỗi lượt $5\,\text{s}$: việc học mất bao lâu khi $N=10^4$ và $N=10^{10}$?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:06:6}
+\emph{Thiết kế: sơ đồ tính $\delta$.} Nơ-ron \nt{DOPA} nhận $r$, nhận $V$ với trọng số $k_1$ và một bản sao của $V$ được làm trơn với $\tau_d$, với trọng số $-k_2$. (a)~Chọn $k_1$, $k_2$ để với $V$ chậm, đầu ra là~\eqref{eq:ctd}. (b)~Với $V=V_0e^{t/\tau_\gamma}$, $\delta$ thật bằng $0$. Với $\tau_d$ nào sai số giả của sơ đồ không vượt quá $5\,\%$ của $V/\tau_\gamma$, nếu $\tau_\gamma=2\,\text{s}$?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:06:7}
+\emph{Mô phỏng: độ trễ phần thưởng tới hạn.} Thêm độ trễ phần thưởng $d$ vào \texttt{run()} trong một bản sao của \texttt{models/\allowbreak dofa\_learning.py}. Tìm tỷ lệ chọn $A$ trong trăm lượt cuối của $500$ lượt thử khi $d=0.5\,\text{s}$ và $\tau_e=0.05$, $0.2$, $1$, $4\,\text{s}$, và khi $\tau_e=1\,\text{s}$, $d=3\,\text{s}$. Khi phần vết còn lại tới lúc có phần thưởng (bài tập~\ref{ex:06:1}) là bao nhiêu thì việc học biến mất?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:06:8}
+\emph{Có thể né cái giá của quảng bá không.} $N$ nơ-ron: $y_i=w_i+\xi_i$, $\xi_i\sim\mathcal N(0,\sigma^2)$, phần thưởng $R=-\sum_i(y_i-w_i^*)^2$, quy tắc $\Delta w_i=\eta\,(R-\langle R\rangle)\,\xi_i$. Với $\eta$ tốt nhất, sau bao nhiêu lượt thử sai số $\sum_i(w_i-w_i^*)^2$ giảm $e$ lần? Còn nếu chỉ $m$ nơ-ron ngẫu nhiên trong số $N$ dao động? Tìm kiếm thưa có giúp ích không?
+\end{exercise}

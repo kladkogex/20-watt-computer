@@ -1,0 +1,199 @@
+\chapter{Khi nào khám phá, khi nào quyết định: thêm \nt{NORA}}
+\chaptermark{Thêm \nt{NORA}}
+\label{sec:nora}
+
+\section{Còn thiếu gì}
+
+Ở chương~\ref{sec:dofa}, mạng học được nhờ nhiễu: những độ lệch hoạt động ngẫu nhiên là sự tìm kiếm, còn \nt{DOPA} báo xem chúng có làm kết quả tốt hơn không. Nhưng cũng ở đó còn một tham số chưa được đặt --- tìm kiếm \emph{bao nhiêu}. Nếu nhiễu quá mạnh, mạng chạy lung tung và không dùng tới những gì nó đã biết. Nếu quá yếu, nó hết lần này tới lần khác chọn cùng một thứ và không nhận ra rằng đâu đó gần bên đã có gì tốt hơn. Trong học tăng cường, đây được gọi là sự lựa chọn giữa khai thác và khám phá, và thuật toán nào cũng có một núm vặn cho nó. Ở chương~\ref{sec:neurontypes}, ta đã giả định rằng trong não núm vặn này do \nt{NORA} điều khiển.
+
+Ở người có vài chục nghìn nơ-ron noradrenaline (bảng~\ref{tab:types}), gần như tất cả tập trung trong một nhóm nhỏ, còn đầu ra của chúng tỏa ra hầu như khắp não, dù như người ta đã phát hiện, các phần khác nhau của nhóm này phần nào phục vụ những vùng khác nhau~\cite{Poe2020}. Đây là một kênh quảng bá còn hẹp hơn cả \nt{DOPA}. Nó hoạt động ở hai chế độ~\cite{AstonJones2005}. Ở chế độ \emph{nền}, các nơ-ron phát xung đều, với tần số từ dưới một tới vài xung mỗi giây, và tần số này thay đổi chậm theo mức tỉnh táo. Ở chế độ \emph{từng đợt}, chúng đáp ứng bằng một chùm xung ngắn với sự kiện quan trọng cho nhiệm vụ hiện tại, vào khoảng thời điểm ra quyết định. Một điểm đo kiểm tra tiện lợi nhưng không chính xác là đường kính đồng tử: nó thay đổi theo hoạt động của các nơ-ron này, nhưng cũng theo hoạt động của các vùng khác~\cite{Joshi2016} và của các đầu ra cholinergic trong vỏ não~\cite{Reimer2016}. Đồng tử cho thấy mức hưng phấn chung, chứ không riêng \nt{NORA}.
+
+\section{Hệ số khuếch đại}
+
+Điều đã đo là: noradrenaline ức chế hoạt động nền của nơ-ron mạnh hơn đáp ứng của chúng với kích thích, và tỷ số tín hiệu trên nền tăng lên~\cite{Foote1975NE}. Từ thí nghiệm không suy ra được rằng độ dốc đặc tuyến của từng nơ-ron bị nhân lên đúng theo nghĩa đen với một hệ số. Như ở chương~\ref{sec:neurontypes}, ta lấy một mô hình đơn giản thể hiện hiệu ứng này: noradrenaline thay đổi độ dốc đặc tuyến truyền đạt của bên nhận~\cite{ServanSchreiber1990}. Khi đó các đầu vào yếu, dưới ngưỡng (nền) cho ra còn ít hơn, còn các đầu vào mạnh cho ra còn nhiều hơn. Giả sử nơ-ron đáp ứng bằng tần số
+\begin{empheq}[box=\keybox]{equation}
+r \;=\; F\bigl(g\,(u-\theta)\bigr), \qquad F(z)=\frac{r_{\max}}{1+e^{-z}} ,
+\label{eq:gain}
+\end{empheq}
+trong đó $u$ là dòng đầu vào, $\theta$ là ngưỡng, còn $g$ là hệ số khuếch đại, thứ mà trong mô hình do \nt{NORA} điều khiển. Khi $g$ nhỏ, tần số đi theo đầu vào một cách trơn tru trong một dải rộng: nơ-ron là một \emph{bộ khuếch đại tương tự}. Khi $g$ lớn, hầu như mọi đầu vào trên ngưỡng đều cho tần số tối đa, dưới ngưỡng thì bằng không: nơ-ron là một \emph{bộ so sánh}, gần như một phần tử số (hình~\ref{fig:gaincurves}). Một núm vặn chuyển cùng một nơ-ron giữa hai chế độ mà trong điện tử phải dùng những mạch khác nhau.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=1.1cm,y=2.4cm]
+\draw[->,gray!70!black] (-3.3,0) -- (3.4,0) node[below left,black] {\small $u$};
+\draw[->,gray!70!black] (-3.3,0) -- (-3.3,1.2) node[left,black] {\small $r$};
+\draw[densely dashed,gray!60!black] (0,0) -- (0,1.1);
+\node[below,font=\small] at (0,0) {$\theta$};
+\draw[densely dotted,gray!60!black] (-3.3,1) -- (3.2,1) node[right,black,font=\small] {$r_{\max}$};
+\draw[very thick,blue!60!black] plot[domain=-3.2:3.2,samples=60] (\x,{1/(1+exp(-0.8*\x))});
+\draw[very thick,orange!85!black] plot[domain=-3.2:3.2,samples=60] (\x,{1/(1+exp(-2*\x))});
+\draw[very thick,red!70!black] plot[domain=-3.2:3.2,samples=120] (\x,{1/(1+exp(min(-8*\x,9)))});
+\node[blue!60!black,font=\small,anchor=west] at (0.5,0.12) {$g$ nhỏ: bộ khuếch đại};
+\node[red!70!black,font=\small,anchor=east] at (-0.3,0.85) {$g$ lớn: bộ so sánh};
+\end{tikzpicture}
+\caption{Đặc tuyến truyền đạt~\eqref{eq:gain} với ba giá trị của hệ số khuếch đại $g$.}
+\label{fig:gaincurves}
+\end{figure}
+
+Khuếch đại lớn có giúp chống nhiễu không? Không phải lúc nào cũng vậy. Giả sử hai đầu vào khác nhau một lượng $\Delta u$, và cần nói cái nào lớn hơn. Nếu nhiễu $\sigma_{\text{trước}}$ cộng vào đầu vào \emph{trước} bộ khuếch đại, thì cả tín hiệu lẫn nhiễu đều được khuếch đại, và tỷ số của chúng không đổi. Còn nếu nhiễu $\sigma_{\text{sau}}$ cộng vào \emph{sau} bộ khuếch đại --- từ các khớp thần kinh không tin cậy và các xung ngẫu nhiên của chính mạng, như ở chương~\ref{sec:code} --- thì tỷ số tín hiệu trên nhiễu
+\begin{empheq}[box=\keybox]{equation}
+d' \;=\; \frac{g\,\Delta u}{\sqrt{g^2\sigma_{\text{trước}}^2+\sigma_{\text{sau}}^2}}
+\label{eq:gainsnr}
+\end{empheq}
+tăng theo $g$ cho tới khi $g\sigma_{\text{trước}}$ bằng $\sigma_{\text{sau}}$~\cite{ServanSchreiber1990}.
+
+\begin{keyblock}
+\begin{proposition}[Khi nào khuếch đại có ích]
+\label{prop:gainnoise}
+Khi tăng hệ số khuếch đại, \nt{NORA} chỉ cải thiện việc phân biệt các đầu vào trước loại nhiễu phát sinh \emph{sau} bộ khuếch đại, trong chính mạng. Nhiễu đến cùng với đầu vào thì khuếch đại không loại bỏ được.
+\end{proposition}
+\end{keyblock}
+
+\section{Khuếch đại trong lựa chọn giữa hai phương án}
+
+Quay lại bài toán lựa chọn ở chương~\ref{sec:gaba}: hai nhóm nơ-ron \nt{GLUT} với các đầu vào $I_1$, $I_2$ ức chế lẫn nhau với cường độ $\beta$. Giờ mỗi nhóm có một hệ số khuếch đại $g$: trong các phương trình lựa chọn~\eqref{eq:wta}, biểu thức trong ngoặc được nhân với $g$. Khi cả hai nhóm cùng hoạt động, tần số xác lập được tìm từ $r_1=g(I_1-\beta r_2)$, $r_2=g(I_2-\beta r_1)$. Cộng và trừ hai đẳng thức này, ta được tổng $r_1+r_2=g(I_1+I_2)/(1+g\beta)$ và hiệu $r_1-r_2=g(I_1-I_2)/(1-g\beta)$. Tỷ số của chúng cho biết mạng ưu tiên một đầu vào hơn đầu vào kia rõ rệt tới mức nào:
+\begin{empheq}[box=\keybox]{equation}
+\frac{r_1-r_2}{r_1+r_2} \;=\; \varepsilon\,\frac{1+g\beta}{1-g\beta}, \qquad \varepsilon=\frac{I_1-I_2}{I_1+I_2}, \quad g\beta<1 .
+\label{eq:wtagain}
+\end{empheq}
+Chênh lệch nhỏ $\varepsilon$ giữa các đầu vào được khuếch đại $(1+g\beta)/(1-g\beta)$ lần, và thừa số này tăng không giới hạn khi $g\beta$ tiến tới một. Khi $g\beta>1$, trạng thái cả hai nhóm cùng hoạt động là không ổn định, như trong mệnh đề~\ref{prop:wta}: một nhóm thắng, nhóm kia im lặng (hình~\ref{fig:pitchfork}).
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=3.2cm,y=1.5cm]
+\draw[->,gray!70!black] (0,0) -- (2.15,0) node[below left,black] {\small $g\beta$};
+\draw[->,gray!70!black] (0,-1.25) -- (0,1.35) node[above,black] {\small $(r_1-r_2)/(r_1+r_2)$};
+\draw[gray!60!black] (1,-0.04) -- (1,0.04); \node[below right,font=\small] at (1,0) {$1$};
+\node[left,font=\scriptsize] at (0,1) {$1$}; \node[left,font=\scriptsize] at (0,-1) {$-1$};
+\draw[very thick,blue!60!black] plot[domain=0:0.905,samples=60] (\x,{0.05*(1+\x)/(1-\x)}) -- (1,1) -- (2.05,1);
+\draw[very thick,blue!60!black] (1.105,-1) -- (2.05,-1);
+\draw[thick,densely dashed,gray!60!black] (1,0) -- (2.05,0);
+\node[font=\small,align=center] at (0.45,-0.62) {đang cân nhắc:\\cả hai nhóm\\hoạt động};
+\node[font=\small,align=center] at (1.55,0.45) {đã quyết:\\một nhóm hoạt động};
+\node[font=\small,blue!60!black,anchor=south west] at (1.05,-0.97) {đầu vào yếu đã thắng trước --- giữ nguyên};
+\end{tikzpicture}
+\caption{Lựa chọn giữa hai phương án với các hệ số khuếch đại khác nhau, các đầu vào khác nhau $\varepsilon=0.05$. Khi $g\beta>1$, cả hai lời giải đều ổn định (đường liền; đầu vào yếu thắng khi $g\beta>(1+\varepsilon)/(1-\varepsilon)\approx1.1$), và mạng giữ lời giải nó đã chọn; trạng thái đối xứng (đường nét đứt) không ổn định.}
+\label{fig:pitchfork}
+\end{figure}
+
+\begin{keyblock}
+\begin{proposition}[Khuếch đại chuyển chế độ lựa chọn]
+\label{prop:gainwta}
+Trong mạng lựa chọn có ức chế lẫn nhau $\beta$, hệ số khuếch đại $g$ đưa mạng vượt qua ranh giới $g\beta=1$. Dưới ranh giới, mạng ``cân nhắc'': cả hai nhóm hoạt động, còn chênh lệch đầu vào được khuếch đại theo~\eqref{eq:wtagain}. Trên ranh giới, mạng ``đã quyết'': một nhóm hoạt động, và quyết định được giữ nguyên. Bằng cách thay đổi $g$, \nt{NORA} có thể chuyển mạng giữa hai chế độ này mà không đụng tới một trọng số nào.
+\end{proposition}
+\end{keyblock}
+
+\section{Khuếch đại như nhiệt độ}
+
+Giờ ta thêm vào lựa chọn nhiễu phát sinh trong chính mạng, sau bộ khuếch đại. Nhóm nào thắng được quyết định bởi dấu của đại lượng $g(u_A-u_B)+\eta$, trong đó $u_A-u_B$ là chênh lệch đầu vào, tức là chênh lệch giữa các trọng số đã học ở chương~\ref{sec:dofa}, còn $\eta$ là nhiễu với thang đo $\sigma$. Nếu nhiễu có phân bố logistic (với phân bố Gauss đường cong gần như y hệt), xác suất chọn $A$ bằng
+\begin{empheq}[box=\keybox]{equation}
+P(A) \;=\; \frac{1}{1+e^{-g\,(u_A-u_B)/\sigma}} .
+\label{eq:softmax}
+\end{empheq}
+Lập trình viên sẽ nhận ra ở đây phép chọn softmax với nhiệt độ $T=\sigma/g$. Hệ số khuếch đại là nghịch đảo của nhiệt độ. Khi $g$ nhỏ, ngay cả phương án tốt hơn rõ rệt cũng chỉ được chọn thường xuyên hơn phương án tệ một chút: mạng khám phá nhiều. Khi $g$ lớn, phương án tốt nhất đã biết gần như luôn được chọn: mạng khai thác những gì nó biết.
+
+Cần nói rõ $g$ trong~\eqref{eq:wtagain} và~\eqref{eq:softmax} là gì: đó là mức khuếch đại \emph{hiệu dụng} của chênh lệch đầu vào của nhiệm vụ hiện tại tại thời điểm lựa chọn. Hai chế độ của \nt{NORA} tác động lên nó theo hướng ngược nhau. Chùm xung từng đợt vào lúc quyết định làm nó tăng, và mạng củng cố lựa chọn. Ngược lại, hoạt động nền cao đi kèm với khám phá: ở người, trước một lựa chọn ngẫu nhiên, đồng tử nền giãn rộng hơn~\cite{JepmaNieuwenhuis2011}, còn ở chuột cống, đầu vào \nt{NORA} tới vỏ não đai trước chuyển lựa chọn sang chế độ ngẫu nhiên~\cite{Tervo2014stochastic}. Như vậy, \nt{NORA} nền cao tương ứng với $g$ hiệu dụng \emph{nhỏ}, còn chùm xung tương ứng với $g$ lớn.
+
+\section{Khám phá bao nhiêu}
+
+Mức khuếch đại nào là tốt nhất? Chúng tôi đã kiểm tra trên mô hình. Mạng chọn một trong hai hành động theo~\eqref{eq:softmax}; mỗi hành động mang lại phần thưởng với một xác suất nào đó, và mạng ước lượng xác suất này từ phần thưởng của hành động được chọn, như ở chương~\ref{sec:dofa}. Thỉnh thoảng thế giới thay đổi: cả hai xác suất được rút thăm lại. Có thể thay đổi cả hành động đang được chọn lẫn hành động mà mạng đã lâu không thử; về hành động thứ hai, mạng chỉ có thể biết được bằng cách khám phá. Hình~\ref{fig:invertedU} cho thấy mạng nhận được bao nhiêu phần của phần thưởng tốt nhất có thể với các giá trị $g$ cố định khác nhau.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=1.2cm,y=1cm]
+\draw[->,gray!70!black] (0,0) -- (7.6,0) node[below left,black] {\small $g$};
+\draw[->,gray!70!black] (0,0) -- (0,4.4) node[above,black,font=\small] {tỷ lệ so với phần thưởng tối ưu};
+\foreach \x/\l in {0/0.5,1/1,2/2,3/4,4/8,5/16,6/32,7/64}{\draw[gray!60!black] (\x,-0.06) -- (\x,0.06); \node[below,font=\scriptsize] at (\x,0) {\l};}
+\foreach \v/\y in {0.8/0.8,0.9/2.4,1.0/4.0}{\draw[gray!60!black] (-0.06,\y) -- (0.06,\y); \node[left,font=\scriptsize] at (0,\y) {\v};}
+\draw[very thick,blue!60!black] plot[mark=*,mark size=1.3pt] coordinates {(0,0.368) (1,0.880) (2,1.728) (3,2.784) (4,3.456) (5,3.616) (6,3.488) (7,3.264)};
+\draw[very thick,red!70!black] plot[mark=*,mark size=1.3pt] coordinates {(0,0.368) (1,0.672) (2,1.184) (3,1.840) (4,2.176) (5,1.920) (6,1.456) (7,1.104)};
+\node[blue!60!black,font=\small,anchor=south] at (5,3.7) {thế giới ổn định};
+\node[red!70!black,font=\small,anchor=north] at (5.1,1.25) {thế giới thay đổi nhanh};
+\draw[->,thick,blue!60!black] (5,3.25) -- (5,3.55);
+\draw[->,thick,red!70!black] (4,1.8) -- (4,2.1);
+\node[font=\small\itshape,gray!35!black,anchor=west] at (0.15,2.3) {mò mẫm};
+\node[font=\small\itshape,gray!35!black] at (6.45,2.55) {không thấy thay đổi};
+\end{tikzpicture}
+\caption{Tỷ lệ so với phần thưởng tốt nhất có thể khi hệ số khuếch đại $g$ cố định (thang $g$ là thang logarit). Đường xanh: thế giới thay đổi trung bình một lần sau mỗi nghìn lượt thử; đường đỏ: một lần sau mỗi hai mươi lượt. Mũi tên đánh dấu $g$ tốt nhất: trong thế giới thay đổi nhanh, nó chỉ bằng một nửa. Trung bình của 60 lần chạy, mỗi lần 4000 lượt thử.}
+\label{fig:invertedU}
+\end{figure}
+
+Với $g=0.5$, mạng hầu như không dùng tới hiểu biết của mình và nhận được khoảng ba phần tư mức có thể; với $g$ rất lớn, nó bỏ lỡ các thay đổi. Giá trị tốt nhất: $g=16$ khi thế giới thay đổi một lần sau mỗi nghìn lượt thử (tỷ lệ $0.976$), và $g=8$ khi một lần sau mỗi hai mươi lượt ($0.886$).
+
+\begin{keyblock}
+\begin{proposition}[Chữ U ngược]
+\label{prop:explore}
+Phần thưởng mà mạng thu được phụ thuộc vào hệ số khuếch đại theo dạng chữ U ngược: $g$ quá nhỏ thì phí lượt thử vào khám phá, $g$ quá lớn thì không nhận ra thay đổi. Thế giới thay đổi càng nhanh thì $g$ tốt nhất càng nhỏ.
+\end{proposition}
+\end{keyblock}
+
+Chữ U ngược cũng được quan sát thấy trong thí nghiệm: con vật giải nhiệm vụ tốt nhất khi hoạt động nền của nơ-ron \nt{NORA} ở mức vừa phải và có đáp ứng từng đợt rõ nét, còn khi hoạt động nền cao thì chúng bị phân tâm và chuyển qua lại giữa các nhiệm vụ~\cite{AstonJones2005}. Điều này khớp với sự khác biệt giữa các chế độ ở mục trước: chùm xung từng đợt lúc quyết định cho $g$ hiệu dụng lớn đúng vào lúc cần chọn, còn hoạt động nền cao không có chùm xung thì khuếch đại mọi thứ, kể cả các đầu vào không liên quan, nên $g$ hiệu dụng cho nhiệm vụ hiện tại giảm xuống --- đó là khám phá.
+
+\section{Ai vặn núm}
+
+Vì mức khuếch đại tốt nhất phụ thuộc vào tốc độ thay đổi của thế giới, nên sẽ tốt nếu điều chỉnh được nó. Nhưng làm sao nơ-ron \nt{NORA} biết được thế giới đã thay đổi? Dấu hiệu tự nhiên là \emph{sự bất ngờ}: sai số dự đoán trở nên lớn hơn bình thường. Điều quan trọng là phân biệt hai loại bất định. Nếu phần thưởng đơn giản là ngẫu nhiên, sai số luôn lớn, và điều đó được dự liệu. Còn nếu sai số đột nhiên tăng so với độ lớn thường ngày của nó, nghĩa là có gì đó đã thay đổi. Theo một giả thuyết, chính sự bất định không được dự liệu này là thứ \nt{NORA} báo đi, còn sự bất định được dự liệu thì do \nt{ACET} báo~\cite{YuDayan2005}.
+
+Làm gì với tín hiệu này? Có thể giảm khuếch đại và khám phá nhiều hơn. Có thể tăng tốc độ học để nhanh chóng quên đi các ước lượng đã lỗi thời: thí nghiệm cho thấy sau một thay đổi đột ngột, người ta học nhanh hơn, và đồng tử khi đó giãn ra~\cite{Nassar2012}; xin nhắc lại rằng đồng tử là chỉ báo không chỉ của \nt{NORA} mà cả của \nt{ACET}~\cite{Reimer2016}. Và cũng có thể làm cả hai cùng lúc: theo một giả thuyết khác nữa, chùm xung từng đợt của \nt{NORA} hoạt động như một \emph{ngắt} --- tín hiệu để mạng xóa trạng thái hiện tại và tái cấu hình cho bối cảnh mới~\cite{BouretSara2005}, như đường ngắt chung của bộ xử lý.
+
+Xin nói thẳng điều chúng tôi chưa tìm ra. Trong mô hình, chúng tôi đã thử cả hai cách điều chỉnh đơn giản: giảm $g$ hoặc tăng tốc độ học khi sai số đã làm trơn vượt quá trung bình dài hạn của nó. Trong một thế giới lúc thì đứng yên rất lâu, lúc thì thay đổi thường xuyên, thiết lập tốt nhất của cả hai cách cho $0.926$--$0.927$ so với phần thưởng tối ưu --- gần như bằng $g$ cố định tốt nhất ($0.925$ khi $g=8$) hay một tốc độ học cố định nhưng đủ lớn ($0.928$), còn thiết lập kém thì cho ít hơn. Các đường cong trên hình~\ref{fig:invertedU} thoải ở gần đỉnh, và trong một thế giới như vậy hầu như chẳng có gì để điều chỉnh. Việc điều chỉnh phải được đền đáp ở nơi các chế độ khác nhau đòi hỏi những thiết lập rất khác nhau. \nt{NORA} thực hiện luật điều khiển cụ thể nào thì hiện chưa được xác định.
+
+\section{Tổng kết}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{3.0cm}>{\raggedright}p{4.4cm}>{\raggedright\arraybackslash}p{6.0cm}}
+\toprule
+\nt{NORA} làm gì & Bằng cách nào & Điều đã biết \\
+\midrule
+thay đổi độ dốc đáp ứng của nơ-ron & hệ số khuếch đại $g$ trong~\eqref{eq:gain} & sự tăng tỷ số tín hiệu trên nhiễu đã được đo; mô hình nhân là một sự đơn giản hóa \\
+chuyển chế độ lựa chọn & đưa mạng vượt qua $g\beta=1$ & suy ra từ mô hình~\eqref{eq:wtagain}; chưa có phép đo trực tiếp ngưỡng này \\
+đặt mức khám phá & $g$ là nghịch đảo nhiệt độ~\eqref{eq:softmax}; nền --- $g$ hiệu dụng nhỏ (khám phá), chùm xung --- lớn (quyết định) & chữ U ngược và hai chế độ hoạt động đã được đo; mối liên hệ với khám phá là giả thuyết có cơ sở vững \\
+báo về thay đổi & sự bất định không được dự liệu & đồng tử và tốc độ học tăng sau thay đổi --- đã đo; việc đây là tín hiệu của \nt{NORA} là giả thuyết \\
+ngắt và xóa & chùm xung từng đợt với sự kiện bất ngờ & chùm xung với các sự kiện quan trọng đã được đo; ``ngắt'' là giả thuyết \\
+\bottomrule
+\end{tabular}
+\caption{\nt{NORA} bổ sung gì cho mạng gồm \nt{GLUT}, \nt{GABA} và \nt{DOPA}.}
+\label{tab:nora}
+\end{table}
+
+\nt{DOPA} cho mạng biết phải thay đổi trọng số \emph{theo hướng nào}. \nt{NORA} không thay đổi một trọng số nào, nhưng quyết định mạng dùng những gì nó đã biết \emph{ra sao} (bảng~\ref{tab:nora}): một núm vặn --- hệ số khuếch đại --- biến nơ-ron từ bộ khuếch đại thành bộ so sánh, biến mạng lựa chọn từ ``đang cân nhắc'' thành ``đã quyết'', và biến lựa chọn từ khám phá thành khai thác. \nt{NORA} biết thế giới thay đổi nhanh tới mức nào bằng cách nào --- đó là một câu hỏi còn mở.
+
+\section{Bài tập}
+
+\begin{exercise}[\lvlA]
+\label{ex:08:1}
+\emph{Một núm vặn cho cả bộ não.} (a)~Dựa vào bảng~\ref{tab:types}, ước lượng mỗi nơ-ron \nt{NORA} ứng với bao nhiêu nơ-ron của não. (b)~Nhiễu trước bộ khuếch đại $\sigma_{\text{trước}}=0.5$, sau bộ khuếch đại $\sigma_{\text{sau}}=4$. Với $g$ nào đại lượng $d'$ trong~\eqref{eq:gainsnr} đạt $90\,\%$ giới hạn của nó?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:08:2}
+\emph{Lựa chọn có hệ số khuếch đại.} $\tau\,\dd r_1/\dd t=-r_1+g[I_1-\beta r_2]_+$, $\tau\,\dd r_2/\dd t=-r_2+g[I_2-\beta r_1]_+$, $\tau=20\ms$. (a)~Sau bao lâu $r_1-r_2$ tắt dần khi $g\beta=0.5$ và $0.9$? (b)~Với $\varepsilon=0.05$, tìm $g\beta$ mà dưới đó cả hai nhóm hoạt động và trên đó chiến thắng của đầu vào yếu là ổn định.
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:08:3}
+\emph{Softmax từ nhiễu.} Mỗi nhóm trong $K$ nhóm nhận nhiễu Gumbel riêng, $P(\eta_k<z)=\exp(-e^{-z/\sigma})$, và giá trị $gu_k+\eta_k$ lớn nhất thắng. Tìm $P(k)$. Với $g$ nào phương án tốt hơn trong hai phương án có $u_A-u_B=0.1$, $\sigma=1$ được chọn trong $90\,\%$ trường hợp?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:08:4}
+\emph{Ước lượng mức khuếch đại tốt nhất.} Trong mô hình ở hình~\ref{fig:invertedU}, xác suất phần thưởng sau một thay đổi phân bố đều trên $[0,1]$. Mạng thử hành động tệ hơn một lần sau mỗi $e^{g\Delta}$ lượt; cho giá trị này bằng $1/h$, ta được $g^*\approx\ln(1/h)/\bar\Delta$. Tìm $\bar\Delta=\langle|p_A-p_B|\rangle$ và $g^*$ khi $h=0.001$, $0.01$, $0.05$.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:08:5}
+\emph{Mô phỏng: khuếch đại và tốc độ thay đổi.} Tìm $g^*(h)$ với $h$ từ $0.001$ tới $0.2$ bằng một bản sao của \texttt{models/\allowbreak nora\_explore.py} (nó ghi tệp vào thư mục hiện tại). Ước lượng ở bài tập~\ref{ex:08:4} đúng ở đâu, và vì sao khi thay đổi nhanh $g^*$ thôi giảm?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:08:6}
+\emph{Thiết kế: ngắt cho mạng lựa chọn.} Mạng của bài tập~\ref{ex:08:2} với $\beta=2$, $\tau=20\ms$, $g=1$ giữ $r_1=0.9$, $r_2=0$, dù đầu vào giờ là $I_1=0.9$, $I_2=1.0$. \nt{NORA} hạ $g$ xuống $g_{\text{lo}}$ trong thời gian $T_p$. Tìm $T_p$ nhỏ nhất khi $g_{\text{lo}}=0$ bằng giải tích, và bằng mô phỏng khi $g_{\text{lo}}=0.25$.
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:08:7}
+\emph{Khi nào điều chỉnh được đền đáp.} Một nhà tiên tri biết thời kỳ là ổn định hay biến động, và đặt $g$ riêng cho mỗi thời kỳ. (a)~Bằng mô phỏng, tìm phần lợi của nó so với $g$ cố định tốt nhất trong thế giới của chương (thời kỳ $1000$ lượt, $h=0.001$ và $0.05$). (b)~Dựng một thế giới có phần lợi lớn hơn, và tìm phần lợi mà điều chỉnh theo sự bất ngờ giành được.
+\end{exercise}
