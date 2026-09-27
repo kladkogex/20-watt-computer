@@ -1,0 +1,101 @@
+\section{Spécification du banc: comment le reproduire}
+\label{sec:dishspec}
+
+On trouvera ci-dessous tout ce qu'il faut pour reconstruire un tel banc: matériel, boucle, codage de l'entrée, lecture de la sortie, rétroaction et protocole expérimental. Chaque paramètre est marqué de sa source. \og Article\fg{}: la valeur est tirée du texte de l'étude~\cite{Kagan2022}. \og Choix\fg{}: l'article ne la donne pas, et il faudra la fixer soi-même pour reproduire l'expérience; nous proposons une valeur par défaut et indiquons comment la vérifier.
+
+\subsection*{Matériel et culture}
+
+\begin{center}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{4.0cm}>{\raggedright}p{6.9cm}>{\raggedright\arraybackslash}p{1.6cm}}
+\toprule
+Paramètre & Valeur & Source \\
+\midrule
+puce & matrice MaxOne: $26\,000$ électrodes de platine sur une surface de $8$~mm$^2$ & article \\
+enregistrement & jusqu'à $1024$ canaux simultanés, $20\,000$ échantillons par seconde & article \\
+stimulation & jusqu'à $32$ électrodes techniquement, $8$ indépendantes dans l'expérience & article \\
+cellules & cortex d'embryon de souris; neurones humains issus de cellules souches (deux méthodes de culture); cellules HEK293T (non neuronales) comme contrôle & article \\
+ensemencement & environ $10^6$ cellules par puce & article \\
+âge de la culture lors de l'expérience & souris: à partir de $\sim10$ jours; humain: $14$--$24$ jours ou $\sim80$ jours selon la méthode de culture & article \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection*{Boucle et temps}
+
+La boucle fonctionne par fenêtres de $10\ms$ ($200$ échantillons): pendant chaque fenêtre, on compte les impulsions sur les électrodes des zones motrices, le jeu est mis à jour et la stimulation suivante est émise. Le délai entre une impulsion dans la culture et le stimulus de réponse est d'environ $5\ms$. Pendant le jeu, le signal de chaque électrode passe par un filtre passe-haut de Bessel d'ordre 2 de fréquence de coupure $100$~Hz; la valeur absolue du signal est lissée par un filtre passe-bas de Bessel d'ordre 1 à $1$~Hz, et le seuil de détection des impulsions est proportionnel à cette valeur absolue lissée. Le seuil de six écarts types du fond, l'article l'indique pour certaines mesures d'activité, et non pour le jeu. Pour que la stimulation ne soit pas comptée comme une réponse de la culture, tous les signaux sont masqués lorsque plus de $15$ grandes impulsions, au-dessus de $75$~mV, arrivent en même temps. Tout ceci: article.
+
+\subsection*{Codage de la balle}
+
+\begin{center}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{3.4cm}>{\raggedright}p{7.5cm}>{\raggedright\arraybackslash}p{1.6cm}}
+\toprule
+Paramètre & Valeur & Source \\
+\midrule
+zone sensorielle & $8$ électrodes disposées de sorte que des électrodes voisines correspondent à des positions voisines de la balle & article \\
+code de place & le numéro d'électrode $k=1,\dots,8$ indique la position de la balle par rapport au centre de la raquette & article \\
+quelle coordonnée & position verticale de la balle; pour la reproduction, par rapport à la raquette, $k=\lceil 8(y-p+\tfrac12)\rceil$ pour $y-p\in[-\tfrac12,\tfrac12]$ & article; formule: choix \\
+code de fréquence & la fréquence de stimulation, de $4$ à $40$~imp./s, porte la distance à la raquette & article \\
+sens de l'échelle & $4$~imp./s quand la balle est près du mur opposé, et linéairement jusqu'à $40$~imp./s près du mur de la raquette: $f=4+36\,(1-x/L)$, $x$ étant la distance au mur de la raquette et $L$ la largeur du court & article \\
+forme d'impulsion & brève impulsion rectangulaire biphasique: d'abord la phase positive, puis la négative & article \\
+amplitude & $75$~mV; choisie pour ne pas forcer la décharge des cellules inhibées & article \\
+durée des phases & non indiquée; prendre le réglage standard du système de stimulation et ne pas le modifier pendant l'expérience & choix \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection*{Lecture de la raquette}
+
+L'article comporte deux zones motrices: les impulsions de la première déplacent la raquette vers le haut, celles de la seconde vers le bas; la contribution des zones est pondérée pour tenir compte de densités de cellules et d'activités différentes~\cite{Kagan2022}. La formule exacte n'est pas donnée. Pour la reproduction, nous prenons la règle~\eqref{eq:dishreadout}, $\Delta p=c\,(n_\uparrow-n_\downarrow)$ pour chaque fenêtre de $10\ms$, avec un poids qui égalise les zones selon leur activité moyenne au repos (choix): $n_\uparrow$ et $n_\downarrow$ sont divisés par le compte moyen de leur zone par fenêtre, mesuré avant le jeu. Le coefficient $c$ est choisi de sorte qu'une différence d'un compte moyen déplace la raquette de $1\%$ de la hauteur du court par fenêtre (choix); un avantage constant d'une zone fait alors traverser tout le court à la raquette en $1$~s.
+
+L'emplacement des zones sur la puce n'est pas donné par des coordonnées dans le texte de l'article; il n'y a qu'un schéma. Pour la reproduction, trois groupes d'électrodes disjoints suffisent: les huit électrodes sensorielles au centre et, de part et d'autre, un groupe d'électrodes d'enregistrement, l'un pour \og haut\fg{}, l'autre pour \og bas\fg{} (choix).
+
+\subsection*{Le jeu}
+
+Les dimensions du court, la longueur de la raquette et la vitesse de la balle ne sont pas indiquées dans l'article; il est seulement dit que la balle se déplace à vitesse constante et rebondit sur les murs. Pour la reproduction (choix): court de $1\times1$, raquette de longueur $0.2$ sur le mur de droite (renvoi si $|y-p|<0.1$, comme dans le modèle~\texttt{models/dishbrain\_model.py}), la balle traverse le court en $1$~s. Un raté sans aucun renvoi dans l'échange compte comme un \og ace\fg{}; un échange de plus de trois renvois consécutifs est dit \og long\fg{} (article).
+
+\subsection*{Rétroaction}
+
+\begin{center}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{2.6cm}>{\raggedright}p{8.3cm}>{\raggedright\arraybackslash}p{1.6cm}}
+\toprule
+Événement & Ce qui est appliqué & Source \\
+\midrule
+renvoi & stimulus prévisible: les $8$ électrodes sensorielles simultanément, $75$~mV, $100$~imp./s, $100\ms$; la stimulation habituelle de la balle est interrompue pendant ce temps & article \\
+raté & stimulus imprévisible: $150$~mV, $5$~imp./s, $4$~s, à des instants aléatoires sur des électrodes tirées au hasard parmi les $8$; puis $4$~s sans stimulation, et la balle repart dans une direction aléatoire & article \\
+loi du hasard & non indiquée; pour la reproduction, instants des impulsions en flux de Poisson de fréquence moyenne $5$~imp./s & choix \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection*{Protocole et contrôles}
+
+Une session dure $20$~min; on compare les $5$ premières et les $15$ dernières minutes (article). Trois mesures du résultat: la longueur moyenne d'un échange, la proportion d'aces et la proportion d'échanges longs. Conditions expérimentales (article):
+\begin{itemize}
+\item \emph{stimulus}: boucle complète, telle que décrite ci-dessus;
+\item \emph{silence}: au lieu du stimulus de renvoi ou de raté, la même durée sans aucune stimulation, puis la balle repart dans une direction aléatoire;
+\item \emph{sans rétroaction}: après un raté, la balle rebondit simplement et continue sa course, et la stimulation de la position de la balle se poursuit;
+\item \emph{repos}: le jeu tourne et la raquette suit l'activité, mais il n'y a aucune stimulation;
+\item \emph{contrôles}: puce avec milieu seul; cellules HEK293T; \og culture in silico\fg{}, une simulation à la place des cellules.
+\end{itemize}
+Taille des échantillons dans la série principale: $9$ cultures de souris ($101$ sessions), $11$ cultures humaines ($138$), $6$ puces avec milieu seul ($80$), $20$ cultures au repos ($42$), $3$ simulations ($38$), soit $399$ sessions au total. Dans la série sur la rétroaction: $486$ sessions sur $3$ jours, à raison de $3$ sessions par jour, conditions \og stimulus\fg{}, \og silence\fg{} et \og sans rétroaction\fg{} ($n=27$, $17$ et $15$). La hausse de la longueur moyenne des échanges entre les $5$ premières minutes et les $15$ dernières n'a été obtenue qu'avec des cultures vivantes. Dans la série sur la rétroaction, une hausse significative au fil du temps n'apparaît que dans la condition \og stimulus\fg{}; en fin de session, la condition \og silence\fg{} dépassait tout de même \og sans rétroaction\fg{}, mais avec un effet moindre, et il n'y a pas eu d'apprentissage stable d'une session à l'autre sur les trois jours~\cite{Kagan2022}.
+
+\subsection*{Le cycle du banc pas à pas}
+
+Toutes les $10\ms$, l'ordinateur du banc effectue les opérations suivantes.
+\begin{enumerate}
+\item Il lit les nombres d'impulsions $n_\uparrow$, $n_\downarrow$ des deux zones motrices sur la fenêtre écoulée et les normalise par le compte moyen de la zone au repos.
+\item Il déplace la raquette de $\Delta p=c\,(n_\uparrow-n_\downarrow)$ et la maintient dans les limites du court.
+\item Il avance la balle d'un pas et la fait rebondir sur les murs du haut, du bas et de gauche.
+\item Si la balle a atteint le mur de droite: pour $|y-p|<0.1$, c'est un renvoi, le compteur de l'échange augmente d'une unité et le stimulus de renvoi est appliqué ($100\ms$); sinon, c'est un raté, l'échange est enregistré, le stimulus de raté est appliqué ($4$~s), suivi de $4$~s de pause, et la balle repart.
+\item Sinon, il choisit l'électrode $k$ d'après la position verticale de la balle et la fréquence $f$ d'après la distance au mur de la raquette, et applique à l'électrode $k$ des impulsions biphasiques de $75$~mV à la fréquence $f$ jusqu'à la fenêtre suivante.
+\end{enumerate}
+Cela suffit pour construire un banc compatible avec celui qui a été publié et pour tester la question centrale du chapitre: est-ce la prévisibilité qui enseigne à la culture, ou la simple différence entre la réponse au renvoi et celle au raté? Pour cela, il faut ajouter aux trois conditions de l'article une quatrième, qui n'y figure pas: après un raté, un stimulus \emph{prévisible} de même durée et de même énergie que le stimulus imprévisible. Si la culture apprend aussi dans ce cas, c'est la différence qui compte, et non la prévisibilité.

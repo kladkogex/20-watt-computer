@@ -1,0 +1,352 @@
+\chapter{Le code Morse: ce que l'on sait de la langue des neurones \nt{GLUT} et \nt{GABA}}
+\chaptermark{Le code Morse}
+\label{sec:code}
+
+\section{Un alphabet d'un seul signe}
+
+Le code Morse a deux signes, le point et le trait, et des pauses de trois longueurs entre eux. L'alphabet du neurone, nous l'avons vu au chapitre~\ref{sec:neurontypes}, est encore plus pauvre: il n'a qu'un signe. Une impulsion dure environ une milliseconde, et toutes les impulsions d'un même neurone ont la même hauteur et la même forme. Tout le message est donc dans les pauses, c'est-à-dire dans la suite des instants $t_1,t_2,t_3,\dots$ C'est un Morse sans traits, où seul le rythme des points porte le sens (fig.~\ref{fig:morse}).
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=0.08cm,y=1cm]
+% Morse letter: dot, dash, dot
+\node[left,font=\small] at (-6,2.55) {Morse:};
+\fill[black] (0,2.45) rectangle (6,2.65);
+\fill[black] (14,2.45) rectangle (32,2.65);
+\fill[black] (40,2.45) rectangle (46,2.65);
+\node[right,font=\small,gray!40!black] at (52,2.55) {point, trait, point: le sens est dans les durées et les pauses};
+% stimulus onset
+\node[left,font=\small] at (-6,0.4) {neurone:};
+\draw[->,thick,green!45!black] (0,-0.55) -- (0,-0.05);
+\node[below,font=\scriptsize,green!45!black] at (0,-0.55) {stimulus};
+\draw[gray!70!black] (0,0) -- (152,0) node[right,black] {\small $t$};
+% spikes: single ones blue, the burst red
+\foreach \s in {14,26,41,88,112,131}{\draw[very thick,blue!60!black] (\s,0) -- (\s,0.8);}
+\foreach \s in {60,63,66,69}{\draw[very thick,red!70!black] (\s,0) -- (\s,0.8);}
+% latency
+\draw[<->,thick] (0,1.1) -- node[above,font=\scriptsize] {$t_1$: instant de la 1\textsuperscript{re} impulsion} (14,1.1);
+% burst
+\draw[decorate,decoration={brace,amplitude=4pt},red!70!black] (58,0.95) -- (71,0.95) node[midway,above=4pt,font=\scriptsize] {bouffée: un \og trait\fg};
+% counting windows
+\foreach \a/\b/\n in {0/50/3,50/100/5,100/150/2}{
+  \draw[decorate,decoration={brace,amplitude=4pt,mirror},gray!50!black] (\a+1,-0.2) -- (\b-1,-0.2) node[midway,below=4pt,font=\small] {$n=\n$};}
+\node[font=\scriptsize,gray!40!black] at (75,-1.05) {code de fréquence: nombre d'impulsions $n$ dans chaque fenêtre};
+\foreach \x in {0,50,100,150}{\draw[gray!60!black] (\x,-0.06) -- (\x,0.06);}
+\end{tikzpicture}
+\caption{Le code Morse et l'alphabet du neurone. Une même suite d'impulsions peut se lire de plusieurs façons: compter les impulsions dans des fenêtres de $50\ms$ (section~\ref{sec:rate}), mesurer le délai $t_1$~\eqref{eq:latency} ou repérer une bouffée, un \og trait\fg~\eqref{eq:burst}.}
+\label{fig:morse}
+\end{figure}
+
+Quelles pauses sont possibles? Par en dessous, elles sont limitées par la période réfractaire: après une impulsion, le neurone ne peut pas se déclencher de nouveau pendant environ une milliseconde, si bien qu'on ne dépasse pas quelques centaines d'impulsions par seconde. Par au-dessus, rien ne les limite: un neurone peut se taire pendant des minutes. Chez les neurones \nt{GLUT} du cortex, les fréquences vont d'une fraction d'impulsion à quelques dizaines d'impulsions par seconde, et la plupart des neurones travaillent la plupart du temps près de la borne inférieure.
+
+Aux chapitres~\ref{sec:glutcomputer} et~\ref{sec:gaba}, nous avons adopté au passage tantôt une façon, tantôt une autre d'écrire des nombres avec des impulsions. Posons maintenant la question directement: dans quelle langue les neurones \nt{GLUT} et \nt{GABA} se parlent-ils? Il n'y a pas de réponse complète, cette langue n'est pas déchiffrée. Mais on en sait quelques choses avec certitude, et presque tout ce qu'on en sait peut s'obtenir en raisonnant en ingénieur des télécommunications: capacité du canal, bruit, récepteur, coût de la transmission.
+
+\section{Combien peut-on transmettre}
+
+Commençons par la borne supérieure. Supposons que le destinataire distingue les instants des impulsions avec une précision $\Delta t$: les décalages inférieurs à $\Delta t$ sont pour lui indiscernables. Découpons le temps en cases de longueur $\Delta t$, plus courtes que la période réfractaire, de sorte que chaque case contienne une impulsion ou aucune (fig.~\ref{fig:cells}). À une fréquence moyenne $r$, une impulsion tombe dans une case avec la probabilité $p=r\Delta t$. Le flux porte le plus d'information quand les cases sont indépendantes, et chaque case donne alors une entropie de $-p\log_2p-(1-p)\log_2(1-p)\approx p\log_2(e/p)$ bits pour $p\ll1$. En divisant par $\Delta t$, on obtient le débit maximal et sa part par impulsion~\cite{MacKay1952}:
+\begin{empheq}[box=\keybox]{equation}
+R_{\max} \;\approx\; r\,\log_2\frac{e}{r\,\Delta t}\ \ \text{bits/s},
+\qquad
+\frac{R_{\max}}{r} \;\approx\; \log_2\frac{e}{r\,\Delta t}\ \ \text{bits par impulsion}.
+\label{eq:spikeentropy}
+\end{empheq}
+Pour $r=10$ impulsions par seconde et $\Delta t=1\ms$, cela fait environ huit bits par impulsion et quatre-vingts bits par seconde.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=0.5cm,y=1cm]
+% time cut into cells of width Delta t; a cell holds one impulse or none
+\foreach \k in {0,...,23}{\draw[gray!55] (\k,0) rectangle (\k+1,0.7);}
+\foreach \k in {2,7,8,15,21}{
+  \fill[red!10] (\k,0) rectangle (\k+1,0.7);
+  \draw[very thick,red!70!black] (\k+0.5,0.05) -- (\k+0.5,0.65);}
+\foreach \k in {0,...,23}{
+  \pgfmathtruncatemacro{\bit}{(\k==2)||(\k==7)||(\k==8)||(\k==15)||(\k==21)}
+  \ifnum\bit=1 \def\bitcol{red!70!black}\else \def\bitcol{gray!60!black}\fi
+  \node[font=\scriptsize,text=\bitcol] at (\k+0.5,-0.25) {\bit};}
+\draw[<->,gray!60!black] (0,0.95) -- (1,0.95) node[midway,above,font=\scriptsize,black] {$\Delta t$};
+\node[font=\small,anchor=east] at (-0.3,0.35) {impulsions};
+\node[font=\small,anchor=east] at (-0.3,-0.25) {bits};
+\draw[decorate,decoration={brace,amplitude=5pt,mirror},gray!60!black] (0,-0.55) -- (24,-0.55)
+  node[midway,below=6pt,font=\scriptsize,black,align=center] {un destinataire qui ne fait que compter: \og $n=5$\fg;\\ un destinataire qui voit les cases: lesquelles des $24$ contiennent les $5$, soit $\log_2\binom{24}{5}\approx15$ bits};
+\end{tikzpicture}
+\caption{D'où vient la capacité~\eqref{eq:spikeentropy}. Le temps est découpé en cases de longueur $\Delta t$; chaque case contient une impulsion ($1$) ou n'en contient pas ($0$): le flux d'impulsions est une chaîne binaire. Une impulsion tombe dans une case avec la probabilité $p=r\Delta t$. Plus les cases sont fines, plus la chaîne est longue et plus il y a de bits; un compteur d'impulsions perd presque tout ce qui est inscrit dans la \emph{position} des uns.}
+\label{fig:cells}
+\end{figure}
+
+Les bits par impulsion ne dépendent de la précision temporelle que de façon logarithmique: avec une précision de $10\ms$, il reste environ cinq bits par impulsion. Mais si le destinataire ne fait que compter les impulsions sur une seconde, pour $r=10$ il reçoit moins de deux bits pour toute la seconde (section~\ref{sec:rate}).
+
+\begin{keyblock}
+\begin{proposition}[Capacité d'un canal à impulsions]
+\label{prop:capacity}
+Un flux d'impulsions de fréquence moyenne $r$, lu avec une précision temporelle $\Delta t$, ne porte pas plus que~\eqref{eq:spikeentropy}. Presque toute cette capacité réside dans l'\emph{instant} des impulsions: un destinataire qui ne fait que compter les impulsions tire du même flux des dizaines de fois moins qu'un destinataire qui distingue leurs instants à la milliseconde près.
+\end{proposition}
+\end{keyblock}
+
+C'est une borne supérieure, pas une mesure. Les mesures sur des neurones sensoriels dont on connaît le stimulus donnent d'un à quelques bits par impulsion; dans les meilleurs cas, cela atteint la moitié de la borne calculée pour leur précision~\cite{Rieke1997}. Donc, au moins à l'entrée du système nerveux, l'instant des impulsions est utilisé et non perdu.
+
+\section{Un canal bruité}
+
+La capacité~\eqref{eq:spikeentropy} a été calculée sans bruit. Sur l'endroit où il naît, trois faits sont établis.
+
+\emph{Le générateur d'impulsions lui-même est précis.} Si l'on injecte de nombreuses fois le même courant, variant vite dans le temps, dans un neurone du cortex prélevé avec un morceau de tissu, les impulsions se répètent à environ une milliseconde près~\cite{Mainen1995}. Si le courant est constant, les instants des impulsions se dispersent d'un essai à l'autre: c'est la variation rapide de l'entrée, et non le neurone lui-même, qui produit la précision temporelle.
+
+\emph{La synapse n'est pas fiable.} Une impulsion qui atteint une synapse \nt{GLUT} ne libère une dose de neurotransmetteur qu'avec une certaine probabilité $p$. Aux synapses de l'hippocampe, plus de la moitié des impulsions n'atteignent tout simplement pas le destinataire, et la cause en est précisément le caractère aléatoire de la libération, non des défauts de conduction~\cite{AllenStevens1994}. Pour un ingénieur des télécommunications, c'est un canal à effacements; plusieurs synapses entre deux neurones sauvent en partie la situation.
+
+\emph{Dans le cortex vivant, le flux d'impulsions paraît aléatoire.} Les intervalles entre impulsions sont dispersés à peu près comme dans un flux aléatoire de Poisson, et quand on répète le même stimulus, le nombre d'impulsions dans une fenêtre varie de sorte que sa variance est proche de sa moyenne~\cite{Softky1993}.
+
+Comment un élément précis produit-il un flux aléatoire? Le neurone reçoit des milliers d'entrées, chacune peu fiable, et l'excitation et l'inhibition s'équilibrent, comme au chapitre~\ref{sec:gaba}. La tension de membrane fluctue près du seuil, et ce sont ces fluctuations qui fixent les instants des impulsions. Est-ce du bruit, ou un message que nous ne savons pas lire? La question reste largement ouverte. Une partie du \og bruit\fg{} s'est déjà révélée être un message: dans le cortex visuel, une part importante de la variabilité suit les mouvements de l'animal lui-même~\cite{Stringer2019}. La difficulté est ici de principe: pour qui ne connaît pas le code, un message bien compressé est indiscernable d'un flux aléatoire.
+
+\section{La fréquence: lente, mais sûre}
+\label{sec:rate}
+
+Le code le plus simple est le \emph{code de fréquence}: le nombre est inscrit dans le nombre d'impulsions que le neurone émet pendant une fenêtre $T$. Ni les effacements ni la gigue des instants ne menacent ce code. Mais il a un prix. Si le flux est poissonien, le nombre d'impulsions $n$ dans la fenêtre a pour moyenne $rT$ et pour écart type $\sqrt{rT}$:
+\begin{empheq}[box=\keybox]{equation}
+\frac{\sigma_n}{\bar n} \;=\; \frac{1}{\sqrt{r\,T}} .
+\label{eq:rateerror}
+\end{empheq}
+Pour connaître une fréquence à dix pour cent près, il faut cent impulsions, soit cinq secondes à vingt impulsions par seconde. Des niveaux voisins sont discernables s'ils sont séparés de deux écarts types environ; jusqu'à la fréquence $r$, on distingue donc en un temps $T$ environ $\sqrt{rT}$ niveaux: pour $r=10$ et $T=1\,\text{s}$, trois ou quatre niveaux, moins de deux bits.
+Le cerveau ne travaille pas si lentement. Un homme reconnaît un animal sur une image montrée un instant, et la réponse apparaît dans le cerveau au bout d'environ $150\ms$~\cite{Thorpe1996}. Selon une estimation grossière, le signal traverse pendant ce temps une dizaine d'étapes de traitement successives, à raison de $10$--$20\ms$ par étape. Aux fréquences habituelles du cortex, chaque neurone n'a le temps d'émettre que zéro ou une impulsion par étape, et sa fréquence n'est pas définie sur une telle fenêtre. Deux issues: prendre beaucoup de neurones, ou regarder le temps.
+
+\emph{Beaucoup de neurones.} Supposons que $N$ neurones portent le même nombre et que le destinataire additionne leurs impulsions. Si leurs bruits sont indépendants, $rT$ est remplacé dans~\eqref{eq:rateerror} par $NrT$: cent neurones à $r=20$ donnent en $15\ms$ trente impulsions et une précision d'environ vingt pour cent. L'espace remplace le temps. Mais les bruits de neurones voisins du cortex ne sont pas indépendants: le coefficient de corrélation des nombres d'impulsions d'une paire de voisins est en général d'environ $0.1$~\cite{Zohary1994}. S'il vaut $c$, la variance de la moyenne sur $N$ neurones vaut
+\begin{empheq}[box=\keybox]{equation}
+\sigma^2_N \;=\; \sigma^2_1\,\frac{1+(N-1)\,c}{N}
+\;\xrightarrow[N\to\infty]{}\; c\,\sigma^2_1 .
+\label{eq:correlated}
+\end{empheq}
+
+\begin{keyblock}
+\begin{proposition}[Limite du moyennage]
+\label{prop:pooling}
+Avec un bruit corrélé, le moyennage sur un groupe ne réduit pas l'erreur de plus d'un facteur $1/\sqrt{c}$. Pour $c=0.1$, c'est un facteur trois, et ce gain est atteint dès quelques dizaines de neurones; en ajouter davantage est inutile.
+\end{proposition}
+\end{keyblock}
+
+Toute corrélation n'est pas également nuisible. Seule limite la précision la part du bruit commun qui \emph{ressemble au signal lui-même}, c'est-à-dire qui déplace tout le groupe comme le déplacerait une variation de la grandeur mesurée~\cite{MorenoBote2014}. Combien le cerveau contient réellement d'un tel bruit, on cherche encore à l'établir.
+
+Il existe une autre façon d'utiliser beaucoup de neurones: inscrire le nombre dans l'identité du neurone qui s'est déclenché, comme dans le détecteur de direction d'un son (fig.~\ref{fig:itd}). C'est le code \emph{de position}, le plus fiable que l'on connaisse: chez les neurones sensoriels, le numéro du fil indique quel point de la peau est touché ou quelle est la hauteur d'un son, et cela a été établi maintes fois. Il est coûteux en neurones, mais rapide: un message ne prend qu'un seul retard.
+
+\section{Le temps: rapide, mais à partir de quand?}
+
+La seconde issue consiste à écrire le nombre dans l'instant de l'impulsion. Prenons le neurone~\eqref{eq:glutneuron} et appliquons-lui, à partir de l'instant $t=0$, une entrée constante qui porterait la tension au niveau $U$. La tension croît comme $V=U\bigl(1-e^{-t/\tau}\bigr)$ et atteint le seuil $\theta$ à l'instant
+\begin{empheq}[box=\keybox]{equation}
+t_1 \;=\; \tau\,\ln\frac{U}{U-\theta}, \qquad U>\theta .
+\label{eq:latency}
+\end{empheq}
+Entrée forte, impulsion précoce; entrée faible, impulsion tardive; entrée sous le seuil, pas d'impulsion. Pour $\tau=10\ms$, l'entrée $U=4\theta$ donne une première impulsion au bout de $2.9\ms$, $U=2\theta$ au bout de $6.9\ms$, $U=1.2\theta$ au bout de $17.9\ms$. Une seule impulsion porte un nombre.
+
+Mais à partir de quel instant compter $t_1$? Il n'y a pas d'horloge, et le destinataire ne sait pas quand le stimulus a commencé. Il y a trois réponses.
+
+\emph{Le délai relatif.} Deux neurones voient le même stimulus, et la différence de leurs délais $t_1^A-t_1^B$ ne dépend que de leurs entrées, non de l'instant du début. Des détecteurs de coïncidences avec des retards comparent les instants (fig.~\ref{fig:itd}). Si $N$ neurones ont émis chacun une impulsion, l'\emph{ordre} même de leurs arrivées porte jusqu'à $\log_2N!$ bits: pour dix neurones, environ vingt-deux bits, alors que la réponse \og déclenché ou non\fg{} n'en donnerait pas plus de dix. Dans la rétine, on a montré qu'on peut reconstruire une image vite et de façon fiable à partir des délais relatifs des premières impulsions de ses neurones de sortie~\cite{Gollisch2008}.
+
+\emph{La salve comme début de mot.} Un changement brusque du stimulus fait se déclencher presque simultanément un grand nombre de neurones. Cette salve sert elle-même de marque de début, comme la longue pause entre les mots en Morse, et le destinataire compte les délais à partir d'elle.
+
+\emph{Le rythme local.} Au chapitre~\ref{sec:gaba}, la boucle \nt{GLUT}--\nt{GABA} engendrait un rythme local de période $12$--$50\ms$. Ce n'est pas une horloge, mais à l'intérieur de son cycle un neurone à entrée forte a le temps de se déclencher avant un neurone à entrée faible, et~\eqref{eq:latency} devient un code \emph{de phase}: le nombre est inscrit dans la partie du cycle où l'impulsion est arrivée. On a observé ce code: des neurones associés à un lieu précis de l'espace se déclenchent de plus en plus tôt dans le cycle d'un rythme local lent à mesure que l'animal traverse \og leur\fg{} lieu~\cite{OKeefe1993}. Dans quelle mesure le cerveau se sert de la phase, on l'ignore encore.
+
+\section{Le destinataire choisit le code}
+
+Une suite d'impulsions contient à la fois une fréquence, des instants et un ordre. Ce qui en sera lu, c'est le destinataire qui le décide, et il le décide par un seul paramètre: sa constante de temps $\tau$.
+
+Moyennons l'équation~\eqref{eq:glutneuron} dans le temps. Si le neurone reçoit des flux indépendants de fréquences $r_j$, la tension moyenne et sa fluctuation relative valent
+\begin{empheq}[box=\keybox]{equation}
+\bar V \;=\; \tau\sum_j w_j\,r_j ,
+\qquad
+\frac{\sigma_V}{\bar V} \;\approx\; \frac{1}{\sqrt{2\,r_{\text{ent}}\,\tau}} ,
+\label{eq:reader}
+\end{empheq}
+où la seconde égalité est écrite pour des poids égaux, et $r_{\text{ent}}$ est la fréquence totale de toutes les entrées. Quand $\tau$ est grande, la tension fluctue à peine et suit la somme pondérée des fréquences: le destinataire est un \emph{intégrateur}, il lit les fréquences et oublie les instants. Quand $\tau$ est petite, la tension a le temps de retomber entre les impulsions, et le seuil n'est atteint que lorsque plusieurs impulsions arrivent dans la fenêtre~\eqref{eq:window}: le destinataire est un \emph{détecteur de coïncidences}, il lit les instants (fig.~\ref{fig:reader}). Mille entrées à cinq impulsions par seconde avec $\tau=10\ms$ donnent une fluctuation d'environ dix pour cent: c'est presque une intégration pure. Si l'inhibition, comme au chapitre~\ref{sec:gaba}, a raccourci $\tau$ à $2\ms$, la fluctuation dépasse vingt pour cent, et le neurone commence à remarquer les coïncidences.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=0.115cm,y=1cm]
+% common input: the same spike train for both receivers
+\foreach \s in {6,21,22,38,52,55.5,59,62.5,66,69.5,73,76.5,80,83.5,87,90.5,94,97.5}{\draw[thick,gray!40!black] (\s,5.25) -- (\s,5.65);}
+\draw[gray!70!black] (0,5.25) -- (105,5.25);
+\node[left,font=\small] at (-1,5.45) {entrée};
+\node[above,font=\scriptsize,gray!40!black] at (13.5,5.65) {rares};
+\node[above,font=\scriptsize,gray!40!black] at (21.5,6.0) {paire};
+\node[above,font=\scriptsize,gray!40!black] at (75,5.65) {fréquentes};
+% axes and thresholds
+\foreach \y/\th in {2.7/2.5,0/1.5}{
+  \draw[gray!70!black] (0,\y) -- (106,\y) node[right,black] {\small $t$};
+  \draw[densely dashed,gray!60!black] (0,\y+0.6*\th) -- (104,\y+0.6*\th) node[right,black,font=\small] {$\theta$};
+}
+\node[anchor=south west,font=\small] at (0,4.3) {$\tau=10\ms$: intégrateur};
+\node[anchor=south east,font=\small] at (104,1.0) {$\tau=2\ms$: détecteur de coïncidences};
+% integrator: tau=10 ms, theta=2.5w
+\begin{scope}[yshift=2.7cm]
+\foreach \a/\b/\v in {0/6/0.000,6/21/1.000,21/22/1.223,22/38/2.107,38/52/1.425,52/55.5/1.351,55.5/59/1.952,59/62.5/2.376,62.5/66/0.000,66/69.5/1.000,69.5/73/1.705,73/76.5/2.201,76.5/80/0.000,80/83.5/1.000,83.5/87/1.705,87/90.5/2.201,90.5/94/0.000,94/97.5/1.000,97.5/104/1.705}{\draw[very thick,blue!60!black] plot[domain=\a:\b,samples=14] (\x,{0.6*\v*exp(-(\x-\a)/10)});}
+\foreach \s/\p/\q in {6/0.000/1.000,21/0.223/1.223,22/1.107/2.107,38/0.425/1.425,52/0.351/1.351,55.5/0.952/1.952,59/1.376/2.376,62.5/1.674/2.500,62.5/2.500/0.000,66/0.000/1.000,69.5/0.705/1.705,73/1.201/2.201,76.5/1.551/2.500,76.5/2.500/0.000,80/0.000/1.000,83.5/0.705/1.705,87/1.201/2.201,90.5/1.551/2.500,90.5/2.500/0.000,94/0.000/1.000,97.5/0.705/1.705}{\draw[very thick,blue!60!black] (\s,0.6*\p) -- (\s,0.6*\q);}
+\foreach \s in {62.5,76.5,90.5}{\draw[->,thick,red!70!black] (\s,1.58) -- (\s,1.95);}
+\end{scope}
+% coincidence: tau=2 ms, theta=1.5w
+\begin{scope}[yshift=0cm]
+\foreach \a/\b/\v in {0/6/0.000,6/21/1.000,21/22/1.001,22/38/0.000,38/52/1.000,52/55.5/1.001,55.5/59/1.174,59/62.5/1.204,62.5/66/1.209,66/69.5/1.210,69.5/73/1.210,73/76.5/1.210,76.5/80/1.210,80/83.5/1.210,83.5/87/1.210,87/90.5/1.210,90.5/94/1.210,94/97.5/1.210,97.5/104/1.210}{\draw[very thick,blue!60!black] plot[domain=\a:\b,samples=14] (\x,{0.6*\v*exp(-(\x-\a)/2)});}
+\foreach \s/\p/\q in {6/0.000/1.000,21/0.001/1.001,22/0.607/1.500,22/1.500/0.000,38/0.000/1.000,52/0.001/1.001,55.5/0.174/1.174,59/0.204/1.204,62.5/0.209/1.209,66/0.210/1.210,69.5/0.210/1.210,73/0.210/1.210,76.5/0.210/1.210,80/0.210/1.210,83.5/0.210/1.210,87/0.210/1.210,90.5/0.210/1.210,94/0.210/1.210,97.5/0.210/1.210}{\draw[very thick,blue!60!black] (\s,0.6*\p) -- (\s,0.6*\q);}
+\foreach \s in {22}{\draw[->,thick,red!70!black] (\s,0.98) -- (\s,1.35);}
+\end{scope}
+\foreach \x in {0,50,100}{\draw[gray!60!black] (\x,-0.06) -- (\x,0.06) node[below,font=\scriptsize] {\x\,ms};}
+\end{tikzpicture}
+\caption{Une même entrée, deux destinataires différents. Chaque impulsion fait monter la tension de $w$, après quoi elle retombe, comme dans le modèle de neurone~\eqref{eq:glutneuron}; les flèches rouges sont les impulsions du destinataire. Le destinataire lent ($\tau=10\ms$, $\theta=2.5w$) se déclenche là où les impulsions sont \emph{nombreuses} et ne remarque pas la paire. Le rapide ($\tau=2\ms$, $\theta=1.5w$) ne se déclenche que pour une paire dans la fenêtre~\eqref{eq:window}, et laisse passer un flux fréquent mais sans coïncidences.}
+\label{fig:reader}
+\end{figure}
+
+Les mesures montrent que, dans le cortex actif, la conductance de la membrane est plusieurs fois plus grande qu'au repos~\cite{Destexhe2003}. La constante $\tau$ y est donc plus courte, et les neurones du cortex en régime de travail sont plus proches de détecteurs de coïncidences que d'intégrateurs.
+
+\begin{keyblock}
+\begin{proposition}[Le destinataire fixe le code]
+\label{prop:reader}
+Une même suite d'impulsions porte une fréquence pour un destinataire lent, des instants pour un destinataire rapide, et, pour un volume dans lequel le neurotransmetteur est libéré, un niveau de concentration lissé sur des secondes (chapitre~\ref{sec:serocomputer}). Le code utilisé n'est pas fixé par l'expéditeur, mais par la constante de temps du destinataire, et l'inhibition l'ajuste.
+\end{proposition}
+\end{keyblock}
+\section{Points et traits: la synapse comme filtre}
+
+Jusqu'ici, notre synapse était un fil avec un poids. En réalité, sa réponse dépend des impulsions précédentes, et cela donne à la langue des neurones un second signe.
+
+\emph{La dépression: la synapse transmet les changements.} Chaque libération consomme une fraction $U$ de la réserve de neurotransmetteur prête à être libérée~\cite{Tsodyks1997}, et la réserve se reconstitue avec une constante de temps $\tau_{\text{rec}}$ de l'ordre de centaines de millisecondes. À la fréquence $r$, l'amplitude de la réponse à une impulsion s'établit approximativement au niveau $A(r)=A_0/(1+U r\tau_{\text{rec}})$, où $A_0$ est la réponse d'une synapse reposée. Le courant que reçoit le destinataire par unité de temps vaut
+\begin{empheq}[box=\keybox]{equation}
+r\,A(r) \;=\; \frac{A_0\,r}{1+U r\,\tau_{\text{rec}}}
+\;\xrightarrow[r\to\infty]{}\; \frac{A_0}{U\tau_{\text{rec}}} .
+\label{eq:depression}
+\end{empheq}
+Pour $U=0.5$ et $\tau_{\text{rec}}=0.8\,\text{s}$, la saturation commence dès $1/(U\tau_{\text{rec}})=2.5$ impulsions par seconde. Si la fréquence passe de cinq à vingt, le courant établi n'augmente que d'un tiers. En revanche, les premières impulsions à la nouvelle fréquence arrivent tant que la réserve est encore l'ancienne, et le courant bondit un instant d'un facteur quatre, puis retombe en $\tau_{\text{rec}}/(1+Ur\tau_{\text{rec}})\approx90\ms$ (fig.~\ref{fig:depression}).
+
+Une telle synapse ne transmet pas la fréquence, mais sa \emph{variation}, et au fond la variation relative $\Delta r/r$~\cite{Abbott1997depression}. Pour un électronicien, c'est un filtre passe-haut placé directement dans le fil.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=12.5cm,y=1cm]
+% input rate
+\draw[->,gray!70!black] (0,2.6) -- (0.9,2.6) node[right,black] {\small $t$};
+\draw[->,gray!70!black] (0,2.6) -- (0,4.3) node[above,black] {\small $r$};
+\draw[very thick,blue!60!black] (0,2.9) -- (0.2,2.9) -- (0.2,3.8) -- (0.8,3.8);
+\node[left,font=\scriptsize] at (0,2.9) {$5$};
+\node[left,font=\scriptsize] at (0,3.8) {$20$};
+\node[right,font=\small,blue!60!black] at (0.4,4.1) {fréquence à l'entrée de la synapse};
+% output current
+\draw[->,gray!70!black] (0,0) -- (0.9,0) node[right,black] {\small $t$};
+\draw[->,gray!70!black] (0,0) -- (0,2.45) node[left,black] {\small $rA$};
+\draw[densely dashed,gray!60!black] (0,0.667) -- (0.8,0.667);
+\draw[very thick,red!70!black] (0,0.5) -- (0.2,0.5) -- (0.2,2.0)
+   plot[domain=0.2:0.8,samples=60] (\x,{0.667+(2.0-0.667)*exp(-(\x-0.2)/0.089)});
+\node[left,font=\scriptsize] at (0,0.5) {$1.7$};
+\node[left,font=\scriptsize] at (0,2.0) {$6.7$};
+\node[right,font=\scriptsize] at (0.8,0.667) {$2.2$};
+\node[right,font=\small,red!70!black] at (0.28,1.6) {courant reçu: bond, puis retombée en $\approx90\ms$};
+\draw[gray!60!black] (0.2,-0.08) -- (0.2,0.08); \node[below,font=\scriptsize] at (0.2,0) {$0.2\,\text{s}$};
+\draw[gray!60!black] (0.8,-0.08) -- (0.8,0.08); \node[below,font=\scriptsize] at (0.8,0) {$0.8\,\text{s}$};
+\end{tikzpicture}
+\caption{Synapse à dépression d'après la formule~\eqref{eq:depression}, pour $U=0.5$, $\tau_{\text{rec}}=0.8\,\text{s}$; courant en unités de $A_0$ par seconde; en tirets, le courant établi: il n'est passé que de $1.7$ à $2.2$, mais a bondi à $6.7$ au moment du saut. La synapse informe le destinataire que la fréquence a changé, non de sa valeur.}
+\label{fig:depression}
+\end{figure}
+
+\emph{La facilitation: la bouffée comme trait.} D'autres synapses ont une probabilité de libération faible, mais qui augmente après chaque impulsion pendant des dizaines de millisecondes. Une impulsion isolée se perd le plus souvent à travers une telle synapse. Mais une \emph{bouffée}, quelques impulsions à la suite à quelques millisecondes d'intervalle, passe presque à coup sûr. Même sans facilitation, la probabilité que les $k$ impulsions d'une bouffée soient toutes perdues vaut
+\begin{empheq}[box=\keybox]{equation}
+P_{\text{perte}} \;=\; (1-p)^k ,
+\label{eq:burst}
+\end{empheq}
+pour $p=0.2$, c'est $0.8$ pour une impulsion isolée et $0.41$ pour une bouffée de quatre; la facilitation la réduit encore davantage. Le neurone acquiert ainsi un second signe: l'impulsion isolée est un point, la bouffée un trait. Une synapse à dépression transmet le mieux la première impulsion après une pause; une synapse à facilitation laisse passer les bouffées et étouffe les points isolés. Que les bouffées soient transmises de façon plus fiable est mesuré; que le cerveau s'en serve réellement comme d'un signe à part est une hypothèse plausible~\cite{Lisman1997}.
+
+\section{Comment parlent les neurones \nt{GABA}}
+
+Les plus nombreux d'entre eux dans le cortex sont les neurones rapides~\cite{Tremblay2016}. Leurs impulsions sont plus courtes que celles des neurones \nt{GLUT}, et ils peuvent les émettre régulièrement et longtemps, à des centaines par seconde, presque sans se fatiguer. Leurs synapses sont plus fiables: la connexion avec chaque destinataire comporte de nombreux sites de libération, et une impulsion ne se perd presque jamais. Leurs sorties se posent près de l'endroit où naît l'impulsion du destinataire, si bien qu'ils ne commandent pas la façon dont le destinataire additionne ses entrées, mais le fait qu'il se déclenche ou non, et quand.
+
+Eux-mêmes reçoivent l'excitation de nombreux neurones \nt{GLUT} voisins et signalent l'activité totale alentour: exactement ce qu'il faut pour la division du chapitre~\ref{sec:gaba}. Enfin, les neurones \nt{GABA} rapides sont connectés entre eux et se déclenchent facilement ensemble; ce sont eux qui fixent le rythme local dont il a été question plus haut~\cite{Cardin2009}.
+
+Dans le langage du Morse, les neurones \nt{GABA} ne sont pas responsables des lettres, mais des \emph{pauses}. Ils découpent le flux continu des impulsions \nt{GLUT} en fenêtres à l'intérieur desquelles le destinataire peut se déclencher, rétrécissent les fenêtres de coïncidence et baissent le volume de tout le flux quand il devient trop fort.
+
+\begin{keyblock}
+\begin{proposition}[Partage des rôles]
+\label{prop:punctuation}
+Les neurones \nt{GLUT} portent le contenu du message: \emph{quoi} et \emph{combien}. Les neurones \nt{GABA} rapides en portent le balisage: \emph{quand} on peut parler et \emph{à quel volume}; une autre classe encore, en inhibant les inhibiteurs, décide \emph{pour qui} le portillon est ouvert. Certaines parties de ce partage sont mesurées; comme règle générale, c'est une hypothèse de travail.
+\end{proposition}
+\end{keyblock}
+
+Il existe aussi d'autres neurones \nt{GABA}, plus lents, dont les sorties se posent sur des entrées particulières du destinataire. Ils fonctionnent comme le veto~\eqref{eq:veto} du chapitre~\ref{sec:gaba}: ils ferment un flux d'impulsions \nt{GLUT} sans toucher aux autres.
+
+La division en neurones \nt{GABA} rapides et lents est un tableau ancien, et incomplet. On distingue aujourd'hui dans le cortex au moins trois grandes classes~\cite{Tremblay2016}, et la troisième est étonnante: elle n'inhibe pas les neurones \nt{GLUT}, mais d'autres neurones \nt{GABA}, avant tout ceux qui ferment les entrées~\cite{Pfeffer2013}. L'inhibition de l'inhibition est une double négation. Un tel neurone \emph{ouvre} le portillon sans envoyer au destinataire une seule impulsion excitatrice. Il est activé par des signaux venus d'autres aires du cortex et par les canaux de diffusion, si bien qu'il fonctionne comme une entrée d'autorisation pour toute une portion du réseau: tant qu'il est actif, les vetos sont levés et le flux passe~\cite{Pi2013}. L'annexe~\ref{sec:othermediators} appelle ce procédé la désinhibition.
+\section{Une langue économe}
+
+La dernière chose que l'on sait avec certitude de la langue des neurones, c'est qu'elle coûte cher. Une impulsion, avec le travail des synapses qu'elle provoque, coûte environ $10^9$ molécules d'ATP (estimation pour le cortex des rongeurs~\cite{Attwell2001}), et une molécule fournit environ $10^{-19}$ joule. Une impulsion coûte donc de l'ordre de $E_{\text{imp}}\sim10^{-10}$ joule. Le cerveau entier consomme environ $20$ watts; si la moitié va à la transmission des signaux, $P\sim10$ watts, la fréquence moyenne d'un neurone vaut
+\begin{empheq}[box=\keybox]{equation}
+\bar r \;\approx\; \frac{P}{N\,E_{\text{imp}}}
+\;\sim\; \frac{10\ \text{W}}{8.6\cdot10^{10}\cdot10^{-10}\ \text{J}}
+\;\approx\; 1\ \text{impulsion par seconde}.
+\label{eq:energy}
+\end{empheq}
+Des estimations plus détaillées pour le cortex donnent encore moins~\cite{Lennie2003}. Le code du cerveau est forcément \emph{parcimonieux}: seule une petite fraction des neurones peut travailler vite.
+
+On voit d'après~\eqref{eq:spikeentropy} que ce n'est pas si grave. Avec une précision de $1\ms$, une impulsion d'un neurone qui travaille à $100$ par seconde ne porte pas plus de cinq bits, et celle d'un neurone qui travaille une fois par seconde, jusqu'à onze. Si l'on paie à l'impulsion, il est avantageux de parler rarement. Le cortex échange d'ailleurs bien de la précision contre de l'énergie: quand la nourriture manque, les neurones conservent leur fréquence d'impulsions, mais dépensent moins en courants synaptiques, et leurs réponses deviennent moins précises~\cite{Padamsey2022}.
+
+En Morse, les lettres fréquentes sont courtes: la lettre la plus fréquente de l'anglais, E, est un seul point. Le code des neurones, pour autant qu'on le sache, suit la même règle sous une autre forme: ce qui est attendu coûte peu d'impulsions~\cite{Barlow1961}. Face à un stimulus constant, un neurone réduit peu à peu sa fréquence, les capteurs du chapitre~\ref{sec:glutcomputer} répondent aux changements et non aux niveaux, et les neurones \nt{DOPA} du chapitre~\ref{sec:neurontypes} ne signalent que l'erreur de prédiction de la récompense.
+
+\begin{keyblock}
+\begin{proposition}[Économie]
+\label{prop:economy}
+L'énergie limite la fréquence moyenne d'un neurone à environ une impulsion par seconde. La langue des neurones \nt{GLUT} est donc parcimonieuse et dépense ses impulsions pour les nouvelles: pour ce qui a changé ou n'avait pas été prédit. La limite énergétique est mesurée; que le code du cerveau soit ajusté pour maximiser le nombre de bits par joule est une hypothèse bien fondée.
+\end{proposition}
+\end{keyblock}
+
+\section{Bilan}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{2.6cm}>{\raggedright}p{2.3cm}>{\raggedright}p{3.0cm}>{\raggedright}p{2.0cm}>{\raggedright\arraybackslash}p{3.6cm}}
+\toprule
+Mode d'écriture & Ce qu'il porte & Qui le lit & Durée d'un message & Ce que l'on sait \\
+\midrule
+numéro du neurone déclenché (code de position) & quelle valeur & tout destinataire; détecteurs de coïncidences & un retard & établi chez les neurones sensoriels et dans la localisation des sons \\
+fréquence d'un neurone & une grandeur & intégrateur à grande $\tau$; volume (ch.~\ref{sec:serocomputer}) & centaines de ms à secondes & établi; trop lent pour une étape de traitement de $10$--$20\ms$ \\
+fréquence d'un groupe & une grandeur & neurone à milliers d'entrées & $10$--$50\ms$ & établi; gain limité par les corrélations~\eqref{eq:correlated} \\
+instant de la première impulsion, ordre & une grandeur, un ordre & détecteurs de coïncidences à retards & un retard & établi à l'entrée du système nerveux; débattu dans le cortex \\
+phase dans un rythme local & une grandeur, une position & neurones à rythme commun & cycle de $12$--$50\ms$ ou plus lent & observé dans certaines régions; rôle général: hypothèse \\
+bouffée (\og trait\fg) & \og important\fg: livraison fiable & synapse à facilitation & $\sim10\ms$ & fiabilité mesurée; signe à part: hypothèse \\
+variation de fréquence & une nouvelle & synapse à dépression & $\sim0.1\,\text{s}$ & établi \\
+impulsions des neurones \nt{GABA} rapides & quand et à quel volume & tous les neurones \nt{GLUT} voisins & $1$--$30\ms$ & rythme et division mesurés; \og ponctuation\fg{} comme règle: hypothèse \\
+\bottomrule
+\end{tabular}
+\caption{Les façons dont les neurones \nt{GLUT} et \nt{GABA} écrivent des messages avec des impulsions. La colonne de droite sépare ce qui est mesuré de ce qui est supposé.}
+\label{tab:code}
+\end{table}
+
+Le tableau~\ref{tab:code} rassemble ce que nous savons; on y voit aussi ce que nous ne savons pas. Nous ne savons pas dans quelle mesure le cortex utilise l'instant précis des impulsions, et pas seulement les fréquences de groupes. Nous ne savons pas si les neurones ont des \og mots\fg, des combinaisons stables d'impulsions de nombreux neurones qui se lisent comme un tout. Et nous ne savons pas si la langue est la même dans les différentes parties du cerveau. On peut apprendre le Morse en une soirée, parce que sa table est connue. La table de la langue des neurones reste à dresser, et ce seront très probablement des ingénieurs des télécommunications qui la dresseront.
+
+\section{Exercices}
+
+\begin{exercise}[\lvlA]
+\label{ex:04:1}
+\emph{La capacité en chiffres.} $\Delta t=1\ms$. (a)~Combien de bits par joule fournit un neurone de fréquence $1$ impulsion par seconde, au coût d'impulsion de~\eqref{eq:energy}? (b)~Pour $r=10$, combien de fois moins que la borne~\eqref{eq:spikeentropy} tire un destinataire qui ne fait que compter les impulsions sur une seconde?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:04:2}
+\emph{Fréquence optimale.} Un neurone dépense la puissance $P_0+rE_{\text{imp}}$, où $P_0$ est l'autre moitié des $20$~W, répartie sur tous les neurones, $E_{\text{imp}}=10^{-10}$~J. Pour quelle fréquence $r$ le nombre de bits par joule $R_{\max}(r)/(P_0+rE_{\text{imp}})$ selon~\eqref{eq:spikeentropy} avec $\Delta t=1\ms$ est-il maximal?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:04:3}
+\emph{Quelle corrélation est nuisible.} $N=1000$ neurones, variance $\sigma^2=1$, corrélation par paire $c=0.1$. Calculez l'information de Fisher $\mathcal I=f'^{\mathsf T}\Sigma^{-1}f'$ ($\Sigma$ est la matrice de covariance) pour des pentes égales $f'=\mathbf 1$ et pour des pentes $\pm1$ avec $\mathbf 1^{\mathsf T}f'=0$. Dans quel rapport diffèrent-elles?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:04:4}
+\emph{Modélisation: détecteur de coïncidences.} Le neurone~\eqref{eq:glutneuron} reçoit $1000$ entrées poissoniennes à $5$ impulsions par seconde, $w=1$; le seuil $\theta$ est tel que la tension libre le franchit une fois par seconde. Trouvez par simulation combien d'entrées simultanées $m$ déclenchent le neurone avec la probabilité $1/2$ pour $\tau=10$ et $2\ms$.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:04:5}
+\emph{Conception: détecteur de changements relatifs.} Choisissez une synapse~\eqref{eq:depression}: le courant établi à $40$ impulsions par seconde ne dépasse pas de plus de $10\,\%$ celui à $10$, et après un saut à $40$ le courant atteint son nouveau niveau avec une constante de temps d'au plus $50\ms$. Quel est le plus petit $\tau_{\text{rec}}$, et pour quel $U$?
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:04:6}
+\emph{Instant de la première impulsion et bouffées.} (a)~D'après~\eqref{eq:latency}, trouvez l'entrée pour laquelle la première impulsion arrive exactement au bout d'une constante de temps. De quoi dépend-elle? (b)~Avec une probabilité de libération $p=0.2$, combien d'impulsions faut-il dans une bouffée pour que la probabilité de toutes les perdre soit inférieure à $5\,\%$?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:04:7}
+\emph{Recherche: combien de bits dans la disposition.} Le neurone est fait de cases indépendantes~\eqref{eq:spikeentropy}, $r=10$, $\Delta t=1\ms$. (a)~Décomposez l'entropie d'un \og mot\fg{} de $20$ cases en entropie du nombre d'impulsions et reste. (b)~Simulez l'estimation de l'entropie d'après les fréquences des mots sur $N=30$ et $10^4$ enregistrements. De combien est-elle sous-estimée?
+\end{exercise}

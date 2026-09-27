@@ -1,0 +1,41 @@
+\chapter{Sur les ondes}
+% version complète: chapters/05_serocomputer.tex
+
+\pencilfig{5}{\pencilart{5}}{À gauche, le téléphone: un fil d'un point à un autre. À droite, la radio: un message pour tout le monde alentour à la fois.}
+
+Jusqu'ici, les neurones se parlaient au téléphone: de fil à fil, avec une adresse. Allumons maintenant la première station de radio, les neurones \nt{SERO}, qui libèrent de la sérotonine. Ils ne sont que quelques centaines de milliers dans tout le cerveau, mais leurs fils se déploient sur d'immenses régions.
+
+\section*{Quatre différences}
+
+Un neurone \nt{SERO} ne ressemble pas à un \nt{GLUT}. Premièrement, le signe de son signal est choisi par le destinataire: la sérotonine a des \og serrures\fg{} des deux signes. Deuxièmement, il travaille tout seul: à l'éveil, il clique régulièrement quelques fois par seconde s'il reçoit une alimentation de fond constante; c'est un métronome. Troisièmement, il est lent: son signal agit non en quelques millisecondes, mais en quelques centaines. Quatrièmement, il libère souvent sa substance non dans une fente étroite, mais dans l'espace alentour, où elle diffuse comme une goutte d'encre dans l'eau. Le destinataire perçoit une concentration et ignore de qui vient la molécule.
+
+\section*{Une logique qui n'existe pas}
+
+Un métronome avec une \og serrure\fg{} inhibitrice, c'est un \og non\fg{} tout prêt: tant qu'il n'y a pas de sérotonine, le neurone travaille; dès qu'elle apparaît, il se tait. Un seul neurone au lieu de tout un circuit. On croirait le réseau sérotoninergique logiquement plus puissant que le réseau \nt{GLUT}.
+
+Mais il y a un hic. La substance libérée dans l'espace se mélange. Deux signaux ne restent distincts que s'ils sont libérés en des points plus éloignés que la distance de diffusion de la substance, soit des dizaines de micromètres. Or chaque neurone à sérotonine possède un nombre énorme de sites de libération, éparpillés sur de grandes régions, et les \og fils\fg{} de neurones différents se chevauchent. Impossible de faire passer des bits isolés par un tel réseau. Il ne peut transmettre que quelques grandeurs communes, comme une radio où tout le monde écoute la même station.
+
+\pencilfig{123}{%
+% two release sites: far apart the clouds stay separate (two signals), close together they merge (one level)
+\foreach \x/\y in {0.9/1.55, 4.1/1.55, 1.9/0, 2.9/0}{
+  \foreach \r/\o in {0.95/0.07, 0.7/0.09, 0.45/0.12}{\fill[pcViolet, opacity=\o] (\x,\y) circle (\r);}
+  \draw[dotpen=pcViolet, fill=pcViolet] (\x,\y) circle (0.07);}
+\draw[arr] (1.95,1.55) -- (3.05,1.55); \draw[arr] (3.05,1.55) -- (1.95,1.55);
+\node[lbl, anchor=south, align=center] at (2.5,1.6) {plus loin que\\la diffusion};
+\node[lbl, anchor=west] at (5.25,1.55) {deux signaux};
+\node[lbl, anchor=west] at (5.25,0) {un seul nuage};
+}{La sérotonine est libérée dans l'espace et diffuse en nuage. Deux sources donnent deux signaux distincts seulement si elles sont plus éloignées que la distance de diffusion de la substance. Plus proches, les nuages se fondent en un seul niveau commun.}
+
+\section*{Ce qu'il fait vraiment}
+
+Pour une seule grandeur commune, ce système a tout ce qu'il faut. La concentration de sérotonine lisse les clics isolés en un niveau continu, comme le plus simple des convertisseurs transforme un train d'impulsions en tension. Ce niveau tient des secondes et s'estompe tout seul: ce n'est pas un bit qu'il faut effacer, mais une trace qui s'évanouit lentement.
+
+Les neurones à sérotonine portent aussi des \og serrures\fg{} sur eux-mêmes: la sérotonine libérée freine sa propre source. Un ingénieur y reconnaîtra un amplificateur à contre-réaction, un thermostat qui maintient un niveau. Cela dit, les expériences montrent que cette auto-inhibition est ciblée et ne provoque que de brèves pauses; le rôle de thermostat reste donc plutôt une hypothèse qu'un fait.
+
+\section*{Combien vaut l'attente}
+
+Quelle grandeur commune vaut la peine d'être lente et identique pour tout le réseau? Un bon candidat est la \emph{patience}. Imaginez le choix: une petite récompense tout de suite, ou une grande dans quelques secondes. Combien de temps vous êtes prêt à attendre dépend de la vitesse à laquelle l'avenir se \og déprécie\fg{} à vos yeux. Selon une hypothèse, c'est ce bouton que tourne la sérotonine. Des expériences vont dans son sens: si l'on active artificiellement les neurones à sérotonine, la souris attend plus longtemps une récompense différée avant d'abandonner.
+
+Ce chapitre introduit trois dispositifs dont se serviront toutes les stations de radio du cerveau: le neurone-métronome, le \og fil\fg{} qui est en réalité un volume, et le niveau lent à la place des clics isolés.
+
+\fullversion{5}

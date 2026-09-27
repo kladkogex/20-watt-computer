@@ -1,0 +1,225 @@
+\chapter{Reconnaissance d'images et de vidéos}
+\chaptermark{Reconnaissance}
+\label{sec:recognition}
+
+\section{Le problème: la même chose avec des pixels différents}
+
+Le chapitre~\ref{sec:sensors} a conduit l'image jusqu'à l'entrée de la machine: environ un million de neurones de sortie de l'œil, un flux comprimé qui transmet surtout des bords et des changements. Mais entre le capteur et l'action, il y a une étape dont nous n'avons encore rien dit. Un chat sur une image n'est pas un ensemble de pixels. Décalez-le d'une demi-image, tournez-le, éloignez-le, éteignez la moitié de la lumière: presque tous les pixels changent, et pourtant la réponse \og chat\fg{} doit rester la même. L'ingénieur appelle cela l'\emph{invariance}: la réponse du classifieur ne doit changer ni avec la translation, ni avec l'échelle, ni avec la rotation, ni avec l'éclairage.
+
+Une expérience simple montre bien la difficulté. Prenons une \og rétine\fg{} unidimensionnelle de $24$ points et deux figures de cinq points qui peuvent se trouver n'importe où. Un classifieur qui compare l'entrée à un modèle mémorisé à une seule position devine juste dans $49$--$52\%$ des cas, autant qu'une pièce jetée à pile ou face. La translation détruit complètement la comparaison pixel par pixel. Il faut un autre schéma.
+
+\section{Un pipeline d'étages}
+
+Nous savons déjà, par le chapitre~\ref{sec:code}, à quelle vitesse le cerveau y parvient: un animal sur une image présentée en un éclair est reconnu en $150\ms$ environ, et le signal traverse une dizaine d'étages, à raison de $10$--$20\ms$ chacun~\cite{Thorpe1996}. À chaque étage, un neurone a le temps d'émettre zéro ou une impulsion. La reconnaissance rapide est donc un seul passage dans le pipeline, sans longue réflexion ni répétition. La question est de savoir ce que fait chaque étage.
+
+La réponse, suggérée par les mesures sur les premiers étages de la vision~\cite{HubelWiesel1962}, consiste en deux opérations alternées (fig.~\ref{fig:conveyor}).
+
+\emph{Sélectivité.} Un neurone de l'étage $S$ regarde une petite zone de l'entrée et ne se déclenche que si elle contient une combinaison précise de parties: tel bord, et tel autre à côté. C'est un ET sur les parties: le neurone à seuil du chapitre~\ref{sec:glutcomputer}, dont le seuil dépasse ce qu'apporte n'importe quelle partie seule.
+
+\emph{Invariance.} Un neurone de l'étage $C$ rassemble les sorties de nombreux neurones $S$ qui cherchent la même combinaison à des endroits différents, et se déclenche si elle a été trouvée n'importe où. C'est un OU sur les positions, ou plus exactement le choix du maximum.
+
+Pour le modèle unidimensionnel, les deux opérations s'écrivent ainsi:
+\begin{empheq}[box=\keybox]{equation}
+s_{f,p} \;=\; \Bigl[\sum_i t_{f,i}\,x_{p+i} - \theta\Bigr]_+ ,
+\qquad
+c_f \;=\; \max_p\, s_{f,p} ,
+\label{eq:scstage}
+\end{empheq}
+où $x$ est l'entrée, $t_{f,i}$ le modèle du trait $f$, $p$ la position et $\theta$ le seuil. La première expression rend la réponse sélective, la seconde la rend indépendante de la position. Le réseau obtient le maximum de nombreuses entrées avec les moyens du chapitre~\ref{sec:gaba}: l'inhibition mutuelle ne laisse que l'entrée la plus forte (proposition~\ref{prop:wta}), et la division par l'activité totale égalise les réponses sous des luminosités différentes~\cite{Carandini2012}.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  px/.style={draw,minimum size=0.36cm,inner sep=0pt},
+  on/.style={px,fill=blue!55!black},
+  snode/.style={circle,draw,very thick,minimum size=0.62cm,inner sep=0pt,font=\scriptsize,fill=blue!6},
+  cnode/.style={circle,draw,very thick,minimum size=0.8cm,inner sep=0pt,font=\scriptsize,fill=red!10}]
+% two inputs: the same shape at two positions
+\foreach \row/\sh/\lab in {0/1/{image 1},1/7/{image 2}}{
+  \begin{scope}[yshift=-\row*1.0cm]
+  \node[left,font=\scriptsize] at (-0.25,0) {\lab};
+  \foreach \i in {0,...,13}{\node[px] at (\i*0.4,0) {};}
+  \foreach \d in {0,1,3,4}{\node[on] at ({(\sh+\d)*0.4},0) {};}
+  \end{scope}}
+% S stage: detectors of the shape at several positions
+\foreach \k in {0,...,5}{
+  \node[snode] (S\k) at ({0.8+0.8*\k},1.7) {$S$};}
+\node[font=\scriptsize,left] at (-0.25,1.7) {étage $S$: ET sur les parties};
+\draw[->,thick,blue!60!black] (1.2,0.25) -- (S1.south);
+\draw[->,thick,orange!85!black] (3.6,0.25) -- (S4.south);
+\node[font=\scriptsize,blue!60!black,anchor=east] at (1.25,0.85) {image 1};
+\node[font=\scriptsize,orange!85!black,anchor=west] at (3.9,0.85) {image 2};
+% C stage
+\node[cnode] (C) at (2.8,3.25) {$C$};
+\node[font=\scriptsize,left] at (-0.25,3.25) {étage $C$: OU sur les positions};
+\foreach \k in {0,...,5}{\draw[->,gray!60!black] (S\k.north) -- (C);}
+\draw[->,very thick,red!70!black] (C.north) -- ++(0,0.6) node[above,font=\scriptsize,black] {\og la figure est là\fg{} dans les deux images};
+% next stages
+\draw[decorate,decoration={brace,amplitude=5pt},gray!60!black] (6.3,1.4) -- (6.3,-1.3);
+\node[right,font=\scriptsize,align=left] at (6.5,0.05) {le même\\objet, d'autres\\pixels};
+\draw[->,thick,densely dashed,gray!60!black] (3.6,3.25) -- (5.9,3.25) node[right,font=\scriptsize,black,align=left] {paires $S$, $C$ suivantes:\\plus grandes, plus\\complexes, plus invariantes};
+\end{tikzpicture}
+\caption{Une paire d'étages du pipeline. Les neurones $S$ cherchent la même combinaison de parties à des endroits différents; le neurone $C$ répond si elle a été trouvée n'importe où~\eqref{eq:scstage}. La figure de l'image 1 et celle de l'image 2 excitent des neurones $S$ différents, mais le même neurone $C$. Les paires d'étages suivantes répètent la même chose sur des combinaisons de plus en plus grandes et complexes.}
+\label{fig:conveyor}
+\end{figure}
+
+Dans le même modèle unidimensionnel, la paire d'étages~\eqref{eq:scstage} reconnaît la figure à n'importe quelle position sans erreur; si chaque point de l'entrée est inversé au hasard avec une probabilité de $0.1$, elle la reconnaît dans $86\%$ des cas, avec une probabilité de $0.2$, dans $70\%$. Pile ou face donne toujours la moitié. Empilez plusieurs de ces paires: la première cherche des bords, la suivante des combinaisons de bords, plus haut des parties d'objets, au sommet des objets entiers. À chaque paire, les combinaisons grandissent, et la réponse dépend de moins en moins de l'endroit et de la façon dont l'objet est placé~\cite{Riesenhuber1999}.
+
+\begin{keyblock}
+\begin{proposition}[Pipeline de sélectivité et d'invariance]
+\label{prop:conveyor}
+La reconnaissance rapide est un seul passage à travers une dizaine d'étages. Dans chaque paire d'étages, le ET sur les parties~\eqref{eq:scstage} rend la réponse sélective, et le OU sur les positions la rend indépendante de la translation. L'alternance de ces deux opérations donne une réponse qui distingue les objets et ne dépend presque pas de l'endroit ni de la façon dont on les voit. La structure des premiers étages et la vitesse du passage sont mesurées; que toute la chaîne se réduise à ces deux opérations est une simplification.
+\end{proposition}
+\end{keyblock}
+
+Si ce dispositif vous semble familier, c'est normal. C'est précisément cette alternance --- chercher un trait à toutes les positions, puis regrouper les positions voisines --- que les ingénieurs ont transposée dans les réseaux artificiels \emph{convolutifs}~\cite{Fukushima1980}. Et récemment, le chemin a été parcouru en sens inverse: les réseaux convolutifs entraînés à reconnaître des objets se sont révélés le meilleur modèle connu des réponses des neurones des étages supérieurs de la vision~\cite{Yamins2014}. Le résultat, au sommet, se lit simplement: à partir des fréquences d'une centaine de neurones du dernier étage, un bloc de décision linéaire reconnaît l'objet un dixième de seconde après sa présentation~\cite{Hung2005}. C'est le code de fréquence d'un groupe du chapitre~\ref{sec:code}.
+
+\section{Le professeur absent: apprendre sur la vidéo}
+
+On entraîne un réseau convolutif sur des millions d'images étiquetées. Le cerveau, lui, ne reçoit presque aucune étiquette: un enfant voit des objets pendant des heures, mais n'entend que rarement le mot \og tasse\fg{}. Comment les étages $C$ savent-ils alors quels neurones $S$ regrouper? Pour regrouper \og cette figure ici\fg{} avec \og cette figure là\fg{}, il faut déjà savoir que c'est la même figure.
+
+C'est la vidéo elle-même qui donne l'indice. Le monde change de façon continue: un objet dans le champ de vision reste le même objet pendant qu'il se déplace, tourne et change d'éclairage, et ce n'est que de temps en temps que le regard passe à un autre. Tout ce qui change \emph{lentement} se rapporte probablement à l'objet, et tout ce qui change vite, à sa position et à son aspect~\cite{WiskottSejnowski2002}. Il suffit donc au neurone $C$ de la règle de Hebb du chapitre~\ref{sec:dofa} munie d'une trace: lier ce qui s'est succédé, et pas seulement ce qui a été simultané~\cite{Foldiak1991}:
+\begin{empheq}[box=\keybox]{equation}
+\tau_{\text{tr}}\,\frac{\dd\bar y_k}{\dd t} \;=\; -\bar y_k + y_k ,
+\qquad
+\frac{\dd\mathbf w_k}{\dd t} \;=\; \eta\,\bar y_k\,\bigl(\mathbf x - \mathbf w_k\bigr) .
+\label{eq:traceinvariance}
+\end{empheq}
+Ici, $y_k$ est l'activité du neurone $C$ numéro $k$, qui a gagné la compétition par l'inhibition, $\bar y_k$ sa trace (le même circuit RC que dans la règle~\eqref{eq:threefactor}) et $\mathbf x$ les sorties des neurones $S$. Le neurone qui a gagné sur le premier aspect de l'objet s'en souvient encore quand arrive le deuxième aspect, et l'attire lui aussi à lui.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=1.0cm,y=1.0cm]
+\foreach \i/\lab in {0/1,1/2,2/3,3/4}{
+  \node[draw,thick,fill=blue!8,minimum width=0.9cm,minimum height=0.55cm,font=\scriptsize] at (\i+0.5,2.2) {$A$ à \lab};}
+\foreach \i/\lab in {0/4,1/3,2/2,3/1}{
+  \node[draw,thick,fill=orange!12,minimum width=0.9cm,minimum height=0.55cm,font=\scriptsize] at (\i+6.5,2.2) {$B$ à \lab};}
+\node[font=\scriptsize,gray!40!black] at (5.0,2.2) {pause};
+\draw[->,gray!70!black] (0,0) -- (10.4,0) node[below left,font=\scriptsize,black] {temps};
+% traces
+\draw[thick,blue!60!black] (0,0.05) .. controls (0.4,1.2) and (0.8,1.3) .. (1.2,1.35) -- (4,1.4) .. controls (4.6,0.5) and (5.2,0.15) .. (6,0.08) -- (10,0.05);
+\draw[thick,orange!85!black] (0,0.05) -- (6,0.05) .. controls (6.4,1.2) and (6.8,1.3) .. (7.2,1.35) -- (10,1.4);
+\node[font=\scriptsize,blue!60!black,anchor=west] at (1.4,1.65) {trace $\bar y_1$: dure tout le passage de $A$};
+\node[font=\scriptsize,orange!85!black,anchor=west] at (7.2,1.65) {trace $\bar y_2$};
+\draw[decorate,decoration={brace,amplitude=4pt},gray!60!black] (4.0,2.6) -- (0,2.6);
+\draw[decorate,decoration={brace,amplitude=4pt,mirror},gray!60!black] (0,-0.35) -- (4,-0.35) node[midway,below=4pt,font=\scriptsize,black] {tous les aspects de $A$ se lient au neurone 1};
+\end{tikzpicture}
+\caption{Comment la vidéo enseigne l'invariance, schéma. L'objet $A$ passe par quatre positions, puis vient une pause, puis l'objet $B$. La trace~\eqref{eq:traceinvariance} du neurone qui a gagné sur le premier aspect de $A$ dure tout le passage, et tous les aspects de $A$ se retrouvent liés à un seul neurone. La pause efface la trace, et $B$ revient à un autre neurone.}
+\label{fig:tracevideo}
+\end{figure}
+
+Nous l'avons vérifié sur un modèle (fig.~\ref{fig:tracevideo}). Deux neurones $C$ sont en compétition pour les entrées de $16$ neurones $S$: deux figures à huit positions. Une figure parcourt toutes les positions, $50\ms$ pour chacune, puis vient une pause de $0.3\,\text{s}$ et la figure aléatoire suivante. Aucune étiquette. Si la trace est courte, $\tau_{\text{tr}}=5\ms$, les neurones se partagent l'entrée selon la \emph{position}, et la réponse ne coïncide pas mieux avec la figure qu'à pile ou face: $52\%$ en moyenne sur dix essais. Si la trace est comparable au temps de présentation d'une position, à partir de $\tau_{\text{tr}}\approx20\ms$, chaque neurone rassemble \emph{toutes} les positions de sa figure (pour $20$, $50$ et $200\ms$, dans les dix essais): l'invariance est apprise sur la seule vidéo. La pause entre les objets est importante: sans elle, la trace déborde sur l'objet suivant et les confond.
+
+On observe la même chose expérimentalement. Si l'on substitue discrètement un objet à un autre pendant que l'œil saute d'un endroit à un autre, les neurones des étages supérieurs se mettent, en une heure ou deux, à répondre à l'objet substitué comme au même objet: ils lient ce qui s'est succédé~\cite{LiDiCarlo2008}. Dans le cerveau, l'invariance s'apprend donc bien sur la continuité du temps. Que cette règle explique tout l'apprentissage visuel reste une hypothèse.
+
+\section{La vidéo, c'est du mouvement}
+
+La vidéo n'est pas seulement un flux d'images pour apprendre, c'est aussi la tâche elle-même: qu'est-ce qui bouge, dans quelle direction et à quelle vitesse. Le premier pas nous est familier: le détecteur de direction du chapitre~\ref{sec:gaba} (fig.~\ref{fig:direction}), où une inhibition retardée éteint le mouvement dans un sens. Ces détecteurs couvrent tout le champ visuel, et on les traite ensuite comme les traits de forme: les étages qui rassemblent de nombreux détecteurs d'une même direction à des endroits différents répondent au mouvement d'un grand objet, où qu'il se trouve. C'est la même paire ET et OU~\eqref{eq:scstage}; seulement, le trait n'est plus \og un bord\fg{}, mais \og un bord qui s'est déplacé en un temps $d$\fg{}.
+
+La vidéo est aussi prévisible: l'image suivante est presque la même que la précédente. Selon l'hypothèse du \emph{codage prédictif}, les étages supérieurs envoient aux étages inférieurs une prédiction, et ce qui monte est surtout l'erreur, ce que la prédiction n'a pas pris en compte~\cite{RaoBallard1999}. C'est la même économie d'impulsions que dans la proposition~\ref{prop:economy}: payer pour les nouvelles, pas pour ce qu'on sait déjà. Certaines observations concordent avec cette hypothèse, mais elle n'est pas démontrée comme principe général du pipeline.
+
+\section{Le cerveau et le réseau convolutif}
+
+Jusqu'où va la ressemblance? Pour la reconnaissance rapide d'un seul objet, elle est vraiment profonde~\cite{Yamins2014}. Mais le cerveau possède aussi ce qu'un simple réseau convolutif n'a pas.
+
+\emph{Rétroactions.} Le pipeline du cerveau n'est pas seulement direct: chaque étage a des connexions vers l'arrière et latérales. Pour les images difficiles --- avec occlusion, sous une mauvaise lumière ---, la réponse des étages supérieurs se forme plus tard, et ces réponses tardives sont mieux décrites par des réseaux récurrents que par des réseaux directs~\cite{Kar2019}. Un seul passage règle les cas faciles; les cas difficiles demandent plusieurs tours.
+
+\emph{Robustesse.} On peut tromper un réseau artificiel par une falsification de pixels invisible à l'œil~\cite{Szegedy2014}: un changement qu'un humain ne voit pas transforme un \og panda\fg{} en \og gibbon\fg{}~\cite{Goodfellow2015}. La vision humaine est bien plus robuste à ces falsifications, mais pas invulnérable: des images qui trompent à la fois de nombreux réseaux infléchissent aussi, en présentation brève, le choix de l'humain~\cite{Elsayed2018}. Pourquoi la robustesse diffère tant reste une question ouverte; les candidats sont le bruit, la division par l'activité totale et les rétroactions.
+
+\emph{Professeur.} Le réseau a besoin de millions d'exemples étiquetés; le cerveau, surtout de vidéo sans étiquettes~\eqref{eq:traceinvariance} et de quelques indications de \nt{DOPA} sur ce qui importe.
+
+\emph{Énergie.} Le cerveau entier consomme environ $20$ watts (proposition~\ref{prop:economy}), et la reconnaissance n'en occupe qu'une partie; un réseau convolutif entraîné sur un accélérateur graphique dépense des centaines de watts.
+
+\section{Illusions: où la machine se trompe, et pourquoi}
+\label{sec:illusions}
+
+Un ingénieur qui veut comprendre le circuit d'un autre lui envoie des signaux inhabituels et regarde où il se trompe. Pour la vision, ces signaux ont été inventés depuis longtemps: ce sont les illusions visuelles. Une illusion n'est pas une panne. Chacune désigne un mécanisme précis de la machine, qui fonctionne correctement dans des conditions ordinaires et se trahit sur une image choisie tout exprès.
+
+\emph{Attentes raisonnables.} L'entrée est bruitée, et la machine la complète par ce qui se produit habituellement dans le monde. Les mouvements lents sont plus fréquents que les rapides; quand l'entrée est peu fiable --- par exemple quand l'image est peu contrastée ---, l'estimation de la vitesse se déplace vers les vitesses lentes, et un objet pâle semble se mouvoir plus lentement qu'un objet vif~\cite{Weiss2002}. On explique de même de nombreuses illusions de luminosité: nous ne voyons pas la luminosité du pixel, mais la surface à laquelle cette luminosité a le plus souvent correspondu dans le passé~\cite{Purves2011}. La photo de la robe que les uns voient blanc et or et les autres bleu et noir relève du même mécanisme: l'image est ambiguë, et les gens divergent sur l'éclairage qu'ils supposent inconsciemment~\cite{LaferSousa2015,Wallisch2017}. Les différences entre individus sont mesurées; que le cerveau combine ici l'entrée et l'attente selon les règles de la théorie des probabilités est une hypothèse bien fondée.
+
+\emph{Réglage du gain.} Regardez une cascade pendant une minute, puis des rochers immobiles: les rochers se mettent à monter. Les canaux \og vers le bas\fg{} et \og vers le haut\fg{} forment une paire de fils, comme dans~\eqref{eq:dualrail}; le réglage du gain~\eqref{eq:nakarushton} a atténué le canal fatigué, et l'équilibre de la paire s'est déplacé. Les illusions d'inclinaison et de contraste, où l'entourage modifie l'aspect du centre, s'expliquent par la division par l'activité des voisins~\cite{Schwartz2009}, comme au chapitre~\ref{sec:gaba}. Il existe aussi un exemple instructif de prudence: les taches sombres aux croisements des bandes blanches d'une grille ont longtemps été expliquées par une simple inhibition des voisins, mais des expériences avec une grille modifiée ont montré que cette explication ne tient pas~\cite{SchillerCarvey2005}.
+
+\emph{Compensation des délais.} Le trajet de l'œil aux étages supérieurs prend des dizaines de millisecondes, et un objet en mouvement a le temps de se déplacer entre-temps. Si un point immobile s'allume à côté de lui, l'objet semble en avance sur l'éclair, alors qu'ils coïncidaient~\cite{Nijhawan1994}. Selon une des explications, la machine prolonge le mouvement vers l'avant pour compenser le délai, comme au chapitre~\ref{sec:muscles}: avec une rétroaction retardée, il faut prédire. Cette illusion a plusieurs explications, et le débat n'est pas tranché.
+
+\emph{Erreur dans le code temporel.} Une image immobile faite d'anneaux aux transitions de couleur tranchées semble tourner. Les zones contrastées sont traitées plus vite que les zones pâles, et les détecteurs de direction lisent la différence de délais~\eqref{eq:latency} comme un mouvement~\cite{Conway2005}. L'illusion est déclenchée par de petits sauts involontaires de l'œil et par les clignements: chaque saut renouvelle l'entrée, et les détecteurs voient de nouveau un \og mouvement\fg{}~\cite{OteroMillan2012}. C'est le code temporel du chapitre~\ref{sec:code}, mal lu.
+
+\emph{Deux images en une.} Un cube en fil de fer qui nous présente tantôt une face, tantôt l'autre, ou des images différentes dans les deux yeux: la perception bascule toutes les quelques secondes. Les meilleurs modèles combinent une inhibition mutuelle entre les deux interprétations, une fatigue lente et du bruit~\cite{MorenoBote2007}; c'est exactement le schéma~\eqref{eq:halfcentre} qui engendrait, au chapitre~\ref{sec:muscles}, le rythme de la marche. Le moment de la bascule est fixé par le bruit et la fatigue; dans le modèle~\cite{MorenoBote2007}, le rôle principal revient au bruit, et la fatigue ne fait qu'aider.
+
+Et les réseaux artificiels? Un réseau entraîné à prédire l'image suivante d'une vidéo voit la rotation sur les mêmes anneaux immobiles et ne la voit pas sur les images témoins~\cite{Watanabe2018}. Des réseaux entraînés à débruiter les images et à en augmenter la netteté cèdent aux mêmes illusions de couleur et de luminosité que les humains~\cite{GomezVilla2020}. Une partie des illusions découle donc de la tâche même qu'apprend la machine, et non des particularités du tissu nerveux. Savoir quelles illusions sont propres au seul cerveau est un bon test pour tout modèle de la vision.
+
+\begin{keyblock}
+\begin{proposition}[Les illusions, empreintes des mécanismes]
+\label{prop:illusions}
+Une illusion naît quand un mécanisme utile dans le monde ordinaire reçoit une entrée inhabituelle: l'attente l'emporte sur une entrée peu fiable, le réglage du gain déplace une paire de canaux, la compensation du délai porte l'objet en avant, une différence de délais est lue comme un mouvement, l'inhibition mutuelle avec bruit et fatigue bascule. Chaque illusion est un signal de test qui désigne son mécanisme. Les illusions elles-mêmes sont mesurées; leurs explications vont du bien fondé au discuté.
+\end{proposition}
+\end{keyblock}
+
+\section{Bilan}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{3.0cm}>{\raggedright}p{4.6cm}>{\raggedright\arraybackslash}p{5.2cm}}
+\toprule
+Ce que fait la machine & Comment & Ce qu'on sait \\
+\midrule
+reconnaît en $150\ms$ & un seul passage à travers une dizaine d'étages & vitesse mesurée \\
+rend la réponse sélective & ET sur les parties, étage $S$~\eqref{eq:scstage} & mesuré sur les premiers étages \\
+rend la réponse invariante & OU sur les positions, étage $C$; inhibition et division & mesuré sur les premiers étages; pour les étages supérieurs, simplification \\
+produit la réponse & fréquences d'une centaine de neurones du dernier étage, lecture linéaire & mesuré \\
+apprend sans étiquettes & règle de Hebb avec trace~\eqref{eq:traceinvariance} sur une vidéo continue & la substitution d'objet modifie les réponses: mesuré; comme règle principale: hypothèse \\
+voit le mouvement & détecteurs de direction, puis la même paire ET/OU & mesuré \\
+économise sur le prévisible & l'erreur de prédiction monte & hypothèse \\
+résout les cas difficiles & rétroactions, plusieurs tours & réponses tardives et rôle des rétroactions mesurés \\
+se trompe de façon prévisible & illusions: attentes, réglage du gain, délais, inhibition mutuelle avec bruit et fatigue & illusions mesurées; explications allant du fondé au discuté \\
+\bottomrule
+\end{tabular}
+\caption{Comment la machine reconnaît les images et les vidéos.}
+\label{tab:recognition}
+\end{table}
+
+La reconnaissance est assemblée à partir de pièces que nous avions déjà (tableau~\ref{tab:recognition}): le seuil donne le ET sur les parties, l'inhibition mutuelle le OU sur les positions, la division l'indépendance vis-à-vis de la luminosité, la règle de Hebb avec trace le professeur absent. Les ingénieurs ont emprunté à la vision l'alternance de la sélectivité et de l'invariance, et en ont tiré les réseaux convolutifs; en retour, le cerveau n'a pas encore livré l'essentiel: savoir apprendre sur de la vidéo sans étiquettes, presque sans énergie.
+
+\section{Exercices}
+
+\begin{exercise}[\lvlA]
+\label{ex:12:1}
+\emph{La fréquence sur un seul étage.} Un étage du pipeline dure $15\ms$, les neurones tirent à $20$ impulsions par seconde, leurs bruits sont corrélés avec $c=0.1$~\eqref{eq:correlated}. Quelle est l'erreur relative sur la fréquence d'un groupe de cent neurones, et sa limite pour un groupe arbitrairement grand? Combien de niveaux de fréquence sont discernables sur un étage?
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:12:2}
+\emph{L'énergie d'une reconnaissance.} En un passage de $150\ms$, dix étages de $10^7$ neurones émettent au plus une impulsion chacun, au prix de $10^{-10}$~J. (a)~Quelle part de l'énergie de tout le cerveau pendant ces $150\ms$ coûte la reconnaissance? (b)~Combien de fois plus dépense un accélérateur de $300$~W qui reconnaît une image en $10\ms$?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:12:3}
+\emph{Les seuils de l'étage $S$.} Une \og rétine\fg{} de $24$ points, les figures $A=11011$ et $B=10101$; le modèle~\eqref{eq:scstage} vaut $+1$ sur les uns de la figure et $-1$ sur les zéros. (a)~Pour quels seuils le neurone $S$ pardonne-t-il un point inversé tout en restant muet sur l'autre figure? (b)~Combien de neurones $S$ faut-il pour dix traits $5\times5$ sur une image $100\times100$?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:12:4}
+\emph{Combien de temps dure l'une des deux images.} Dans le schéma de bascule~\eqref{eq:halfcentre} avec $\tau\ll\tau_a$, tant que le groupe~1 gagne, $r_2=0$ et $r_1=I-a_1$. (a)~Trouvez la durée d'une victoire pour $I=1$, $\beta=2$, $b=2$, $\tau_a=0.4\,\text{s}$. (b)~Quel $\tau_a$ donne un changement d'image toutes les trois secondes?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:12:5}
+\emph{Simulation: le prix de l'invariance.} Avec la fonction \texttt{two\_stage} de \texttt{models/\allowbreak recognition\_models.py} ($4000$ essais), trouvez pour quelle probabilité d'inversion d'un point $p$ la paire d'étages $S$, $C$ se trompe une fois sur quatre pour $N=24$. Comment la proportion de bonnes réponses pour $p=0.1$ évolue-t-elle de $N=8$ à $N=192$?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:12:6}
+\emph{Simulation: la fenêtre de la trace.} Avec dix essais de \texttt{trace\_learning} de \texttt{models/\allowbreak recognition\_models.py} et une pause de $0.3\,\text{s}$, trouvez pour quels $\tau_{\text{tr}}$, de $5\ms$ à $2\,\text{s}$, tous les essais apprennent l'invariance sans erreur. D'où vient la borne supérieure de cette fenêtre?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:12:7}
+\emph{Un mouvement n'importe où.} Sur des points voisins d'une rangée espacés de $0.1^\circ$ se trouvent des détecteurs de direction du chapitre~\ref{sec:gaba}: l'inhibition venant de $A$ avec un délai $d$ éteint l'excitation venant de $B$ si elles sont séparées de $5\ms$ au plus; au-dessus, un étage $C$. Quels délais faut-il pour que $C$ reste muet pour un mouvement inverse de $5$ à $20^\circ$/s?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:12:8}
+\emph{Falsification de pixels.} Combien de points inversés faut-il pour changer la réponse du modèle \texttt{two\_stage} ($N=24$) sur une figure propre? Et celle du classifieur \og plus de $3.5$ uns en entrée, c'est $A$\fg{}, lui aussi invariant par translation? Quelle est sa proportion de bonnes réponses pour $p=0.1$, contre $0.86$ pour la paire d'étages?
+\end{exercise}

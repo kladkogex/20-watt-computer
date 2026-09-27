@@ -1,0 +1,237 @@
+\chapter{Ce que calculent les neurones \nt{SERO}}
+\label{sec:serocomputer}
+
+\section{Le premier canal de diffusion}
+
+Jusqu'ici, tous les neurones du livre parlaient par le bus d'adresses: \nt{GLUT} et \nt{GABA} envoyaient leurs impulsions à des destinataires précis, et nous avons établi ce que calcule un tel réseau et dans quelle langue il parle. Passons maintenant au second bus de la section~\ref{sec:buses}, le bus de diffusion. Son premier canal est \nt{SERO}. Comme avant, nous ne nous autorisons que ce qui existe dans un organisme vivant.
+
+Ce chapitre introduit trois dispositifs dont se serviront ensuite tous les canaux de diffusion: un neurone qui, alimenté par un apport de fond régulier, fonctionne tout seul tant qu'on ne l'arrête pas; un fil qui est en réalité un volume de tissu; une concentration lente au lieu d'impulsions isolées. \nt{DOPA}, \nt{NORA} et \nt{ACET}, aux chapitres~\ref{sec:dofa}--\ref{sec:acet}, seront construits avec les mêmes pièces.
+
+Du point de vue de l'ingénieur, le neurone \nt{SERO} diffère sur quatre points importants.
+
+\emph{Premièrement: le signe est choisi par le destinataire.} La sérotonine a des récepteurs des deux signes, et la règle~\eqref{eq:dalesign} ne s'applique pas ici: le signe n'est pas fixé par l'émetteur mais par le récepteur du destinataire (proposition~\ref{prop:receptor})~\cite{BarnesSharp1999}.
+
+\emph{Deuxièmement: le neurone \nt{SERO} fonctionne tout seul si le fond est régulier.} À l'éveil, il émet régulièrement plusieurs impulsions par seconde, sans avoir besoin d'une poussée pour chacune: c'est un stimulateur (pacemaker). Mais il lui faut un apport de fond constant. Dans une tranche de cerveau, où cet apport manque, la plupart de ces cellules se taisent; le rythme régulier revient si l'on applique de la noradrénaline par les récepteurs $\alpha_1$, et leur blocage l'éteint~\cite{VandermaelenAghajanian1983}. Dans l'organisme, ce fond vient de \nt{NORA}. Pour le schéma, c'est un oscillateur qui a besoin d'une alimentation: tant qu'elle est là, il fonctionne tout seul, jusqu'à ce qu'une inhibition l'arrête.
+
+\emph{Troisièmement: il est lent.} Presque tous les récepteurs de la sérotonine sont métabotropes: ils n'ouvrent pas eux-mêmes un canal, mais déclenchent une chaîne de réactions dans la cellule. La réponse est lente: le courant inhibiteur qui passe par le récepteur principal monte et retombe en une seconde environ~\cite{CourtneyFord2016}, des dizaines de fois plus longtemps que la réponse d'une synapse rapide \nt{GLUT}.
+
+\emph{Quatrièmement: il libère son neurotransmetteur non dans un fil, mais dans un volume.} Dans les régions où projettent les neurones \nt{SERO}, la sérotonine est souvent libérée non dans une fente étroite, mais dans l'espace extracellulaire, où elle se répand~\cite{Bunin1998}. Le destinataire perçoit une concentration et ne peut pas savoir de quel émetteur vient une molécule.
+
+À ces échelles de temps, les impulsions isolées ne comptent plus; nous décrirons donc le réseau par des fréquences $r_j$ et des concentrations. La concentration $c$ de sérotonine dans le volume où libèrent les neurones $j$ croît avec la libération et décroît parce que le neurotransmetteur est recapté:
+\begin{empheq}[box=\keybox]{equation}
+\tau_c\,\frac{\dd c}{\dd t} \;=\; -c \;+\; \kappa\sum_j r_j ,
+\qquad
+r_i \;=\; f_i\bigl(b_i + s_i\,g\,c\bigr), \quad s_i=\pm1 .
+\label{eq:seroneuron}
+\end{empheq}
+C'est une manière de plus de lire un train d'impulsions, qui complète la proposition~\ref{prop:reader}: le volume ne voit ni les impulsions isolées ni leur ordre, seulement la fréquence moyennée sur le temps $\tau_c$. La première équation est le même circuit RC que la membrane: $\tau_c$ est la durée de vie du neurotransmetteur dans le volume (elle n'a pas été mesurée directement, et nous la prenons de l'ordre de la seconde); $\kappa$ est la quantité de neurotransmetteur apportée par une impulsion. La seconde décrit le destinataire: $b_i$ est son apport propre, positif pour un pacemaker (il inclut l'entrée de fond régulière venue de \nt{NORA}); $g$ est la sensibilité du récepteur; le signe $s_i$ est choisi par le destinataire; $f_i$ est une caractéristique de transfert non décroissante.
+
+\section{NON avec un seul neurone}
+
+Prenons un pacemaker à récepteur inhibiteur, $s=-1$. Tant qu'il n'y a pas de sérotonine autour, il fonctionne sur son apport propre $b$. Quand la sérotonine apparaît, l'apport diminue de $gc$, et si $gc>b$, le neurone se tait. C'est un NON: la sortie est active quand l'entrée ne l'est pas. Il a coûté un seul neurone (fig.~\ref{fig:serogates}). La proposition~\ref{prop:monotone} ne s'applique pas ici: elle supposait des poids positifs.
+
+Si le même pacemaker reçoit la sérotonine de deux volumes différents, il se tait dès qu'il y en a dans au moins l'un d'eux. C'est un NON-OU, et avec des NON-OU on peut construire n'importe quelle fonction logique. Le code à deux fils du réseau \nt{GLUT} est ici inutile: l'absence de signal est calculée par des neurones qui fonctionnent tant qu'on ne les arrête pas.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  nrn/.style={circle,draw,very thick,fill=blue!6,minimum size=0.95cm,inner sep=0pt},
+  pace/.style={nrn,double,double distance=1.2pt},
+  inh/.style={-{Bar[width=7pt]},thick,red!70!black}]
+\node[pace] (N1) at (0,0) {};
+\draw[inh] (-1.6,0) node[left,black] {$c$} -- (N1);
+\draw[->,very thick,red!70!black] (N1) -- (1.3,0) node[right,black] {$\bar c$};
+\node[below=0.55cm] at (0,0) {\small NON};
+\node[pace] (N2) at (5,0) {};
+\draw[inh] (3.4,0.45) node[left,black] {$c_1$} -- (N2);
+\draw[inh] (3.4,-0.45) node[left,black] {$c_2$} -- (N2);
+\draw[->,very thick,red!70!black] (N2) -- (6.3,0) node[right,black] {$\overline{c_1\vee c_2}$};
+\node[below=0.55cm] at (5,0) {\small NON-OU};
+\end{tikzpicture}
+\caption{Logique à neurones \nt{SERO}. Double cercle: pacemaker; avec un apport de fond régulier, il fonctionne tout seul tant qu'on ne l'inhibe pas. Trait barré: récepteur inhibiteur, $s=-1$; $c$, $c_1$, $c_2$ sont les concentrations de sérotonine dans les volumes autour du destinataire. À gauche, NON; à droite, NON-OU.}
+\label{fig:serogates}
+\end{figure}
+
+\begin{keyblock}
+\begin{proposition}[Complétude de la logique \nt{SERO}]
+\label{prop:serocomplete}
+Si le réseau contient des pacemakers à récepteurs inhibiteurs et que les libérations dans des volumes différents ne se mélangent pas, le réseau~\eqref{eq:seroneuron} peut calculer n'importe quelle fonction logique, et chaque bit passe par un seul fil.
+\end{proposition}
+\end{keyblock}
+
+Sur le plan logique, le réseau \nt{SERO} est plus puissant que \nt{GLUT}, mais la condition \og les libérations dans des volumes différents ne se mélangent pas\fg{} n'est pas remplie dans le cerveau (section~\ref{sec:volume}).
+
+\section{Rétroaction négative}
+
+Les neurones à sérotonine portent des récepteurs inhibiteurs sur eux-mêmes~\cite{Sprouse1987}. La sérotonine qu'ils ont libérée leur revient et les freine. Pour un ingénieur, le schéma est familier: un amplificateur à rétroaction négative (fig.~\ref{fig:serofeedback}).
+
+Ce qui est mesuré et ce qui relève du modèle. Dans le noyau du raphé lui-même, où se trouvent les neurones \nt{SERO}, la sérotonine inhibe les voisins non par un volume commun, mais point à point, par des synapses: le transporteur l'élimine vite et l'empêche de s'accumuler hors de la fente. Une libération isolée ne produit qu'une courte pause dans la décharge, et la fréquence moyenne n'en est pas changée~\cite{CourtneyFord2016}. La boucle ci-dessous, fermée par un volume commun, est donc un modèle: nous calculons ce que ferait une telle rétroaction si elle agissait au niveau des fréquences moyennes.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  nrn/.style={circle,draw,very thick,fill=blue!6,minimum size=0.95cm,inner sep=0pt},
+  pace/.style={nrn,double,double distance=1.2pt},
+  blk/.style={draw,very thick,rounded corners=2pt,fill=orange!10,minimum height=0.9cm,minimum width=2.2cm,align=center,font=\small},
+  inh/.style={-{Bar[width=7pt]},thick,red!70!black}]
+\node[pace] (N) at (0,0) {};
+\node[blk] (V) at (3.6,0) {volume\\$\tau_c$};
+\draw[->,very thick] (N) -- node[above] {\small $r$} (V);
+\draw[->,very thick] (V) -- (6.0,0) node[right] {\small $c$ vers tous les destinataires};
+\draw[inh] (V.south) -- ++(0,-0.9) -| node[pos=0.25,below] {\small $-g\,c$} (N.south);
+\draw[->,thick,blue!60!black] (-1.7,0) node[left,black] {\small $b$} -- (N);
+\end{tikzpicture}
+\caption{Neurone \nt{SERO} rétrocontrôlé par son propre neurotransmetteur: la concentration $c$ va à tous les destinataires et inhibe le neurone lui-même. Dans le modèle, c'est un régulateur de niveau; dans le cerveau, ce rôle de la boucle est une hypothèse.}
+\label{fig:serofeedback}
+\end{figure}
+
+Calculons ce que fait cette boucle. Supposons la caractéristique de transfert linéaire, $f(u)=au$ pour $u>0$. À l'équilibre, $c=\kappa r$ et $r=a(b-gc)$. En substituant l'une dans l'autre, on obtient
+\begin{empheq}[box=\keybox]{equation}
+r \;=\; \frac{a\,b}{1+G}, \qquad G \;=\; a\,g\,\kappa .
+\label{eq:feedback}
+\end{empheq}
+La grandeur $G$ est le gain de boucle. C'est la formule de tout amplificateur à rétroaction négative, et elle donne les deux mêmes avantages.
+
+\emph{Robustesse à la dispersion.} Supposons que l'excitabilité $a$ du neurone change d'une fraction $\varepsilon$. Sans rétroaction, la fréquence changerait de la même fraction. Avec rétroaction, pour $G\gg1$, la fréquence $r\approx b/(g\kappa)$ ne dépend presque plus de $a$: sa variation est $1+G$ fois plus petite. Pour $G=9$, la dispersion est divisée par dix.
+
+\emph{Rapidité.} Portons $r=a(b-gc)$ dans la première équation~\eqref{eq:seroneuron}: on obtient $\tau_c\,\dd c/\dd t=-(1+G)\,c+\kappa ab$. La concentration rejoint son niveau avec la constante de temps $\tau_c/(1+G)$, soit $1+G$ fois plus vite que sans rétroaction.
+
+Voici le premier calcul que pourrait effectuer le système \nt{SERO}: maintenir le niveau global de sérotonine dans le cerveau à une valeur de consigne, comme un thermostat maintient la température. C'est une hypothèse: expérimentalement, l'autoinhibition n'apparaît pour l'instant que sous forme de courtes pauses, qui ne changent pas la fréquence moyenne.
+
+\section{Des impulsions au niveau}
+
+Le deuxième calcul est caché dans la première équation~\eqref{eq:seroneuron}. Les neurones émettent des impulsions isolées, mais le destinataire perçoit une concentration qui les lisse sur le temps $\tau_c$. Si la fréquence de la source varie, la concentration la suit avec retard:
+\begin{equation}
+c(t) \;=\; \frac{\kappa}{\tau_c}\int_{-\infty}^{t} e^{-(t-t')/\tau_c}\,\sum_j r_j(t')\,\dd t' .
+\label{eq:lowpass}
+\end{equation}
+C'est une moyenne glissante de l'activité des sources sur les derniers $\tau_c$, un filtre passe-bas (fig.~\ref{fig:lowpass}). Le convertisseur numérique-analogique le plus simple fait passer des impulsions dans un circuit RC et transforme ainsi leur fréquence en niveau. Le système \nt{SERO} fait de même avec des centaines de milliers de neurones à la fois.
+
+Cette grandeur est aussi une mémoire. Une fois les sources silencieuses, la concentration persiste encore un temps de l'ordre de $\tau_c$. Ce n'est pas un bit, mais une trace qui s'efface doucement.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=1.45cm,y=1cm]
+\draw[gray!70!black] (0,3.2) -- (8.1,3.2);
+\node[left,font=\small] at (-0.05,3.4) {impulsions};
+\node[above,font=\scriptsize,gray!40!black] at (1,3.65) {$2$ par seconde};
+\node[above,font=\scriptsize,gray!40!black] at (3.5,3.65) {$8$ par seconde};
+\node[above,font=\scriptsize,gray!40!black] at (6.5,3.65) {$2$ par seconde};
+\draw[->,gray!70!black] (0,0) -- (8.3,0) node[right,black] {\small $t$};
+\draw[->,gray!70!black] (0,0) -- (0,2.75) node[left,black] {\small $c$};
+\foreach \s in {0.136,0.529,0.760,1.223,1.714,1.748,1.755,2.663,2.701,2.734,3.414,3.493,3.719,3.800,3.928,3.948,4.074,4.327,4.420,4.589,4.728,4.736,4.914,5.025,5.205,5.220,6.224,6.544,7.178}{\draw[thick,blue!60!black] (\s,3.2) -- (\s,3.6);}
+\foreach \a/\b/\v in {0.000/0.136/0.000,0.136/0.529/1.000,0.529/0.760/1.675,0.760/1.223/2.330,1.223/1.714/2.466,1.714/1.748/2.509,1.748/1.755/3.425,1.755/2.663/4.402,2.663/2.701/2.775,2.701/2.734/3.672,2.734/3.414/4.553,3.414/3.493/3.306,3.493/3.719/4.055,3.719/3.800/4.235,3.800/3.928/4.905,3.928/3.948/5.316,3.948/4.074/6.211,4.074/4.327/6.476,4.327/4.420/6.028,4.420/4.589/6.493,4.589/4.728/6.483,4.728/4.736/6.642,4.736/4.914/7.589,4.914/5.025/7.351,5.025/5.205/7.579,5.205/5.220/7.331,5.220/6.224/8.221,6.224/6.544/4.012,6.544/7.178/3.914,7.178/8.000/3.076}{\draw[very thick,orange!85!black] plot[domain=\a:\b,samples=10] (\x,{0.25*\v*exp(-(\x-\a))});}
+\foreach \s/\p/\q in {0.136/0.000/1.000,0.529/0.675/1.675,0.760/1.330/2.330,1.223/1.466/2.466,1.714/1.509/2.509,1.748/2.425/3.425,1.755/3.402/4.402,2.663/1.775/2.775,2.701/2.672/3.672,2.734/3.553/4.553,3.414/2.306/3.306,3.493/3.055/4.055,3.719/3.235/4.235,3.800/3.905/4.905,3.928/4.316/5.316,3.948/5.211/6.211,4.074/5.476/6.476,4.327/5.028/6.028,4.420/5.493/6.493,4.589/5.483/6.483,4.728/5.642/6.642,4.736/6.589/7.589,4.914/6.351/7.351,5.025/6.579/7.579,5.205/6.331/7.331,5.220/7.221/8.221,6.224/3.012/4.012,6.544/2.914/3.914,7.178/2.076/3.076}{\draw[very thick,orange!85!black] (\s,0.25*\p) -- (\s,0.25*\q);}
+\draw[thick,densely dashed,black] plot[domain=0:2,samples=30] (\x,{0.25*2*(1-exp(-\x))})
+  plot[domain=2:5,samples=40] (\x,{0.25*(8-6.271*exp(-(\x-2)))})
+  plot[domain=5:8,samples=40] (\x,{0.25*(2+5.688*exp(-(\x-5)))});
+\foreach \x in {0,2,5,8}{\draw[gray!60!black] (\x,-0.05) -- (\x,0.05) node[below=3pt,font=\scriptsize] {\x\,s};}
+\end{tikzpicture}
+\caption{Des impulsions au niveau. En haut, les impulsions des neurones \nt{SERO}: deux secondes de décharge rare, trois secondes de décharge dense, puis de nouveau rare. En bas, la concentration de sérotonine~\eqref{eq:lowpass} pour $\tau_c=1\,\text{s}$. En tirets, la même chose si les impulsions arrivaient parfaitement régulièrement.}
+\label{fig:lowpass}
+\end{figure}
+
+\section{Le fil, c'est le volume}
+\label{sec:volume}
+
+Revenons à la condition de la proposition~\ref{prop:serocomplete}. La sérotonine libérée à proximité par différents émetteurs s'additionne en une seule concentration.
+
+\emph{Le fil n'est pas ici une fibre, mais un volume de tissu.} Deux signaux ne restent distincts que s'ils sont libérés dans des régions plus éloignées que la distance sur laquelle le neurotransmetteur a le temps de se répandre. En un temps $\tau$, une molécule de coefficient de diffusion $D$ parcourt
+\begin{empheq}[box=\keybox]{equation}
+\ell \;\sim\; \sqrt{D\,\tau}\, .
+\label{eq:diffusionlength}
+\end{empheq}
+La tortuosité des espaces extracellulaires ralentit la diffusion d'une petite molécule d'un facteur $2.6$ environ~\cite{Sykova2008}, et le coefficient de diffusion de la sérotonine elle-même dans le tissu n'a pas été mesuré; d'après la taille de la molécule, nous l'estimons à quelques unités de $10^{-6}$~cm$^2$/s. Si le signal vit $\tau\sim1$~s (encore une estimation), alors $\ell\sim\sqrt{3\cdot10^{-6}}$~cm $\approx20$~\textmu m. Dans un tel réseau, l'adresse est un \emph{lieu}: le destinataire ne sait de qui vient le signal que par l'endroit où il se trouve lui-même.
+
+Les vrais neurones \nt{SERO} sont construits de telle sorte qu'il ne reste presque rien de ces adresses distinctes. La sortie de chacun est répartie sur d'immenses portions du cerveau: les branches d'une seule cellule atteignent de nombreuses régions éloignées les unes des autres~\cite{GagnonParent2014}. On estime à environ $10^5$ les sites de libération par cellule (tableau~\ref{tab:types}); ils n'ont pas été comptés directement. Les \og fils\fg{} des différents neurones \nt{SERO} se chevauchent et se mélangent. Ils ne se fondent pourtant pas en un fil unique: les neurones \nt{SERO} se répartissent en quelques sous-systèmes, qui projettent vers des régions différentes et répondent différemment à un même événement~\cite{Ren2018}. Mais ces sous-systèmes se comptent par unités, et non par centaines de milliers.
+
+\begin{keyblock}
+\begin{proposition}[Nombre de fils indépendants]
+\label{prop:volumewires}
+Dans un réseau à transmission volumique, le nombre de signaux indépendants n'est pas limité par le nombre de neurones, mais par le nombre de régions disjointes de taille $\ell\sim\sqrt{D\tau}$ dans lesquelles ils libèrent le neurotransmetteur. Si la sortie de chaque neurone est répartie sur un grand volume, tout le réseau ne transmet que quelques variables communes.
+\end{proposition}
+\end{keyblock}
+
+Dans le cerveau, il n'y a donc pas de quoi construire les circuits logiques de la proposition~\ref{prop:serocomplete}. En revanche, le régulateur~\eqref{eq:feedback} et le filtre~\eqref{eq:lowpass} n'ont pas besoin de fils distincts: une seule grandeur commune leur suffit. Le filtre découle directement de la libération volumique mesurée dans les régions cibles~\cite{Bunin1998}; le régulateur de niveau est une hypothèse.
+
+\section{L'horizon de planification}
+\label{sec:horizon}
+
+À quoi peut servir une seule grandeur commune et lente? Un bon candidat est un paramètre qui doit être le même pour tout le réseau et ne varier qu'en quelques secondes ou minutes. Au chapitre~\ref{sec:neurontypes}, un tel paramètre est déjà apparu: le coefficient $\gamma$ de la formule de l'erreur~\eqref{eq:rpe}, qui dit combien une récompense future vaut moins qu'une récompense immédiate. En temps continu, sa place est prise par l'\emph{horizon} $\tau_\gamma$: une récompense $R$ qu'il faut attendre pendant un temps $D$ vaut aujourd'hui $R\,e^{-D/\tau_\gamma}$.
+
+L'horizon décide s'il vaut la peine d'attendre. Supposons qu'on puisse prendre tout de suite une petite récompense $r_0$ ou attendre une grande récompense $R$. Attendre est avantageux tant que
+\begin{empheq}[box=\keybox]{equation}
+D \;<\; \tau_\gamma\,\ln\frac{R}{r_0} .
+\label{eq:patience}
+\end{empheq}
+Pour $\tau_\gamma=2\,\text{s}$ et une récompense différée trois fois plus grande, il vaut la peine d'attendre jusqu'à $2.2\,\text{s}$; si l'horizon est deux fois plus long, jusqu'à $4.4\,\text{s}$. La patience est proportionnelle à l'horizon.
+
+La formule~\eqref{eq:patience} repose sur une dépréciation exponentielle. La dépréciation mesurée pour des délais de quelques secondes est plus proche de l'hyperbole $R/(1+D/\tau_\gamma)$: c'est ainsi que décroissent chez le singe aussi bien la valeur d'une récompense différée dans le choix que la réponse des neurones \nt{DOPA} au signal qui l'annonce~\cite{KobayashiSchultz2008}. Pour l'hyperbole, la condition~\eqref{eq:patience} devient $D<\tau_\gamma\,(R/r_0-1)$: la dépendance au rapport des récompenses n'est plus logarithmique mais linéaire, et avec les mêmes nombres la limite d'attente se déplace presque du double. L'hyperbole s'obtient à partir de la même exponentielle si le délai est aléatoire (exercice~\ref{ex:05:7}), et la proportionnalité de la patience à l'échelle de temps est conservée.
+
+Selon une hypothèse, c'est \nt{SERO} qui fixe l'horizon~\cite{Doya2002}. Il a tout ce qu'il faut pour ce rôle: un seul niveau commun pour tout le réseau, qui varie en quelques secondes. Il existe aussi des expériences directes: si l'on active artificiellement les neurones à sérotonine, l'animal attend plus longtemps une récompense différée avant d'abandonner~\cite{Miyazaki2014}, et s'obstine plus longtemps à chercher une récompense là où elle est devenue rare~\cite{Lottem2018}. Comment la concentration de sérotonine se transforme en $\tau_\gamma$ à l'intérieur du réseau, on ne le sait pas. Au chapitre suivant, l'horizon entrera dans l'erreur que diffuse \nt{DOPA}.
+
+\section{Bilan}
+
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{>{\raggedright}p{3.6cm}>{\raggedright}p{4.3cm}>{\raggedright\arraybackslash}p{4.3cm}}
+\toprule
+& \nt{GLUT} & \nt{SERO} \\
+\midrule
+temps de réaction & millisecondes & fraction de seconde à une seconde \\
+signe de l'action & seulement $+$ & $+$ et $-$, choisi par le destinataire \\
+sans entrée & se tait & fonctionne seul avec un apport de fond régulier \\
+adressage & point à point & volume; l'adresse est un lieu \\
+NON & seulement par des détecteurs d'\og extinction\fg{} & un seul neurone \\
+mémoire & activité auto-entretenue, s'éteint par fatigue & concentration, s'efface en un temps $\tau_c$ \\
+calculs principaux & coïncidences, délais, logique, séquences & lissage; régulation de niveau et horizon $\tau_\gamma$ (hypothèses) \\
+\bottomrule
+\end{tabular}
+\caption{Ce que calculent les réseaux faits uniquement de neurones \nt{GLUT} et uniquement de neurones \nt{SERO}.}
+\label{tab:glutvssero}
+\end{table}
+
+Comme élément logique (tableau~\ref{tab:glutvssero}), le neurone \nt{SERO} est plus riche que \nt{GLUT}, mais comme système de communication c'est une diffusion générale: lente et presque sans adresses. Il ne cherche donc pas à être un processeur; il lisse et diffuse quelques grandeurs communes, celles dont il a été question au chapitre~\ref{sec:neurontypes}, parmi lesquelles, selon l'hypothèse, l'horizon de planification. Le pacemaker, le volume et la concentration lente nous attendent encore trois fois: chez \nt{DOPA}, \nt{NORA} et \nt{ACET}.
+
+\section{Exercices}
+
+\begin{exercise}[\lvlA]
+\label{ex:05:1}
+\emph{Le fil, c'est le volume.} Prenez pour la sérotonine $D=3\cdot10^{-6}$~cm$^2$/s (section~\ref{sec:volume}). Trouvez par~\eqref{eq:diffusionlength} $\ell$ pour un signal qui vit $1\,\text{s}$, et le temps qu'il faut au neurotransmetteur pour se répandre sur $5$~cm. Qu'est-ce qui assure alors la diffusion générale de \nt{SERO}: la diffusion moléculaire ou la ramification d'un fil à $\sim10^5$ sites de libération?
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:05:2}
+\emph{Régulateur de niveau.} Montrez que dans~\eqref{eq:seroneuron}, pour $f(u)=au$, la sensibilité relative $S=(a/r)\,\partial r/\partial a$ vaut exactement $1/(1+G)$, et pas seulement pour $G\gg1$. Pour $G=9$, l'excitabilité $a$ augmente de $20\,\%$. De combien de pour cent $r$ change-t-il, sans linéarisation?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:05:3}
+\emph{Récepteur lent dans la boucle.} Le récepteur \nt{SERO} répond avec retard: $r(t)=a\bigl(b-gc(t-T)\bigr)$, le volume obéissant à~\eqref{eq:seroneuron}. Montrez que pour $G>1$ la boucle n'est stable que si $T<T^*=\tau_c\arccos(-1/G)/\sqrt{G^2-1}$. Trouvez $T^*$ pour $\tau_c=1\,\text{s}$, avec $G=2$ et $G=9$. Quelle réduction de la dispersion reste possible avec un retard de quelques centaines de millisecondes?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:05:4}
+\emph{Bruit de grenaille du niveau.} Chaque impulsion ajoute à $c$, selon~\eqref{eq:lowpass}, une exponentielle de $\tau_c=1\,\text{s}$. Trouvez le coefficient de variation de $c$ si les $3\cdot10^5$ neurones \nt{SERO} libèrent tous dans un même volume des impulsions poissoniennes à $2$ par seconde. Quel $\tau_c$ donnerait $\mathrm{CV}=10\,\%$ pour un seul neurone à $4$ impulsions par seconde?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:05:5}
+\emph{Simulation: rétroaction contre bruit.} Simulez $N=50$ pacemakers poissoniens de fréquences $r_i=a_i[b-gc]_+$, les $a_i$ uniformes dans $[2.8,\,5.2]$, et le volume~\eqref{eq:seroneuron} avec $\kappa=1/N$, $\tau_c=1\,\text{s}$. De quel facteur la rétroaction ($b=1$, $g=2.25$) réduit-elle le CV du niveau $c$ par rapport à $b=0.1$, $g=0$? Égalise-t-elle les fréquences des neurones?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:05:6}
+\emph{Conception: XOR en logique \nt{SERO}.} La porte est un pacemaker qui émet $r_0$ si $b-g\sum_kc_k>0$, et $0$ sinon, dans son propre volume $\tau_c\,\dd c/\dd t=-c+\kappa r$; elle calcule un NON-OU. Construisez un XOR avec cinq de ces portes et trouvez son temps d'établissement pour $\tau_c=1\,\text{s}$ et $G'=g\kappa r_0/b=2$.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:05:7}
+\emph{Patience face à un délai inconnu.} (a)~Un animal accepte d'attendre une récompense trois fois plus grande si l'attente ne dépasse pas $6\,\text{s}$. Quel horizon $\tau_\gamma$ cela implique-t-il? (b)~Supposons le délai $D$ distribué exponentiellement, de moyenne $\bar D$. Montrez qu'attendre est avantageux si $\bar D<\tau_\gamma(R/r_0-1)$, et comparez au délai fixe pour $\tau_\gamma=2\,\text{s}$, $R=3r_0$.
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:05:8}
+\emph{Comment la concentration fixe l'horizon.} Un neurone \nt{DOPA} reçoit $V$ directement avec le poids $k_1$ et, par un intermédiaire \nt{GABA} qui lisse avec $\tau_d=0.1\,\text{s}$, avec le poids $-k_2$; pour $V$ lent, la somme vaut $(k_1-k_2)V+k_2\tau_d\dot V$. Choisissez $k_1$, $k_2$ pour obtenir~\eqref{eq:ctd} avec $\tau_\gamma=2\,\text{s}$. \nt{SERO} multiplie $k_1$ par $m$: de combien faut-il changer $m$ pour doubler l'horizon?
+\end{exercise}

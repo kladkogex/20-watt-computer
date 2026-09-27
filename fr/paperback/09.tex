@@ -1,0 +1,42 @@
+\chapter{Écriture et lecture}
+% version complète: chapters/09_acet.tex
+
+La mémoire du cerveau a une particularité gênante: les souvenirs sont stockés dans les connexions mêmes par lesquelles passe le travail. Pas de disque dur séparé. Chaque fois que le réseau se souvient, il se sert de ses connexions, et chaque fois qu'il apprend, il les modifie. Comment ne pas abîmer l'ancien en écrivant le nouveau? Dans un ordinateur, il existe pour cela un signal à part, \og autorisation d'écriture\fg{}. Dans le cerveau, ce rôle semble tenu par la station \nt{ACET}, l'acétylcholine.
+
+\section*{Deux modes}
+
+Imaginez un réseau qui stocke quelques images: montrez-lui une moitié, il complète le reste. C'est la lecture. Montrez-lui maintenant une image nouvelle, qui ressemble à une ancienne. Si le réseau complète par habitude, il verra non le nouveau mais l'ancien, et apprendra une erreur. Pour écrire du nouveau, le réseau doit un temps cesser de faire confiance à sa mémoire et regarder le monde.
+
+\pencilfig{9}{\pencilart{9}}{Un seul fil fait basculer le réseau: écrire du nouveau ou se rappeler l'ancien.}
+
+L'acétylcholine fait exactement cela, et ses trois effets sont mesurés: elle affaiblit les connexions internes du réseau, par lesquelles il \og se souvient\fg{}, renforce les signaux venus des organes des sens et facilite la modification des connexions. Beaucoup d'acétylcholine: mode écriture, le réseau écoute le monde et apprend. Peu: mode lecture, le réseau s'appuie sur sa mémoire et complète.
+
+Dans notre modèle, il n'existe aucun niveau où les deux marchent bien. Pour écrire, il faut atténuer les connexions internes; pour lire, il les faut à pleine force. Un commutateur est donc indispensable.
+
+\section*{Quelle confiance accorder aux yeux}
+
+Les ingénieurs ont résolu depuis longtemps un problème semblable. Quand un navire suit son cap, le navigateur dispose d'une estime, là où le navire devrait être, et d'observations nouvelles mais imprécises. Quelle confiance accorder à chacune? Le filtre optimal répond: fie-toi d'autant plus aux observations que tu es moins sûr de ton estime. Et la même recette dit une seconde chose: moins on est sûr, plus il faut réapprendre vite. Un seul bouton commande à la fois le poids de l'entrée et la vitesse d'apprentissage. C'est exactement ce que fait l'acétylcholine. D'où l'hypothèse: elle indique au réseau à quel point son propre modèle du monde est incertain.
+
+\pencilfig{124}{%
+% optimal blending: the less sure the model, the more weight on the observation (and the faster it relearns)
+\foreach \dx/\wm/\we/\ttop/\bbot in {0/2.4pt/0.6pt/{modèle sûr}/{peu d'acétylcholine}, 4.3/0.6pt/2.4pt/{modèle incertain}/{beaucoup d'acétylcholine}}{
+  \begin{scope}[xshift=\dx cm]
+  \draw[penlite=pcViolet, wash=pcViolet, rounded corners=3pt] (0,0.95) rectangle (1.3,1.45); \node[lbl, text=black] at (0.65,1.2) {mémoire};
+  \draw[penlite=pcBlue, wash=pcBlue, rounded corners=3pt] (0,-0.25) rectangle (1.3,0.25); \node[lbl, text=black] at (0.65,0) {yeux};
+  \draw[dotpen=pcAmber, wash=pcAmber] (2.95,0.6) circle (0.55); \node[lbl, text=black] at (2.95,0.6) {estimation};
+  \draw[pcViolet, line width=\wm, line cap=round, -{Stealth[length=5pt]}] (1.35,1.2) -- (2.4,0.8);
+  \draw[pcBlue, line width=\we, line cap=round, -{Stealth[length=5pt]}] (1.35,0) -- (2.4,0.4);
+  \node[font=\small\itshape, text=pcGray, anchor=south] at (1.55,1.6) {\ttop};
+  \node[lbl, anchor=north] at (1.55,-0.4) {\bbot};
+  \end{scope}}
+}{Quelle confiance accorder aux yeux. Si le réseau est sûr de son modèle du monde, l'estimation vient presque toute de la mémoire. S'il ne l'est pas, elle vient des observations, et le réseau réapprend alors plus vite. Selon l'hypothèse, c'est l'acétylcholine qui tourne ce bouton.}
+
+\section*{La division du travail}
+
+Rappelez-vous le chapitre précédent. Quand le monde change brusquement, la noradrénaline, selon l'hypothèse, remarque l'inattendu. Et l'acétylcholine maintient le réseau en mode écriture tant que la nouvelle situation n'est pas apprise. L'une dit \og quelque chose a changé\fg{}, l'autre \og écris\fg{}.
+
+\section*{La réécriture nocturne}
+
+Pendant le sommeil profond, le niveau d'acétylcholine est bas. Le réseau est coupé du monde et se trouve en mode lecture. C'est justement à ce moment que les événements de la journée y sont \og rejoués\fg{}: c'est mesuré. Que ce qui a été appris dans la journée soit alors recopié dans la mémoire à long terme est une hypothèse plausible, que nous retrouverons au chapitre sur le sommeil.
+
+\fullversion{9}

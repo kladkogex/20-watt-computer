@@ -1,0 +1,199 @@
+\chapter{Quand chercher, quand décider: ajoutons \nt{NORA}}
+\chaptermark{Ajoutons \nt{NORA}}
+\label{sec:nora}
+
+\section{Ce qui manque}
+
+Au chapitre~\ref{sec:dofa}, le réseau apprenait grâce au bruit: les écarts aléatoires de l'activité constituaient la recherche, et \nt{DOPA} signalait s'ils amélioraient les choses. Mais un paramètre y est resté non fixé: \emph{combien} chercher. Si le bruit est trop fort, le réseau s'agite et n'utilise pas ce qu'il sait déjà. S'il est trop faible, le réseau choisit sans cesse la même chose et ne remarque pas que, tout près, les choses se sont améliorées. En apprentissage par renforcement, on appelle cela le compromis entre exploitation et exploration, et chaque algorithme possède un bouton pour le régler. Au chapitre~\ref{sec:neurontypes}, nous avons supposé que, dans le cerveau, c'est \nt{NORA} qui tourne ce bouton.
+
+L'homme possède quelques dizaines de milliers de neurones à noradrénaline (tableau~\ref{tab:types}), presque tous réunis en un seul petit groupe, et leurs sorties se répartissent dans pratiquement tout le cerveau, bien que différentes parties de ce groupe desservent en partie, on l'a découvert, des régions différentes~\cite{Poe2020}. C'est un canal de diffusion encore plus étroit que \nt{DOPA}. Il fonctionne selon deux modes~\cite{AstonJones2005}. En mode \emph{tonique}, de fond, les neurones émettent des impulsions régulières, à une fréquence allant d'une fraction d'impulsion à quelques impulsions par seconde, et cette fréquence varie lentement avec l'éveil. En mode \emph{phasique}, ils répondent par une courte bouffée à un événement important pour la tâche en cours, à peu près au moment de la décision. Un point de mesure commode, mais imprécis, est le diamètre de la pupille: il varie avec l'activité de ces neurones, mais aussi avec celle d'autres régions~\cite{Joshi2016} et des sorties cholinergiques dans le cortex~\cite{Reimer2016}. La pupille indique le niveau général d'éveil, et non \nt{NORA} seul.
+
+\section{Le gain}
+
+Voici ce qui est mesuré: la noradrénaline supprime l'activité de fond des neurones plus fortement que leur réponse au stimulus, et le rapport du signal au fond augmente~\cite{Foote1975NE}. Que la pente de la caractéristique d'un neurone individuel soit alors littéralement multipliée par un coefficient ne découle pas de l'expérience. Comme au chapitre~\ref{sec:neurontypes}, prenons un modèle simple qui rend compte de cet effet: la noradrénaline modifie la pente de la caractéristique de transfert du destinataire~\cite{ServanSchreiber1990}. Les entrées faibles, sous le seuil (le fond), donnent alors encore moins, et les fortes encore plus. Supposons que le neurone réponde par la fréquence
+\begin{empheq}[box=\keybox]{equation}
+r \;=\; F\bigl(g\,(u-\theta)\bigr), \qquad F(z)=\frac{r_{\max}}{1+e^{-z}} ,
+\label{eq:gain}
+\end{empheq}
+où $u$ est le courant d'entrée, $\theta$ le seuil, et $g$ le gain, piloté dans le modèle par \nt{NORA}. Pour $g$ petit, la fréquence suit l'entrée continûment sur une large plage: le neurone est un \emph{amplificateur analogique}. Pour $g$ grand, presque toute entrée au-dessus du seuil donne la fréquence maximale, et au-dessous, zéro: le neurone est un \emph{comparateur}, un élément presque numérique (fig.~\ref{fig:gaincurves}). Un seul bouton fait basculer le même neurone entre deux modes qui, en électronique, sont réalisés par des circuits différents.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=1.1cm,y=2.4cm]
+\draw[->,gray!70!black] (-3.3,0) -- (3.4,0) node[below left,black] {\small $u$};
+\draw[->,gray!70!black] (-3.3,0) -- (-3.3,1.2) node[left,black] {\small $r$};
+\draw[densely dashed,gray!60!black] (0,0) -- (0,1.1);
+\node[below,font=\small] at (0,0) {$\theta$};
+\draw[densely dotted,gray!60!black] (-3.3,1) -- (3.2,1) node[right,black,font=\small] {$r_{\max}$};
+\draw[very thick,blue!60!black] plot[domain=-3.2:3.2,samples=60] (\x,{1/(1+exp(-0.8*\x))});
+\draw[very thick,orange!85!black] plot[domain=-3.2:3.2,samples=60] (\x,{1/(1+exp(-2*\x))});
+\draw[very thick,red!70!black] plot[domain=-3.2:3.2,samples=120] (\x,{1/(1+exp(min(-8*\x,9)))});
+\node[blue!60!black,font=\small,anchor=west] at (0.5,0.12) {petit $g$: amplificateur};
+\node[red!70!black,font=\small,anchor=east] at (-0.3,0.85) {grand $g$: comparateur};
+\end{tikzpicture}
+\caption{La caractéristique de transfert~\eqref{eq:gain} pour trois valeurs du gain $g$.}
+\label{fig:gaincurves}
+\end{figure}
+
+Un grand gain aide-t-il contre le bruit? Pas toujours. Supposons que deux entrées diffèrent de $\Delta u$ et qu'il faille dire laquelle est la plus grande. Si le bruit $\sigma_{\text{avant}}$ s'ajoute à l'entrée \emph{avant} l'amplificateur, le signal et le bruit sont amplifiés ensemble, et leur rapport ne change pas. Si en revanche le bruit $\sigma_{\text{après}}$ s'ajoute \emph{après} l'amplificateur (celui des synapses peu fiables et des impulsions aléatoires du réseau lui-même, comme au chapitre~\ref{sec:code}), le rapport signal sur bruit
+\begin{empheq}[box=\keybox]{equation}
+d' \;=\; \frac{g\,\Delta u}{\sqrt{g^2\sigma_{\text{avant}}^2+\sigma_{\text{après}}^2}}
+\label{eq:gainsnr}
+\end{empheq}
+croît avec $g$ jusqu'à ce que $g\sigma_{\text{avant}}$ égale $\sigma_{\text{après}}$~\cite{ServanSchreiber1990}.
+
+\begin{keyblock}
+\begin{proposition}[Quand le gain aide]
+\label{prop:gainnoise}
+En augmentant le gain, \nt{NORA} n'améliore la discrimination des entrées que contre le bruit qui naît \emph{après} l'amplificateur, dans le réseau lui-même. Le bruit arrivé avec l'entrée, le gain ne l'élimine pas.
+\end{proposition}
+\end{keyblock}
+
+\section{Le gain dans le choix entre deux options}
+
+Revenons au choix du chapitre~\ref{sec:gaba}: deux groupes de neurones \nt{GLUT}, d'entrées $I_1$, $I_2$, s'inhibent mutuellement avec la force $\beta$. Chaque groupe a désormais un gain $g$: dans les équations du choix~\eqref{eq:wta}, l'expression entre crochets est multipliée par $g$. Tant que les deux groupes sont actifs, les fréquences stationnaires se déduisent de $r_1=g(I_1-\beta r_2)$, $r_2=g(I_2-\beta r_1)$. En additionnant et en soustrayant ces égalités, on obtient la somme $r_1+r_2=g(I_1+I_2)/(1+g\beta)$ et la différence $r_1-r_2=g(I_1-I_2)/(1-g\beta)$. Leur rapport dit avec quelle netteté le réseau préfère une entrée à l'autre:
+\begin{empheq}[box=\keybox]{equation}
+\frac{r_1-r_2}{r_1+r_2} \;=\; \varepsilon\,\frac{1+g\beta}{1-g\beta}, \qquad \varepsilon=\frac{I_1-I_2}{I_1+I_2}, \quad g\beta<1 .
+\label{eq:wtagain}
+\end{empheq}
+Une petite différence d'entrées $\varepsilon$ est amplifiée d'un facteur $(1+g\beta)/(1-g\beta)$, et ce facteur croît sans limite quand $g\beta$ approche de un. Pour $g\beta>1$, l'état où les deux groupes sont actifs est instable, comme dans la proposition~\ref{prop:wta}: l'un gagne, l'autre se tait (fig.~\ref{fig:pitchfork}).
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=3.2cm,y=1.5cm]
+\draw[->,gray!70!black] (0,0) -- (2.15,0) node[below left,black] {\small $g\beta$};
+\draw[->,gray!70!black] (0,-1.25) -- (0,1.35) node[above,black] {\small $(r_1-r_2)/(r_1+r_2)$};
+\draw[gray!60!black] (1,-0.04) -- (1,0.04); \node[below right,font=\small] at (1,0) {$1$};
+\node[left,font=\scriptsize] at (0,1) {$1$}; \node[left,font=\scriptsize] at (0,-1) {$-1$};
+\draw[very thick,blue!60!black] plot[domain=0:0.905,samples=60] (\x,{0.05*(1+\x)/(1-\x)}) -- (1,1) -- (2.05,1);
+\draw[very thick,blue!60!black] (1.105,-1) -- (2.05,-1);
+\draw[thick,densely dashed,gray!60!black] (1,0) -- (2.05,0);
+\node[font=\small,align=center] at (0.45,-0.62) {réfléchit:\\les deux groupes\\sont actifs};
+\node[font=\small,align=center] at (1.55,0.45) {a décidé:\\un seul est actif};
+\node[font=\small,blue!60!black,anchor=south west] at (1.05,-0.97) {l'entrée faible a gagné avant: elle tient};
+\end{tikzpicture}
+\caption{Choix entre deux options pour différents gains; les entrées diffèrent de $\varepsilon=0.05$. Pour $g\beta>1$, les deux décisions sont stables (traits pleins; la victoire de l'entrée faible pour $g\beta>(1+\varepsilon)/(1-\varepsilon)\approx1.1$), et le réseau maintient celle qu'il a déjà prise; l'état symétrique (en tirets) est instable.}
+\label{fig:pitchfork}
+\end{figure}
+
+\begin{keyblock}
+\begin{proposition}[Le gain change le régime du choix]
+\label{prop:gainwta}
+Dans un réseau de choix à inhibition mutuelle $\beta$, le gain $g$ fait franchir au réseau la frontière $g\beta=1$. En dessous, le réseau \og réfléchit\fg{}: les deux groupes sont actifs, et la différence des entrées est amplifiée selon~\eqref{eq:wtagain}. Au-dessus, le réseau \og a décidé\fg{}: un seul groupe est actif, et la décision tient. En modifiant $g$, \nt{NORA} peut faire passer le réseau d'un régime à l'autre sans toucher à un seul poids.
+\end{proposition}
+\end{keyblock}
+
+\section{Le gain comme température}
+
+Ajoutons maintenant au choix le bruit qui naît dans le réseau lui-même, après l'amplificateur. Le groupe gagnant est déterminé par le signe de la grandeur $g(u_A-u_B)+\eta$, où $u_A-u_B$ est la différence des entrées, c'est-à-dire la différence des poids appris au chapitre~\ref{sec:dofa}, et $\eta$ un bruit d'échelle $\sigma$. Si le bruit suit une loi logistique (pour un bruit gaussien, la courbe est presque la même), la probabilité de choisir $A$ vaut
+\begin{empheq}[box=\keybox]{equation}
+P(A) \;=\; \frac{1}{1+e^{-g\,(u_A-u_B)/\sigma}} .
+\label{eq:softmax}
+\end{empheq}
+Le programmeur reconnaîtra ici le choix par softmax à la température $T=\sigma/g$. Le gain est l'inverse de la température. Pour $g$ petit, même une option nettement meilleure n'est guère plus souvent choisie que la moins bonne: le réseau explore beaucoup. Pour $g$ grand, la meilleure option connue est choisie presque toujours: le réseau exploite ce qu'il sait.
+
+Précisons ce qu'est $g$ dans~\eqref{eq:wtagain} et~\eqref{eq:softmax}: c'est le gain \emph{effectif} appliqué à la différence des entrées de la tâche en cours, au moment du choix. Les deux modes de \nt{NORA} agissent sur lui en sens opposés. La bouffée phasique au moment de la décision l'augmente, et le réseau consolide son choix. Une forte activité tonique va au contraire de pair avec l'exploration: chez l'homme, la pupille de base est plus large avant un choix au hasard~\cite{JepmaNieuwenhuis2011}, et chez le rat, l'entrée \nt{NORA} dans le cortex cingulaire antérieur fait passer le choix en mode aléatoire~\cite{Tervo2014stochastic}. Une forte \nt{NORA} tonique correspond donc à un $g$ effectif \emph{petit}, et la bouffée à un $g$ grand.
+
+\section{Combien chercher}
+
+Quel gain vaut le mieux? Nous l'avons vérifié sur un modèle. Le réseau choisit l'une de deux actions selon~\eqref{eq:softmax}; chacune rapporte une récompense avec une certaine probabilité, que le réseau estime d'après les récompenses de l'action choisie, comme au chapitre~\ref{sec:dofa}. De temps en temps, le monde change: les deux probabilités sont tirées à nouveau. Ce peut être l'action choisie qui change, ou celle que le réseau n'a pas essayée depuis longtemps; de la seconde, le réseau ne peut apprendre le changement qu'en explorant. La fig.~\ref{fig:invertedU} montre quelle part de la meilleure récompense possible le réseau obtient pour différents $g$ constants.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=1.2cm,y=1cm]
+\draw[->,gray!70!black] (0,0) -- (7.6,0) node[below left,black] {\small $g$};
+\draw[->,gray!70!black] (0,0) -- (0,4.4) node[above,black,font=\small] {part de la meilleure récompense};
+\foreach \x/\l in {0/0.5,1/1,2/2,3/4,4/8,5/16,6/32,7/64}{\draw[gray!60!black] (\x,-0.06) -- (\x,0.06); \node[below,font=\scriptsize] at (\x,0) {\l};}
+\foreach \v/\y in {0.8/0.8,0.9/2.4,1.0/4.0}{\draw[gray!60!black] (-0.06,\y) -- (0.06,\y); \node[left,font=\scriptsize] at (0,\y) {\v};}
+\draw[very thick,blue!60!black] plot[mark=*,mark size=1.3pt] coordinates {(0,0.368) (1,0.880) (2,1.728) (3,2.784) (4,3.456) (5,3.616) (6,3.488) (7,3.264)};
+\draw[very thick,red!70!black] plot[mark=*,mark size=1.3pt] coordinates {(0,0.368) (1,0.672) (2,1.184) (3,1.840) (4,2.176) (5,1.920) (6,1.456) (7,1.104)};
+\node[blue!60!black,font=\small,anchor=south] at (5,3.7) {monde calme};
+\node[red!70!black,font=\small,anchor=north] at (5.1,1.25) {monde qui change vite};
+\draw[->,thick,blue!60!black] (5,3.25) -- (5,3.55);
+\draw[->,thick,red!70!black] (4,1.8) -- (4,2.1);
+\node[font=\small\itshape,gray!35!black,anchor=west] at (0.15,2.3) {à l'aveugle};
+\node[font=\small\itshape,gray!35!black] at (6.45,2.55) {rate les changements};
+\end{tikzpicture}
+\caption{Part de la meilleure récompense possible pour un gain $g$ constant (échelle de $g$ logarithmique). Courbe bleue: le monde change en moyenne une fois tous les mille essais; courbe rouge: une fois tous les vingt. Les flèches marquent le meilleur $g$: dans un monde qui change vite, il est deux fois plus petit. Moyenne sur 60 simulations de 4000 essais.}
+\label{fig:invertedU}
+\end{figure}
+
+Pour $g=0.5$, le réseau n'utilise presque pas ce qu'il sait et obtient environ les trois quarts du possible; pour $g$ très grand, il rate les changements. La meilleure valeur: $g=16$ quand le monde change une fois tous les mille essais (part $0.976$), et $g=8$ quand il change une fois tous les vingt ($0.886$).
+
+\begin{keyblock}
+\begin{proposition}[Le U inversé]
+\label{prop:explore}
+La récompense que recueille le réseau dépend du gain comme un U inversé: un $g$ trop petit gaspille des essais en exploration, un $g$ trop grand ne remarque pas les changements. Le meilleur $g$ est d'autant plus petit que le monde change vite.
+\end{proposition}
+\end{keyblock}
+
+Le U inversé s'observe aussi dans les expériences: les animaux réussissent le mieux une tâche quand l'activité tonique des neurones \nt{NORA} est modérée et que leurs réponses phasiques sont nettes, alors qu'avec une forte activité tonique ils se laissent distraire et passent d'une tâche à l'autre~\cite{AstonJones2005}. Cela s'accorde avec la distinction des modes de la section précédente: la bouffée phasique au moment de la décision donne un grand $g$ effectif précisément quand il faut choisir, alors qu'une forte activité tonique sans bouffées amplifie tout indistinctement, y compris les entrées étrangères à la tâche, si bien que le $g$ effectif pour la tâche en cours diminue: c'est l'exploration.
+
+\section{Qui tourne le bouton}
+
+Puisque le meilleur gain dépend de la vitesse à laquelle le monde change, il serait bon de l'ajuster. Mais comment les neurones \nt{NORA} sauraient-ils que le monde a changé? L'indice naturel est la \emph{surprise}: les erreurs de prédiction sont devenues plus grandes que d'habitude. Il importe de distinguer deux sortes d'incertitude. Si la récompense est simplement aléatoire, les erreurs sont toujours grandes, et c'est attendu. Si en revanche les erreurs ont soudain augmenté par rapport à leur taille habituelle, c'est que quelque chose a changé. Selon une hypothèse, c'est précisément cette incertitude inattendue que signale \nt{NORA}, l'incertitude attendue étant signalée par \nt{ACET}~\cite{YuDayan2005}.
+
+Que faire de ce signal? On peut baisser le gain et explorer davantage. On peut augmenter la vitesse d'apprentissage pour oublier plus vite les estimations périmées: les expériences montrent qu'après un changement brusque, les humains apprennent plus vite, et que leur pupille se dilate alors~\cite{Nassar2012}; rappelons que la pupille n'indique pas seulement \nt{NORA}, mais aussi \nt{ACET}~\cite{Reimer2016}. On peut enfin faire les deux à la fois: selon une autre hypothèse, la bouffée phasique de \nt{NORA} fonctionne comme une \emph{interruption}, un signal par lequel le réseau remet à zéro son état courant et se reconfigure pour la nouvelle situation~\cite{BouretSara2005}, comme la ligne d'interruption commune d'un processeur.
+
+Disons honnêtement ce que nous n'avons pas trouvé. Dans le modèle, nous avons essayé les deux manières simples d'ajuster: baisser $g$, ou augmenter la vitesse d'apprentissage, quand l'erreur lissée dépasse sa moyenne à long terme. Dans un monde qui tantôt reste longtemps stable, tantôt change souvent, les meilleurs réglages des deux méthodes ont donné $0.926$--$0.927$ de la meilleure récompense, presque autant que le meilleur $g$ constant ($0.925$ pour $g=8$) ou qu'une vitesse d'apprentissage constante mais assez grande ($0.928$), et les réglages malheureux, moins. Les courbes de la fig.~\ref{fig:invertedU} sont plates près du sommet, et dans un tel monde il n'y a presque rien à ajuster. L'ajustement devrait être rentable là où des régimes différents exigent des réglages très différents. Quelle loi de commande \nt{NORA} met réellement en œuvre n'est pas encore établi.
+
+\section{Bilan}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{3.0cm}>{\raggedright}p{4.4cm}>{\raggedright\arraybackslash}p{6.0cm}}
+\toprule
+Ce que fait \nt{NORA} & Comment & Ce qu'on sait \\
+\midrule
+change la pente de la réponse des neurones & le gain $g$ dans~\eqref{eq:gain} & l'augmentation du rapport signal sur bruit est mesurée; le modèle multiplicatif est une simplification \\
+fait basculer le choix & fait franchir au réseau $g\beta=1$ & découle du modèle~\eqref{eq:wtagain}; pas de mesure directe du seuil \\
+fixe combien chercher & $g$ est l'inverse de la température~\eqref{eq:softmax}; tonique: petit $g$ effectif (exploration), bouffée: grand (décision) & le U inversé et les deux modes de fonctionnement sont mesurés; le lien avec l'exploration est une hypothèse bien fondée \\
+signale les changements & incertitude inattendue & la pupille et la vitesse d'apprentissage augmentent après un changement: mesuré; qu'il s'agisse d'un signal \nt{NORA} est une hypothèse \\
+interrompt et remet à zéro & bouffée phasique sur un événement inattendu & les bouffées sur les événements importants sont mesurées; l'\og interruption\fg{} est une hypothèse \\
+\bottomrule
+\end{tabular}
+\caption{Ce que \nt{NORA} ajoute à un réseau de \nt{GLUT}, \nt{GABA} et \nt{DOPA}.}
+\label{tab:nora}
+\end{table}
+
+\nt{DOPA} dit au réseau \emph{dans quel sens} modifier les poids. \nt{NORA} ne modifie aucun poids, mais décide \emph{comment} le réseau utilise ce qu'il sait déjà (tableau~\ref{tab:nora}): un seul bouton, le gain, transforme le neurone d'amplificateur en comparateur, le réseau de choix de \og réfléchissant\fg{} en \og décidé\fg{}, et le choix d'exploration en exploitation. Comment \nt{NORA} apprend à quelle vitesse change le monde est une question ouverte.
+
+\section{Exercices}
+
+\begin{exercise}[\lvlA]
+\label{ex:08:1}
+\emph{Un seul bouton pour tout le cerveau.} (a)~D'après le tableau~\ref{tab:types}, estimez combien de neurones du cerveau reviennent à un neurone \nt{NORA}. (b)~Le bruit avant l'amplificateur est $\sigma_{\text{avant}}=0.5$, après, $\sigma_{\text{après}}=4$. Pour quel $g$ la grandeur $d'$ de~\eqref{eq:gainsnr} atteint-elle $90\,\%$ de sa limite?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:08:2}
+\emph{Choix avec gain.} $\tau\,\dd r_1/\dd t=-r_1+g[I_1-\beta r_2]_+$, $\tau\,\dd r_2/\dd t=-r_2+g[I_2-\beta r_1]_+$, $\tau=20\ms$. (a)~En combien de temps $r_1-r_2$ s'amortit-il pour $g\beta=0.5$ et $0.9$? (b)~Pour $\varepsilon=0.05$, trouvez le $g\beta$ en dessous duquel les deux groupes sont actifs et celui au-dessus duquel la victoire de l'entrée faible est stable.
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:08:3}
+\emph{Le softmax à partir du bruit.} Chacun des $K$ groupes reçoit son propre bruit de Gumbel, $P(\eta_k<z)=\exp(-e^{-z/\sigma})$, et c'est le plus grand $gu_k+\eta_k$ qui gagne. Trouvez $P(k)$. Pour quel $g$ la meilleure de deux options, avec $u_A-u_B=0.1$, $\sigma=1$, est-elle choisie dans $90\,\%$ des cas?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:08:4}
+\emph{Estimation du meilleur gain.} Dans le modèle de la fig.~\ref{fig:invertedU}, les probabilités de récompense après un changement sont uniformes sur $[0,1]$. Le réseau essaie la moins bonne action une fois tous les $e^{g\Delta}$ essais; en égalant cela à $1/h$, on obtient $g^*\approx\ln(1/h)/\bar\Delta$. Trouvez $\bar\Delta=\langle|p_A-p_B|\rangle$ et $g^*$ pour $h=0.001$, $0.01$, $0.05$.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:08:5}
+\emph{Simulation: gain et vitesse des changements.} Trouvez $g^*(h)$ pour $h$ de $0.001$ à $0.2$ avec une copie de \texttt{models/\allowbreak nora\_explore.py} (elle écrit des fichiers dans le dossier courant). Où l'estimation de l'exercice~\ref{ex:08:4} est-elle juste, et pourquoi $g^*$ cesse-t-il de décroître quand les changements sont rapides?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:08:6}
+\emph{Conception: une interruption pour le réseau de choix.} Le réseau de l'exercice~\ref{ex:08:2}, avec $\beta=2$, $\tau=20\ms$, $g=1$, maintient $r_1=0.9$, $r_2=0$, bien que les entrées soient désormais $I_1=0.9$, $I_2=1.0$. \nt{NORA} abaisse $g$ à $g_{\text{lo}}$ pendant un temps $T_p$. Trouvez le plus petit $T_p$ analytiquement pour $g_{\text{lo}}=0$, et par simulation pour $g_{\text{lo}}=0.25$.
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:08:7}
+\emph{Quand l'ajustement est rentable.} Un oracle sait si l'époque est calme ou changeante et règle $g$ en conséquence. (a)~Simulez son gain sur le meilleur $g$ constant dans le monde du chapitre (époques de $1000$ essais, $h=0.001$ et $0.05$). (b)~Construisez un monde où ce gain est plus grand, et trouvez quelle part en récupère l'ajustement par la surprise.
+\end{exercise}

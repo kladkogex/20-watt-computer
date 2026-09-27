@@ -1,0 +1,194 @@
+\chapter{Ce que font les neurones pendant le sommeil}
+\chaptermark{Le sommeil}
+\label{sec:sleep}
+
+\section{Le sommeil n'est pas un arrêt, mais un autre mode}
+
+Devant un ordinateur éteint, un ingénieur dira: il ne fait rien. Avec un cerveau endormi, ce n'est pas le cas. Pendant le sommeil, les neurones ne se taisent pas: en sommeil profond, le cortex émet des impulsions; en sommeil paradoxal, presque autant que le jour. Ce qui change, ce n'est pas le fait que les neurones \emph{fonctionnent}, mais la \emph{manière} dont ils fonctionnent. Le sommeil est un ensemble de modes de la machine, et ce sont les mêmes canaux de diffusion que le jour qui les commutent.
+
+Pour chaque mode, on peut écrire \og l'état des registres\fg{} (tableau~\ref{tab:sleepmodes}). Le jour, \nt{ACET}, \nt{NORA} et \nt{SERO} sont actifs, les capteurs sont connectés, les muscles obéissent. En sommeil lent, le sommeil profond, les trois canaux s'apaisent, et l'entrée venant des organes des sens est affaiblie~\cite{Hasselmo1999}: la libération d'acétylcholine dans le cortex chute, et les neurones \nt{NORA} et \nt{SERO} émettent moins d'impulsions que le jour~\cite{Marrosu1995,AstonJonesBloom1981,McGintyHarper1976}. En sommeil paradoxal, le tableau est étrange: \nt{ACET} remonte à son niveau diurne~\cite{Marrosu1995}, tandis que \nt{NORA} et \nt{SERO} se taisent presque complètement~\cite{AstonJonesBloom1981,McGintyHarper1976,JacobsAzmitia1992}. En sommeil paradoxal, les muscles du corps sont coupés: les neurones \nt{ACET} qui les commandent sont fortement inhibés par \nt{GABA} et \nt{GLYC}~\cite{BrooksPeever2012}, par le même veto qu'au chapitre~\ref{sec:gaba}, mais appliqué à toute la sortie à la fois.
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{3.1cm}>{\raggedright}p{2.9cm}>{\raggedright}p{3.2cm}>{\raggedright\arraybackslash}p{3.4cm}}
+\toprule
+& veille & sommeil lent & sommeil paradoxal \\
+\midrule
+\nt{ACET} (écriture, chap.~\ref{sec:acet}) & élevé & bas & élevé \\
+\nt{NORA} (gain, chap.~\ref{sec:nora}) & moyen, bouffées & bas & presque silencieux \\
+\nt{SERO} (chap.~\ref{sec:serocomputer}) & moyen & bas & presque silencieux \\
+entrée des capteurs & connectée & affaiblie & affaiblie \\
+sortie vers les muscles & connectée & affaiblie & coupée par inhibition \\
+activité du cortex & régulière & bascule lente: activité / silence & régulière, comme le jour \\
+\bottomrule
+\end{tabular}
+\caption{L'état des registres de la machine dans les trois modes. Toutes les lignes sont mesurées; les niveaux d'\nt{ACET}, de \nt{NORA} et de \nt{SERO} par des enregistrements directs selon les stades du sommeil~\cite{Marrosu1995,AstonJonesBloom1981,McGintyHarper1976}.}
+\label{tab:sleepmodes}
+\end{table}
+
+\section{Quand dormir: un relais à hystérésis}
+
+Qu'est-ce qui décide du moment où la machine bascule dans le sommeil? Un schéma simple en deux parties fonctionne bien~\cite{Borbely1982}. La première partie est la \emph{pression de sommeil} $S$, qui s'accumule pendant la veille et se dissipe pendant le sommeil. C'est un condensateur qui se charge le jour et se décharge la nuit:
+\begin{empheq}[box=\keybox]{equation}
+\frac{\dd S}{\dd t} \;=\; \frac{1-S}{\tau_r}\ \ \text{(veille)},\qquad
+\frac{\dd S}{\dd t} \;=\; -\frac{S}{\tau_d}\ \ \text{(sommeil)} .
+\label{eq:sleeppressure}
+\end{empheq}
+La seconde partie, ce sont deux seuils: la machine s'endort quand $S$ atteint le seuil haut $H(t)$, et se réveille quand $S$ redescend au seuil bas $L(t)$. Les deux seuils oscillent doucement au rythme circadien du chapitre~\ref{sec:chemoutput}. On obtient un relais à hystérésis, le trigger de Schmitt de la section~\ref{sec:bistable}, et avec le condensateur, il forme un oscillateur à relaxation dont la phase est calée par le rythme circadien~\eqref{eq:pll}.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=0.16cm,y=4.2cm]
+\foreach \a/\b in {0/4.3,21.2/29.3,45.4/53.4,69.5/72}{\fill[blue!8] (\a,0) rectangle (\b,1);}
+\draw[->,gray!70!black] (0,0) -- (75,0) node[right,font=\small,black] {$t$, h};
+\draw[->,gray!70!black] (0,0) -- (0,1.08) node[left,font=\small,black] {$S$};
+\foreach \t in {0,24,48,72}{\draw[gray!60!black] (\t,-0.02) -- (\t,0.02); \node[below,font=\scriptsize] at (\t,0) {\t};}
+\draw[thick,densely dashed,red!70!black] plot file {figures/sleep_H.dat};
+\draw[thick,densely dashed,green!45!black] plot file {figures/sleep_L.dat};
+\draw[very thick,blue!60!black] plot file {figures/sleep_S.dat};
+\node[font=\scriptsize,red!70!black,anchor=west] at (73,0.72) {$H$: s'endormir};
+\node[font=\scriptsize,green!45!black,anchor=west] at (73,0.24) {$L$: se réveiller};
+\node[font=\scriptsize,blue!60!black] at (25.25,0.93) {sommeil};
+\node[font=\scriptsize,blue!60!black] at (49.4,0.93) {sommeil};
+\end{tikzpicture}
+\caption{Pression de sommeil $S$~\eqref{eq:sleeppressure} pour $\tau_r=18.2$~h, $\tau_d=4.2$~h. Le jour, $S$ se charge jusqu'au seuil haut $H$; la nuit (zones colorées), elle se décharge jusqu'au seuil bas $L$; les deux seuils oscillent avec le rythme circadien. La machine trouve d'elle-même un régime d'environ $16$ heures de veille et $8$ heures de sommeil.}
+\label{fig:twoprocess}
+\end{figure}
+
+Dans notre modèle, avec les valeurs usuelles $\tau_r=18.2$~h et $\tau_d=4.2$~h, la machine trouve d'elle-même $16.1$ heures de veille et $8.0$ heures de sommeil (fig.~\ref{fig:twoprocess}). Le modèle explique aussi ce qui semble étrange: après quarante heures sans sommeil, la pression atteint $0.90$, mais le sommeil de récupération ne dure dans le modèle que $8.8$ heures, et non une journée de plus que d'habitude. La décharge est exponentielle, et une charge élevée s'écoule vite; la \og dette\fg{} se rembourse non par la durée, mais par la profondeur du sommeil.
+
+Qu'est-ce qui joue physiquement le rôle de $S$? Un candidat sérieux est l'adénosine, le \og compteur de charge\fg{} de l'annexe~\ref{sec:othermediators}: sa concentration augmente pendant la veille et baisse pendant le sommeil~\cite{PorkkaHeiskanen1997,Dunwiddie2001}. Que la pression de sommeil soit l'adénosine et rien d'autre reste une hypothèse.
+
+\section{Le sommeil lent: tout le réseau en oscillateur à relaxation}
+
+En sommeil profond, les neurones du cortex fonctionnent en alternance, tout le groupe ensemble: moins d'une fois par seconde, ils s'allument ensemble pendant quelques centaines de millisecondes (l'\emph{état actif}) et se taisent ensemble (l'\emph{état de silence}); la fréquence de cette bascule est inférieure à $1$~Hz, le plus souvent $0.3$--$0.4$~Hz sous anesthésie~\cite{Steriade1993}. Cette bascule lente, nous pouvons l'assembler avec des pièces que nous avons déjà. Prenons un groupe de neurones \nt{GLUT} à forte rétroaction sur lui-même, la mémoire du chapitre~\ref{sec:glutcomputer}, qui possède deux états stables, et ajoutons une fatigue lente, comme dans le générateur de rythme du chapitre~\ref{sec:muscles}:
+\begin{empheq}[box=\keybox]{equation}
+\tau\,\frac{\dd r}{\dd t} = -r + F\bigl(w\,r + I - a\bigr),
+\qquad
+\tau_a\,\frac{\dd a}{\dd t} = -a + b\,r .
+\label{eq:updown}
+\end{empheq}
+Le groupe s'allume, travaille et se fatigue; la fatigue $a$ ronge l'état haut, et le groupe tombe dans le silence; dans le silence, la fatigue se dissipe, l'état bas disparaît, et le groupe se rallume. On obtient le même oscillateur à relaxation que pour la pression de sommeil, mais environ quatre-vingt mille fois plus rapide.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=2.9cm,y=1.0cm]
+\begin{scope}[yshift=1.9cm]
+\draw[->,gray!70!black] (0,0) -- (4.1,0);
+\draw[->,gray!70!black] (0,0) -- (0,1.25) node[left,font=\small,black] {$r$};
+\draw[thick,blue!60!black] plot file {figures/updown_sleep.dat};
+\node[font=\scriptsize,anchor=west] at (4.15,0.5) {sommeil: $b=5$};
+\end{scope}
+\draw[->,gray!70!black] (0,0) -- (4.1,0) node[right,font=\small,black] {$t$, s};
+\draw[->,gray!70!black] (0,0) -- (0,1.25) node[left,font=\small,black] {$r$};
+\draw[thick,red!70!black] plot file {figures/updown_wake.dat};
+\node[font=\scriptsize,anchor=west] at (4.15,0.5) {jour: $b=1$};
+\foreach \t in {0,1,2,3,4}{\draw[gray!60!black] (\t,-0.05) -- (\t,0.05); \node[below,font=\scriptsize] at (\t,0) {\t};}
+\end{tikzpicture}
+\caption{Un même groupe~\eqref{eq:updown} dans deux modes: $w=5$, $I=2$, $\theta=2.5$, $\tau=10\ms$, $\tau_a=0.3$~s. Avec une forte fatigue ($b=5$, comme en sommeil lent), le groupe bascule entre activité et silence avec une période de $1.1$~s (valeur du modèle; dans le cortex, la période dépasse une seconde, et sous anesthésie elle est d'environ $3$~s). Affaiblissons la fatigue ($b=1$), comme le fait l'acétylcholine, et le même groupe fonctionne de façon régulière.}
+\label{fig:updown}
+\end{figure}
+
+Et qu'est-ce qui fait passer le réseau de la bascule au fonctionnement régulier du jour? L'acétylcholine supprime dans les neurones les courants lents qui créent la fatigue~\cite{McCormick1992}. Dans notre modèle, avec une forte fatigue, $b=5$, le groupe bascule avec une période de $1.1$~s (plus vite que la bascule mesurée, mais du même ordre) et reste actif environ $35\%$ du temps, en moyenne sur un nombre entier de périodes; avec une fatigue faible, $b=1$, le même groupe fonctionne régulièrement (fig.~\ref{fig:updown}). Un seul registre, le niveau d'\nt{ACET}, transforme l'oscillateur en amplificateur. Par-dessus la bascule lente du sommeil passent aussi des bouffées plus rapides d'un rythme de $7$ à $15$ oscillations par seconde; elles naissent d'une boucle \nt{GLUT}--\nt{GABA} entre le cortex et un nœud relais intermédiaire~\cite{SteriadeMcCormickSejnowski1993}, parente du rythme du chapitre~\ref{sec:gaba}.
+
+\section{Les répétitions: la journée en accéléré}
+
+Au chapitre~\ref{sec:acet}, nous avons vu qu'en sommeil lent, les neurones qui ont travaillé ensemble le jour déchargent de nouveau ensemble, et dans le même ordre. Ajoutons un détail d'ingénieur: les répétitions se font \emph{en accéléré}. Une séquence qui occupait des secondes le jour est rejouée pendant le sommeil en quelques dixièmes de seconde~\cite{Nadasdy1999}: environ vingt fois plus vite dans l'hippocampe~\cite{LeeWilson2002}, six à sept fois plus vite dans le cortex~\cite{Euston2007}. Et elle n'est pas rejouée n'importe quand: les brèves bouffées de répétitions dans une région se calent sur la bascule activité--silence et sur les bouffées rapides de rythme du cortex. Si l'on renforce artificiellement cette coordination, la mémoire s'améliore~\cite{Maingret2016}: c'est là un lien causal, et non une coïncidence.
+
+Pourquoi la machine repasse-t-elle la journée en accéléré? L'ingénieur connaît une difficulté qu'on appelle l'\emph{oubli catastrophique}: un réseau qui apprend de nouvelles choses à la suite, l'une après l'autre, abîme les anciennes. Le remède est l'\emph{entrelacement}: apprendre le nouveau mêlé à l'ancien, par petites portions, de nombreuses fois. L'hypothèse des deux systèmes d'apprentissage~\cite{McClelland1995} veut qu'une mémoire rapide enregistre la journée entière, puis, pendant le sommeil, la rejoue peu à peu, en l'entremêlant et de nombreuses fois, au cortex lent. C'est la même paire \og tampon rapide, stockage lent\fg{} qu'au chapitre~\ref{sec:acet}, et la même paire d'élèves rapide et lent qu'au chapitre~\ref{sec:motorlearning}. Les répétitions et leur coordination sont mesurées; que leur fonction soit l'apprentissage entrelacé de la mémoire lente est une hypothèse bien fondée.
+
+\section{La renormalisation des poids}
+
+Le jour, les règles de Hebb du chapitre~\ref{sec:dofa} renforcent surtout les connexions. Si l'on ne fait que renforcer, les poids croissent, et avec eux la dépense d'énergie, tandis que la sensibilité baisse: un neurone dont toutes les entrées sont fortes cesse de les distinguer. Selon l'hypothèse de l'\emph{homéostasie synaptique}~\cite{TononiCirelli2014}, le sommeil sert entre autres à ramener les poids à leur niveau de travail: toutes les connexions sont affaiblies d'un même facteur, si bien que leurs \emph{rapports}, c'est-à-dire ce qui a été appris, sont conservés. Pour un ingénieur, c'est une normalisation, comme dans la règle~\eqref{eq:oja}, mais faite non pas en marche, mais dans un créneau séparé.
+
+Les mesures directes ne le contredisent pas: chez la souris, la surface de contact des synapses du cortex est après le sommeil inférieure d'environ $18\%$ à ce qu'elle est après la veille; la diminution est proportionnelle à la taille, et les contacts les plus gros et les plus stables ne changent presque pas~\cite{deVivo2017}. La mise à l'échelle des poids est mesurée; qu'elle soit la tâche principale du sommeil reste une hypothèse.
+
+\section{Le sommeil paradoxal: une machine déconnectée de ses entrées et de ses sorties}
+
+En sommeil paradoxal, le cortex fonctionne presque comme le jour, mais l'entrée venant des organes des sens est affaiblie et la sortie vers les muscles est coupée par inhibition. Pour un ingénieur, c'est un mode familier: l'\emph{essai sur banc}. Le circuit fonctionne à pleine puissance, mais ses entrées sont reliées à un générateur interne et ses sorties déconnectées des actionneurs, pour ne rien casser. Selon une hypothèse, les rêves sont justement un tel déroulement interne du modèle du monde construit pendant la journée; ce que fait alors le réseau et s'il apprend, on l'ignore. Seul est mesuré ici ce qui figure dans le tableau~\ref{tab:sleepmodes}: quel canal est actif, lequel se tait, et le fait que la sortie est bloquée.
+
+\section{La maintenance et le sommeil local}
+
+On a longtemps cru que, pendant le sommeil, les espaces intercellulaires s'élargissent et que le cerveau est plus vite lavé des déchets du métabolisme~\cite{Xie2013}. Des expériences récentes, qui mesuraient ce lavage d'une autre manière, ont obtenu l'inverse: pendant le sommeil, il est plus lent~\cite{Miao2024}. La question est aujourd'hui ouverte, et nous la laisserons ouverte.
+
+Un autre fait est plus solide: le sommeil est une propriété des réseaux locaux, et non de toute la machine à la fois. Si l'on empêche longtemps un animal de dormir, certaines zones de son cortex, alors qu'il est éveillé et qu'il bouge, sombrent brièvement dans le silence comme en sommeil lent, et à ces moments-là l'animal se trompe plus souvent~\cite{Vyazovskiy2011}. Chaque réseau se fatigue et bascule de lui-même; le mode global apparaît quand les canaux de diffusion font basculer tous les réseaux à la fois.
+
+\begin{keyblock}
+\begin{proposition}[Le sommeil comme ensemble de modes]
+\label{prop:sleep}
+Pendant le sommeil, les neurones ne s'éteignent pas: les canaux de diffusion font passer la machine dans d'autres modes. Le moment de dormir est décidé par un relais à hystérésis~\eqref{eq:sleeppressure} calé par le rythme circadien. En sommeil lent, le réseau devient un oscillateur à relaxation~\eqref{eq:updown} et rejoue la journée en accéléré; en sommeil paradoxal, il fonctionne déconnecté de ses entrées et de ses sorties. Les modes, les répétitions et la mise à l'échelle des poids sont mesurés; leur fonction (apprentissage entrelacé et renormalisation) relève d'hypothèses bien fondées.
+\end{proposition}
+\end{keyblock}
+
+\section{Bilan}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{3.2cm}>{\raggedright}p{4.4cm}>{\raggedright\arraybackslash}p{5.2cm}}
+\toprule
+Ce qui se passe & Comment & Ce que l'on sait \\
+\midrule
+changement de mode & registres \nt{ACET}, \nt{NORA}, \nt{SERO} (tabl.~\ref{tab:sleepmodes}) & mesuré \\
+quand dormir & condensateur $S$ et relais à hystérésis~\eqref{eq:sleeppressure} & le modèle décrit bien les expériences; l'adénosine comme $S$: hypothèse \\
+bascule lente & groupe à rétroaction et fatigue~\eqref{eq:updown} & bascule mesurée; le modèle est le schéma le plus simple \\
+journée en accéléré & répétitions $6$ à $20$ fois plus rapides, coordonnées avec la bascule & mesuré; renforcer la coordination améliore la mémoire \\
+pourquoi les répétitions & apprentissage entrelacé de la mémoire lente & hypothèse bien fondée \\
+renormalisation des poids & mise à l'échelle des connexions pendant le sommeil & diminution des contacts mesurée; rôle principal du sommeil: hypothèse \\
+sommeil paradoxal & fonctionnement avec entrées et sortie déconnectées & mode mesuré; fonction inconnue \\
+lavage & élargissement des espaces intercellulaires & résultats contradictoires \\
+sommeil local & certaines zones sombrent dans le silence & mesuré \\
+\bottomrule
+\end{tabular}
+\caption{Ce que font les neurones pendant le sommeil.}
+\label{tab:sleep}
+\end{table}
+
+Le tableau~\ref{tab:sleep} résume le chapitre. Le sommeil s'est révélé non pas une pause dans le travail de la machine, mais sa maintenance en marche: changement de mode par les mêmes canaux de diffusion, oscillateur fait des mêmes pièces que le rythme de la marche, journée rejouée en accéléré pour la mémoire lente, et renormalisation des poids. Le jour, la machine écrit; la nuit, elle réécrit et met de l'ordre dans ce qu'elle a écrit.
+
+\section{Exercices}
+
+\begin{exercise}[\lvlA]
+\label{ex:20:1}
+\emph{Un relais sans rythme circadien.} Seuils constants: $H=0.67$, $L=0.17$ (moyennes des seuils de la fig.~\ref{fig:twoprocess}). Déduisez de~\eqref{eq:sleeppressure} les durées de veille et de sommeil et la période de l'oscillateur pour $\tau_r=18.2$~h, $\tau_d=4.2$~h. Pourquoi le modèle à seuils oscillants donne-t-il pourtant $16.1+8.0=24$~h? À quel composant du chapitre~\ref{sec:chemoutput} cet effet se rattache-t-il?
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:20:2}
+\emph{La dette de sommeil.} Un sommeil entamé à la pression $S_0$ dure $t_s=\tau_d\ln(S_0/L)$, $\tau_d=4.2$~h, $L$: seuil bas au réveil. (a)~Après $40$~h sans sommeil, $S_0=0.90$, et on a dormi $8.8$~h. Que valait $L$? Et avec l'habituel $L\approx0.092$? (b)~En une nuit, la surface des contacts synaptiques baisse de $18\%$: de combien les poids doivent-ils croître le jour?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:20:3}
+\emph{Concevoir les seuils.} Choisissez des seuils constants $H$ et $L$ pour lesquels le relais~\eqref{eq:sleeppressure} avec $\tau_r=18.2$~h et $\tau_d=4.2$~h donne exactement $16$~h de veille et $8$~h de sommeil. En quoi une telle machine est-elle moins bonne qu'une machine à seuils oscillants si, une nuit, on la réveille au bout de $4$~heures?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:20:4}
+\emph{La période de la bascule lente.} Dans le modèle~\eqref{eq:updown}, $F(x)=1/\bigl(1+e^{-(x-\theta)/k}\bigr)$, $w=5$, $I=2$, $\theta=2.5$, $k=0.25$, $b=5$, $\tau\ll\tau_a=0.3$~s. (a)~Trouvez les points de rebroussement $a_{\text{h}}$ et $a_{\text{b}}$ de la courbe $r=F(wr+I-a)$, où disparaissent l'état actif et le silence. (b)~En prenant $r\approx1$ en activité et $r\approx0$ en silence, trouvez la période et la fraction d'activité.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:20:5}
+\emph{Quand la bascule s'arrête.} Dans le modèle de l'exercice~\ref{ex:20:4}, le point fixe est à l'intersection de la courbe $a=wr+I-F^{-1}(r)$ et de la droite $a=br$. Il y a oscillation tant que l'intersection est sur la branche médiane, entre les points de rebroussement. Pour quels $b$? Comment \nt{ACET}, en modifiant $b$, transforme-t-il l'oscillateur en amplificateur?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:20:6}
+\emph{Simulation: dette ou phase.} Dans \texttt{sleep\_models.py}, prenez le premier réveil après $48$~h et maintenez la machine éveillée $D=24$, $32$, $40$, $48$, $64$~h (\texttt{stay\_awake}, \texttt{days=8}). Combien dure le sommeil de récupération pour chaque $D$? Qu'est-ce qui détermine sa durée?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:20:7}
+\emph{Simulation: oubli et entrelacement.} Un neurone linéaire $y=\mathbf w\cdot\mathbf x$, $n=40$, apprend selon la règle $\mathbf w\leftarrow\mathbf w-0.5\,(y-y^*)\,\mathbf x$. Les tâches A et B comptent chacune $10$ motifs, $x_j\sim\mathcal N(0,1/n)$, $y^*=\pm1$. Quelle est l'erreur quadratique moyenne sur A après $200$ époques de A puis $200$ époques de B? Et après $200$ époques de A et B entremêlées?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:20:8}
+\emph{Recherche: entrelacement ou renormalisation?} Le neurone de l'exercice~\ref{ex:20:7}, muni d'un seuil; deux procédures nocturnes: (i)~tous les poids sont multipliés par $0.82$; (ii)~les anciens motifs sont rejoués parmi les nouveaux. Que fait chacune aux rapports des poids et aux réponses? Comment distinguer les hypothèses par la taille des synapses au réveil?
+\end{exercise}

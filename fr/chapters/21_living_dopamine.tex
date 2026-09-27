@@ -1,0 +1,63 @@
+\section{De la dopamine libérée par un éclair de lumière}
+\label{sec:dishdopamine}
+
+La seule expérience directe que nous connaissions où l'on a donné à une culture la dopamine pour professeur a été menée sur une plateforme d'organoïdes à laquelle les chercheurs se connectent à distance~\cite{Jordan2024}. Dans le liquide qui baigne les organoïdes, on a ajouté de la dopamine enfermée dans une \og cage\fg{} photosensible: la molécule liée n'agit pas sur les récepteurs. La concentration de dopamine en cage est de $1$~mM. Quand il faut récompenser le réseau, on l'éclaire aux ultraviolets: la cage se rompt, et la dopamine se répand dans le volume.
+
+La boucle fonctionne ainsi. Le même stimulus est appliqué encore et encore; s'il a provoqué plus d'impulsions qu'auparavant, un éclair se déclenche et libère la dopamine. Sur $240$ répétitions, le nombre d'impulsions évoquées a globalement augmenté. Les auteurs écrivent eux-mêmes qu'une seule expérience de ce type ne permet pas de conclure que cette hausse est due à la dopamine~\cite{Jordan2024}.
+
+Pour un ingénieur, c'est une première tentative de monter dans une boîte de culture la règle à trois facteurs~\eqref{eq:threefactor}: l'activité de l'émetteur et du destinataire laisse une trace, et un signal commun décide s'il faut consolider le changement. Mais le signal ne peut ici être que positif: il y a récompense ou non, et le montage ne produit aucune erreur négative $\delta<0$. De plus, la dopamine diffuse et n'est évacuée que lentement, comme la concentration de~\eqref{eq:lowpass}, si bien que des éclairs fréquents peuvent simplement élever son niveau global. Pour distinguer l'apprentissage de cet effet, il faut deux contrôles: autant d'éclairs à des instants aléatoires, sans lien avec la réponse du réseau, et les mêmes éclairs sans dopamine en cage. Il faut aussi un test après repos: le changement subsiste-t-il une fois la dopamine partie?
+
+\section{La dopamine enseigne au silicium}
+\label{sec:biohybrid}
+
+Dans l'expérience inverse, des cellules vivantes enseignent à l'électronique~\cite{Keene2020}. Des cellules qui sécrètent de la dopamine sont cultivées dans un microcanal au-dessus d'un composant neuromorphique organique, un transistor dont la conductance du canal joue le rôle du poids synaptique. La dopamine libérée par les cellules s'oxyde sur l'électrode du composant, ce qui modifie la conductance. Le dispositif reproduit aussi le mécanisme d'élimination du neurotransmetteur de la fente, si bien que le poids peut non seulement être modifié durablement, mais aussi être ramené à sa valeur initiale.
+
+En termes de circuit, c'est un intégrateur à fuite à entrée chimique: le poids accumule le flux de dopamine, et l'\og évacuation\fg{} fixe la vitesse de l'oubli; c'est le même circuit RC que~\eqref{eq:lowpass}. L'essentiel est ici le sens de la liaison. La sonde du chapitre~\ref{sec:debugging} ne voit pas les registres de diffusion, parce qu'ils sont chimiques. Ce composant lit justement un registre chimique et le convertit en poids électrique. Pour les interfaces cerveau-ordinateur, c'est la voie vers un capteur qui entend non seulement le bus de données, mais aussi les registres de contrôle.
+
+\section{Des organoïdes dotés de leurs propres neurones dopaminergiques}
+\label{sec:midbrainorg}
+
+On sait cultiver, à partir de cellules souches humaines, des organoïdes qui ressemblent à la région du cerveau où se trouvent les neurones \nt{DOPA}. Ils contiennent des neurones dopaminergiques fonctionnels, qui sécrètent de la dopamine~\cite{Jo2016}. On les cultive surtout pour étudier des maladies. Nous n'avons trouvé aucune expérience où leur dopamine aurait servi de professeur à un autre réseau.
+
+Pour la machine faite de neurones vivants, c'est la pièce manquante. Le banc du chapitre~\ref{sec:livingmachine}, c'est un bus de données et un contrôle de flux sans registres de contrôle; ici, la source du signal de diffusion existe déjà. Il manque le critique: un réseau qui calculerait l'erreur de prédiction~\eqref{eq:ctd} et piloterait ces neurones. Relier un organoïde de cortex à un tel organoïde de façon que la dopamine soit libérée en fonction de l'erreur est un problème ouvert; pour l'instant, c'est une hypothèse et non une expérience.
+
+\section{Un organoïde tient un pendule en équilibre sans dopamine}
+\label{sec:cartpole}
+
+La plus complète des expériences récentes se passe entièrement de dopamine~\cite{Robbins2026}. Des organoïdes de cortex de souris ont été placés en boucle fermée sur la tâche du \og pendule inversé sur chariot\fg{}: l'activité de l'organoïde déplace le chariot, et la position du pendule lui revient sous forme de stimulation. Entre les essais, l'organoïde reçoit de brefs stimuli d'apprentissage à haute fréquence. Lesquels exactement, c'est un programme d'apprentissage par renforcement qui le choisit.
+
+Les résultats sont mesurés:
+\begin{itemize}
+\item pour la plupart des organoïdes, les signaux d'apprentissage choisis par le programme ont donné de meilleurs résultats que des signaux choisis au hasard ou que l'absence de signal;
+\item après $45$ minutes de repos, l'amélioration ne subsistait pas;
+\item le blocage des deux types de récepteurs du glutamate, AMPA et NMDA, supprimait l'amélioration.
+\end{itemize}
+
+Le dernier point indique où réside ce qui est appris: dans les synapses \nt{GLUT}, et via le récepteur qui, à la section~\ref{sec:weightstore}, fonctionne comme détecteur de coïncidences entre l'entrée et la sortie. Le deuxième point montre ce qui manque: le changement rapide existe, la consolidation non, comme chez l'élève rapide du chapitre~\ref{sec:motorlearning} privé de l'élève lent. Quant au rôle du professeur, il a changé: l'ingénieur qui choisit le motif de courant a été remplacé par un programme, mais le professeur reste à l'extérieur de la boîte.
+
+Parmi les expériences antérieures d'apprentissage de cultures sur matrices d'électrodes, nous n'en avons trouvé aucune qui utilise la dopamine: le signal d'apprentissage était partout une stimulation électrique.
+
+\section{Qui enseigne à la culture}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{2.7cm}>{\raggedright}p{2.5cm}>{\raggedright}p{3.2cm}>{\raggedright\arraybackslash}p{4.4cm}}
+\toprule
+Expérience & Qui enseigne & Signal d'apprentissage & Ce que l'on sait \\
+\midrule
+arrêt de la stimulation à la bonne réponse & l'ingénieur & fin de la stimulation & la réponse se fixe (mesuré) \\
+DishBrain (chap.~\ref{sec:dishbrain}) & l'ingénieur & courant prévisible ou aléatoire & hausse significative des échanges en une session seulement avec rétroaction complète, effet moindre avec le silence (mesuré); instable d'une session à l'autre; cause débattue \\
+pendule sur chariot & programme d'apprentissage par renforcement & stimuli à haute fréquence choisis par le programme & mieux que le hasard, mais ne subsiste pas après repos (mesuré) \\
+dopamine par éclair & règle \og plus d'impulsions = récompense\fg{} & dopamine libérée par la lumière & hausse des impulsions observée; rôle de la dopamine non démontré \\
+synapse biohybride & cellules vivantes & dopamine des cellules & changement durable et retour du poids du composant (mesuré) \\
+organoïdes à neurones \nt{DOPA} & --- & --- & source de dopamine présente; pas utilisée comme professeur \\
+\bottomrule
+\end{tabular}
+\caption{Qui enseigne aux neurones vivants sur puce, et avec quoi.}
+\label{tab:dishteachers}
+\end{table}
+
+Dans toutes les expériences où c'est la culture elle-même qui apprend, le professeur reste pour l'instant à l'extérieur (tableau~\ref{tab:dishteachers}): un ingénieur, un programme ou une règle fixée par l'ingénieur. La dopamine n'est entrée dans la boîte qu'une seule fois, et son rôle reste à démontrer. Monter dans la boîte un véritable canal de diffusion, avec un critique, une erreur et une trace comme au chapitre~\ref{sec:dofa}, est la prochaine étape, que personne n'a encore franchie.

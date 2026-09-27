@@ -1,0 +1,65 @@
+% "L'ordinateur de 20 watts": the popular ("take-along") version.
+% Each chapter paperback/NN.tex corresponds to the full chapter ../chapters/NN_*.tex with the same number;
+% on the website the reader switches a chapter between the "Short" and "Full" versions.
+\documentclass[11pt,openany]{book}
+\usepackage[paperwidth=13cm,paperheight=20cm,top=1.8cm,bottom=1.8cm,inner=1.6cm,outer=1.4cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[french]{babel}
+\addto\captionsfrench{\renewcommand{\tablename}{Tableau}}
+\usepackage{amsmath,amssymb}
+\usepackage{xcolor}
+\usepackage[unicode,colorlinks=true,linkcolor=blue!60!black]{hyperref}
+\usepackage{microtype}
+\input{paperback/pencil} % minimal colour-pencil illustrations, one per chapter
+\usetikzlibrary{babel} % French babel makes : ; ! ? active
+\setlength{\parskip}{0.3em}
+\setlength{\emergencystretch}{2em} % narrow paperback page: allow a little extra stretch
+\renewcommand{\chaptermark}[1]{\markboth{\small #1}{}}
+% neuron type code: first four letters of the primary mediator (as in the full edition)
+\newcommand{\nt}[1]{\textsf{\textbf{#1}}}
+% pointer to the full edition at the end of each chapter
+\newcommand{\fullversion}[1]{\par\bigskip\noindent\small\emph{Formules, modèles, exercices et sources: dans la version complète, chapitre~#1.}\normalsize}
+
+\title{\Huge L'ordinateur de 20 watts\\[14pt] \Large Comment calcule le cerveau, en bref et en clair}
+\hypersetup{pdftitle={L'ordinateur de 20 watts. Comment calcule le cerveau, en bref et en clair},pdfauthor={Konstantin Kladko}}
+\author{\Large Konstantin~Kladko}
+\date{}
+
+\begin{document}
+\frontmatter
+\input{paperback/cover} % cover: a collage of the chapter drawings
+% copyright page (same licence as the full edition)
+\thispagestyle{empty}
+\vspace*{\fill}
+\noindent{\footnotesize \copyright~2026 Konstantin~Kladko.\\[4pt]
+Le texte et les figures sont diffusés sous licence Creative Commons Attribution -- Pas d'utilisation commerciale -- Partage dans les mêmes conditions 4.0 International (CC BY-NC-SA 4.0): \url{https://creativecommons.org/licenses/by-nc-sa/4.0/deed.fr}. Le livre peut être librement copié, utilisé dans l'enseignement, traduit et adapté à des fins non commerciales, à condition de citer l'auteur et de diffuser les œuvres dérivées sous la même licence.\\[4pt]
+Version complète, sources et modèles: \url{https://github.com/kladkogex/20-watt-computer}.}
+\clearpage
+\tableofcontents
+\input{paperback/00_preface}
+\mainmatter
+\input{paperback/01}
+\input{paperback/02}
+\input{paperback/03}
+\input{paperback/04}
+\input{paperback/05}
+\input{paperback/06}
+\input{paperback/07}
+\input{paperback/08}
+\input{paperback/09}
+\input{paperback/10}
+\input{paperback/11}
+\input{paperback/12}
+\input{paperback/13}
+\input{paperback/14}
+\input{paperback/15}
+\input{paperback/16}
+\input{paperback/17}
+\input{paperback/18}
+\input{paperback/19}
+\input{paperback/20}
+\input{paperback/21}
+\input{paperback/22}
+\end{document}

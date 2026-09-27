@@ -1,0 +1,292 @@
+\chapter{Ce que calculent les neurones \nt{GLUT}}
+\label{sec:glutcomputer}
+
+\section{Les règles du jeu}
+
+Au chapitre~\ref{sec:neurontypes}, nous avons vu que l'écrasante majorité des neurones du cerveau sont \nt{GLUT}: ils ne font qu'exciter, leurs poids ne sont que positifs. Prenons autant de ces neurones que nous voulons et demandons-nous: que peut calculer un tel réseau si l'on ne s'autorise que ce qui existe dans un organisme vivant?
+
+Or un organisme vivant n'a pas de générateur d'horloge qui ferait basculer tous les éléments en même temps. Chaque neurone travaille pour son compte, en temps continu: les impulsions arrivent et repartent quand elles peuvent, avec des retards variés. Il y a des \emph{entrées}, les neurones sensoriels qui réagissent à la lumière, au son ou à la pression, et des \emph{sorties}, les neurones qui commandent les muscles. Entre les deux se trouve le réseau, et personne ne lui dit quand commencer ni quand terminer le calcul. Pour un électronicien, c'est un circuit \emph{asynchrone} dont les éléments ont des retards mal connus à l'avance.
+
+Prenons le modèle de neurone le plus simple parmi ceux qui fonctionnent honnêtement en temps continu. Au repos, la tension $V$ sur la membrane du neurone est nulle. Chaque impulsion reçue du neurone $j$ la fait monter d'un saut $w_j\ge0$, après quoi la tension redescend d'elle-même vers zéro avec la constante de temps $\tau$:
+\begin{empheq}[box=\keybox]{equation}
+\tau\,\frac{\dd V}{\dd t} \;=\; -V \;+\; \tau\sum_j w_j \sum_k \delta\bigl(t-t_j^{(k)}-d_j\bigr), \qquad w_j\ge 0 .
+\label{eq:glutneuron}
+\end{empheq}
+Ici $t_j^{(k)}$ sont les instants des impulsions du neurone $j$, $d_j$ le retard sur le chemin qui en vient, et $\delta$ la fonction delta, qui traduit le saut instantané. Quand $V$ atteint le seuil $\theta$, le neurone émet une impulsion, $V$ est remis à zéro, et pendant environ une milliseconde le neurone ne peut pas se déclencher de nouveau. Valeurs typiques: $\tau$ va d'une fraction de milliseconde à vingt millisecondes selon les neurones, les retards d'une fraction de milliseconde à quelques dizaines de millisecondes. C'est le \emph{neurone intégrateur à fuite}: un circuit RC avec un seuil. C'est une simplification délibérée: chez les neurones du cortex, les branches d'entrée émettent elles-mêmes des impulsions locales~\cite{Smith2013}, et un neurone se comporte plutôt comme un petit réseau multicouche (chapitre~\ref{sec:synthesis}). Pour les questions de ce chapitre, un seul circuit RC suffit.
+
+La principale différence avec une porte logique est la fuite: le neurone ne se souvient pas d'une impulsion éternellement, mais pendant environ $\tau$, et seules s'additionnent les impulsions arrivées dans cette fenêtre.
+
+\section{OU et ET}
+
+Commençons par les portes. Si une seule impulsion porte la tension au-dessus du seuil, $w\ge\theta$, le neurone se déclenche à chaque impulsion de n'importe quelle entrée. C'est un \emph{OU}.
+
+Le ET est plus intéressant. Supposons $w<\theta<2w$: une impulsion ne suffit pas, il en faut deux. Mais la question \og sont-elles arrivées toutes les deux?\fg{} n'a pas de sens tant qu'on n'a pas dit \emph{dans quel délai}. Supposons que la première impulsion arrive à l'instant $0$, et la seconde au bout d'un temps $\Delta$. À l'arrivée de la seconde, il reste de la première $we^{-\Delta/\tau}$, et le neurone se déclenche si $we^{-\Delta/\tau}+w\ge\theta$. D'où la fenêtre de coïncidence:
+\begin{empheq}[box=\keybox]{equation}
+\Delta \;\le\; \Delta_{\max} \;=\; \tau\,\ln\frac{w}{\theta-w} .
+\label{eq:window}
+\end{empheq}
+Ce n'est pas un ET logique, mais un \emph{détecteur de coïncidences}: un ET dans le temps (fig.~\ref{fig:coincidence}). Pour $\theta=1.5w$, la fenêtre vaut $\tau\ln2\approx0.7\tau$. Pour un neurone du cortex avec $\tau=10\ms$, cela fait environ sept millisecondes. Chez les neurones du système auditif, où $\tau$ est inférieur à une milliseconde, la fenêtre se réduit à une fraction de milliseconde.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=0.9cm,y=1.6cm]
+\foreach \dx/\lab/\c [count=\i] in {0.5/{coïncidence}/red!70!black, 2.6/{pas de coïncidence}/blue!60!black}{
+ \begin{scope}[xshift={(\i-1)*7.2cm}]
+  \draw[->,gray!70!black] (0,0) -- (6.3,0) node[below left,black] {\small $t$};
+  \draw[->,gray!70!black] (0,0) -- (0,1.75) node[left,black] {\small $V$};
+  \draw[densely dashed,gray!60!black] (0,1.5) -- (6.0,1.5) node[right,black] {\small $\theta$};
+  \draw[very thick,\c] (0,0) -- (1,0) -- (1,1)
+      plot[domain=1:1+\dx,samples=30] (\x,{exp(-(\x-1)/1.5)});
+  \pgfmathsetmacro{\v}{exp(-\dx/1.5)+1}
+  \draw[very thick,\c] (1+\dx,{exp(-\dx/1.5)}) -- (1+\dx,{min(\v,1.5)});
+  \ifdim\v pt<1.5pt
+    \draw[very thick,\c] plot[domain=1+\dx:6,samples=40] (\x,{\v*exp(-(\x-1-\dx)/1.5)});
+  \else
+    \draw[very thick,\c] (1+\dx,1.5) -- (1+\dx,0) -- (6,0);
+    \draw[->,thick,\c] (1+\dx,1.55) -- (1+\dx,1.72) node[above,font=\scriptsize] {impulsion};
+  \fi
+  \draw[->,thick] (1,-0.35) -- (1,-0.08); \draw[->,thick] (1+\dx,-0.35) -- (1+\dx,-0.08);
+  \draw[decorate,decoration={brace,amplitude=3pt,mirror}] (1,-0.42) -- (1+\dx,-0.42) node[midway,below=3pt] {\scriptsize $\Delta$};
+  \node[\c] at (3.5,-0.95) {\small \lab};
+ \end{scope}}
+\end{tikzpicture}
+\caption{Détecteur de coïncidences, seuil $\theta=1.5w$. À gauche, la seconde impulsion est arrivée au bout de $\Delta<\Delta_{\max}$, la somme a atteint le seuil, le neurone s'est déclenché. À droite, $\Delta>\Delta_{\max}$: il ne reste presque rien de la première impulsion, et le neurone est resté muet.}
+\label{fig:coincidence}
+\end{figure}
+
+Une autre façon d'obtenir un ET passe par la durée plutôt que par l'instant précis. Tant que la lumière est allumée, un neurone sensoriel émet des impulsions fréquentes et régulières; si une telle entrée ne suffit pas au seuil mais que deux suffisent, le neurone travaille tant que les deux sont actives. Le réseau calcule alors par \emph{niveaux}, et l'instant précis d'arrivée des impulsions n'a pas d'importance. La plus grande partie de ce qui suit fonctionnera ainsi.
+
+\section{Ce qu'on ne peut pas faire}
+
+Essayons maintenant de faire un NON: un neurone qui travaille quand l'entrée se tait. Impossible: sans impulsions d'entrée, il n'y a dans~\eqref{eq:glutneuron} aucun saut, et la tension reste à zéro, sous le seuil. Et un réseau de nombreux neurones? Non plus, et cela se démontre d'un coup pour tous les réseaux.
+
+Le plus commode est de raisonner en fréquences. Soit $r_i$ la fréquence des impulsions du neurone $i$, $I_i$ l'apport des entrées, et $f_i$ sa caractéristique de transfert: la façon dont la fréquence dépend de l'apport total. Pour un neurone intégrateur, cette caractéristique est non décroissante: plus d'apport, plus d'impulsions. Les fréquences d'un réseau parvenu à l'équilibre vérifient les équations
+\begin{equation}
+r_i \;=\; f_i\Bigl(\sum_j w_{ij}\,r_j + I_i\Bigr), \qquad w_{ij}\ge 0 .
+\label{eq:ratenet}
+\end{equation}
+
+\begin{keyblock}
+\begin{proposition}[Monotonie]
+\label{prop:monotone}
+Supposons que le réseau~\eqref{eq:ratenet} ne soit fait que de neurones \nt{GLUT} et parte du silence complet. Si l'on renforce les entrées, la fréquence établie d'aucun neurone ne diminue. Tout ce que calcule un tel réseau, ce sont des fonctions \emph{monotones} des entrées.
+\end{proposition}
+\end{keyblock}
+
+Démonstration. Partons du silence, $r^{(0)}=0$, et substituons les fréquences dans le membre de droite de~\eqref{eq:ratenet}: $r^{(k+1)}=F\bigl(r^{(k)}\bigr)$. Le membre de droite $F$ est non décroissant en chacun de ses arguments, puisque les poids sont positifs ou nuls et que les $f_i$ sont non décroissantes. Comme $r^{(1)}\ge0=r^{(0)}$, par récurrence $r^{(k+1)}\ge r^{(k)}$: les fréquences ne font que croître et atteignent la plus petite solution de~\eqref{eq:ratenet}. Si l'on remplace les entrées $I$ par des entrées plus grandes $I'$, alors à chaque pas $r^{(k)}(I)\le r^{(k)}(I')$, et à la limite aussi. Un vrai réseau atteint l'équilibre non par pas, mais continûment; pour lui, la conclusion est la même: avec des connexions positives, une inégalité entre deux exécutions, vraie au départ, reste vraie tout le temps.
+
+Pour des impulsions isolées, l'énoncé n'est pas vrai à la lettre: une impulsion d'entrée supplémentaire peut faire se déclencher le neurone un peu plus tôt, et à cause de la milliseconde réfractaire son impulsion suivante disparaît. Mais l'effet est faible et peu fiable, on ne peut pas calculer avec. Pour les fréquences, la monotonie est stricte.
+
+Les conséquences sont celles de tout circuit sans inverseurs. Pas de NON. Pas de OU exclusif: ajouter une seconde entrée ne peut pas éteindre la sortie. Et le plus gênant: \emph{on ne peut pas arrêter une activité par une activité}; on peut seulement retirer ce qui l'entretient.
+
+\section{Deux fils: ON et OFF}
+
+L'organisme lui-même indique la sortie de l'impasse. Dans beaucoup d'organes des sens, un stimulus est transmis par deux ensembles de neurones: dans la vision, certaines cellules répondent à l'augmentation de la lumière, d'autres à sa diminution~\cite{Schiller1992}. Appelons-les neurones \emph{d'allumage} (ON) et \emph{d'extinction} (OFF). Au lieu d'un fil $x$, le réseau reçoit une paire $(x,\bar x)$, et l'absence qu'il ne sait pas calculer lui est signalée par le capteur lui-même.
+
+Avec une paire de fils, le NON est gratuit: il suffit d'échanger les fils. Le ET et le OU se font chacun avec deux neurones:
+\begin{empheq}[box=\keybox]{equation}
+\begin{aligned}
+x\wedge y \;&\to\; \bigl(\;x\wedge y,\;\; \bar x\vee\bar y\;\bigr),\\
+x\vee y \;&\to\; \bigl(\;x\vee y,\;\; \bar x\wedge\bar y\;\bigr).
+\end{aligned}
+\label{eq:dualrail}
+\end{empheq}
+À droite, toutes les opérations sont monotones, donc la proposition~\ref{prop:monotone} n'est pas violée.
+
+Pour un circuit asynchrone, le code à deux fils (le codage double rail des électroniciens) a un second avantage, plus important encore. Une paire de fils a trois états: \og oui\fg, \og non\fg{} et, quand les deux se taisent, \emph{\og pas encore de réponse\fg}. Le destinataire apprend que le calcul est terminé non par une horloge, mais par le signal lui-même: dans chaque paire, exactement un fil s'est activé. Entre deux stimuli, les capteurs se taisent, et le réseau revient au silence, prêt pour la fois suivante. En électronique asynchrone, on construit sur ce principe des circuits qui fonctionnent correctement quels que soient les retards des éléments~\cite{Sparso2001}.
+
+\begin{keyblock}
+\begin{proposition}[Calcul asynchrone]
+\label{prop:dualrail}
+Si chaque entrée arrive sous forme d'une paire de fils ON/OFF, un réseau de neurones \nt{GLUT} peut calculer n'importe quelle fonction logique des entrées. La réponse arrive elle aussi par paires de fils, et on voit qu'elle est prête quand un fil de chaque paire s'est activé. Aucune horloge n'est nécessaire. Le prix: environ deux fois plus de neurones.
+\end{proposition}
+\end{keyblock}
+
+Exemple: le OU exclusif, \og exactement un des deux stimuli a changé\fg. Le fil direct de la réponse est $(x\wedge\bar y)\vee(\bar x\wedge y)$, le fil inverse $(x\wedge y)\vee(\bar x\wedge\bar y)$. Cela fait six neurones, dont aucun n'a besoin d'inhibition (fig.~\ref{fig:dualxor}).
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=1cm,y=1cm,
+  nrn/.style={circle,draw,very thick,fill=blue!6,minimum size=0.75cm,inner sep=0pt,font=\small},
+  inp/.style={font=\small}]
+\node[inp] (X)  at (0,3.3) {$x$};
+\node[inp] (Xb) at (0,2.2) {$\bar x$};
+\node[inp] (Y)  at (0,1.1) {$y$};
+\node[inp] (Yb) at (0,0)   {$\bar y$};
+\node[nrn] (A1) at (3.2,3.3) {$2$};
+\node[nrn] (A2) at (3.2,2.2) {$2$};
+\node[nrn] (A3) at (3.2,1.1) {$2$};
+\node[nrn] (A4) at (3.2,0)   {$2$};
+\node[nrn] (O)  at (7.2,2.75) {$1$};
+\node[nrn] (Ob) at (7.2,0.55) {$1$};
+\foreach \s/\t in {X/A1,Yb/A1,Xb/A2,Y/A2,X/A3,Y/A3,Xb/A4,Yb/A4}{\draw[->,thick,blue!60!black] (\s) -- (\t);}
+\draw[->,thick,blue!60!black] (A1) -- node[pos=0.45,above,sloped,font=\scriptsize,black] {$x\wedge\bar y$} (O);
+\draw[->,thick,blue!60!black] (A2) -- node[pos=0.45,below,sloped,font=\scriptsize,black] {$\bar x\wedge y$} (O);
+\draw[->,thick,blue!60!black] (A3) -- node[pos=0.45,above,sloped,font=\scriptsize,black] {$x\wedge y$} (Ob);
+\draw[->,thick,blue!60!black] (A4) -- node[pos=0.45,below,sloped,font=\scriptsize,black] {$\bar x\wedge\bar y$} (Ob);
+\draw[->,very thick,red!70!black] (O) -- (8.6,2.75) node[right,black] {$x\oplus y$: \og oui\fg};
+\draw[->,very thick,red!70!black] (Ob) -- (8.6,0.55) node[right,black] {$\overline{x\oplus y}$: \og non\fg};
+\node[below,font=\small,gray!40!black] at (3.2,-0.55) {ET: seuil $2$};
+\node[below,font=\small,gray!40!black] at (7.2,-0.55) {OU: seuil $1$};
+\node[below,font=\small,gray!40!black] at (0,-0.55) {paires de fils};
+\end{tikzpicture}
+\caption{OU exclusif en code à deux fils, avec des neurones \nt{GLUT} seulement. Le nombre dans le cercle est le seuil, en unités du poids d'une entrée. Quatre neurones ET reconnaissent les quatre combinaisons d'entrées, deux neurones OU les rassemblent en une paire de fils de réponse.}
+\label{fig:dualxor}
+\end{figure}
+
+\section{Des retards au lieu d'une horloge}
+
+Pour calculer avec le temps, il suffit de retards dans les fils et de détecteurs de coïncidences. Le meilleur exemple est la façon dont le cerveau détermine d'où vient un son.
+
+Le son d'une source placée sur le côté arrive à l'oreille proche plus tôt qu'à l'oreille éloignée. La différence dépend de la direction: de zéro quand la source est droit devant, jusqu'à $0.22\,\text{m}/343\,\text{m/s}\approx0.6\ms$ chez l'homme quand elle est exactement sur le côté. Le cerveau distingue des différences d'environ dix \emph{microsecondes}~\cite{KlumppEady1956,Grothe2010}, alors que les neurones eux-mêmes ne se déclenchent pas avec une précision meilleure qu'une fraction de milliseconde. Comment?
+
+Menons depuis l'oreille gauche un fil qui longe une rangée de détecteurs de coïncidences de gauche à droite, et depuis l'oreille droite un fil de droite à gauche (fig.~\ref{fig:itd}). Le signal parcourt le fil à la vitesse $v$. Jusqu'au détecteur placé à la distance $x$ du bord gauche d'une rangée de longueur $L$, le signal gauche met le temps $x/v$, le signal droit $(L-x)/v$. Si le son arrive à l'oreille droite avec un retard $\delta t$, les deux signaux se rencontrent simultanément au point où
+\begin{empheq}[box=\keybox]{equation}
+\frac{x}{v} \;=\; \frac{L-x}{v} + \delta t
+\quad\Longrightarrow\quad
+x \;=\; \frac{L}{2} + \frac{v\,\delta t}{2} .
+\label{eq:itd}
+\end{empheq}
+Seul se déclenche le détecteur auquel les deux signaux sont arrivés dans la fenêtre~\eqref{eq:window}. Le numéro du détecteur déclenché donne la direction de la source. Une différence de temps s'est changée en \emph{position}.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  nrn/.style={circle,draw,very thick,fill=blue!6,minimum size=0.7cm,inner sep=0pt}]
+\foreach \k in {0,...,6}{\node[nrn] (D\k) at (1.4*\k,0) {\scriptsize $2$};}
+\node[nrn,fill=red!15] at (D4) {\scriptsize $2$};
+\draw[->,thick,blue!60!black] (-1.4,0.9) node[left,black] {\small oreille gauche} -- (9.2,0.9);
+\draw[->,thick,orange!85!black] (9.8,-0.9) node[right,black] {\small oreille droite} -- (-0.8,-0.9);
+\foreach \k in {0,...,6}{
+  \draw[->,blue!60!black] (1.4*\k,0.9) -- (D\k.north);
+  \draw[->,orange!85!black] (1.4*\k,-0.9) -- (D\k.south);}
+\draw[->,thick,red!70!black] (D4.north east) ++(0.1,0.05) -- ++(0.5,0.45) node[above right,font=\small,black] {déclenché};
+\node[font=\small,gray!40!black] at (4.2,-1.5) {le retard croît $\longrightarrow$ \hspace{2.2cm} $\longleftarrow$ le retard croît};
+\pic[scale=1.4] at (-2.3,1.75) {speaker};
+\node[font=\scriptsize,align=center] at (-2.3,2.35) {source à gauche};
+\end{tikzpicture}
+\caption{Déterminer la direction d'un son. Les signaux des deux oreilles courent l'un vers l'autre; chaque cercle est un détecteur de coïncidences de seuil $2$. Si le son arrive plus tard à l'oreille droite, les signaux se rencontrent à droite du milieu, selon la formule~\eqref{eq:itd}. La sortie du réseau est le numéro du neurone déclenché. Ici la source est à gauche: le son est arrivé plus tôt à l'oreille gauche.}
+\label{fig:itd}
+\end{figure}
+
+Il n'y a ici ni horloge, ni inhibition, ni même de code à deux fils: le réseau ne répond pas \og oui\fg{} ou \og non\fg, il désigne un neurone parmi beaucoup. Un tel circuit de lignes à retard et de détecteurs de coïncidences fonctionne apparemment bel et bien dans le tronc cérébral auditif des oiseaux~\cite{Carr1990}. La précision de l'ordre de la microseconde ne vient pas de la précision de chaque neurone, mais de ce que les détecteurs sont nombreux et que chacun surveille son propre retard. Chez les mammifères, on n'a pas trouvé de telle rangée de retards: la même tâche y est apparemment résolue par des détecteurs de coïncidences réglés par une inhibition précisément calée dans le temps, venue de neurones \nt{GLYC}~\cite{Brand2002,Grothe2010}. Comment l'inhibition rétrécit la fenêtre de coïncidence, nous le verrons au chapitre~\ref{sec:gaba} sur l'exemple de \nt{GABA}; la glycine inhibe de la même façon, en ouvrant des canaux chlorure chez le destinataire.
+
+\section{La mémoire}
+
+Un ordinateur a besoin de mémoire. Dans un tel réseau, la mémoire est une activité qui s'entretient elle-même. Prenons un groupe de neurones \nt{GLUT} fortement connectés entre eux et décrivons-le par une seule fréquence $r$ (fig.~\ref{fig:recurrentgroup}a). À l'équilibre, $r=f(wr+I)$, où $w$ est la force de la rétroaction du groupe sur lui-même, et $I$ l'apport extérieur. Résolvons cette équation graphiquement, en coupant la courbe $f(wr+I)$ par la droite $r$ (fig.~\ref{fig:bistable}).
+
+\begin{figure}[t]
+\centering
+% (b): tau dr/dt = -r + f(w r + I), f as in fig:bistable, w=1, I=0.6; Euler dt=0.001 tau.
+\begin{tikzpicture}[>=Stealth,
+  nrn/.style={circle,draw,thick,fill=blue!6,minimum size=0.5cm,inner sep=0pt}]
+\begin{scope}
+\node[font=\small] at (-0.5,1.55) {(a)};
+\foreach \k in {1,...,6}{\node[nrn] (n\k) at ({1.4+1.0*cos(60*\k)},{1.0*sin(60*\k)}) {};}
+\foreach \a/\b in {1/2,2/3,3/4,4/5,5/6,6/1,1/4,2/5,3/6}{\draw[<->,blue!60!black] (n\a) -- (n\b);}
+\foreach \k in {2,3,4}{\draw[->,thick,green!45!black] ($(n\k)+(-0.95,0)$) -- (n\k);}
+\node[font=\small,green!45!black] at (-0.35,-0.45) {$I$};
+\node[font=\Large] at (3.1,0) {$\approx$};
+\node[nrn,minimum size=0.85cm,font=\small] (R) at (4.35,-0.1) {$r$};
+\draw[->,thick,blue!60!black] (R) edge[loop above,looseness=6] node[above,font=\small] {$w$} (R);
+\draw[->,thick,green!45!black] (3.55,-0.95) node[left,font=\small] {$I$} -- (R);
+\end{scope}
+\begin{scope}[xshift=6.3cm,y=2.6cm,x=1.05cm]
+\node[font=\small] at (-0.6,1.25) {(b)};
+\draw[->,gray!70!black] (0,0) -- (7.3,0) node[below left,font=\small,black] {$t/\tau$};
+\draw[->,gray!70!black] (0,0) -- (0,1.12) node[left,font=\small,black] {$r$};
+\foreach \t in {0,2,4,6}{\draw[gray!60!black] (\t,-0.02) -- (\t,0.02); \node[below,font=\scriptsize] at (\t,0) {\t};}
+\draw[densely dotted,gray!60!black] (0,0.5) -- (7,0.5) node[right,font=\scriptsize,black,align=left] {seuil\\d'écriture};
+\fill[green!45!black,opacity=0.25] (1,-0.2) rectangle (2,-0.13);
+\fill[gray!60!black,opacity=0.35] (1,-0.29) rectangle (1.5,-0.22);
+\draw[very thick,blue!60!black] plot coordinates {(0.0,0.002) (0.1,0.002) (0.2,0.002) (0.3,0.002) (0.4,0.002) (0.5,0.002) (0.6,0.002) (0.7,0.002) (0.8,0.002) (0.9,0.002) (1.0,0.002) (1.1,0.083) (1.2,0.165) (1.3,0.242) (1.4,0.313) (1.5,0.378) (1.6,0.437) (1.7,0.491) (1.8,0.539) (1.9,0.583) (2.0,0.623) (2.1,0.643) (2.2,0.665) (2.3,0.688) (2.4,0.71) (2.5,0.732) (2.6,0.753) (2.7,0.773) (2.8,0.792) (2.9,0.81) (3.0,0.826) (3.2,0.855) (3.4,0.88) (3.6,0.9) (3.8,0.917) (4.0,0.931) (4.4,0.953) (4.8,0.967) (5.2,0.977) (5.6,0.984) (6.0,0.988) (6.5,0.992) (7.0,0.994)};
+\draw[very thick,gray!60!black,densely dashed] plot coordinates {(0.0,0.002) (0.1,0.002) (0.2,0.002) (0.3,0.002) (0.4,0.002) (0.5,0.002) (0.6,0.002) (0.7,0.002) (0.8,0.002) (0.9,0.002) (1.0,0.002) (1.1,0.083) (1.2,0.165) (1.3,0.242) (1.4,0.313) (1.5,0.378) (1.6,0.358) (1.7,0.336) (1.8,0.313) (1.9,0.291) (2.0,0.269) (2.2,0.228) (2.4,0.191) (2.6,0.159) (2.8,0.133) (3.0,0.11) (3.2,0.091) (3.4,0.076) (3.6,0.063) (3.8,0.052) (4.0,0.043) (4.4,0.03) (4.8,0.021) (5.2,0.015) (5.6,0.011) (6.0,0.008) (6.5,0.006) (7.0,0.004)};
+\node[font=\scriptsize,blue!60!black,anchor=west] at (3.3,0.8) {apport $1\tau$: écrit};
+\node[font=\scriptsize,gray!50!black,anchor=west] at (2.3,0.3) {apport $0.5\tau$: éteint};
+\end{scope}
+\end{tikzpicture}
+\caption{Un groupe fortement connecté à lui-même. (a)~De nombreux neurones \nt{GLUT} qui s'excitent mutuellement se comportent comme un seul neurone de fréquence $r$ qui s'excite lui-même avec la force $w$; de l'extérieur arrive l'apport $I$. (b)~Fréquence du groupe au cours du temps pour $w=1$ et la même courbe $f$ que sur la fig.~\ref{fig:bistable}. L'apport $I=0.6$ est appliqué pendant la durée marquée par la bande sous l'axe. S'il dure $1\tau$, le groupe a le temps de franchir le point instable $r=0.5$, s'embrase et reste allumé une fois l'apport terminé. S'il ne dure que $0.5\tau$, le groupe n'atteint pas ce point et s'éteint: pour écrire un bit, l'apport doit durer plus d'environ $0.7\tau$.}
+\label{fig:recurrentgroup}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=5cm,y=3.2cm]
+\draw[->,gray!70!black] (0,0) -- (1.1,0) node[below left,black] {\small $r$};
+\draw[->,gray!70!black] (0,0) -- (0,1.1);
+\draw[thick,gray!60!black] (0,0) -- (1.05,1.05) node[right,black] {\small $r$};
+\draw[very thick,blue!60!black] plot[domain=0:1.05,samples=80] (\x,{1/(1+exp(-(\x-0.5)/0.08))});
+\draw[very thick,red!70!black,densely dashed] plot[domain=0:1.05,samples=80] (\x,{1/(1+exp(-(\x+0.3-0.5)/0.08))});
+\fill[blue!60!black] (0.002,0.002) circle (0.018);
+\draw[blue!60!black,fill=white,thick] (0.5,0.5) circle (0.018);
+\fill[blue!60!black] (0.998,0.998) circle (0.018);
+\node[below right,font=\small] at (0.02,0.0) {éteint};
+\node[right,font=\small] at (0.52,0.46) {instable};
+\node[below,font=\small] at (0.99,0.96) {allumé};
+\node[anchor=east,font=\small,red!70!black] at (0.19,0.62) {$f(wr+I)$};
+\node[anchor=west,font=\small,blue!60!black] at (0.45,0.1) {$f(wr)$};
+\end{tikzpicture}
+\caption{Une mémoire faite d'un groupe de neurones \nt{GLUT} à forte rétroaction. Courbe pleine: sans apport extérieur, deux intersections stables avec la droite $r$, \og éteint\fg{} et \og allumé\fg, et une instable entre les deux. Un bref apport $I$ (courbe en tirets) ne laisse que l'intersection supérieure.}
+\label{fig:bistable}
+\end{figure}
+
+Si la rétroaction est forte, il y a trois intersections: celle du bas est le silence, celle du haut le groupe qui brûle à plein régime, celle du milieu est instable. On obtient un élément à deux états stables, une bascule. Y écrire un \og 1\fg{} est facile: un bref apport relève la courbe, l'intersection du bas disparaît, et le groupe s'embrase, puis reste allumé une fois l'apport terminé (fig.~\ref{fig:recurrentgroup}b). Un apport trop bref n'a pas le temps d'amener le groupe au point instable, et le groupe s'éteint. Une telle activité auto-entretenue, qui persiste des secondes après la disparition du stimulus, s'observe bel et bien dans le cerveau et passe pour la base de la mémoire à court terme~\cite{Wang2001}. Mais ce n'est pas la seule façon de se souvenir pendant quelques secondes. L'information peut aussi être gardée dans une variable lente des synapses elles-mêmes: après une bouffée d'impulsions, la facilitation, comme celle de la synapse-\og trait\fg{} du chapitre~\ref{sec:code}, dure environ une seconde, et le réseau peut presque se taire entre de brèves bouffées: non plus une bascule, mais un condensateur chargé~\cite{Mongillo2008}. De tels intervalles \og silencieux\fg{} pendant le maintien en mémoire s'observent~\cite{Stokes2015}, et un stockage sans impulsions permanentes coûte moins d'énergie. Laquelle des deux façons le cortex utilise dans quel cas reste débattu.
+
+Et comment effacer? D'après la proposition~\ref{prop:monotone}, impossible par une activité; il reste à \emph{retirer} quelque chose. Première façon: retirer le soutien; si le groupe ne brûle qu'avec l'apport d'un autre groupe, la mémoire s'éteint avec lui. Seconde façon: la fatigue. Dans les vraies synapses, la réserve de neurotransmetteur s'épuise lors d'un travail prolongé~\cite{Tsodyks1997}, et chez les neurones montent des courants lents qui réduisent l'excitabilité. La rétroaction s'affaiblit, l'intersection supérieure disparaît, et le groupe s'éteint de lui-même au bout de quelques secondes. On obtient une mémoire qui s'allume par un signal et ne s'éteint qu'avec le temps.
+
+\section{Les séquences}
+
+Au lieu d'une horloge, on peut avoir une \emph{minuterie déclenchée par un événement}. Relions des groupes de neurones \nt{GLUT} en chaîne: le premier excite le deuxième, le deuxième le troisième, et ainsi de suite. Un signal extérieur allume le premier groupe, et une vague d'activité parcourt la chaîne, chaque maillon un ou deux retards après le précédent, et une seule fois: juste après une impulsion, les neurones sont réfractaires, et la vague est déjà passée plus loin.
+
+Une telle chaîne mesure le temps écoulé depuis un événement: si le maillon numéro $k$ s'est déclenché, $k$ retards se sont écoulés depuis le lancement. On peut envoyer ses sorties vers les muscles et obtenir une séquence de mouvements qui se déroule d'elle-même. Chez les oiseaux chanteurs, pendant le chant, des neurones \nt{GLUT} isolés d'une des régions du cerveau se déclenchent strictement à tour de rôle, chacun à son moment du chant, ce qui ressemble beaucoup à une telle chaîne~\cite{Hahnloser2002}.
+
+Contrairement à une horloge, la chaîne se tait tant qu'on ne l'a pas lancée, ne s'exécute qu'une fois et ne mesure le temps que pour ceux qui y sont branchés. Le réseau n'a toujours pas de cadence commune.
+
+\section{Ce qui manque}
+
+Avec des neurones \nt{GLUT} seuls, sans inhibition, on obtient beaucoup. Mais trois choses manquent, et toutes trois à cause de la proposition~\ref{prop:monotone}.
+
+\emph{Le choix.} Le réseau doit choisir une direction, une action. Si deux stimuli sont presque égaux, dans le réseau de la fig.~\ref{fig:itd} les deux sorties se déclenchent, et rien ne permet de supprimer la plus faible au profit de la plus forte.
+
+\emph{La remise à zéro.} On ne peut pas effacer la mémoire par un signal.
+
+\emph{La stabilité.} Dans un réseau dont les connexions ne suivent pas le plan d'un ingénieur, les boucles de rétroaction positive sont inévitables, et l'activité peut y croître en avalanche (chapitre~\ref{sec:neurontypes}). Le seul frein est cette même fatigue, lente et grossière.
+
+Les trois maux ont un seul remède: un neurone qui éteint une impulsion par une impulsion. C'est \nt{GABA}, et on en a besoin non pour calculer, mais pour choisir, remettre à zéro et garder le calcul sous contrôle.
+
+\section{Exercices}
+
+\begin{exercise}[\lvlA]
+\label{ex:02:1}
+\emph{Une rangée de détecteurs pour le son.} Les signaux des oreilles parcourent les fils de la fig.~\ref{fig:itd} à $5$~m/s, la plus grande différence d'arrivée est de $0.64\ms$. Les détecteurs, des neurones~\eqref{eq:glutneuron} avec $\tau=0.5\ms$, $\theta=1.5w$, sont placés de sorte que deux voisins diffèrent de $10$~\textmu s. Combien de détecteurs compte la rangée, et combien se déclenchent pour un son?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:02:2}
+\emph{Des entrées inégales décalent la fenêtre.} Un détecteur~\eqref{eq:glutneuron} avec $\tau=0.5\ms$, $\theta=1.5$ reçoit une impulsion de chacune de deux entrées de poids $1$ et $0.8$. Trouvez la fenêtre de coïncidence et son centre. De combien de microsecondes se trompe la rangée de la fig.~\ref{fig:itd} si l'entrée d'une oreille est $20\,\%$ plus faible?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:02:3}
+\emph{Quels réseaux n'oscillent pas.} Le réseau $\tau\dot r_i=-r_i+f_i\bigl(\textstyle\sum_jw_{ij}r_j+I_i\bigr)$ avec des $f_i$ non décroissantes et $w_{ij}\ge0$ pour $i\ne j$ est monotone et n'oscille pas durablement. Montrez que le changement $r_i\to\pm r_i$ y ramène tout réseau à nombre pair de connexions inhibitrices dans chaque cycle. Deux groupes à inhibition mutuelle oscillent-ils? Et la boucle \nt{GLUT}--\nt{GABA}?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:02:4}
+\emph{Conception: additionneur à deux fils.} Chaque bit est une paire de fils $(x,\bar x)$. Construisez avec des neurones \nt{GLUT} un additionneur complet de trois bits donnant les paires $(S,\bar S)$ de la somme et $(C,\bar C)$ de la retenue, avec poids et seuils, en huit neurones au plus. Combien en faudrait-il avec des ET et des OU, comme sur la fig.~\ref{fig:dualxor}?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:02:5}
+\emph{Modélisation: combien dure une écriture.} Groupe de la fig.~\ref{fig:recurrentgroup}: $\tau\dot r=-r+f(r+I)$, $f(u)=1/\bigl(1+e^{-(u-0.5)/0.08}\bigr)$, dans l'état bas avant l'écriture; l'apport $I$ est appliqué pendant le temps $T$. Trouvez numériquement le plus petit $T$ qui écrit le bit pour $I=0.6$, et le seuil $I_c$ en dessous duquel le bit ne s'écrit pour aucun $T$.
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:02:6}
+\emph{La chaîne comme minuterie.} Un maillon: $100$ neurones \nt{GLUT}, retard $2\ms$, dispersion indépendante $0.2\ms$. (a)~Combien de neurones pour mesurer $1$~s, et quelle erreur relative? Comment dépend-elle de l'intervalle? (b)~Une vraie minuterie a une erreur de $5\,\%$ quel que soit l'intervalle. Quelle source de dispersion donne cela?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:02:7}
+\emph{Recherche: bascule ou condensateur.} $100$ neurones gardent un bit $10$~s. Bascule: $20$ impulsions par seconde chacun. Condensateur: la facilitation $u$ décroît avec $\tau_F=1$~s, le bit se lit si $u\ge u_{\max}/2$, on rafraîchit par une bouffée de trois impulsions de chacun. Combien de fois le condensateur est-il plus économe? Et le bit, si le groupe se tait $200\ms$?
+\end{exercise}

@@ -1,0 +1,47 @@
+\chapter{Combien faut-il d'entrées}
+% version complète: chapters/19_dendrites.tex
+
+Le neurone possède des prolongements d'entrée ramifiés, les dendrites. Chez certains neurones, c'est un arbre entier avec des milliers de contacts; chez d'autres, une ou deux branches, voire rien du tout. Pour un ingénieur, le nombre d'entrées est un paramètre du circuit, choisi en fonction de la tâche.
+
+\section*{De zéro à cent mille}
+
+Les capteurs du toucher et de la douleur n'ont aucune dendrite: le fil va simplement de la peau à la moelle épinière, et le capteur se trouve à son extrémité. C'est une ligne avec un capteur au bout.
+
+\pencilfig{19}{\pencilart{19}}{Beaucoup d'entrées: un sommateur; une seule entrée énorme: un relais rapide et précis.}
+
+Les neurones de l'odorat et ceux qui transmettent le signal des capteurs de l'œil et de l'oreille ont une seule dendrite. Une entrée, une sortie: un répéteur, un tampon.
+
+Les détecteurs de direction du son ont deux dendrites tournées dans des directions opposées, une pour chaque oreille. En séparant les deux entrées sur des branches différentes, le neurone rend son \og et\fg{} plus strict: deux apports de courant sur une même branche se gêneraient.
+
+Les petits neurones du circuit d'apprentissage des mouvements ont environ quatre dendrites courtes, dont chacune saisit sa propre entrée. Ces neurones se comptent par dizaines de milliards, et chacun n'additionne que quatre signaux. Mais ensemble, ils décomposent l'entrée en millions de combinaisons, et un grand neurone de sortie à cent mille entrées choisit parmi elles celles qu'il lui faut.
+
+Enfin, les neurones aux arbres immenses et aux milliers d'entrées sont des sommateurs et des classificateurs, dont certaines branches fonctionnent presque comme de petits circuits autonomes.
+
+\section*{Pourquoi}
+
+Tout se joue sur la charge. Un petit neurone à peu d'entrées se charge à partir d'une seule grosse connexion en une fraction de milliseconde: un tel neurone est précis dans le temps et transmet le signal de façon fiable. Un grand arbre, une seule connexion ne le chargera jamais: la charge fuira avant. Il lui faut des dizaines de signaux arrivés ensemble, mais en échange il peut les additionner et les comparer. Peu d'entrées et de grosses connexions, pour le temps précis. Beaucoup d'entrées, pour le calcul.
+
+\pencilfig{128}{%
+% charging: a small neuron reaches threshold from one large synapse at once; a big tree barely moves
+% from one input and needs many inputs arriving together
+\foreach \dx/\t in {0/{peu d'entrées}, 4.3/{grand arbre}}{
+  \draw[pen] (\dx,0) -- (\dx+3.6,0);
+  \draw[pcGray, densely dashed, line width=0.5pt] (\dx,0.9) -- (\dx+3.6,0.9);
+  \node[font=\small\itshape, text=pcGray, anchor=south] at (\dx+1.8,1.75) {\t};}
+\node[lbl, anchor=east] at (-0.05,0.9) {seuil};
+% small neuron
+\draw[pcBlue, line width=2pt] (0.6,-0.15) -- (0.6,-0.6);
+\draw[penlite=pcBlue] (0,0) -- (0.6,0) -- plot[domain=0.6:0.8, samples=12] (\x,{1.3*(1-exp(-(\x-0.6)/0.18))}) -- (0.8,1.6) -- (0.84,0) -- (3.5,0);
+\node[lbl, text=pcRed, anchor=west] at (0.85,1.45) {clic immédiat};
+\node[lbl, text=pcBlue, anchor=north] at (0.6,-0.62) {une grosse entrée};
+% big tree
+\draw[pcBlue, line width=0.6pt] (4.8,-0.15) -- (4.8,-0.45);
+\foreach \s in {6.15,6.2,6.25,6.3,6.35,6.4,6.45,6.5}{\draw[pcBlue, line width=0.6pt] (\s,-0.15) -- (\s,-0.45);}
+\draw[penlite=pcBlue] (4.3,0) -- (4.8,0) -- plot[domain=4.8:6.15, samples=20] (\x,{0.16*((\x-4.8)/0.15)*exp(1-(\x-4.8)/0.15)}) -- plot[domain=6.15:6.62, samples=14] (\x,{1.25*(1-exp(-(\x-6.15)/0.4))}) -- (6.62,1.6) -- (6.66,0) -- (7.9,0);
+\node[lbl, anchor=south] at (4.95,0.2) {presque rien};
+\node[lbl, text=pcBlue, anchor=north] at (6.33,-0.47) {beaucoup à la fois};
+}{Un petit neurone se charge à partir d'une seule grosse connexion en une fraction de milliseconde et clique aussitôt. Un grand arbre bouge à peine pour une seule entrée: il lui faut des dizaines de signaux arrivés ensemble.}
+
+Nous voilà avec un troisième tri des neurones: par substance, par appareil et par nombre d'entrées. Chacun montre la même machine sous un jour nouveau.
+
+\fullversion{19}

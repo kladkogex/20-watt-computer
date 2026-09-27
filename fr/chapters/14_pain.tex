@@ -1,0 +1,168 @@
+\chapter{La douleur: un signal d'alarme}
+\chaptermark{La douleur}
+\label{sec:pain}
+
+\section{Une alarme, pas une mesure}
+
+Tous les capteurs du chapitre~\ref{sec:sensors} mesuraient le monde: combien de lumière, quelle hauteur de son, quelle pression. La douleur fonctionne autrement. Elle ne dit pas \og qu'y a-t-il là\fg{}, mais \og danger, lâche tout\fg{}. Pour un ingénieur, ce n'est pas un canal de mesure, mais un \emph{signal d'alarme}: une ligne de priorité maximale, qui doit percer à travers n'importe quel travail en cours de la machine.
+
+Une alarme se distingue d'un canal de mesure par trois propriétés, et la douleur les a toutes les trois. Premièrement, l'accoutumance l'atténue difficilement: les capteurs de la douleur s'adaptent bien moins que les capteurs du toucher, et après une lésion légère ils deviennent même plus sensibles~\cite{LaMotte1982hyper}; un affaiblissement de la réponse après un fort échauffement n'a été mesuré que pour un seul de leurs types~\cite{Treede1995heat}. Le capteur de lumière se tait sur un fond constant (fig.~\ref{fig:adaptation}), mais une alarme qui se tairait au bout d'une minute serait inutile. Deuxièmement, elle a un seuil élevé: les capteurs de la douleur ne se déclenchent que lorsque l'agression approche du danger; pour l'échauffement, par exemple, les seuils vont de $41^\circ$ à $46$--$48^\circ$ selon le type de capteur~\cite{Treede1995heat, Weidner1999cfib}. Troisièmement --- et c'est l'essentiel pour ce chapitre ---, le volume de l'alarme n'est pas décidé par le seul capteur, mais aussi par la machine elle-même. Une même blessure fait plus ou moins mal selon la situation. Voyons de quelles pièces déjà connues tout cela est fait.
+
+Les capteurs de la douleur sont des neurones \nt{GLUT}, comme les autres neurones sensoriels du chapitre~\ref{sec:sensors}. Certains d'entre eux libèrent, avec le glutamate, la substance~P de l'annexe~\ref{sec:othermediators}, qui renforce lentement la transmission.
+
+\section{Deux fils: douleur rapide et douleur lente}
+
+Cognez-vous le doigt, et vous sentirez la douleur deux fois: d'abord brève et aiguë, puis, une seconde plus tard, sourde et durable. Ce sont deux fils différents. Le fil rapide est isolé et conduit les impulsions à une vitesse $v$ de $5$ à $30$ mètres par seconde; le fil lent est fin et nu, $0.5$--$2$ mètres par seconde. Depuis le pied, le signal parcourt environ un mètre, et le temps d'arrivée
+\begin{empheq}[box=\keybox]{equation}
+t \;=\; \frac{L}{v}
+\label{eq:paintime}
+\end{empheq}
+est de quelques dizaines de millisecondes pour le fil rapide et d'environ une seconde pour le fil lent. Les deux fils portent deux messages. Le rapide dit \emph{où} et \emph{quand}: ses impulsions arrivent plus tôt et plus précisément, comme dans le code temporel du chapitre~\ref{sec:code}. Le lent dit \emph{à quel point c'est grave}, et sa douleur sourde et durable maintient la machine en mode alarme tant que la lésion n'est pas guérie.
+
+\section{Le portillon de la moelle épinière}
+
+Le premier endroit où arrive le signal de douleur est la moelle épinière, et il y passe par un \emph{portillon}~\cite{MelzackWall1965}; les neurones concrets de ce portillon n'ont été trouvés que relativement récemment~\cite{Duan2014}. Sur le neurone \nt{GLUT} de sortie, qui transmet la douleur plus loin vers le cerveau, convergent le fil de la douleur et le fil du toucher. À côté se trouve un neurone intermédiaire inhibiteur, \nt{GABA} ou \nt{GLYC}, que le toucher excite (fig.~\ref{fig:gate}). Le toucher ferme le portillon. Dans la théorie originale du portillon~\cite{MelzackWall1965}, la douleur, à l'inverse, éteint cet intermédiaire, et une douleur forte ouvre le portillon; c'est une hypothèse de la théorie, qui n'a pas été montrée directement sur les neurones du portillon identifiés.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  nrn/.style={circle,draw,very thick,minimum size=1.0cm,inner sep=0pt,font=\scriptsize},
+  inh/.style={-{Bar[width=7pt]},thick,red!70!black},
+  bc/.style={->,thick,densely dashed,orange!85!black}]
+\node[nrn,fill=blue!6] (Z) at (6,0) {\nt{GLUT}};
+\node[nrn,fill=red!10] (Q) at (3.6,-1.6) {\nt{GABA}};
+\draw[->,very thick,red!70!black] (0,0.6) node[left,font=\small,black,align=right] {douleur $\nu$} -- (5.45,0.15);
+\draw[->,very thick,blue!60!black] (0,-2.6) node[left,font=\small,black,align=right] {toucher $\mu$} -- (2.9,-2.0);
+\draw[->,thick,blue!60!black] (1.8,-2.35) -- (5.5,-0.35) node[pos=0.8,below right=-2pt,font=\scriptsize] {$w_{z\mu}$};
+\draw[inh] (1.6,0.5) -- (3.35,-1.1) node[pos=0.5,left=1pt,font=\scriptsize] {$w_{q\nu}$};
+\draw[inh] (Q) -- (Z) node[pos=0.5,above left=-1pt,font=\scriptsize] {$\beta$};
+\draw[->,very thick] (Z) -- (8.2,0) node[right,font=\small,align=left] {vers le cerveau: $z$};
+\draw[bc] (6,2.1) node[above,font=\scriptsize,black,align=center] {d'en haut: \nt{SERO}, \nt{NORA}, opioïdes} -- (Z.north) node[pos=0.45,right,font=\scriptsize,black] {gain $g$};
+\end{tikzpicture}
+\caption{Le portillon de la douleur dans la moelle épinière selon le modèle~\eqref{eq:gate}. Le neurone \nt{GLUT} de sortie reçoit la douleur $\nu$ et une faible excitation du toucher $\mu$. L'intermédiaire inhibiteur (\nt{GABA} ou \nt{GLYC}) est excité par le toucher et, selon l'hypothèse de la théorie du portillon, éteint par la douleur. D'en haut, par les canaux de diffusion, arrive le gain $g$.}
+\label{fig:gate}
+\end{figure}
+
+Écrivons cela pour les fréquences, comme au chapitre~\ref{sec:gaba}. La fréquence de l'intermédiaire $q$ et la fréquence de sortie $z$ valent
+\begin{empheq}[box=\keybox]{equation}
+q \;=\; \bigl[w_{q\mu}\,\mu + q_0 - w_{q\nu}\,\nu\bigr]_+ ,
+\qquad
+z \;=\; \bigl[\,g\,(\nu + w_{z\mu}\,\mu) - \beta\,q\,\bigr]_+ ,
+\label{eq:gate}
+\end{empheq}
+où $\nu$ est l'entrée de douleur, $\mu$ l'entrée du toucher, $w$ les poids des connexions (premier indice: vers qui; second: de qui), $\beta$ la force de l'inhibition, $q_0$ l'activité de fond propre de l'intermédiaire et $g$ le gain fixé d'en haut (nous y reviendrons). C'est le veto~\eqref{eq:veto} du chapitre~\ref{sec:gaba}, \og douleur, sauf en cas de toucher\fg{}, avec une correction empruntée à la théorie du portillon à titre d'hypothèse: une douleur forte éteint elle-même le neurone qui pose le veto.
+
+Nous avons calculé le modèle pour $w_{q\mu}=1$, $q_0=0.2$, $w_{q\nu}=0.5$, $w_{z\mu}=0.3$, $\beta=1.5$ (fig.~\ref{fig:gatecurves}). Sans toucher, la douleur commence à passer à partir de $\nu\approx0.18$. Avec le toucher, le seuil monte à $0.86$, et pour $\nu=1$ la sortie est divisée par quatre, de $1$ à $0.25$. Mais pour une douleur forte, $\nu=2$, le toucher ne change plus rien: le portillon est grand ouvert. C'est ce qu'on observe dans la vie: frotter une contusion soulage, mais pas en cas de blessure grave. Le toucher seul, sans douleur, ne passe pas le portillon: l'alarme ne se déclenche pas sur un simple contact.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=5.2cm,y=1.35cm]
+\draw[->,gray!70!black] (0,0) -- (2.12,0) node[right,font=\small,black] {douleur $\nu$};
+\draw[->,gray!70!black] (0,0) -- (0,4.3) node[left,font=\small,black] {$z$};
+\foreach \t in {0,0.5,1,1.5,2}{\draw[gray!60!black] (\t,-0.05) -- (\t,0.05); \node[below,font=\scriptsize] at (\t,0) {\t};}
+\foreach \f in {1,2,3,4}{\draw[gray!60!black] (-0.01,\f) -- (0.01,\f); \node[left,font=\scriptsize] at (0,\f) {\f};}
+\draw[very thick,red!70!black] plot file {figures/pain_gate_notouch.dat};
+\draw[very thick,blue!60!black] plot file {figures/pain_gate_touch.dat};
+\draw[very thick,orange!85!black,densely dashed] plot file {figures/pain_gate_sens.dat};
+\draw[very thick,red!70!black] (0.08,3.9) -- (0.2,3.9) node[right,font=\scriptsize,black] {sans toucher};
+\draw[very thick,blue!60!black] (0.08,3.45) -- (0.2,3.45) node[right,font=\scriptsize,black] {avec toucher};
+\draw[very thick,orange!85!black,densely dashed] (0.08,3.0) -- (0.2,3.0) node[right,font=\scriptsize,black] {après sensibilisation, $g=2$};
+\end{tikzpicture}
+\caption{Sortie du portillon~\eqref{eq:gate} en fonction de l'intensité de la douleur. Le toucher relève le seuil et atténue la douleur faible et moyenne, mais pas la douleur forte. La sensibilisation (trait en tirets) double le gain: la même douleur est transmise deux fois plus fort, et le seuil s'abaisse.}
+\label{fig:gatecurves}
+\end{figure}
+
+\section{Le bouton de volume, d'en haut}
+
+Le portillon n'est pas commandé seulement d'en bas. Du tronc cérébral descendent vers lui des voies qui modifient le gain $g$ de~\eqref{eq:gate}: \nt{SERO}, \nt{NORA} et les peptides opioïdes de l'annexe~\ref{sec:othermediators}~\cite{Fields2004}. Ce sont les mêmes canaux de diffusion que dans les chapitres~\ref{sec:serocomputer}--\ref{sec:acet}; seulement, leur bouton est ici le volume de l'alarme. Ils savent le tourner dans les deux sens: les mêmes circuits descendants peuvent aussi bien atténuer la douleur que l'amplifier.
+
+Pourquoi la machine baisserait-elle l'alarme? Parce que l'alarme est une interruption, et qu'une interruption n'est pas toujours opportune. Un animal qui fuit un prédateur ne doit pas s'arrêter à cause d'une patte blessée: d'abord courir, ensuite lécher la plaie. L'attente d'un soulagement atténue elle aussi la douleur, et une partie de cet effet disparaît si l'on bloque les récepteurs opioïdes~\cite{Levine1978}: l'attente calculée dans le cerveau descend vers le portillon par le canal opioïde. Ce tableau en soi est mesuré; la manière exacte dont le cerveau décide du volume à donner reste une hypothèse.
+
+\section{La sensibilisation: une alarme qui apprend}
+
+Après une lésion, les neurones de sortie du portillon deviennent plus sensibles: la même entrée provoque une sortie plus grande, et le seuil s'abaisse~\cite{Woolf1983}. Dans le modèle~\eqref{eq:gate}, c'est une hausse du gain $g$, et sa description la plus simple est un circuit RC lent, alimenté par la douleur elle-même:
+\begin{empheq}[box=\keybox]{equation}
+\tau_s\,\frac{\dd g}{\dd t} \;=\; -(g-1) + k_s\,z ,
+\label{eq:sensitization}
+\end{empheq}
+où $\tau_s$ est le temps que met la sensibilité à revenir à la normale; il est plus long que la douleur elle-même, parce que la sensibilisation persiste après l'arrêt du stimulus nocif~\cite{Woolf1983}; $k_s$ est la force de l'alimentation. Tant que le tissu est lésé, la sortie du portillon maintient $g$ au-dessus de un, et tout ce qui se passe près de la blessure est transmis plus fort (trait en tirets sur la fig.~\ref{fig:gatecurves}: pour $g=2$, le seuil descend à $0.11$ et la sortie double). C'est un réglage raisonnable pour une alarme: tant que la lésion n'est pas guérie, mieux vaut être trop prudent.
+
+Pour un ingénieur, c'est une réaction positive à fuite lente: la douleur augmente le gain, le gain augmente la douleur. Tant que la boucle est faible, $g$ revient à la normale une fois la blessure guérie. Mais si la boucle est forte, l'alarme peut rester bloquée en position active même quand la lésion a disparu, comme le groupe à forte rétroaction de la fig.~\ref{fig:bistable}. Le modèle~\eqref{eq:sensitization} est une simplification; l'existence de la sensibilisation centrale est mesurée.
+
+\section{La douleur comme professeur et comme interruption}
+
+Dans la machine, la douleur a deux fonctions en plus de l'alarme.
+
+\emph{Professeur.} La douleur est une récompense négative: dans la formule de l'erreur~\eqref{eq:ctd}, elle entre comme $r<0$. Tout ce qui a été dit au chapitre~\ref{sec:dofa} s'applique ici: un signe annonciateur de la douleur se met à provoquer l'erreur à l'avance, et le réseau apprend à éviter ce qui mène à la douleur. Des expériences chez l'homme montrent que l'activité cérébrale pendant l'apprentissage par la douleur suit précisément l'erreur de différence temporelle~\cite{Seymour2004}, et une partie des neurones \nt{DOPA} répond aussi aux événements désagréables (chapitre~\ref{sec:dofaalt}).
+
+\emph{Interruption.} La douleur arrache l'attention à la tâche en cours: c'est sa fonction, et non un effet secondaire~\cite{EcclestonCrombez1999}. Au chapitre~\ref{sec:nora}, ce même rôle d'\og interruption\fg{} a été discuté pour la bouffée phasique de \nt{NORA}. Et la réponse la plus rapide n'atteint même pas le cerveau: le retrait de la main devant un objet brûlant se referme directement dans la moelle épinière, par la même paire de muscles et le même veto sur l'antagoniste que sur la fig.~\ref{fig:antagonists}.
+
+\begin{keyblock}
+\begin{proposition}[Signal d'alarme]
+\label{prop:pain}
+La douleur n'est pas une mesure, mais un signal d'alarme de haute priorité. Elle s'adapte bien moins que les canaux de mesure, passe par deux fils (le rapide dit \og où\fg{}, le lent \og à quel point c'est grave\fg{}), traverse un portillon que le toucher ferme (et qu'une douleur forte, selon l'hypothèse de la théorie du portillon, ouvre), et son volume est fixé d'en haut par les canaux de diffusion. Ces dispositifs sont mesurés, sauf l'ouverture du portillon par la douleur; les modèles simples~\eqref{eq:gate} et~\eqref{eq:sensitization} sont des simplifications.
+\end{proposition}
+\end{keyblock}
+
+\section{Bilan}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{3.0cm}>{\raggedright}p{4.9cm}>{\raggedright\arraybackslash}p{4.9cm}}
+\toprule
+Ce que fait la douleur & Comment & Ce qu'on sait \\
+\midrule
+donne l'alarme & seuil élevé, accoutumance plus faible que pour le toucher & seuil mesuré; comparaison de l'accoutumance: estimation \\
+dit \og où\fg{} et \og à quel point c'est grave\fg{} & deux fils de vitesses différentes~\eqref{eq:paintime} & mesuré \\
+passe le portillon & veto par \nt{GABA}/\nt{GLYC}~\eqref{eq:gate} & portillon mesuré; ouverture par la douleur: hypothèse de la théorie; modèle: simplification \\
+change de volume & \nt{SERO}, \nt{NORA}, opioïdes descendants & mesuré; règle du choix du volume: hypothèse \\
+apprend après une lésion & hausse du gain~\eqref{eq:sensitization} & sensibilisation mesurée; modèle: simplification \\
+enseigne l'évitement & récompense négative dans~\eqref{eq:ctd} & ressemblance avec l'erreur de différence temporelle mesurée \\
+interrompt le travail & capture de l'attention; réflexe de retrait & mesuré \\
+\bottomrule
+\end{tabular}
+\caption{La douleur comme signal d'alarme.}
+\label{tab:pain}
+\end{table}
+
+La douleur est assemblée à partir de pièces que nous avons déjà vues (tableau~\ref{tab:pain}): capteurs \nt{GLUT}, deux fils, veto par un intermédiaire inhibiteur, bouton de volume diffusé, circuit RC lent, erreur de prédiction et interruption. Une seule chose y est nouvelle: c'est la seule entrée de la machine dont la machine fixe elle-même le volume, une alarme que son propriétaire peut aussi bien atténuer que reconfigurer.
+
+\section{Exercices}
+
+\begin{exercise}[\lvlA]
+\label{ex:14:1}
+\emph{Deux fils.} Le signal part du pied, $L=1$~m. (a)~Une salve parcourt un faisceau de fils d'un même type, dont les vitesses remplissent la plage~\eqref{eq:paintime}. De combien s'étale-t-elle à l'arrivée dans la moelle, pour chaque type? (b)~Des vagues de douleur sur des fils à $15$ et $1$~m/s se distinguent si leur décalage atteint $0.1$~s. À partir de quelle distance fusionnent-elles?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:14:2}
+\emph{Quand le toucher fait mal.} Portillon~\eqref{eq:gate} avec les paramètres du texte; le gain $g$ croît avec la sensibilisation. Jusqu'à quel $g$ un toucher sans douleur ne passe-t-il le portillon pour aucune intensité $\mu$? À partir de quel $g$ un toucher $\mu=1$ commence-t-il à passer?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:14:3}
+\emph{Stabilité de la sensibilisation.} Les entrées sont constantes, la sortie du portillon est linéaire en $g$: $z=gA-C$, $A=\nu+w_{z\mu}\mu$, $C=\beta q\ge0$. (a)~Trouvez l'équilibre $g^*$ du modèle~\eqref{eq:sensitization} et sa condition de stabilité. (b)~Pour $k_s=0.5$, trouvez l'intensité de douleur au-delà de laquelle le modèle s'emballe, sans toucher et avec un toucher $\mu=1$.
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:14:4}
+\emph{Le signe annonciateur de la douleur.} Un signal à l'instant $0$ prédit une douleur à l'instant $T=2$~s; dans~\eqref{eq:ctd}, $r(t)=-P\,\delta(t-T)$, $\tau_\gamma=2$~s. (a)~Trouvez l'aire de la bouffée de $\delta$ à l'instant du signal. (b)~Une action à l'instant $t_e=1$~s annule la douleur. Quelle est la bouffée de $\delta$ à cet instant, et qu'enseignera-t-elle au réseau?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:14:5}
+\emph{Une alarme qui se verrouille.} Complétez le portillon de \texttt{models/\allowbreak pain\_gate.py} par la dynamique~\eqref{eq:sensitization} et une saturation $z\le4$. Le toucher $\mu=1$ est toujours présent, la lésion $\nu=2$ dure un temps $T$, puis $\nu=0$. Trouvez par simulation le plus petit $T$ (en unités de $\tau_s$) après lequel l'alarme reste active, pour $k_s=4$, $4.6$, $5$, $6$, $8$.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:14:6}
+\emph{Concevoir le portillon.} Pour $\beta=1.5$, $w_{z\mu}=0.3$, $g=1$, choisissez dans~\eqref{eq:gate} $q_0$, $w_{q\nu}$, $w_{q\mu}$ de sorte que le seuil de douleur soit $0.2$ sans toucher et $1.0$ avec un toucher $\mu=1$, et que le toucher cesse d'atténuer la douleur à $\nu_\times=2.5$. Jusqu'à quel gain $g$ un toucher sans douleur ne passe-t-il pas le portillon?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:14:7}
+\emph{Le bouton de volume.} Le travail rapporte une valeur $V$ par unité de temps, travailler avec une lésion $\nu$ coûte $c\nu$, d'où l'intérêt d'interrompre pour $\nu>V/c$; la douleur interrompt quand $z>\theta=0.5$. (a)~Quel gain $g^*$ du portillon~\eqref{eq:gate} sans toucher donne ce seuil pour $V/c=0.25$, $0.5$, $2$? (b)~Par quels signaux du livre la machine estimerait-elle $V$ et $c$?
+\end{exercise}

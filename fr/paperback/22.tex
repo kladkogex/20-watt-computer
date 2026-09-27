@@ -1,0 +1,53 @@
+\chapter{Des neurones qui jouent au tennis}
+% version complète: chapters/22_dishbrain.tex
+
+L'expérience la plus célèbre avec des neurones vivants sur une puce s'appelle DishBrain, \og le cerveau en boîte de Petri\fg{}. Environ un million de neurones, cultivés sur une puce à vingt-six mille électrodes, jouaient au plus simple des tennis sur ordinateur: une balle traverse l'écran, une raquette monte et descend.
+
+\section*{Comment le jeu est organisé}
+
+La balle entre dans le réseau par huit électrodes. Laquelle d'entre elles clique indique à quelle hauteur est la balle. À quelle fréquence elle clique indique si la balle est loin: quatre fois par seconde quand elle est près du mur du fond, et de plus en plus souvent, jusqu'à quarante, quand elle approche de la raquette. La sortie, ce sont deux zones d'électrodes: les clics de l'une font monter la raquette, ceux de l'autre la font descendre. Toutes les dix millisecondes, l'ordinateur compte les clics et déplace la raquette. Ces dix millisecondes sont la cadence de l'ordinateur du banc d'essai, non de la culture: le réseau lui-même fonctionne de façon asynchrone, comme tout réseau nerveux.
+
+\pencilfig{22}{\pencilart{22}}{La balle, la raquette et le million de neurones qui la déplacent.}
+
+\section*{Le professeur}
+
+Pas la moindre dopamine. Après un renvoi réussi, le réseau reçoit un signal bref et parfaitement prévisible: les huit électrodes à la fois, pendant un dixième de seconde. Après un raté, quatre secondes de stimulation désordonnée en des points et à des instants aléatoires, puis une pause, et un nouveau service.
+
+\section*{Le résultat}
+
+Au cours d'une séance de vingt minutes, les échanges des cultures vivantes s'allongeaient, et les balles manquées se raréfiaient. Cela marchait le mieux avec la rétroaction complète. Quand les signaux après un renvoi et après un raté étaient remplacés par un simple silence, il y avait aussi une amélioration, mais plus faible; sans rétroaction, il n'y en avait pas. Les neurones humains jouaient un peu mieux que ceux de souris. En revanche, l'apprentissage étalé sur plusieurs jours ne s'est pas révélé fiable.
+
+\section*{Pourquoi le réseau apprend}
+
+Les auteurs expliquent le résultat ainsi: le réseau cherche à rendre ses sensations prévisibles. Le raté apporte le chaos, le renvoi l'ordre, et le réseau change pour avoir plus d'ordre. Mais il existe une explication plus terre à terre, elle aussi compatible avec les données: \og secoue après un raté, ne touche à rien après un renvoi\fg{}. Chaque secousse mélange un peu les connexions au hasard. Les réglages avec lesquels le réseau rate souvent sont sans cesse brassés, tandis que les bons restent intacts. Le réseau s'attarde de lui-même là où les ratés sont rares: personne ne l'a instruit, on cesse simplement de le secouer. Dans notre modèle simple, une telle règle augmente bel et bien la part des renvois.
+
+\pencilfig{130}{%
+% scrambler: miss probability p over one setting of the network (valley in the middle); a miss kicks the setting
+% at random, a hit leaves it alone, so the time spent at a setting is proportional to 1/p (6x more in the valley here)
+\draw[pen] (0,1.2) -- (8.2,1.2);
+\draw[penlite=pcRed] plot[smooth] coordinates {(0.0,2.46) (0.8,2.46) (1.6,2.46) (2.0,2.44) (2.4,2.41) (2.8,2.32) (3.2,2.15) (3.6,1.90) (4.0,1.62) (4.4,1.44) (4.8,1.44) (5.2,1.62) (5.6,1.90) (6.0,2.15) (6.4,2.32) (6.8,2.41) (7.2,2.44) (7.6,2.46) (8.0,2.46)};
+\node[lbl, text=pcRed, anchor=south] at (7.55,2.55) {beaucoup de ratés};
+\node[lbl, text=pcRed, anchor=west] at (5.3,1.45) {peu};
+% kicked balls on the slopes
+\draw[dotpen=pcBlue, wash=pcBlue] (1.3,2.68) circle (0.12);
+\draw[arr=pcGray, densely dashed] (1.35,2.82) to[bend left=50] (2.35,2.72);
+\draw[arr=pcGray, densely dashed] (1.22,2.82) to[bend right=50] (0.4,2.72);
+\draw[dotpen=pcBlue, wash=pcBlue] (6.3,2.45) circle (0.12);
+\draw[arr=pcGray, densely dashed] (6.25,2.59) to[bend right=50] (5.45,2.25);
+\node[lbl, anchor=south] at (1.3,3.05) {secousse après un raté};
+% the ball left alone in the valley
+\draw[dotpen=pcBlue, wash=pcBlue] (4.6,1.66) circle (0.12);
+\node[lbl, anchor=south] at (4.6,1.95) {pas secoué};
+% where the network spends its time (proportional to 1/p)
+\fill[pcGreen, opacity=0.22] (0,0) -- plot[smooth] coordinates {(0.0,0.18) (0.8,0.18) (1.6,0.18) (2.0,0.19) (2.4,0.19) (2.8,0.21) (3.2,0.24) (3.6,0.33) (4.0,0.55) (4.4,0.98) (4.8,0.98) (5.2,0.55) (5.6,0.33) (6.0,0.24) (6.4,0.21) (6.8,0.19) (7.2,0.19) (7.6,0.18) (8.0,0.18)} -- (8.0,0) -- cycle;
+\draw[penlite=pcGreen] plot[smooth] coordinates {(0.0,0.18) (0.8,0.18) (1.6,0.18) (2.0,0.19) (2.4,0.19) (2.8,0.21) (3.2,0.24) (3.6,0.33) (4.0,0.55) (4.4,0.98) (4.8,0.98) (5.2,0.55) (5.6,0.33) (6.0,0.24) (6.4,0.21) (6.8,0.19) (7.2,0.19) (7.6,0.18) (8.0,0.18)};
+\draw[pen] (0,0) -- (8.2,0);
+\node[lbl, text=pcGreen!60!black, anchor=west] at (5.3,0.6) {où le réseau passe son temps};
+\node[lbl, anchor=north] at (4.1,-0.03) {réglages du réseau};
+}{Un raté secoue les réglages du réseau au hasard, un renvoi les laisse tranquilles. Là où les ratés sont nombreux, le réseau ne s'attarde pas. Là où ils sont rares, on cesse de le secouer et il y reste, bien que personne ne l'y ait conduit.}
+
+Comment départager les deux explications? Il faut une expérience qui n'a pas encore été faite: après un raté, envoyer non un signal chaotique, mais un signal \emph{prévisible}, de même durée et de même intensité. Si le réseau apprend malgré tout, ce n'est pas une affaire de prévisibilité, mais simplement de différence entre \og après un renvoi\fg{} et \og après un raté\fg{}. Cette expérience attend encore quelqu'un pour la réaliser.
+
+Voici la fin de notre parcours. La machine à vingt watts est faite de composants simples, mais la façon exacte dont elle les assemble en pensée, nous ne la comprenons encore qu'en partie. Peut-être le prochain chapitre sera-t-il écrit par vous.
+
+\fullversion{22}

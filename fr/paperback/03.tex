@@ -1,0 +1,76 @@
+\chapter{Les freins}
+% version complète: chapters/03_gaba.tex
+
+Ajoutons à la machine le deuxième type de neurones par le nombre, les \nt{GABA}. Leur signal ne pousse pas le voisin vers le clic, il l'en éloigne. Ce sont les freins. Ils sont peu nombreux, d'un cinquième à un quart des neurones du cortex, mais sans eux la machine ne roule pas.
+
+Il y a une restriction: un neurone \og plus\fg{} ne peut pas freiner lui-même son voisin. S'il faut une connexion négative, on doit passer par un intermédiaire: le \og plus\fg{} réveille un neurone inhibiteur, et c'est celui-ci qui freine la cible. Le changement de signe coûte un neurone et un petit retard.
+
+\section*{\og Mais pas si\fg{}}
+
+L'opération la plus utile avec les freins est l'interdiction: \og déclenche-toi sur A, mais pas si B est arrivé\fg{}. Le neurone reçoit une poussée de A et un coup de frein de l'intermédiaire que réveille B. Avec des interdictions et des \og ou\fg{}, on peut assembler n'importe quelle logique.
+
+\pencilfig{3}{\pencilart{3}}{\og A, mais pas si B\fg{}: le neurone rouge barre la route au bleu.}
+
+L'interdiction dans le temps donne le détecteur de mouvement que vous avez dans l'œil. Deux capteurs voisins: l'un excite le neurone de sortie, l'autre le freine avec un retard. Si une tache de lumière file dans un sens à la bonne vitesse, le freinage arrive exactement en même temps que l'excitation et l'étouffe. Dans l'autre sens, le freinage arrive trop tard et le neurone a le temps de cliquer. On obtient un neurone qui ne voit le mouvement que dans un seul sens.
+
+\pencilfig{103}{%
+% sensors on top; the left one excites the output, the right one inhibits it through a GABA go-between and a delay
+\draw[dotpen=pcAmber, wash=pcAmber] (0,1.6) circle (0.16); \draw[dotpen=pcAmber, wash=pcAmber] (1.6,1.6) circle (0.16);
+\node[lbl, anchor=south] at (0.8,1.8) {deux capteurs};
+\draw[pen=pcBlue, wash=pcBlue] (0.4,0) circle (0.24);
+\draw[arr=pcBlue] (0,1.44) -- (0.3,0.25);
+\draw[pen=pcBlue] (1.6,1.44) -- (1.6,1.18);
+\draw[penlite, fill=white] (0.95,0.9) rectangle (2.25,1.18); \node[font=\tiny\itshape, text=pcGray] at (1.6,1.04) {retard};
+\draw[pen=pcBlue] (1.6,0.9) -- (1.6,0.72);
+\draw[pen=pcRed, wash=pcRed] (1.6,0.55) circle (0.17);
+\draw[pcRed, line width=0.7pt, -{Bar[width=5pt]}] (1.45,0.45) -- (0.66,0.08);
+\draw[arr] (0.4,-0.24) -- (0.4,-0.6); \node[lbl, anchor=north] at (0.4,-0.6) {sortie};
+% outcomes
+\begin{scope}[xshift=3.1cm]
+  \draw[dotpen=pcAmber, wash=pcAmber] (0,1.25) circle (0.1); \draw[arr=pcAmber] (0.18,1.25) -- (1.1,1.25);
+  \node[lbl, anchor=west] at (1.25,1.25) {vers la droite: clic};
+  \draw[dotpen=pcAmber, wash=pcAmber] (1.1,0.45) circle (0.1); \draw[arr=pcAmber] (0.92,0.45) -- (0,0.45);
+  \node[lbl, anchor=west] at (1.25,0.45) {vers la gauche: silence};
+  \node[lbl, anchor=west, align=left] at (0,-0.35) {le freinage arrive\\pile avec l'excitation};
+\end{scope}
+}{Détecteur de mouvement: le freinage arrive avec un retard et n'étouffe la réponse que si la tache file de droite à gauche.}
+
+
+\section*{Soustraire ou diviser}
+
+Le freinage ne sait pas seulement soustraire. Un canal inhibiteur ouvert ne tire pas la tension vers le bas, il la tire \emph{vers le repos}, comme si l'on perçait un trou de plus dans le seau. Du coup, tout apport d'eau la fait monter moins. Le freinage ne retire pas au signal une portion fixe, il le \emph{divise}: c'est un bouton de volume. Si la force du freinage croît avec l'activité générale alentour, chaque neurone réagit non à la force de son signal, mais à sa force \emph{par rapport à ses voisins}. C'est pourquoi un même réseau fonctionne dans la pénombre comme en plein soleil. Il faut dire que, sur la fréquence des impulsions, ce \og diviseur\fg{} n'agit proprement qu'avec un bruit de fond constant, qui existe toujours dans le cerveau vivant.
+
+\pencilfig{104}{%
+\foreach \dx/\t in {0/soustraction,4.6/division}{
+  \begin{scope}[xshift=\dx cm]
+  \draw[pen] (0,0) -- (3.6,0); \draw[pen] (0,0) -- (0,1.9);
+  \node[lbl, anchor=north] at (1.8,-0.05) {signal}; \node[lbl, anchor=south, rotate=90] at (-0.05,0.95) {réponse};
+  \draw[pen=pcBlue] (0.4,0) -- (3.3,1.75);
+  \node[font=\small\itshape, text=pcGray, anchor=south] at (1.8,1.95) {\t};
+  \end{scope}}
+\draw[pen=pcRed, line width=0.9pt] (1.3,0) -- (3.4,1.27);
+\node[lbl, text=pcRed, anchor=west] at (2.25,0.35) {décalage};
+\begin{scope}[xshift=4.6cm]
+\draw[pen=pcRed, line width=0.9pt] (0.4,0) -- (3.3,0.8);
+\node[lbl, text=pcRed, anchor=west] at (2.0,0.25) {pente réduite};
+\end{scope}
+\node[lbl, text=pcBlue, anchor=east] at (2.25,1.45) {sans frein};
+}{En bleu, la réponse du neurone sans freinage; en rouge, avec. La soustraction décale le seuil; la division baisse le volume, comme un bouton de réglage.}
+
+Il y a une deuxième conséquence: le trou supplémentaire fait oublier le seau plus vite. La fenêtre dans laquelle deux signaux doivent tomber pour s'additionner se rétrécit. Le freinage rend les détecteurs de coïncidences plus exigeants.
+
+\section*{Le choix}
+
+Voici maintenant l'essentiel de ce qui manquait: choisir un élément parmi plusieurs. Deux groupes de neurones se freinent mutuellement. Tant que le freinage est faible, les deux travaillent, simplement moins fort. Mais s'il est assez fort, la moindre différence s'amplifie, comme sur une balançoire, jusqu'à ce qu'un groupe se taise complètement. Le gagnant rafle tout. Et la victoire tient: pour que le réseau change d'avis, le nouvel argument doit être nettement plus fort que l'ancien. La machine ne sursaute pas au moindre bruissement.
+
+Les freins effacent aussi la mémoire: sur un signal \og remise à zéro\fg{}, un neurone inhibiteur éteint le feu de camp du chapitre précédent. Deux cellules de ce genre qui se freinent l'une l'autre sont l'équivalent d'une bascule, la base de toute mémoire d'ordinateur.
+
+\section*{Vivre sur le fil}
+
+Un réseau fait uniquement de \og plus\fg{} peut partir en avalanche: chaque impulsion en fait naître plus d'une suivante. Les freins le maintiennent à son point de fonctionnement, comme un thermostat maintient la température d'un four. À deux conditions: le freinage doit être assez fort et assez rapide. S'il est fort mais lent, le régulateur se met à en faire trop, comme quelqu'un qui tourne le robinet de la douche sans attendre que l'eau chaude arrive. La température oscille dans un sens puis dans l'autre. Dans le cerveau, une telle boucle de \og plus\fg{} et de \og moins\fg{} engendre un rythme rapide, de quelques dizaines d'oscillations par seconde.
+
+Le cortex vit apparemment sur le fil: sa propre rétroaction est assez forte pour partir en avalanche sans les freins. Seuls les freins rapides le retiennent, et c'est pourquoi il répond avec tant de sensibilité aux signaux faibles.
+
+La conclusion du chapitre est inattendue: les freins n'ajoutent presque pas de nouveaux calculs à la machine. Ils ajoutent du \emph{contrôle}: le choix, la remise à zéro, le réglage du volume, la stabilité. L'excitation porte les données; le freinage décide quelles données passent, quand et à quel volume.
+
+\fullversion{3}

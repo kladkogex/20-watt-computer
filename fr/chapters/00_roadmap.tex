@@ -1,0 +1,81 @@
+\chapter*{Comment lire ce livre}
+\addcontentsline{toc}{chapter}{Comment lire ce livre}
+
+Il n'est pas nécessaire de lire ce livre dans l'ordre. Les chapitres~1 à~4 forment le socle commun: les types de neurones, ce que calculent \nt{GLUT} et \nt{GABA}, et la langue qu'ils parlent. Ensuite, le livre se ramifie. La carte de la figure~\ref{fig:roadmap} montre quels chapitres s'appuient sur quels autres: une flèche du chapitre $A$ vers le chapitre $B$ signifie que $B$ utilise des notions et des formules de $A$. La carte ne montre que les dépendances principales; les petits renvois en arrière ne gênent pas la lecture.
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[>=Stealth,scale=0.95,
+  ch/.style={draw,thick,rounded corners=3pt,align=center,font=\scriptsize,text width=1.85cm,minimum height=0.62cm,inner sep=2pt},
+  base/.style={ch,fill=blue!8}, bus/.style={ch,fill=orange!14}, sum/.style={ch,fill=gray!18},
+  io/.style={ch,fill=green!10}, sort/.style={ch,fill=cyan!8}, lab/.style={ch,fill=violet!10},
+  dep/.style={->,thick,gray!60!black}]
+% foundation
+\node[base] (c1) at (0,0) {1 Types de neurones};
+\node[base] (c2) at (2.3,0) {2 \nt{GLUT}};
+\node[base] (c3) at (4.6,0) {3 \nt{GLUT} et \nt{GABA}};
+\node[base] (c4) at (6.9,0) {4 Code Morse};
+% broadcast channels and the synthesis
+\node[bus] (c5) at (4.6,-1.5) {5 \nt{SERO}};
+\node[bus] (c6) at (7.3,-1.5) {6 \nt{DOPA}};
+\node[bus] (c7) at (9.2,-0.9) {7 Théories de la dopamine};
+\node[bus] (c8) at (9.2,-2.1) {8 \nt{NORA}};
+\node[bus] (c9) at (11.5,-2.1) {9 \nt{ACET}};
+\node[sum] (c10) at (13.8,-0.9) {10 Toute la machine};
+% inputs and outputs
+\node[io] (c12) at (2.3,-4.1) {12 Recon-\\naissance};
+\node[io] (c11) at (4.6,-4.1) {11 Entrées};
+\node[io] (c13) at (6.9,-4.1) {13 Muscles};
+\node[io] (c14) at (9.2,-3.05) {14 Douleur};
+\node[io] (c15) at (9.2,-4.1) {15 Apprentissage moteur};
+\node[io] (c16) at (9.2,-5.15) {16 Chimie\\du corps};
+% lab, sorting, sleep
+\node[lab] (c17) at (11.5,-4.1) {17 Débogage};
+\node[lab] (c21) at (13.8,-4.1) {21 Machines vivantes};
+\node[lab] (c22) at (13.8,-5.15) {22 DishBrain};
+\node[sort] (c18) at (11.5,-5.15) {18 Neurones-\\instruments};
+\node[sort] (c19) at (13.8,-6.2) {19 Nombre de dendrites};
+\node[bus] (c20) at (11.5,-6.2) {20 Sommeil};
+% dependencies
+\draw[dep] (c1) -- (c2); \draw[dep] (c2) -- (c3); \draw[dep] (c3) -- (c4);
+\draw[dep] (c1) -- (c5); \draw[dep] (c4) -- (c6); \draw[dep] (c5) -- (c6);
+\draw[dep] (c6) -- (c7); \draw[dep] (c6) -- (c8); \draw[dep] (c8) -- (c9);
+\draw[dep] (c7) -- (c10); \draw[dep] (c9) -- (c10);
+\draw[dep] (c4) -- (c11); \draw[dep] (c11) -- (c12); \draw[dep] (c11) -- (c13); \draw[dep] (c5) -- (c13);
+\draw[dep] (c13) -- (c14); \draw[dep] (c13) -- (c15); \draw[dep] (c13) -- (c16);
+\draw[dep] (c15) -- (c17); \draw[dep] (c9) -- (c17); \draw[dep] (c17) -- (c21); \draw[dep] (c21) -- (c22);
+\draw[dep] (c16) -- (c18); \draw[dep] (c18) -- (c19); \draw[dep] (c16) -- (c20);
+% legend
+\begin{scope}[yshift=-7.25cm]
+\foreach \s/\t [count=\i] in {base/socle, bus/canaux et régimes, sum/synthèse, io/entrées et sorties, sort/classements des neurones, lab/laboratoire}{
+  \pgfmathtruncatemacro{\col}{mod(\i-1,3)}\pgfmathtruncatemacro{\row}{(\i-1)/3}
+  \node[\s,text width=0.3cm,minimum height=0.32cm] at ({\col*4.8+0.2},{-\row*0.55}) {};
+  \node[anchor=west,font=\scriptsize] at ({\col*4.8+0.55},{-\row*0.55}) {\t};}
+\end{scope}
+\end{tikzpicture}
+\caption{Carte des chapitres. Une flèche va d'un chapitre vers celui qui s'appuie sur lui. Les autres renvois entre chapitres sont des pointeurs, pas des dépendances.}
+\label{fig:roadmap}
+\end{figure}
+
+\section*{Parcours de lecture}
+
+\begin{center}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{>{\raggedright}p{3.0cm}>{\raggedright}p{3.9cm}>{\raggedright\arraybackslash}p{6.4cm}}
+\toprule
+Parcours & Pour qui & Chapitres dans l'ordre \\
+\midrule
+cours d'un trimestre & enseignant, 10 semaines & semaine 1: ch.~1--2; 2: ch.~3; 3: ch.~4; 4: ch.~5--6; 5: ch.~7--8; 6: ch.~9; 7: ch.~10; 8: ch.~11--12; 9: ch.~13 et~15; 10: ch.~17 \\
+IA et apprentissage automatique & qui connaît les réseaux de neurones et veut comprendre comment le cerveau apprend & 1--4, 5 (survol), 6, 7, 8, 9, 11 (survol), 12, 13 (survol), 15 \\
+électronique et matériel & concepteur de circuits, développeur de puces neuromorphiques & 1--4, 5, 11, 13, 16, 18, 19, 17 (chapitres 9 et 15 en survol) \\
+neuro-interfaces et calculateurs vivants & qui construit des interfaces cerveau-ordinateur et des puces à neurones vivants & 1, 2, 4, 11, 13, 17 (chapitres 9 et 15 en survol), 21, 22 (chapitre 12 en survol) \\
+aperçu rapide & ingénieur qui dispose d'un week-end & 1, 2, 3, 6, 10; les renvois du chapitre~6 aux chapitres~4--5 se comprennent par le contexte \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\og Survol\fg{} signifie qu'il suffit de lire le début du chapitre, ses énoncés dans les encadrés jaunes et son tableau récapitulatif.
+
+Chaque chapitre se termine par des exercices: estimations, dérivations, modélisation et conception; les réponses brèves sont réunies dans l'annexe~\ref{sec:answers}. Toutes les notations se trouvent dans l'annexe~\ref{sec:notation}, et les expériences sur lesquelles reposent les principaux énoncés de chaque chapitre, dans l'annexe~\ref{sec:supplement}. Les nombres du livre proviennent de petits programmes du dossier \texttt{models/}; on peut les exécuter et les modifier.

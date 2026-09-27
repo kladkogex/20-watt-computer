@@ -1,0 +1,43 @@
+\chapter{Comment la machine apprend à bouger}
+% version complète: chapters/15_motorlearning.tex
+
+Nous avons vu deux façons d'apprendre. Sans professeur, \og ensemble, donc liés\fg{}, la machine mémorise ce qui revient souvent. Avec la dopamine, elle apprend des surprises: c'est allé mieux ou moins bien que prévu. Mais quand vous ratez un panier au basket, vous ne savez pas seulement que c'est raté. Vous savez de \emph{combien} et \emph{de quel côté} vous avez manqué. C'est le troisième professeur: une erreur avec une direction, propre à chaque sortie.
+
+\section*{Le fil de l'erreur}
+
+Le cerveau possède un circuit à part pour apprendre les mouvements, et il est construit de façon très inhabituelle. Un nombre énorme de petits neurones \nt{GLUT}, des dizaines de milliards, décompose les signaux d'entrée en une très longue liste de caractéristiques. Les neurones de sortie de ce circuit sont inhibiteurs, des \nt{GABA}; ils sont des dizaines de millions, et chacun écoute cent mille entrées. Et vers chaque neurone de sortie court exactement un fil particulier, le fil de l'erreur. Si l'erreur arrive pendant qu'une entrée était active, cette entrée s'affaiblit. C'est la règle classique \og réduis l'erreur\fg{}, avec laquelle les ingénieurs entraînent les filtres adaptatifs.
+
+\pencilfig{15}{\pencilart{15}}{Un tir manqué ne dit pas seulement \og raté\fg{}, mais aussi \og de combien et de quel côté\fg{}.}
+
+Ce professeur est plus rapide que celui de la dopamine: chaque sortie a sa propre erreur, et il n'est pas nécessaire d'extraire sa part d'un signal commun à tous. Certes, l'erreur arrive en retard, et la connexion a de nouveau besoin d'un \og autocollant\fg{} qui se souvient qu'elle a participé. Les expériences montrent que la durée de cet autocollant est ajustée au retard de l'erreur.
+
+\section*{Le modèle interne}
+
+Qu'apprend un tel circuit? Un modèle de son propre corps: quel résultat donnera une commande. Avec lui, inutile d'attendre les capteurs en retard: le résultat peut être prédit d'avance. Selon une hypothèse, c'est pourquoi vous ne pouvez pas vous chatouiller vous-même: le cerveau sait d'avance ce qui va se passer et retranche ce qui était prévu.
+
+\section*{L'élève rapide et l'élève lent}
+
+Mettez des lunettes qui décalent l'image sur le côté et lancez des fléchettes. Les premiers lancers partent de côté, mais en quelques dizaines d'essais vous vous adaptez. Retirez les lunettes: de nouveau des ratés, cette fois de l'autre côté. Le plus intéressant vient ensuite. Les expériences sont bien décrites par deux élèves à la fois: le rapide apprend vite et oublie vite, le lent apprend lentement mais se souvient longtemps. Si, après une longue adaptation, on réapprend brièvement en sens inverse, la correction totale revient à zéro, mais l'ancien savoir-faire remonte ensuite de lui-même en partie: l'élève rapide a oublié, le lent se souvient. Un modèle à un seul élève en est incapable; les gens, eux, en sont capables.
+
+\pencilfig{115}{%
+% figures/tworate_*.dat from models/motor_learning.py: adapt 200 throws, reverse until the sum is back to zero, then no errors at all
+\begin{scope}[x=0.026cm, y=1.45cm]
+\fill[pcGray, opacity=0.08] (220,-1.1) rectangle (226,1.1);
+\draw[pen] (0,0) -- (340,0);
+\draw[pcGray, line width=0.4pt] plot file {figures/tworate_p.dat};
+\draw[penlite=pcAmber] plot file {figures/tworate_fast.dat};
+\draw[penlite=pcBlue] plot file {figures/tworate_slow.dat};
+\draw[pcGray!40!black, line width=1.1pt] plot file {figures/tworate_net.dat};
+\draw[pcGray, densely dashed, line width=0.4pt] (226,-1.1) -- (226,1.1);
+\end{scope}
+\node[lbl, anchor=south] at (3.1,1.47) {lunettes mises};
+\node[lbl, anchor=north west, align=left] at (6.3,-0.55) {bref\\réapprentissage};
+\node[lbl, anchor=south west] at (6.0,1.47) {sans erreur};
+\node[lbl, text=pcBlue, anchor=north] at (4.4,0.8) {lent};
+\node[lbl, text=pcAmber!80!black, anchor=south west] at (1.15,0.5) {rapide};
+\node[lbl, text=pcGray!40!black, anchor=south] at (7.7,0.95) {la somme remonte};
+}{La correction des deux élèves dans le modèle. Après un bref réapprentissage, la somme est à zéro, mais l'élève lent se souvient de l'ancien, qui remonte de lui-même.}
+
+Pourquoi deux élèves? Selon une hypothèse, c'est la même recette que celle du navigateur du neuvième chapitre: le monde change à la fois vite et lentement, et il est raisonnable de suivre les deux.
+
+\fullversion{15}

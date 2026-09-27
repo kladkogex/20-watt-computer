@@ -1,0 +1,59 @@
+\chapter{Une machine sans chef d'orchestre}
+% version complète: chapters/02_glutcomputer.tex
+
+Votre ordinateur a un chef d'orchestre: le générateur d'horloge. Des milliards de fois par seconde, il donne le signal, et tous les éléments du circuit basculent en même temps, au pas. Dans le cerveau, il n'y a pas de chef d'orchestre. Chaque neurone travaille pour son compte: les signaux lui arrivent quand ils arrivent et repartent quand ils repartent. Voyons ce qu'on peut calculer avec une telle machine si l'on ne prend que des neurones \nt{GLUT}, uniquement des \og plus\fg{}.
+
+\section*{Le seau percé}
+
+On peut se représenter le neurone comme un seau percé. Chaque impulsion qui arrive est une louche d'eau. L'eau s'écoule peu à peu par le trou. Si les louches arrivent souvent, l'eau a le temps de monter jusqu'au bord, et le seau bascule: le neurone émet un clic, le seau est vide, tout recommence. Si les louches arrivent rarement, l'eau a le temps de s'écouler et il ne se passe rien.
+
+\pencilfig{2}{\pencilart{2}}{Le neurone est un seau percé: les gouttes des entrées le remplissent, l'eau s'échappe; quand elle atteint le trait, c'est le clic.}
+
+Le trou est la grande différence entre un neurone et une porte logique. Le neurone ne garde pas en mémoire une impulsion pour toujours, mais quelques millisecondes. Tout ce qui arrive dans cette fenêtre s'additionne; ce qui est venu avant est oublié.
+
+\section*{\og Ou\fg{} et \og et\fg{}}
+
+Si une seule louche suffit à faire basculer le seau, le neurone répond à n'importe quelle entrée. C'est le \og ou\fg{}. S'il en faut deux, cela devient intéressant: sans chef d'orchestre, \og sont-elles arrivées toutes les deux?\fg{} n'a pas de sens tant qu'on n'a pas précisé \emph{dans quel délai}. Le neurone ne se déclenchera que si les deux impulsions arrivent presque en même temps, avant que la première louche se soit écoulée. C'est un \og et dans le temps\fg{}, un détecteur de coïncidences. Chez certains neurones, la fenêtre dure quelques millisecondes; chez les neurones de l'audition, une fraction de milliseconde.
+
+\section*{Ce que les \og plus\fg{} seuls ne savent pas faire}
+
+Essayez de construire un \og non\fg{}, un neurone qui travaille quand l'entrée se tait. Impossible: le silence ne verse pas d'eau dans le seau. Et c'est vrai non seulement pour un neurone, mais pour tout réseau fait uniquement de \og plus\fg{}: si l'on renforce les entrées, aucun neurone du réseau ne se mettra à travailler moins. D'où la propriété la plus gênante: \emph{on ne peut pas éteindre de l'activité avec de l'activité}. Un incendie déclaré ne s'arrête que d'une seule façon: en cessant d'y jeter du bois.
+
+La nature a trouvé un détour. Dans beaucoup d'organes des sens, un même stimulus est transmis par deux groupes de neurones. Dans l'œil, certaines cellules signalent \og plus clair\fg{}, d'autres \og plus sombre\fg{}. Si, au lieu d'un fil, on dispose d'une paire de fils \og oui\fg{} et \og non\fg{}, le \og non\fg{} s'obtient gratuitement: il suffit d'intervertir les fils. Avec de telles paires, on peut assembler à partir de \og plus\fg{} seulement n'importe quel circuit logique, et même savoir que le calcul est terminé: dans chaque paire, exactement un fil s'est allumé. C'est ainsi que les ingénieurs construisent des circuits asynchrones, qui fonctionnent correctement quels que soient les retards.
+
+\section*{Le temps tiré des retards}
+
+Sans chef d'orchestre, il n'y a pas d'horloge commune, mais on peut quand même calculer le temps. Un son venu du côté arrive à l'oreille la plus proche avant l'autre, avec une avance d'une fraction de milliseconde. Tirons depuis l'oreille gauche un fil qui longe de gauche à droite une rangée de détecteurs de coïncidences, et depuis l'oreille droite un fil qui la longe de droite à gauche. Les deux signaux courent l'un vers l'autre et se rencontrent au point où ils arrivent en même temps. C'est le détecteur situé à cet endroit qui se déclenche. La différence de temps est devenue le \emph{numéro} du neurone déclenché, c'est-à-dire la direction du son. La précision atteint une dizaine de microsecondes, alors que chaque neurone pris seul est bien moins précis: c'est le grand nombre de détecteurs qui sauve la mise.
+
+\pencilfig{102}{%
+% delay line: the left-ear wire runs right along the top, the right-ear wire runs left along the bottom
+\draw[pen=pcBlue] (0,0.6) -- (5.6,0.6); \draw[pen=pcBlue] (6.0,-0.6) -- (0.4,-0.6);
+\foreach \i in {1,...,7}{
+  \pgfmathsetmacro{\x}{0.75*\i}
+  \draw[pen=pcBlue] (\x,0.6) -- (\x,0.24); \draw[pen=pcBlue] (\x,-0.6) -- (\x,-0.24);
+  \ifnum\i=5 \draw[dotpen=pcAmber, wash=pcAmber, line width=1.1pt] (\x,0) circle (0.2);
+  \else \draw[dotpen=pcBlue, wash=pcBlue] (\x,0) circle (0.2); \fi}
+\draw[arr=pcBlue] (0.95,0.78) -- (1.75,0.78); \draw[arr=pcBlue] (5.3,-0.78) -- (4.5,-0.78);
+\node[lbl, anchor=east, align=right] at (-0.05,0.6) {oreille\\gauche};
+\node[lbl, anchor=west, align=left] at (6.05,-0.6) {oreille\\droite};
+\node[lbl, text=pcAmber!70!black, anchor=south] at (3.75,0.95) {rencontre ici};
+\draw[arr=pcAmber!70!black] (3.75,0.95) -- (3.75,0.68);
+% sound source on the left
+\draw[penlite] (-1.25,-0.25) -- (-1.05,-0.25) -- (-0.8,-0.45) -- (-0.8,0.05) -- (-1.05,-0.15) -- (-1.25,-0.15) -- cycle;
+\foreach \r in {0.2,0.35}{\draw[penlite] ($(-0.75,-0.2)+(-40:\r)$) arc (-40:40:\r);}
+\node[lbl, anchor=north] at (-0.95,-0.5) {son à gauche};
+}{Un son venu de gauche atteint d'abord l'oreille gauche; son signal a le temps d'aller plus loin, et la rencontre a lieu à droite du milieu. Le numéro du neurone déclenché donne la direction du son.}
+
+\section*{La mémoire est un feu de camp}
+
+Prenons un groupe de neurones qui s'excitent fortement les uns les autres. Si on l'allume par un bref signal, il s'entretient tout seul, comme un feu de camp qui s'alimente lui-même. Le signal est fini, mais le groupe brûle toujours: il se souvient que le signal a eu lieu. C'est une cellule de mémoire. Et si le signal était trop bref, le feu n'a pas le temps de prendre et s'éteint.
+
+Mais voilà le problème: comment effacer une telle mémoire? Par de l'activité, impossible. Reste à attendre que les neurones se fatiguent et que le feu s'éteigne de lui-même.
+
+\section*{Une minuterie lancée par un événement}
+
+Relions des groupes en chaîne: le premier allume le deuxième, le deuxième le troisième. Poussons le premier, et une vague parcourt la chaîne, comme une rangée de dominos. Le numéro du domino tombé indique combien de temps s'est écoulé depuis la poussée. Ce n'est pas une horloge qui bat en permanence, mais une minuterie que déclenche un événement et qui ne sert qu'une fois. Chez les oiseaux chanteurs, pendant le chant, les neurones d'une certaine région se déclenchent strictement à tour de rôle, très semblables à une telle chaîne.
+
+Ainsi, avec des \og plus\fg{} seulement, on obtient beaucoup. Il manque trois choses: choisir un élément parmi plusieurs, effacer la mémoire sur commande et empêcher le réseau de s'embraser. Toutes trois viennent des \og moins\fg{}, sujet du chapitre suivant.
+
+\fullversion{2}

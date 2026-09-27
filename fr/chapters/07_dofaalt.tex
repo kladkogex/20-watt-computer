@@ -1,0 +1,218 @@
+\chapter{Théories modernes alternatives de l'apprentissage par la dopamine}
+\chaptermark{Autres théories de \nt{DOPA}}
+\label{sec:dofaalt}
+
+\section{Ce qui passe vraiment dans le fil}
+
+Au chapitre~\ref{sec:dofa}, le système \nt{DOPA} était pour nous un seul fil portant un seul nombre, l'erreur de prédiction de la récompense $\delta$~\eqref{eq:ctd}. Cette image explique beaucoup, mais plus on mesure la dopamine avec précision, plus on trouve de choses qui n'y entrent pas. Certains neurones répondent à un événement désagréable comme à une récompense; la concentration de dopamine monte pendant que l'animal court vers le but, alors que rien d'inattendu ne se produit; différents neurones \nt{DOPA} se comportent différemment.
+
+Pour l'ingénieur, toutes ces découvertes posent une seule question: \emph{quel est le format du signal sur le bus de diffusion?} Un nombre ou un vecteur? Un seul signal dans le fil, ou plusieurs, séparés en fréquence? Parle-t-il de l'avenir, comme $\delta$, ou du passé? Voici six réponses modernes; pour chacune, nous séparerons ce qui est mesuré de ce qui est supposé.
+
+\section{Non pas un nombre, mais une distribution}
+
+L'erreur~\eqref{eq:ctd} apprend au critique l'attente \emph{moyenne} de la récompense. Mais une demi-goutte de jus certaine et une goutte avec une probabilité d'un demi ont la même moyenne. Pour les distinguer, il faut toute la distribution de la récompense.
+
+Prenons le problème le plus simple: après un indice annonciateur arrive une récompense de taille aléatoire $r$. Supposons qu'il y ait beaucoup de neurones \nt{DOPA} et que chacun, le $i$-ième, entretienne sa propre estimation $V_i$, de sorte qu'au moment de la récompense son erreur vaut $\delta_i=r-V_i$. Et supposons que chacun compte l'erreur positive avec le poids $\alpha_i^+$ et l'erreur négative avec le poids $\alpha_i^-$. Après chaque récompense, l'estimation se déplace de
+\begin{equation}
+\Delta V_i \;=\; \eta\,\bigl(\alpha_i^+\,[\delta_i]_+ \;-\; \alpha_i^-\,[-\delta_i]_+\bigr).
+\label{eq:asymmetric}
+\end{equation}
+L'estimation cesse de changer quand, en moyenne, les corrections positives équilibrent les négatives:
+\begin{empheq}[box=\keybox]{equation}
+\alpha_i^+\,\bigl\langle[r-V_i]_+\bigr\rangle \;=\; \alpha_i^-\,\bigl\langle[V_i-r]_+\bigr\rangle ,
+\qquad
+\kappa_i \;=\; \frac{\alpha_i^+}{\alpha_i^++\alpha_i^-} .
+\label{eq:expectile}
+\end{empheq}
+Pour $\kappa_i=1/2$, c'est la moyenne ordinaire. Pour $\kappa_i>1/2$, le neurone est \og optimiste\fg{}: son estimation est décalée vers le haut de la distribution; pour $\kappa_i<1/2$, il est \og pessimiste\fg{}.
+
+Exemple: le jus arrive avec la probabilité $1/2$, la goutte a la taille $1$. Alors~\eqref{eq:expectile} donne $\kappa_i\cdot\tfrac12(1-V_i)=(1-\kappa_i)\cdot\tfrac12V_i$, c'est-à-dire $V_i=\kappa_i$ (fig.~\ref{fig:expectiles}). Un ensemble de neurones de $\kappa_i$ différents enregistre la distribution de la récompense comme un ensemble de quantiles enregistre une distribution en statistique.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=7cm,y=3cm]
+\draw[->,gray!70!black] (-0.08,0) -- (1.15,0) node[right,black] {\small récompense};
+\draw[->,gray!70!black] (-0.08,0) -- (-0.08,0.75) node[left,black] {\small probabilité};
+\fill[blue!25] (-0.03,0) rectangle (0.03,0.5);
+\fill[blue!25] (0.97,0) rectangle (1.03,0.5);
+\node[below,font=\small] at (0,0) {$0$};
+\node[below,font=\small] at (1,0) {$1$};
+\node[left,font=\scriptsize] at (-0.08,0.5) {$1/2$};
+\foreach \k/\c/\lab/\h in {0.2/blue!60!black/{pessimiste, $\kappa=0.2$}/0.62, 0.5/gray!50!black/{moyenne, $\kappa=0.5$}/0.42, 0.8/red!70!black/{optimiste, $\kappa=0.8$}/0.22}{
+  \draw[very thick,\c] (\k,0) -- (\k,\h);
+  \node[above,font=\scriptsize,\c] at (\k,\h) {\lab};}
+\end{tikzpicture}
+\caption{La distribution de la récompense enregistrée par un ensemble de neurones \nt{DOPA}. Récompense $0$ ou $1$ avec la probabilité $1/2$ (barres bleues); un neurone de fraction $\kappa$ aboutit à l'estimation $V=\kappa$~\eqref{eq:expectile}.}
+\label{fig:expectiles}
+\end{figure}
+
+Ce qui est mesuré: les différents neurones \nt{DOPA} ont des \og points d'inversion\fg{} différents (la taille de récompense pour laquelle la réponse passe du pic au creux), et les neurones dont les réponses aux erreurs positives et négatives sont plus asymétriques s'inversent pour de plus grandes récompenses, comme l'exige~\eqref{eq:expectile}~\cite{Dabney2020}. À partir des réponses d'un groupe de neurones, on parvient à reconstituer la forme de la distribution. Que ce soit la fonction principale de cette dispersion, et non un effet secondaire, est une hypothèse.
+
+\begin{keyblock}
+\begin{proposition}[La distribution par l'asymétrie]
+\label{prop:expectile}
+Si les neurones \nt{DOPA} diffèrent par la fraction $\kappa_i$ avec laquelle ils comptent les erreurs positives, leurs estimations convergent vers différents points~\eqref{eq:expectile} de la distribution de la récompense. Le groupe de neurones transmet non pas la moyenne, mais la distribution, et par là même le risque.
+\end{proposition}
+\end{keyblock}
+
+\section{Non seulement l'erreur, mais l'importance}
+
+D'après la formule de l'erreur~\eqref{eq:ctd}, un événement désagréable (un choc, un goût amer) devrait provoquer un creux: c'est pire que prévu. Une partie des neurones \nt{DOPA} fait bien cela, mais une autre répond au désagréable par un \emph{pic}, comme à une récompense~\cite{Matsumoto2009}. Ces neurones ne signalent pas le signe de l'erreur, mais le fait que quelque chose d'\emph{important} s'est produit: d'inattendu, de fort, qui demande de l'attention~\cite{BrombergMartin2010}.
+
+Pour l'ingénieur, il est commode d'y voir deux signaux. Le premier est l'erreur signée $\delta$: dans quel sens modifier les poids. Le second est son module $|\delta|$ ou la nouveauté de l'événement: \emph{de combien} les modifier, c'est-à-dire la vitesse d'apprentissage; après un événement inattendu, il faut apprendre plus vite. Par son sens, il est proche du gain noradrénergique du chapitre~\ref{sec:neurontypes}.
+
+Il existe une troisième variante: un fil séparé pour un axe séparé. Les neurones \nt{DOPA} qui projettent vers l'une des régions de choix des actions ne répondent pas à la récompense, mais à la nouveauté et à l'intensité du stimulus, et ils sont nécessaires pour que l'animal apprenne à éviter le danger~\cite{Menegas2018}: ce qui passe dans le fil n'est pas \og mieux ou pire\fg{}, mais \og dangereux ou non\fg{}.
+
+Ce qui est mesuré: différents groupes de neurones \nt{DOPA} répondent différemment au désagréable et au nouveau, et différentes sorties enseignent des choses différentes. La manière dont le cerveau utilise le signal d'importance (comme vitesse d'apprentissage, comme signal d'attention ou comme erreur séparée sur l'axe du danger) est en discussion.
+
+\section{Non seulement enseigner, mais aussi presser}
+
+La dopamine a aussi une action immédiate: plus il y en a, plus l'animal agit volontiers et vite. Comment concilier cela avec l'apprentissage?
+
+La réponse de l'ingénieur est la \emph{séparation en fréquence}. Les pics et les creux rapides, d'une durée de quelques centaines de millisecondes, portent $\delta$ et enseignent. Le niveau lent, qui varie en quelques minutes, porte une autre grandeur, la récompense moyenne par unité de temps $\bar R$~\cite{Niv2007}. Supposons qu'une action exécutée en un temps $\tau_a$ exige un effort $C/\tau_a$: plus c'est rapide, plus c'est cher. En revanche, chaque seconde de retard coûte $\bar R$, la récompense qu'on aurait pu obtenir pendant ce temps. Le coût total $C/\tau_a+\bar R\,\tau_a$ est minimal pour
+\begin{empheq}[box=\keybox]{equation}
+\tau_a^{*} \;=\; \sqrt{\frac{C}{\bar R}} .
+\label{eq:vigor}
+\end{empheq}
+Plus l'environnement est riche, plus le temps coûte cher et plus il est avantageux d'agir vite: si $\bar R$ double, le temps d'action diminue d'un facteur $\sqrt2\approx1.4$. Remarquez que $\bar R$ est la récompense attendue que l'on soustrayait au chapitre~\ref{sec:dofa}.
+
+La libération de dopamine sur place peut varier sans que change la fréquence des impulsions: des signaux locaux l'ajustent au niveau même des sorties~\cite{Mohebi2019}. Mais les impulsions elles-mêmes contiennent aussi des composantes lentes: dans les expériences de la section suivante, la montée progressive à l'approche de la récompense se voit aussi dans la fréquence des neurones \nt{DOPA}~\cite{Kim2020}. Le niveau lent a donc deux sources, la fréquence des impulsions et la régulation locale de la libération, et laquelle domine dépend apparemment de la sortie et de la tâche.
+
+\begin{keyblock}
+\begin{proposition}[Deux signaux sur un même fil]
+\label{prop:multiplex}
+Le système \nt{DOPA} transmet au moins deux grandeurs séparées dans le temps: l'erreur rapide $\delta$, qui enseigne, et le niveau lent, qui fixe le prix du temps~\eqref{eq:vigor} et par là la vitesse des actions. Il est mesuré que les composantes rapide et lente se comportent différemment; que la composante lente soit précisément $\bar R$ est une hypothèse.
+\end{proposition}
+\end{keyblock}
+
+\section{La montée à l'approche}
+
+Quand un animal court dans un couloir vers une récompense lointaine, la concentration de dopamine dans la région de choix des actions monte progressivement pendant plusieurs secondes, à mesure que le but se rapproche~\cite{Hamid2016}. D'après le chapitre~\ref{sec:dofa}, cela ne devrait pas arriver: tout se déroule comme prévu, et $\delta$ devrait être nul.
+
+Première explication: cette montée n'est pas $\delta$, mais l'attente $V$ elle-même, le signal \og le but est proche, cela vaut la peine de faire un effort\fg{} de la section précédente~\cite{Hamid2016}. La seconde explication conserve $\delta$~\cite{Kim2020}. Si l'attente est juste, alors, avec l'horizon $\tau_\gamma$, elle croît sur le chemin vers la récompense $R$ comme $V=Re^{-(T-t)/\tau_\gamma}$, et d'après la formule de l'erreur~\eqref{eq:ctd}, $\dd V/\dd t-V/\tau_\gamma=0$. Mais supposons que, de loin, l'attente soit sous-estimée et que l'estimation se précise à l'approche. L'attente croît alors plus vite, disons comme $V=Re^{-(T-t)/\tau_v}$ avec $\tau_v<\tau_\gamma$, et
+\begin{empheq}[box=\keybox]{equation}
+\delta(t) \;=\; \frac{\dd V}{\dd t}-\frac{V}{\tau_\gamma} \;=\; V\Bigl(\frac{1}{\tau_v}-\frac{1}{\tau_\gamma}\Bigr) \;>\; 0 .
+\label{eq:ramp}
+\end{empheq}
+L'erreur est positive et croît avec $V$: c'est bien la montée progressive (fig.~\ref{fig:ramp}). Pour $\tau_\gamma=4\,\text{s}$ et $\tau_v=1\,\text{s}$, on obtient $\delta=0.75\,V$ par seconde. Cette version a été testée dans un couloir virtuel, en téléportant l'animal plus près du but: la dopamine a répondu par un pic, comme il convient à une dérivée, et non par un niveau progressif~\cite{Kim2020}.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=1.6cm,y=2.6cm]
+\draw[->,gray!70!black] (-4.2,0) -- (0.5,0) node[below left,black] {\small $t$};
+\draw[->,gray!70!black] (-4.2,0) -- (-4.2,1.2);
+\foreach \x/\l in {-4/{$T-4$},-2/{$T-2$},0/{$T$}}{\draw[gray!60!black] (\x,-0.03) -- (\x,0.03); \node[below,font=\scriptsize] at (\x,0) {\l\,s};}
+\draw[thick,densely dashed,gray!60!black] plot[domain=-4:0,samples=40] (\x,{exp(\x/4)});
+\draw[very thick,blue!60!black] plot[domain=-4:0,samples=60] (\x,{exp(\x)});
+\draw[very thick,red!70!black] plot[domain=-4:0,samples=60] (\x,{0.75*exp(\x)});
+\node[anchor=south east,font=\small,gray!50!black] at (-1.3,0.77) {$V$ pour $\tau_v=\tau_\gamma$: $\delta=0$};
+\node[right,font=\small,blue!60!black] at (0.05,1.0) {$V$ pour $\tau_v=1\,\text{s}$};
+\node[right,font=\small,red!70!black] at (0.05,0.72) {$\delta$ selon~\eqref{eq:ramp}};
+\end{tikzpicture}
+\caption{La montée de la dopamine à l'approche de la récompense vue comme une erreur de prédiction, $\tau_\gamma=4\,\text{s}$. En tirets, l'attente qui croît exactement comme l'exige l'horizon ($\delta=0$); en bleu, l'attente qui croît plus vite; en rouge, l'erreur~\eqref{eq:ramp}.}
+\label{fig:ramp}
+\end{figure}
+
+Ce qui est mesuré: la montée progressive existe, à la fois dans la concentration de dopamine et dans la fréquence des impulsions des neurones \nt{DOPA}~\cite{Kim2020}, et les sauts instantanés de situation provoquent des sauts de dopamine. Laquelle des deux explications est la bonne (ou si les deux le sont, sur des sorties différentes) est en discussion.
+
+\section{Le regard en arrière}
+
+Toutes les théories ci-dessus regardent \emph{en avant}. L'une des théories modernes inverse le sens~\cite{Jeong2022}. Supposons que le cerveau n'apprenne pas à prédire la récompense à partir de l'indice, mais, une fois la récompense reçue, \emph{regarde en arrière}: quel événement l'a précédée plus souvent que les autres? La mesure de ce lien est une différence de deux probabilités:
+\begin{empheq}[box=\keybox]{equation}
+M \;=\; P(\text{indice avant la récompense}) \;-\; P(\text{indice dans une fenêtre au hasard}) .
+\label{eq:retro}
+\end{empheq}
+Si l'indice survient souvent sans récompense, le second terme est grand, et le lien est faible. Dans cette théorie, la dopamine ne signale pas une erreur de prédiction, mais la mesure dans laquelle un événement donné est une \emph{cause} probable de la récompense.
+
+Le mécanisme du regard en arrière exige la même chose que la règle à trois facteurs du chapitre~\ref{sec:dofa}: chaque événement doit laisser une trace qui s'efface, pour qu'au moment de la récompense on puisse lire ce qui l'a précédée. La différence n'est pas dans la synapse, mais dans ce que transmet \nt{DOPA}.
+
+Dans les expériences où la théorie~\eqref{eq:retro} et l'erreur~\eqref{eq:ctd} prédisent des choses différentes, la libération de dopamine a suivi la première dans plusieurs cas~\cite{Jeong2022}. Mais dans d'autres expériences, la réponse dopaminergique s'est déplacée progressivement, au cours de l'apprentissage, du moment de la récompense vers celui de l'indice, comme l'exige l'apprentissage par l'erreur~\eqref{eq:ctd}~\cite{Amo2022}. On ne sait pas encore quelle théorie décrit le cerveau.
+
+\section{Une erreur qui ne porte pas que sur la récompense}
+
+La dernière extension porte sur l'\emph{objet} de l'erreur. Si l'on remplace le jus attendu par un autre, de même valeur mais de goût différent, la valeur n'a pas changé, et l'erreur~\eqref{eq:ctd} est nulle. Pourtant, les neurones \nt{DOPA} répondent à cette substitution~\cite{Takahashi2017}. Et des pics de dopamine provoqués artificiellement peuvent apprendre à l'animal un lien entre deux stimuli neutres, sans aucune récompense~\cite{Sharpe2017}. Il semble que \nt{DOPA} signale l'erreur de prédiction non seulement de la récompense, mais aussi de \emph{ce qui} va se produire.
+
+Formellement, c'est une généralisation simple de~\eqref{eq:ctd}: au lieu d'un seul flux de récompense $r$, on prend un ensemble de caractéristiques de ce qui se passe, $\varphi_k$ (goût, lieu, son), et pour chacune sa propre attente $M_k$ et sa propre erreur~\cite{Gardner2018}:
+\begin{empheq}[box=\keybox]{equation}
+\delta_k(t) \;=\; \varphi_k(t) \;+\; \frac{\dd M_k}{\dd t} \;-\; \frac{M_k}{\tau_\gamma} ,
+\qquad k=1,\dots,K .
+\label{eq:vectortd}
+\end{empheq}
+La récompense n'est qu'une des caractéristiques, et le vecteur des erreurs n'enseigne pas seulement ce qui est bon, mais aussi ce qui suit quoi: un modèle du monde.
+
+L'hétérogénéité des neurones \nt{DOPA} va dans le même sens: dans une même tâche, différents neurones portent différentes grandeurs, les uns liés à la récompense, d'autres au mouvement, d'autres encore à la direction de l'attention~\cite{Engelhard2019}.
+
+\begin{keyblock}
+\begin{proposition}[Un faisceau au lieu d'un fil]
+\label{prop:bundle}
+Le signal du système \nt{DOPA} n'est pas un nombre unique. Il est réparti entre les neurones (distribution~\eqref{eq:expectile}, caractéristiques différentes~\eqref{eq:vectortd}, axe séparé du danger) et dans le temps (erreur rapide et niveau lent~\eqref{eq:vigor}). L'erreur scalaire~\eqref{eq:ctd} est une première approximation de ce signal, comme le sommateur à seuil est une première approximation du neurone.
+\end{proposition}
+\end{keyblock}
+
+\section{Bilan}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{2.5cm}>{\raggedright}p{3.2cm}>{\raggedright}p{3.6cm}>{\raggedright\arraybackslash}p{4.2cm}}
+\toprule
+Théorie & Ce qui passe dans le fil & Mesure principale & Ce qu'on sait \\
+\midrule
+erreur de prédiction (chap.~\ref{sec:dofa}) & scalaire $\delta$~\eqref{eq:ctd} & pic, transfert sur l'indice, creux & mesuré; première approximation \\
+distribution & ensemble de $\delta_i$ d'asymétries différentes & points d'inversion différents selon les neurones & accord avec l'expérience; rôle de la dispersion: hypothèse \\
+importance & $|\delta|$, nouveauté; axe du danger & pics au désagréable chez une partie des neurones & mesuré; son usage est en discussion \\
+prix du temps & niveau lent $\bar R$ & la dopamine accélère les actions; composante lente dans la libération aux sorties et dans la fréquence des impulsions & séparation rapide/lent mesurée; $\bar R$: hypothèse \\
+montée à l'approche & $V$, ou $\delta$ quand l'estimation se précise~\eqref{eq:ramp} & montée progressive, sauts lors de la téléportation dans le couloir & montée mesurée; explication en discussion \\
+regard en arrière & mesure du lien causal~\eqref{eq:retro} & expériences où les deux théories divergent & résultats contradictoires \\
+vecteur d'erreurs & $\delta_k$ par caractéristique~\eqref{eq:vectortd} & réponse au changement de goût; apprentissage sans récompense & mesuré; forme vectorielle: hypothèse \\
+\bottomrule
+\end{tabular}
+\caption{Ce que transmet le système \nt{DOPA}: l'image standard du chapitre~\ref{sec:dofa} et ses extensions modernes.}
+\label{tab:dofaalt}
+\end{table}
+
+Les théories du tableau~\ref{tab:dofaalt} ne s'excluent pas: presque toutes gardent l'erreur de prédiction comme base et en élargissent le format. Seul le regard en arrière lui fait sérieusement concurrence, et ce débat sera tranché par l'expérience. Pour l'ingénieur, la conclusion est simple: le prix de la diffusion de la proposition~\ref{prop:broadcastcost} baisse si le fil est en réalité un ensemble de fils aux destinataires différents.
+
+\section{Exercices}
+
+\begin{exercise}[\lvlA]
+\label{ex:07:1}
+\emph{Les points de la distribution pour une seule goutte.} Un jus de taille $1$ arrive avec la probabilité $p=0.2$, sinon la récompense vaut $0$. Trouvez par~\eqref{eq:expectile} $V_i$ pour $\kappa_i=0.2$, $0.5$, $0.8$. Que vaut la médiane de cette récompense, et en quoi le point~\eqref{eq:expectile} diffère-t-il d'un quantile?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:07:2}
+\emph{La distribution d'après deux neurones.} La récompense vaut $0$ ou $x$, avec la probabilité $p$ pour $x$. Deux neurones à règle~\eqref{eq:asymmetric} ont signalé $V(1/2)=0.25$ et $V(0.8)=0.5$. Retrouvez $p$, $x$ et l'écart type de la récompense. Que signalera un neurone avec $\kappa=0.2$?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:07:3}
+\emph{Simulation: la distribution par l'asymétrie.} Simulez neuf neurones \nt{DOPA} avec $\kappa_i=0.1,\dots,0.9$ et la règle~\eqref{eq:asymmetric}, $\alpha_i^+=2\kappa_i$, $\alpha_i^-=2(1-\kappa_i)$, pour une récompense uniforme sur $[0,1]$. Comment la dispersion des $V_i$ dépend-elle de $\eta$, et quel $\eta$ faut-il pour distinguer cette distribution de deux gouttes équiprobables $0.25$ et $0.75$?
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:07:4}
+\emph{Le prix du temps.} (a)~Établissez~\eqref{eq:vigor} et trouvez le coût total à l'optimum. (b)~Le cerveau a estimé $\bar R$ avec une erreur d'un facteur $k$. Trouvez le surcoût relatif pour $k=2$ et $k=4$. Avec quelle précision le niveau lent de dopamine doit-il signaler $\bar R$?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:07:5}
+\emph{Pic lors de la téléportation.} L'attente croît selon~\eqref{eq:ramp} avec $\tau_v=1\,\text{s}$, $\tau_\gamma=4\,\text{s}$; l'animal est téléporté instantanément du point $T-2\,\text{s}$ au point $T-1\,\text{s}$. Trouvez l'aire du pic de $\delta$ en fraction de $R$, et combien de secondes de rampe avant le saut il remplace. Que montrera la téléportation si la dopamine signale $V$ lui-même?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:07:6}
+\emph{Conception: deux signaux sur un fil.} Le fil \nt{DOPA} porte un niveau qui croît de $s=1/60$~imp/s chaque seconde, et des événements de $A=3$ impulsions. Une synapse à trace $\tau_e=1\,\text{s}$ soustrait de la fréquence sa copie lissée avec $\tau_f$. Pour quels $\tau_f$ perd-on au plus $10\,\%$ de l'événement, en gardant l'apport du niveau pendant la trace sous $10\,\%$ de celui de l'événement?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:07:7}
+\emph{Conception d'expérience: regard en arrière contre erreur.} Dans une fenêtre, l'indice survient avec la probabilité $0.1$, et après lui la récompense avec la probabilité $0.8$. Comparez $\Delta P=P(\text{réc.}\mid\text{ind.})-P(\text{réc.}\mid\text{sans})$ et $M$ de~\eqref{eq:retro} si (a)~l'on ajoute des récompenses sans indice, $0.08$ par fenêtre; (b)~l'on double la fréquence de l'indice sans récompenses.
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:07:8}
+\emph{Le faisceau et le prix de la diffusion.} Dans le modèle de l'exercice~\ref{ex:06:8}, les $N$ neurones sont répartis en $K$ groupes, chacun avec son fil, et dans chaque fil s'infiltre une fraction $\rho$ des erreurs des autres. Montrez que la constante d'apprentissage vaut $N/K+2+\rho^2N(1-1/K)$. Combien d'essais donne-t-elle pour $K\to\infty$, $N=10^{10}$ et $\rho=0.01$?
+\end{exercise}

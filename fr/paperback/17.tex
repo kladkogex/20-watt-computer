@@ -1,0 +1,28 @@
+\chapter{Réparer une machine sans schéma}
+% version complète: chapters/17_debugging.tex
+
+\pencilfig{17}{\pencilart{17}}{Une carte sans schéma: la sonde n'entend que quelques fils sur des milliards.}
+
+Imaginez qu'on vous remette une carte électronique qui fonctionne, sans son schéma, en vous demandant de la réparer. L'ingénieur dispose de quatre outils: une sonde pour écouter un signal; un générateur pour injecter son propre signal; la possibilité de débrancher un composant pour voir ce qui tombe en panne; et l'accès aux registres de contrôle. Ce sont exactement les outils avec lesquels on étudie aussi le cerveau.
+
+\section*{Une sonde pour mille neurones}
+
+Une électrode plantée dans le cerveau entend les clics de quelques neurones proches. On pourrait croire que, sur quatre-vingt-six milliards, mille électrodes ne sont rien. Pourtant, elles suffisent pour piloter un curseur à l'écran. Pourquoi? Les neurones voisins font un bruit semblable, et l'activité qui commande la main se décrit en réalité par une dizaine ou deux de variables communes. Inutile d'écouter tout le monde, il suffit d'entendre ces quelques \og voix\fg{}.
+
+Le signal brut de mille électrodes, ce sont des centaines de millions de bits par seconde: aucun canal radio ne peut les faire sortir de sous le crâne. Or les clics eux-mêmes en portent environ mille fois moins. Il est donc avantageux d'extraire les clics directement sur l'implant et de n'envoyer qu'eux vers l'extérieur: la même astuce de compression que dans l'œil.
+
+\section*{Ce que fait Neuralink}
+
+L'entreprise Neuralink s'est attaquée au versant ingénierie du problème: de fins fils souples au lieu d'aiguilles rigides, un robot qui les implante et un implant sans fil étanche. Son article publié décrit un système relié à l'ordinateur par un câble, la compression et la liaison sans fil y étant présentées comme des projets. Les données sur une personne aux mains paralysées qui pilote un curseur ne sont connues pour l'instant que par les comptes rendus de l'entreprise elle-même; d'après eux, l'implant compte environ mille canaux sur quelques dizaines de fils, et une partie des fils s'est déplacée après l'implantation. L'idée elle-même n'est pas neuve: des équipes universitaires utilisant des matrices rigides d'une centaine d'électrodes avaient déjà permis à des personnes de piloter un curseur, d'\og écrire\fg{} des lettres par la pensée et de transformer leurs tentatives de parole en texte à l'écran, à une soixantaine de mots par minute.
+
+\section*{Lecture et écriture}
+
+Le décodeur lit les fréquences de clics de nombreux neurones et en tire moins de dix bits par seconde, une part infime de ce que portent les neurones eux-mêmes. En revanche, le cerveau et le décodeur apprennent l'un de l'autre: la personne s'adapte au décodeur, le décodeur à la personne. Deux élèves qui s'ajustent l'un à l'autre, c'est un problème délicat: même quand chacun est stable pris isolément, ensemble ils peuvent se mettre à osciller.
+
+Écrire dans le cerveau est plus difficile que lire. Le courant d'une électrode excite tout ce qui l'entoure, et non un seul neurone voulu. On peut \og dessiner\fg{} des points lumineux, comme des pixels allumés, et la personne distinguera des lettres simples. Mais écrire le code compressé de l'œil de façon que le cerveau voie une image, personne ne sait encore le faire.
+
+\section*{Ce que la sonde ne voit pas}
+
+L'électrode entend le réseau téléphonique des données. Mais les stations de radio, dopamine, sérotonine, noradrénaline, acétylcholine, sont des concentrations de substances, et la sonde ne les entend pas. Elle ne voit pas non plus la force des connexions, où loge toute la mémoire. Et elle ne voit pas la douleur telle que la personne la ressent. Un débogueur qui voit les données mais pas les registres s'étonnera toujours qu'une même entrée donne des réponses différentes.
+
+\fullversion{17}

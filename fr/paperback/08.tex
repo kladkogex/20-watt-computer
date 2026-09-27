@@ -1,0 +1,45 @@
+\chapter{Le bouton de l'audace}
+% version complète: chapters/08_nora.tex
+
+Vous choisissez où déjeuner. Aller dans le café que vous connaissez, ou en essayer un nouveau? Si vous allez toujours au même, vous ne saurez jamais qu'il y a mieux au coin de la rue. Si vous essayez sans cesse du nouveau, vous mangerez souvent mal. Où est le juste milieu? Ce problème, chercher ou profiter de ce qu'on a trouvé, se pose à tout être qui apprend. Dans le cerveau, il est apparemment confié à la station \nt{NORA}, la noradrénaline.
+
+\section*{Le bouton de contraste}
+
+La noradrénaline change la netteté avec laquelle un neurone répond à un signal. Quand son action est faible, le neurone ressemble à un variateur de lumière: un peu plus de signal, une réponse un peu plus vive. Quand elle est forte, il ressemble à un interrupteur: sous le seuil, le silence; au-dessus, la réponse complète. Plus exactement, les expériences montrent que la noradrénaline étouffe le bavardage de fond des neurones plus que leur réponse à un vrai signal; le \og bouton de contraste\fg{} est un modèle commode de cet effet.
+
+\pencilfig{8}{\pencilart{8}}{Le bouton de l'audace: tourné à gauche, la machine essaie du nouveau; à droite, elle choisit résolument ce qui a fait ses preuves.}
+
+\section*{Réfléchir ou décider}
+
+Rappelez-vous, au troisième chapitre, les deux groupes qui se freinent mutuellement. Quand le contraste est bas, les deux travaillent, le plus faible un peu moins fort: le réseau \og réfléchit\fg{} encore, il pèse les options. Quand le contraste dépasse un certain seuil, le réseau passe brusquement en mode \og décidé\fg{}: un groupe l'emporte, l'autre se tait. Un seul bouton fait passer la machine de la réflexion à la décision.
+
+\section*{Combien chercher}
+
+Ajoutons du bruit. À faible contraste, le bruit l'emporte facilement sur une petite différence entre les options, et la machine essaie souvent une option qui n'est pas la meilleure: elle cherche. À fort contraste, le bruit ne décide plus rien, et la machine prend toujours ce qu'elle croit le meilleur: elle en profite.
+
+Dans notre modèle, le monde change de temps en temps: la meilleure option devient la pire. Le gain dépend du bouton comme un U renversé. Trop peu de contraste: la machine erre à l'aveugle. Trop: elle ne remarque pas que le monde a changé et retourne obstinément dans le café qui s'est dégradé. Et plus le monde change souvent, plus le meilleur réglage est bas: dans un monde changeant, chercher paie davantage.
+
+\pencilfig{108}{%
+% points: models/nora_explore.py, reward as a share of the best possible, gain 0.5 ... 64 (doubling); the y axis starts at 0.70, hence the break mark
+\draw[pen] (0,0) -- (6.3,0); \draw[pen] (0,0) -- (0,0.18); \draw[pen] (0,0.34) -- (0,2.4);
+\draw[pcGray, line width=0.6pt] (-0.1,0.14) -- (0.1,0.22); \draw[pcGray, line width=0.6pt] (-0.1,0.3) -- (0.1,0.38);
+\node[lbl, anchor=north] at (3.0,-0.05) {bouton de contraste};
+\node[lbl, anchor=south, rotate=90] at (-0.1,1.3) {gain};
+\draw[penlite=pcBlue] plot[smooth] coordinates {(0.00,0.55) (0.85,0.79) (1.70,1.19) (2.55,1.68) (3.40,2.00) (4.25,2.07) (5.10,2.01) (5.95,1.91)};
+\draw[penlite=pcRed] plot[smooth] coordinates {(0.00,0.55) (0.85,0.69) (1.70,0.93) (2.55,1.24) (3.40,1.40) (4.25,1.28) (5.10,1.06) (5.95,0.89)};
+\draw[dotpen=pcBlue, wash=pcBlue] (4.25,2.07) circle (0.07);
+\draw[dotpen=pcRed, wash=pcRed] (3.40,1.40) circle (0.07);
+\node[lbl, text=pcBlue, anchor=south] at (4.25,2.15) {le monde change rarement};
+\node[lbl, text=pcRed, anchor=north] at (3.40,1.30) {souvent};
+\node[lbl, anchor=north west, align=left] at (0.05,-0.35) {erre\\à l'aveugle}; \node[lbl, anchor=north east, align=right] at (6.3,-0.35) {ne voit pas\\les changements};
+}{Gain du modèle selon la position du bouton. Chaque courbe a un sommet; quand le monde change souvent, il est plus bas et plus à gauche.}
+
+\section*{Qui tourne le bouton}
+
+L'indice naturel d'un changement est l'inattendu: les erreurs deviennent plus grandes que d'habitude. Selon une hypothèse, c'est justement un tel changement inattendu que signale la noradrénaline. Une subtilité compte ici: le niveau constant, de fond, de noradrénaline est plutôt lié à la recherche et à la distraction, tandis que les brèves bouffées lors d'un événement important sont liées à la concentration et à la décision. La bouffée fonctionne peut-être comme une interruption dans un ordinateur: \og laisse tomber ce que tu fais, le monde a changé, refais le plan\fg{}.
+
+Un indice indirect de ce système se voit de l'extérieur: la pupille se dilate quand quelque chose change de façon inattendue et que les gens se mettent à apprendre plus vite. Certes, la pupille ne suit pas que la noradrénaline; c'est donc un indice, pas un instrument de mesure.
+
+Et un aveu honnête: dans notre modèle, ajuster le bouton selon l'inattendu n'a gagné que très peu par rapport au meilleur réglage fixe. Où un tel ajustement est vraiment rentable reste à comprendre.
+
+\fullversion{8}

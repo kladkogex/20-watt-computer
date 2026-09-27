@@ -1,0 +1,46 @@
+\chapter{Ce que la machine fait la nuit}
+% version complète: chapters/20_sleep.tex
+
+Le sommeil n'est pas l'arrêt de la machine, mais un changement de mode. On le voit aux stations de radio. Dans le sommeil profond, presque toutes sont en sourdine: acétylcholine, noradrénaline, sérotonine. Dans le sommeil avec rêves, l'acétylcholine revient à son niveau diurne, la noradrénaline et la sérotonine se taisent presque, et la sortie vers les muscles est coupée par les freins: c'est pourquoi, en rêve, nous ne courons pas après ce que nous fuyons dans le rêve. Tout cela est mesuré.
+
+\section*{Quand il est temps de dormir}
+
+Imaginez un condensateur qui se charge toute la journée pendant que vous êtes éveillé, et se décharge la nuit. La charge, c'est la \og pression de sommeil\fg{}. Vous vous endormez quand la charge atteint le seuil haut, et vous vous réveillez quand elle redescend au seuil bas. Et les seuils eux-mêmes montent et descendent en douceur avec le rythme quotidien du chapitre 16. Ce schéma simple aboutit tout seul à seize heures de veille et huit heures de sommeil. Il explique aussi pourquoi, après une nuit blanche, nous ne dormons pas deux fois plus longtemps, mais plus profondément: un condensateur plein se décharge plus vite. Le candidat au rôle de \og charge\fg{} est une substance qui s'accumule dans le cerveau pendant qu'il travaille; que ce soit bien elle reste une hypothèse.
+
+\pencilfig{120}{%
+% figures/sleep_{S,H,L}.dat from models/sleep_models.py, t in hours
+\begin{scope}[x=0.1cm, y=2.6cm]
+\foreach \a/\b in {0/4.3,21.2/29.3,45.4/53.4,69.5/72}{\fill[pcBlue, opacity=0.1] (\a,0) rectangle (\b,1);}
+\draw[pen] (0,0) -- (72,0);
+\draw[penlite=pcRed, densely dashed] plot file {figures/sleep_H.dat};
+\draw[penlite=pcGreen, densely dashed] plot file {figures/sleep_L.dat};
+\draw[pcBlue, line width=1.0pt] plot file {figures/sleep_S.dat};
+\foreach \t/\l in {0/0,24/1 jour,48/2 jours,72/3 jours}{\draw[pcGray, line width=0.5pt] (\t,0) -- (\t,-0.04); \node[lbl, anchor=base] at (\t,-0.16) {\l};}
+\node[lbl, text=pcBlue] at (25.25,0.93) {sommeil}; \node[lbl, text=pcBlue] at (49.4,0.93) {sommeil};
+\end{scope}
+\node[lbl, text=pcRed, anchor=west] at (7.3,2.0) {s'endormir};
+\node[lbl, text=pcGreen!70!black, anchor=west] at (7.3,0.62) {se réveiller};
+\node[lbl, text=pcBlue, anchor=west, align=left] at (7.3,1.35) {pression\\de sommeil};
+}{La pression de sommeil s'accumule le jour et fond la nuit; on s'endort au seuil haut, on se réveille au seuil bas, et les deux seuils oscillent au fil des jours.}
+
+\section*{La balançoire lente}
+
+Dans le sommeil profond, des régions entières du cerveau s'allument et s'éteignent de façon synchrone, moins d'une fois par seconde. C'est un schéma déjà connu: un groupe qui s'excite lui-même et se fatigue est un oscillateur. Le jour, l'acétylcholine supprime la fatigue des neurones, et le même groupe travaille régulièrement; la nuit, elle se fait rare, et le réseau se met à osciller.
+
+\pencilfig{20}{\pencilart{20}}{La nuit, le réseau oscille lentement: tantôt presque tous les neurones travaillent, tantôt presque tous se taisent.}
+
+\section*{L'avance rapide}
+
+C'est dans ces oscillations que se passe le plus intéressant. Les séquences de déclenchement de neurones survenues dans la journée sont \og rejouées\fg{}, et bien plus vite: environ vingt fois plus vite dans la région de la mémoire, quelques fois plus vite dans le cortex. Si l'on renforce artificiellement l'accord entre ces rejeux et les oscillations lentes, la mémoire s'améliore: c'est une expérience causale. À quoi cela sert-il? Hypothèse plausible: la mémoire à long terme, lente, apprend sur des répétitions entremêlées d'anciens souvenirs, afin que le nouveau n'efface pas l'ancien. Les ingénieurs connaissent ce fléau: un réseau de neurones entraîné sur une nouvelle tâche oublie l'ancienne si on ne lui répète pas les anciens exemples.
+
+\section*{L'élagage des connexions}
+
+Autre fait mesuré: après le sommeil, les contacts entre neurones deviennent en moyenne plus petits, de quelques pour cent à quelques dizaines de pour cent, en proportion de leur taille. Comme si l'on baissait tous les volumes d'un seul geste: les proportions sont conservées, l'appris demeure, et de la place se libère pour l'apprentissage du lendemain. Que ce soit la tâche principale du sommeil est une hypothèse.
+
+\section*{Rêves et ménage}
+
+Le sommeil avec rêves ressemble à un essai sur banc: la machine tourne à pleine puissance, mais ses entrées sont remplacées par des signaux internes et sa sortie est coupée. À quoi cela sert, nous l'ignorons. L'idée que, pendant le sommeil, le cerveau se \og rince\fg{} de ses déchets reste discutée: il y a des expériences pour et contre.
+
+Le plus étonnant: le sommeil peut être local. Après une longue veille, certaines zones du cortex d'une personne éveillée \og s'endorment\fg{} un instant, se taisant en plein travail.
+
+\fullversion{20}

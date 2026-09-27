@@ -1,0 +1,164 @@
+\chapter{Une machine faite de neurones vivants}
+\chaptermark{Une machine faite de neurones vivants}
+\label{sec:livingmachine}
+
+\section{Un banc d'essai au schéma ouvert}
+
+Au chapitre~\ref{sec:debugging}, nous avons débogué une machine dont on n'a pas le schéma: la sonde entend mille neurones sur quatre-vingts milliards, et il faut deviner tout le reste. Dans cette situation, un ingénieur ferait une chose simple: il monterait un petit morceau du circuit sur une plaque d'essai, où chaque composant est visible. Avec des neurones, c'est aussi possible.
+
+On dissocie des neurones du cortex et on les cultive sur une puce munie d'une matrice d'électrodes, de quelques dizaines à plusieurs dizaines de milliers. En quelques semaines, les cellules émettent des prolongements et se connectent en un réseau de milliers ou de centaines de milliers de neurones, surtout des \nt{GLUT}, avec une part plus faible de \nt{GABA} qui dépend de la préparation: dans les cultures d'hippocampe, elle est d'environ $6\%$ des neurones~\cite{Benson1994}. Chaque électrode sait à la fois écouter, comme la sonde du chapitre~\ref{sec:debugging}, et injecter du courant, comme un signal de test. La seconde variante du banc, ce sont les \emph{organoïdes}: des boulettes tridimensionnelles de tissu nerveux d'environ un millimètre, cultivées à partir de cellules souches humaines~\cite{Lancaster2013}. Sur de tels bancs, les réseaux vivants fonctionnent pendant des mois; certaines plateformes permettent de mener des expériences sur des organoïdes à distance, par le réseau, plus de cent jours d'affilée~\cite{Jordan2024}. Ce domaine s'appelle le \emph{calcul biologique} ou l'\emph{intelligence organoïde}~\cite{Smirnova2023}.
+
+Le banc diffère du cerveau sur deux points importants. Il est minuscule: il compte cent mille fois moins de neurones. Et il n'a pas de canaux de diffusion: une culture de cortex ne contient aucun neurone \nt{DOPA}, \nt{SERO}, \nt{NORA} ou \nt{ACET}. C'est une machine qui possède un bus de données et un contrôle de flux, mais pas de registres de contrôle. Voyons de quoi elle est capable.
+
+\section{Ce que le réseau fait tout seul}
+
+Laissée au repos, une culture ne se tait pas et ne produit pas non plus un bruit uniforme. De temps en temps, presque tout le réseau s'embrase d'un coup, en une \emph{salve}, puis retombe dans le silence; l'intervalle entre les salves va d'une seconde à plusieurs minutes selon la culture~\cite{Wagenaar2006}. Pour un ingénieur, le tableau est familier: un amplificateur à forte contre-réaction positive et sans charge devient un oscillateur.
+
+Nous connaissons déjà le mécanisme. Les fortes connexions mutuelles des neurones \nt{GLUT} déclenchent une avalanche, comme au chapitre~\ref{sec:gaba} lorsque les conditions de la proposition~\ref{prop:ei} ne sont pas remplies. L'avalanche épuise vite la réserve de neurotransmetteur dans les synapses~\eqref{eq:depression}, et le réseau se tait. La réserve se reconstitue avec une constante de temps $\tau_{\text{rec}}$, et lorsque la fraction $x^*$ suffisante pour une nouvelle avalanche est rétablie, une nouvelle salve suit. L'intervalle entre salves vaut
+\begin{empheq}[box=\keybox]{equation}
+T_{\text{salve}} \;\approx\; \tau_{\text{rec}}\,\ln\frac{1}{1-x^*} .
+\label{eq:burstinterval}
+\end{empheq}
+Avec $\tau_{\text{rec}}=0.8\,\text{s}$ du chapitre~\ref{sec:code} et $x^*=0.9$, on obtient environ deux secondes; avec $x^*=0.99$, environ quatre. C'est une estimation du modèle avec le $\tau_{\text{rec}}$ du livre, et elle tombe dans le bas de la plage des intervalles mesurés. Une mesure directe sur des microcultures montre que la réserve de neurotransmetteur se reconstitue après une salve en quelques dizaines de secondes~\cite{CohenSegal2011}: $\tau_{\text{rec}}$ y est donc plus grand, et avec un tel $\tau_{\text{rec}}$ la formule~\eqref{eq:burstinterval} donne des dizaines de secondes et des minutes, comme dans les cultures lentes. C'est un oscillateur de relaxation, cousin du générateur de rythme du chapitre~\ref{sec:muscles}: là, c'était la fatigue des groupes qui le rechargeait; ici, c'est la réserve de neurotransmetteur.
+
+Les salves sont ce que fait le réseau quand il n'a rien à faire. Dans un cerveau vivant, on observe un tableau semblable pendant le sommeil profond (chapitre~\ref{sec:sleep}) et dans le cerveau en développement, avant que de vraies entrées n'y arrivent. La ressemblance est suggestive, mais l'identité des mécanismes reste une hypothèse.
+
+\section{Enseigner sans professeur dopaminergique}
+
+Puisque la culture ne contient pas de \nt{DOPA}, le signal \og mieux ou moins bien\fg{} doit être fourni par l'expérimentateur, au moyen des électrodes. Les expériences montrent que le réseau du banc modifie bel et bien ses réponses, et le plus intéressant est de savoir \emph{avec quoi} on l'enseigne.
+
+\emph{Le professeur qui se tait.} On stimule le réseau par une électrode une fois toutes les une à trois secondes, jusqu'à ce que la réponse voulue apparaisse sur une autre électrode $50\pm10\ms$ après le stimulus. Dès qu'elle apparaît, on coupe la stimulation pendant cinq minutes. Après quelques cycles de ce genre, la réponse voulue suit le stimulus d'emblée~\cite{Shahaf2001}. La récompense, ici, c'est le silence: le stimulus secoue le réseau, et son arrêt laisse le réseau dans l'état qui a donné la bonne réponse. C'est la descente de gradient par perturbations aléatoires du chapitre~\ref{sec:dofa} (proposition~\ref{prop:gradient}), où le rôle de l'erreur est joué par le simple fait d'être secoué: on secoue jusqu'à ce que ce soit juste.
+
+\emph{Le réseau qui joue au tennis.} Dans une expérience sur un banc à matrice d'électrodes dense, environ un million de neurones ont été branchés sur un jeu vidéo de tennis à une seule raquette~\cite{Kagan2022}. La position de la balle était injectée sous forme de courant dans des électrodes \og sensorielles\fg{}: le lieu de la balle par un code de place, sa distance par la fréquence. L'activité de deux zones \og motrices\fg{} déplaçait la raquette vers le haut ou vers le bas. La règle d'apprentissage était inhabituelle. Si la raquette renvoyait la balle, le réseau recevait un bref stimulus \emph{prévisible}; en cas de raté, plusieurs secondes de courant aléatoire \emph{imprévisible}. En vingt minutes de jeu, les séries de renvois s'allongeaient. Une hausse significative au cours d'une session n'apparaissait qu'avec la rétroaction complète; avec du silence à la place du stimulus, la culture jouait aussi mieux en fin de session que sans rétroaction, mais avec un effet plus faible, et il n'y avait pas d'apprentissage stable d'une session à l'autre sur plusieurs jours. L'analyse détaillée de cette expérience se trouve au chapitre~\ref{sec:dishbrain}.
+
+Les auteurs ont expliqué le résultat par l'hypothèse que le réseau agit de façon à rendre son entrée prévisible~\cite{Friston2010}. C'est la même idée que l'économie d'impulsions du chapitre~\ref{sec:code} et la prédiction d'image du chapitre~\ref{sec:recognition}: la machine dépense moins quand l'entrée est attendue. Mais l'expérience elle-même, et surtout les propos des auteurs sur la \og sensibilité\fg{} de la culture, ont suscité de vives critiques: l'effet est faible et s'explique aussi plus simplement~\cite{Balci2023}. Le bilan honnête est le suivant: la culture du banc modifie son comportement sous l'effet de la rétroaction, c'est mesuré; qu'elle apprenne précisément à prédire son entrée reste une hypothèse.
+
+\emph{Le réseau qui pilote un corps.} De façon analogue, on a relié une culture à un \og corps\fg{} virtuel simple et on lui a appris à se diriger vers une cible, en choisissant le motif spatio-temporel des stimulations d'entraînement~\cite{Bakkum2008}. Aucune de ces expériences ne fait intervenir la dopamine: le professeur, c'est le motif de courant que choisit l'ingénieur. Ce qui change quand le professeur devient un programme ou la dopamine elle-même est traité aux sections~\ref{sec:dishdopamine}--\ref{sec:cartpole}.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  blk/.style={draw,very thick,rounded corners=2pt,align=center,font=\footnotesize,minimum height=0.8cm,fill=blue!5}]
+% (a) closed loop
+\node[font=\small] at (1.5,4.3) {(a) boucle fermée};
+\node[blk,text width=2.6cm] (G) at (1.5,3.3) {jeu: balle et raquette};
+\draw[very thick,fill=orange!10,rounded corners=3pt] (0.5,0.2) rectangle (2.5,1.6);
+\foreach \x in {0.7,1.0,...,2.35}{\foreach \y in {0.4,0.7,1.0,1.3}{\fill[gray!60] (\x,\y) circle (0.04);}}
+\draw[->,thick,blue!60!black] (G.west) -| (-0.5,0.9) -- (0.5,0.9);
+\node[font=\scriptsize,blue!60!black,anchor=east,align=right] at (-0.6,2.1) {balle $\to$\\courant};
+\draw[->,thick,red!70!black] (2.5,0.9) -- (3.5,0.9) |- (G.east);
+\node[font=\scriptsize,red!70!black,anchor=west,align=left] at (3.6,2.1) {impulsions\\$\to$ raquette};
+\node[font=\scriptsize] at (1.5,-0.2) {neurones sur matrice d'électrodes};
+\node[font=\scriptsize,align=center] at (1.5,-0.85) {renvoi: stimulus prévisible\\raté: courant aléatoire};
+% (b) reservoir
+\begin{scope}[xshift=7.9cm]
+\node[font=\small] at (1.6,4.3) {(b) réservoir};
+\node[blk,text width=1.1cm] (X) at (-0.4,1.0) {entrée\\$u(t)$};
+\draw[very thick,fill=orange!10] (1.6,1.0) circle (0.8);
+\foreach \a/\r in {20/0.35,80/0.5,150/0.3,210/0.55,280/0.4,330/0.2,110/0.15}{\fill[red!60!black] ({1.6+\r*cos(\a)},{1.0+\r*sin(\a)}) circle (0.05);}
+\node[font=\scriptsize] at (1.6,-0.2) {organoïde: sans professeur};
+\node[blk,text width=1.8cm,fill=green!8] (W) at (4.0,1.0) {lecture\\$W_{\text{sort}}$};
+\draw[->,thick] (X) -- (0.8,1.0);
+\draw[->,thick] (2.4,1.0) -- node[above,font=\scriptsize] {$\mathbf r(t)$} (W);
+\draw[->,thick] (W) -- (4.0,2.3) node[above,font=\scriptsize] {$y(t)$};
+\node[font=\scriptsize,green!40!black] at (4.0,0.3) {apprentissage supervisé};
+\end{scope}
+\end{tikzpicture}
+\caption{Deux façons de faire calculer un réseau vivant. (a) Boucle fermée: la position de la balle est injectée sous forme de courant, les impulsions des zones motrices déplacent la raquette, et un stimulus prévisible ou aléatoire après le coup sert de professeur. (b) Réservoir~\eqref{eq:reservoir}: l'organoïde ne reçoit aucun signal d'apprentissage; il décompose l'entrée en une multitude de réponses non linéaires dotées de mémoire, et seule une lecture linéaire externe apprend à partir de l'erreur. Les connexions de l'organoïde lui-même changent aussi, sans professeur.}
+\label{fig:livingmachine}
+\end{figure}
+
+\section{Le réservoir vivant}
+
+Il existe une autre façon d'utiliser un réseau vivant: ne pas l'entraîner du tout. En technique, on l'appelle le \emph{calcul par réservoir}~\cite{Maass2002,JaegerHaas2004}. On prend un système non linéaire à mémoire tout fait, n'importe lequel, pourvu que sa réponse à l'entrée soit riche et dépende du passé récent. L'entrée $u(t)$ le met en mouvement, on obtient un vecteur de réponses $\mathbf r(t)$, et seule la lecture linéaire est entraînée:
+\begin{empheq}[box=\keybox]{equation}
+y(t) \;=\; W_{\text{sort}}\,\mathbf r(t) ,
+\label{eq:reservoir}
+\end{empheq}
+dont les poids sont ajustés par la règle des moindres carrés~\eqref{eq:lms} du chapitre~\ref{sec:motorlearning}. Le réservoir fait ce que faisaient les petits neurones \nt{GLUT} du chapitre~\ref{sec:motorlearning}: il déploie l'entrée en un long vecteur, dans lequel les classes voulues deviennent séparables par un plan (chapitre~\ref{sec:dendrites}).
+
+Un organoïde sur matrice d'électrodes s'est révélé apte à jouer ce rôle de réservoir. Des sons de parole, injectés sous forme de motifs de courant, ont été distingués selon le locuteur avec une précision d'environ $78\%$ après l'entraînement d'une seule lecture linéaire~\cite{Cai2023}. Ce chiffre de $78\%$ est celui qu'annoncent les auteurs et que reprend la presse. Le résultat est utile, mais il faut comprendre où se trouve l'\og intelligence\fg{}: l'organoïde apporte la non-linéarité et une mémoire évanescente, l'apprentissage par l'erreur se fait à l'extérieur, dans le silicium (fig.~\ref{fig:livingmachine}). L'organoïde ne reste pas pour autant inchangé: selon les auteurs, sa propre connectivité fonctionnelle a évolué pendant l'entraînement, ce qu'ils appellent un apprentissage non supervisé dans l'organoïde lui-même~\cite{Cai2023}. La part de la précision due à ce changement et celle due à la lecture n'ont pas été séparées.
+
+\section{Ce que le banc nous apprend sur la machine}
+
+\emph{L'énergie.} D'après l'estimation~\eqref{eq:energy}, une impulsion coûte environ $10^{-10}$~J. Une culture d'un million de neurones, à une impulsion par seconde, dépense pour la transmission des signaux
+\begin{empheq}[box=\keybox]{equation}
+P \;\approx\; 10^{6}\times1\,\text{s}^{-1}\times10^{-10}\,\text{J} \;=\; 10^{-4}\,\text{W},
+\label{eq:dishpower}
+\end{empheq}
+soit un dixième de milliwatt. L'électronique qui stimule, enregistre et traite ces impulsions dépense des ordres de grandeur de plus. Comme au chapitre~\ref{sec:debugging}, le goulot d'étranglement n'est pas le calcul, mais la liaison avec lui.
+
+\emph{Les pièces manquantes.} Le banc montre ce que sait faire un bus \nt{GLUT} doté d'un contrôle de flux \nt{GABA}, sans registres de contrôle: s'auto-organiser, produire des salves, modifier ses réponses sous l'effet de la rétroaction et servir de bon réservoir. Ce qu'il ne sait pas faire sans eux, c'est décider lui-même de ce qui compte comme un succès. Sur le banc, ce signal est fourni par l'ingénieur; dans le cerveau, comme nous l'avons vu aux chapitres~\ref{sec:dofa}--\ref{sec:acet}, par les canaux de diffusion.
+
+\emph{L'éthique.} Les organoïdes sont cultivés à partir de cellules humaines, et plus ils deviennent complexes, plus la question se pose sérieusement: un tel tissu peut-il ressentir quelque chose? Le regard de l'ingénieur suggère une réponse partielle: la douleur du chapitre~\ref{sec:pain} n'est pas le signal d'un capteur isolé, mais tout un système d'alarme, avec un portillon, un bouton de volume et des canaux de diffusion, qui n'existent pas sur le banc. Mais c'est un raisonnement, non une preuve, et le domaine lui-même propose de mener l'évaluation éthique en même temps que les expériences, dès le début~\cite{Smirnova2023}.
+
+\begin{keyblock}
+\begin{proposition}[Un réseau vivant sur le banc]
+\label{prop:livingmachine}
+Un réseau de neurones \nt{GLUT} et \nt{GABA} sur une matrice d'électrodes produit spontanément des salves~\eqref{eq:burstinterval}, modifie ses réponses sous l'effet de la rétroaction et peut servir de réservoir~\eqref{eq:reservoir} pour une lecture entraînée à l'extérieur. Tout cela est mesuré. Qu'un tel réseau apprenne selon une règle générale, par exemple prédire son entrée, reste une hypothèse, et la plupart des spécialistes rejettent les grands mots sur sa \og sensibilité\fg{}.
+\end{proposition}
+\end{keyblock}
+
+\input{chapters/21_living_dopamine}
+
+\section{Bilan}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{2.8cm}>{\raggedright}p{4.2cm}>{\raggedright\arraybackslash}p{5.8cm}}
+\toprule
+Expérience & Ce que fait le réseau vivant & Ce que l'on sait \\
+\midrule
+réseau sans entrée & salves espacées d'une seconde à plusieurs minutes~\eqref{eq:burstinterval} & mesuré; le mécanisme par épuisement synaptique est le modèle admis \\
+professeur qui se tait & la réponse voulue se fixe quand on coupe la stimulation & mesuré \\
+partie de tennis & les séries de renvois s'allongent; hausse significative en une session seulement avec rétroaction complète & changement de comportement mesuré; apprentissage d'une session à l'autre instable; taille de l'effet et explication par la prédiction de l'entrée contestées \\
+corps virtuel & déplacement vers la cible avec un motif de stimuli bien choisi & mesuré \\
+réservoir & non-linéarité et mémoire pour la lecture~\eqref{eq:reservoir} & mesuré; apprentissage par l'erreur à l'extérieur, dans le silicium; les connexions de l'organoïde changent aussi \\
+énergie & environ $10^{-4}$~W par million de neurones~\eqref{eq:dishpower} & estimation d'après~\eqref{eq:energy} \\
+\bottomrule
+\end{tabular}
+\caption{Ce qu'ont montré les machines faites de neurones vivants.}
+\label{tab:livingmachine}
+\end{table}
+
+La machine faite de neurones vivants (tableau~\ref{tab:livingmachine}) est un banc d'essai qui montre ce que savent faire un bus de données et un contrôle de flux sans registres de contrôle. Ils savent faire beaucoup, mais pas décider eux-mêmes de ce qui est bien. Sur le banc, ce rôle revient à l'ingénieur et à son motif de courant; dans le cerveau, aux quelques fils de diffusion auxquels est consacré le milieu du livre.
+
+\section{Exercices}
+
+\begin{exercise}[\lvlA]
+\label{ex:21:1}
+\emph{Intervalle entre salves.} Une salve vide la réserve jusqu'à zéro, puis $\tau_{\text{rec}}\,\dd x/\dd t=1-x$, et une nouvelle salve part à $x=x^*$; $\tau_{\text{rec}}=0.8$~s. (a)~Trouvez l'intervalle pour $x^*=0.9$ et $0.99$. (b)~Le seuil $x^*$ fluctue aléatoirement de $\pm0.005$ autour de $0.99$. Dans quelle plage tombent les intervalles?
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:21:2}
+\emph{L'énergie du banc.} (a)~Quelle puissance l'estimation~\eqref{eq:dishpower} donne-t-elle pour le cerveau entier ($8.6\cdot10^{10}$ neurones)? (b)~Le banc enregistre $1024$ électrodes à $20$~kHz, sur $10$~bits par échantillon. À $1$~nJ par bit, combien de fois la transmission de ce flux coûte-t-elle plus cher que la puissance de la culture elle-même?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:21:3}
+\emph{Conception: supprimer les salves.} Une stimulation clairsemée par de nombreuses électrodes fait libérer à chaque synapse du neurotransmetteur à la fréquence $r_b$; la réserve suit $\tau_{\text{rec}}\,\dd x/\dd t=1-x-Ur_b\tau_{\text{rec}}x$, $U=0.5$, $\tau_{\text{rec}}=0.8$~s. Quelle est la plus petite $r_b$ pour laquelle la réserve n'atteint pas $x^*=0.9$; $0.99$, et de combien la synapse s'affaiblit-elle alors?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:21:4}
+\emph{La mémoire d'un réservoir ne dépasse pas son nombre de neurones.} Un réservoir à $N$ sorties $\mathbf r(t)$ reçoit une entrée blanche $u(t)$ de moyenne nulle et de variance unité; $m_k$ est le plus grand carré de la corrélation d'une lecture $\mathbf w_k\cdot\mathbf r(t)$ avec $u(t-k)$. Démontrez que la capacité mémoire $\mathrm{MC}=\sum_{k\ge0}m_k\le N$.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:21:5}
+\emph{Simulation: un réservoir en silicium.} Réservoir $\mathbf r(t+1)=\tanh(W\mathbf r(t)+\mathbf v\,u(t)+\mathbf c)$, $N=30$, $W$ aléatoire de rayon spectral $0.9$, $v_i\sim U(-0.5,0.5)$, $c_i\sim U(-0.2,0.2)$, $u\sim U(-1,1)$, lecture par régression ridge. Trouvez la capacité mémoire de l'exercice~\ref{ex:21:4} avec et sans $\tanh$. Quel réservoir retient le plus?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:21:6}
+\emph{Une lecture pour un réservoir vivant.} Un organoïde fournit $1024$ canaux et $P=240$ enregistrements d'entraînement de deux classes. (a)~Combien de caractéristiques $n$ garder pour qu'un étiquetage aléatoire soit séparable avec une probabilité d'au plus $1\%$ (exercice~\ref{ex:19:3})? (b)~De combien de sigmas $78\%$ sur $100$ enregistrements de test dépassent-ils le hasard?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:21:7}
+\emph{Recherche: un professeur sans canal de diffusion.} Proposez un protocole de stimulation qui réalise sur le banc la règle à trois facteurs du chapitre~\ref{sec:dofa} par $8$ à $1024$ électrodes, ainsi qu'un contrôle à lecture gelée qui distingue l'apprentissage des poids d'un simple décalage de l'état du réseau. Quel résultat réfuterait l'hypothèse d'apprentissage?
+\end{exercise}

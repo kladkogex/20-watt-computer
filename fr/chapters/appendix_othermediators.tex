@@ -1,0 +1,46 @@
+\chapter{Les substances qui ne définissent pas le type d'un neurone}
+\label{sec:othermediators}
+
+Au chapitre~\ref{sec:neurontypes}, nous avons classé les neurones selon leur neurotransmetteur principal et obtenu dix types (tableau~\ref{tab:types}). Il est temps d'ajouter les complications. Un neurone ne libère pas seulement son neurotransmetteur principal, et dans le cerveau, d'autres substances agissent en plus des neurotransmetteurs principaux. Elles modifient la façon dont le réseau transmet et stocke les signaux.
+
+Outre le bus d'adresses et le bus de diffusion (section~\ref{sec:buses}), il en existe un troisième: le \emph{canal rétrograde}. Plusieurs substances ne sont pas libérées par l'émetteur mais par le \emph{destinataire}; elles traversent la fente en sens inverse, vers la sortie de l'émetteur, et modifient la quantité de neurotransmetteur que celui-ci libérera la fois suivante. Dans les réseaux de communication, cela ressemble à l'accusé de réception dont l'émetteur se sert pour ajuster sa transmission. C'est précisément ce canal qu'utilisent les neurones lorsqu'ils modifient les poids de leurs connexions: il informe la sortie de l'émetteur de l'activité du destinataire, c'est-à-dire du deuxième facteur des règles d'apprentissage du chapitre~\ref{sec:dofa}.
+
+La liste complète des neurotransmetteurs connus est longue: plus d'une centaine de substances, dont la plupart sont de courtes chaînes protéiques, les neuropeptides. Mais toutes se rangent en quelques classes, et au sein de chaque classe les substances se comportent de façon semblable. Les substances qui ne sont jamais le neurotransmetteur principal sont réunies dans le tableau~\ref{tab:othermediators}, avec les trois questions que poserait un ingénieur: sur quel bus passe le signal, agit-il vite, et quel est d'ordinaire son signe. Elles ne définissent pas le type d'un neurone: soit elles sont libérées avec le neurotransmetteur principal, soit elles ne sont pas libérées par des neurones, soit elles circulent en sens inverse.
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.12}
+\begin{tabular}{>{\raggedright}p{2.25cm}>{\raggedright}p{2.8cm}>{\raggedright}p{1.8cm}>{\raggedright}p{1.5cm}>{\centering}p{0.8cm}>{\raggedright\arraybackslash}p{4.3cm}}
+\toprule
+Classe & Substance & Bus & Vitesse & Signe & Rôle dans le calcul \\
+\midrule
+Acides aminés & D-sérine & local & lente & ET & seconde clé du récepteur du glutamate: condition \og ET\fg{} \\
+\midrule
+Monoamines & amines traces & diffusion & lente & $\pm$ & réglage fin des canaux monoaminergiques \\
+\midrule
+\multirow{2}{2.25cm}{Purines}
+ & ATP & adresse & rapide et lente & $+$ & neurotransmetteur associé; signal entre neurones et glie \\
+ & adénosine & volumique & lente & $-$ & s'accumule avec l'activité: compteur de charge~\cite{Dunwiddie2001} \\
+\midrule
+\multirow{8}{2.25cm}{Neuropeptides (plus d'une centaine)}
+ & enképhalines, endorphines, dynorphine & volumique & lente & $-$ & suppression de la transmission \\
+ & substance P & volumique & lente & $+$ & renforcement lent \\
+ & neuropeptide Y & volumique & lente & $-$ & inhibition lente \\
+ & somatostatine & volumique & lente & $-$ & inhibition lente, accompagne le GABA \\
+ & peptide vasoactif intestinal (VIP) & volumique & lente & $+$ & désinhibition: inhibition des neurones inhibiteurs \\
+ & cholécystokinine & volumique & lente & $\pm$ & accompagne le GABA dans une partie des neurones inhibiteurs \\
+ & orexine & diffusion & lente & $+$ & stabilisateur du régime de veille \\
+ & ocytocine, vasopressine & diffusion & lente & $\pm$ & réglages globaux du comportement \\
+\midrule
+\multirow{2}{2.25cm}{Gaz}
+ & monoxyde d'azote NO & rétrograde, volumique & lente & $\pm$ & traverse les membranes; signal rétrograde lors des changements de poids~\cite{Garthwaite2008} \\
+ & CO, H$_2$S & volumique & lente & $\pm$ & rôle peu étudié \\
+\midrule
+Lipides & endocannabinoïdes (anandamide, 2-AG) & rétrograde & lente & $-$ & le destinataire réduit la libération de l'émetteur: rétroaction sur le poids~\cite{WilsonNicoll2001} \\
+\bottomrule
+\end{tabular}
+\caption{Les substances qui ne définissent pas le type d'un neurone. \emph{Bus}, \emph{vitesse} et \emph{signe} comme dans le tableau~\ref{tab:types}; en outre, bus volumique: le neurotransmetteur diffuse dans l'espace extracellulaire autour du site de libération; rétrograde: il va du destinataire vers l'émetteur; local: il agit près du site de libération. \og ET\fg{} désigne un signal de validation: il ne produit pas de courant à lui seul, mais sans lui une autre entrée ne se déclenche pas, comme la seconde entrée d'une porte logique ET. Les neuropeptides sont presque toujours libérés avec le neurotransmetteur principal, et surtout à haute fréquence d'impulsions~\cite{vandenPol2012}.}
+\label{tab:othermediators}
+\end{table}

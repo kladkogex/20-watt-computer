@@ -1,0 +1,214 @@
+\chapter{Les sorties de la machine: comment le cerveau commande les muscles}
+\chaptermark{Les sorties de la machine}
+\label{sec:muscles}
+
+\section{La sortie rapide}
+
+Tout ce que la machine fait vite dans le monde, elle le fait avec les muscles. Une parole, un regard, un pas, un sourire sont des contractions musculaires. La seconde sortie, lente, la chimie du corps, est examinée au chapitre~\ref{sec:chemoutput}. Sur la fig.~\ref{fig:machine}, la sortie était une flèche \og muscles\fg{}; voyons maintenant ce qu'il y a derrière cette flèche.
+
+Le dernier maillon de la chaîne, ce sont les neurones \nt{ACET}, ceux-là mêmes dont le tableau~\ref{tab:types} indique \og sortie vers le muscle\fg{}. Chaque fibre musculaire reçoit son entrée d'un seul neurone de ce type, et un neurone commande un groupe de fibres, de quelques centaines à deux mille environ~\cite{Feinstein1955mu}. Dans les muscles qui demandent un réglage fin, les unités sont plus petites; dans les grands muscles des jambes, plus grosses. Le neurone et ses fibres forment une \emph{unité motrice}: le plus petit morceau de muscle que le cerveau puisse activer isolément.
+
+La synapse du neurone sur le muscle est construite tout autrement que les synapses corticales du chapitre~\ref{sec:code}. Là, la plupart des impulsions se perdaient. Ici, chaque impulsion libère plusieurs fois plus d'acétylcholine qu'il n'en faut pour que la fibre se déclenche~\cite{WoodSlater2001}. C'est une synapse avec une \emph{marge de sécurité}: une impulsion du neurone donne exactement une contraction des fibres. À l'intérieur de la machine, on peut se permettre des connexions peu fiables et corriger les erreurs par la redondance; en sortie, une erreur coûte un mouvement, et la fiabilité est achetée directement dans le matériel.
+
+\section{La force: fréquence et nombre d'unités}
+
+Une impulsion donne une contraction isolée, une secousse: la force monte en quelques dizaines de millisecondes, puis retombe. En voici une bonne approximation~\cite{Fuglevand1993}:
+\begin{equation}
+h(t) \;=\; F_1\,\frac{t}{T_c}\,e^{\,1-t/T_c},
+\label{eq:twitch}
+\end{equation}
+où $T_c$ est le temps de montée, de l'ordre de $50\ms$, et $F_1$ la force d'une secousse. Si les impulsions arrivent plus souvent, les secousses s'additionnent:
+\begin{empheq}[box=\keybox]{equation}
+F(t) \;=\; \sum_k h\bigl(t-t_k\bigr) .
+\label{eq:forcesum}
+\end{empheq}
+C'est le même filtre passe-bas qui transformait les impulsions en concentration au chapitre~\ref{sec:serocomputer}; seulement, en sortie, ce n'est plus une concentration, mais une force. Le muscle est un convertisseur numérique-analogique des impulsions en force (fig.~\ref{fig:tetanus}). Dans notre modèle, à cinq impulsions par seconde, les secousses ne se recouvrent presque pas et la force saute de $0.2F_1$ à $1.1F_1$; à quinze, elle se maintient déjà entre $1.8F_1$ et $2.2F_1$; à quarante, elle devient presque lisse, autour de $5.4F_1$. Un vrai muscle sature quand les impulsions sont fréquentes, si bien que la somme linéaire~\eqref{eq:forcesum} ne vaut que jusqu'à quelques dizaines d'impulsions par seconde.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=20cm,y=0.55cm]
+\draw[->,gray!70!black] (0,0) -- (0.66,0) node[right,font=\small,black] {$t$, s};
+\draw[->,gray!70!black] (0,0) -- (0,6.4) node[left,font=\small,black] {$F/F_1$};
+\foreach \t in {0,0.2,0.4,0.6}{\draw[gray!60!black] (\t,-0.1) -- (\t,0.1); \node[below,font=\scriptsize] at (\t,0) {\t};}
+\foreach \f in {1,3,5}{\draw[gray!60!black] (-0.004,\f) -- (0.004,\f); \node[left,font=\scriptsize] at (0,\f) {\f};}
+\draw[thick,blue!60!black] plot file {figures/muscle_twitch_5.dat};
+\draw[thick,green!45!black] plot file {figures/muscle_twitch_15.dat};
+\draw[thick,red!70!black] plot file {figures/muscle_twitch_40.dat};
+\node[font=\scriptsize,blue!60!black,anchor=west] at (0.605,0.9) {5 imp./s};
+\node[font=\scriptsize,green!45!black,anchor=west] at (0.605,2.1) {15 imp./s};
+\node[font=\scriptsize,red!70!black,anchor=west] at (0.605,5.4) {40 imp./s};
+\end{tikzpicture}
+\caption{Le muscle comme convertisseur numérique-analogique: force~\eqref{eq:forcesum} pour des impulsions régulières d'une seule unité motrice, $T_c=50\ms$. Des impulsions rares donnent des secousses séparées; des impulsions fréquentes fusionnent en une force lisse, de même que des impulsions fréquentes fusionnent en une concentration lisse sur la fig.~\ref{fig:lowpass}.}
+\label{fig:tetanus}
+\end{figure}
+
+Le cerveau dispose de deux boutons pour la force: la fréquence des impulsions de chaque unité et le nombre d'unités activées. Le second bouton est très ingénieux. Les unités d'un muscle diffèrent: les plus faibles sont cent fois plus faibles que les plus fortes. Quand il faut une force de plus en plus grande, les unités s'activent \emph{par ordre de taille}, des petites aux grandes~\cite{Henneman1957}. Personne ne calcule cet ordre: les petits neurones s'excitent simplement plus facilement sous la même entrée commune, si bien que l'ordre d'activation est fixé par le matériel lui-même.
+
+Qu'est-ce que cela apporte? Supposons que chaque unité soit $q$ fois plus forte que la précédente, $q$ étant un peu supérieur à un. La force de toutes les unités activées est la somme d'une progression géométrique, et presque toute cette somme revient aux dernières unités. Chaque nouvelle unité activée ajoute alors
+\begin{empheq}[box=\keybox]{equation}
+\frac{\Delta F}{F} \;\approx\; q-1 \;=\; \text{const} ,
+\label{eq:sizeprinciple}
+\end{empheq}
+autrement dit, le pas de force est proportionnel à la force elle-même. Pour un effort faible, le cerveau le dose par petites portions; pour un effort fort, par grosses portions. C'est un \emph{nombre à virgule flottante}: l'exposant est donné par le nombre d'unités activées, la mantisse par la fréquence de leurs impulsions. C'est la même échelle logarithmique que celle des capteurs du chapitre~\ref{sec:sensors}: l'entrée et la sortie de la machine mesurent le monde en proportions relatives.
+
+La virgule flottante a son revers. La dispersion de la force croît elle aussi proportionnellement à la force: un mouvement fort est inévitablement moins précis qu'un mouvement faible. Selon une hypothèse influente, c'est justement ce bruit dépendant du signal qui explique pourquoi nos mouvements sont fluides: une commande fluide donne la plus petite dispersion au point d'arrivée~\cite{HarrisWolpert1998}.
+
+\section{Tirer sans pousser: deux fils par articulation}
+
+Un muscle ne sait que tirer. Il ne peut pas pousser, pas plus qu'un neurone \nt{GLUT} ne peut émettre un signal négatif. La solution est connue depuis le chapitre~\ref{sec:glutcomputer}: \emph{deux fils}. Chaque articulation est servie par une paire de muscles qui tirent en sens opposés (fig.~\ref{fig:antagonists}). Si leurs forces sont $F_1$ et $F_2$ et le bras de levier $\ell$, le couple et la raideur de l'articulation valent
+\begin{empheq}[box=\keybox]{equation}
+M \;=\; \ell\,(F_1-F_2), \qquad K \;\approx\; \kappa_m\,(F_1+F_2),
+\label{eq:antagonists}
+\end{empheq}
+où $\kappa_m$ est le coefficient qui relie la force d'un muscle à sa raideur: un muscle tendu fait un ressort plus raide qu'un muscle relâché. La différence des forces fixe le couple, leur somme la raideur~\cite{Hogan1984}. Avec deux fils, le cerveau commande deux grandeurs indépendantes: dans quel sens tourner l'articulation et avec quelle fermeté la tenir. Pour tenir une tasse sans renverser, nous contractons les deux muscles à la fois: le couple est le même, la raideur plus grande, et une poussée accidentelle dévie moins la main.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  nrn/.style={circle,draw,very thick,minimum size=0.95cm,inner sep=0pt,font=\scriptsize},
+  inh/.style={-{Bar[width=7pt]},thick,red!70!black}]
+% the joint: a bar on a pivot, two springs pulling down on either side
+\fill[gray!30] (4.6,-0.25) -- (5.4,-0.25) -- (5,0.15) -- cycle;
+\draw[line width=3pt,gray!50!black] (2.4,0.2) -- (7.6,0.2);
+\fill[black] (5,0.2) circle (0.08);
+\draw[decorate,decoration={coil,segment length=5pt,amplitude=4pt},very thick,blue!60!black] (3.0,0.2) -- (3.0,-1.6);
+\draw[decorate,decoration={coil,segment length=5pt,amplitude=4pt},very thick,orange!85!black] (7.0,0.2) -- (7.0,-1.6);
+\draw[very thick] (2.5,-1.6) -- (3.5,-1.6); \draw[very thick] (6.5,-1.6) -- (7.5,-1.6);
+\node[font=\small,blue!60!black] at (2.35,-0.75) {$F_1$};
+\node[font=\small,orange!85!black] at (7.65,-0.75) {$F_2$};
+\draw[->,thick] (5.9,0.75) arc (60:120:1.8) node[above,font=\scriptsize,pos=0.5] {$M=\ell(F_1-F_2)$};
+% motor neurons and reflex circuit
+\node[nrn,fill=green!12] (M1) at (1.6,-3.0) {\nt{ACET}};
+\node[nrn,fill=green!12] (M2) at (8.4,-3.0) {\nt{ACET}};
+\node[nrn,fill=red!10] (G) at (5.0,-3.0) {\nt{GLYC}};
+\node[nrn,fill=blue!6] (S) at (1.6,-5.0) {\nt{GLUT}};
+\draw[->,very thick] (M1) -- (3.0,-1.7);
+\draw[->,very thick] (M2) -- (7.0,-1.7);
+\draw[->,thick] (S) -- (M1);
+\draw[->,thick] (S) -- (G);
+\draw[inh] (G) -- (M2);
+\draw[->,thick,densely dashed,gray!60!black] (3.15,-1.2) to[bend left=25] node[pos=0.35,right,font=\scriptsize,black] {étirement} (S.north east);
+\draw[->,thick,blue!60!black] (-0.3,-3.0) node[left,font=\scriptsize,black,align=right] {commande\\du cerveau} -- (M1);
+\draw[->,thick,blue!60!black] (10.3,-3.0) node[right,font=\scriptsize,black,align=left] {commande\\du cerveau} -- (M2);
+\end{tikzpicture}
+\caption{Deux muscles pour une articulation et la boucle de rétroaction la plus rapide. Les neurones \nt{ACET} reçoivent les commandes du cerveau et tirent l'articulation dans des sens opposés; la différence des forces la fait tourner, leur somme la rend plus raide. Le capteur d'étirement (\nt{GLUT}) du muscle de gauche excite son propre neurone \nt{ACET} et, par un intermédiaire \nt{GLYC}, inhibe le neurone du muscle antagoniste: le veto du chapitre~\ref{sec:gaba}.}
+\label{fig:antagonists}
+\end{figure}
+
+\section{Rétroaction avec retard}
+
+Les muscles ne travaillent pas à l'aveugle. Chacun contient des capteurs d'étirement, dont il a été question dans le tableau~\ref{tab:sensors}, et la boucle la plus courte se ferme directement dans la moelle épinière (fig.~\ref{fig:antagonists}). Si un muscle est étiré à l'improviste, le capteur d'étirement excite son propre neurone \nt{ACET}; le muscle se contracte et ramène l'articulation. En même temps, par un neurone intermédiaire inhibiteur, le muscle antagoniste est coupé pour ne pas gêner. Cet intermédiaire, c'est \nt{GLYC}, le type du tableau~\ref{tab:types} qui n'a pas eu son propre chapitre: sa place est précisément ici, dans les boucles rapides de la moelle épinière.
+
+Chaque boucle a un retard $d$: environ $25$--$30\ms$ pour la boucle spinale du bras, une fois et demie à trois fois plus pour la boucle qui passe par le cortex, $100$--$200\ms$ pour la boucle qui passe par l'œil. Or une rétroaction retardée, nous l'avons vu dans la proposition~\ref{prop:ei}, fait osciller le système. Pour le régulateur le plus simple, qui corrige un écart $x$ à la vitesse $G$ d'après des informations vieilles de $d$ secondes, $\dd x/\dd t=-G\,x(t-d)$, la condition de stabilité est~\cite{Hayes1950}:
+\begin{empheq}[box=\keybox]{equation}
+G\,d \;<\; \frac{\pi}{2} ,
+\label{eq:delaystable}
+\end{empheq}
+et à la limite, le système oscille à la fréquence $1/(4d)$. Nous l'avons vérifié sur un modèle: pour $d=30\ms$, l'écart s'amortit pour $G=40$ par seconde, et se met à osciller pour $G=55$ par seconde, juste au-dessus de la limite de $52$.
+
+Il en découle deux conséquences. Premièrement, plus la boucle est longue, plus elle est obligée de corriger lentement. Par l'œil, avec un retard de cent cinquante millisecondes, on ne peut pas corriger la main plus vite qu'en un dixième de seconde environ, sinon elle se met à trembler. Deuxièmement, la limite de stabilité de la boucle spinale, $1/(4\cdot30\ms)\approx8$ oscillations par seconde, est proche de la fréquence du petit tremblement que présente toute personne en bonne santé, huit à douze oscillations par seconde. La boucle d'étirement est l'une des sources probables de ce tremblement~\cite{McAuleyMarsden2000}.
+
+Comment le cerveau se meut-il alors vite et précisément si la rétroaction est en retard? Selon une hypothèse répandue, il \emph{prédit}: il entretient un modèle interne du corps et calcule le résultat d'une commande sans attendre les capteurs~\cite{WolpertGhahramani2000}. Les capteurs servent à corriger le modèle, et non chaque mouvement. Un ingénieur parlerait de commande anticipative avec observateur d'état.
+
+\section{Les générateurs de rythme des mouvements}
+
+La marche, la respiration, la mastication sont des mouvements rythmiques. Leur faut-il une horloge? Non. La moelle épinière et le tronc cérébral contiennent de petits réseaux qui produisent eux-mêmes un rythme, même si rien de rythmique ne leur parvient~\cite{MarderBucher2001}. Le plus simple de ces réseaux est fait de pièces que nous possédons déjà: deux groupes de neurones \nt{GLUT} qui s'inhibent mutuellement par des intermédiaires \nt{GABA} ou \nt{GLYC}, comme sur la fig.~\ref{fig:wta}, et qui se fatiguent lentement, comme la mémoire du chapitre~\ref{sec:glutcomputer}:
+\begin{empheq}[box=\keybox]{equation}
+\tau\,\frac{\dd r_i}{\dd t} = -r_i + \bigl[I - \beta\,r_j - a_i\bigr]_+ ,
+\qquad
+\tau_a\,\frac{\dd a_i}{\dd t} = -a_i + b\,r_i ,
+\label{eq:halfcentre}
+\end{empheq}
+où $a_i$ est la fatigue du groupe $i$ et $j$ l'autre groupe. L'inhibition mutuelle avec $\beta>1$ choisit un gagnant (proposition~\ref{prop:wta}). Le gagnant travaille et se fatigue; quand la fatigue a mangé son entrée, le perdant, déjà reposé, prend le dessus et commence à son tour à se fatiguer. Les groupes travaillent à tour de rôle, et chacun commande son muscle de la paire (fig.~\ref{fig:halfcentre}).
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=3.2cm,y=2.4cm]
+\draw[->,gray!70!black] (0,0) -- (4.2,0) node[right,font=\small,black] {$t$, s};
+\draw[->,gray!70!black] (0,0) -- (0,1.2) node[left,font=\small,black] {$r$};
+\foreach \t in {0,1,2,3,4}{\draw[gray!60!black] (\t,-0.03) -- (\t,0.03); \node[below,font=\scriptsize] at (\t,0) {\t};}
+\draw[thick,blue!60!black] plot file {figures/halfcentre1.dat};
+\draw[thick,orange!85!black] plot file {figures/halfcentre2.dat};
+\node[font=\scriptsize,blue!60!black,anchor=west] at (1.6,1.28) {groupe 1: \og avant\fg{}};
+\node[font=\scriptsize,orange!85!black,anchor=west] at (2.7,1.28) {groupe 2: \og arrière\fg{}};
+\end{tikzpicture}
+\caption{Générateur de rythme selon le modèle~\eqref{eq:halfcentre}: $I=1$, $\beta=2$, $b=2$, $\tau=20\ms$, $\tau_a=0.4\,\text{s}$. Deux groupes à inhibition mutuelle et fatigue travaillent à tour de rôle avec une période de $0.84\,\text{s}$, bien que l'entrée reçoive un signal constant.}
+\label{fig:halfcentre}
+\end{figure}
+
+Dans notre modèle, sous une entrée constante, les groupes se relaient avec une période de $0.84\,\text{s}$, environ le double du temps de fatigue $\tau_a$. Une commande constante venue d'en haut, \og marche\fg{}, se transforme sur place en rythme. C'est un rythme local de plus, comme le rythme de la boucle \nt{GLUT}--\nt{GABA} du chapitre~\ref{sec:gaba}: il n'apparaît que lorsque le réseau travaille, et ne donne la cadence qu'aux muscles qu'il commande.
+
+\begin{keyblock}
+\begin{proposition}[Sortie de la machine]
+\label{prop:muscles}
+Le cerveau commande les muscles comme une hiérarchie de régulateurs. Au sommet, on choisit l'action (chapitre~\ref{sec:dofa}); plus bas, des générateurs locaux transforment des commandes constantes en rythme, et les boucles rapides de la moelle épinière tiennent les articulations. La force est codée en virgule flottante: l'exposant par le nombre d'unités, activées par ordre de taille, la mantisse par la fréquence des impulsions. Chaque articulation est commandée par une paire de muscles qui tirent; la différence de leurs forces fixe le couple, leur somme la raideur. Ces dispositifs sont mesurés; que le cerveau s'appuie sur un modèle interne du corps est une hypothèse bien fondée.
+\end{proposition}
+\end{keyblock}
+
+\section{Bilan}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{3.0cm}>{\raggedright}p{4.6cm}>{\raggedright\arraybackslash}p{5.2cm}}
+\toprule
+Ce que fait la sortie & Comment & Ce qu'on sait \\
+\midrule
+transforme les impulsions en force & somme des secousses~\eqref{eq:forcesum}, filtre passe-bas & mesuré; la somme linéaire est une simplification \\
+dose la force & activation des unités par taille, virgule flottante~\eqref{eq:sizeprinciple} & ordre d'activation mesuré \\
+pousse en ne sachant que tirer & paire de muscles: couple = différence, raideur = somme~\eqref{eq:antagonists} & mesuré \\
+tient l'articulation & boucle d'étirement, veto sur l'antagoniste par \nt{GLYC} & mesuré \\
+ne tremble pas & $Gd<\pi/2$~\eqref{eq:delaystable} & découle de la théorie de la régulation; contribution au tremblement: cause probable \\
+se meut vite & prédiction par un modèle interne & hypothèse bien fondée \\
+marche et respire en rythme & générateur de rythme~\eqref{eq:halfcentre} & générateurs mesurés; le schéma le plus simple est un modèle \\
+\bottomrule
+\end{tabular}
+\caption{Comment la machine commande les muscles.}
+\label{tab:muscles}
+\end{table}
+
+La sortie de la machine est construite avec les mêmes procédés que tout le reste (tableau~\ref{tab:muscles}): deux fils au lieu d'un signe, un filtre passe-bas au lieu d'un CNA, une échelle logarithmique au lieu d'une échelle linéaire, l'inhibition mutuelle et la fatigue au lieu d'un générateur d'horloge. L'entrée (chapitre~\ref{sec:sensors}) et la sortie mesurent le monde en proportions relatives, et entre elles travaille la machine à laquelle ce livre est consacré.
+
+\section{Exercices}
+
+\begin{exercise}[\lvlA]
+\label{ex:13:1}
+\emph{La virgule flottante en chiffres.} Un muscle a $N=100$ unités motrices de forces $f_n=f_1q^{\,n-1}$; la plus forte est $100$ fois plus forte que la plus faible. (a)~Trouvez $q$, le pas relatif~\eqref{eq:sizeprinciple} et la plage dynamique en décibels. (b)~Quel est le pas à la force $10f_1$ pour un \og CNA linéaire\fg{} de $100$ unités identiques de même force totale?
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:13:2}
+\emph{Le prix de la marge de sécurité.} À chaque impulsion, la synapse sur une fibre musculaire libère un nombre poissonnien de quanta de moyenne $m$, et la fibre se déclenche à partir de $n_{\text{seuil}}=20$ quanta; la marge de sécurité est $S=m/n_{\text{seuil}}$. Combien d'échecs par jour donne une unité qui tire à $20$ impulsions par seconde, pour $S=2$ et pour $S=4$?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:13:3}
+\emph{Le muscle comme filtre.} La secousse~\eqref{eq:twitch} avec $T_c=50\ms$ est la réponse impulsionnelle d'un système linéaire. (a)~Trouvez sa fonction de transfert $H(s)$ et sa fréquence de coupure. (b)~À quelle fréquence d'impulsions régulières l'amplitude crête à crête des ondulations de la force vaut-elle $10\%$ de la force moyenne?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:13:4}
+\emph{On ne corrige pas plus vite que le retard.} Régulateur $\dd x/\dd t=-G\,x(t-d)$. (a)~Montrez que l'écart s'amortit le plus vite sans oscillations pour $Gd=1/e$, à la vitesse $1/d$. (b)~Trouvez ce $G$ et la constante de temps d'amortissement pour la boucle spinale, $d=30\ms$, et pour la boucle par l'œil, $d=150\ms$.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:13:5}
+\emph{La période du générateur de rythme.} Pour $\tau\ll\tau_a$, la période $T$ du modèle~\eqref{eq:halfcentre} est donnée par l'équation $(\beta-1)(1-E^{2+b})/(\beta-E)=b\,(1-E^{1+b})/(1+b)$, où $E=e^{-T/(2\tau_a)}$. (a)~Trouvez $T$ pour $\beta=b=2$, $\tau_a=0.4$~s. (b)~Montrez que $T$ ne dépend pas de l'entrée $I$ et que le rythme n'est possible que pour $b>\beta-1$.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:13:6}
+\emph{Simulation du générateur.} Importez la fonction \texttt{halfcentre} de \texttt{models/\allowbreak muscle\_models.py} (sans exécuter le fichier lui-même) et mesurez la période, en écartant les deux premiers cycles, pour $b=0.8$, $1.05$, $1.2$, $1.5$, $2$, $4$ et pour $I=0.5$, $1$, $2$. La commande \og marche plus vite\fg{} peut-elle changer le tempo par $I$?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:13:7}
+\emph{Raideur contre réflexe.} Une articulation est prise dans une boucle d'étirement: $\dd\theta/\dd t=-a\theta(t)-G\theta(t-d)$, $a=K/B$, $d=30\ms$. Ramenez-la à l'exercice~\ref{ex:13:4} et trouvez le plus petit $a$ pour lequel l'écart s'amortit sans oscillations avec une constante de temps de $15\ms$, ainsi que le $G$ nécessaire. Comment modifier $G$ quand la co-contraction des muscles augmente?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:13:8}
+\emph{Le bouton du tempo.} Selon les exercices~\ref{ex:13:5} et~\ref{ex:13:6}, l'entrée $I$ du générateur~\eqref{eq:halfcentre} ne change que l'amplitude, pas le tempo. Modifiez au minimum le modèle, avec des pièces du livre: pas de rythme sous un $I_{\min}$, et au-dessus une période qui décroît avec $I$, au moins de moitié quand $I$ triple. Trouvez $I_{\min}$ pour $\tau\ll\tau_a$ et vérifiez par simulation.
+\end{exercise}

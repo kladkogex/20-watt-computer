@@ -1,0 +1,128 @@
+\chapter{Déboguer la machine}
+\chaptermark{Déboguer la machine}
+\label{sec:debugging}
+
+\section{Comment déboguer une machine sans schéma}
+
+Un ingénieur à qui l'on confie une carte qui fonctionne, mais sans son schéma, la débogue avec quatre techniques. Il pose une \emph{sonde} et regarde ce qui passe dans un fil. Il \emph{injecte un signal de test} et regarde ce qui a changé. Il \emph{déconnecte} une partie du circuit et regarde ce qui a cessé de fonctionner. Et il \emph{lit les registres de contrôle} pour savoir dans quel mode tourne la carte. Tout ce livre est une tentative de lire le schéma du cerveau; dans ce chapitre, nous verrons lesquelles de ces quatre techniques les ingénieurs savent déjà employer, et ce que les chapitres précédents leur disent de ce qu'il faut attendre.
+
+L'exemple le plus visible aujourd'hui d'un tel débogage, ce sont les interfaces cerveau-ordinateur: des appareils qui lisent les impulsions des neurones et les transforment en commandes pour des machines externes, ou, à l'inverse, envoient au cerveau des signaux venus de l'extérieur. C'est à elles qu'est consacrée la plus grande partie du chapitre, et d'abord à ce que fait la société Neuralink.
+
+\section{La sonde: ce qu'entend une électrode}
+
+La sonde du cerveau est une fine électrode insérée dans le tissu. Elle entend les impulsions des neurones situés dans un rayon d'une centaine de micromètres, en général d'un seul à quelques-uns. Sur l'électrode, une impulsion est une pointe de quelques dizaines à quelques centaines de microvolts qui dure environ une milliseconde, et sa forme permet de distinguer des neurones voisins les uns des autres. Ce sont les grands neurones \nt{GLUT} que l'on entend le mieux: ils sont majoritaires dans le cortex (tableau~\ref{tab:types}), et leurs courants sont plus forts.
+
+La difficulté principale saute aux yeux. Une bonne sonde compte aujourd'hui des centaines ou des milliers d'électrodes, alors que le cerveau contient $8.6\cdot10^{10}$ neurones. Nous écoutons environ un cent-millionième de la machine. Pourquoi un échantillon aussi dérisoire permet-il de comprendre quoi que ce soit? Le chapitre~\ref{sec:code} a donné la réponse. Les neurones voisins sont bruités de façon corrélée, et la moyenne sur un groupe bute sur une limite (proposition~\ref{prop:pooling}): une centaine de neurones porte presque autant qu'un millier. De plus, la tâche que résout le cortex moteur est de faible dimension: un bras a peu d'articulations (chapitre~\ref{sec:muscles}), et l'activité des centaines de neurones qui le commandent tient dans un espace d'une dizaine ou deux de variables communes seulement~\cite{Gallego2017}. Une sonde qui écoute une centaine de neurones entend presque toutes ces variables. Si le cerveau stockait un message indépendant dans chaque neurone, une telle écoute serait inutile.
+
+\section{Le flux de données: compresser sur la sonde}
+
+La sonde produit un flux énorme. Pour voir la forme d'une impulsion, il faut numériser chaque électrode environ $20$ mille fois par seconde avec une précision d'une dizaine de bits. Mille électrodes donnent
+\begin{empheq}[box=\keybox]{equation}
+\begin{aligned}
+R_{\text{brut}} \;&=\; N\,f_s\,b \;\approx\; 10^3\cdot2\cdot10^4\cdot10 \;\approx\; 2\cdot10^8\ \text{bit/s},\\
+R_{\text{imp}} \;&\approx\; N\,r\,\log_2\frac{e}{r\,\Delta t} \;\approx\; 8\cdot10^4\ \text{bit/s}.
+\end{aligned}
+\label{eq:probedata}
+\end{empheq}
+La seconde estimation est la capacité du flux d'impulsions~\eqref{eq:spikeentropy} pour $r=10$ impulsions par seconde et une précision $\Delta t=1\ms$: tout ce qu'il contient réellement tient dans un volume deux mille cinq cents fois plus petit. Pour un appareil implanté, la différence est décisive: on ne peut pas transmettre le flux brut par radio à travers la peau avec l'alimentation que l'on peut se permettre à l'intérieur de la tête sans chauffer le tissu. Un appareil implanté doit donc détecter les impulsions directement sur la puce, à côté des électrodes, et ne transmettre vers l'extérieur que des événements: le numéro du canal et l'instant de l'impulsion. La première description du système Neuralink n'en était pas encore là: les puces amplifient et numérisent les signaux, tout le flux brut part par câble, et c'est un programme externe qui détecte les impulsions; la compression sur puce et la liaison sans fil y sont présentées comme un projet~\cite{Musk2019}.
+
+C'est une technique familière. L'œil compresse le signal d'un facteur cent avant de l'envoyer par un long câble (chapitre~\ref{sec:sensors}); une caméra événementielle ne transmet pas des images, mais des changements. Pour tenir dans son fil, la sonde est obligée de faire ce que fait le cerveau lui-même: parler par impulsions, et seulement des nouveautés.
+
+\section{Ce que fait Neuralink}
+
+L'appareil de Neuralink est une sonde conçue sous ces contraintes~\cite{Musk2019}. Au lieu d'une grille rigide d'aiguilles, de nombreux fils souples plus fins qu'un cheveu, portant chacun des électrodes sur leur longueur: dans la première description du système, jusqu'à $3072$ électrodes sur $96$ fils, $32$ par fil; dans l'appareil implanté chez l'humain, selon la société, environ mille canaux sur $64$ fils. Les fils souples abîment moins le tissu et supportent mieux le fait que le cerveau bouge sans cesse légèrement dans le crâne. Un robot insère les fils en évitant les vaisseaux. Dans la première description, comme dit plus haut, le flux brut~\eqref{eq:probedata} sortait par câble. L'appareil destiné à l'humain, selon la société, est conçu autrement: le boîtier est entièrement recouvert par la peau, les impulsions sont détectées à l'intérieur, les données partent par radio et l'alimentation arrive sans fil.
+
+La tâche du premier appareil est la lecture. On place les fils dans la partie du cortex qui planifie les mouvements du bras, et un décodeur transforme les impulsions en mouvement d'un curseur à l'écran. Une personne aux bras paralysés commande un ordinateur en imaginant le mouvement. L'idée elle-même n'est pas neuve: des interfaces à grilles rigides d'une centaine d'électrodes permettaient depuis longtemps de piloter un curseur~\cite{Hochberg2006}, d'écrire un texte en imaginant les gestes de l'écriture à la main~\cite{Willett2021}, et même de convertir des tentatives de parole en texte à l'écran à une soixantaine de mots par minute~\cite{Willett2023}. Ce que Neuralink apporte de neuf, c'est l'ingénierie: le nombre de canaux, l'absence de fil, le boîtier fermé et l'insertion robotisée, autrement dit la tentative de faire une sonde que l'on peut porter des années hors du laboratoire. À notre connaissance, les résultats des essais chez l'humain ont surtout été publiés par la société elle-même, et non dans des articles à comité de lecture; la société a notamment indiqué qu'une partie des fils s'était déplacée après l'insertion et que le nombre de canaux actifs avait diminué. Pour le débogage, c'est un désagrément ordinaire: une sonde qui bouge par rapport à la carte écoute déjà d'autres fils.
+
+Le second axe de la société est l'écriture: un appareil pour la vision, qui envoie des signaux dans le cortex visuel d'une personne ayant perdu la vue. Nous en parlons plus bas, dans la section sur l'écriture.
+
+\section{La lecture: le décodeur comme destinataire}
+
+Le décodeur d'une interface est un destinataire au sens de la proposition~\ref{prop:reader}: c'est lui qui décide quelle partie du message lire. Pratiquement toutes les interfaces lisent les \emph{fréquences de groupes}: elles comptent les impulsions de chaque canal dans des fenêtres de quelques dizaines de millisecondes et les additionnent avec des poids choisis pour obtenir le mouvement voulu. C'est le code de fréquence de groupe de la section~\ref{sec:rate}, et ce choix n'est pas un hasard: avec quelques impulsions par fenêtre, la fréquence d'un seul neurone n'est pas définie, alors que la somme sur une centaine fonctionne déjà.
+
+Combien d'information parvient-on à extraire? L'écriture \og par la main mentale\fg{} atteignait environ quatre-vingt-dix caractères par minute~\cite{Willett2021}, soit un caractère et demi par seconde: même à cinq bits par caractère, cela fait moins de huit bits par seconde. Le pilotage d'un curseur donne, selon Neuralink, de l'ordre de dix bits par seconde. Or la borne supérieure~\eqref{eq:spikeentropy} est de quelques dizaines de bits par seconde pour \emph{un seul} neurone, et de quelques milliers pour une centaine. L'interface extrait des neurones écoutés une petite fraction de ce qu'ils pourraient porter. Le goulot d'étranglement n'est pas le fil, mais le nombre de variables indépendantes que porte le groupe (proposition~\ref{prop:pooling}) et la façon dont le décodeur comprend un code qui, nous l'avons vu au chapitre~\ref{sec:code}, n'est pas entièrement déchiffré.
+
+Il y a une seconde particularité, familière depuis le chapitre~\ref{sec:motorlearning}. Le décodeur et le cerveau apprennent l'un de l'autre. Le cerveau voit où est allé le curseur, reçoit une erreur et ajuste ses commandes: c'est le même apprentissage moteur par le fil d'erreur. Et les ingénieurs recalculent de temps en temps les poids du décodeur, parce que les neurones sous les fils changent et que les connexions du réseau réapprennent. On obtient deux élèves qui s'adaptent l'un à l'autre; pour qu'une telle paire ne s'emballe pas, il est commode de séparer leurs vitesses d'apprentissage: que l'un apprenne vite et l'autre lentement.
+
+\begin{keyblock}
+\begin{proposition}[Pourquoi une sonde sur mille neurones fonctionne]
+\label{prop:probe}
+Une interface qui écoute une part infime des neurones peut piloter un mouvement parce que l'activité du groupe est de faible dimension et que ses bruits sont corrélés: quelques centaines de neurones portent presque toutes les variables communes. Pour la même raison, l'interface n'extrait que quelques bits par seconde, autant qu'il y a de variables indépendantes dans la tâche, et non autant que peut en contenir le flux d'impulsions. Le fonctionnement des interfaces est mesuré; de combien le décodeur s'améliorera quand le code sera compris reste une question ouverte.
+\end{proposition}
+\end{keyblock}
+
+\section{L'écriture: plus difficile que la lecture}
+
+Injecter un signal dans la machine est plus difficile que le lire. Une électrode parcourue par un courant n'excite pas un seul neurone, mais tous les neurones et tous les fils qui l'entourent, sans distinction de type ni de signe. Elle ne peut pas écrire un code dans lequel compte \emph{quel} neurone a déchargé et \emph{quand} (chapitre~\ref{sec:code}): elle ne peut fixer que grossièrement \emph{où} et \emph{avec quelle force}.
+
+Pour la vision, cela suffit en partie. Un courant envoyé par une électrode dans le cortex visuel est perçu comme un point lumineux à un endroit donné du champ visuel; quand on allumait des points simultanément, jusqu'à seize à la fois, une personne ayant perdu la vue reconnaissait certaines lettres et distinguait les contours des objets~\cite{Fernandez2021}. C'est un code de position, et on peut l'écrire. Mais rappelez-vous le chapitre~\ref{sec:sensors}: l'œil n'envoie pas au cerveau des pixels, mais une description compressée (bords, changements, éclaircissements et assombrissements, sur des fils séparés). Écrire des \og points de lumière\fg{} dans le cortex, c'est écrire des pixels dans une machine qui attend à l'entrée un tout autre code. C'est pourquoi la vision artificielle reste plus grossière qu'on ne l'attendrait d'après le nombre d'électrodes. Il existe aussi des signaux de test qui n'ont pas besoin d'électrode: les illusions visuelles présentent par l'œil une entrée inhabituelle et font sortir la machine de son régime normal, et chaque erreur désigne son propre mécanisme (section~\ref{sec:illusions}).
+
+\section{Ce que la sonde ne voit pas}
+
+L'électrode entend le bus d'adresses: les impulsions des neurones \nt{GLUT} et, moins bien, des petits \nt{GABA}. Mais aux chapitres~\ref{sec:serocomputer}--\ref{sec:acet}, nous avons vu que le mode de fonctionnement de toute la machine est fixé par des registres de diffusion: les concentrations de \nt{SERO}, \nt{DOPA}, \nt{NORA}, \nt{ACET}. L'électrode ne les entend pas: les neurones sources sont en nombre infime, et leur signal n'est pas une impulsion près de la sonde, mais une concentration dans un volume. Un débogueur qui voit le bus de données mais pas les registres de contrôle sera toujours surpris: une même entrée donnera des réponses différentes, parce que quelque part $g$, $a$ ou $\tau_\gamma$ aura changé. On peut mesurer les concentrations par des capteurs chimiques directement dans le tissu~\cite{Bunin1998}, mais les interfaces n'en utilisent pas encore. La seconde sortie de la machine, la lente, échappe elle aussi entièrement à la sonde: les hormones dans le sang (chapitre~\ref{sec:chemoutput}) se mesurent dans des prélèvements sanguins, pas avec une électrode.
+
+La sonde ne voit pas non plus les poids, or c'est en eux que réside presque toute la mémoire et tout ce qui a été appris. On ne peut que les deviner d'après la façon dont les réponses changent. Et elle ne voit pas la douleur telle que la ressent une personne: au chapitre~\ref{sec:pain}, nous avons vu que la force du signal d'alarme est fixée par la machine elle-même (par le portillon de la moelle épinière et par les régulateurs d'en haut), si bien qu'on ne peut pas lire sur un capteur à quel point on a mal.
+
+\section{Bilan: le débogage et les questions ouvertes}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{2.2cm}>{\raggedright}p{3.6cm}>{\raggedright}p{3.4cm}>{\raggedright\arraybackslash}p{4.0cm}}
+\toprule
+Technique de débogage & Ce que fait l'interface & Ce qu'explique le livre & Ce que l'on sait \\
+\midrule
+sonde & écoute des centaines à des milliers de neurones & faible dimension et bruit corrélé (chap.~\ref{sec:code}) & mesuré \\
+compression sur la sonde & transmet des événements au lieu du signal brut & capacité du flux d'impulsions~\eqref{eq:spikeentropy} & résolu par l'ingénierie \\
+lecture & fréquences de groupes $\to$ mouvement, texte, parole & le décodeur est un destinataire; code de fréquence de groupe & fonctionne; quelques bits par seconde \\
+apprentissage conjoint & le cerveau et le décodeur s'adaptent l'un à l'autre & fil d'erreur (chap.~\ref{sec:motorlearning}) & observé; les règles d'adaptation sont un sujet de recherche \\
+écriture & le courant allume des points dans le champ visuel & un code de position s'écrit, un code temporel non (chap.~\ref{sec:sensors}) & points mesurés; vision utile: pas encore \\
+lecture des registres & presque jamais faite & canaux de diffusion (chap.~\ref{sec:serocomputer}--\ref{sec:acet}) & capteurs chimiques disponibles en expérience \\
+\bottomrule
+\end{tabular}
+\caption{Déboguer la machine: ce que savent faire les interfaces cerveau-ordinateur et ce qu'en disent les chapitres du livre.}
+\label{tab:debugging}
+\end{table}
+
+Le tableau~\ref{tab:debugging} résume le chapitre. Les interfaces cerveau-ordinateur savent déjà poser une sonde sur le bus d'adresses et y lire quelques bits par seconde, et le fait même que cela fonctionne s'explique par la faible dimension et le bruit corrélé du chapitre~\ref{sec:code}. Elles ne savent écrire dans la machine que grossièrement, parce que son code d'entrée est compressé et adressé à des fils séparés. Quant aux registres de contrôle et aux poids, ce qui rend la machine capable d'apprendre et de se régler, la sonde ne les voit encore presque pas.
+
+Chaque question ouverte du chapitre~\ref{sec:synthesis} est aussi une tâche pour le débogueur. Quel code lire, on le saura quand les sondes seront plus denses et que les décodeurs sauront exploiter l'instant des impulsions, et pas seulement les fréquences. Comment apprend un réseau à plusieurs couches, on peut le vérifier en posant des sondes dans plusieurs couches à la fois et en regardant comment leurs réponses changent pendant l'apprentissage. Ce que transmettent les canaux de diffusion deviendra visible quand des sondes chimiques s'ajouteront aux sondes électriques. Ce livre est une tentative de lire le schéma de la machine d'après son comportement et d'après les lois que connaît tout ingénieur. Les débogueurs en construction aujourd'hui permettront de vérifier ce schéma à la sonde.
+
+\section{Exercices}
+
+\begin{exercise}[\lvlA]
+\label{ex:17:1}
+\emph{Budget de la liaison radio.} Transmettre à travers la peau coûte $1$~nJ par bit, et l'émetteur ne peut pas dépenser plus de $10$~mW. Quelle puissance faut-il pour le flux brut~\eqref{eq:probedata} avec $N=1000$ électrodes, et pour le flux d'impulsions? Quelle énergie par bit exigerait le flux brut?
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:17:2}
+\emph{Combien de bits dans cent neurones.} Le décodeur additionne les impulsions de $N$ neurones sur des fenêtres de $50\ms$, avec $r=20$~imp/s, une corrélation de bruit par paires $c=0.1$, et un signal modulant la fréquence du groupe de $30\%$ (valeur efficace). Estimez le débit $\tfrac12\log_2(1+\text{SNR})$ par fenêtre pour $N=10$, $100$, $1000$ et $N\to\infty$. Et pour $c=0$, $N=1000$?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:17:3}
+\emph{Débit d'une interface-clavier.} Une fois et demie par seconde, l'interface choisit l'un de $N=32$ caractères: le caractère voulu avec une probabilité $P$, les erreurs étant équiprobables. Combien de bits par seconde transmet-elle pour $P=0.99$, $0.94$, $0.8$? Combien de caractères par seconde faut-il à $P=0.94$ pour $10$~bit/s?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:17:4}
+\emph{Simulation: décodeur de groupe.} $N$ neurones avec $\lambda_i=[b+m\,\mathbf v\cdot\mathbf p_i]_+$, $b=20$, $m=15$~imp/s, fenêtres de $50\ms$, $\mathbf v$ d'écart-type $0.5$ par composante; tous voient un bruit commun, $\mathbf v+\boldsymbol\xi$, $\sigma_\xi=0.2$. Simulez un décodeur non biaisé par vecteur de population. À quel $N$ les deux bruits s'égalent-ils, et combien de bits par composante et fenêtre pour $N\to\infty$?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:17:5}
+\emph{Deux élèves.} Le cerveau émet la commande $m=b\,v^*$, le décodeur produit $v=d\,m$, $\langle v^{*2}\rangle=1$. Après chaque essai, tous deux font un pas de gradient sur $\tfrac12(v-v^*)^2$ avec le taux $\eta$. Simulez à partir de $b=1.2$, $d=1$ pour $\eta=0.8$, $1.1$, $1.5$, $2$. Chacun seul est stable pour $\eta<2$; pour quel $\eta$ la paire est-elle stable?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:17:6}
+\emph{Conception: la chaîne de la sonde.} $1024$ canaux à $20$~k échantillons par seconde, neurones à $10$~imp/s, radio à $1$~nJ/bit. Quel seuil sur le bruit blanc donne au plus $0.1$~Hz de fausses impulsions par canal? On transmet le compte d'impulsions par tranche de $20\ms$ sur $2$~bits: quelle puissance, et combien de fois moins que pour des échantillons bruts sur $10$~bits?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:17:7}
+\emph{La limite de débit d'une interface.} Estimez $R\le DW\log_2(1+\text{SNR})$ pour $D=10$ variables de bande $W=5$~Hz avec $\text{SNR}\approx0.9$ (bruit semblable au signal) et $90$ (bruit indépendant de $1000$ neurones). On mesure environ $10$~bit/s. Quelle expérience distinguerait les deux explications de cet écart: un bruit semblable au signal, ou la méconnaissance du code?
+\end{exercise}

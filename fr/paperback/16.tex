@@ -1,0 +1,39 @@
+\chapter{La seconde sortie}
+% version complète: chapters/16_chemoutput.tex
+
+La machine a deux sorties. La rapide, ce sont les muscles. La lente, c'est la chimie du corps: le cerveau commande le cœur, les vaisseaux, les glandes, et par le sang il envoie des messages à tout le corps à la fois. Le sang est le plus diffusant de tous les bus: un message atteint chaque cellule en une minute environ, et c'est, comme toujours, la \og serrure\fg{} du destinataire qui lui donne son sens.
+
+\section*{Accélérateur et frein}
+
+Le cœur bat tout seul, il a son propre métronome. Le cerveau ne fait qu'ajuster le tempo avec deux fils de signes opposés. \nt{NORA} est la pédale d'accélérateur: elle accélère, mais lentement. \nt{ACET} est le frein: il ralentit vite, parce qu'il n'a pas besoin d'une longue chaîne de réactions chimiques. Et c'est là qu'on trouve enfin un travail pour le type \nt{ADRE}: l'adrénaline libérée dans le sang, c'est la même pédale d'accélérateur, mais enfoncée d'un coup pour tout le corps.
+
+\pencilfig{16}{\pencilart{16}}{Le cœur est piloté par deux fils de signes opposés: l'accélérateur et le frein.}
+
+\section*{Une cascade avec rétroaction}
+
+Beaucoup d'hormones sont commandées en cascade: le cerveau donne un ordre à une première glande, celle-ci à une deuxième, la deuxième sécrète l'hormone, et l'hormone signale au cerveau qu'il y en a assez. C'est un thermostat à trois étages. Un ingénieur sait ce qu'un tel schéma a de dangereux: si la boucle est rendue trop \og sensible\fg{}, elle se met à osciller, et le niveau, au lieu de se maintenir, fluctue. La précision d'un tel régulateur est donc limitée: on ne peut pas le rendre à la fois stable et très précis.
+
+\pencilfig{127}{%
+% three identical first-order stages with proportional feedback: secretion = max(0, K (target - level)).
+% K = 3 settles at 3/4 of the target; K = 12 (above the stability limit K = 8) keeps oscillating. x = 0.42 t, y = 0.55 level
+\foreach \yo/\t in {1.75/{boucle faible: calme, mais à côté du but}, 0/{boucle forte: plus près du but, mais oscille}}{
+  \draw[pen] (0,\yo) -- (8.5,\yo);
+  \draw[pcGray, densely dashed, line width=0.5pt] (0,\yo+0.55) -- (8.5,\yo+0.55);
+  \node[lbl, anchor=south west] at (2.0,\yo+0.8) {\t};}
+\node[lbl, anchor=west] at (8.55,2.3) {but}; \node[lbl, anchor=west] at (8.55,0.55) {but};
+\begin{scope}[yshift=1.75cm]
+\draw[penlite=pcBlue] plot[smooth] coordinates {(0.00,0.00) (0.17,0.01) (0.34,0.08) (0.50,0.19) (0.67,0.33) (0.84,0.46) (1.01,0.55) (1.18,0.59) (1.34,0.58) (1.51,0.55) (1.68,0.49) (1.85,0.43) (2.02,0.37) (2.18,0.34) (2.35,0.33) (2.52,0.34) (2.69,0.37) (2.86,0.40) (3.02,0.43) (3.19,0.44) (3.36,0.45) (3.53,0.45) (3.70,0.44) (3.86,0.42) (4.03,0.41) (4.20,0.40) (4.37,0.39) (4.54,0.39) (4.70,0.40) (4.87,0.40) (5.04,0.41) (5.38,0.42) (5.88,0.42) (6.38,0.41) (7.06,0.41) (8.40,0.41)};
+\end{scope}
+\draw[penlite=pcRed] plot[smooth] coordinates {(0.00,0.00) (0.17,0.05) (0.34,0.30) (0.50,0.68) (0.67,1.02) (0.84,1.23) (1.01,1.30) (1.18,1.26) (1.34,1.16) (1.51,1.02) (1.68,0.87) (1.85,0.72) (2.02,0.58) (2.18,0.47) (2.35,0.39) (2.52,0.38) (2.69,0.46) (2.86,0.57) (3.02,0.67) (3.19,0.71) (3.36,0.70) (3.53,0.65) (3.70,0.58) (3.86,0.50) (4.03,0.43) (4.20,0.41) (4.37,0.45) (4.54,0.53) (4.70,0.61) (4.87,0.65) (5.04,0.64) (5.21,0.60) (5.38,0.54) (5.54,0.47) (5.71,0.42) (5.88,0.42) (6.05,0.48) (6.22,0.56) (6.38,0.62) (6.55,0.64) (6.72,0.62) (6.89,0.56) (7.06,0.50) (7.22,0.44) (7.39,0.42) (7.56,0.45) (7.73,0.53) (7.90,0.60) (8.06,0.63) (8.23,0.62) (8.40,0.58)};
+\node[lbl, anchor=north] at (4.2,-0.05) {temps};
+}{Modèle d'une cascade hormonale à trois étages. Une rétroaction faible calme le niveau, mais le laisse nettement en dessous du but. Une rétroaction forte l'en approche, mais le niveau ne tient plus: il oscille.}
+
+\section*{Des impulsions, pas un niveau}
+
+Certaines hormones ne fonctionnent que par impulsions. Si on les administre en continu, la glande réceptrice \og se lasse\fg{} et décroche; par brèves impulsions une fois par heure, elle fonctionne. Le destinataire lit non le niveau, mais le rythme, comme la synapse du chapitre sur le code Morse qui n'entend que les changements.
+
+\section*{Le jour et la nuit}
+
+Enfin, le corps possède un générateur lent, d'une période d'environ un jour. Sa période naturelle diffère un peu de vingt-quatre heures, et chaque matin la lumière le recale, comme un poste de radio s'accorde sur une station. Ne le confondez pas avec l'horloge d'un ordinateur: il ne cadence pas les étapes du calcul. Il fait basculer les modes de fonctionnement de toute la machine: le jour et la nuit, la veille et le sommeil.
+
+\fullversion{16}

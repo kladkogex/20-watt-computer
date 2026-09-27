@@ -1,0 +1,67 @@
+\chapter{Un sac de composants}
+% version complète: chapters/01b_neurontypes.tex
+
+\pencilfig{1}{\pencilart{1}}{Un sac de composants: presque tous bleus, quelques rouges et une poignée d'autres.}
+
+Imaginez qu'on vous remette un sac contenant quatre-vingt-six milliards de composants d'apparence identique, en vous demandant de comprendre comment on en a fait un ordinateur. Par où commenceriez-vous? Un ingénieur ne s'attarderait pas sur la forme des pièces. Il demanderait: combien chaque composant a-t-il d'entrées, combien de sorties, et que produit-il en sortie?
+
+Le neurone --- c'est le nom de ce composant --- est d'une simplicité étonnante. Des entrées, il en a des milliers: les fils d'autres neurones y aboutissent. La sortie est unique. Mais cette sortie se ramifie comme un arbre, et une même copie du signal part vers des milliers de destinataires. Imaginez quelqu'un qui écoute mille interlocuteurs à la fois et qui répond d'une seule phrase, mais que mille autres personnes entendent.
+
+Quel est ce signal? Un clic bref. De temps à autre, le neurone émet une impulsion, un pic de tension d'environ un millième de seconde. Tous les clics d'un même neurone sont identiques, comme les coups frappés sur un même tambour. Tout ce que le neurone peut dire est donc inscrit non dans le volume du clic, mais dans le moment \emph{où} il clique: plus souvent, plus rarement, tout de suite ou avec un retard.
+
+À l'intérieur, le neurone fait le calcul le plus simple qu'on puisse imaginer: il additionne les signaux qui arrivent et, si la somme dépasse un seuil, il émet lui-même un clic. Certaines entrées poussent la somme vers le haut, d'autres vers le bas.
+
+\section*{Trier le sac}
+
+L'extrémité du fil de sortie, une fois arrivée au voisin, ne le touche pas. Il reste entre eux une fente étroite, et c'est la chimie qui y fait passer le signal: le fil libère une pincée d'une substance particulière, un neurotransmetteur, que le voisin capte. Et voici la chance: presque chaque neurone libère la même substance à toutes les extrémités de son fil. On peut donc trier les neurones selon \emph{ce} qu'ils libèrent.
+
+Nous désignerons chaque type de neurone par les quatre premières lettres du nom anglais de sa substance. Le neurone qui libère du glutamate est un \nt{GLUT}. Celui qui libère de l'acide gamma-aminobutyrique, un \nt{GABA}. Viennent ensuite \nt{DOPA} (dopamine), \nt{SERO} (sérotonine), \nt{NORA} (noradrénaline), \nt{ACET} (acétylcholine) et quelques autres.
+
+Une fois le sac trié, le tableau est très déséquilibré. Sur mille neurones, environ neuf cent soixante sont des \nt{GLUT}. Leur signal pousse le destinataire vers le clic: c'est le \og plus\fg{}. Environ trente-six sont des \nt{GABA}, dont le signal éloigne du seuil: c'est le \og moins\fg{}. Dans le cortex, ils sont plus nombreux, d'un cinquième à un quart. Tous les autres types réunis ne font que quelques neurones sur cent mille. Une goutte d'eau dans la mer.
+
+\section*{Téléphone et radio}
+
+Mais cette goutte fonctionne tout autrement. Le fil d'un neurone \nt{GLUT} ou \nt{GABA} mène à des voisins précis, comme une ligne téléphonique: seuls ceux qu'on appelle reçoivent le signal. Les minuscules groupes \nt{DOPA}, \nt{SERO}, \nt{NORA} et \nt{ACET}, eux, fonctionnent comme des stations de radio. Leurs fils se déploient sur d'immenses régions du cerveau, la substance se déverse souvent non dans la fente mais dans l'espace alentour, et le même message est entendu d'un coup par des millions de cellules.
+
+Sur les lignes téléphoniques passent les données: voici une ligne dans l'image, voici un son d'une certaine hauteur. À la radio passent les réglages communs: à quel point tout est fort, s'il faut apprendre, s'il est temps de dormir. Il en va de même dans tout ordinateur: des milliards de cellules de mémoire, mais une poignée de registres de contrôle. Sans eux, la machine ne fonctionne pas pour autant.
+
+\section*{Le sens, c'est le destinataire qui le choisit}
+
+Il y a une subtilité. La substance elle-même ne sait pas si elle est un \og plus\fg{} ou un \og moins\fg{}. La molécule est une clé. Ce qui se passe quand on introduit la clé, c'est la serrure qui en décide, une protéine particulière du côté du destinataire. La même dopamine stimule certains destinataires et en atténue d'autres, selon la serrure qu'ils portent. Comme une même émission de radio que chaque auditeur comprend à sa façon.
+
+\section*{Le signal \og mieux que prévu\fg{}}
+
+Le canal radio le plus célèbre est la dopamine. Que transmet-il? Voici une expérience. On donne à un animal, sans prévenir, une goutte de jus, et les neurones à dopamine répondent par une bouffée de clics. Puis on allume une lampe avant chaque jus. L'animal apprend que la lampe annonce le jus, et désormais la bouffée survient à la lampe, et non plus au jus lui-même. Et si, après la lampe, le jus ne vient pas, les neurones à dopamine \emph{se taisent} au moment attendu.
+
+\pencilfig{101}{%
+% three rows: a spike raster of a DOPA neuron; lamp (amber) and juice (blue drop) above the axis
+\foreach \row/\y in {1/0,2/-1.05,3/-2.1}{
+  \draw[pen] (0,\y) -- (6.2,\y);
+  \foreach \s in {0.3,0.75,1.1,2.15,2.6,3.05,3.45,3.9,4.45,4.95,5.4,5.85}{
+    \pgfmathtruncatemacro{\gap}{(\row==3)&&(\s>3.6)&&(\s<4.7)}
+    \ifnum\gap=0 \draw[pcGray, line width=0.7pt] (\s,\y) -- (\s,\y+0.3);\fi}}
+% row 1: juice without a lamp -> burst at the juice
+\foreach \s in {4.0,4.08,4.16,4.24,4.33}{\draw[pcAmber, line width=0.8pt] (\s,0) -- (\s,0.45);}
+\draw[dotpen=pcBlue, wash=pcBlue] (4.15,0.72) circle (0.09); \draw[pcBlue, line width=0.6pt] (4.07,0.76) -- (4.15,0.92) -- (4.23,0.76);
+% row 2: lamp -> burst at the lamp, nothing at the promised juice
+\foreach \y in {-1.05,-2.1}{
+  \foreach \s in {1.5,1.58,1.66,1.74,1.83}{\draw[pcAmber, line width=0.8pt] (\s,\y) -- (\s,\y+0.45);}
+  \draw[dotpen=pcAmber, wash=pcAmber] (1.65,\y+0.72) circle (0.1);
+  \foreach \a in {30,90,150}{\draw[pcAmber, line width=0.5pt] ($(1.65,\y+0.72)+(\a:0.14)$) -- ($(1.65,\y+0.72)+(\a:0.24)$);}}
+\draw[dotpen=pcBlue, wash=pcBlue] (4.15,-0.33) circle (0.09); \draw[pcBlue, line width=0.6pt] (4.07,-0.29) -- (4.15,-0.13) -- (4.23,-0.29);
+% row 3: lamp, no juice -> a gap where the juice was expected
+\draw[pcBlue, line width=0.6pt, densely dotted] (4.15,-1.38) circle (0.09); \draw[pcBlue, line width=0.6pt, densely dotted] (4.07,-1.34) -- (4.15,-1.18) -- (4.23,-1.34);
+\draw[penlite=pcRed] (3.65,-2.22) -- (3.65,-2.28) -- (4.65,-2.28) -- (4.65,-2.22);
+\node[lbl, text=pcRed, anchor=north] at (4.15,-2.3) {creux};
+\node[lbl, anchor=east, align=right] at (-0.1,0.15) {jus\\sans lampe};
+\node[lbl, anchor=east, align=right] at (-0.1,-0.9) {lampe,\\puis jus};
+\node[lbl, anchor=east, align=right] at (-0.1,-1.95) {lampe,\\pas de jus};
+}{Une bouffée au jus inattendu, puis à la lampe qui l'annonce; et un creux à l'instant où le jus promis n'arrive pas.}
+
+La règle qui explique les trois cas: la dopamine ne signale pas \og c'est bien\fg{}, mais \og c'est mieux que je ne le pensais\fg{}. Le jus inattendu est une bonne surprise. Le jus promis n'est pas une surprise du tout. Promis mais pas donné, c'est une mauvaise surprise. C'est exactement la grandeur qu'utilisent les programmes qui apprennent de leurs erreurs. Nous y reviendrons.
+
+\section*{À retenir}
+
+Le cerveau est un immense réseau de composants d'apparence identique. Presque tous sont les \og plus\fg{} et les \og moins\fg{} du réseau téléphonique des données. Et une toute petite minorité sont des stations de radio, qui règlent tout le réseau à la fois. Au chapitre suivant, nous verrons ce qu'on peut construire avec des \og plus\fg{} seulement.
+
+\fullversion{1}

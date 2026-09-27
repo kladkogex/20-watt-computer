@@ -1,0 +1,167 @@
+\chapter{Les neurones selon le nombre de dendrites}
+\chaptermark{Le nombre de dendrites}
+\label{sec:dendrites}
+
+\section{Le nombre d'entrées, paramètre du circuit}
+
+Au chapitre~\ref{sec:neurontypes}, nous avons trié les neurones selon ce que libère leur sortie, et au chapitre~\ref{sec:eetypes} selon le composant qu'ils réalisent. Il existe un troisième critère, que l'ingénieur remarquera aussitôt: \emph{combien d'entrées possède le neurone}. Les entrées sont collectées par les dendrites, des branches sur lesquelles se posent les axones d'autres neurones (chapitre~\ref{sec:dofa}, section~\ref{sec:weightstore}). Certains neurones n'ont aucune dendrite, d'autres en ont une ou deux, d'autres encore un arbre qui rassemble cent mille entrées. Pour un électronicien, c'est la sortance inverse, le fan-in, et elle correspond presque toujours à la tâche.
+
+Une estimation simple montre pourquoi le nombre et la taille des dendrites comptent autant. La membrane est un condensateur de capacité spécifique $c_m\approx1$~µF/cm$^2$, et plus la surface $A$ du neurone et de ses dendrites est grande, plus il faut apporter de charge pour élever la tension de $\Delta V$. Le temps que met un courant d'entrée $I$ pour y parvenir, si l'on néglige la fuite, vaut
+\begin{empheq}[box=\keybox]{equation}
+t \;\approx\; \frac{c_m\,A\,\Delta V}{I} .
+\label{eq:dendriteload}
+\end{empheq}
+Un petit neurone muni de quelques dendrites courtes a une surface de l'ordre de $2\cdot10^{-5}$~cm$^2$ et une capacité d'environ $20$~pF. Une seule grosse synapse délivrant quelques nanoampères l'élève de $20\mV$ en moins d'un dixième de milliseconde. Un neurone à grand arbre a une surface une quinzaine de fois plus grande et une capacité d'environ $300$~pF; une synapse ordinaire délivrant environ $0.1$~nA le chargerait en $60\ms$, bien plus que la constante de temps de fuite, c'est-à-dire qu'elle ne le chargerait jamais. Un tel neurone a besoin de dizaines d'entrées simultanées. Ces nombres sont des ordres de grandeur, mais la conclusion n'en dépend pas: \emph{peu d'entrées, c'est rapide et précis; beaucoup d'entrées, c'est lent et par la somme}.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  soma/.style={circle,draw,very thick,fill=blue!6,minimum size=0.55cm,inner sep=0pt},
+  ax/.style={->,very thick,red!70!black},
+  den/.style={very thick,blue!60!black}]
+% 0 dendrites: sensor on a line
+\begin{scope}[xshift=0cm]
+\draw[den,decorate,decoration={snake,amplitude=1pt,segment length=4pt}] (-0.9,0) -- (0,0);
+\node[font=\scriptsize] at (-0.9,0.3) {capteur};
+\draw[ax] (0,0) -- (1.0,0);
+\draw[thick] (0.1,0) -- (0.1,0.45);
+\node[soma,minimum size=0.4cm] at (0.1,0.65) {};
+\node[font=\scriptsize,align=center] at (0.05,-0.75) {$0$\\ligne à capteur};
+\end{scope}
+% 1 dendrite
+\begin{scope}[xshift=3.3cm]
+\draw[den] (-0.9,0) -- (-0.28,0);
+\node[soma] at (0,0) {};
+\draw[ax] (0.28,0) -- (0.9,0);
+\node[font=\scriptsize,align=center] at (0,-0.75) {$1$\\tampon, suiveur};
+\end{scope}
+% 2 dendrites: one per ear
+\begin{scope}[xshift=6.2cm]
+\draw[den] (-0.28,0) -- (-0.9,0); \draw[den] (0.28,0) -- (0.9,0);
+\node[soma] at (0,0) {};
+\draw[ax] (0,-0.28) -- (0,-0.6);
+\node[font=\scriptsize] at (-0.9,0.25) {g.}; \node[font=\scriptsize] at (0.9,0.25) {d.};
+\node[font=\scriptsize,align=center] at (0,-1.0) {$2$\\ET temporel};
+\end{scope}
+% ~4 short dendrites: mixer
+\begin{scope}[xshift=9.0cm]
+\foreach \a in {45,135,225,315}{\draw[den] (\a:0.28) -- (\a:0.7); \fill[blue!60!black] (\a:0.72) circle (0.06);}
+\node[soma] at (0,0) {};
+\draw[ax] (0.28,0) -- (1.0,0);
+\node[font=\scriptsize,align=center] at (0,-1.0) {$\sim4$\\mélangeur};
+\end{scope}
+% many: summing tree
+\begin{scope}[xshift=12.0cm]
+\foreach \a in {60,90,120}{\draw[den] (0,0.28) -- ++(\a:0.55) coordinate (b); \foreach \d in {-20,20}{\draw[den] (b) -- ++(\a+\d:0.35);}}
+\foreach \a in {-120,-60}{\draw[den] (0,-0.28) -- ++(\a:0.45);}
+\node[soma] at (0,0) {};
+\draw[ax] (0.28,0) -- (1.0,0);
+\node[font=\scriptsize,align=center] at (0,-1.0) {$10^4$--$10^5$\\sommateur};
+\end{scope}
+\end{tikzpicture}
+\caption{Cinq classes selon le nombre d'entrées. En bleu, les dendrites (entrées); en rouge, l'axone (sortie). Moins un neurone a d'entrées, plus il transmet vite et précisément un signal isolé; plus il en a, mieux il additionne et classe. Schéma de principe, et non dessin de la forme des cellules.}
+\label{fig:dendriteclasses}
+\end{figure}
+
+\section{Zéro dendrite: un capteur au bout d'une ligne}
+
+Les neurones sensoriels du toucher, de la douleur et de l'étirement musculaire (chapitres~\ref{sec:sensors}, \ref{sec:pain}, \ref{sec:muscles}) n'ont aucune dendrite sur leur corps cellulaire. L'axone sort du corps par une seule branche et se divise aussitôt en deux: une branche part vers la peau ou le muscle, et son extrémité sert elle-même de capteur; l'autre va dans la moelle épinière. L'impulsion court du capteur directement à la moelle, sans passer par le corps cellulaire. Pour un ingénieur, c'est une ligne de transmission dont le capteur est à l'extrémité distante, tandis que le corps cellulaire est branché sur le côté, comme une alimentation: il entretient la ligne, mais ne participe pas à la transmission. Le gain, c'est la vitesse et la fiabilité: il n'y a sur le trajet aucun endroit où il faudrait additionner le signal et décider à nouveau s'il faut le transmettre.
+
+Les capteurs de la lumière et du son sont un cas encore plus extrême: ce ne sont pas des neurones collecteurs, mais les transducteurs eux-mêmes, dont l'entrée n'est pas une synapse, mais une protéine réceptrice (fig.~\ref{fig:transducer}).
+
+\section{Une dendrite: le tampon}
+
+Un neurone à une dendrite et un axone reçoit une seule ligne d'entrée et la transmet plus loin. C'est le cas des neurones olfactifs: leur unique dendrite atteint la surface du nez et porte un seul type de récepteur~\cite{Mombaerts2004}; des cellules relais de la rétine, entre les capteurs de lumière et les neurones de sortie de l'œil; des neurones qui relient les capteurs de l'oreille au cerveau. Un ingénieur les appellerait tampons ou suiveurs: ils ne calculent pas, ils acheminent un seul signal, en changeant parfois sa forme, par exemple en transformant la tension continue d'un capteur en impulsions, comme au chapitre~\ref{sec:sensors}.
+
+\section{Deux dendrites: un ET temporel}
+
+Chez les mammifères, les détecteurs de coïncidences qui déterminent la direction d'un son (fig.~\ref{fig:itd}) ont souvent exactement deux dendrites, orientées dans des directions opposées: l'une reçoit les entrées de l'oreille gauche, l'autre celles de l'oreille droite~\cite{Grothe2010}. Pourquoi séparer les entrées? Rappelons la formule~\eqref{eq:shunt}: quand de nombreux canaux excitateurs sont ouverts sur une même portion de membrane, la tension s'y rapproche du potentiel d'équilibre, et chaque entrée supplémentaire ajoute de moins en moins. Beaucoup d'entrées venant d'une même oreille, rassemblées sur une même dendrite, la saturent donc et ne peuvent pas, à elles seules, amener le neurone au seuil. En revanche, une entrée sur chaque dendrite s'additionnent de façon presque linéaire. Deux dendrites font du neurone un \og ET\fg{} plus strict: ne décharge que si les signaux sont arrivés des deux côtés, et ensemble. Des modèles ont montré qu'une telle séparation améliore effectivement la détection des coïncidences~\cite{AgmonSnir1998}.
+
+\section{Quelques dendrites courtes: le mélangeur et le relais}
+
+\emph{Les mélangeurs.} Dans le circuit d'apprentissage moteur du chapitre~\ref{sec:motorlearning}, environ soixante-dix milliards de petits neurones \nt{GLUT} déploient l'entrée en un vecteur très long. Chacun n'a qu'environ quatre dendrites courtes, et chacune se termine par une \og griffe\fg{} qui enserre la terminaison d'une seule entrée. Chaque mélangeur ne voit donc qu'environ quatre entrées parmi beaucoup, et fonctionne comme un petit élément \og ET\fg{} sur son quadruplet. Parmi $M$ lignes d'entrée, on peut choisir $\binom{M}{4}$ quadruplets différents: pour $M=100$, cela fait près de quatre millions. Pourquoi tant? Un élément à seuil à $n$ entrées peut séparer correctement en deux classes au plus
+\begin{empheq}[box=\keybox]{equation}
+P_{\max} \;\approx\; 2n
+\label{eq:cover}
+\end{empheq}
+motifs aléatoires~\cite{Cover1965}. Le neurone de sortie du même circuit reçoit environ $10^5$ entrées venant des mélangeurs, et selon~\eqref{eq:cover}, sa borne supérieure est de l'ordre de $2\cdot10^5$ associations différentes. C'est la limite d'un élément idéal: si tous les poids sont positifs, comme pour les synapses excitatrices, et qu'il faut une marge contre le bruit, l'estimation pour ce même neurone est d'environ $4\cdot10^4$ associations~\cite{Brunel2004}. Les mélangeurs à peu d'entrées servent justement à fournir au grand sommateur de nombreuses entrées différentes et presque indépendantes~\cite{Marr1969,Albus1971}.
+
+\emph{Les relais.} Sur le chemin qui va de l'oreille aux détecteurs de direction se trouvent des neurones à quelques dendrites courtes qui ne reçoivent que quelques synapses énormes, et certains n'en reçoivent qu'une en pratique. Selon~\eqref{eq:dendriteload}, c'est exactement ce qu'il faut: une petite capacité et un fort courant, et le neurone décharge une fraction de milliseconde après chaque impulsion d'entrée, en ne perdant presque rien de la précision temporelle. L'un de ces relais reçoit \nt{GLUT} et émet \nt{GLYC}: c'est un inverseur d'une précision de quelques dizaines de microsecondes, qui fournit une inhibition rapide aux détecteurs de direction~\cite{BorstSoria2012}.
+
+\section{Des milliers d'entrées: le sommateur et le classifieur}
+
+À l'autre bout de l'échelle se trouvent les neurones \nt{GLUT} du cortex, avec une dizaine de milliers d'entrées, et les neurones \nt{GABA} de sortie du circuit d'apprentissage moteur, avec cent mille. Selon~\eqref{eq:dendriteload}, un tel neurone est lent et ne peut pas répondre à une entrée isolée: il additionne. C'est le neurone intégrateur du chapitre~\ref{sec:glutcomputer}, le sommateur à partir duquel on construit les classifieurs. Un grand arbre apporte aussi du neuf: ses branches fonctionnent comme des sous-circuits distincts dotés de leurs propres seuils, si bien qu'un seul neurone se comporte comme un petit réseau multicouche~\cite{Beniaguev2021,Gidon2020}.
+
+\section{Des dendrites qui servent aussi de sortie}
+
+Certains neurones n'ont pas d'axone du tout, et leurs dendrites servent à la fois d'entrée et de sortie: elles reçoivent des signaux et libèrent elles-mêmes le neurotransmetteur. L'exemple le mieux étudié est celui des neurones \nt{GABA} de la rétine qui participent à la détection de la direction du mouvement (chapitre~\ref{sec:gaba}, fig.~\ref{fig:direction}). Dans un tel neurone, chaque branche répond d'elle-même au mouvement allant du corps cellulaire vers sa pointe et émet une inhibition depuis cette pointe~\cite{Euler2002}. Un neurone, ce sont plusieurs détecteurs de direction indépendants, un par branche. Pour un ingénieur, ce n'est pas un élément unique, mais un circuit intégré à plusieurs canaux dans un même boîtier.
+
+\section{Bilan}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{1.9cm}>{\raggedright}p{3.4cm}>{\raggedright}p{2.6cm}>{\raggedright}p{1.8cm}>{\raggedright\arraybackslash}p{3.8cm}}
+\toprule
+Dendrites & Exemple & Composant & Entrées & Ce que l'on sait \\
+\midrule
+$0$ & capteurs du toucher, de la douleur, de l'étirement & ligne avec capteur à l'extrémité & --- & établi \\
+$1$ & neurones olfactifs, cellules relais de la rétine, neurones de l'oreille & tampon, suiveur & $1$ à quelques-unes & établi \\
+$2$ & détecteurs de direction du son & ET temporel & deux faisceaux & structure établie; gain dû à la séparation des entrées montré sur des modèles \\
+$\sim4$ & mélangeurs du circuit d'apprentissage moteur & petit élément \og ET\fg{} & $\sim4$ & établi; rôle de déploiement de l'entrée: hypothèse bien fondée \\
+quelques-unes, courtes & relais sur le chemin de l'oreille & relais, inverseur & $1$ à quelques énormes & établi \\
+des milliers & neurones \nt{GLUT} du cortex, neurones de sortie de l'apprentissage moteur & sommateur, classifieur & $10^4$--$10^5$ & établi; branches comme sous-circuits mesurées sur quelques exemples \\
+dendrites-sorties & neurones \nt{GABA} de direction de la rétine & circuit intégré multicanal & beaucoup & mesuré \\
+\bottomrule
+\end{tabular}
+\caption{Les neurones selon le nombre de dendrites.}
+\label{tab:dendrites}
+\end{table}
+
+\begin{keyblock}
+\begin{proposition}[Le nombre d'entrées suit la tâche]
+\label{prop:dendrites}
+Là où il faut la vitesse et la précision d'un signal isolé (capteurs, relais, détecteurs de coïncidences), les neurones ont peu de dendrites, peu d'entrées et de grosses synapses: une petite capacité~\eqref{eq:dendriteload} se charge vite. Là où il faut additionner et classer, les neurones ont de grands arbres à des milliers d'entrées. La structure des classes est mesurée; l'explication computationnelle est bien fondée, mais reste une hypothèse pour de nombreuses classes.
+\end{proposition}
+\end{keyblock}
+
+Le tableau~\ref{tab:dendrites} complète les deux tris précédents: par neurotransmetteur (tableau~\ref{tab:types}) et par composant (tableau~\ref{tab:eetypes}). Tous trois regardent le même élément sous des angles différents: ce qu'il émet, ce qu'il calcule et combien il écoute.
+
+\section{Exercices}
+
+\begin{exercise}[\lvlA]
+\label{ex:19:1}
+\emph{Combien d'entrées pour un grand neurone.} Un neurone avec $C=300$~pF et $\tau_m=20\ms$ reçoit des synapses, sources de courant de $0.1$~nA; seuil à $20\mV$ au-dessus du repos. (a)~Combien de synapses simultanées atteignent le seuil tout court; en $10\ms$; en $5\ms$? (b)~Et un neurone de $C=20$~pF sous une synapse de $4$~nA: en combien de temps?
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:19:2}
+\emph{Pourquoi quatre.} Un mélangeur est un \og ET\fg{} sur $k$ lignes parmi $M=100$; dans un motif, la moitié des lignes est active; il y a $7\cdot10^{10}$ mélangeurs. (a)~Combien répondent au motif pour $k=2$; $4$; $40$? (b)~De quel facteur les mélangeurs augmentent-ils le nombre d'associations~\eqref{eq:cover} d'un neurone de sortie à $10^5$ entrées par rapport à $M=100$ lignes directes?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:19:3}
+\emph{D'où vient $2n$.} Un hyperplan passant par l'origine sépare $P$ points en position générale dans un espace à $n$ dimensions en deux classes de $C(P,n)=2\sum_{k=0}^{n-1}\binom{P-1}{k}$ façons. (a)~Démontrez que pour $P=2n$, exactement la moitié des $2^P$ partitions est séparable. (b)~Quelle fraction est séparable pour $n=100$ et $P=180$; $220$?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:19:4}
+\emph{Deux dendrites comme \og ET\fg{} strict.} Une dendrite est un compartiment à fuite $g_L$; chaque entrée y ouvre une conductance $g_0=0.5\,g_L$ de potentiel $E_E$; le corps voit $\kappa(V_1+V_2)$; seuil $\theta=1.1\,\kappa E_E$. Pourquoi aucun nombre d'entrées sur une seule dendrite ne déclenche-t-il le neurone, et combien d'entrées faut-il sur chacune?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:19:5}
+\emph{Concevoir un relais.} La gigue d'une impulsion vaut $\sigma_t=\sigma_V/\dot V$, où $\dot V$ est la pente de la tension au seuil. On veut $\sigma_t\le20$~µs avec un bruit $\sigma_V=1\mV$; négligez la fuite. Combien de synapses synchrones de $0.1$~nA faut-il pour cela à un neurone avec $C=300$~pF, et quelle est la gigue d'un neurone avec $C=20$~pF et une seule synapse de $4$~nA?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:19:6}
+\emph{Simulation: charge d'une longue dendrite.} Simulez un câble passif $\tau_m\partial_tV=\lambda^2\partial_x^2V-V+i/g$ de longueur $L=\ell/\lambda$ à extrémités fermées ($40$ compartiments, Euler). Une brève impulsion de courant entre au bout distant: quand, et jusqu'à quelle fraction de la tension qu'aurait la même charge étalée sur la dendrite, le bout proche monte-t-il pour $L=0.2$, $1$, $2$?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:19:7}
+\emph{Recherche: le nombre optimal d'entrées.} Capacité $C=C_0+nc_s$; $m$ entrées de courant $I_s$ agissent simultanément; le neurone mémorise $P\approx2n$ associations~\eqref{eq:cover}. Comment le temps de réponse dépend-il de $P$ à $m$ constant, et à fraction constante $m=\varphi n$? Proposez un critère de coût et trouvez le $n$ optimal pour un relais et pour un classifieur.
+\end{exercise}

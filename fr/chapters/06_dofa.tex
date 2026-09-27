@@ -1,0 +1,362 @@
+\chapter{Des réseaux de neurones qui savent apprendre: ajoutons \nt{DOPA}}
+\chaptermark{Des réseaux qui apprennent}
+\label{sec:dofa}
+
+\section{Les règles du jeu}
+
+Dans tous les schémas des chapitres précédents, les poids étaient fixés par l'ingénieur. Dans l'organisme, il n'y a pas d'ingénieur. Les poids doivent s'établir d'eux-mêmes, en cours de fonctionnement, et de façon que le réseau fasse quelque chose d'utile. C'est ce qu'on appelle l'apprentissage.
+
+Aux règles précédentes s'en ajoute une. La synapse modifie son poids elle-même, et elle ne peut connaître que ce qui se passe \emph{près d'elle}: l'activité de l'émetteur $x$, l'activité du destinataire $y$ et les substances qui lui parviennent. Personne ne peut envoyer à une synapse une correction personnelle.
+
+Cela exclut la méthode principale des réseaux de neurones artificiels, la rétropropagation de l'erreur. Là, l'erreur de sortie traverse le réseau à rebours par les mêmes poids, dans une phase séparée après la passe avant, et chaque poids reçoit sa propre correction. Il faut pour cela des fils de retour qui reproduisent exactement les fils aller, et une horloge commune. Ni l'un ni l'autre n'a été trouvé dans le cerveau, du moins sous la forme qu'ils ont dans les réseaux artificiels~\cite{Lillicrap2020,WhittingtonBogacz2019}.
+
+Nous écrirons la variation d'un poids comme un processus continu et lent:
+\begin{equation}
+\frac{\dd w}{\dd t} \;=\; \eta\,\Phi(\text{ce que sait la synapse}),
+\label{eq:plasticity}
+\end{equation}
+où $\eta$ est la vitesse d'apprentissage, si faible que le poids ne change presque pas pendant la durée d'une impulsion. Tout le chapitre porte sur ce que peut être la fonction $\Phi$.
+
+\section{Où est stocké le poids}
+\label{sec:weightstore}
+
+Qu'est-ce qu'une synapse qui \og change de poids\fg{}? Une connexion a deux côtés: la terminaison du fil de l'émetteur (côté \emph{présynaptique}) et une portion de la membrane du destinataire portant les récepteurs (côté \emph{postsynaptique}), séparées par une fente étroite. Dans les connexions \nt{GLUT}, la membrane du destinataire se trouve en général sur une \emph{épine}, petite saillie d'une branche d'entrée du destinataire. Il est commode de décomposer le poids de la connexion en trois facteurs~\cite{delCastillo1954}:
+\begin{empheq}[box=\keybox]{equation}
+w \;=\; N_s\,p\,A_1 .
+\label{eq:quantal}
+\end{empheq}
+Ici, $N_s$ est le nombre de sites de libération entre les deux neurones, $p$ la probabilité qu'une impulsion libère un quantum de neurotransmetteur en un site (le même $p$ qu'au chapitre~\ref{sec:code}), $A_1$ la réponse du destinataire à un quantum, c'est-à-dire le nombre de récepteurs qui le captent. Le facteur $p$ réside chez l'émetteur, $A_1$ chez le destinataire, et $N_s$ exige les deux côtés: de nouveaux sites de libération apparaissent, d'anciens disparaissent, et cela dure toute la vie.
+
+\emph{C'est le destinataire qui décide.} Dans une synapse \nt{GLUT} typique, l'un des récepteurs du glutamate ne conduit le courant que si deux conditions sont réunies: le glutamate est arrivé de l'émetteur, et la membrane du destinataire est déjà excitée~\cite{Nowak1984}. C'est la règle de Hebb inscrite dans une seule molécule: le détecteur de coïncidences du chapitre~\ref{sec:glutcomputer}, placé à l'entrée même de la synapse. En s'ouvrant, le récepteur laisse entrer du calcium dans le destinataire, et le calcium déclenche la modification du poids. Le destinataire est le seul endroit où l'on voit à la fois l'entrée et la sortie; c'est donc chez lui que la décision est prise.
+
+\emph{N'importe quel côté peut exécuter la décision.} La potentialisation à long terme la mieux étudiée a lieu chez le destinataire: de nouveaux récepteurs s'insèrent dans la membrane~\cite{Malinow2002}, et l'épine grossit~\cite{Matsuzaki2004}: c'est $A_1$ qui augmente. Mais le destinataire peut aussi modifier $p$: il libère une substance qui retraverse la fente vers l'émetteur (le canal de retour de l'annexe~\ref{sec:othermediators}), et celui-ci se met à libérer moins de neurotransmetteur~\cite{WilsonNicoll2001}. Quant aux variations de poids à court terme, la dépression et la facilitation du chapitre~\ref{sec:code}, ce sont des variations de $p$ que l'émetteur gère lui-même d'après son activité récente.
+
+Pour l'ingénieur, le registre du poids est réparti entre deux puces. La règle d'apprentissage est exécutée par le destinataire, et il peut en écrire le résultat chez lui comme chez l'émetteur, par le canal de retour. Dans les règles de ce chapitre, le mot \og local\fg{} ne désigne donc pas un seul côté de la connexion, mais la connexion tout entière.
+
+\section{Apprendre sans professeur}
+
+La chose la plus simple que puisse faire une synapse, c'est se renforcer quand l'émetteur et le destinataire sont actifs ensemble:
+\begin{equation}
+\frac{\dd w}{\dd t} \;=\; \eta\,x\,y .
+\label{eq:hebb}
+\end{equation}
+C'est la règle de Hebb~\cite{Hebb1949}. Elle est locale et n'a besoin d'aucune horloge. Mais elle souffre du même mal que le réseau \nt{GLUT} du chapitre~\ref{sec:glutcomputer}: la rétroaction positive. Un poids fort augmente $y$, un grand $y$ renforce encore le poids, et les poids croissent sans limite. Le remède est une rétroaction négative sur le poids: que le poids décroisse aussi proportionnellement à $y^2$. Pour un neurone d'entrées $\mathbf x$ et de sortie linéaire $y=\mathbf w\cdot\mathbf x$, on obtient
+\begin{empheq}[box=\keybox]{equation}
+\frac{\dd\mathbf w}{\dd t} \;=\; \eta\,y\,\bigl(\mathbf x - y\,\mathbf w\bigr) .
+\label{eq:oja}
+\end{empheq}
+La règle reste locale: la synapse connaît son entrée $x_i$, la sortie $y$ et son poids $w_i$.
+
+\begin{keyblock}
+\begin{proposition}[Ce que trouve la règle de Hebb]
+\label{prop:oja}
+La règle~\eqref{eq:oja} amène le vecteur des poids à une longueur unité selon la direction où les entrées varient le plus, c'est-à-dire vers le vecteur propre principal de la matrice de corrélation des entrées $C=\langle\mathbf x\mathbf x^{\mathsf T}\rangle$~\cite{Oja1982}. Le neurone apprend à émettre la grandeur unique la plus expressive en laquelle on puisse comprimer ses entrées.
+\end{proposition}
+\end{keyblock}
+
+Démonstration. Moyennons~\eqref{eq:oja} sur les entrées: $\dd\mathbf w/\dd t=\eta\bigl(C\mathbf w-(\mathbf w^{\mathsf T}C\mathbf w)\,\mathbf w\bigr)$. Les points fixes sont les vecteurs propres unitaires de $C$. Si $\mathbf w$ est proche du vecteur propre $\mathbf e_k$ de valeur propre $\lambda_k$, une petite composante selon un autre vecteur $\mathbf e_j$ croît comme $e^{\eta(\lambda_j-\lambda_k)t}$. Seul est stable le point pour lequel tous les $\lambda_j<\lambda_k$, c'est-à-dire le vecteur principal.
+
+Il existe aussi une variante de la règle de Hebb qui tient compte de l'instant des impulsions. Si l'impulsion de l'émetteur arrive $s$ millisecondes \emph{avant} celle du destinataire, le poids augmente de $A_+e^{-s/\tau_+}$; si elle arrive $s$ millisecondes \emph{après}, il diminue de $A_-e^{-s/\tau_-}$, avec $\tau_\pm$ de l'ordre de vingt millisecondes. Cette règle a été mesurée sur les synapses des neurones \nt{GLUT}~\cite{BiPoo1998}. Elle renforce les connexions qui \emph{ont pu causer} la réponse et affaiblit celles qui arrivent en retard (fig.~\ref{fig:stdp}). Faites passer de nombreuses fois une même séquence d'excitations dans un réseau, et des connexions de chaque maillon vers le suivant y pousseront d'elles-mêmes: la chaîne du chapitre~\ref{sec:glutcomputer}, assemblée sans ingénieur.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=0.07cm,y=1.3cm]
+\draw[->,gray!70!black] (-66,0) -- (68,0) node[right,black] {\small $s$};
+\draw[->,gray!70!black] (0,-1.2) -- (0,1.35) node[above,black] {\small variation du poids};
+\draw[very thick,blue!60!black] plot[domain=0.5:60,samples=50] (\x,{exp(-\x/20)});
+\draw[very thick,red!70!black] plot[domain=-60:-0.5,samples=50] (\x,{-0.6*exp(\x/20)});
+\draw[blue!60!black,thick] (0.5,0) -- (0.5,1);
+\draw[red!70!black,thick] (-0.5,0) -- (-0.5,-0.6);
+\foreach \x in {-40,-20,20,40}{\draw[gray!60!black] (\x,-0.04) -- (\x,0.04);}
+\node[below,font=\scriptsize] at (20,-0.04) {$20\ms$};
+\node[above,font=\scriptsize] at (-20,0.04) {$-20\ms$};
+\node[align=left,font=\small,blue!60!black,anchor=west] at (22,0.95) {émetteur en avance:\\ la connexion se renforce};
+\node[align=right,font=\small,red!70!black,anchor=east] at (-12,-0.95) {émetteur en retard:\\ la connexion s'affaiblit};
+\end{tikzpicture}
+\caption{La règle de Hebb temporelle. En abscisse, $s=t_{\text{dest}}-t_{\text{ém}}$, le retard de l'impulsion du destinataire sur celle de l'émetteur; $\tau_\pm=20\ms$, $A_-=0.6A_+$. La fenêtre, large de quelques dizaines de millisecondes, est du même ordre que la fenêtre de coïncidence~\eqref{eq:window}.}
+\label{fig:stdp}
+\end{figure}
+
+Mais toutes les règles de cette section apprennent ce qui est \emph{fréquent}, et non ce qui est \emph{utile}. Une synapse qui ne connaît que $x$ et $y$ ne sait pas si l'action a apporté du jus ou de la douleur. Pour apprendre d'après le résultat, il faut à la synapse un troisième signal.
+
+\section{Le troisième facteur}
+
+Le troisième signal est apporté par \nt{DOPA}: les neurones à dopamine diffusent à tous un seul nombre, l'erreur de prédiction de la récompense $\delta$~\eqref{eq:rpe} (chapitre~\ref{sec:neurontypes}). Supposons la variation du poids proportionnelle au produit de trois facteurs: l'activité de l'émetteur, celle du destinataire et $\delta$.
+
+La difficulté est que la récompense n'arrive pas au moment où le réseau choisissait l'action, mais des centaines de millisecondes ou des secondes plus tard. Quand $\delta$ arrive, le produit $xy$ est nul depuis longtemps, et la synapse a besoin de se souvenir qu'elle a participé. La mémoire la plus simple est notre vieux circuit RC:
+\begin{empheq}[box=\keybox]{equation}
+\tau_e\,\frac{\dd e}{\dd t} \;=\; -e \;+\; x\,y ,
+\qquad
+\frac{\dd w}{\dd t} \;=\; \eta\,\delta(t)\,e(t) .
+\label{eq:threefactor}
+\end{empheq}
+La grandeur $e$ est appelée \emph{trace d'éligibilité}~\cite{Fremaux2016}. L'activité conjointe laisse dans la synapse une marque qui s'efface en un temps $\tau_e$. Si de la dopamine arrive dans ce délai, le poids change avec le signe de $\delta$; sinon, la marque disparaît sans laisser de trace (fig.~\ref{fig:trace}). Sur les synapses \nt{GLUT}, on a mesuré que la dopamine arrivée dans la seconde ou les deux secondes qui suivent l'activité conjointe transforme celle-ci en renforcement de la connexion, alors que la dopamine arrivée plus tard n'a pas cet effet~\cite{Yagishita2014}. Des fenêtres de plasticité longues de plusieurs secondes ont aussi été trouvées là où le troisième signal n'est pas la dopamine, mais une forte excitation du destinataire lui-même~\cite{Bittner2017}.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=7cm,y=1cm]
+\fill[orange!12] (0.7,-0.2) rectangle (0.8,5.2);
+% rows: x*y, delta, traces, weights
+\foreach \y/\lab in {4.4/{$x\,y$},3.1/{$\delta$},1.4/{trace $e$},0/{poids $w$}}{
+  \draw[gray!70!black] (0,\y) -- (1.42,\y);
+  \node[left,font=\small] at (-0.02,\y+0.3) {\lab};}
+\draw[very thick,blue!60!black] (0,4.4) -- (0,4.9) -- (0.2,4.9) -- (0.2,4.4);
+\node[right,font=\scriptsize,blue!60!black] at (0.21,4.8) {émetteur et destinataire actifs ensemble};
+\draw[very thick,orange!85!black] (0,3.1) -- (0.7,3.1) -- (0.7,3.7) -- (0.8,3.7) -- (0.8,3.1) -- (1.4,3.1);
+\node[right,font=\scriptsize,orange!85!black] at (0.81,3.6) {arrivée de dopamine};
+% traces, each in units of its own maximum
+\draw[very thick,blue!60!black] plot[domain=0:0.2,samples=20] (\x,{1.4+1.1*(1-exp(-\x))/(1-exp(-0.2))})
+  plot[domain=0.2:1.4,samples=60] (\x,{1.4+1.1*exp(-(\x-0.2))});
+\draw[thick,densely dashed,gray!50!black] plot[domain=0:0.2,samples=30] (\x,{1.4+1.1*(1-exp(-\x/0.05))/(1-exp(-4))})
+  plot[domain=0.2:1.4,samples=80] (\x,{1.4+1.1*exp(-(\x-0.2)/0.05)});
+\node[right,font=\scriptsize,blue!60!black] at (1.0,2.15) {$\tau_e=1\,\text{s}$};
+\node[right,font=\scriptsize,gray!40!black] at (0.3,1.65) {$\tau_e=50\ms$};
+% weights
+\draw[very thick,blue!60!black] (0,0.25) -- (0.7,0.25) -- (0.8,0.8) -- (1.4,0.8) node[right,font=\scriptsize] {$\tau_e=1\,\text{s}$: le poids a crû};
+\draw[thick,densely dashed,gray!50!black] (0,0.2) -- (1.4,0.2) node[right,font=\scriptsize,gray!40!black] {$\tau_e=50\ms$: inchangé};
+% time axis marks
+\foreach \x/\l in {0/0,0.2/0.2,0.7/0.7,1.4/1.4}{\draw[gray!60!black] (\x,-0.05) -- (\x,0.05) node[below=3pt,font=\scriptsize] {\l\,s};}
+\draw[<->,thick,gray!50!black] (0.2,5.35) -- node[above,font=\scriptsize,black] {délai de la récompense $0.5\,\text{s}$} (0.7,5.35);
+\end{tikzpicture}
+\caption{La trace selon la règle~\eqref{eq:threefactor}. L'activité conjointe dure $0.2\,\text{s}$; la dopamine arrive une demi-seconde après sa fin. Les traces sont représentées en fraction de leur maximum. La trace lente ($\tau_e=1\,\text{s}$) est encore vivante à ce moment, la trace rapide ($\tau_e=50\ms$) s'est effacée depuis longtemps.}
+\label{fig:trace}
+\end{figure}
+
+\begin{keyblock}
+\begin{proposition}[Apprentissage par un signal diffusé]
+\label{prop:threefactor}
+La règle~\eqref{eq:threefactor} ne modifie que les synapses qui ont participé au fonctionnement du réseau pendant les derniers $\tau_e$, dans le sens fixé par le signal commun $\delta$. Le signal diffusé, combiné à la trace locale, produit une correction adressée. Un délai entre l'action et le résultat est admissible tant qu'il ne dépasse pas $\tau_e$.
+\end{proposition}
+\end{keyblock}
+
+\section{Pourquoi cela marche: le bruit comme recherche}
+\label{sec:dofagradient}
+
+Pourquoi la règle~\eqref{eq:threefactor} mène-t-elle au mieux? La réponse vient du bruit du chapitre~\ref{sec:code}. Soit la sortie du neurone $y=f(u)+\xi$, où $u=\sum_jw_jx_j$ et $\xi$ est une fluctuation aléatoire de moyenne nulle et de variance $\sigma^2$. La récompense $R$ dépend de $y$. Prenons comme trace non pas simplement $x_jy$, mais sa partie aléatoire $x_j\xi$, et comme troisième facteur l'erreur $\delta=R-\bar R$, où $\bar R$ est la récompense attendue. Pour un bruit faible, $R\approx R\bigl(f(u)\bigr)+R'\,\xi$, donc
+\begin{empheq}[box=\keybox]{equation}
+\bigl\langle \delta\,\xi\,x_j \bigr\rangle \;=\; \sigma^2\,R'\,x_j \;=\; \frac{\sigma^2}{f'(u)}\,\frac{\partial\langle R\rangle}{\partial w_j} .
+\label{eq:perturbation}
+\end{empheq}
+Le pas moyen suit le gradient de la récompense attendue~\cite{Williams1992}. Personne n'a calculé de dérivées: le réseau a dévié au hasard, la dopamine a signalé si c'était mieux, et les synapses qui ont participé se sont déplacées dans le sens favorable (fig.~\ref{fig:perturbation}). Le bruit qui, au chapitre~\ref{sec:code}, gênait la transmission des messages devient ici une recherche.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=2cm,y=3cm]
+\draw[->,gray!70!black] (0,0) -- (4.2,0) node[below left,font=\small,black] {sortie $y$};
+\draw[->,gray!70!black] (0,0) -- (0,1.2) node[left,font=\small,black] {récompense $R$};
+% reward hill
+\draw[very thick,blue!60!black] plot[domain=0:4,samples=60] (\x,{max(0,1-((\x-3)/2.2)^2)});
+\node[font=\scriptsize,blue!60!black,anchor=south] at (3,1.02) {meilleure sortie};
+% noise around f(u)
+\draw[thick,gray!60!black] plot[domain=0.6:2.4,samples=50] (\x,{0.28*exp(-((\x-1.5)/0.3)^2/2)});
+\draw[densely dashed,gray!60!black] (1.5,0) -- (1.5,0.535);
+\node[below,font=\small] at (1.5,0) {$f(u)$};
+\node[font=\scriptsize,gray!50!black] at (1.5,-0.2) {fluctuation $\xi$};
+% expected reward
+\draw[densely dotted,gray!60!black] (0.5,0.535) node[left,font=\scriptsize,black] {$\bar R$} -- (2.1,0.535);
+% two random deviations
+\fill[green!45!black] (2.1,0.833) circle (0.035);
+\draw[very thick,green!45!black] (2.1,0.535) -- (2.1,0.833);
+\node[font=\scriptsize,green!45!black,anchor=west,align=left] at (2.18,0.6) {$\xi>0$: mieux,\\ $\delta>0$};
+\fill[red!70!black] (0.9,0.089) circle (0.035);
+\draw[very thick,red!70!black] (0.9,0.535) -- (0.9,0.089);
+\node[font=\scriptsize,red!70!black,anchor=east,align=right] at (0.83,0.27) {$\xi<0$: moins bien,\\ $\delta<0$};
+% resulting step
+\draw[->,very thick,orange!85!black] (1.55,0.4) -- (1.95,0.4) node[right,font=\scriptsize,black] {pas};
+\end{tikzpicture}
+\caption{Le bruit comme recherche~\eqref{eq:perturbation}. La sortie du neurone fluctue autour de $f(u)$. Un écart aléatoire vers la droite (en vert) a rapporté plus que prévu, $\delta>0$; vers la gauche (en rouge), moins, $\delta<0$. Dans les deux cas, le produit $\delta\,\xi$ est positif, et le poids se déplace vers la droite, là où la récompense croît. En moyenne, le pas est proportionnel à la pente $R'$: au sommet de la colline, les écarts des deux côtés sont également mauvais, et les pas s'annulent.}
+\label{fig:perturbation}
+\end{figure}
+
+\begin{keyblock}
+\begin{proposition}[Descente de gradient sans fils de retour]
+\label{prop:gradient}
+Si le réseau présente des écarts d'activité aléatoires, et que le signal diffusé est égal à l'erreur de prédiction de la récompense et nul en moyenne dans chaque situation, la règle~\eqref{eq:threefactor} modifie en moyenne les poids selon le gradient de la récompense attendue. Il n'y faut ni fils de retour ni phase d'apprentissage séparée.
+\end{proposition}
+\end{keyblock}
+
+On comprend maintenant pourquoi la dopamine ne signale pas la récompense, mais l'\emph{erreur} de sa prédiction. Si le troisième facteur était la récompense elle-même, $R\ge0$, la moyenne dans~\eqref{eq:perturbation} ne changerait pas, mais deux maux apparaîtraient. D'abord, un terme $\bar R\,\xi x_j$ s'ajouterait à la partie utile: nul en moyenne, mais très bruité. Ensuite, et c'est plus grave, une vraie synapse ne sait pas séparer, dans la trace $x_jy$, la partie aléatoire de la partie non aléatoire. Pour des entrées données, $x_jf(u)$ est le même nombre d'un essai à l'autre; si $\delta$ est nul en moyenne dans cette situation, cette partie de la trace ne change rien, mais avec $\delta\ge0$ elle renforce, essai après essai, tout ce que faisait le réseau, le bon comme le mauvais. C'est pourquoi $\bar R$ doit être l'attente \emph{dans la situation donnée}, et non la moyenne sur toute la vie. La calculer est l'affaire du critique, dont il sera question plus bas.
+
+Nous l'avons vérifié sur un modèle. Deux groupes de neurones \nt{GLUT} choisissent l'une de deux actions par inhibition mutuelle, comme sur la fig.~\ref{fig:wta}; les poids du signal \og départ\fg{} vers les groupes sont d'abord égaux, et c'est le bruit qui décide du vainqueur. L'action $A$ apporte du jus avec la probabilité $0.8$, l'action $B$ avec la probabilité $0.2$, et le jus arrive une demi-seconde après le choix. Avec $\tau_e=1\,\text{s}$ et $\delta=R-\bar R$, la part des choix de $A$ sur cinq cents essais est passée de $0.65$--$0.8$ dans la première centaine à $0.96$--$1.0$ dans la dernière, et les poids sont restés entre $0.85$ et $1.35$. Avec $\tau_e=50\ms$, moins que le délai de la récompense, le réseau n'a rien appris: la part des choix de $A$ est restée autour de la moitié. Avec $\delta=R$, sans soustraire l'attente, le réseau s'est aussi mis à choisir $A$, mais le poids du vainqueur a été multiplié par mille en ces mêmes cinq cents essais et continuait de croître; et avec le même $\delta=R$ et une vitesse d'apprentissage dix fois plus grande, le réseau a figé pour toujours, dans l'une de trois simulations, son premier choix aléatoire, le plus mauvais.
+
+\section{Le prix d'un fil unique}
+
+Le signal $\delta$ est unique pour tous, alors que le bruit qu'il évalue est la somme des fluctuations des $N$ neurones qui influent sur le résultat. Chaque synapse voit dans $\delta$ sa partie utile et le bruit étranger de ses $N-1$ voisins. Pour isoler sa part, il faut moyenner sur de nombreux essais, et le temps d'apprentissage croît proportionnellement à $N$~\cite{Werfel2005}. La rétropropagation n'exige pas ce prix.
+
+\begin{keyblock}
+\begin{proposition}[Le prix de la diffusion]
+\label{prop:broadcastcost}
+Le temps d'apprentissage par un seul signal commun croît proportionnellement au nombre de neurones dont le bruit influe sur le résultat. Un tel apprentissage convient à de petits circuits qui choisissent parmi peu d'options, mais pas au réglage de milliards de poids.
+\end{proposition}
+\end{keyblock}
+
+Le cerveau semble bien répartir le travail ainsi: les sorties des neurones \nt{DOPA} vont avant tout aux régions qui choisissent les actions (chapitre~\ref{sec:neurontypes}), tandis que l'immense réseau \nt{GLUT} du cortex, qui contient l'écrasante majorité des poids, apprend surtout par des règles locales, sans professeur extérieur. On les ramenait autrefois aux règles de Hebb~\eqref{eq:oja}. Aujourd'hui, de plus en plus de données suggèrent que le cortex a son propre objectif, \emph{prédire} sa prochaine entrée; l'erreur est alors calculée sur place, comme la différence entre ce qui était prédit et ce qui est arrivé~\cite{Keller2018}: le professeur est intégré au réseau lui-même. Les fenêtres de plasticité longues de plusieurs secondes, où le troisième signal est une forte excitation du destinataire lui-même~\cite{Bittner2017}, montrent qu'un signal d'erreur local existe bien au niveau des synapses. Qu'il s'agisse d'une règle générale du cortex reste une hypothèse.
+
+\section{D'où vient l'erreur: le critique en temps continu}
+
+Reste à savoir comment les neurones \nt{DOPA} calculent eux-mêmes $\delta$. Dans les programmes d'apprentissage par renforcement, l'erreur de prédiction se calcule par pas $t,t+1,\dots$ Dans l'organisme, il n'y a pas de pas; écrivons-la donc en temps continu~\cite{Doya2000}. Soit $r(t)$ le flux de récompense et $V(t)$ l'attente de toute la récompense future, la plus lointaine valant moins:
+\begin{equation}
+V(t) \;=\; \int_t^{\infty} e^{-(s-t)/\tau_\gamma}\,r(s)\,\dd s .
+\end{equation}
+En dérivant, on obtient $\dd V/\dd t=V/\tau_\gamma-r$. Le résidu de cette égalité est précisément l'erreur de prédiction:
+\begin{empheq}[box=\keybox]{equation}
+\delta(t) \;=\; r(t) \;+\; \frac{\dd V}{\dd t} \;-\; \frac{V}{\tau_\gamma} .
+\label{eq:ctd}
+\end{empheq}
+La constante $\tau_\gamma$ est l'horizon de planification, l'analogue continu du coefficient $\gamma$; selon l'hypothèse, il est fixé par \nt{SERO} (section~\ref{sec:horizon}), et~\eqref{eq:patience} est alors la règle qui dit combien de temps il vaut la peine d'attendre. Vérifions trois cas (fig.~\ref{fig:ctdcases}). Une lampe qui promet du jus s'allume: $V$ monte brusquement, $\dd V/\dd t$ est grand, c'est un pic. Le jus promis arrive: $r>0$, mais l'attente s'épuise au même instant, $\dd V/\dd t\approx-r$, et il n'y a pas de pic. Le jus n'arrive pas: l'attente disparaît sans récompense, $\dd V/\dd t<0$, c'est un creux.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=1.15cm,y=1cm]
+\foreach \col/\ttl/\lampon/\juice in {0/{jus inattendu}/0/1, 1/{jus promis}/1/1, 2/{pas de jus}/1/0}{
+ \begin{scope}[xshift=\col*4.6cm]
+  \node[font=\small] at (1.5,3.55) {\ttl};
+  \foreach \yy in {2.4,1.2,0}{\draw[gray!60!black] (0,\yy) -- (3.1,\yy);}
+  % reward r
+  \ifnum\juice=1
+    \fill[green!45!black] (1.95,2.4) rectangle (2.05,2.85);
+    \pic[scale=0.55] at (2.0,3.1) {juice};
+  \else
+    \pic[scale=0.55] at (2.0,3.1) {nojuice};
+  \fi
+  % expectation V and error delta
+  \ifnum\lampon=1
+    \pic[scale=0.55] at (1.0,3.1) {lamp};
+    \draw[very thick,blue!60!black] (0,1.2) -- (1,1.2) -- (1,1.45)
+      plot[domain=1:2,samples=20] (\x,{1.2+0.25*exp((\x-1)/1.5)}) -- (2,{1.2+0.25*exp(1/1.5)}) -- (2,1.2) -- (3.1,1.2);
+    \draw[very thick,red!70!black] (0,0) -- (0.95,0) -- (0.95,0.5) -- (1.05,0.5) -- (1.05,0) -- (3.1,0);
+    \ifnum\juice=0
+      \draw[very thick,red!70!black] (1.95,0) -- (1.95,-0.45) -- (2.05,-0.45) -- (2.05,0);
+      \node[font=\scriptsize,red!70!black,anchor=west] at (2.1,-0.35) {creux};
+    \else
+      \node[font=\scriptsize,gray!50!black,anchor=north,align=center] at (2.0,-0.08) {$r$ et la chute de $V$\\ s'annulent};
+    \fi
+  \else
+    \draw[very thick,blue!60!black] (0,1.2) -- (3.1,1.2);
+    \draw[very thick,red!70!black] (0,0) -- (1.95,0) -- (1.95,0.5) -- (2.05,0.5) -- (2.05,0) -- (3.1,0);
+  \fi
+  \ifnum\col=0
+    \node[font=\small,anchor=east] at (-0.1,2.55) {$r$};
+    \node[font=\small,anchor=east] at (-0.1,1.35) {$V$};
+    \node[font=\small,anchor=east] at (-0.1,0.1) {$\delta$};
+  \fi
+ \end{scope}}
+\end{tikzpicture}
+\caption{Trois cas pour l'erreur~\eqref{eq:ctd}; de haut en bas, la récompense $r$, l'attente $V$ et l'erreur $\delta$. À gauche, il n'y a pas d'attente, et le jus est une pure surprise. Au milieu, la lampe fait monter $V$ d'un coup: c'est un saut de $\dd V/\dd t$, et le pic de $\delta$ tombe sur la lampe. Ensuite $V$ croît exactement comme l'exige l'horizon, et $\delta=0$; au moment du jus, la récompense $r$ et la chute de $V$ s'annulent. À droite, $V$ chute sans récompense: c'est un creux. Ce sont le pic, le transfert et le creux de la fig.~\ref{fig:rpe}, mais on voit maintenant d'où ils viennent.}
+\label{fig:ctdcases}
+\end{figure}
+
+Que faut-il pour~\eqref{eq:ctd} parmi les schémas dont nous disposons déjà? Trois choses.
+
+\emph{L'estimation $V$ elle-même.} Elle est fournie par un groupe de neurones \nt{GLUT}, le critique, dont les poids apprennent par la même règle~\eqref{eq:threefactor} avec le même $\delta$: si $\delta>0$, l'attente était sous-estimée, et les connexions actives juste avant se renforcent.
+
+\emph{La dérivée $\dd V/\dd t$.} Elle est calculée par tout schéma qui répond aux variations et non au niveau: une excitation directe combinée à une inhibition retardée par un intermédiaire \nt{GABA}, comme dans le détecteur de direction du chapitre~\ref{sec:gaba}, ou une synapse à dépression~\eqref{eq:depression} du chapitre~\ref{sec:code}.
+
+\emph{Le signe dans un seul fil.} L'erreur peut être positive ou négative, alors que la fréquence des impulsions n'est que positive. La solution est celle du neurone \nt{SERO} du chapitre~\ref{sec:serocomputer}: le neurone \nt{DOPA} est un pacemaker. Ses quelques impulsions régulières par seconde signifient $\delta=0$, une bouffée $\delta>0$, une pause $\delta<0$. L'erreur négative dispose de moins de place: la fréquence ne peut pas descendre sous zéro. Chez les vrais neurones \nt{DOPA}, les creux sont effectivement moins profonds que les pics~\cite{Bayer2005}.
+
+Que la dopamine se comporte comme $\delta$ est mesuré. Comment exactement le cerveau calcule $\dd V/\dd t$ est une hypothèse.
+
+\section{L'acteur et le critique}
+
+Assemblons le tout (fig.~\ref{fig:actorcritic}). Les neurones de contexte excitent les groupes d'actions, qui choisissent un vainqueur par \nt{GABA} (proposition~\ref{prop:wta}) --- c'est l'\emph{acteur} ---, ainsi que le critique, qui fournit $V$~\cite{SuttonBarto2018}. Le neurone \nt{DOPA} reçoit la récompense $r$ et $V$, calcule~\eqref{eq:ctd} et diffuse $\delta$ à toutes les synapses de l'acteur et du critique.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  nrn/.style={circle,draw,very thick,fill=blue!6,minimum size=0.9cm,inner sep=0pt,font=\small},
+  gab/.style={circle,draw,very thick,fill=red!10,minimum size=0.6cm,inner sep=0pt},
+  dofa/.style={circle,draw,very thick,double,double distance=1.2pt,fill=orange!15,minimum size=1.35cm,inner sep=0pt,font=\scriptsize},
+  inh/.style={-{Bar[width=7pt]},thick,red!70!black},
+  bc/.style={->,thick,densely dashed,orange!85!black}]
+\node[nrn] (S1) at (0,2.4) {$x_1$};
+\node[nrn] (S2) at (0,1.2) {$x_2$};
+\node[nrn] (S3) at (0,0) {$x_3$};
+\node[left=0.15cm,align=right,font=\small] at (-0.5,1.2) {contexte};
+\node[nrn] (A) at (4,2.6) {$A$};
+\node[nrn] (B) at (4,1.0) {$B$};
+\node[gab] (G) at (5.2,1.8) {};
+\draw[->,thick] (A) -- (G); \draw[->,thick] (B) -- (G);
+\draw[inh] (G) to[bend left=35] (A);
+\draw[inh] (G) to[bend right=35] (B);
+\node[above,font=\small] at (4.6,3.05) {acteur: choix de l'action};
+\node[nrn] (V) at (4,-1.1) {$V$};
+\node[below,font=\small] at (4,-1.6) {critique};
+\foreach \s in {S1,S2,S3}{\foreach \t in {A,B,V}{\draw[->,gray!60!black] (\s) -- (\t);}}
+\node[dofa] (D) at (8.0,-1.1) {\nt{DOPA}};
+\draw[->,thick] (V) -- node[above,font=\scriptsize] {$V,\ \dd V/\dd t$} (D);
+\draw[->,thick,green!45!black] (10.0,-1.1) node[right,black,font=\small] {récompense $r$} -- (D);
+\pic[scale=1.1] at (10.6,-0.5) {juice};
+\draw[bc] (D.north) -- (8.0,4.0) -- node[above,font=\small,black] {$\delta$ vers toutes les synapses de l'acteur et du critique} (2.2,4.0) -- (2.2,3.0);
+\draw[bc] (D.south) -- (8.0,-2.4) -- (2.2,-2.4) -- (2.2,-0.6);
+\end{tikzpicture}
+\caption{Un réseau qui apprend à choisir ses actions. Flèches grises: synapses \nt{GLUT} à poids modifiables; cercle rouge: neurone \nt{GABA}; double cercle: pacemaker \nt{DOPA}, qui calcule $\delta$ selon~\eqref{eq:ctd}; flèches en tirets: diffusion de $\delta$.}
+\label{fig:actorcritic}
+\end{figure}
+
+Le signe de l'action du neurotransmetteur est choisi par le destinataire (proposition~\ref{prop:receptor}), et dans la région qui choisit les actions, une partie des neurones porte des récepteurs de la dopamine d'une famille, une autre partie ceux de l'autre famille. En tranche, la dopamine associée à l'activité conjointe renforce les synapses des premiers et affaiblit celles des seconds~\cite{Shen2008}; dans le modèle, cela signifie que chez les seconds le signe de $\delta$ dans~\eqref{eq:threefactor} est inversé. Les premiers apprennent ce qu'il \emph{vaut la peine de faire}, les seconds ce qu'il \emph{ne faut pas faire}.
+
+\section{Bilan}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{2.6cm}>{\raggedright}p{2.7cm}>{\raggedright}p{3.1cm}>{\raggedright\arraybackslash}p{5.0cm}}
+\toprule
+Règle & Ce que sait la synapse & Ce qu'apprend le réseau & Ce qu'on sait \\
+\midrule
+Hebb en fréquence~\eqref{eq:oja} & $x$, $y$, son poids & comprimer les entrées: directions principales & le renforcement par activité conjointe est mesuré; le mécanisme qui borne les poids est objet de recherche \\
+Hebb temporel & ordre des impulsions de $x$ et $y$ à $\sim20\ms$ près & liens de cause, séquences & mesuré sur les synapses \nt{GLUT} \\
+trois facteurs~\eqref{eq:threefactor} & $x$, $y$, trace $e$, signal commun $\delta$ & les actions qui apportent une récompense & l'effet de la dopamine dans les secondes qui suivent l'activité est mesuré; comme mécanisme principal de l'apprentissage du choix, hypothèse bien fondée \\
+critique~\eqref{eq:ctd} & idem & l'attente de récompense $V$ & la ressemblance de la dopamine avec $\delta$ est mesurée; le schéma qui calcule $\dd V/\dd t$ est une hypothèse \\
+rétropropagation de l'erreur & une correction personnelle pour chaque poids & tout, mais il faut des fils de retour et une horloge & non trouvée dans le cerveau sous cette forme; on en cherche des approximations \\
+\bottomrule
+\end{tabular}
+\caption{Règles d'apprentissage dans un réseau de neurones \nt{GLUT}, \nt{GABA} et \nt{DOPA}.}
+\label{tab:learning}
+\end{table}
+
+Les règles d'apprentissage sont rassemblées dans le tableau~\ref{tab:learning}. \nt{GLUT} porte les données, \nt{GABA} commande le flux, et \nt{DOPA} décide quelles modifications du réseau conserver.
+
+\section{Exercices}
+
+\begin{exercise}[\lvlA]
+\label{ex:06:1}
+\emph{Combien de temps vit la trace.} L'activité conjointe $xy=1$ dure $T_a=0.2\,\text{s}$ à partir de $e=0$, et la dopamine arrive $d=0.5\,\text{s}$ après sa fin. (a)~Combien de fois la trace~\eqref{eq:threefactor} est-elle plus grande à cet instant pour $\tau_e=1\,\text{s}$ que pour $\tau_e=50\ms$? (b)~Pour quel $\tau_e$ est-elle maximale?
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:06:2}
+\emph{Dérive de la règle de Hebb.} L'émetteur et le destinataire émettent des trains poissoniens indépendants de $10$ impulsions par seconde, et chaque paire d'impulsions modifie le poids selon la fenêtre de la fig.~\ref{fig:stdp}, avec $\tau_\pm=20\ms$, $A_-=0.6A_+$. De combien de $A_+$ le poids croît-il en une heure d'activité parfaitement aléatoire? Pour quel $\tau_-$ la dérive disparaît-elle?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:06:3}
+\emph{Corrélations, et non covariances.} La règle de la proposition~\ref{prop:oja} trouve le vecteur propre principal de $C=\langle\mathbf x\mathbf x^{\mathsf T}\rangle$. Les fréquences sont positives: $\mathbf x=\mathbf m+\mathbf n$, $\mathbf m=(\mu,0)$, covariance du bruit $\operatorname{diag}(s_1^2,s_2^2)$. À quelle condition le neurone apprend-il $\mathbf e_1$? Qu'apprend-il pour $\mu=1$, $s_1=0.1$, $s_2=0.5$?
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:06:4}
+\emph{L'horizon dans le pic.} La lampe s'allume à un instant imprévisible, et un jus de taille $R$ arrive $L=1\,\text{s}$ plus tard. Montrez que pour l'attente apprise selon~\eqref{eq:ctd}, $\delta\equiv0$ entre la lampe et le jus, et trouvez l'aire du pic sur la lampe pour $\tau_\gamma=2\,\text{s}$ et $\tau_\gamma=4\,\text{s}$.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:06:5}
+\emph{D'où vient le prix de la diffusion.} $N$ neurones fluctuent indépendamment, $\xi_i\sim\mathcal N(0,\sigma^2)$, l'erreur est $\delta=a\sum_i\xi_i$, et la synapse $j$ estime le gradient par $\delta\,\xi_jx_j$. Trouvez le rapport signal sur bruit d'un essai. Un neurone apprend en $100$ essais de $5\,\text{s}$: combien de temps prendra l'apprentissage pour $N=10^4$ et $N=10^{10}$?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:06:6}
+\emph{Conception: un schéma qui calcule $\delta$.} Le neurone \nt{DOPA} reçoit $r$, $V$ avec le poids $k_1$ et une copie de $V$ lissée avec $\tau_d$, avec le poids $-k_2$. (a)~Choisissez $k_1$, $k_2$ pour que, pour $V$ lent, la sortie soit~\eqref{eq:ctd}. (b)~Pour $V=V_0e^{t/\tau_\gamma}$, le vrai $\delta=0$. Pour quel $\tau_d$ la fausse erreur du schéma ne dépasse-t-elle pas $5\,\%$ de $V/\tau_\gamma$, si $\tau_\gamma=2\,\text{s}$?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:06:7}
+\emph{Simulation: délai limite de la récompense.} Ajoutez un délai de récompense $d$ dans \texttt{run()} d'une copie de \texttt{models/\allowbreak dofa\_learning.py}. Trouvez la part des choix $A$ dans les $100$ derniers des $500$ essais pour $d=0.5\,\text{s}$ et $\tau_e=0.05$, $0.2$, $1$, $4\,\text{s}$, et pour $\tau_e=1\,\text{s}$, $d=3\,\text{s}$. Pour quelle part de trace restant à la récompense (exercice~\ref{ex:06:1}) l'apprentissage disparaît-il?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:06:8}
+\emph{Peut-on contourner le prix de la diffusion?} $N$ neurones: $y_i=w_i+\xi_i$, $\xi_i\sim\mathcal N(0,\sigma^2)$, récompense $R=-\sum_i(y_i-w_i^*)^2$, règle $\Delta w_i=\eta\,(R-\langle R\rangle)\,\xi_i$. En combien d'essais, pour le meilleur $\eta$, l'erreur $\sum_i(w_i-w_i^*)^2$ est-elle divisée par $e$? Et si seuls $m$ neurones aléatoires sur $N$ fluctuent? La recherche creuse aide-t-elle?
+\end{exercise}

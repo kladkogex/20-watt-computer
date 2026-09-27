@@ -1,0 +1,50 @@
+\chapter{Comment la machine apprend}
+% version complète: chapters/06_dofa.tex
+
+Dans tous les circuits vus jusqu'ici, c'est l'ingénieur qui réglait la force des connexions. Dans le cerveau vivant, il n'y a pas d'ingénieur. Les connexions doivent se régler toutes seules, en cours de route, et de façon que la machine fasse quelque chose d'utile. C'est cela, apprendre.
+
+La contrainte principale est très stricte. Chaque connexion se modifie elle-même, et elle ne peut savoir que ce qui se passe près d'elle: l'émetteur travaille-t-il, le destinataire travaille-t-il, et quelles substances lui parviennent. Personne ne peut envoyer à une connexion une correction personnelle. Cela exclut la méthode principale d'apprentissage des réseaux de neurones artificiels, où l'erreur parcourt le réseau à rebours et où chaque connexion reçoit sa propre correction.
+
+\section*{Ensemble, donc liés}
+
+La règle la plus simple: si l'émetteur et le destinataire travaillent ensemble, la connexion entre eux se renforce. Elle est locale et n'a pas besoin d'horloge. Une telle règle, avec un peu d'oubli en plus, trouve dans le flux des signaux l'essentiel, ce qui varie le plus. Il en existe aussi une version qui regarde l'instant des clics: la connexion se renforce si l'émetteur a cliqué \emph{avant} le destinataire, donc a pu en être la cause, et s'affaiblit s'il a cliqué après.
+
+Mais ces règles ont une limite: elles apprennent ce qui est \emph{fréquent}, pas ce qui est \emph{utile}. Une connexion qui ne voit que ses voisins ne sait pas si l'action a apporté du jus ou de la douleur.
+
+\section*{Le troisième signal}
+
+C'est la dopamine qui l'apporte, la station \og mieux que prévu\fg{}. Que la connexion ne change que lorsque trois choses coïncident: l'émetteur a travaillé, le destinataire a travaillé, et la dopamine est arrivée.
+
+\pencilfig{6}{\pencilart{6}}{La connexion se renforce quand les deux neurones ont travaillé ensemble et que le troisième signal est arrivé: \og c'est mieux que prévu\fg{}.}
+
+Mais voici la difficulté: la récompense n'arrive pas tout de suite, mais une ou deux secondes plus tard. À ce moment-là, l'émetteur et le destinataire se sont tus depuis longtemps. La connexion a besoin de garder en mémoire qu'elle a participé. Et cette mémoire existe: le travail commun laisse dans la connexion une marque, comme un autocollant qui se décolle tout seul en une ou deux secondes. Si la dopamine arrive pendant que l'autocollant tient, la connexion change. Sinon, la marque disparaît sans laisser de trace. Cela règle le problème de l'adressage: la dopamine est la même pour tous, mais seules changent les connexions qui portent un autocollant.
+
+\pencilfig{106}{%
+\foreach \y/\d/\t in {0/0.9/{à temps: renforcée},-1.3/3.3/{en retard: rien}}{
+  \draw[pen] (0,\y) -- (4.6,\y);
+  \foreach \s in {0.25,0.33}{\draw[pcBlue, line width=0.8pt] (\s,\y) -- (\s,\y+0.3);}
+  \fill[pcAmber, opacity=0.25] (0.35,\y) -- plot[domain=0.35:4.5, samples=30] (\x,{\y+0.8*exp(-(\x-0.35)/0.8)}) -- (4.5,\y) -- cycle;
+  \draw[penlite=pcAmber] plot[domain=0.35:4.5, samples=30] (\x,{\y+0.8*exp(-(\x-0.35)/0.8)});
+  \draw[pcAmber!80!black, line width=0.9pt] (\d-0.1,\y+0.95) -- (\d+0.07,\y+0.62) -- (\d-0.07,\y+0.6) -- (\d+0.1,\y+0.22);
+  \draw[arr=pcAmber!80!black] (\d+0.09,\y+0.27) -- (\d+0.11,\y+0.12);
+  \node[lbl, anchor=west] at (4.7,\y+0.3) {\t};}
+\node[lbl, text=pcBlue, anchor=south west] at (0.1,0.85) {travail commun};
+\node[lbl, text=pcAmber!80!black, anchor=south] at (2.3,0.35) {la marque fond};
+\foreach \x/\l in {0.35/0,1.95/1,3.55/2}{\draw[pcGray, line width=0.5pt] (\x,-1.3) -- (\x,-1.38); \node[lbl, anchor=north] at (\x,-1.38) {\l~s};}
+}{Le travail commun laisse dans la connexion une marque qui fond en une ou deux secondes. La dopamine ne modifie que les connexions marquées.}
+
+\section*{Le bruit comme recherche}
+
+Pourquoi cette règle mène-t-elle au mieux, et non n'importe où? Imaginez que vous cherchiez le sommet d'une colline les yeux bandés. Vous faites un pas au hasard, et quelqu'un crie \og plus haut!\fg{} ou \og plus bas!\fg{}. Si c'est \og plus haut\fg{}, vous gardez le pas. Pas à pas, vous montez sans jamais regarder la carte. Le cerveau fait la même chose: les neurones tremblent un peu au hasard, la dopamine signale si c'est devenu mieux, et les connexions qui ont participé se déplacent dans le bon sens. Le bruit, qui gênait la transmission des messages, devient ici une recherche.
+
+On comprend maintenant pourquoi la dopamine signale non la récompense, mais la \emph{surprise}. Si elle criait simplement \og du jus!\fg{} après chaque succès, elle renforcerait du même coup tout ce que faisait le réseau, le juste comme le faux. Dans notre modèle, un tel réseau fait effectivement s'emballer ses connexions d'un facteur de plusieurs milliers, et reste parfois coincé pour toujours sur le moins bon choix. Soustraire l'attente rend l'apprentissage honnête.
+
+\section*{Le prix d'un seul fil}
+
+L'apprentissage par diffusion a un prix. Un seul signal pour tous, où se mêle le bruit de tous les neurones qui influent sur le résultat. Plus le réseau est grand, plus il faut de temps à chaque connexion pour isoler sa part. C'est pourquoi la dopamine n'entraîne sans doute que des circuits relativement petits, ceux qui choisissent les actions, tandis que l'immense cortex apprend surtout par des règles locales.
+
+\section*{Qui calcule la surprise}
+
+Reste une question: comment les neurones à dopamine calculent-ils le \og mieux que prévu\fg{}? Il faut un critique, un groupe de neurones qui estime en permanence combien de bonnes choses restent à venir. La surprise, c'est la récompense reçue plus le saut de l'attente. La lampe s'allume: l'attente bondit, bouffée. Le jus promis arrive: la récompense est là, mais l'attente s'épuise au même instant, pas de surprise. Le jus ne vient pas: l'attente s'effondre pour rien, creux. Les trois cas du premier chapitre en découlent d'eux-mêmes. Que la dopamine se comporte ainsi, c'est mesuré. Comment le cerveau calcule précisément cette surprise, c'est encore une hypothèse.
+
+\fullversion{6}

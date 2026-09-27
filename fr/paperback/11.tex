@@ -1,0 +1,46 @@
+\chapter{Comment le monde entre dans la machine}
+% version complète: chapters/11_sensors.tex
+
+Tout organe des sens est un transducteur, comme un microphone ou une cellule photoélectrique. La lumière, le son ou une molécule agissent sur une protéine particulière dans la cellule-capteur, la protéine ouvre un \og robinet\fg{}, un courant passe, et au bout de la chaîne on obtient des clics qui partent dans le réseau. Presque tous les capteurs libèrent du glutamate: les entrées de la machine se branchent donc directement sur son réseau téléphonique.
+
+\section*{Aux limites de la physique}
+
+Les capteurs du cerveau travaillent tout près de la limite du possible. Dans l'obscurité, un capteur de lumière répond à une seule particule de lumière. Un capteur du son perçoit un déplacement inférieur au nanomètre, moins que la taille de quelques atomes. Dans la pénombre, ce qui limite la précision n'est plus l'œil mais la lumière elle-même: les particules arrivent au hasard, et pour distinguer une nuance il faut en accumuler davantage. C'est pourquoi nous voyons plus lentement au crépuscule: l'œil accumule la lumière plus longtemps, comme un appareil photo en pose longue.
+
+\section*{L'exposition automatique}
+
+L'éclairement varie d'un milliard de fois entre une nuit étoilée et la neige au soleil, le volume sonore plus encore. Or la fréquence des clics va de zéro à quelques centaines par seconde. Impossible de faire tenir directement l'un dans l'autre. La solution est celle de l'appareil photo: l'exposition automatique. Le capteur ajuste sans cesse sa sensibilité au niveau moyen alentour et transmet non la luminosité, mais la luminosité \emph{par rapport au fond}. Ce qui est constant cesse avec le temps de provoquer une réponse, et chaque changement en provoque une. Dès le départ, les entrées de la machine parlent de changements.
+
+\pencilfig{125}{%
+% light rises in two tenfold steps, then drops a hundredfold; sensor rate = baseline + gain * (log light - adapted level),
+% the adapted level follows log light with a 0.7 s time constant; rate clipped at zero
+\draw[penlite=pcAmber] (0,1.75) -- (1.4,1.75) -- (1.4,2.1) -- (4.2,2.1) -- (4.2,2.45) -- (6.3,2.45) -- (6.3,1.75) -- (8.4,1.75);
+\node[lbl, text=pcAmber!70!black, anchor=east] at (-0.05,2.0) {lumière};
+\node[lbl, anchor=south] at (2.8,2.12) {10 fois plus clair}; \node[lbl, anchor=south] at (5.25,2.47) {encore 10};
+\node[lbl, anchor=south] at (7.35,1.77) {sombre};
+\draw[pen] (0,0) -- (8.4,0);
+\draw[pcGray, densely dashed, line width=0.5pt] (0,0.32) -- (8.4,0.32);
+\draw[penlite=pcBlue] plot coordinates {(0.00,0.32) (1.26,0.32) (1.40,1.02) (1.54,0.85) (1.68,0.72) (1.82,0.62) (1.96,0.54) (2.10,0.49) (2.24,0.45) (2.38,0.41) (2.52,0.39) (2.66,0.37) (2.80,0.36) (3.08,0.34) (3.50,0.33) (4.06,0.32) (4.20,1.03) (4.34,0.85) (4.48,0.72) (4.62,0.62) (4.76,0.54) (4.90,0.49) (5.04,0.45) (5.18,0.41) (5.32,0.39) (5.46,0.37) (5.60,0.36) (5.88,0.34) (6.16,0.33) (6.30,0.00) (7.00,0.00) (7.14,0.07) (7.28,0.13) (7.42,0.18) (7.56,0.22) (7.70,0.24) (7.84,0.26) (7.98,0.28) (8.12,0.29) (8.40,0.30)};
+\node[lbl, text=pcBlue, anchor=east] at (-0.05,0.32) {réponse};
+\node[lbl, anchor=north] at (6.65,-0.02) {silence};
+}{La lumière augmente par paliers, chacun de dix fois. Le capteur répond à chaque changement par une bouffée et revient vite à son niveau antérieur. Quand l'obscurité revient, il se tait un moment.}
+
+Les ingénieurs ont repris cette astuce dans les caméras événementielles. Une telle caméra ne prend pas d'images au rythme d'une horloge: chacun de ses pixels signale de lui-même \og plus clair\fg{} ou \og plus sombre\fg{} quand quelque chose change. C'est la paire de fils \og oui\fg{} et \og non\fg{} du deuxième chapitre, en silicium.
+
+\section*{L'œil compresse l'image}
+
+L'œil compte une centaine de millions de capteurs de lumière, mais il n'y a qu'environ un million de fils pour porter l'image au cerveau. Avant de quitter l'œil, l'image est compressée environ cent fois. Les zones uniformes ne coûtent presque rien; ce qui passe, ce sont les contours et les changements. D'après une estimation faite sur des yeux d'animaux et transposée à l'homme, l'œil envoie au cerveau de l'ordre de dix millions de bits par seconde, comme un vieux câble réseau.
+
+\section*{L'oreille est un piano}
+
+L'oreille décompose le son en fréquences, comme un ingénieur installerait un banc de filtres. Une membrane élastique de l'oreille répond à des fréquences différentes selon l'endroit, et les capteurs de chaque zone écoutent leur propre \og touche\fg{}. Le numéro du capteur déclenché, c'est la hauteur du son.
+
+\pencilfig{11}{\pencilart{11}}{L'oreille est un piano à l'envers: chaque touche écoute sa propre note.}
+
+Qui plus est, l'oreille n'est pas passive. Une partie de ses cellules fait elle-même vibrer la membrane au rythme du son et amplifie les sons faibles des milliers de fois, alors qu'elle n'amplifie presque pas les sons forts. C'est un amplificateur tout au bord de l'auto-oscillation: c'est là qu'il est le plus sensible. Et aux basses fréquences, les neurones cliquent en outre au rythme de l'onde, ce qui conserve l'instant précis du son; c'est grâce à lui que le cerveau trouve la direction de la source. Plus la fréquence est haute, moins les neurones arrivent à suivre, et il ne reste que le codage par la position.
+
+\section*{Les autres sens}
+
+Dans presque chaque sens, on reconnaît une astuce des chapitres précédents. La température passe par deux fils, un pour le chaud et un pour le froid. Le toucher utilise des capteurs qui répondent au contact puis se taisent aussitôt, et des capteurs qui maintiennent leur réponse tant que la pression dure. Quant à l'odorat, il fonctionne comme un code-barres: l'homme possède environ quatre cents types de capteurs olfactifs, et une odeur est l'ensemble des types déclenchés. Le nombre de ces ensembles est astronomique.
+
+\fullversion{11}

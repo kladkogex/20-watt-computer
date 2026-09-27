@@ -1,0 +1,175 @@
+\chapter{La seconde sortie: comment le cerveau pilote la chimie du corps}
+\chaptermark{La sortie chimique}
+\label{sec:chemoutput}
+
+\section{Une sortie rapide et une sortie lente}
+
+Au chapitre~\ref{sec:muscles}, nous avons vu la sortie rapide de la machine: les muscles. Mais elle en possède une seconde, lente. Le cerveau maintient dans les bonnes limites la température du corps, la fréquence cardiaque, la quantité d'eau et de sucre; il prépare le corps à la course ou au sommeil. Pour cela, il ne bouge pas les articulations: il émet des signaux chimiques. Il dispose de deux voies. La première, ce sont les nerfs qui vont directement aux organes internes: au cœur, aux vaisseaux, à l'intestin, aux glandes. La seconde, c'est le sang: certains neurones et certaines glandes libèrent leur substance non pas dans la fente qui les sépare d'un voisin, mais directement dans la circulation.
+
+Le sang est le bus de diffusion le plus large de tout le livre. Les canaux de diffusion des chapitres~\ref{sec:serocomputer}--\ref{sec:acet} envoyaient un signal à de vastes régions du cerveau; le sang l'envoie à chaque cellule du corps. Le sang fait le tour du corps en une minute environ: le message atteint donc tout le monde en quelques dizaines de secondes et persiste des minutes, voire des heures, jusqu'à ce que la substance soit dégradée. Cette diffusion n'a aucune adresse. Comme dans la proposition~\ref{prop:receptor}, c'est le destinataire qui choisit le sens du message: seules répondent les cellules qui possèdent un récepteur à cette substance.
+
+\section{L'accélérateur et le frein: deux fils vers les organes}
+
+Le meilleur exemple est le cœur. Le cœur possède son propre stimulateur, comme le neurone \nt{SERO} du chapitre~\ref{sec:serocomputer}: il impose lui-même le rythme, et si l'on coupe tous les nerfs, le cœur bat environ cent fois par minute. Le cerveau ne crée pas ce rythme, il ne fait que l'ajuster, et cela par deux fils de signes opposés (fig.~\ref{fig:gasbrake}). Par l'un passe \nt{NORA}: c'est l'\emph{accélérateur}, qui accélère le rythme. Par l'autre passe \nt{ACET}: c'est le \emph{frein}, qui le ralentit. En gros,
+\begin{empheq}[box=\keybox]{equation}
+f \;\approx\; f_0 \;+\; a_S\,S \;-\; a_P\,P ,
+\label{eq:gasbrake}
+\end{empheq}
+où $f_0\approx100$ battements par minute est le rythme propre du stimulateur, et $S$ et $P$ l'activité de l'accélérateur et du frein. Au repos, le frein est enfoncé, et le cœur bat en général de soixante à soixante-dix fois par minute; à l'effort, on relâche le frein et on appuie sur l'accélérateur.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  blk/.style={draw,very thick,rounded corners=2pt,align=center,font=\small},
+  pace/.style={circle,draw,very thick,double,double distance=1.2pt,minimum size=1.8cm,inner sep=0pt,font=\scriptsize,fill=red!8,align=center},
+  inh/.style={-{Bar[width=7pt]},thick,red!70!black}]
+\node[blk,fill=blue!5,text width=1.6cm] (B) at (0,0) {commande\\cérébrale};
+\node[pace] (H) at (6.2,0) {stimula-\\teur};
+\draw[->,very thick,orange!85!black] (B.north east) to[bend left=20] node[above,font=\scriptsize,black,align=center] {\nt{NORA}: accélérateur, secondes} (H.north west);
+\draw[inh,very thick,blue!60!black] (B.south east) to[bend right=20] node[below,font=\scriptsize,black,align=center] {\nt{ACET}: frein, fractions de seconde} (H.south west);
+\draw[->,very thick] (H) -- (8.4,0) node[right,font=\small] {fréquence $f$};
+\node[blk,fill=orange!10,text width=1.6cm] (A) at (0,-2.6) {\nt{ADRE}\\dans le sang};
+\draw[->,thick,orange!85!black] (B) -- (A);
+\foreach \y/\lab in {-2.0/{cœur},-2.6/{vaisseaux},-3.2/{foie, muscles}}{
+  \draw[->,thick,densely dashed,orange!85!black] (A.east) -- (4.3,\y) node[right,font=\scriptsize,black] {\lab};}
+\end{tikzpicture}
+\caption{Deux fils de signes opposés vers le stimulateur du cœur: l'accélérateur \nt{NORA} est lent, le frein \nt{ACET} est rapide. En bas, le même accélérateur sur le bus de diffusion: les cellules \nt{ADRE} libèrent l'adrénaline dans le sang, et tous les organes munis du récepteur adéquat reçoivent le signal (flèches en tirets).}
+\label{fig:gasbrake}
+\end{figure}
+
+C'est le code à deux fils du chapitre~\ref{sec:glutcomputer} et la paire de muscles du chapitre~\ref{sec:muscles}, sauf qu'ici les fils ne commandent pas une articulation, mais la cadence d'un stimulateur. Et les deux fils n'ont pas la même vitesse. Tous deux se comportent comme des filtres passe-bas, mais le frein transmet les changements plusieurs fois plus vite que l'accélérateur~\cite{Berger1989}: le chemin d'\nt{ACET} est court, car la protéine liée au récepteur ouvre elle-même un canal potassique, sans second messager dans la cellule~\cite{Logothetis1987gbg}, tandis que \nt{NORA} agit par une chaîne de réactions intracellulaires. L'ingénieur reconnaît là l'astuce des deux actionneurs de vitesses différentes: le rapide assure l'ajustement fin et instantané, le lent les changements amples et durables.
+
+C'est aussi là qu'\nt{ADRE} trouve son rôle, alors que le tableau~\ref{tab:types} indiquait que son rôle dans le cerveau restait obscur. Hors du cerveau, il est clair. Une partie des cellules de la voie de l'accélérateur n'envoie pas de fil vers un organe, mais libère l'adrénaline directement dans le sang. C'est le même accélérateur, mais sur le bus de diffusion: en quelques dizaines de secondes, il atteint à la fois le cœur, les vaisseaux, le foie et les muscles, et il persiste des minutes. L'accélérateur adressé \nt{NORA} ajuste un organe; l'accélérateur diffusé \nt{ADRE} fait passer tout le corps en mode course.
+
+\section{Une cascade à rétroaction}
+
+Beaucoup d'hormones ne sont pas émises par une seule glande, mais par une cascade. Un petit groupe de neurones à la base du cerveau libère dans le sang un premier signal; celui-ci fait libérer un deuxième signal par une glande intermédiaire; ce dernier fait libérer par la glande finale l'hormone qui agit sur le corps. Et l'hormone finale revient vers les premiers étages pour les freiner. On obtient un amplificateur à trois étages bouclé par une contre-réaction: un régulateur de niveau, comme celui du système \nt{SERO} dans la formule~\eqref{eq:feedback}.
+
+Décrivons chaque étage par un circuit RC de constante de temps $\tau$ et de gain $g$, et la rétroaction par un coefficient $k$:
+\begin{equation}
+\tau\,\frac{\dd x_1}{\dd t} = -x_1 + g\bigl[u - k\,x_3\bigr]_+ ,\qquad
+\tau\,\frac{\dd x_2}{\dd t} = -x_2 + g\,x_1 ,\qquad
+\tau\,\frac{\dd x_3}{\dd t} = -x_3 + g\,x_2 ,
+\label{eq:cascade}
+\end{equation}
+où $u$ est la commande du cerveau et $x_3$ le niveau de l'hormone finale. Le gain de boucle vaut $K=g^3k$. À l'équilibre, $x_3=g^3u/(1+K)$ et, comme pour tout régulateur à contre-réaction, une grande boucle rend le niveau insensible à la dispersion des gains des étages. Mais chaque étage décale la phase: à la pulsation $\omega=\sqrt3/\tau$, trois étages identiques donnent ensemble un déphasage d'un demi-tour et une atténuation d'un facteur huit. D'où le résultat classique de l'automatique:
+\begin{empheq}[box=\keybox]{equation}
+K \;<\; 8 ,
+\label{eq:cascadestable}
+\end{empheq}
+faute de quoi le régulateur se met à osciller, avec une période d'environ $2\pi\tau/\sqrt3\approx3.6\,\tau$.
+
+\begin{keyblock}
+\begin{proposition}[Précision contre stabilité]
+\label{prop:cascade}
+Pour une cascade à trois étages avec rétroaction proportionnelle, l'erreur sur le niveau vaut $1/(1+K)$, et la cascade n'est stable que si $K<8$. Un tel régulateur ne tient donc pas le niveau à mieux qu'environ dix pour cent près; vouloir augmenter le gain le transforme en oscillateur.
+\end{proposition}
+\end{keyblock}
+
+Nous l'avons vérifié sur le modèle~\eqref{eq:cascade} (fig.~\ref{fig:cascade}). Avec $K=4$, le niveau oscille un peu après la mise en marche, puis se stabilise. Avec $K=7$, il se stabilise aussi, mais lentement. Avec $K=12$, les oscillations ne s'amortissent pas et ne croissent pas sans limite non plus: un étage ne peut pas produire de signal négatif, et la cascade passe en pulsations régulières entre $0.83$ et $1.24$ fois le niveau moyen, avec une période de $3.7$ à $3.9\,\tau$.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=0.3cm,y=1.2cm]
+\draw[->,gray!70!black] (0,0) -- (41.5,0) node[right,font=\small,black] {$t/\tau$};
+\draw[->,gray!70!black] (0,0) -- (0,2.8) node[left,font=\small,black] {$x_3/x_3^*$};
+\foreach \t in {0,10,20,30,40}{\draw[gray!60!black] (\t,-0.05) -- (\t,0.05); \node[below,font=\scriptsize] at (\t,0) {\t};}
+\foreach \f in {1,2}{\draw[gray!60!black] (-0.3,\f) -- (0.3,\f); \node[left,font=\scriptsize] at (0,\f) {\f};}
+\draw[densely dashed,gray!60!black] (0,1) -- (40,1);
+\draw[thick,blue!60!black] plot file {figures/cascade_K4.dat};
+\draw[thick,red!70!black] plot file {figures/cascade_K12.dat};
+\node[font=\scriptsize,blue!60!black,anchor=west] at (16,0.55) {$K=4$: se stabilise};
+\node[font=\scriptsize,red!70!black,anchor=west] at (16,1.75) {$K=12$: pulse};
+\end{tikzpicture}
+\caption{Cascade à trois étages avec rétroaction selon~\eqref{eq:cascade}, niveau de l'hormone finale rapporté à sa valeur d'équilibre $x_3^*$. Quand le gain de boucle est inférieur à huit, le niveau se stabilise; au-delà, la cascade engendre d'elle-même des pulsations régulières.}
+\label{fig:cascade}
+\end{figure}
+
+Les vraies hormones de cascade sortent effectivement par pulsations: le niveau de l'hormone du stress, par exemple, oscille avec une période d'environ une heure. Selon une hypothèse, ces pulsations naissent de la rétroaction retardée entre les étages elle-même, sans qu'il faille un générateur de rythme séparé~\cite{Walker2010}. C'est la même cause d'oscillation que pour la boucle \nt{GLUT}--\nt{GABA} de la proposition~\ref{prop:ei} et pour la boucle d'étirement du muscle de la condition~\eqref{eq:delaystable}: une contre-réaction qui arrive en retard.
+
+\section{Le code impulsionnel des hormones}
+
+Les pulsations ne sont pas seulement un effet secondaire; elles peuvent aussi être un code. Les neurones qui commandent la reproduction libèrent leur signal dans le sang par courtes bouffées, environ une fois par heure. Si l'on présente le même signal à la glande destinataire non plus par bouffées mais en continu, elle ne travaille pas à plein régime comme avec les pulsations: elle se tait; si l'on revient à une bouffée par heure, son activité reprend~\cite{Belchetz1978}. Le destinataire ne lit donc pas le niveau, mais la \emph{fréquence} des bouffées.
+
+Pour un ingénieur, il n'y a là aucun mystère. Un récepteur qui se fatigue sous l'action prolongée d'une substance et cesse de répondre est un filtre passe-haut, comme la synapse qui s'épuise~\eqref{eq:depression} du chapitre~\ref{sec:code}. Il étouffe le signal continu et laisse passer les changements. À un tel destinataire, on ne peut rien communiquer autrement que par impulsions, et l'information passe du niveau à la fréquence et à la forme des bouffées. De plus, des fréquences de bouffées différentes agissent différemment sur les diverses cellules d'une même glande, si bien qu'une seule ligne chimique peut transmettre plus d'une grandeur, comme le fil unique \nt{DOPA} du chapitre~\ref{sec:dofaalt} portait une composante rapide et une composante lente.
+
+\section{Le rythme circadien: un générateur lent de modes}
+
+Le rythme le plus lent du corps est le rythme circadien. Il naît d'une contre-réaction retardée à l'intérieur des cellules: des gènes produisent des protéines qui, avec un retard de plusieurs heures, répriment leur propre production~\cite{TakahashiJS2017}. Encore une contre-réaction retardée (la quatrième de ce livre), et encore un rythme, cette fois d'une période d'environ un jour. Le générateur principal est un petit groupe de quelques dizaines de milliers de neurones à la base du cerveau, dont le rythme synchronise les autres cellules du corps.
+
+Chez l'humain, la période propre de ce générateur n'est pas exactement d'un jour, mais de $24.18$ heures en moyenne~\cite{Czeisler1999}. Chaque jour, il est recalé par la lumière que lui transmettent les capteurs de l'œil (chapitre~\ref{sec:sensors}). Pour un électronicien, c'est une \emph{boucle à verrouillage de phase}: un oscillateur de pulsation propre $\omega_0$ se cale sur un signal externe de pulsation $\omega$, et le déphasage $\varphi$ obéit à l'équation
+\begin{empheq}[box=\keybox]{equation}
+\frac{\dd\varphi}{\dd t} \;=\; (\omega-\omega_0) \;-\; K_\varphi\,\sin\varphi .
+\label{eq:pll}
+\end{empheq}
+Le verrouillage tient si $|\omega-\omega_0|<K_\varphi$. Un générateur de période $24.18$ heures doit se décaler d'environ onze minutes chaque jour; la lumière du matin suffit en général pour cela. Pendant la nuit polaire ou dans une grotte sans lumière, il n'y a plus de verrouillage, et le rythme dérive vers sa période propre.
+
+Le générateur circadien n'est pas l'horloge d'un ordinateur. Il ne compte pas les pas de calcul et ne synchronise pas les impulsions des neurones. Il commute des \emph{modes}: sommeil et veille, niveaux hormonaux, température du corps, disposition à manger. C'est un registre de diffusion lent, de la même famille que les registres des chapitres~\ref{sec:serocomputer}--\ref{sec:acet}, sauf que sa valeur change selon un horaire calé sur le soleil.
+
+\begin{keyblock}
+\begin{proposition}[La sortie chimique]
+\label{prop:chemoutput}
+La sortie lente de la machine est construite avec les mêmes pièces que la sortie rapide. Les organes reçoivent deux fils de signes opposés et de vitesses différentes, l'accélérateur \nt{NORA} et le frein \nt{ACET}; l'organisme entier reçoit des signaux diffusés par le sang, dont l'adrénaline \nt{ADRE}. Les niveaux hormonaux sont tenus par des cascades à contre-réaction dont la précision est limitée par la stabilité; une partie des hormones est codée par la fréquence des bouffées; le rythme circadien est un générateur lent à verrouillage de phase sur la lumière. L'organisation des voies ainsi que les expériences sur les bouffées et sur la période sont mesurées; l'explication des pulsations de la cascade par la rétroaction elle-même est une hypothèse.
+\end{proposition}
+\end{keyblock}
+
+\section{Bilan}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{3.1cm}>{\raggedright}p{4.8cm}>{\raggedright\arraybackslash}p{4.9cm}}
+\toprule
+Ce que fait la sortie chimique & Comment & Ce que l'on sait \\
+\midrule
+ajuste les organes & accélérateur \nt{NORA} et frein \nt{ACET}~\eqref{eq:gasbrake} & mesuré; le frein est plus rapide que l'accélérateur \\
+fait passer tout le corps en mode course & adrénaline \nt{ADRE} dans le sang & mesuré \\
+tient les niveaux hormonaux & cascade à rétroaction, $K<8$~\eqref{eq:cascadestable} & cascades et rétroaction mesurées; pulsations nées de la boucle elle-même: hypothèse \\
+transmet par la fréquence des bouffées & récepteur fatigué comme filtre passe-haut & dépendance aux bouffées mesurée \\
+commute les modes sur la journée & générateur à verrouillage de phase sur la lumière~\eqref{eq:pll} & période et recalage par la lumière mesurés \\
+\bottomrule
+\end{tabular}
+\caption{Comment la machine pilote la chimie du corps.}
+\label{tab:chemoutput}
+\end{table}
+
+La machine a deux sorties (tableau~\ref{tab:chemoutput}). La rapide, ce sont les muscles: des millisecondes, de façon adressée, vers chaque articulation. La lente, c'est la chimie du corps: des secondes, des minutes et des jours, par deux fils vers les organes et par le sang vers tous à la fois. Les deux sorties sont faites des mêmes pièces (deux fils de signes opposés, des stimulateurs, la rétroaction et son retard), celles-là mêmes dont la machine est construite à l'intérieur.
+
+\section{Exercices}
+
+\begin{exercise}[\lvlA]
+\label{ex:16:1}
+\emph{Le sang comme filtre.} Une hormone quitte le sang avec une demi-vie $t_{1/2}=10$~min et arrive par courtes bouffées toutes les $T=60$~min. De quel facteur le maximum de concentration dépasse-t-il le minimum, et de quel facteur le fondamental des bouffées est-il atténué? Pour quel $t_{1/2}$ le maximum ne dépasse-t-il le minimum que d'un facteur deux?
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:16:2}
+\emph{Verrouillage circadien.} La période propre du générateur~\eqref{eq:pll} vaut $24.18$~h; la lumière décale la phase d'au plus une heure par jour: $K_\varphi=2\pi/24$~rad/j. Trouvez le déphasage stationnaire $\varphi^*$ en minutes et le temps de relaxation. Au bout de combien de jours un désaccord créé par un saut du signal externe de $\pm6$~h tombe-t-il sous une heure?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:16:3}
+\emph{Précision contre stabilité.} On allonge la cascade linéarisée~\eqref{eq:cascade} à $n$ étages identiques. Trouvez le gain critique $K_c(n)$ et la plus petite erreur accessible $1/(1+K_c)$ pour $n=3$ et $n=6$. Vers quoi tend cette erreur quand $n\to\infty$?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:16:4}
+\emph{Accélérateur et frein.} Dans~\eqref{eq:gasbrake}, les contributions de l'accélérateur et du frein sont les sorties de circuits RC avec $\tau_S=2$~s et $\tau_P=0.4$~s, les commandes étant limitées à $80$ et $60$ battements par minute. Rythme $f_0=100$; au repos, frein $35$, accélérateur $0$, $f=65$. En combien de temps peut-on atteindre $f=120$? Et sans relâcher le frein, avec l'accélérateur seul?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:16:5}
+\emph{Simulation: cascade avec retard.} Dans la rétroaction de la fonction \texttt{cascade} de \texttt{models/\allowbreak chem\_models.py} (copiez-la, n'exécutez pas le fichier), ajoutez un retard $d$: le premier étage voit $x_3(t-d)$. Trouvez $K_c$ et la période à la limite pour $d/\tau=0$, $0.5$, $1$, $2$, et vérifiez par simulation à $0.9K_c$ et $1.1K_c$.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:16:6}
+\emph{Un destinataire qui lit les bouffées.} Le récepteur se fatigue: $y=[c-a]_+$, $\tau_a\,\dd a/\dd t=c-a$, $\tau_a=30$~min. L'hormone arrive par bouffées de $6$~min avec une période $T$, à dose moyenne $\bar c$ constante. Trouvez la réponse moyenne pour $T=15$, $60$, $120$~min et $T\to\infty$. Que vaut-elle à concentration constante $\bar c$?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:16:7}
+\emph{Générateur ou rétroaction?} Proposez une expérience qui distingue les pulsations engendrées par la rétroaction retardée de la cascade~\eqref{eq:cascade} de celles d'un stimulateur séparé. Peut-on départager les hypothèses par le décalage de la période si l'on ne peut modifier $K$ que d'un facteur une fois et demie et que la période est mesurée à $5\%$ près?
+\end{exercise}

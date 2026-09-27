@@ -1,0 +1,66 @@
+\chapter{Le code Morse}
+% version complète: chapters/04_code.tex
+
+Le code Morse a deux signes, le point et le trait, et des pauses entre eux. L'alphabet du neurone est plus pauvre encore: un seul signe, le clic bref. Tout le message est donc inscrit dans les pauses. Quelle langue les neurones parlent-ils?
+
+\section*{Combien peut-on dire avec des clics}
+
+Commençons en ingénieur des télécommunications: combien d'information tient dans un tel canal? Si le destinataire distingue l'instant d'arrivée d'un clic à la milliseconde près, un seul clic peut porter environ huit bits. S'il se contente de compter combien de clics sont arrivés en une seconde, il tirera du même flux des dizaines de fois moins. Presque toute la capacité du canal loge dans le \emph{temps}.
+
+\pencilfig{4}{\pencilart{4}}{En haut le code Morse, en bas le neurone: un seul signe, le clic; tout le message est inscrit dans les pauses.}
+
+Mais le canal est bruité. Le neurone lui-même, curieusement, est précis: si on lui injecte bien des fois le même courant variable, il clique aux mêmes instants à la milliseconde près. Ce sont les connexions qui sont bruitées: plus de la moitié des clics arrivés au bout du fil se perdent tout simplement, car la substance n'est pas libérée à chaque fois. Dans le cortex vivant, le flux de clics paraît presque aléatoire. Est-ce du bruit, ou un message que nous ne savons pas encore lire? Pour un tiers, un message bien compressé est impossible à distinguer du hasard, si bien que la question reste ouverte.
+
+\section*{Lent mais sûr}
+
+Le code le plus simple consiste à compter les clics: plus ils sont fréquents, plus le nombre est grand. Ce code ne craint ni les pertes ni la gigue. Mais il est lent. Pour connaître une fréquence à dix pour cent près, il faut une centaine de clics, soit des secondes. Or vous reconnaissez un animal sur une image montrée un instant en quinze centièmes de seconde environ, et le signal franchit pendant ce temps une dizaine d'étages de traitement. À chaque étage, chaque neurone a le temps de cliquer une fois, tout au plus.
+
+L'issue: prendre beaucoup de neurones à la fois. Non pas un auditeur qui compte les clics pendant une minute, mais cent auditeurs pendant un instant. Là encore, il y a un piège: les bruits de neurones voisins se ressemblent un peu, comme les rumeurs dans une foule. Faire la moyenne sur quelques dizaines de voisins aide, mais au-delà presque plus.
+
+\pencilfig{122}{%
+% error of the group-average rate relative to one neuron, sqrt(c + (1-c)/N): c = 0.1 (neighbours' noise
+% is slightly alike; full edition, chapter 4) and c = 0 (independent noise). x = 0.8 log2 N, y = 2.2 * error
+\draw[pen] (0,0) -- (5.9,0); \draw[pen] (0,0) -- (0,2.45);
+\foreach \x/\n in {0/1, 2.66/10, 5.31/100}{\draw[pcGray, line width=0.5pt] (\x,0) -- (\x,-0.08); \node[lbl, anchor=north] at (\x,-0.08) {\n};}
+\node[lbl, anchor=north] at (2.95,-0.38) {nombre de neurones moyennés};
+\node[lbl, anchor=south, rotate=90] at (-0.1,1.2) {erreur};
+\draw[pcGray, densely dashed, line width=0.5pt] (0,0.70) -- (5.6,0.70);
+\draw[penlite=pcBlue] plot[smooth] coordinates {(0.00,2.20) (0.47,1.80) (0.80,1.56) (1.27,1.27) (1.60,1.10) (2.07,0.90) (2.40,0.78) (2.87,0.64) (3.20,0.55) (3.67,0.45) (4.00,0.39) (4.47,0.32) (4.80,0.28) (5.27,0.22) (5.60,0.19)};
+\draw[penlite=pcRed] plot[smooth] coordinates {(0.00,2.20) (0.47,1.84) (0.80,1.63) (1.27,1.39) (1.60,1.25) (2.07,1.10) (2.40,1.01) (2.87,0.92) (3.20,0.87) (3.67,0.82) (4.00,0.79) (4.47,0.76) (4.80,0.74) (5.27,0.73) (5.60,0.72)};
+\node[lbl, text=pcRed, anchor=west, align=left] at (5.7,0.74) {bruits proches,\\comme au cortex};
+\node[lbl, text=pcBlue, anchor=west] at (5.7,0.19) {bruits indépendants};
+\node[lbl, anchor=west] at (0.9,2.15) {un seul neurone};
+\node[lbl, anchor=north west] at (0.05,0.66) {trois fois moins};
+}{Erreur sur la fréquence moyennée sur un groupe de neurones. Si les bruits étaient indépendants, elle continuerait de baisser. Les bruits semblables des voisins l'arrêtent vers un tiers, et cette limite est atteinte dès quelques dizaines de neurones.}
+
+\section*{Vite: qui arrive le premier}
+
+Deuxième issue: écrire le nombre dans le temps. Un signal fort fait cliquer le neurone tôt, un signal faible tard. Un clic unique porte déjà un nombre. Mais à partir de quoi compter le temps, s'il n'y a pas d'horloge? On peut comparer les neurones entre eux: qui a cliqué le premier, qui le deuxième. L'ordre d'arrivée des clics de dix neurones porte plus de vingt bits. Et une salve commune sert de repère de départ, comme la longue pause entre les mots en Morse.
+
+\pencilfig{121}{%
+% latency code: one click per neuron; the stronger the input, the earlier the click
+\foreach \y/\t/\l/\k in {1.5/1.1/{entrée forte}/1, 0.95/2.4/{moyenne}/2, 0.4/4.2/{faible}/3}{
+  \draw[pen] (0.4,\y) -- (5.1,\y);
+  \draw[pcBlue, line width=0.9pt] (\t,\y) -- (\t,\y+0.42);
+  \node[lbl, anchor=east] at (0.3,\y+0.1) {\l};
+  \draw[dotpen=pcAmber, wash=pcAmber] (5.6,\y+0.16) circle (0.17);
+  \node[font=\scriptsize, text=pcAmber!60!black] at (5.6,\y+0.16) {\k};}
+\draw[pcGray, densely dashed, line width=0.5pt] (0.55,0.25) -- (0.55,2.1);
+\node[lbl, anchor=south] at (0.55,2.1) {stimulus};
+\node[lbl, text=pcAmber!70!black, anchor=south] at (5.6,2.1) {ordre};
+\draw[arr] (0.7,0.05) -- (4.9,0.05); \node[lbl, anchor=north] at (2.8,0.02) {temps};
+}{Entrée forte, clic précoce; entrée faible, clic tardif. L'ordre des clics dit quelle entrée est la plus forte, même si l'instant de départ est inconnu.}
+
+\section*{Le code, c'est l'auditeur qui le choisit}
+
+Une même suite de clics porte à la fois la fréquence, les instants et l'ordre. Ce qui en sera lu, c'est le destinataire qui en décide. Un neurone au \og trou large\fg{} remplit lentement son seau et n'entend que la fréquence. Un neurone qui oublie vite n'entend que les coïncidences. Et les freins, nous l'avons vu, savent faire passer un neurone d'un régime à l'autre.
+
+Même les connexions filtrent le signal. Certaines se fatiguent vite et transmettent donc non la fréquence, mais sa \emph{variation}. D'autres, au contraire, laissent mieux passer les bouffées de plusieurs clics d'affilée: le neurone dispose alors d'un \og trait\fg{}. Pendant ce temps, les neurones inhibiteurs placent la ponctuation: ils découpent le flux en fenêtres et le baissent quand il est trop fort.
+
+\section*{Une langue économe}
+
+Dernier point: cette langue coûte cher. Chaque clic coûte de l'énergie, et le cerveau entier consomme une vingtaine de watts. Si l'on répartit ces watts sur tous les neurones, on obtient en moyenne de l'ordre d'un clic par seconde et par neurone. La plupart des neurones se taisent la plupart du temps. Le code du cerveau est forcé d'être avare.
+
+En Morse, la lettre la plus fréquente de l'anglais comme du français, E, est un simple point: ce qui est fréquent se code court. Chez les neurones, c'est pareil: ce qui est attendu coûte peu de clics. Un stimulus constant cesse peu à peu de provoquer une réponse, les capteurs signalent les changements, et la dopamine seulement les surprises. Le cerveau dépense ses clics pour les nouvelles.
+
+\fullversion{4}

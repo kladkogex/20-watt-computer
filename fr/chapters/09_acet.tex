@@ -1,0 +1,191 @@
+\chapter{Quand écrire, quand lire: ajoutons \nt{ACET}}
+\chaptermark{Ajoutons \nt{ACET}}
+\label{sec:acet}
+
+\section{Ce qui manque}
+
+Une puce de mémoire possède, outre les fils d'adresse et de données, une ligne de plus: la validation d'écriture. Tant qu'elle est inactive, la mémoire est seulement lue; quand elle est active, ce qui se trouve sur les lignes de données est écrit. Sans cette ligne, la mémoire ne fonctionne pas: si chaque lecture écrit en même temps quelque chose, ce qui a été lu, y compris ce qui a été lu avec une erreur, est aussitôt réécrit.
+
+Dans le cerveau, ce problème est plus aigu que dans une puce. Au chapitre~\ref{sec:glutcomputer}, la mémoire était un groupe de neurones \nt{GLUT} maintenu actif par ses propres connexions (fig.~\ref{fig:bistable}). Au chapitre~\ref{sec:dofa}, nous avons vu que ces connexions apprennent par la règle de Hebb en plein fonctionnement. Les mêmes synapses conservent donc l'ancien et reçoivent le nouveau, et il n'y a pas de phase d'écriture séparée, pas plus que d'horloge. Comment le réseau distingue-t-il le moment où il faut mémoriser ce que l'on voit du moment où il faut se rappeler ce que l'on sait? Au chapitre~\ref{sec:neurontypes}, nous avons supposé que cette ligne est tenue par \nt{ACET}. Dans ce chapitre, nous verrons comment une telle ligne doit fonctionner et pourquoi on ne peut pas s'en passer.
+
+\section{Les trois actions d'un seul fil}
+
+Les neurones à acétylcholine qui travaillent à l'intérieur du cerveau sont peu nombreux et réunis en quelques petits groupes, et leurs sorties se répartissent dans tout le cortex. C'est un canal de diffusion, comme \nt{DOPA} et \nt{NORA}. Le niveau d'acétylcholine dans le cortex est élevé pendant l'éveil attentif et bas pendant le sommeil lent~\cite{Hasselmo1999}. Comme pour la dopamine, le sens du signal est fixé par le récepteur du destinataire (proposition~\ref{prop:receptor}): l'acétylcholine a des récepteurs rapides, qui ouvrent un canal, et des récepteurs lents, qui déclenchent des réactions dans la cellule. Trois actions nous importent.
+
+\emph{Premièrement: affaiblir les connexions internes.} Des expériences sur tranches de cortex olfactif ont montré que l'acétylcholine supprime fortement la transmission par les connexions entre neurones d'une même région et touche à peine les entrées qui y arrivent de l'extérieur~\cite{HasselmoBower1992}.
+
+\emph{Deuxièmement: renforcer les entrées.} L'acétylcholine augmente l'excitabilité des neurones et facilite la transmission sur certaines voies d'entrée; le signal venu des organes des sens devient plus fort que l'activité propre du réseau~\cite{Hasselmo2006}.
+
+\emph{Troisièmement: faciliter la modification des poids.} Quand le niveau d'acétylcholine est élevé, les connexions changent plus facilement~\cite{Hasselmo2006}.
+
+Pour l'ingénieur, ces trois actions forment une seule opération: le passage du mode \og lire\fg{} au mode \og écrire\fg{}. Le réseau cesse de s'écouter lui-même, se met à écouter l'entrée et mémorise ce qu'il entend.
+
+\section{Un réseau qui complète}
+
+Prenons $N$ neurones \nt{GLUT} reliés entre eux. Stockons dans leurs connexions plusieurs motifs (des ensembles de $pN$ neurones actifs simultanément) par la règle de Hebb~\cite{Hebb1949}. Si l'on présente à ce réseau la moitié d'un motif, les connexions excitent la moitié manquante: le réseau \emph{complète} le motif à partir d'une partie, comme le groupe de la fig.~\ref{fig:bistable} s'entretenait lui-même. C'est une mémoire associative: l'adresse est une partie du contenu. \nt{GABA}, comme au chapitre~\ref{sec:gaba}, maintient le nombre total de neurones actifs autour de $pN$, pour que deux motifs ne puissent pas s'allumer ensemble.
+
+Notons $a$ le niveau d'acétylcholine, de $0$ à $1$, et inscrivons directement ses trois actions dans le modèle:
+\begin{empheq}[box=\keybox]{equation}
+\tau\frac{\dd r_i}{\dd t} = -r_i + F\Bigl(\tfrac{1+a}{2}\,x_i + (1-a)\sum_j W_{ij}\,r_j - g\Bigr),
+\qquad
+\frac{\dd W_{ij}}{\dd t} = \eta\,a\,(r_i-p)(r_j-p) .
+\label{eq:acetnet}
+\end{empheq}
+Ici, $r_i$ est la fréquence du neurone $i$, $x_i$ son entrée venue des organes des sens, $F$ une caractéristique de transfert à seuil, $g$ l'inhibition globale due à \nt{GABA}, qui croît quand plus de $pN$ neurones sont actifs. Le facteur $\frac{1+a}{2}$ est l'amplification de l'entrée, $1-a$ l'affaiblissement des connexions internes, $\eta a$ la vitesse d'apprentissage. La seconde équation est la règle de Hebb~\eqref{eq:hebb} sous une forme adaptée aux motifs clairsemés~\cite{Tsodyks1988}: le poids croît quand les deux neurones sont plus actifs que d'habitude, et diminue quand un seul l'est. La partie négative des poids est, comme toujours, réalisée par des intermédiaires \nt{GABA}. Il n'y a pas d'horloge: les neurones comme les poids changent continûment.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  nrn/.style={circle,draw,very thick,fill=blue!6,minimum size=0.8cm,inner sep=0pt,font=\small},
+  acet/.style={circle,draw,very thick,double,double distance=1.2pt,fill=orange!15,minimum size=1.35cm,inner sep=0pt,font=\scriptsize},
+  bc/.style={->,thick,densely dashed,orange!85!black}]
+\foreach \i/\y in {1/2.4,2/1.2,3/0}{
+  \node[nrn] (N\i) at (3,\y) {$r_\i$};
+  \draw[->,thick,blue!60!black] (0,\y) node[left,black] {\small $x_\i$} -- (N\i);}
+\node[left,align=right,font=\small] at (-0.5,1.2) {des organes\\des sens};
+\draw[->,thick,gray!60!black] (N1) to[bend left=30] (N2);
+\draw[->,thick,gray!60!black] (N2) to[bend left=30] (N1);
+\draw[->,thick,gray!60!black] (N2) to[bend left=30] (N3);
+\draw[->,thick,gray!60!black] (N3) to[bend left=30] (N2);
+\draw[->,thick,gray!60!black] (N1.east) .. controls (4.6,2.0) and (4.6,0.4) .. (N3.east);
+\node[right,font=\small,gray!40!black,align=left] at (4.7,1.2) {connexions\\internes $W$};
+\node[acet] (A) at (1.2,-1.9) {\nt{ACET}};
+\draw[bc] (A) -- (1.6,-0.15);
+\node[font=\small,orange!60!black,anchor=east] at (0.95,-0.9) {$+$ entrée};
+\draw[bc] (A) -- (4.3,0.6);
+\node[font=\small,orange!60!black,anchor=west] at (4.3,0.1) {$-$ connexions internes, $+$ vitesse d'apprentissage};
+\node[right,font=\small,align=left] at (2.2,-1.9) {niveau haut: \og écrire\fg{}\\niveau bas: \og lire\fg{}};
+\end{tikzpicture}
+\caption{\nt{ACET} comme ligne de validation d'écriture. Les neurones $r_i$ reçoivent l'entrée $x_i$ des organes des sens (flèches bleues) et s'excitent mutuellement par les connexions internes $W$ (en gris), qui stockent les motifs. L'acétylcholine (flèches en tirets) renforce l'entrée, affaiblit les connexions internes et facilite la modification des poids, comme dans~\eqref{eq:acetnet}.}
+\label{fig:acetnet}
+\end{figure}
+
+\section{L'écriture et la lecture se gênent}
+
+Testons le modèle~\eqref{eq:acetnet} sur une tâche où l'écriture et la lecture sont réellement en conflit. Un réseau de $200$ neurones stocke déjà cinq motifs de $20$ neurones actifs. Il faut maintenant en mémoriser un sixième, qui recouvre à moitié l'un des anciens: ils ont dix neurones en commun. Cela arrive constamment: une nouvelle pièce ressemble à une pièce connue, un nouveau visage à un ancien.
+
+\emph{Écriture avec $a$ bas.} Séparons d'abord les deux premières actions de l'acétylcholine de la troisième: gardons la vitesse d'apprentissage maximale, et seuls l'amplification de l'entrée et l'affaiblissement des connexions internes varieront. Pour $a=0$, l'entrée allume les dix neurones communs, et ceux-ci, par les connexions internes, allument la moitié restante de l'\emph{ancien} motif. \nt{GABA} empêche les deux de brûler en même temps, et l'ancien motif, soutenu par ses propres connexions, évince le nouveau, qui ne tient que par l'entrée. Le réseau ne voit pas ce qu'il a devant lui, mais ce dont il se souvient, et la règle de Hebb enregistre consciencieusement ce qu'il a vu.
+
+Au bout du compte, le nouveau motif n'a pas du tout été mémorisé: à partir de sa moitié distinctive, le réseau ne se rappelle rien. Et l'ancien est abîmé: rappelé par sa moitié distinctive, il entraîne en moyenne six neurones étrangers sur dix. Pour $a=0.1$, le nouveau motif est déjà mémorisé, mais il fusionne avec l'ancien, et les dégâts sont même plus grands: chacun des deux, rappelé par sa moitié, entraîne environ huit neurones étrangers; à partir de $a=0.2$, l'écriture est propre: moins d'un neurone superflu au rappel (moyenne sur dix simulations).
+
+\emph{Écriture avec une vraie vitesse d'apprentissage.} Supposons maintenant que l'acétylcholine fixe aussi la vitesse d'apprentissage, comme dans~\eqref{eq:acetnet}. En une seule présentation, le nouveau motif n'est entièrement mémorisé que pour $a\ge0.9$; pour $a=0.75$, aux huit dixièmes; pour $a\le0.5$, pas du tout.
+
+\emph{Lecture.} Présentons à un réseau qui stocke proprement cinq motifs la moitié d'un motif, puis retirons-la aussi. Pour $a\le0.2$, le réseau complète tout le motif et le maintient seul; pour $a=0.3$, presque tout; pour $a\ge0.4$, les connexions internes sont trop affaiblies, et une fois l'indice disparu, l'activité s'éteint (fig.~\ref{fig:acetsim}).
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=9cm,y=3.2cm]
+\draw[->,gray!70!black] (0,0) -- (1.1,0) node[right,black] {\small $a$};
+\draw[->,gray!70!black] (0,0) -- (0,1.2);
+\foreach \x in {0,0.2,0.4,0.6,0.8,1.0}{\draw[gray!60!black] (\x,-0.02) -- (\x,0.02); \node[below,font=\scriptsize] at (\x,0) {$\x$};}
+\foreach \y in {0,0.5,1}{\draw[gray!60!black] (-0.01,\y) -- (0.01,\y); \node[left,font=\scriptsize] at (0,\y) {$\y$};}
+\node[rotate=90,font=\small] at (-0.1,0.6) {part du motif restituée};
+\draw[very thick,blue!60!black] plot[mark=*,mark size=1.6pt] coordinates {(0,1.00) (0.1,1.00) (0.2,1.00) (0.3,0.96) (0.4,0.04) (0.5,0.00) (0.75,0.00) (1.0,0.00)};
+\draw[very thick,red!70!black] plot[mark=*,mark size=1.6pt] coordinates {(0.1,0.00) (0.2,0.00) (0.3,0.00) (0.5,0.00) (0.75,0.80) (0.9,1.00) (1.0,1.00)};
+\node[font=\small,blue!60!black,anchor=west,align=left] at (0.03,0.5) {lecture:\\motif d'après\\sa moitié};
+\node[font=\small,red!70!black,anchor=east,align=right] at (1.0,0.35) {écriture:\\nouveau motif\\en une fois};
+\end{tikzpicture}
+\caption{Le modèle~\eqref{eq:acetnet}: $200$ neurones, motifs de $20$ neurones actifs, moyenne sur dix simulations. Points bleus: la lecture, c'est-à-dire la part du motif restituée d'après sa moitié une fois l'indice retiré. Points rouges: l'écriture, c'est-à-dire la part d'un nouveau motif, à moitié semblable à un ancien, dont le réseau se souvient après une seule présentation, si l'acétylcholine fixe aussi la vitesse d'apprentissage. La lecture fonctionne pour $a\le0.3$, l'écriture pour $a\ge0.9$.}
+\label{fig:acetsim}
+\end{figure}
+
+\begin{keyblock}
+\begin{proposition}[L'écriture et la lecture exigent des modes différents]
+\label{prop:writeread}
+Dans le modèle~\eqref{eq:acetnet}, où les mêmes connexions conservent l'ancien et apprennent le nouveau, et où l'acétylcholine fixe aussi la vitesse d'apprentissage, il n'existe pas de niveau $a$ auquel l'écriture et la lecture marchent aussi bien l'une que l'autre. Pour écrire, il faut affaiblir les connexions internes, sinon le réseau écrit non pas l'entrée, mais ce dont il s'est souvenu; pour lire, il faut les renforcer, sinon il ne complète pas le motif à partir d'une partie. Il faut un commutateur, et un seul fil de diffusion peut en tenir lieu.
+\end{proposition}
+\end{keyblock}
+
+Si l'acétylcholine ne modifiait pas la vitesse d'apprentissage, une bande étroite $0.2\le a\le0.3$ conviendrait aux deux tâches. Mais le réseau apprendrait alors à chaque lecture, c'est-à-dire qu'il réécrirait ce qu'il a lu, avec ses erreurs. L'idée même de supprimer les connexions internes pendant l'apprentissage vient de modèles construits à partir de mesures sur tranches~\cite{HasselmoAndersonBower1992}. Les nombres ci-dessus concernent notre modèle simplifié; où se trouvent exactement les frontières des modes dans le cerveau, on ne le sait pas.
+
+\section{Jusqu'où croire ses yeux}
+
+Le commutateur \og écrire/lire\fg{} est un cas extrême d'une question plus générale: jusqu'à quel point croire l'entrée, et jusqu'à quel point la mémoire? Les ingénieurs ont une réponse exacte à cette question, et elle explique pourquoi un seul fil commande à la fois le mode et la vitesse d'apprentissage.
+
+Supposons que le réseau suive une grandeur $s(t)$ qui dérive lentement: en une seconde, sa variance croît de $q$. Les organes des sens rapportent $y(t)=s(t)+$bruit d'intensité $R$. La meilleure estimation $\hat s$ en temps continu est donnée par le filtre de Kalman--Bucy~\cite{KalmanBucy1961}:
+\begin{empheq}[box=\keybox]{equation}
+\frac{\dd\hat s}{\dd t} \;=\; \frac{P}{R}\,\bigl(y-\hat s\bigr),
+\qquad
+\frac{\dd P}{\dd t} \;=\; q-\frac{P^2}{R} ,
+\label{eq:kalman}
+\end{empheq}
+où $P$ est la variance de l'erreur d'estimation, c'est-à-dire l'incertitude du réseau sur ce qu'il sait. La première équation est le même circuit RC que celui de la membrane dans le modèle du neurone~\eqref{eq:glutneuron}, mais avec une constante de temps $R/P$ variable. Quand le réseau n'est pas sûr, $P$ est grand, la constante de temps est petite, et l'estimation suit vite l'entrée: c'est \og écrire\fg{}. Quand il est sûr, $P$ est petit, et l'estimation n'écoute presque plus l'entrée, elle s'en tient à la mémoire: c'est \og lire\fg{}.
+
+En régime établi, $P=\sqrt{qR}$ et la constante de temps de la mémoire vaut $\sqrt{R/q}$: si le monde dérive d'une unité en cent secondes, $q=0.01$, et si le bruit des organes des sens est $R=1$, la mémoire doit retenir environ dix secondes.
+
+L'essentiel est ici qu'un seul nombre, $P/R$, fixe deux choses à la fois: le poids de l'entrée par rapport à la mémoire, et la vitesse à laquelle change l'estimation stockée. C'est exactement ce que fait l'acétylcholine dans~\eqref{eq:acetnet}. Selon une hypothèse~\cite{YuDayan2005}, l'acétylcholine communique justement au réseau une grandeur semblable à $P$: l'incertitude \emph{attendue}, celle que le réseau connaît d'avance. Ce canal n'est pas toujours lent: une partie des neurones \nt{ACET} répond à la récompense et à la punition en une vingtaine de millisecondes, d'autant plus fort que le renforcement est inattendu~\cite{Hangya2015}.
+
+\begin{keyblock}
+\begin{proposition}[Un seul bouton pour le poids de l'entrée et la vitesse d'apprentissage]
+\label{prop:kalman}
+Dans le filtre optimal~\eqref{eq:kalman}, le poids avec lequel l'entrée se mêle à la mémoire et la vitesse d'apprentissage sont une seule et même grandeur, $P/R$. Il est donc raisonnable de les commander par un seul signal. Si les propriétés du monde ne changent pas, ce signal atteint un niveau constant $\sqrt{q/R}$, et il ne faut l'ajuster que lorsque les propriétés du monde changent.
+\end{proposition}
+\end{keyblock}
+
+La seconde phrase de la proposition explique le résultat du chapitre~\ref{sec:nora}, où l'ajustement de la vitesse d'apprentissage par la surprise n'a pas battu la meilleure vitesse constante: dans un monde dont les propriétés de changement sont fixes, la meilleure vitesse d'apprentissage est justement constante. Le gain apparaît quand le monde devient soudain différent. L'estimation se retrouve alors tout à coup loin de l'entrée, et $P$ l'ignore. La bonne action est d'augmenter brusquement $P$, et donc de passer en mode écriture. Selon l'hypothèse discutée au chapitre~\ref{sec:nora}, c'est \nt{NORA} qui signale un tel changement \emph{inattendu}~\cite{YuDayan2005}. La division du travail est naturelle: \nt{NORA} remarque que le monde a changé, \nt{ACET} maintient le réseau en mode écriture tant que la nouvelle situation n'est pas apprise.
+
+\section{Le sommeil comme mode lecture}
+
+Si un niveau élevé d'acétylcholine est le mode écriture, que fait le réseau quand ce niveau est bas? Pendant le sommeil lent, le niveau d'acétylcholine chute, les connexions internes sont libérées de la suppression, et l'entrée venue des organes des sens est presque nulle. Le réseau, en mode lecture sans indice, rejoue ce qui y est inscrit. Les enregistrements montrent que les neurones qui ont travaillé ensemble pendant la journée se déclenchent de nouveau ensemble pendant le sommeil lent~\cite{WilsonMcNaughton1994}, et même dans le même ordre~\cite{Skaggs1996}. Selon une hypothèse~\cite{Hasselmo1999}, ces répétitions recopient dans la mémoire à long terme ce qui a été appris vite pendant la journée (allonger artificiellement les courtes bouffées de répétitions améliore la mémoire~\cite{FernandezRuiz2019}): le jour, écriture depuis l'entrée; la nuit, réécriture depuis l'intérieur. Pour l'ingénieur, cela ressemble à l'écriture dans un tampon rapide pendant la journée et à son vidage dans une mémoire permanente lente pendant la nuit.
+
+\section{Bilan}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{3.2cm}>{\raggedright}p{4.2cm}>{\raggedright\arraybackslash}p{6.0cm}}
+\toprule
+Ce que fait \nt{ACET} & Comment & Ce qu'on sait \\
+\midrule
+affaiblit les connexions internes & facteur $1-a$ dans~\eqref{eq:acetnet} & mesuré sur tranches \\
+renforce l'entrée & facteur $\frac{1+a}{2}$ & l'augmentation de l'excitabilité et de la transmission sur les voies d'entrée est mesurée \\
+facilite l'apprentissage & vitesse $\eta a$ & mesuré \\
+commute \og écrire/lire\fg{} & proposition~\ref{prop:writeread} & découle des modèles; pas de mesure directe des modes \\
+signale l'incertitude attendue & $P$ dans~\eqref{eq:kalman} & hypothèse \\
+libère le réseau pour les répétitions du sommeil & $a$ bas en sommeil lent & le niveau bas pendant le sommeil et les répétitions sont mesurés; la recopie en mémoire à long terme est une hypothèse \\
+\bottomrule
+\end{tabular}
+\caption{Ce que \nt{ACET} ajoute à un réseau de \nt{GLUT}, \nt{GABA}, \nt{DOPA} et \nt{NORA}.}
+\label{tab:acet}
+\end{table}
+
+\nt{DOPA} dit au réseau dans quel sens modifier les poids, \nt{NORA} avec quelle détermination utiliser ce qu'il sait, et \nt{ACET} s'il doit écouter le monde ou lui-même (tableau~\ref{tab:acet}). C'est la dernière ligne de commande diffusée du tableau~\ref{tab:types}: la validation d'écriture, sans laquelle une mémoire qui stocke ses motifs dans les connexions mêmes par lesquelles elle les lit s'abîmerait à chaque lecture.
+
+\section{Exercices}
+
+\begin{exercise}[\lvlA]
+\label{ex:09:1}
+\emph{Combien de temps retenir.} Le filtre~\eqref{eq:kalman} avec $q=0.01$, $R=1$ retient environ $10$~s. Trouvez $P_\infty$ et la mémoire $\sqrt{R/q}$ si (a)~l'amplitude du bruit du capteur double; (b)~le monde dérive cent fois plus vite. (c)~De quel facteur doit croître le bruit pour que le réseau retienne une minute?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:09:2}
+\emph{Mode écriture après un changement.} Le monde a changé, et l'incertitude du filtre~\eqref{eq:kalman} avec $q=0.01$, $R=1$ a bondi à $P_0\to\infty$. (a)~Avec quelle constante de temps $P$ revient-il à $P_\infty$? (b)~Au bout de combien de secondes la vitesse d'apprentissage ne dépasse-t-elle plus la valeur établie de plus de $10\,\%$?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:09:3}
+\emph{Vitesse d'apprentissage constante.} Le réseau apprend selon $\dd\hat s/\dd t=(y-\hat s)/T$; le monde dérive, $\dd s/\dd t=w$, $y=s+n$, où $w$ et $n$ sont des bruits blancs d'intensités $q$ et $R$. Trouvez le meilleur $T$ et la variance de l'erreur correspondante. De quel facteur augmente-t-elle si $T$ est faux d'un facteur $2$, puis $10$?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:09:4}
+\emph{Où est la frontière de l'écriture.} Dans \texttt{models/\allowbreak acet\_memory.py}, le seuil vaut $\theta=0.35$, le poids à l'intérieur d'un motif $w=0.041$ (idéalement $0.045$). Un nouveau motif partage $m=10$ neurones avec un ancien. Pour quel $a$ dans~\eqref{eq:acetnet} les autres neurones de l'ancien motif ne s'allument-ils pas à partir de ces $m$ (seuil franc)?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:09:5}
+\emph{Simulation: capacité de la mémoire.} Dans \texttt{models/\allowbreak acet\_memory.py}, modifiez la fonction \texttt{read\_sweep}: pour $a=1$, écrivez $M$ motifs ($M$ de $5$ à $100$), puis pour $a=0$ lisez les dix premiers d'après leur moitié. Pour quel $M$ apparaissent les erreurs, et comment la limite $M_{\max}$ dépend-elle de $N$ et de $p$?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:09:6}
+\emph{Conception: écrire sans fuite.} Avec la vitesse d'apprentissage $\eta a$, le réseau apprend aussi pendant la lecture. Proposez une fonction monotone $\eta(a)\le\eta$, nulle pour $a\le0.3$ et pas moins bonne que $\eta a$ pour $a\ge0.9$. Vérifiez: après $20$ lectures à $a=0.2$ avec un indice contenant trois neurones étrangers, combien de ceux-ci sont entrés dans le motif?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:09:7}
+\emph{Recopier le tampon la nuit.} (a)~La nuit, $a=0.05$ et une répétition dure $0.1\,\text{s}$, contre $0.2\,\text{s}$ le jour pour $a=1$. Combien de répétitions valent en poids une présentation diurne, pour la vitesse $\eta a$ et pour $\eta(a)$ de l'exercice~\ref{ex:09:6}? (b)~La mémoire permanente, $100$ fois plus lente que le tampon, entend le motif $20$ fois par nuit, $0.1\,\text{s}$ chaque fois. Combien de nuits?
+\end{exercise}

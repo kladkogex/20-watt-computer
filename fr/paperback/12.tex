@@ -1,0 +1,44 @@
+\chapter{Comment reconnaître un chat}
+% version complète: chapters/12_recognition.tex
+
+\pencilfig{12}{\pencilart{12}}{Un grand chat et un petit: des images toutes différentes sur les capteurs de l'œil, mais une seule réponse.}
+
+Sur une image, le chat peut être à gauche ou à droite, près ou loin, au soleil ou à l'ombre. À chaque fois, c'est un motif tout différent qui tombe sur les capteurs de l'œil, et vous le reconnaissez pourtant en une fraction de seconde. Toute la difficulté de la reconnaissance est là: il faut reconnaître une même chose sous des milliers d'aspects différents.
+
+\section*{La chaîne de montage}
+
+Le cerveau résout ce problème par une chaîne d'une dizaine d'étages, que le signal traverse en quinze centièmes de seconde. À chaque étage, deux opérations. D'abord un \og et\fg{}: le neurone se déclenche si les bons détails sont dans le bon ordre, par exemple deux segments qui se rejoignent en coin. Puis un \og ou sur toutes les positions\fg{}: le neurone suivant se déclenche s'il y a un coin n'importe où dans les parages, peu importe où exactement. La première opération rend la reconnaissance sélective, la seconde tolérante au déplacement. Étage après étage, les détails s'assemblent en parties, les parties en objets, et les déplacements et les échelles sont pardonnés.
+
+\pencilfig{112}{%
+\foreach \i/\y/\cx/\cy in {1/1.2/0.15/0.3,2/0.3/0.3/0.1,3/-0.6/0.05/0.05}{
+  \draw[penlite] (0,\y-0.3) rectangle (0.6,\y+0.3);
+  \draw[pcGray, line width=0.8pt] (\cx,\y-0.3+\cy+0.35) -- (\cx,\y-0.3+\cy) -- (\cx+0.3,\y-0.3+\cy);
+  \draw[pen=pcBlue, wash=pcBlue] (1.9,\y) circle (0.2);
+  \draw[arr] (0.65,\y) -- (1.65,\y);
+  \draw[arr=pcBlue] (2.12,\y) -- (3.62,{0.3+0.12*(2-\i)});}
+\draw[pen=pcBlue, wash=pcBlue] (3.9,0.3) circle (0.25);
+\draw[arr] (4.2,0.3) -- (5.75,0.3); \node[lbl, anchor=south] at (4.97,0.35) {autres étages};
+% a small cat
+\draw[penlite] (6.3,0.3) circle (0.32);
+\draw[penlite] (6.03,0.5) -- (6.07,0.82) -- (6.23,0.6); \draw[penlite] (6.57,0.5) -- (6.53,0.82) -- (6.37,0.6);
+\node[lbl, anchor=north] at (0.3,-1.0) {image}; \node[lbl, anchor=north, align=center] at (1.9,-1.0) {ET: un coin\\à cet endroit};
+\node[lbl, anchor=north, align=center] at (3.9,-1.0) {OU: un coin\\n'importe où}; \node[lbl, anchor=north] at (6.3,-1.0) {chat};
+}{Un étage de la chaîne: le \og et\fg{} assemble un coin à un endroit, le \og ou\fg{} pardonne l'endroit exact où il se trouve.}
+
+C'est précisément ce schéma que copient les réseaux convolutifs qui reconnaissent les images dans votre téléphone. Et ils le lui rendent bien: les réseaux entraînés à reconnaître des objets prédisent assez bien comment répondent les neurones des étages supérieurs de la vision.
+
+\section*{Apprendre par la vidéo}
+
+Mais qui a instruit le cerveau? Personne ne vous a montré un million d'images étiquetées \og chat\fg{}. Une réponse plausible: la vidéo. Le monde s'écoule sans interruption, et en une fraction de seconde un objet ne change presque pas, seuls changent sa position et son éclairage. Si les connexions se renforcent entre ce qu'on voit maintenant et ce qu'on voyait un instant plus tôt, le réseau reliera de lui-même les différents aspects d'un même objet: ce qui est lent, c'est l'objet; ce qui est rapide, ce sont les circonstances. Dans une expérience, on remplaçait discrètement les objets pendant les mouvements des yeux, et les neurones se mettaient à tenir des objets différents pour un seul. Comme règle générale, c'est encore une hypothèse.
+
+\section*{Les illusions, empreintes des mécanismes}
+
+Les illusions ne sont pas des pannes, mais des traces de la façon dont la machine est construite. Si l'œil fixe longtemps une cascade, puis des pierres immobiles, les pierres \og remontent\fg{}: la paire de canaux \og vers le bas\fg{} et \og vers le haut\fg{} est déséquilibrée par la fatigue de l'un d'eux. La célèbre robe que les uns voient blanc et or et les autres bleu et noir partage les gens selon l'éclairage que leur cerveau suppose en silence. Les \og serpents tournants\fg{} dessinés semblent bouger parce que les zones claires sont traitées un peu plus vite que les sombres, et la différence de temps est lue comme un mouvement. Et le cube qui tantôt ressort, tantôt se creuse, ce sont deux groupes de neurones en compétition; selon un modèle, c'est surtout le bruit qui décide des bascules.
+
+Fait curieux: un réseau de neurones entraîné à prédire l'image suivante d'une vidéo \og voit\fg{} lui aussi les serpents tourner. Certaines illusions seraient donc le prix inévitable de la capacité à prédire.
+
+\section*{Le cerveau contre le réseau de neurones}
+
+La ressemblance n'est pas complète. Le cerveau se contente de peu d'exemples, apprend presque sans étiquettes et dépense vingt watts pour le tout. Un réseau de neurones peut être trompé par une retouche d'image imperceptible pour l'homme. Il est vrai que ces retouches troublent un peu les gens aussi, quand on les leur montre un instant. Où passe la véritable frontière entre ces deux machines, on le cherche encore.
+
+\fullversion{12}

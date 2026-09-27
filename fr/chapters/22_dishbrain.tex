@@ -1,0 +1,154 @@
+\chapter{DishBrain}
+\chaptermark{DishBrain}
+\label{sec:dishbrain}
+
+\section{Un réseau en boîte de culture joue au tennis}
+
+DishBrain, c'est le nom que les auteurs ont donné au banc sur lequel une culture de neurones vivants, cultivée sur une puce à électrodes, joue à un tennis simplifié à une seule raquette~\cite{Kagan2022}. C'est l'expérience la plus débattue sur une machine faite de neurones vivants (ces machines sont passées en revue au chapitre~\ref{sec:livingmachine}), et elle est particulièrement commode pour notre livre. Ici, le petit réseau est accessible en entier: chaque entrée est fixée par l'expérimentateur, chaque sortie est enregistrée. Toutes les questions des chapitres précédents (comment le signal est codé, qui enseigne, ce que voit la sonde) peuvent être posées à un réseau qui n'a ni yeux, ni muscles, ni neurones \nt{DOPA}. Analysons l'expérience comme un ingénieur analyse le banc d'un autre: schéma, entrée, sortie, professeur, résultat, controverses.
+
+\section{Le banc}
+
+Les neurones proviennent du cortex d'embryons de souris, environ $800\,000$ cellules par puce, ou sont obtenus à partir de cellules souches humaines, environ un million par puce. Pendant quelques semaines, ils poussent sur la puce, s'interconnectent et commencent à émettre spontanément des impulsions et des bouffées. Sous eux, sur une surface de $8$~mm$^2$, se trouvent $26\,000$ électrodes de platine; on peut en enregistrer jusqu'à $1024$ simultanément, et en pratique on stimule par huit d'entre elles.
+
+Une boucle est refermée autour de la culture (fig.~\ref{fig:dishloop}). Un ordinateur simule le jeu: la balle vole, rebondit sur les murs, la raquette monte et descend. La position de la balle est convertie en courant sur huit électrodes \og sensorielles\fg{}. Les impulsions de deux zones \og motrices\fg{} sont comptées par fenêtres de $10\ms$ et déplacent la raquette. Après chaque renvoi ou raté, la culture reçoit un stimulus supplémentaire: la rétroaction. Les fenêtres de $10\ms$ sont le cycle de l'ordinateur du banc, et non celui de la culture: le réseau lui-même fonctionne toujours de façon asynchrone, comme tous les réseaux de ce livre.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  blk/.style={draw,very thick,rounded corners=3pt,align=center,font=\small,minimum height=1.2cm},
+  lab/.style={font=\scriptsize,align=center}]
+\node[blk,fill=blue!6,text width=3.4cm] (C) at (0,0) {culture sur puce\\\scriptsize $\sim10^6$ neurones, $26\,000$ électrodes};
+\node[blk,fill=orange!10,text width=3.0cm] (G) at (7.2,0) {ordinateur:\\partie de tennis};
+\draw[->,very thick,blue!60!black] (G.north west) to[bend right=25] node[lab,above] {balle: \emph{lieu}, laquelle des 8 électrodes;\\\emph{fréquence}, 4--40 imp./s} (C.north east);
+\draw[->,very thick,red!70!black] (C.south east) to[bend right=25] node[lab,below] {raquette: impulsions des zones\\\og haut\fg{} et \og bas\fg{} comptées sur $10\ms$} (G.south west);
+\draw[->,thick,densely dashed,green!45!black] (G.east) -- ++(0.9,0) |- ++(0,-2.6) -| node[lab,pos=0.25,below] {renvoi: stimulus prévisible; raté: imprévisible} (C.south);
+\end{tikzpicture}
+\caption{La boucle DishBrain. Flèche bleue: l'entrée; la position de la balle est codée par un code de place et un code de fréquence (chapitre~\ref{sec:code}). Flèche rouge: la sortie; la différence des comptes des deux zones déplace la raquette. Flèche verte en tirets: la rétroaction après chaque échange, seul \og professeur\fg{} du banc.}
+\label{fig:dishloop}
+\end{figure}
+
+\section{Entrée et sortie}
+
+L'\emph{entrée} est codée à la fois par deux codes du chapitre~\ref{sec:code}. L'électrode stimulée, parmi les huit, indique à quelle hauteur se trouve la balle: c'est un code de place, comme celui des capteurs du chapitre~\ref{sec:sensors}. La cadence des impulsions de stimulation indique à quelle distance est la balle: $4$ par seconde quand elle est près du mur du fond, et davantage, linéairement, jusqu'à $40$ par seconde quand elle est près du mur de la raquette. C'est un code de fréquence; l'amplitude des impulsions de la balle est de $75$~mV. La culture ne \og connaît\fg{} d'avance aucun de ces codes: le code est fixé par l'expérimentateur, et le réseau doit apprendre à le lire.
+
+La \emph{sortie} se lit comme dans les interfaces du chapitre~\ref{sec:debugging}. Les impulsions d'une zone motrice poussent la raquette vers le haut, celles de l'autre vers le bas; dans l'écriture la plus simple, pour chaque fenêtre,
+\begin{empheq}[box=\keybox]{equation}
+\Delta p \;=\; c\,\bigl(n_\uparrow - n_\downarrow\bigr),
+\label{eq:dishreadout}
+\end{empheq}
+où $n_\uparrow$, $n_\downarrow$ sont les nombres d'impulsions des deux zones en $10\ms$, et $c$ un coefficient du banc. C'est le code à deux fils du chapitre~\ref{sec:glutcomputer}: le sens du mouvement n'est pas porté par le signe du signal, mais par celui des deux fils qui parle le plus fort.
+
+Examinons le bruit d'une telle sortie. Si une zone émet au total $R$ impulsions par seconde, une fenêtre $T=10\ms$ en contient en moyenne $RT$, et d'après~\eqref{eq:rateerror} la dispersion relative vaut $1/\sqrt{RT}$. Pour $R=1000$ impulsions par seconde, cela fait environ $30$ pour cent dans chaque fenêtre; pour $R=100$, plus de cent. La raquette tremble inévitablement, et le réseau ne peut apprendre que d'une seule façon: en décalant la différence \emph{moyenne} des comptes dans le bon sens. Ce sont les mêmes lois qui limitent toute interface du chapitre~\ref{sec:debugging}, mais cette fois des deux côtés de la boucle.
+
+\section{Un professeur sans dopamine}
+
+Le plus intéressant, sur ce banc, c'est le professeur. Une culture de neurones du cortex ne contient pas de neurones \nt{DOPA}, et le banc n'envoie aucun signal \og mieux que prévu\fg{}. La rétroaction est d'une autre nature. Si le réseau renvoie la balle, un bref stimulus \emph{prévisible} est appliqué simultanément aux huit électrodes sensorielles: des impulsions de $75$~mV, $100$ par seconde pendant $0.1\,\text{s}$. S'il la rate, un stimulus que les auteurs qualifient d'\emph{imprévisible} dure quatre secondes: des impulsions de $150$~mV, $5$ par seconde, à des instants aléatoires et sur des électrodes tirées au hasard; suivent quatre secondes de pause sans stimulation, puis la balle repart~\cite{Kagan2022}.
+
+Les auteurs partaient de l'hypothèse que le réseau agit de façon à rendre son entrée prévisible~\cite{Friston2010}. Pour un ingénieur, le sens est simple: la culture n'a qu'un moyen d'échapper à quatre secondes de bruit aléatoire, renvoyer la balle. Nous avons déjà rencontré la même idée dans l'économie d'impulsions du chapitre~\ref{sec:code} et dans la prédiction d'image du chapitre~\ref{sec:recognition}.
+
+Mais la prévisibilité est-elle vraiment nécessaire ici? Un mécanisme plus grossier est possible. Supposons que le stimulus imprévisible après un raté se contente de \emph{brasser} les changements récents du réseau, tandis que le stimulus calme après un renvoi n'y touche pas. Décrivons le réglage du réseau par un vecteur $\boldsymbol\psi$, et soit $P_{\text{raté}}(\boldsymbol\psi)$ la probabilité de rater avec le réglage $\boldsymbol\psi$. Si les secousses sont symétriques (passer de $\boldsymbol\psi$ à $\boldsymbol\psi'$ est aussi probable que l'inverse), alors en régime établi le flux de départs de chaque réglage est équilibré par le flux d'arrivées, et la fraction du temps que le réseau passe dans le réglage $\boldsymbol\psi$ vaut
+\begin{empheq}[box=\keybox]{equation}
+\rho(\boldsymbol\psi) \;\propto\; \frac{1}{P_{\text{raté}}(\boldsymbol\psi)} .
+\label{eq:dishdensity}
+\end{empheq}
+Un réglage qui rate dix fois moins souvent est conservé dix fois plus longtemps. Personne n'indique au réseau dans quel sens modifier ses poids: les bons réglages sont simplement détruits moins souvent.
+
+Nous l'avons vérifié sur un modèle qui réduit la culture à deux nombres: la raquette arrive au point $a\,y+b$ quand la balle arrive à la hauteur $y$, et elle renvoie si l'écart est inférieur à $0.1$. Après un raté, les deux nombres reçoivent une secousse aléatoire; après un renvoi, ils restent inchangés. Sur $2000$ échanges, la proportion de balles renvoyées est passée de $0.21$ sur les deux cents premiers à $0.38$ sur les cinq cents derniers (quarante \og cultures\fg{}, fig.~\ref{fig:dishmodel}). Si l'on applique la secousse après \emph{chaque} échange, la rétroaction ne porte aucune information, et la proportion reste vers $0.12$; sans aucune secousse, elle reste à $0.19$. L'expérience sur le banc concorde: une hausse significative au cours d'une session n'apparaissait qu'avec la rétroaction complète. Avec du silence à la place des stimuli, la culture jouait tout de même mieux en fin de session que sans rétroaction, mais avec un effet moindre~\cite{Kagan2022}; notons que, dans cette condition aussi, un raté est suivi d'une longue pause et un renvoi d'une pause courte, de sorte que la différence entre les issues ne disparaît pas entièrement.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[x=1cm,y=5cm]
+\draw[->,gray!70!black] (0,0) -- (10.6,0);
+\draw[->,gray!70!black] (0,0) -- (0,0.5) node[above,font=\small,black] {proportion de renvois};
+\foreach \v in {0.1,0.2,0.3,0.4}{\draw[gray!60!black] (-0.06,\v) -- (0.06,\v); \node[left,font=\scriptsize] at (0,\v) {\v};}
+\foreach \x/\f/\l/\lab in {1.8/0.21/0.38/{bruit après\\un raté},5.2/0.13/0.11/{bruit après\\chaque échange},8.6/0.19/0.19/{sans bruit}}{
+  \fill[blue!35] (\x-0.8,0) rectangle (\x-0.05,\f);
+  \fill[red!60!black] (\x+0.05,0) rectangle (\x+0.8,\l);
+  \node[below,font=\scriptsize,align=center] at (\x,-0.01) {\lab};
+  \node[above,font=\scriptsize] at (\x-0.425,\f) {\f};
+  \node[above,font=\scriptsize] at (\x+0.425,\l) {\l};}
+\fill[blue!35] (7.4,0.47) rectangle (7.7,0.495); \node[right,font=\scriptsize] at (7.75,0.482) {200 premiers};
+\fill[red!60!black] (7.4,0.41) rectangle (7.7,0.435); \node[right,font=\scriptsize] at (7.75,0.422) {500 derniers};
+\end{tikzpicture}
+\caption{Modèle du \og brassage après un raté\fg{} (\texttt{dishbrain\_model.py}): proportion de balles renvoyées au début et à la fin de $2000$ échanges, moyenne sur quarante cultures modèles. L'apprentissage n'a lieu que si la secousse suit un raté et non un renvoi, comme dans l'expérience, où la hausse significative en une session n'apparaissait qu'avec la rétroaction complète.}
+\label{fig:dishmodel}
+\end{figure}
+
+\begin{keyblock}
+\begin{proposition}[Le professeur brasseur]
+\label{prop:dishscramble}
+Si l'échec secoue le réseau et que le succès le laisse en paix, le réseau dérive de lui-même vers les réglages qui se trompent moins souvent: le temps passé dans un réglage est inversement proportionnel à la probabilité d'échec~\eqref{eq:dishdensity}. Un tel apprentissage n'exige ni signal de récompense, ni signe de ce signal, ni prévisibilité en tant que telle: il suffit que la rétroaction après un succès diffère de celle qui suit un échec. Le changement de comportement de la culture est mesuré; le mécanisme à l'œuvre dans la boîte (prédiction de l'entrée ou brassage) n'est pas établi.
+\end{proposition}
+\end{keyblock}
+
+Comparez avec le chapitre~\ref{sec:dofa}. Là aussi, le bruit servait à la recherche, mais la dopamine avait un signe: l'erreur $\delta$ indiquait dans quel sens déplacer les poids, et le pas suivait le gradient~\eqref{eq:perturbation}. Ici, il n'y a pas de signe, seulement \og garder\fg{} ou \og secouer\fg{}. Une telle recherche est plus grossière et plus lente, mais elle exige moins du réseau: ni neurones \nt{DOPA}, ni critique, ni trace étalée sur des secondes.
+
+\section{Ce qui a été mesuré et ce qui est débattu}
+
+Chaque partie durait $20$ minutes; on comparait les $5$ premières minutes aux $15$ dernières. Chez les cultures à rétroaction complète, les séries de renvois se sont allongées et les ratés immédiats sont devenus plus rares; dans les contrôles sans cellules, sans jeu ou avec une \og raquette\fg{} pilotée par ordinateur, rien de tel. Les cultures de cellules humaines tenaient en moyenne plus longtemps que celles de souris. L'amélioration est statistiquement robuste (sur neuf cultures de souris et onze cultures humaines, dans une bonne centaine de parties par groupe), mais modeste: le réseau n'est pas devenu un bon joueur, il est devenu un peu meilleur que le hasard. Elle est robuste au sein d'une session; les auteurs n'ont pas obtenu d'apprentissage stable d'une session à l'autre sur plusieurs jours~\cite{Kagan2022}. Un travail ultérieur du même groupe a montré que, pendant le jeu, l'activité de la culture se rapproche du régime \emph{critique}, la frontière entre extinction et avalanche, cette même vie au bord du gouffre qu'au chapitre~\ref{sec:gaba}, et que plus elle s'en approche, meilleur est le jeu~\cite{Habibollahi2023}.
+
+La principale controverse n'a pas porté sur les chiffres, mais sur les mots. Le titre de l'article affirmait que les neurones en boîte \og font preuve de sensibilité\fg{} (sentience), et un groupe de chercheurs a objecté qu'un changement de comportement en boucle fermée n'est encore ni intelligence ni sensation, et que les conclusions doivent être formulées plus modestement~\cite{Balci2023}. Du point de vue de l'ingénieur, deux questions restent ouvertes, et toutes deux portent sur le mécanisme. Première question: le réseau apprend-il, c'est-à-dire ses poids changent-ils durablement, ou la rétroaction ne fait-elle que décaler son état courant? Seconde question: la prévisibilité est-elle réellement nécessaire, ou toute différence entre la réponse au succès et la réponse à l'échec suffit-elle, comme dans la proposition~\ref{prop:dishscramble}? Un banc où chaque électrode est accessible permet de répondre aux deux, et c'est sans doute là sa principale valeur.
+
+\input{chapters/22_dishbrain_spec}
+
+\section{Bilan}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{2.1cm}>{\raggedright}p{4.2cm}>{\raggedright}p{1.9cm}>{\raggedright\arraybackslash}p{4.6cm}}
+\toprule
+Bloc du banc & Fonctionnement & Chapitre du livre & Ce que l'on sait \\
+\midrule
+entrée & lieu (laquelle des 8 électrodes) et fréquence (4--40 imp./s) & \ref{sec:code}, \ref{sec:sensors} & fixée par l'expérimentateur \\
+sortie & différence des comptes des deux zones en $10\ms$~\eqref{eq:dishreadout} & \ref{sec:glutcomputer}, \ref{sec:debugging} & fixée par l'expérimentateur; bruit selon~\eqref{eq:rateerror} \\
+professeur & stimulus prévisible après un renvoi, imprévisible après un raté; pas de dopamine & \ref{sec:dofa} & hausse significative en une session seulement avec rétroaction complète; effet moindre avec le silence; instable d'une session à l'autre \\
+mécanisme & prédiction de l'entrée ou brassage après un raté~\eqref{eq:dishdensity} & \ref{sec:dofa}, \ref{sec:recognition} & non établi; les deux expliquent le résultat \\
+régime du réseau & rapprochement du régime critique pendant le jeu & \ref{sec:gaba} & lien avec la qualité du jeu mesuré \\
+\og sensibilité\fg{} & affirmation des auteurs & --- & non démontrée; contestée \\
+\bottomrule
+\end{tabular}
+\caption{DishBrain vu par un ingénieur.}
+\label{tab:dishbrain}
+\end{table}
+
+DishBrain est une machine faite de neurones vivants sous sa forme la plus simple: l'entrée est fixée par un code, la sortie lue par un comptage, et le professeur est la différence entre la réponse au succès et la réponse à l'échec (tableau~\ref{tab:dishbrain}). Un réseau sans yeux, sans muscles et sans dopamine a appris à jouer un tout petit peu, et cela seul en fait un banc d'essai pour les idées du livre. Quel que soit le mécanisme (prédiction, brassage ou autre chose), la réponse sera trouvée comme le conseille le chapitre~\ref{sec:debugging}: avec une sonde, un signal de test et la mise hors circuit de certaines parties, sur une machine que l'on voit enfin en entier.
+
+\section{Exercices}
+
+\begin{exercise}[\lvlA]
+\label{ex:22:1}
+\emph{De combien décaler le compte.} Les deux zones émettent ensemble $R_\uparrow+R_\downarrow=2000$ impulsions par seconde, flux poissoniens. (a)~Dispersion relative du compte d'une zone en $10\ms$ pour $R=1000$ et $R=100$? (b)~En $1$~s de vol de la balle, les déplacements~\eqref{eq:dishreadout} s'additionnent. Plus petit $R_\uparrow-R_\downarrow$ donnant un déplacement moyen double de la dispersion?
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:22:2}
+\emph{Combien d'échanges pour voir l'apprentissage.} Les échanges sont indépendants, la proportion de renvois est binomiale. Combien d'échanges faut-il dans chacune des deux périodes pour que la hausse de la proportion de renvois dépasse deux écarts types de la différence: (a)~de $0.20$ à $0.25$; (b)~de $0.21$ à $0.38$, comme dans le modèle?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:22:3}
+\emph{Démonstration de~\eqref{eq:dishdensity}.} Le réglage $\boldsymbol\psi$ parcourt un ensemble fini; en cas de raté (probabilité $P(\boldsymbol\psi)>0$), le réseau passe en $\boldsymbol\psi'$ avec une probabilité symétrique $K(\boldsymbol\psi,\boldsymbol\psi')$; en cas de renvoi, il reste. (a)~Démontrez que $\rho\propto1/P$ est la distribution stationnaire. (b)~Quelle est la proportion de ratés avec deux réglages où $P=0.9$ et $P=0.1$?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:22:4}
+\emph{La région absorbante du modèle.} La raquette arrive en $p=\min\bigl(1,\max(0,ay+b)\bigr)$, la balle à la hauteur $y\sim U(0,1)$, et il y a renvoi si $|p-y|<h=0.1$. (a)~Démontrez que pour $|b|<h$ et $|a-1+b|<h$ le réseau renvoie toutes les balles, et trouvez l'aire de cette région. (b)~Trouvez numériquement la proportion moyenne de renvois pour $a\sim U(-1,1)$, $b\sim U(0,1)$.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:22:5}
+\emph{Simulation: une clôture autour des réglages.} Dans une copie de \texttt{dishbrain\_model.py}, faites jouer $200$ cultures pendant $20\,000$ échanges chacune. Quelle est la proportion de renvois sur les $500$ derniers? Et si, après chaque secousse, on ramène le réglage dans le rectangle $a\in[-1,2]$, $b\in[-1,1]$? Expliquez la différence à l'aide de l'exercice~\ref{ex:22:3}.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:22:6}
+\emph{Conception du code d'entrée.} La balle est renvoyée si l'erreur de hauteur est inférieure à $h=0.1$; le réseau lit l'entrée en $T=0.25$~s et distingue environ $\sqrt{rT}$ niveaux jusqu'à la fréquence $r$; la stimulation ne dépasse pas $40$ impulsions par seconde. (a)~Un code de place sur huit électrodes suffit-il? (b)~Et la fréquence sur une seule électrode?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:22:7}
+\emph{Recherche: prédiction ou brassage?} Généralisez le modèle à $d$ nombres réglables ($p=\sum_{i<d}a_iy^i$). Comment le nombre d'échanges menant à $0.5$ de renvois croît-il avec $d$, par brassage et par la règle au signe de l'erreur~\eqref{eq:perturbation}? Quelle expérience sur le banc départagerait les deux hypothèses?
+\end{exercise}

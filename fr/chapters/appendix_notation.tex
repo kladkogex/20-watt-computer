@@ -1,0 +1,209 @@
+\chapter{Notations}
+\label{sec:notation}
+
+Les types de neurones sont désignés par les quatre premières lettres du nom anglais de leur neurotransmetteur principal: \nt{GLUT}, glutamate; \nt{GABA}, acide gamma-aminobutyrique; \nt{GLYC}, glycine; \nt{ACET}, acétylcholine; \nt{DOPA}, dopamine; \nt{SERO}, sérotonine; \nt{HIST}, histamine; \nt{NORA}, noradrénaline; \nt{ADRE}, adrénaline; \nt{ASPA}, aspartate (tableau~\ref{tab:types}).
+
+Il y a moins de lettres que de grandeurs, et d'un chapitre à l'autre une même lettre désigne parfois des choses différentes. Dans le tableau ci-dessous, chaque signification a sa propre ligne; la colonne de droite indique la formule où elle est introduite.
+
+\begin{center}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.12}
+\begin{longtable}{>{\raggedright}p{2.0cm}>{\raggedright}p{9.6cm}>{\raggedright\arraybackslash}p{2.4cm}}
+\toprule
+Symbole & Signification & Introduit en \\
+\midrule
+\endfirsthead
+\toprule
+Symbole & Signification & Introduit en \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+$a$ & pente d'une caractéristique de transfert linéaire, $f(u)=au$ & \eqref{eq:feedback} \\
+$a$ & niveau d'\nt{ACET}: $0$ pour la lecture, $1$ pour l'écriture & \eqref{eq:acetnet} \\
+$a_i$, $a$ & fatigue d'un groupe: dans le générateur de rythme; dans la bascule du sommeil lent & \eqref{eq:halfcentre}, \eqref{eq:updown} \\
+$a_S$, $a_P$ & sensibilité du rythme cardiaque à l'accélérateur et au frein & \eqref{eq:gasbrake} \\
+$A(r)$, $A_0$ & réponse d'une synapse à une impulsion à la fréquence $r$; pour une synapse reposée & \eqref{eq:depression} \\
+$A_1$ & réponse du destinataire à une seule dose de neurotransmetteur & \eqref{eq:quantal} \\
+$A$ & surface de la membrane du neurone, dendrites comprises & \eqref{eq:dendriteload} \\
+$A_f$, $A_s$ & part de la correction conservée jusqu'au mouvement suivant, pour les processus rapide et lent & \eqref{eq:tworate} \\
+$b_i$ & apport propre d'un stimulateur (pacemaker) & \eqref{eq:seroneuron} \\
+$b$ & vitesse à laquelle le travail fatigue un groupe dans le générateur de rythme ou dans la bascule du sommeil & \eqref{eq:halfcentre}, \eqref{eq:updown} \\
+$b$ & nombre de bits par échantillon numérisé & \eqref{eq:probedata} \\
+$B_f$, $B_s$ & force avec laquelle la correction apprend de l'erreur, pour les processus rapide et lent & \eqref{eq:tworate} \\
+$c$ & concentration du neurotransmetteur dans le volume & \eqref{eq:seroneuron} \\
+$c$ & coefficient de corrélation des bruits de neurones voisins & \eqref{eq:correlated} \\
+$c$ & coefficient avec lequel la différence des comptes déplace la raquette & \eqref{eq:dishreadout} \\
+$c_f$ & réponse d'un neurone $C$: le plus grand des $s_{f,p}$ sur toutes les positions & \eqref{eq:scstage} \\
+$c_m$ & capacité membranaire spécifique & \eqref{eq:dendriteload} \\
+$C$ & coût de l'effort: une action de durée $\tau_a$ coûte $C/\tau_a$ & \eqref{eq:vigor} \\
+$d'$ & discriminabilité de deux entrées: leur différence divisée par le bruit & \eqref{eq:gainsnr} \\
+$d$, $d_j$ & retard sur le trajet du signal & \eqref{eq:glutneuron}, \eqref{eq:vstar} \\
+$d$ & retard de la boucle de rétroaction avec le muscle & \eqref{eq:delaystable} \\
+$D$ & coefficient de diffusion & \eqref{eq:diffusionlength} \\
+$D$ & dénominateur des fréquences du réseau \nt{GLUT}--\nt{GABA} & \eqref{eq:isn} \\
+$D$ & délai d'attente d'une récompense différée & \eqref{eq:patience} \\
+$e$, $e_{ij}$ & trace d'éligibilité dans une synapse & \eqref{eq:threefactor} \\
+$e$, $e_i$ & erreur de sortie ou de mouvement, arrivant par le fil d'erreur & \eqref{eq:lms}, \eqref{eq:adaptivefilter}, \eqref{eq:tworate} \\
+$E_{\text{imp}}$ & énergie d'une impulsion, travail des synapses compris & \eqref{eq:energy} \\
+$E$ & fréquence du groupe \nt{GLUT} & \eqref{eq:ei} \\
+$E_E$ & potentiel d'équilibre d'une synapse excitatrice & \eqref{eq:shunt} \\
+$f$, $F$ & caractéristique de transfert: fréquence en fonction de l'entrée & \eqref{eq:ratenet}, \eqref{eq:gain} \\
+$f$, $f_0$ & fréquence cardiaque; rythme propre du stimulateur & \eqref{eq:gasbrake} \\
+$f_s$ & fréquence d'échantillonnage d'une électrode & \eqref{eq:probedata} \\
+$F(t)$, $F_1$ & force du muscle; force d'une secousse unique & \eqref{eq:forcesum} \\
+$F_1$, $F_2$ & forces de deux muscles qui tirent une articulation en sens opposés & \eqref{eq:antagonists} \\
+$g$ & sensibilité du récepteur à la concentration & \eqref{eq:seroneuron} \\
+$g_L$, $g_E$, $g_I$ & conductances de fuite, d'excitation et d'inhibition & \eqref{eq:shunt} \\
+$g$ & gain fixé par \nt{NORA} & \eqref{eq:gain}, \eqref{eq:machine} \\
+$g$ & inhibition globale due au \nt{GABA} dans le réseau de mémoire & \eqref{eq:acetnet} \\
+$g$ & gain du portillon de la douleur, fixé d'en haut & \eqref{eq:gate} \\
+$g$ & gain d'un étage de la cascade hormonale & \eqref{eq:cascade} \\
+$g_j$ & filtre $j$, avec sa propre constante de temps, à l'entrée du filtre adaptatif & \eqref{eq:adaptivefilter} \\
+$G$ & gain de la boucle de rétroaction & \eqref{eq:feedback} \\
+$G$ & vitesse de correction dans une boucle à retard & \eqref{eq:delaystable} \\
+$h$, $h_I$ & entrée externe du groupe \nt{GLUT} et du groupe \nt{GABA} & \eqref{eq:ei}, \eqref{eq:isn} \\
+$h(t)$ & secousse musculaire unique & \eqref{eq:twitch} \\
+$H(t)$ & seuil haut de la pression de sommeil: en l'atteignant, la machine s'endort & \eqref{eq:sleeppressure} \\
+$I$, $I_i$ & apport externe à un neurone ou à un groupe & \eqref{eq:ratenet}, \eqref{eq:wta}, \eqref{eq:updown} \\
+$I$ & fréquence du groupe \nt{GABA} & \eqref{eq:ei} \\
+$I$ & luminosité ou intensité du stimulus & \eqref{eq:photonnoise}, \eqref{eq:nakarushton} \\
+$I$ & courant d'entrée qui charge la membrane & \eqref{eq:dendriteload} \\
+$k$ & nombre d'impulsions dans une bouffée & \eqref{eq:burst} \\
+$k$ & combien de fois l'accroissement doit dépasser le bruit & \eqref{eq:photonnoise} \\
+$k$ & coefficient de rétroaction de la cascade hormonale & \eqref{eq:cascade} \\
+$k_s$ & force avec laquelle la douleur alimente la sensibilisation & \eqref{eq:sensitization} \\
+$K$ & nombre de caractéristiques du résultat & \eqref{eq:vectortd} \\
+$K$ & raideur de l'articulation & \eqref{eq:antagonists} \\
+$K$ & gain de boucle de la cascade hormonale, $K=g^3k$ & \eqref{eq:cascade}, \eqref{eq:cascadestable} \\
+$K_\varphi$ & force de l'accrochage du générateur circadien au signal externe & \eqref{eq:pll} \\
+$L$ & longueur de la ligne à retard & \eqref{eq:itd} \\
+$L$ & longueur du fil venant du capteur de douleur & \eqref{eq:paintime} \\
+$L(t)$ & seuil bas de la pression de sommeil: en l'atteignant, la machine se réveille & \eqref{eq:sleeppressure} \\
+$M$ & mesure du lien causal entre un signe annonciateur et la récompense & \eqref{eq:retro} \\
+$M_k$ & attente de la caractéristique $k$ & \eqref{eq:vectortd} \\
+$M_{ik}$ & force de l'inhibition venant du neurone \nt{GABA} $k$ & \eqref{eq:machine} \\
+$M$ & couple de l'articulation & \eqref{eq:antagonists} \\
+$M$ & nombre de lignes d'entrée des mélangeurs & \eqref{eq:cover} \\
+$n$, $\bar n$ & nombre d'impulsions dans une fenêtre; sa moyenne & \eqref{eq:rateerror} \\
+$n$ & nombre d'entrées d'un élément à seuil & \eqref{eq:cover} \\
+$n_\uparrow$, $n_\downarrow$ & compte des impulsions des zones \og haut\fg{} et \og bas\fg{} par fenêtre & \eqref{eq:dishreadout} \\
+$N$ & nombre de neurones & \eqref{eq:correlated}, \eqref{eq:energy} \\
+$N$ & nombre d'électrodes de la sonde & \eqref{eq:probedata} \\
+$N_s$ & nombre de sites de libération entre deux neurones & \eqref{eq:quantal} \\
+$p$ & probabilité de libération du neurotransmetteur par impulsion & \eqref{eq:burst} \\
+$p$ & proportion de neurones actifs dans le réseau de mémoire & \eqref{eq:acetnet} \\
+$p$ & perturbation que l'on apprend à compenser & \eqref{eq:tworate} \\
+$P$ & puissance consacrée aux signaux & \eqref{eq:energy}, \eqref{eq:dishpower} \\
+$P$ & incertitude de l'estimation stockée & \eqref{eq:kalman} \\
+$P$ & activité du \og frein\fg{}: les fils \nt{ACET} vers le cœur & \eqref{eq:gasbrake} \\
+$P_{\max}$ & nombre de motifs aléatoires qu'un élément à seuil peut séparer en deux classes & \eqref{eq:cover} \\
+$P_{\text{raté}}$ & probabilité de raté & \eqref{eq:dishdensity} \\
+$q$ & vitesse à laquelle le monde change & \eqref{eq:kalman} \\
+$q_k$ & fréquence du neurone \nt{GABA} $k$ & \eqref{eq:machine} \\
+$q_0$ & activité de fond de l'intermédiaire inhibiteur & \eqref{eq:gate} \\
+$q$ & fréquence de l'intermédiaire inhibiteur dans le portillon de la douleur & \eqref{eq:gate} \\
+$q$ & combien de fois l'unité motrice suivante est plus forte que la précédente & \eqref{eq:sizeprinciple} \\
+$r$, $r_i$ & fréquence des impulsions d'un neurone & \eqref{eq:ratenet} \\
+$r$, $r_t$ & récompense (flux de récompense) & \eqref{eq:rpe}, \eqref{eq:ctd} \\
+$\mathbf r(t)$ & vecteur des réponses du réservoir & \eqref{eq:reservoir} \\
+$R$, $\bar R$ & récompense reçue; son attente ou sa moyenne par unité de temps & \eqref{eq:perturbation}, \eqref{eq:vigor} \\
+$R$ & variance du bruit à l'entrée du filtre & \eqref{eq:kalman} \\
+$R$, $r_0$ & récompenses différée et immédiate & \eqref{eq:patience} \\
+$R_{\max}$ & débit de transmission maximal, en bit/s & \eqref{eq:spikeentropy} \\
+$r_{\max}$ & fréquence d'impulsions maximale & \eqref{eq:gain}, \eqref{eq:nakarushton} \\
+$R_{\text{brut}}$, $R_{\text{imp}}$ & débit de données de la sonde: brut et impulsions seules, en bit/s & \eqref{eq:probedata} \\
+$s_j$ & signe des sorties du neurone $j$ & \eqref{eq:dalesign} \\
+$s_i$ & signe du récepteur du destinataire & \eqref{eq:seroneuron} \\
+$s$, $\hat s$ & état du monde; son estimation & \eqref{eq:rpe}, \eqref{eq:kalman} \\
+$s_{f,p}$ & réponse d'un neurone $S$ à la caractéristique $f$ en position $p$ & \eqref{eq:scstage} \\
+$S$ & activité de l'\og accélérateur\fg{}: les fils \nt{NORA} vers le cœur & \eqref{eq:gasbrake} \\
+$S$ & pression de sommeil & \eqref{eq:sleeppressure} \\
+$t_1$ & instant de la première impulsion & \eqref{eq:latency} \\
+$t_k$ & instant de la $k$-ième impulsion & \eqref{eq:forcesum} \\
+$t_{f,i}$ & modèle de la caractéristique $f$ & \eqref{eq:scstage} \\
+$T$ & fenêtre de comptage des impulsions; temps d'accumulation des photons & \eqref{eq:rateerror}, \eqref{eq:photonnoise} \\
+$T_c$ & temps de montée d'une secousse musculaire & \eqref{eq:twitch} \\
+$T_{\text{salve}}$ & intervalle entre les salves d'une culture & \eqref{eq:burstinterval} \\
+$u$ & entrée totale d'un neurone & \eqref{eq:gain} \\
+$u$, $u(t)$ & commande du cerveau: à l'entrée du filtre adaptatif; vers la cascade hormonale & \eqref{eq:adaptivefilter}, \eqref{eq:cascade} \\
+$u(t)$ & entrée du réservoir & \eqref{eq:reservoir} \\
+$U$ & niveau d'une entrée constante & \eqref{eq:latency} \\
+$U$ & fraction de la réserve de neurotransmetteur libérée par impulsion & \eqref{eq:depression} \\
+$v$ & vitesse du signal dans le fil; vitesse de déplacement de la tache & \eqref{eq:itd}, \eqref{eq:vstar} \\
+$V$ & tension de membrane & \eqref{eq:glutneuron}, \eqref{eq:shunt} \\
+$V$ & attente de la récompense future & \eqref{eq:rpe}, \eqref{eq:ctd} \\
+$w$, $w_{ij}$, $W_{ij}$ & poids d'une connexion & \eqref{eq:glutneuron}, \eqref{eq:ratenet}, \eqref{eq:acetnet}, \eqref{eq:lms}, \eqref{eq:adaptivefilter} \\
+$\mathbf w_k$ & poids des entrées du neurone $C$ numéro $k$ & \eqref{eq:traceinvariance} \\
+$w_{q\mu}$, $w_{q\nu}$, $w_{z\mu}$ & poids des connexions dans le portillon de la douleur & \eqref{eq:gate} \\
+$W_{\text{sort}}$ & poids de la lecture linéaire du réservoir & \eqref{eq:reservoir} \\
+$x$, $y$ & entrées et sortie logiques & \eqref{eq:dualrail}, \eqref{eq:veto} \\
+$x$, $y$ & activité de l'émetteur et du destinataire & \eqref{eq:hebb} \\
+$x$ & position du détecteur sur la ligne à retard & \eqref{eq:itd} \\
+$x_i$ & entrée venant des organes des sens & \eqref{eq:acetnet} \\
+$x_p$ & entrée en position $p$ & \eqref{eq:scstage} \\
+$\mathbf x$ & sorties des neurones $S$, entrée du neurone $C$ & \eqref{eq:traceinvariance} \\
+$x_j$ & entrée $j$ du filtre adaptatif: la commande après le filtre $g_j$ & \eqref{eq:lms}, \eqref{eq:adaptivefilter} \\
+$x_f$, $x_s$ & corrections des processus rapide et lent & \eqref{eq:tworate} \\
+$x_1$, $x_2$, $x_3$ & niveaux aux trois étages de la cascade hormonale; $x_3$ est l'hormone finale & \eqref{eq:cascade} \\
+$x^*$ & fraction de la réserve de neurotransmetteur reconstituée à laquelle démarre une nouvelle avalanche & \eqref{eq:burstinterval} \\
+$y$ & entrée bruitée du filtre & \eqref{eq:kalman} \\
+$y$, $\hat y$ & signal des capteurs; sa prédiction par le filtre adaptatif & \eqref{eq:adaptivefilter} \\
+$y_k$, $\bar y_k$ & activité du neurone $C$ numéro $k$; sa trace & \eqref{eq:traceinvariance} \\
+$y(t)$ & sortie de la lecture du réservoir & \eqref{eq:reservoir} \\
+$z$ & fréquence de sortie du portillon de la douleur & \eqref{eq:gate} \\
+\midrule
+$\alpha_i^\pm$ & poids des erreurs positives et négatives & \eqref{eq:asymmetric} \\
+$\beta$ & force de l'inhibition mutuelle & \eqref{eq:wta} \\
+$\beta$ & force de l'inhibition de la sortie du portillon de la douleur & \eqref{eq:gate} \\
+$\gamma$ & facteur d'actualisation & \eqref{eq:rpe} \\
+$\delta(\cdot)$ & fonction delta: un saut instantané & \eqref{eq:glutneuron} \\
+$\delta$, $\delta_t$ & erreur de prédiction de la récompense & \eqref{eq:rpe}, \eqref{eq:ctd} \\
+$\delta t$ & différence des temps d'arrivée du son aux deux oreilles & \eqref{eq:itd} \\
+$\Delta$, $\Delta_{\max}$ & intervalle entre impulsions; fenêtre de coïncidence & \eqref{eq:window} \\
+$\Delta t$ & précision avec laquelle le destinataire distingue les temps & \eqref{eq:spikeentropy} \\
+$\Delta F$ & accroissement de force apporté par l'unité motrice suivante & \eqref{eq:sizeprinciple} \\
+$\Delta I$ & accroissement de luminosité perceptible & \eqref{eq:photonnoise} \\
+$\Delta p$ & déplacement de la raquette par fenêtre & \eqref{eq:dishreadout} \\
+$\Delta u$ & différence des entrées de deux groupes & \eqref{eq:gainsnr} \\
+$\Delta V$ & élévation nécessaire de la tension de membrane & \eqref{eq:dendriteload} \\
+$\Delta x$ & distance entre capteurs voisins & \eqref{eq:vstar} \\
+$\varepsilon$ & différence relative des entrées & \eqref{eq:wtagain} \\
+$\eta$ & vitesse d'apprentissage & \eqref{eq:plasticity}, \eqref{eq:lms}, \eqref{eq:traceinvariance} \\
+$\eta$ & bruit dans le réseau après l'amplificateur & \eqref{eq:softmax} \\
+$\mu$ & entrée tactile du portillon de la douleur & \eqref{eq:gate} \\
+$\nu$ & entrée douloureuse & \eqref{eq:gate} \\
+$\theta$ & seuil de déclenchement & \eqref{eq:window}, \eqref{eq:scstage} \\
+$\kappa$ & quantité de neurotransmetteur par impulsion & \eqref{eq:seroneuron} \\
+$\kappa_i$ & rapport des poids des erreurs positives et négatives & \eqref{eq:expectile} \\
+$\kappa_m$ & lien entre la force d'un muscle et sa raideur & \eqref{eq:antagonists} \\
+$\ell$ & distance sur laquelle le neurotransmetteur diffuse & \eqref{eq:diffusionlength} \\
+$\ell$ & bras de levier avec lequel le muscle tire l'articulation & \eqref{eq:antagonists} \\
+$\xi$ & fluctuation aléatoire de la sortie d'un neurone & \eqref{eq:perturbation} \\
+$\rho(\boldsymbol\psi)$ & fraction du temps passé dans le réglage $\boldsymbol\psi$ & \eqref{eq:dishdensity} \\
+$\sigma$ & dispersion, échelle du bruit & \eqref{eq:rateerror}, \eqref{eq:softmax} \\
+$\sigma$ & luminosité à laquelle la réponse vaut la moitié du maximum & \eqref{eq:nakarushton} \\
+$\sigma_{\text{avant}}$, $\sigma_{\text{après}}$ & bruit avant et après l'amplificateur & \eqref{eq:gainsnr} \\
+$\tau$ & constante de temps de la membrane & \eqref{eq:glutneuron} \\
+$\tau$ & constante de temps d'un étage de la cascade hormonale & \eqref{eq:cascade} \\
+$\tau_{\text{eff}}$ & constante de temps d'un groupe qui s'auto-excite & \eqref{eq:perfectint} \\
+$\tau_c$ & durée de vie du neurotransmetteur dans le volume & \eqref{eq:seroneuron} \\
+$\tau_E$, $\tau_I$ & constantes de temps des groupes \nt{GLUT} et \nt{GABA} & \eqref{eq:ei} \\
+$\tau_e$ & durée de vie de la trace d'éligibilité & \eqref{eq:threefactor} \\
+$\tau_{\text{tr}}$ & durée de vie de la trace d'activité d'un neurone $C$ & \eqref{eq:traceinvariance} \\
+$\tau_s$ & temps de retour de la sensibilité après une lésion & \eqref{eq:sensitization} \\
+$\tau_r$, $\tau_d$ & temps d'accumulation de la pression de sommeil pendant la veille et de sa décharge pendant le sommeil & \eqref{eq:sleeppressure} \\
+$\tau_{\text{rec}}$ & temps de reconstitution de la réserve de neurotransmetteur & \eqref{eq:depression} \\
+$\tau_\gamma$ & horizon de planification & \eqref{eq:ctd} \\
+$\tau_v$ & vitesse à laquelle l'attente se précise & \eqref{eq:ramp} \\
+$\tau_a$ & temps de fatigue dans le générateur de rythme ou dans la bascule du sommeil & \eqref{eq:halfcentre}, \eqref{eq:updown} \\
+$\tau_a^*$ & durée optimale d'exécution d'une action & \eqref{eq:vigor} \\
+$\Phi$ & membre de droite de la règle d'apprentissage & \eqref{eq:plasticity} \\
+$\Phi$ & flux de photons & \eqref{eq:photonnoise} \\
+$\varphi_k$ & caractéristique $k$ du résultat obtenu & \eqref{eq:vectortd} \\
+$\varphi$ & déphasage entre le générateur circadien et le signal externe & \eqref{eq:pll} \\
+$\boldsymbol\psi$ & réglage du réseau dans le modèle DishBrain & \eqref{eq:dishdensity} \\
+$\omega$, $\omega_0$ & fréquence du signal externe (la lumière); fréquence propre du générateur circadien & \eqref{eq:pll} \\
+\end{longtable}
+\end{center}

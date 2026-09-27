@@ -1,0 +1,179 @@
+\chapter{Les entrées de la machine: comment s'y branchent les yeux, les oreilles et les autres capteurs}
+\chaptermark{Les entrées de la machine}
+\label{sec:sensors}
+
+\section{Le capteur comme transducteur}
+
+Sur la fig.~\ref{fig:machine}, les données entraient dans la machine par la gauche, depuis le bloc \og capteurs\fg{}. Ouvrons maintenant ce bloc. Pour un ingénieur, chaque organe des sens est un \emph{transducteur}, avec un étage d'entrée analogique et un convertisseur analogique-numérique à la fin; seulement, les chiffres en sortie ne sont pas des nombres, mais des impulsions.
+
+Le schéma est le même pour tous les organes des sens (fig.~\ref{fig:transducer}). Une grandeur physique --- lumière, pression, vibration, molécule --- agit sur une protéine réceptrice de la membrane d'une cellule sensorielle. Cette protéine fonctionne comme une porte: elle ouvre un canal ionique, directement ou par une courte chaîne de réactions. Il naît un \emph{courant de récepteur}, et avec lui une tension analogique sur la membrane. Cette tension passe ensuite par un réglage du gain et arrive dans un codeur d'impulsions, le neurone intégrateur déjà connu~\eqref{eq:glutneuron}, qui transforme le niveau en fréquence et en instants d'impulsions. La sortie est presque toujours la même: les neurones sensoriels de l'œil, de l'oreille, de l'odorat et de la peau libèrent du glutamate, si bien que les entrées se branchent directement sur le bus \nt{GLUT}.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  blk/.style={draw,very thick,rounded corners=2pt,align=center,font=\footnotesize,minimum height=1.0cm,text width=1.9cm,fill=blue!5}]
+\node[align=center,font=\small] (P) at (0.1,0) {lumière, son,\\pression,\\molécule};
+\node[blk] (R) at (3.0,0) {récepteur-\\porte};
+\node[blk] (G) at (6.5,0) {réglage\\du gain};
+\node[blk] (E) at (10.0,0) {codeur\\d'impulsions};
+\node[align=center,font=\small] (B) at (13.4,0) {bus\\\nt{GLUT}};
+\draw[->,very thick] (P) -- (R);
+\foreach \ic/\xx in {sun/-1.1,speaker/-0.3,press/0.5,molecule/1.3}{\pic[scale=0.85] at (\xx,1.05) {\ic};}
+\draw[->,very thick] (R) -- node[above,font=\scriptsize] {courant} (G);
+\draw[->,very thick] (G) -- node[above,font=\scriptsize] {niveau} (E);
+\draw[->,very thick,red!70!black] (E) -- node[above,font=\scriptsize,black] {impulsions} (B);
+\draw[decorate,decoration={brace,amplitude=5pt,mirror},gray!60!black] (1.8,-0.8) -- (7.7,-0.8) node[midway,below=5pt,font=\scriptsize,black] {partie analogique};
+\draw[decorate,decoration={brace,amplitude=5pt,mirror},gray!60!black] (8.8,-0.8) -- (11.2,-0.8) node[midway,below=5pt,font=\scriptsize,black] {impulsions};
+\end{tikzpicture}
+\caption{Tout organe des sens comme chaîne de transformations. La protéine réceptrice ouvre un canal et produit un courant; le réglage du gain l'adapte aux conditions; le codeur~\eqref{eq:glutneuron} transforme le niveau en impulsions, qui partent sur le bus \nt{GLUT}. Dans l'œil et l'oreille, les premiers étages ne produisent aucune impulsion: le signal reste analogique tant qu'il n'a pas à voyager loin.}
+\label{fig:transducer}
+\end{figure}
+
+Un détail est bien connu de l'électronicien. Dans l'œil et dans l'oreille, les toutes premières cellules ne produisent pas d'impulsions du tout: elles transmettent à leurs voisines une tension continue, comme un étage analogique sur une carte. Les impulsions n'apparaissent que là où le signal doit aller loin. Un signal analogique s'atténue et se charge de bruit sur quelques millimètres, alors qu'une impulsion, nous l'avons vu au chapitre~\ref{sec:neurontypes}, arrive au bout du fil avec la même amplitude. On numérise là où commence la ligne longue.
+
+\section{À la limite de la physique}
+
+Les capteurs du cerveau travaillent près des limites physiques de la sensibilité. Dans l'obscurité, le capteur de lumière répond à \emph{un seul photon}: l'absorption d'une seule particule de lumière donne un courant d'environ un picoampère, visible sur le fond de son propre bruit~\cite{Baylor1979}. Le capteur de son détecte un déplacement de son faisceau sensible inférieur au nanomètre~\cite{Hudspeth1989}.
+
+Quand la lumière est faible, la précision n'est pas limitée par le capteur, mais par la lumière elle-même: les photons arrivent au hasard, en flux de Poisson. Si, pendant le temps d'accumulation $T$, le capteur reçoit en moyenne $N=\Phi T$ photons, leur nombre fluctue de $\sqrt N$. Pour qu'un supplément $\Delta N$ soit perceptible, il doit être plusieurs fois plus grand que cette fluctuation, et la fraction discernable du changement de luminosité vaut
+\begin{empheq}[box=\keybox]{equation}
+\frac{\Delta I}{I} \;\approx\; \frac{k}{\sqrt{\Phi\,T}} .
+\label{eq:photonnoise}
+\end{empheq}
+C'est la même formule que pour le nombre d'impulsions~\eqref{eq:rateerror}: le bruit de grenaille des photons et celui des impulsions obéissent à la même loi. Dans l'obscurité, l'œil n'a qu'un seul moyen d'améliorer sa précision: accumuler les photons plus longtemps, et le temps d'accumulation augmente effectivement jusqu'à quelques dixièmes de seconde. C'est pourquoi, au crépuscule, nous voyons plus lentement.
+
+\section{Plage dynamique: le réglage du gain}
+
+Le problème d'ingénierie le plus difficile pour les capteurs est la plage. L'éclairement varie d'environ dix ordres de grandeur entre une nuit étoilée et la neige au soleil, l'intensité sonore de douze entre le seuil d'audition et le seuil de douleur. Or la fréquence des impulsions va de zéro à quelques centaines par seconde, moins de trois ordres de grandeur. Impossible de faire tenir linéairement une telle entrée dans une telle sortie.
+
+La solution est celle de tout récepteur radio: le \emph{contrôle automatique de gain}. Les réponses des cellules sensorielles de l'œil sont bien décrites par la formule
+\begin{empheq}[box=\keybox]{equation}
+r \;=\; r_{\max}\,\frac{I}{I+\sigma} ,
+\label{eq:nakarushton}
+\end{empheq}
+où $\sigma$ est la luminosité à laquelle la réponse atteint la moitié de son maximum~\cite{NakaRushton1966}. À elle seule, \eqref{eq:nakarushton} ne couvre que deux ou trois ordres de grandeur. Mais $\sigma$ n'est pas constante: lors d'un travail prolongé sur un fond lumineux, elle suit la luminosité moyenne. La courbe de réponse glisse le long de l'axe logarithmique des luminosités et place chaque fois sa partie raide là où se trouve l'entrée (fig.~\ref{fig:adaptation}). C'est la même division par l'activité totale que l'inhibition shuntante du chapitre~\ref{sec:gaba}~\cite{Carandini2012}; seulement, le dénominateur est ici la luminosité moyenne des dernières secondes.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=1.25cm,y=2.8cm]
+\draw[->,gray!70!black] (-2,0) -- (6.4,0) node[below left,font=\small,black] {$\log_{10} I$};
+\draw[->,gray!70!black] (-2,0) -- (-2,1.15) node[left,font=\small,black] {$r/r_{\max}$};
+\foreach \u in {-2,0,2,4,6}{\draw[gray!60!black] (\u,-0.02) -- (\u,0.02); \node[below,font=\scriptsize] at (\u,0) {$\u$};}
+\draw[densely dashed,gray!60!black] (-2,0.5) -- (6.2,0.5);
+\foreach \s/\c/\lab in {0/blue!60!black/{fond sombre},2/green!45!black/{moyen},4/red!70!black/{clair}}{
+  \pgfmathsetmacro{\lo}{max(-2,\s-3)}
+  \draw[very thick,\c] (-2,0) -- (\lo,0) plot[domain=\lo:6.2,samples=80] (\x,{1/(1+10^(\s-\x))});
+  \node[font=\scriptsize,\c,anchor=west] at (\s+0.15,0.42) {\lab};}
+\foreach \s/\ic in {0/moon,2/cloud,4/sun}{\pic at (\s+0.6,0.64) {\ic};}
+\end{tikzpicture}
+\caption{Réglage du gain d'un capteur de lumière selon~\eqref{eq:nakarushton}. Chaque courbe couvre deux ou trois ordres de grandeur de luminosité; quand on passe à un fond plus clair, $\sigma$ augmente et la courbe glisse le long de l'axe logarithmique. Ensemble, les courbes glissantes couvrent toute la plage.}
+\label{fig:adaptation}
+\end{figure}
+
+Ce réglage a un prix, déjà rencontré au chapitre~\ref{sec:code}: le capteur ne signale pas la luminosité, mais la luminosité \emph{par rapport au fond}. Une entrée constante cesse peu à peu de provoquer une réponse, alors que chaque changement en provoque une. Dès le départ, les entrées de la machine parlent de changements, et non de niveaux; c'est la même économie d'impulsions que dans la proposition~\ref{prop:economy}~\cite{Barlow1961}. D'où aussi les capteurs ON et OFF du chapitre~\ref{sec:glutcomputer}~\cite{Schiller1992}: les uns signalent que la scène est devenue plus claire, les autres qu'elle est devenue plus sombre.
+
+Les ingénieurs ont repris ce procédé dans les \emph{caméras événementielles}. Une telle caméra ne prend pas d'images au rythme d'une horloge: chacun de ses pixels, de lui-même et sans cadence commune, émet un événement \og plus clair\fg{} ou \og plus sombre\fg{} lorsque le logarithme de la luminosité a changé d'une fraction donnée~\cite{Lichtsteiner2008}. C'est exactement le code ON/OFF à deux fils du chapitre~\ref{sec:glutcomputer}, gravé dans le silicium, et il donne à la caméra une plage et une rapidité hors de portée d'un capteur d'images ordinaire~\cite{Gallego2022}.
+
+\section{L'œil: comprimer pour tenir dans un câble}
+
+L'œil compte environ $10^8$ capteurs de lumière~\cite{Curcio1990}, mais seulement un million environ de neurones de sortie qui portent l'image au cerveau. Avant que le signal ne quitte l'œil, on le comprime donc d'un facteur cent environ. Les principaux procédés de compression nous sont familiers. Chaque neurone de sortie répond à la différence entre la luminosité d'une petite tache et celle de son pourtour: c'est la soustraction des voisins par inhibition, comme au chapitre~\ref{sec:gaba}. Les zones uniformes de l'image ne coûtent presque rien, alors que les bords et les changements sont transmis. Les différents neurones de sortie sont spécialisés: les uns signalent un éclaircissement, d'autres un assombrissement, d'autres encore un mouvement dans une direction donnée (fig.~\ref{fig:direction}); chez la souris, on a dénombré plus de trente canaux de sortie de ce genre~\cite{Baden2016}.
+
+Quel est le débit du câble ainsi obtenu? Chez le cobaye, des enregistrements de neurones de sortie ont donné environ $875$ mille bits par seconde pour $\sim10^5$ de ces neurones; rapporté au million de neurones de sortie de l'homme, cela fait de l'ordre de $10^7$ bits par seconde~\cite{Koch2006}, autant qu'un vieux câble réseau à dix mégabits. Avec une fréquence moyenne de quelques impulsions par seconde par neurone, cela fait quelques bits par impulsion, comme nous l'avions trouvé au chapitre~\ref{sec:code}.
+
+\section{L'oreille: un banc de filtres}
+
+L'oreille résout un autre problème: il faut décomposer le son en fréquences. Un ingénieur installerait un banc de filtres passe-bande, et c'est exactement ce que fait l'oreille, mécaniquement. La vibration sonore court le long d'une cloison élastique dont les propriétés varient progressivement sur sa longueur, et chaque portion résonne à sa propre fréquence. Les capteurs placés sur une portion ne répondent qu'à leur bande (fig.~\ref{fig:filterbank}). Les fréquences sont réparties le long de la cloison de façon à peu près logarithmique: chaque octave reçoit une part semblable des capteurs. Le numéro du capteur qui a réagi, c'est la fréquence: le code de position du chapitre~\ref{sec:code}.
+
+\begin{figure}[t]
+\centering
+\shorthandoff{:?}% pgfmath ternary below
+\begin{tikzpicture}[>=Stealth,x=1.35cm,y=2.2cm]
+\draw[->,gray!70!black] (-0.3,0) -- (7.6,0) node[above left,font=\small,black] {fréquence, Hz};
+\draw[->,gray!70!black] (-0.3,0) -- (-0.3,1.15) node[left,font=\small,black] {réponse};
+\foreach \k/\f in {0/125,1/250,2/500,3/1000,4/2000,5/4000,6/8000}{
+  \draw[gray!60!black] (\k,-0.02) -- (\k,0.02); \node[below,font=\scriptsize] at (\k,0) {\f};
+  \draw[thick,blue!60!black] plot[domain={max(\k-1.2,-0.3)}:{\k+0.7},samples=60] (\x,{1/(1+((\x-\k)/(\x<\k?0.45:0.2))^4)});}
+% a piano keyboard: seven white keys per octave, like the octaves on the axis
+\foreach \i in {0,...,48}{\draw[gray!50!black,fill=white,line width=0.3pt] ({\i/7},-0.44) rectangle ({(\i+1)/7},-0.26);}
+\foreach \o in {0,...,6}{\foreach \j in {0,1,3,4,5}{\fill[black] ({\o+(\j+1)/7-0.035},-0.35) rectangle ({\o+(\j+1)/7+0.035},-0.26);}}
+\end{tikzpicture}
+\shorthandon{:?}
+\caption{L'oreille comme banc de filtres passe-bande, schéma. Chaque courbe est la réponse des capteurs d'une portion à des sons de fréquences différentes; les fréquences centrales sont espacées d'une octave, comme des touches sur une échelle logarithmique. Les vrais filtres ont un flanc haute fréquence raide et un flanc basse fréquence doux. En bas, un clavier: comme dans l'oreille, chaque octave y occupe la même place.}
+\label{fig:filterbank}
+\end{figure}
+
+Les résonateurs de l'oreille ne sont pas passifs. Une partie des capteurs fait elle-même vibrer la cloison au rythme du son et amplifie les vibrations faibles d'un facteur de plusieurs milliers en amplitude (de $66$ à $76$\,dB); quand le volume augmente, ce gain diminue~\cite{Ruggero1997,Robles2001}. Pour un ingénieur, c'est un amplificateur à réaction positive placé juste au bord de l'auto-oscillation: la même vie au bord de l'instabilité que celle du réseau du chapitre~\ref{sec:gaba}; près de la frontière, le système est particulièrement sensible aux petits signaux. La compression du volume est faite par ce même amplificateur: il amplifie beaucoup ce qui est faible, peu ce qui est fort.
+
+L'oreille a aussi un second code. Aux basses fréquences, les impulsions des neurones sont en phase avec le son: le neurone se déclenche sur une portion déterminée de chaque onde, même s'il ne se déclenche pas à chaque onde. Chez le cobaye, ce verrouillage de phase commence à faiblir vers $600$\,Hz et reste perceptible jusqu'à environ $3.5$\,kHz~\cite{PalmerRussell1986}. Les instants des impulsions conservent ainsi le temps précis du son et, à partir de lui, la différence d'arrivée du son aux deux oreilles, dont le réseau du chapitre~\ref{sec:glutcomputer} tire la direction~\cite{Grothe2010}. Aux hautes fréquences, les impulsions ne suivent plus l'onde, et il ne reste que le code de position. Une seule oreille utilise les deux codes du chapitre~\ref{sec:code}: le temps là où les neurones suivent, la position là où ils ne suivent pas.
+
+\section{Les autres capteurs}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{1.9cm}>{\raggedright}p{2.6cm}>{\raggedright}p{4.0cm}>{\raggedright\arraybackslash}p{4.6cm}}
+\toprule
+Sens & Ce qu'il mesure & Comment l'entrée est construite & Procédé du livre \\
+\midrule
+vue & lumière & $\sim10^8$ capteurs, compression d'un facteur $\sim100$, $\sim10^7$ bit/s & réglage du gain, soustraction des voisins, deux fils, direction du mouvement \\
+ouïe & pression de l'air & banc de filtres mécanique, amplificateur actif & code de position et code temporel, délais \\
+toucher & pression, vibration & capteurs à adaptation rapide et lente & paire \og filtre passe-haut --- filtre passe-bas\fg{} \\
+température & chaleur & capteurs séparés du chaud et du froid & code à deux fils \\
+odorat & molécules & $\sim400$ types de récepteurs, un seul type par capteur & code combinatoire: une odeur est l'ensemble des types activés \\
+goût & substances des aliments & cinq qualités: sucré, amer, salé, acide, umami & lignes étiquetées; certaines cellules libèrent de l'ATP ou de la sérotonine, et non du glutamate \\
+position du corps & étirement des muscles & capteurs de longueur et de vitesse d'étirement & rétroaction pour le régulateur du mouvement \\
+\bottomrule
+\end{tabular}
+\caption{Comment les capteurs sont branchés. Tous les dispositifs de la troisième colonne sont mesurés; la colonne de droite les relie aux procédés des chapitres précédents.}
+\label{tab:sensors}
+\end{table}
+
+Les autres sens sont réunis dans le tableau~\ref{tab:sensors}, et presque chaque ligne y fait reconnaître un procédé des chapitres précédents. Le toucher utilise une paire de filtres: certains capteurs de pression répondent au contact puis se taisent aussitôt, d'autres maintiennent leur réponse tant que la pression dure. La température est transmise par deux fils, l'un pour le chaud, l'autre pour le froid. L'entrée la plus insolite est l'odorat. L'homme possède environ quatre cents types de récepteurs olfactifs, et chaque neurone olfactif n'en porte qu'un seul type~\cite{Mombaerts2004}. Une odeur n'active pas un seul type, mais un ensemble, et le message, c'est \emph{quels} types ont réagi. Pour un ingénieur, c'est un vecteur binaire d'environ quatre cents composantes, dont le nombre de valeurs possibles est astronomique.
+
+\begin{keyblock}
+\begin{proposition}[Entrées de la machine]
+\label{prop:sensors}
+Chaque sens est un transducteur qui travaille près de la limite physique de sensibilité, comprime une immense plage dynamique par un contrôle automatique de gain et transmet sur le bus \nt{GLUT} avant tout des \emph{changements}. Pour cela, les capteurs emploient les mêmes procédés que la machine elle-même: code à deux fils, code de position, code temporel et division par le fond. La structure des capteurs est mesurée; que leurs codes soient ajustés pour porter le plus d'information par impulsion est une hypothèse bien fondée.
+\end{proposition}
+\end{keyblock}
+
+Les entrées, comme tout le reste, fonctionnent de manière asynchrone. Chaque capteur émet une impulsion quand il a quelque chose à signaler, et les différents sens arrivent avec des retards différents: le son au bout de quelques millisecondes, la lumière au bout de dizaines de millisecondes. Comment la machine les rassemble en une seule image du monde sans cadence commune, c'est l'un des problèmes de coordination dans le temps du chapitre~\ref{sec:synthesis}.
+
+\section{Exercices}
+
+\begin{exercise}[\lvlA]
+\label{ex:11:1}
+\emph{Durée d'accumulation des photons.} Au crépuscule, un capteur reçoit $100$ photons par seconde; un supplément se perçoit s'il vaut $3$ fois la fluctuation~\eqref{eq:photonnoise}. (a)~En combien de temps un seul capteur perçoit-il un changement de luminosité de $10\,\%$? (b)~Combien de capteurs additionner pour y parvenir en $0.2\,\text{s}$, et de combien baisse la résolution spatiale?
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:11:2}
+\emph{Combien de bits par impulsion.} (a)~L'œil transmet $\sim10^7$ bit/s par $10^6$ neurones de sortie, à $3$--$5$ impulsions par seconde. Quelle fraction de la capacité~\eqref{eq:spikeentropy} utilise-t-il pour $\Delta t=1\ms$? (b)~Une odeur active $20$ des $\approx400$ types de récepteurs. Combien de bits porte un tel ensemble, et combien de types deux odeurs aléatoires ont-elles en commun en moyenne?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:11:3}
+\emph{Ce que sait faire une seule courbe~\eqref{eq:nakarushton}.} (a)~Sur quelle plage de luminosités la réponse passe-t-elle de $10\,\%$ à $90\,\%$ de $r_{\max}$? Combien d'ordres de grandeur cela fait-il? (b)~Combien de positions de la courbe glissante faut-il pour couvrir dix ordres de grandeur de luminosité? Et douze ordres de volume sonore?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:11:4}
+\emph{Limite du code temporel dans l'oreille.} L'écart d'arrivée entre les deux oreilles atteint $0.22\,\text{m}/343\,\text{m/s}$. (a)~Les impulsions suivent la phase d'un son pur: jusqu'à quelle fréquence la direction s'en déduit-elle sans ambiguïté? (b)~Une impulsion fluctue de $0.5\ms$, et il faut distinguer $20$~\textmu s. Combien de neurones à $100$ imp./s faut-il moyenner sur $50\ms$?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:11:5}
+\emph{Une caméra événementielle sur le câble de l'œil.} Une caméra de $10^6$ pixels, de sortie $10^7$ bit/s, émet un événement (adresse et signe) quand $\ln I$ d'un pixel varie de $\ln1.2$. À quelle vitesse maximale peut défiler un bord long de $500$ pixels, de contraste $4$? Combien d'images par seconde une caméra ordinaire à $8$ bits par pixel passerait-elle par la même sortie?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:11:6}
+\emph{Simulation: réglage du gain.} Le capteur~\eqref{eq:nakarushton} ajuste $\sigma$ avec $\tau=1\,\text{s}$, en logarithmes, $\tau\,\dd\ln\sigma/\dd t=\ln I-\ln\sigma$, ou linéairement, $\tau\,\dd\sigma/\dd t=I-\sigma$; le fond saute $1\to100\to1$. Au bout de combien de secondes la réponse à un test de $+10\,\%$ revient-elle à la moitié de sa valeur adaptée, après le saut vers le haut et vers le bas, pour chaque loi?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:11:7}
+\emph{À quel monde la courbe est-elle ajustée.} Pour un petit bruit de sortie constant, l'information sur la luminosité est maximale quand $r(I)=r_{\max}\Phi_I(I)$, où $\Phi_I$ est la fonction de répartition des luminosités. (a)~Pour quelle distribution la courbe~\eqref{eq:nakarushton} est-elle optimale? Quel est l'écart de $\log_{10}I$? (b)~Et pour un bruit de sortie poissonnien?
+\end{exercise}
