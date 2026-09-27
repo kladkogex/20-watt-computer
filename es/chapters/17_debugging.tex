@@ -36,9 +36,9 @@ La tarea del primer dispositivo es la lectura. Los hilos se colocan en la parte 
 
 La segunda línea de la empresa es la escritura: un dispositivo de visión que introduce señales en la corteza visual de una persona que ha perdido la vista. De él se habla más abajo, en la sección sobre escritura.
 
-\section{Lectura: el decodificador como receptor}
+\section{Lectura: el decodificador como destinatario}
 
-El decodificador de una interfaz es un receptor en el sentido de la proposición~\ref{prop:reader}: decide por sí mismo qué parte del mensaje leer. Prácticamente todas las interfaces leen \emph{frecuencias de grupo}: cuentan las espigas de cada canal en ventanas de varias decenas de milisegundos y las suman con pesos ajustados para obtener el movimiento deseado. Es el código de frecuencia de grupo de la sección~\ref{sec:rate}, y no se eligió por casualidad: con unas pocas espigas por ventana, la frecuencia de una sola neurona no está definida, pero la suma sobre un centenar ya funciona.
+El decodificador de una interfaz es un destinatario en el sentido de la proposición~\ref{prop:reader}: decide por sí mismo qué parte del mensaje leer. Prácticamente todas las interfaces leen \emph{frecuencias de grupo}: cuentan las espigas de cada canal en ventanas de varias decenas de milisegundos y las suman con pesos ajustados para obtener el movimiento deseado. Es el código de frecuencia de grupo de la sección~\ref{sec:rate}, y no se eligió por casualidad: con unas pocas espigas por ventana, la frecuencia de una sola neurona no está definida, pero la suma sobre un centenar ya funciona.
 
 ¿Cuánta información se logra extraer? La escritura con la “mano mental” alcanzó unos noventa caracteres por minuto~\cite{Willett2021}, es decir, un carácter y medio por segundo: incluso con cinco bits por carácter, son menos de ocho bits por segundo. El control del cursor, según Neuralink, da del orden de diez bits por segundo. En cambio, el límite superior~\eqref{eq:spikeentropy} para \emph{una} neurona es de decenas de bits por segundo, y para un centenar, de miles. La interfaz extrae de las neuronas escuchadas una pequeña fracción de lo que podrían llevar. El cuello de botella no es el cable, sino cuántas variables independientes lleva el grupo (proposición~\ref{prop:pooling}) y lo bien que el decodificador entiende un código que, como vimos en el capítulo~\ref{sec:code}, no está descifrado del todo.
 
@@ -76,7 +76,7 @@ Técnica de depuración & Qué hace la interfaz & Qué explica el libro & Qué s
 \midrule
 sonda & oye de cientos a miles de neuronas & baja dimensión y ruido correlacionado (cap.~\ref{sec:code}) & medido \\
 compresión en la sonda & transmite eventos en lugar de la señal bruta & capacidad del flujo de espigas~\eqref{eq:spikeentropy} & resuelto en ingeniería \\
-lectura & frecuencias de grupo $\to$ movimiento, texto, habla & el decodificador es un receptor; código de frecuencia de grupo & funciona; unos pocos bits por segundo \\
+lectura & frecuencias de grupo $\to$ movimiento, texto, habla & el decodificador es un destinatario; código de frecuencia de grupo & funciona; unos pocos bits por segundo \\
 aprendizaje conjunto & el cerebro y el decodificador se ajustan el uno al otro & cable de error (cap.~\ref{sec:motorlearning}) & observado; las reglas del ajuste están en investigación \\
 escritura & la corriente enciende puntos en el campo visual & el código de lugar se puede escribir, el temporal no (cap.~\ref{sec:sensors}) & puntos medidos; visión útil, aún no \\
 lectura de registros & casi no se hace & canales de difusión (caps.~\ref{sec:serocomputer}--\ref{sec:acet}) & hay sensores químicos en experimentos \\
@@ -109,7 +109,7 @@ Cada pregunta abierta del capítulo~\ref{sec:synthesis} es también una tarea pa
 
 \begin{exercise}[\lvlB]
 \label{ex:17:4}
-\emph{Simulación: decodificador de grupo.} $N$ neuronas con $\lambda_i=[b+m\,\mathbf v\cdot\mathbf p_i]_+$, $b=20$, $m=15$~espigas/s, ventanas de $50\ms$, $\mathbf v$ con desviación estándar $0.5$ por componente; todas ven un ruido común, $\mathbf v+\boldsymbol\xi$, $\sigma_\xi=0.2$. Simule un decodificador insesgado por vector de población. ¿Con qué $N$ se igualan ambos ruidos y cuántos bits por componente y ventana da $N\to\infty$?
+\emph{Simulación: decodificador de grupo.} $N$ neuronas con $\lambda_i=[b+m\,\mathbf v\cdot\mathbf p_i]_+$, $b=20$, $m=15$~espigas/s, ventanas de $50\ms$, $\mathbf v$ con $\sigma=0.5$ por componente; todas ven un ruido común, $\mathbf v+\boldsymbol\xi$, $\sigma_\xi=0.2$. Simule un decodificador insesgado por vector de población. ¿Con qué $N$ se igualan ambos ruidos y cuántos bits por componente y ventana da $N\to\infty$?
 \end{exercise}
 
 \begin{exercise}[\lvlB]
@@ -119,10 +119,10 @@ Cada pregunta abierta del capítulo~\ref{sec:synthesis} es también una tarea pa
 
 \begin{exercise}[\lvlB]
 \label{ex:17:6}
-\emph{Diseño: la cadena de la sonda.} $1024$ canales a $20$~mil muestras por segundo, neuronas a $10$~espigas/s, radio a $1$~nJ/bit. ¿Qué umbral sobre el ruido blanco de las muestras da como mucho $0.1$~Hz de espigas falsas por canal? Si transmitimos el número de espigas cada $20\ms$ con $2$~bits, ¿qué potencia hace falta y cuántas veces es menor que para muestras brutas de $10$~bits?
+\emph{Diseño: la cadena de la sonda.} $1024$ canales a $20\,000$ muestras/s, neuronas a $10$~espigas/s, radio a $1$~nJ/bit. ¿Qué umbral sobre el ruido blanco de las muestras da como mucho $0.1$~Hz de espigas falsas por canal? Si transmitimos el número de espigas cada $20\ms$ con $2$~bits, ¿qué potencia hace falta y cuántas veces es menor que para muestras brutas de $10$~bits?
 \end{exercise}
 
 \begin{exercise}[\lvlC]
 \label{ex:17:7}
-\emph{Límite de velocidad de una interfaz.} Estime $R\le DW\log_2(1+\text{SNR})$ para $D=10$ variables con ancho de banda $W=5$~Hz con $\text{SNR}\approx0.9$ (ruido parecido a la señal) y $90$ (ruido independiente de $1000$ neuronas). Lo medido es unos $10$~bit/s. ¿Qué experimento distinguiría las dos explicaciones de la brecha: ruido parecido a la señal o desconocimiento del código?
+\emph{Límite de velocidad de una interfaz.} Estime $R\le DW\log_2(1+\text{SNR})$ para $D=10$ variables con ancho de banda $W=5$~Hz con $\text{SNR}\approx0.9$ (ruido parecido a la señal) y $90$ (ruido independiente de $1000$ neuronas). Se miden unos $10$~bit/s. ¿Qué experimento distinguiría las dos explicaciones de la brecha: ruido parecido a la señal o código desconocido?
 \end{exercise}

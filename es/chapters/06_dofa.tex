@@ -81,7 +81,7 @@ Pero todas las reglas de esta sección enseñan lo que es \emph{frecuente}, no l
 
 \section{El tercer factor}
 
-La tercera señal la trae \nt{DOPA}: las neuronas dopaminérgicas difunden un solo número, el error de predicción de la recompensa $\delta$~\eqref{eq:rpe} (capítulo~\ref{sec:neurontypes}). Hagamos el cambio de peso proporcional al producto de tres factores: la actividad del emisor, la actividad del receptor y $\delta$.
+La tercera señal la trae \nt{DOPA}: las neuronas dopaminérgicas difunden un solo número, el error de predicción de la recompensa $\delta$~\eqref{eq:rpe} (capítulo~\ref{sec:neurontypes}). Hagamos el cambio de peso proporcional al producto de tres factores: la actividad del emisor, la actividad del destinatario y $\delta$.
 
 La dificultad es que la recompensa no llega cuando la red elegía la acción, sino cientos de milisegundos o segundos después. Cuando llega $\delta$, el producto $xy$ hace tiempo que vale cero, y la sinapsis necesita recordar que participó. La memoria más sencilla es el conocido circuito RC:
 \begin{empheq}[box=\keybox]{equation}
@@ -116,7 +116,7 @@ La magnitud $e$ se llama \emph{traza de elegibilidad}~\cite{Fremaux2016}. La act
 \draw[thick,densely dashed,gray!50!black] (0,0.2) -- (1.4,0.2) node[right,font=\scriptsize,gray!40!black] {$\tau_e=50\ms$: sin cambios};
 % time axis marks
 \foreach \x/\l in {0/0,0.2/0.2,0.7/0.7,1.4/1.4}{\draw[gray!60!black] (\x,-0.05) -- (\x,0.05) node[below=3pt,font=\scriptsize] {\l\,s};}
-\draw[<->,thick,gray!50!black] (0.2,5.35) -- node[above,font=\scriptsize,black] {retraso de la recompensa $0.5\,\text{s}$} (0.7,5.35);
+\draw[<->,thick,gray!50!black] (0.2,5.35) -- node[above,font=\scriptsize,black] {retardo de la recompensa $0.5\,\text{s}$} (0.7,5.35);
 \end{tikzpicture}
 \caption{Traza según la regla~\eqref{eq:threefactor}. La actividad conjunta dura $0.2\,\text{s}$; la dopamina llega medio segundo después de que termina. Las trazas se muestran en fracciones de su máximo. La traza lenta ($\tau_e=1\,\text{s}$) sigue viva en ese momento; la rápida ($\tau_e=50\ms$) se desvaneció hace tiempo.}
 \label{fig:trace}
@@ -125,7 +125,7 @@ La magnitud $e$ se llama \emph{traza de elegibilidad}~\cite{Fremaux2016}. La act
 \begin{keyblock}
 \begin{proposition}[Aprendizaje con una señal de difusión]
 \label{prop:threefactor}
-La regla~\eqref{eq:threefactor} cambia solo las sinapsis que participaron en el trabajo de la red durante los últimos $\tau_e$, en el sentido que marca la señal común $\delta$. Una señal de difusión junto con una traza local da una corrección con dirección. Se admite un retraso entre la acción y el resultado mientras no supere $\tau_e$.
+La regla~\eqref{eq:threefactor} cambia solo las sinapsis que participaron en el trabajo de la red durante los últimos $\tau_e$, en el sentido que marca la señal común $\delta$. Una señal de difusión junto con una traza local da una corrección dirigida. Se admite un retardo entre la acción y el resultado mientras no supere $\tau_e$.
 \end{proposition}
 \end{keyblock}
 
@@ -177,7 +177,7 @@ Si en la red hay desviaciones aleatorias de la actividad, y la señal de difusi�
 
 Ahora se entiende por qué la dopamina no informa de la recompensa, sino del \emph{error} de su predicción. Si el tercer factor fuera la propia recompensa $R\ge0$, el promedio en~\eqref{eq:perturbation} no cambiaría, pero aparecerían dos problemas. Primero, a la parte útil se sumaría el término $\bar R\,\xi x_j$: cero en promedio, pero un ruido fuerte. Segundo, y peor, una sinapsis real no sabe separar en la traza $x_jy$ la parte aleatoria de la que no lo es. Con entradas dadas, $x_jf(u)$ es el mismo número de un intento a otro; si $\delta$ vale cero en promedio en esa situación, esa parte de la traza no cambia nada, pero con $\delta\ge0$ refuerza una y otra vez todo lo que la red hacía, lo correcto y lo incorrecto. Por eso $\bar R$ debe ser la expectativa \emph{en la situación dada}, no un promedio de toda la vida. Calcularla es tarea del crítico, del que hablaremos más abajo.
 
-Lo comprobamos en un modelo. Dos grupos de neuronas \nt{GLUT} eligen una de dos acciones mediante inhibición mutua, como en la fig.~\ref{fig:wta}; los pesos desde la señal “empezamos” hacia los grupos son al principio iguales, y el ruido decide quién gana. La acción $A$ trae jugo con probabilidad $0.8$; la acción $B$, con probabilidad $0.2$, y el jugo llega medio segundo después de la elección. Con $\tau_e=1\,\text{s}$ y $\delta=R-\bar R$, la fracción de elecciones de $A$ en quinientos intentos subió de $0.65$--$0.8$ en el primer centenar a $0.96$--$1.0$ en el último, y los pesos se quedaron entre $0.85$ y $1.35$. Con $\tau_e=50\ms$, menor que el retraso de la recompensa, la red no aprendió nada: la fracción de elecciones de $A$ se quedó en torno a la mitad. Con $\delta=R$, sin restar la expectativa, la red también pasó a elegir $A$, pero el peso del ganador se multiplicó por mil en esos mismos quinientos intentos y seguía creciendo; y con la misma $\delta=R$ y una tasa de aprendizaje diez veces mayor, la red, en una de tres ejecuciones, fijó para siempre su primera elección aleatoria, la peor.
+Lo comprobamos en un modelo. Dos grupos de neuronas \nt{GLUT} eligen una de dos acciones mediante inhibición mutua, como en la fig.~\ref{fig:wta}; los pesos desde la señal “empezamos” hacia los grupos son al principio iguales, y el ruido decide quién gana. La acción $A$ trae jugo con probabilidad $0.8$; la acción $B$, con probabilidad $0.2$, y el jugo llega medio segundo después de la elección. Con $\tau_e=1\,\text{s}$ y $\delta=R-\bar R$, la fracción de elecciones de $A$ en quinientos intentos subió de $0.65$--$0.8$ en el primer centenar a $0.96$--$1.0$ en el último, y los pesos se quedaron entre $0.85$ y $1.35$. Con $\tau_e=50\ms$, menor que el retardo de la recompensa, la red no aprendió nada: la fracción de elecciones de $A$ se quedó en torno a la mitad. Con $\delta=R$, sin restar la expectativa, la red también pasó a elegir $A$, pero el peso del ganador se multiplicó por mil en esos mismos quinientos intentos y seguía creciendo; y con la misma $\delta=R$ y una tasa de aprendizaje diez veces mayor, la red, en una de tres ejecuciones, fijó para siempre su primera elección aleatoria, la peor.
 
 \section{El precio de un solo cable}
 
@@ -353,7 +353,7 @@ Las reglas de aprendizaje se resumen en la tabla~\ref{tab:learning}. \nt{GLUT} l
 
 \begin{exercise}[\lvlB]
 \label{ex:06:7}
-\emph{Simulación: retraso máximo de la recompensa.} Añada un retraso de la recompensa $d$ a \texttt{run()} en una copia de \texttt{models/\allowbreak dofa\_learning.py}. Halle la fracción de elecciones de $A$ en el último centenar de $500$ intentos con $d=0.5\,\text{s}$ y $\tau_e=0.05$, $0.2$, $1$, $4\,\text{s}$, y con $\tau_e=1\,\text{s}$, $d=3\,\text{s}$. ¿Con qué fracción de traza viva al llegar la recompensa (ejercicio~\ref{ex:06:1}) desaparece el aprendizaje?
+\emph{Simulación: retardo máximo de la recompensa.} Añada un retardo de la recompensa $d$ a \texttt{run()} en una copia de \texttt{models/\allowbreak dofa\_learning.py}. Halle la fracción de elecciones de $A$ en los últimos $100$ de $500$ intentos con $d=0.5\,\text{s}$ y $\tau_e=0.05$, $0.2$, $1$, $4\,\text{s}$, y con $\tau_e=1\,\text{s}$, $d=3\,\text{s}$. ¿Con qué fracción de traza viva al llegar la recompensa (ejercicio~\ref{ex:06:1}) cesa el aprendizaje?
 \end{exercise}
 
 \begin{exercise}[\lvlC]

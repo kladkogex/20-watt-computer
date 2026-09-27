@@ -6,7 +6,7 @@
 
 En el capítulo~\ref{sec:neurontypes} clasificamos las neuronas según lo que libera su salida, y en el capítulo~\ref{sec:eetypes}, según el instrumento que son. Hay un tercer rasgo que un ingeniero notará enseguida: \emph{cuántas entradas tiene la neurona}. Las entradas las recogen las dendritas, las ramas en las que se posan los axones ajenos (capítulo~\ref{sec:dofa}, sección~\ref{sec:weightstore}). Algunas neuronas no tienen ninguna dendrita, otras tienen una o dos, y otras un árbol que recoge cien mil entradas. Para un electrónico es el abanico de entrada, el fan-in, y casi siempre se corresponde con la tarea.
 
-Por qué importan tanto el número y el tamaño de las dendritas se ve con una estimación sencilla. La membrana es un condensador con una capacidad específica $c_m\approx1$~\textmu F/cm$^2$, y cuanto mayor es el área $A$ de la neurona junto con sus dendritas, más carga hay que aportar para subir la tensión en $\Delta V$. El tiempo que tarda en hacerlo una corriente de entrada $I$, sin contar la fuga, es
+Por qué importan tanto el número y el tamaño de las dendritas se ve con una estimación sencilla. La membrana es un condensador con una capacidad específica $c_m\approx1$~\textmu F/cm$^2$, y cuanto mayor es el área $A$ de la neurona junto con sus dendritas, más carga hay que aportar para subir el voltaje en $\Delta V$. El tiempo que tarda en hacerlo una corriente de entrada $I$, sin contar la fuga, es
 \begin{empheq}[box=\keybox]{equation}
 t \;\approx\; \frac{c_m\,A\,\Delta V}{I} .
 \label{eq:dendriteload}
@@ -71,11 +71,11 @@ Los sensores de luz y de sonido son un caso aún más extremo: no son neuronas c
 
 \section{Una dendrita: el búfer}
 
-Una neurona con una dendrita y un axón recibe una línea de entrada y la transmite. Así son las neuronas olfativas: su única dendrita sale a la superficie de la nariz y lleva un único tipo de receptor~\cite{Mombaerts2004}; así son las células de relevo de la retina entre los sensores de luz y las neuronas de salida del ojo; así son las neuronas que conectan los sensores del oído con el cerebro. Un ingeniero las llamaría búferes o repetidores: no calculan, sino que entregan una señal, a veces cambiando su forma, por ejemplo convirtiendo la tensión continua del sensor en espigas, como en el capítulo~\ref{sec:sensors}.
+Una neurona con una dendrita y un axón recibe una línea de entrada y la transmite. Así son las neuronas olfativas: su única dendrita sale a la superficie de la nariz y lleva un único tipo de receptor~\cite{Mombaerts2004}; así son las células de relevo de la retina entre los sensores de luz y las neuronas de salida del ojo; así son las neuronas que conectan los sensores del oído con el cerebro. Un ingeniero las llamaría búferes o repetidores: no calculan, sino que entregan una señal, a veces cambiando su forma, por ejemplo convirtiendo el voltaje continuo del sensor en espigas, como en el capítulo~\ref{sec:sensors}.
 
 \section{Dos dendritas: AND temporal}
 
-Los detectores de coincidencias que determinan la dirección de un sonido (fig.~\ref{fig:itd}) tienen a menudo, en los mamíferos, exactamente dos dendritas orientadas en sentidos opuestos: a una llegan las entradas del oído izquierdo y a la otra las del derecho~\cite{Grothe2010}. ¿Para qué separar las entradas? Recordemos la fórmula~\eqref{eq:shunt}: cuando en un tramo de membrana hay muchos canales excitadores abiertos, la tensión allí se acerca al potencial de equilibrio, y cada entrada adicional aporta cada vez menos. Por eso muchas entradas de un mismo oído, reunidas en una dendrita, la saturan y no pueden llevar por sí solas la neurona al umbral. En cambio, una entrada de cada dendrita se suma de forma casi lineal. Las dos dendritas convierten la neurona en un AND más estricto: dispara solo si las señales llegan de ambos lados y a la vez. Los modelos muestran que esta separación mejora de verdad la detección de coincidencias~\cite{AgmonSnir1998}.
+Los detectores de coincidencias que determinan la dirección de un sonido (fig.~\ref{fig:itd}) tienen a menudo, en los mamíferos, exactamente dos dendritas orientadas en sentidos opuestos: a una llegan las entradas del oído izquierdo y a la otra las del derecho~\cite{Grothe2010}. ¿Para qué separar las entradas? Recordemos la fórmula~\eqref{eq:shunt}: cuando en un tramo de membrana hay muchos canales excitadores abiertos, el voltaje allí se acerca al potencial de equilibrio, y cada entrada adicional aporta cada vez menos. Por eso muchas entradas de un mismo oído, reunidas en una dendrita, la saturan y no pueden llevar por sí solas la neurona al umbral. En cambio, una entrada de cada dendrita se suma de forma casi lineal. Las dos dendritas convierten la neurona en un AND más estricto: dispara solo si las señales llegan de ambos lados y a la vez. Los modelos muestran que esta separación mejora de verdad la detección de coincidencias~\cite{AgmonSnir1998}.
 
 \section{Varias dendritas cortas: el mezclador y el relevo}
 
@@ -133,7 +133,7 @@ La tabla~\ref{tab:dendrites} completa las dos clasificaciones anteriores: por ne
 
 \begin{exercise}[\lvlA]
 \label{ex:19:1}
-\emph{Cuántas entradas necesita una neurona grande.} Una neurona con $C=300$~pF y $\tau_m=20\ms$ recibe sinapsis que son fuentes de corriente de $0.1$~nA; el umbral está $20\mV$ por encima del reposo. (a)~¿Cuántas sinapsis deben actuar a la vez para llegar al umbral en absoluto, en $10\ms$, en $5\ms$? (b)~¿En cuánto tiempo llega al umbral una neurona con $C=20$~pF por una sinapsis de $4$~nA?
+\emph{Cuántas entradas necesita una neurona grande.} Una neurona con $C=300$~pF y $\tau_m=20\ms$ recibe sinapsis, fuentes de corriente de $0.1$~nA; el umbral está $20\mV$ por encima del reposo. (a)~¿Cuántas sinapsis simultáneas llevan al umbral en absoluto, en $10\ms$, en $5\ms$? (b)~¿En cuánto tiempo llega al umbral una neurona con $C=20$~pF por una sinapsis de $4$~nA?
 \end{exercise}
 
 \begin{exercise}[\lvlA]
@@ -153,12 +153,12 @@ La tabla~\ref{tab:dendrites} completa las dos clasificaciones anteriores: por ne
 
 \begin{exercise}[\lvlB]
 \label{ex:19:5}
-\emph{Diseño de un relevo.} La fluctuación temporal de la espiga es $\sigma_t=\sigma_V/\dot V$, donde $\dot V$ es la pendiente de la tensión en el umbral. Se requiere $\sigma_t\le20$~\textmu s con un ruido $\sigma_V=1\mV$; desprecie la fuga. ¿Cuántas sinapsis síncronas de $0.1$~nA necesita para ello una neurona con $C=300$~pF, y cuál es la fluctuación de una neurona con $C=20$~pF y una sinapsis de $4$~nA?
+\emph{Diseño de un relevo.} La fluctuación temporal de la espiga es $\sigma_t=\sigma_V/\dot V$, donde $\dot V$ es la pendiente del voltaje en el umbral. Se requiere $\sigma_t\le20$~\textmu s con un ruido $\sigma_V=1\mV$; desprecie la fuga. ¿Cuántas sinapsis síncronas de $0.1$~nA necesita para ello una neurona con $C=300$~pF, y cuál es la fluctuación de una neurona con $C=20$~pF y una sinapsis de $4$~nA?
 \end{exercise}
 
 \begin{exercise}[\lvlB]
 \label{ex:19:6}
-\emph{Simulación: carga de una dendrita larga.} Simule un cable pasivo $\tau_m\partial_tV=\lambda^2\partial_x^2V-V+i/g$ de longitud $L=\ell/\lambda$ con extremos cerrados ($40$ tramos, Euler). En el extremo lejano se aplica un pulso breve de corriente: ¿cuándo y hasta qué fracción de la tensión que daría la misma carga repartida por toda la dendrita sube el extremo cercano con $L=0.2$, $1$, $2$?
+\emph{Simulación: carga de una dendrita larga.} Simule un cable pasivo $\tau_m\partial_tV=\lambda^2\partial_x^2V-V+i/g$ de longitud $L=\ell/\lambda$ con extremos cerrados ($40$ tramos, Euler). En el extremo lejano se aplica un pulso breve de corriente: ¿cuándo y hasta qué fracción del voltaje que daría la misma carga repartida por toda la dendrita sube el extremo cercano con $L=0.2$, $1$, $2$?
 \end{exercise}
 
 \begin{exercise}[\lvlC]

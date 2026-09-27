@@ -82,7 +82,7 @@ En el ojo hay unos $10^8$ sensores de luz~\cite{Curcio1990}, y las neuronas de s
 
 \section{El oído: un banco de filtros}
 
-El oído resuelve otro problema: el sonido debe descomponerse en frecuencias. Un ingeniero pondría un banco de filtros pasabanda, y el oído hace exactamente eso, mecánicamente. La vibración sonora recorre una membrana elástica cuyas propiedades cambian suavemente a lo largo de ella, y cada tramo resuena a su propia frecuencia. Los sensores situados en un tramo responden solo a su banda (fig.~\ref{fig:filterbank}). Las frecuencias se reparten por lugar de forma aproximadamente logarítmica: a cada octava le corresponde una fracción parecida de los sensores. El número del sensor que se activó es la frecuencia: el código de lugar del capítulo~\ref{sec:code}.
+El oído resuelve otro problema: el sonido debe descomponerse en frecuencias. Un ingeniero pondría un banco de filtros pasa banda, y el oído hace exactamente eso, mecánicamente. La vibración sonora recorre una membrana elástica cuyas propiedades cambian suavemente a lo largo de ella, y cada tramo resuena a su propia frecuencia. Los sensores situados en un tramo responden solo a su banda (fig.~\ref{fig:filterbank}). Las frecuencias se reparten por lugar de forma aproximadamente logarítmica: a cada octava le corresponde una fracción parecida de los sensores. El número del sensor que se activó es la frecuencia: el código de lugar del capítulo~\ref{sec:code}.
 
 \begin{figure}[t]
 \centering
@@ -96,7 +96,7 @@ El oído resuelve otro problema: el sonido debe descomponerse en frecuencias. Un
 \foreach \i in {0,...,48}{\draw[gray!50!black,fill=white,line width=0.3pt] ({\i/7},-0.44) rectangle ({(\i+1)/7},-0.26);}
 \foreach \o in {0,...,6}{\foreach \j in {0,1,3,4,5}{\fill[black] ({\o+(\j+1)/7-0.035},-0.35) rectangle ({\o+(\j+1)/7+0.035},-0.26);}}
 \end{tikzpicture}
-\caption{El oído como banco de filtros pasabanda, esquema. Cada curva es la respuesta de los sensores de un tramo a sonidos de distinta frecuencia; las frecuencias centrales van de octava en octava, como las teclas en una escala logarítmica. Los filtros reales tienen una pendiente de alta frecuencia abrupta y una de baja frecuencia suave. Abajo, un teclado: en él, como en el oído, a cada octava le toca el mismo espacio.}
+\caption{El oído como banco de filtros pasa banda, esquema. Cada curva es la respuesta de los sensores de un tramo a sonidos de distinta frecuencia; las frecuencias centrales van de octava en octava, como las teclas en una escala logarítmica. Los filtros reales tienen una pendiente de alta frecuencia abrupta y una de baja frecuencia suave. Abajo, un teclado: en él, como en el oído, a cada octava le toca el mismo espacio.}
 \label{fig:filterbank}
 \end{figure}
 
@@ -117,7 +117,7 @@ Sentido & Qué mide & Cómo es la entrada & Truco del libro \\
 \midrule
 vista & luz & $\sim10^8$ sensores, compresión de $\sim100$ veces, $\sim10^7$ bit/s & control de ganancia, resta de vecinos, dos cables, dirección del movimiento \\
 oído & presión del aire & banco de filtros mecánico, amplificador activo & código de lugar y código temporal, retardos \\
-tacto & presión, vibración & sensores de adaptación rápida y lenta & par “filtro pasaaltos y filtro pasabajos” \\
+tacto & presión, vibración & sensores de adaptación rápida y lenta & par “filtro pasa altos y filtro pasa bajos” \\
 temperatura & calor & sensores separados de calor y de frío & código de dos cables \\
 olfato & moléculas & $\sim400$ tipos de receptores, un tipo por sensor & código combinatorio: el olor es el conjunto de tipos activados \\
 gusto & sustancias de los alimentos & cinco cualidades: dulce, amargo, salado, ácido, umami & líneas marcadas; algunas células liberan ATP o serotonina, no glutamato \\
@@ -163,7 +163,7 @@ Las entradas, como todo lo demás, trabajan de forma asíncrona. Cada sensor emi
 
 \begin{exercise}[\lvlB]
 \label{ex:11:5}
-\emph{Una cámara de eventos en el cable del ojo.} Una cámara de $10^6$ píxeles con una salida de $10^7$ bit/s envía un evento (dirección y signo) cuando $\ln I$ en un píxel cambió en $\ln1.2$. ¿A qué velocidad máxima puede moverse un borde de $500$ píxeles de largo con un salto de brillo de $4$? ¿Cuántos cuadros por segundo daría por la misma salida una cámara común a $8$ bits por píxel?
+\emph{Una cámara de eventos en el cable del ojo.} Una cámara de $10^6$ píxeles con una salida de $10^7$ bit/s envía un evento (dirección y signo) cuando $\ln I$ en un píxel cambió en $\ln1.2$. ¿A qué velocidad máxima puede moverse un borde de $500$ píxeles con un salto de brillo de $4$? ¿Cuántos cuadros por segundo daría con esa salida una cámara común a $8$ bits por píxel?
 \end{exercise}
 
 \begin{exercise}[\lvlB]

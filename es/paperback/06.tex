@@ -3,21 +3,21 @@
 
 En todos los circuitos hasta ahora, la fuerza de las conexiones la ajustaba un ingeniero. En el cerebro vivo no hay ingeniero. Las conexiones tienen que ajustarse solas, sobre la marcha, y de modo que la máquina haga algo útil. Eso es el aprendizaje.
 
-La restricción principal es muy estricta. Cada conexión se modifica a sí misma, y solo puede saber lo que pasa a su lado: si trabaja el emisor, si trabaja el receptor y qué sustancias le llegan. Nadie puede enviarle a una conexión una corrección personal. Eso descarta el método principal para entrenar redes neuronales artificiales, en el que el error recorre la red en sentido inverso y cada conexión recibe su propia corrección.
+La restricción principal es muy estricta. Cada conexión se modifica a sí misma, y solo puede saber lo que pasa a su lado: si trabaja el emisor, si trabaja el destinatario y qué sustancias le llegan. Nadie puede enviarle a una conexión una corrección personal. Eso descarta el método principal para entrenar redes neuronales artificiales, en el que el error recorre la red en sentido inverso y cada conexión recibe su propia corrección.
 
 \section*{Juntas, luego conectadas}
 
-La regla más sencilla: si el emisor y el receptor trabajan juntos, la conexión entre ellos se refuerza. Es local y no necesita reloj. Si se le añade un poco de olvido, esta regla encuentra en el flujo de señales lo más importante: lo que más varía. Hay también una versión que mira el momento de los clics: la conexión se refuerza si el emisor hizo clic \emph{antes} que el receptor, es decir, pudo ser la causa, y se debilita si lo hizo después.
+La regla más sencilla: si el emisor y el destinatario trabajan juntos, la conexión entre ellos se refuerza. Es local y no necesita reloj. Si se le añade un poco de olvido, esta regla encuentra en el flujo de señales lo más importante: lo que más varía. Hay también una versión que mira el momento de los clics: la conexión se refuerza si el emisor hizo clic \emph{antes} que el destinatario, es decir, pudo ser la causa, y se debilita si lo hizo después.
 
 Pero estas reglas tienen un límite: enseñan lo \emph{frecuente}, no lo \emph{útil}. Una conexión que solo ve a sus vecinas no sabe si la acción trajo jugo o dolor.
 
 \section*{La tercera señal}
 
-La trae la dopamina, la emisora “mejor de lo esperado”. Que la conexión cambie solo cuando coinciden tres cosas: trabajó el emisor, trabajó el receptor y llegó dopamina.
+La trae la dopamina, la emisora “mejor de lo esperado”. Que la conexión cambie solo cuando coinciden tres cosas: trabajó el emisor, trabajó el destinatario y llegó dopamina.
 
 \pencilfig{6}{\pencilart{6}}{La conexión se refuerza cuando las dos neuronas trabajaron juntas y llegó una tercera señal: “salió mejor de lo esperado”.}
 
-Pero hay una dificultad: la recompensa no llega enseguida, sino al cabo de un segundo o dos. Para entonces, emisor y receptor ya callaron hace rato. La conexión necesita recordar que participó. Y lo recuerda: el trabajo conjunto deja en la conexión una marca, como una etiqueta adhesiva que se despega sola en uno o dos segundos. Si llega dopamina mientras la etiqueta sigue pegada, la conexión cambia. Si no llega, la marca desaparece sin dejar rastro. Esto resuelve el problema del direccionamiento: la dopamina es una sola para todas, pero solo cambian las conexiones que llevan la etiqueta.
+Pero hay una dificultad: la recompensa no llega enseguida, sino al cabo de un segundo o dos. Para entonces, emisor y destinatario ya callaron hace rato. La conexión necesita recordar que participó. Y lo recuerda: el trabajo conjunto deja en la conexión una marca, como una etiqueta adhesiva que se despega sola en uno o dos segundos. Si llega dopamina mientras la etiqueta sigue pegada, la conexión cambia. Si no llega, la marca desaparece sin dejar rastro. Esto resuelve el problema del direccionamiento: la dopamina es una sola para todas, pero solo cambian las conexiones que llevan la etiqueta.
 
 \pencilfig{106}{%
 \foreach \y/\d/\t in {0/0.9/{a tiempo: se refuerza},-1.3/3.3/{tarde: nada}}{

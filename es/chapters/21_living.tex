@@ -12,16 +12,16 @@ El banco difiere del cerebro en dos cosas importantes. Es diminuto: tiene cien m
 
 \section{Lo que la red hace por sí sola}
 
-Dejado en paz, el cultivo no calla ni produce un ruido uniforme. De vez en cuando casi toda la red se enciende a la vez, en una \emph{ráfaga de red}, y vuelve a apagarse; los intervalos entre ráfagas van de un segundo a varios minutos, según el cultivo~\cite{Wagenaar2006}. Para un ingeniero es un cuadro conocido: un amplificador con fuerte realimentación positiva y sin carga se convierte en un oscilador.
+Dejado en paz, el cultivo no calla ni produce un ruido uniforme. De vez en cuando casi toda la red se enciende a la vez, en una \emph{salva}, y vuelve a apagarse; los intervalos entre salvas van de un segundo a varios minutos, según el cultivo~\cite{Wagenaar2006}. Para un ingeniero es un cuadro conocido: un amplificador con fuerte realimentación positiva y sin carga se convierte en un oscilador.
 
-El mecanismo ya lo conocemos. Las fuertes conexiones mutuas entre neuronas \nt{GLUT} desencadenan una avalancha, como en el capítulo~\ref{sec:gaba} cuando no se cumplen las condiciones de la proposición~\ref{prop:ei}. La avalancha agota rápido la reserva de neurotransmisor en las sinapsis~\eqref{eq:depression}, y la red enmudece. La reserva se recupera con constante de tiempo $\tau_{\text{rec}}$, y cuando se ha recuperado la fracción $x^*$ suficiente para una nueva avalancha, llega una nueva ráfaga. El intervalo entre ráfagas es
+El mecanismo ya lo conocemos. Las fuertes conexiones mutuas entre neuronas \nt{GLUT} desencadenan una avalancha, como en el capítulo~\ref{sec:gaba} cuando no se cumplen las condiciones de la proposición~\ref{prop:ei}. La avalancha agota rápido la reserva de neurotransmisor en las sinapsis~\eqref{eq:depression}, y la red enmudece. La reserva se recupera con constante de tiempo $\tau_{\text{rec}}$, y cuando se ha recuperado la fracción $x^*$ suficiente para una nueva avalancha, llega una nueva salva. El intervalo entre salvas es
 \begin{empheq}[box=\keybox]{equation}
-T_{\text{ráfaga}} \;\approx\; \tau_{\text{rec}}\,\ln\frac{1}{1-x^*} .
+T_{\text{salva}} \;\approx\; \tau_{\text{rec}}\,\ln\frac{1}{1-x^*} .
 \label{eq:burstinterval}
 \end{empheq}
-Con $\tau_{\text{rec}}=0.8\,\text{s}$ del capítulo~\ref{sec:code} y $x^*=0.9$ salen unos dos segundos; con $x^*=0.99$, unos cuatro. Es una estimación del modelo con el $\tau_{\text{rec}}$ del libro, y cae en el extremo corto de los intervalos medidos. La medición directa en microcultivos da una recuperación de la reserva de neurotransmisor tras la ráfaga en decenas de segundos~\cite{CohenSegal2011}, es decir, allí $\tau_{\text{rec}}$ es mayor; con ese $\tau_{\text{rec}}$ la fórmula~\eqref{eq:burstinterval} da decenas de segundos y minutos, como en los cultivos lentos. Es un oscilador de relajación, pariente del generador de ritmo del capítulo~\ref{sec:muscles}: allí lo recargaba la fatiga de los grupos; aquí, la reserva de neurotransmisor.
+Con $\tau_{\text{rec}}=0.8\,\text{s}$ del capítulo~\ref{sec:code} y $x^*=0.9$ salen unos dos segundos; con $x^*=0.99$, unos cuatro. Es una estimación del modelo con el $\tau_{\text{rec}}$ del libro, y cae en el extremo corto de los intervalos medidos. La medición directa en microcultivos da una recuperación de la reserva de neurotransmisor tras la salva en decenas de segundos~\cite{CohenSegal2011}, es decir, allí $\tau_{\text{rec}}$ es mayor; con ese $\tau_{\text{rec}}$ la fórmula~\eqref{eq:burstinterval} da decenas de segundos y minutos, como en los cultivos lentos. Es un oscilador de relajación, pariente del generador de ritmo del capítulo~\ref{sec:muscles}: allí lo recargaba la fatiga de los grupos; aquí, la reserva de neurotransmisor.
 
-Las ráfagas son lo que la red hace cuando no tiene nada que hacer. En el cerebro vivo se ve un cuadro parecido en el sueño profundo (capítulo~\ref{sec:sleep}) y en el cerebro en desarrollo, antes de que le lleguen entradas de verdad. El parecido sugiere una idea, pero que los mecanismos sean los mismos es una hipótesis.
+Las salvas son lo que la red hace cuando no tiene nada que hacer. En el cerebro vivo se ve un cuadro parecido en el sueño profundo (capítulo~\ref{sec:sleep}) y en el cerebro en desarrollo, antes de que le lleguen entradas de verdad. El parecido sugiere una idea, pero que los mecanismos sean los mismos es una hipótesis.
 
 \section{Cómo enseñar a la red sin un maestro dopaminérgico}
 
@@ -29,9 +29,9 @@ Como en el cultivo no hay \nt{DOPA}, la señal de “mejor o peor” hay que dar
 
 \emph{Un maestro que se calla.} Se estimula la red por un electrodo una vez cada uno a tres segundos hasta que en otro electrodo aparece la respuesta deseada $50\pm10\ms$ después del estímulo. En cuanto aparece, la estimulación se apaga durante cinco minutos. Tras varios ciclos así, la respuesta deseada aparece enseguida ante el estímulo~\cite{Shahaf2001}. Aquí la recompensa es el silencio: el estímulo desestabiliza la red, y al cesar deja a la red en el estado que dio la respuesta correcta. Es el descenso por el gradiente mediante desviaciones aleatorias del capítulo~\ref{sec:dofa} (proposición~\ref{prop:gradient}), donde el papel del error lo desempeña la propia sacudida: se sacude hasta que sale bien.
 
-\emph{Una red que juega al tenis.} En un experimento en un banco con una matriz densa de electrodos, alrededor de un millón de neuronas se conectaron a un videojuego de tenis con una sola raqueta~\cite{Kagan2022}. La posición de la pelota se entregaba con corriente a los electrodos “sensoriales”: dónde está la pelota, con un código de lugar; a qué distancia, con la frecuencia. La actividad en dos regiones “motoras” movía la raqueta hacia arriba o hacia abajo. La regla de aprendizaje era inusual. Si la raqueta devolvía la pelota, la red recibía un estímulo breve y \emph{predecible}; si fallaba, varios segundos de corriente aleatoria \emph{impredecible}. En veinte minutos de juego las series de pelotas devueltas se alargaban. Un aumento significativo dentro de la sesión solo se dio con la retroalimentación completa; con silencio en lugar del estímulo, el cultivo al final de la sesión también jugaba mejor que sin retroalimentación, pero con un efecto menor, y no hubo aprendizaje estable de una sesión a otra a lo largo de varios días. El análisis detallado de este experimento está en el capítulo~\ref{sec:dishbrain}.
+\emph{Una red que juega al tenis.} En un experimento en un banco con una matriz densa de electrodos, alrededor de un millón de neuronas se conectaron a un videojuego de tenis con una sola raqueta~\cite{Kagan2022}. La posición de la pelota se entregaba con corriente a los electrodos “sensoriales”: dónde está la pelota, con un código de lugar; a qué distancia, con la frecuencia. La actividad en dos regiones “motoras” movía la raqueta hacia arriba o hacia abajo. La regla de aprendizaje era inusual. Si la raqueta devolvía la pelota, la red recibía un estímulo breve y \emph{predecible}; si fallaba, varios segundos de corriente aleatoria \emph{impredecible}. En veinte minutos de juego las series de pelotas devueltas se alargaban. Un aumento significativo dentro de la sesión solo se dio con la realimentación completa; con silencio en lugar del estímulo, el cultivo al final de la sesión también jugaba mejor que sin realimentación, pero con un efecto menor, y no hubo aprendizaje estable de una sesión a otra a lo largo de varios días. El análisis detallado de este experimento está en el capítulo~\ref{sec:dishbrain}.
 
-Los autores explicaron el resultado con la hipótesis de que la red actúa de modo que su entrada sea predecible~\cite{Friston2010}. Es la misma idea que el ahorro de espigas del capítulo~\ref{sec:code} y la predicción del fotograma del capítulo~\ref{sec:recognition}: la máquina gasta menos cuando la entrada es la esperada. Pero tanto el experimento como, sobre todo, las palabras de los autores sobre la “sintiencia” del cultivo provocaron duras críticas: el efecto es pequeño y se puede explicar de forma más sencilla~\cite{Balci2023}. La valoración honesta es esta: el cultivo en el banco cambia su comportamiento bajo la retroalimentación, y eso está medido; que aprenda precisamente a predecir su entrada es una hipótesis.
+Los autores explicaron el resultado con la hipótesis de que la red actúa de modo que su entrada sea predecible~\cite{Friston2010}. Es la misma idea que el ahorro de espigas del capítulo~\ref{sec:code} y la predicción del fotograma del capítulo~\ref{sec:recognition}: la máquina gasta menos cuando la entrada es la esperada. Pero tanto el experimento como, sobre todo, las palabras de los autores sobre la “sintiencia” del cultivo provocaron duras críticas: el efecto es pequeño y se puede explicar de forma más sencilla~\cite{Balci2023}. La valoración honesta es esta: el cultivo en el banco cambia su comportamiento bajo la realimentación, y eso está medido; que aprenda precisamente a predecir su entrada es una hipótesis.
 
 \emph{Una red que conduce un cuerpo.} De modo parecido, se conectó un cultivo a un sencillo “cuerpo” virtual y se le enseñó a moverse hacia un objetivo eligiendo el patrón espaciotemporal de los estímulos de entrenamiento~\cite{Bakkum2008}. En ninguno de estos experimentos hay dopamina: el maestro es un patrón de corriente que elige el ingeniero. Qué cambia cuando el maestro pasa a ser un programa o la propia dopamina se ve en las secciones~\ref{sec:dishdopamine}--\ref{sec:cartpole}.
 
@@ -88,14 +88,14 @@ P \;\approx\; 10^{6}\times1\,\text{s}^{-1}\times10^{-10}\,\text{J} \;=\; 10^{-4}
 \end{empheq}
 una décima de milivatio. La electrónica que estimula, registra y procesa esas espigas gasta órdenes de magnitud más. Como en el capítulo~\ref{sec:debugging}, el cuello de botella no es el cálculo, sino la comunicación con él.
 
-\emph{Las piezas que faltan.} El banco muestra cuánto sabe hacer el bus \nt{GLUT} con el control de flujo \nt{GABA} sin registros de control: autoorganizarse, generar ráfagas, cambiar sus respuestas bajo la retroalimentación y servir como buen reservorio. Lo que sin ellos no sabe hacer es decidir por sí mismo qué cuenta como éxito. En el banco esa señal la da el ingeniero; en el cerebro, como vimos en los capítulos~\ref{sec:dofa}--\ref{sec:acet}, los canales de difusión.
+\emph{Las piezas que faltan.} El banco muestra cuánto sabe hacer el bus \nt{GLUT} con el control de flujo \nt{GABA} sin registros de control: autoorganizarse, generar salvas, cambiar sus respuestas bajo la realimentación y servir como buen reservorio. Lo que sin ellos no sabe hacer es decidir por sí mismo qué cuenta como éxito. En el banco esa señal la da el ingeniero; en el cerebro, como vimos en los capítulos~\ref{sec:dofa}--\ref{sec:acet}, los canales de difusión.
 
 \emph{Ética.} Los organoides se cultivan a partir de células humanas, y cuanto más complejos se vuelven, más serio es el problema de si ese tejido puede sentir algo. La mirada del ingeniero sugiere una respuesta parcial: el dolor del capítulo~\ref{sec:pain} no es la señal de un solo sensor, sino todo un sistema de alarma con compuertas, control de volumen y canales de difusión, que en el banco no existen. Pero esto es un razonamiento, no una prueba, y el propio campo propone hacer la evaluación ética junto con los experimentos, desde el principio~\cite{Smirnova2023}.
 
 \begin{keyblock}
 \begin{proposition}[Una red viva en el banco]
 \label{prop:livingmachine}
-Una red de neuronas \nt{GLUT} y \nt{GABA} sobre una matriz de electrodos genera por sí sola ráfagas~\eqref{eq:burstinterval}, cambia sus respuestas bajo la retroalimentación y puede servir como reservorio~\eqref{eq:reservoir} para una lectura entrenada desde fuera. Todo esto está medido. Que una red así aprenda según alguna regla general, por ejemplo a predecir su entrada, es una hipótesis, y las palabras grandilocuentes sobre su “sintiencia” no las acepta la mayoría de los especialistas.
+Una red de neuronas \nt{GLUT} y \nt{GABA} sobre una matriz de electrodos genera por sí sola salvas~\eqref{eq:burstinterval}, cambia sus respuestas bajo la realimentación y puede servir como reservorio~\eqref{eq:reservoir} para una lectura entrenada desde fuera. Todo esto está medido. Que una red así aprenda según alguna regla general, por ejemplo a predecir su entrada, es una hipótesis, y las palabras grandilocuentes sobre su “sintiencia” no las acepta la mayoría de los especialistas.
 \end{proposition}
 \end{keyblock}
 
@@ -112,9 +112,9 @@ Una red de neuronas \nt{GLUT} y \nt{GABA} sobre una matriz de electrodos genera 
 \toprule
 Experimento & Qué hace la red viva & Qué se sabe \\
 \midrule
-red sin entrada & ráfagas con intervalos de un segundo a minutos~\eqref{eq:burstinterval} & medido; el mecanismo por agotamiento sináptico es el modelo aceptado \\
+red sin entrada & salvas con intervalos de un segundo a minutos~\eqref{eq:burstinterval} & medido; el mecanismo por agotamiento sináptico es el modelo aceptado \\
 maestro que se calla & la respuesta deseada se fija cuando se apaga la estimulación & medido \\
-juego de tenis & las series de pelotas devueltas se alargan; un aumento significativo en la sesión, solo con retroalimentación completa & el cambio de comportamiento está medido; el aprendizaje de una sesión a otra es inestable; el tamaño del efecto y la explicación por predicción de la entrada son discutibles \\
+juego de tenis & las series de pelotas devueltas se alargan; un aumento significativo en la sesión, solo con realimentación completa & el cambio de comportamiento está medido; el aprendizaje de una sesión a otra es inestable; el tamaño del efecto y la explicación por predicción de la entrada son discutibles \\
 cuerpo virtual & movimiento hacia el objetivo con un patrón de estímulos elegido & medido \\
 reservorio & no linealidad y memoria para la lectura~\eqref{eq:reservoir} & medido; el aprendizaje por el error ocurre fuera, en silicio; las conexiones del organoide también cambian \\
 energía & unos $10^{-4}$~W por millón de neuronas~\eqref{eq:dishpower} & estimación según~\eqref{eq:energy} \\
@@ -130,7 +130,7 @@ Una máquina de neuronas vivas (tabla~\ref{tab:livingmachine}) es un banco de pr
 
 \begin{exercise}[\lvlA]
 \label{ex:21:1}
-\emph{Intervalo entre ráfagas.} La ráfaga agota la reserva hasta cero; luego $\tau_{\text{rec}}\,\dd x/\dd t=1-x$, y la nueva ráfaga empieza cuando $x=x^*$; $\tau_{\text{rec}}=0.8$~s. (a)~Halle el intervalo para $x^*=0.9$ y $0.99$. (b)~El umbral $x^*$ varía al azar en $\pm0.005$ en torno a $0.99$. ¿En qué rango caen los intervalos?
+\emph{Intervalo entre salvas.} La salva agota la reserva hasta cero; luego $\tau_{\text{rec}}\,\dd x/\dd t=1-x$, y la nueva salva empieza cuando $x=x^*$; $\tau_{\text{rec}}=0.8$~s. (a)~Halle el intervalo para $x^*=0.9$ y $0.99$. (b)~El umbral $x^*$ varía al azar en $\pm0.005$ en torno a $0.99$. ¿En qué rango caen los intervalos?
 \end{exercise}
 
 \begin{exercise}[\lvlA]
@@ -140,7 +140,7 @@ Una máquina de neuronas vivas (tabla~\ref{tab:livingmachine}) es un banco de pr
 
 \begin{exercise}[\lvlB]
 \label{ex:21:3}
-\emph{Diseño: suprimir las ráfagas.} Una estimulación escasa por muchos electrodos hace que cada sinapsis libere neurotransmisor con frecuencia $r_b$; la reserva cumple $\tau_{\text{rec}}\,\dd x/\dd t=1-x-Ur_b\tau_{\text{rec}}x$, $U=0.5$, $\tau_{\text{rec}}=0.8$~s. ¿Con qué $r_b$ mínima la reserva no llega a $x^*=0.9$; $0.99$, y cuánto se debilita entonces la sinapsis?
+\emph{Diseño: suprimir las salvas.} Una estimulación escasa por muchos electrodos hace que cada sinapsis libere neurotransmisor con frecuencia $r_b$; la reserva cumple $\tau_{\text{rec}}\,\dd x/\dd t=1-x-Ur_b\tau_{\text{rec}}x$, $U=0.5$, $\tau_{\text{rec}}=0.8$~s. ¿Con qué $r_b$ mínima la reserva no llega a $x^*=0.9$; $0.99$, y cuánto se debilita entonces la sinapsis?
 \end{exercise}
 
 \begin{exercise}[\lvlB]
@@ -155,7 +155,7 @@ Una máquina de neuronas vivas (tabla~\ref{tab:livingmachine}) es un banco de pr
 
 \begin{exercise}[\lvlB]
 \label{ex:21:6}
-\emph{Lectura para un reservorio vivo.} Un organoide da $1024$ canales y $P=240$ registros de entrenamiento de dos clases. (a)~¿Cuántos rasgos $n$ se pueden conservar para que, según la fórmula del ejercicio~\ref{ex:19:3}, un etiquetado aleatorio sea separable con probabilidad no mayor del $1\%$? (b)~¿Cuántas sigmas por encima del azar está una exactitud del $78\%$ en $100$ registros de prueba?
+\emph{Lectura para un reservorio vivo.} Un organoide da $1024$ canales y $P=240$ registros de entrenamiento de dos clases. (a)~¿Cuántos rasgos $n$ conservar para que, según el ejercicio~\ref{ex:19:3}, un etiquetado aleatorio sea separable con probabilidad $\le1\%$? (b)~¿Cuántas sigmas por encima del azar está una exactitud del $78\%$ en $100$ registros de prueba?
 \end{exercise}
 
 \begin{exercise}[\lvlC]

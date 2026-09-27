@@ -9,7 +9,7 @@ En este capítulo aparecerán tres dispositivos que después usarán todos los c
 
 Desde el punto de vista del ingeniero, la neurona \nt{SERO} tiene cuatro diferencias importantes.
 
-\emph{Primera: el signo lo elige el receptor.} La serotonina tiene receptores de ambos signos, y la regla~\eqref{eq:dalesign} no se aplica aquí: el signo no lo fija el emisor, sino el receptor del destinatario (proposición~\ref{prop:receptor})~\cite{BarnesSharp1999}.
+\emph{Primera: el signo lo elige el destinatario.} La serotonina tiene receptores de ambos signos, y la regla~\eqref{eq:dalesign} no se aplica aquí: el signo no lo fija el emisor, sino el receptor del destinatario (proposición~\ref{prop:receptor})~\cite{BarnesSharp1999}.
 
 \emph{Segunda: la neurona \nt{SERO} funciona sola si hay un fondo constante.} En la vigilia emite espigas de forma regular, varias por segundo, y no necesita un empujón para cada una: es un marcapasos. Pero necesita un aporte de fondo permanente. En una rebanada de cerebro, donde ese aporte falta, la mayoría de estas células calla; el ritmo regular vuelve si se aplica noradrenalina a través de los receptores $\alpha_1$, y su bloqueo lo apaga~\cite{VandermaelenAghajanian1983}. En el organismo ese fondo llega de \nt{NORA}. Para el circuito es un oscilador que necesita alimentación: mientras la tiene, funciona solo, hasta que lo detiene la inhibición.
 
@@ -26,11 +26,11 @@ r_i \;=\; f_i\bigl(b_i + s_i\,g\,c\bigr), \quad s_i=\pm1 .
 \end{empheq}
 Es otra forma de leer un tren de espigas, que complementa la proposición~\ref{prop:reader}: el volumen no ve ni espigas sueltas ni su orden, solo la frecuencia promediada en el tiempo $\tau_c$. La primera ecuación es el mismo circuito RC que la membrana: $\tau_c$ es la vida media del neurotransmisor en el volumen; no se ha medido directamente, y lo tomamos del orden de un segundo; $\kappa$ es cuánto neurotransmisor aporta una espiga. La segunda describe al destinatario: $b_i$ es su propio aporte, positivo en un marcapasos (incluye la entrada de fondo constante de \nt{NORA}); $g$ es la sensibilidad del receptor; el signo $s_i$ lo elige el destinatario; $f_i$ es una característica de transferencia no decreciente.
 
-\section{Un NO con una sola neurona}
+\section{Un NOT con una sola neurona}
 
-Tomemos un marcapasos con receptor inhibidor, $s=-1$. Mientras no hay serotonina alrededor, funciona con su propio aporte $b$. Cuando aparece serotonina, el aporte baja en $gc$, y si $gc>b$, la neurona calla. Esto es un NO: hay salida cuando no hay entrada. Ha costado una sola neurona (fig.~\ref{fig:serogates}). La proposición~\ref{prop:monotone} no se aplica aquí: exigía pesos positivos.
+Tomemos un marcapasos con receptor inhibidor, $s=-1$. Mientras no hay serotonina alrededor, funciona con su propio aporte $b$. Cuando aparece serotonina, el aporte baja en $gc$, y si $gc>b$, la neurona calla. Esto es un NOT: hay salida cuando no hay entrada. Ha costado una sola neurona (fig.~\ref{fig:serogates}). La proposición~\ref{prop:monotone} no se aplica aquí: exigía pesos positivos.
 
-Si sobre el mismo marcapasos actúa serotonina de dos volúmenes distintos, calla cuando hay serotonina en al menos uno. Esto es un NO-O, y con NO-O se puede construir cualquier función lógica. El código de dos cables de la red \nt{GLUT} no hace falta aquí: la ausencia de señal la calculan neuronas que funcionan mientras nada las detenga.
+Si sobre el mismo marcapasos actúa serotonina de dos volúmenes distintos, calla cuando hay serotonina en al menos uno. Esto es un NOR, y con NOR se puede construir cualquier función lógica. El código de dos cables de la red \nt{GLUT} no hace falta aquí: la ausencia de señal la calculan neuronas que funcionan mientras nada las detenga.
 
 \begin{figure}[t]
 \centering
@@ -41,14 +41,14 @@ Si sobre el mismo marcapasos actúa serotonina de dos volúmenes distintos, call
 \node[pace] (N1) at (0,0) {};
 \draw[inh] (-1.6,0) node[left,black] {$c$} -- (N1);
 \draw[->,very thick,red!70!black] (N1) -- (1.3,0) node[right,black] {$\bar c$};
-\node[below=0.55cm] at (0,0) {\small NO};
+\node[below=0.55cm] at (0,0) {\small NOT};
 \node[pace] (N2) at (5,0) {};
 \draw[inh] (3.4,0.45) node[left,black] {$c_1$} -- (N2);
 \draw[inh] (3.4,-0.45) node[left,black] {$c_2$} -- (N2);
 \draw[->,very thick,red!70!black] (N2) -- (6.3,0) node[right,black] {$\overline{c_1\vee c_2}$};
-\node[below=0.55cm] at (5,0) {\small NO-O};
+\node[below=0.55cm] at (5,0) {\small NOR};
 \end{tikzpicture}
-\caption{Lógica con neuronas \nt{SERO}. El círculo doble es un marcapasos: con un aporte de fondo constante funciona solo mientras no lo inhiban. La línea con barra es un receptor inhibidor, $s=-1$; $c$, $c_1$, $c_2$ son las concentraciones de serotonina en los volúmenes que rodean al destinatario. A la izquierda, NO; a la derecha, NO-O.}
+\caption{Lógica con neuronas \nt{SERO}. El círculo doble es un marcapasos: con un aporte de fondo constante funciona solo mientras no lo inhiban. La línea con barra es un receptor inhibidor, $s=-1$; $c$, $c_1$, $c_2$ son las concentraciones de serotonina en los volúmenes que rodean al destinatario. A la izquierda, NOT; a la derecha, NOR.}
 \label{fig:serogates}
 \end{figure}
 
@@ -105,7 +105,7 @@ El segundo cálculo está escondido en la primera ecuación~\eqref{eq:seroneuron
 c(t) \;=\; \frac{\kappa}{\tau_c}\int_{-\infty}^{t} e^{-(t-t')/\tau_c}\,\sum_j r_j(t')\,\dd t' .
 \label{eq:lowpass}
 \end{equation}
-Es la media móvil de la actividad de las fuentes en una ventana de unas pocas $\tau_c$ hacia atrás: un filtro paso bajo (fig.~\ref{fig:lowpass}). Así el convertidor digital-analógico más sencillo pasa los pulsos por un circuito RC y convierte su frecuencia en un nivel. El sistema \nt{SERO} hace lo mismo con cientos de miles de neuronas a la vez.
+Es la media móvil de la actividad de las fuentes en una ventana de unas pocas $\tau_c$ hacia atrás: un filtro pasa bajos (fig.~\ref{fig:lowpass}). Así el convertidor digital-analógico más sencillo pasa los pulsos por un circuito RC y convierte su frecuencia en un nivel. El sistema \nt{SERO} hace lo mismo con cientos de miles de neuronas a la vez.
 
 Esta magnitud es además una memoria. Cuando las fuentes callan, la concentración se mantiene todavía un tiempo del orden de $\tau_c$. No es un bit, sino una huella que se desvanece poco a poco.
 
@@ -183,7 +183,7 @@ tiempo de reacción & milisegundos & de fracciones de segundo a un segundo \\
 signo de la acción & solo $+$ & $+$ y $-$, lo elige el destinatario \\
 sin entrada & calla & funciona sola con un aporte de fondo constante \\
 direccionamiento & punto a punto & volumen; la dirección es el lugar \\
-NO & solo mediante detectores de “apagado” & una neurona \\
+NOT & solo mediante sensores de “apagado” & una neurona \\
 memoria & actividad autosostenida, se apaga por fatiga & concentración, se desvanece en el tiempo $\tau_c$ \\
 cálculos principales & coincidencias, retardos, lógica, secuencias & suavizado; regulación de nivel y horizonte $\tau_\gamma$ (hipótesis) \\
 \bottomrule
@@ -223,7 +223,7 @@ Como elemento lógico (tabla~\ref{tab:glutvssero}), la neurona \nt{SERO} es más
 
 \begin{exercise}[\lvlB]
 \label{ex:05:6}
-\emph{Diseño: XOR con lógica \nt{SERO}.} Una compuerta es un marcapasos que emite $r_0$ si $b-g\sum_kc_k>0$ y $0$ en caso contrario, hacia su propio volumen $\tau_c\,\dd c/\dd t=-c+\kappa r$; calcula NO-O. Construya un XOR con cinco compuertas así y halle su tiempo de establecimiento con $\tau_c=1\,\text{s}$ y $G'=g\kappa r_0/b=2$.
+\emph{Diseño: XOR con lógica \nt{SERO}.} Una compuerta es un marcapasos que emite $r_0$ si $b-g\sum_kc_k>0$ y $0$ en caso contrario, hacia su propio volumen $\tau_c\,\dd c/\dd t=-c+\kappa r$; calcula NOR. Construya un XOR con cinco compuertas así y halle su tiempo de establecimiento con $\tau_c=1\,\text{s}$ y $G'=g\kappa r_0/b=2$.
 \end{exercise}
 
 \begin{exercise}[\lvlB]

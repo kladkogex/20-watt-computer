@@ -22,7 +22,7 @@ donde $T_c$ es el tiempo de subida, del orden de $50\ms$, y $F_1$ es la fuerza d
 F(t) \;=\; \sum_k h\bigl(t-t_k\bigr) .
 \label{eq:forcesum}
 \end{empheq}
-Es el mismo filtro pasabajos que convertía las espigas en concentración en el capítulo~\ref{sec:serocomputer}, solo que ahora la salida no es una concentración, sino una fuerza. El músculo es un convertidor digital-analógico de espigas a fuerza (fig.~\ref{fig:tetanus}). En nuestro modelo, con cinco espigas por segundo las sacudidas casi no se solapan y la fuerza salta de $0.2F_1$ a $1.1F_1$; con quince ya se mantiene entre $1.8F_1$ y $2.2F_1$; con cuarenta se vuelve casi constante, cerca de $5.4F_1$. Un músculo real se satura con espigas frecuentes, así que la suma lineal~\eqref{eq:forcesum} solo vale hasta unas decenas de espigas por segundo.
+Es el mismo filtro pasa bajos que convertía las espigas en concentración en el capítulo~\ref{sec:serocomputer}, solo que ahora la salida no es una concentración, sino una fuerza. El músculo es un convertidor digital-analógico de espigas a fuerza (fig.~\ref{fig:tetanus}). En nuestro modelo, con cinco espigas por segundo las sacudidas casi no se solapan y la fuerza salta de $0.2F_1$ a $1.1F_1$; con quince ya se mantiene entre $1.8F_1$ y $2.2F_1$; con cuarenta se vuelve casi constante, cerca de $5.4F_1$. Un músculo real se satura con espigas frecuentes, así que la suma lineal~\eqref{eq:forcesum} solo vale hasta unas decenas de espigas por segundo.
 
 \begin{figure}[t]
 \centering
@@ -156,7 +156,7 @@ El cerebro controla los músculos como una jerarquía de reguladores. Arriba se 
 \toprule
 Qué hace la salida & Cómo & Qué se sabe \\
 \midrule
-convierte espigas en fuerza & suma de sacudidas~\eqref{eq:forcesum}, filtro pasabajos & medido; la suma lineal es una simplificación \\
+convierte espigas en fuerza & suma de sacudidas~\eqref{eq:forcesum}, filtro pasa bajos & medido; la suma lineal es una simplificación \\
 dosifica la fuerza & activación de unidades por tamaño, punto flotante~\eqref{eq:sizeprinciple} & orden de activación medido \\
 empuja sabiendo solo tirar & par de músculos: momento, la diferencia; rigidez, la suma~\eqref{eq:antagonists} & medido \\
 sostiene la articulación & lazo de estiramiento, veto del antagonista mediante \nt{GLYC} & medido \\
@@ -169,7 +169,7 @@ camina y respira con ritmo & generador de ritmo~\eqref{eq:halfcentre} & generado
 \label{tab:muscles}
 \end{table}
 
-La salida de la máquina está hecha con los mismos trucos que todo lo demás (tabla~\ref{tab:muscles}): dos cables en lugar de un signo, un filtro pasabajos en lugar de un DAC, una escala logarítmica en lugar de una lineal, inhibición mutua y fatiga en lugar de un generador de reloj. La entrada (capítulo~\ref{sec:sensors}) y la salida miden el mundo en proporciones relativas, y entre ellas trabaja la máquina a la que está dedicado este libro.
+La salida de la máquina está hecha con los mismos trucos que todo lo demás (tabla~\ref{tab:muscles}): dos cables en lugar de un signo, un filtro pasa bajos en lugar de un DAC, una escala logarítmica en lugar de una lineal, inhibición mutua y fatiga en lugar de un generador de reloj. La entrada (capítulo~\ref{sec:sensors}) y la salida miden el mundo en proporciones relativas, y entre ellas trabaja la máquina a la que está dedicado este libro.
 
 \section{Ejercicios}
 
@@ -210,5 +210,5 @@ La salida de la máquina está hecha con los mismos trucos que todo lo demás (t
 
 \begin{exercise}[\lvlC]
 \label{ex:13:8}
-\emph{Una perilla de ritmo.} Según los ejercicios~\ref{ex:13:5} y~\ref{ex:13:6}, la entrada $I$ del generador~\eqref{eq:halfcentre} solo cambia la amplitud, no el ritmo. Proponga el cambio mínimo del modelo, con piezas del libro, con el que por debajo de cierto $I_{\min}$ no haya ritmo y por encima el período decrezca al crecer $I$, al menos a la mitad al triplicar $I$. Halle $I_{\min}$ con $\tau\ll\tau_a$ y compruébelo simulando.
+\emph{Una perilla de ritmo.} Según los ejercicios~\ref{ex:13:5} y~\ref{ex:13:6}, la entrada $I$ del generador~\eqref{eq:halfcentre} cambia la amplitud, no el ritmo. Proponga el cambio mínimo del modelo, con piezas del libro, con el que bajo cierto $I_{\min}$ no haya ritmo y por encima el período decrezca al crecer $I$, al menos a la mitad al triplicar $I$. Halle $I_{\min}$ con $\tau\ll\tau_a$ y compruébelo simulando.
 \end{exercise}

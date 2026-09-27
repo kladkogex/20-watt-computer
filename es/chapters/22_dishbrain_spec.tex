@@ -1,7 +1,7 @@
 \section{Especificación del banco: cómo reproducirlo}
 \label{sec:dishspec}
 
-A continuación está todo lo necesario para montar de nuevo un banco así: el equipo, el lazo, la codificación de la entrada, la lectura de la salida, la retroalimentación y el protocolo del experimento. Cada parámetro lleva indicada su fuente. “Artículo”: el valor está tomado del texto del trabajo~\cite{Kagan2022}. “Elección”: el artículo no lo da, y para reproducirlo habrá que fijarlo uno mismo; proponemos un valor por defecto y decimos cómo comprobarlo.
+A continuación está todo lo necesario para montar de nuevo un banco así: el equipo, el lazo, la codificación de la entrada, la lectura de la salida, la realimentación y el protocolo del experimento. Cada parámetro lleva indicada su fuente. “Artículo”: el valor está tomado del texto del trabajo~\cite{Kagan2022}. “Elección”: el artículo no lo da, y para reproducirlo habrá que fijarlo uno mismo; proponemos un valor por defecto y decimos cómo comprobarlo.
 
 \subsection*{Equipo y cultivo}
 
@@ -25,7 +25,7 @@ edad del cultivo en el experimento & ratón: desde $\sim10$ días; humano: $14$-
 
 \subsection*{Lazo y tiempo}
 
-El lazo funciona en ventanas de $10\ms$ ($200$ muestras): en cada ventana se cuentan las espigas en los electrodos de las regiones motoras, se actualiza el juego y se emite la siguiente estimulación. El retardo desde una espiga en el cultivo hasta el estímulo de respuesta es de unos $5\ms$. Durante el juego, la señal de cada electrodo pasa por un filtro de Bessel paso alto de 2.º orden con frecuencia de corte de $100$~Hz; el valor absoluto de la señal se suaviza con un filtro de Bessel paso bajo de 1.er orden de $1$~Hz, y el umbral de espiga es proporcional a ese valor absoluto suavizado. El umbral de seis desviaciones estándar del fondo el artículo lo indica para mediciones aparte de la actividad, no para el juego. Para que la estimulación no cuente como respuesta del cultivo, todas las señales se anulan cuando llegan a la vez más de $15$ pulsos grandes, de más de $75$~mV. Todo esto: artículo.
+El lazo funciona en ventanas de $10\ms$ ($200$ muestras): en cada ventana se cuentan las espigas en los electrodos de las regiones motoras, se actualiza el juego y se emite la siguiente estimulación. El retardo desde una espiga en el cultivo hasta el estímulo de respuesta es de unos $5\ms$. Durante el juego, la señal de cada electrodo pasa por un filtro de Bessel pasa altos de 2.º orden con frecuencia de corte de $100$~Hz; el valor absoluto de la señal se suaviza con un filtro de Bessel pasa bajos de 1.er orden de $1$~Hz, y el umbral de espiga es proporcional a ese valor absoluto suavizado. El umbral de seis desviaciones estándar del fondo el artículo lo indica para mediciones aparte de la actividad, no para el juego. Para que la estimulación no cuente como respuesta del cultivo, todas las señales se anulan cuando llegan a la vez más de $15$ pulsos grandes, de más de $75$~mV. Todo esto: artículo.
 
 \subsection*{Codificación de la pelota}
 
@@ -57,9 +57,9 @@ La ubicación de las regiones en el chip no está dada con coordenadas en el tex
 
 \subsection*{El juego}
 
-El tamaño de la cancha, la longitud de la raqueta y la velocidad de la pelota no se indican en el artículo; solo se dice que la pelota vuela a velocidad constante y rebota en las paredes. Para reproducirlo (elección): cancha de $1\times1$, raqueta de longitud $0.2$ en la pared derecha (acierto con $|y-p|<0.1$, como en el modelo~\texttt{models/dishbrain\_model.py}), y la pelota cruza la cancha en $1$~s. Un fallo sin ninguna pelota devuelta en el peloteo cuenta como “ace”; un peloteo de más de tres golpes seguidos, como “largo” (artículo).
+El tamaño de la cancha, la longitud de la raqueta y la velocidad de la pelota no se indican en el artículo; solo se dice que la pelota vuela a velocidad constante y rebota en las paredes. Para reproducirlo (elección): cancha de $1\times1$, raqueta de longitud $0.2$ en la pared derecha (acierto con $|y-p|<0.1$, como en el modelo~\texttt{models/dishbrain\_model.py}), y la pelota cruza la cancha en $1$~s. Un fallo sin ninguna pelota devuelta en el peloteo cuenta como “ace”; un peloteo de más de tres aciertos seguidos, como “largo” (artículo).
 
-\subsection*{Retroalimentación}
+\subsection*{Realimentación}
 
 \begin{center}
 \footnotesize
@@ -82,11 +82,11 @@ Una sesión dura $20$~min; se comparan los primeros $5$ y los últimos $15$~min 
 \begin{itemize}
 \item \emph{estímulo}: el lazo completo, como se describe arriba;
 \item \emph{silencio}: en lugar del estímulo de acierto o de fallo, el mismo tiempo sin ninguna estimulación; luego la pelota sale en una dirección aleatoria;
-\item \emph{sin retroalimentación}: tras un fallo la pelota simplemente rebota y sigue volando, y la estimulación de la posición de la pelota continúa;
+\item \emph{sin realimentación}: tras un fallo la pelota simplemente rebota y sigue volando, y la estimulación de la posición de la pelota continúa;
 \item \emph{reposo}: el juego sigue y la raqueta se mueve según la actividad, pero no hay ninguna estimulación;
 \item \emph{controles}: chip solo con medio; células HEK293T; “cultivo en la computadora”, una simulación en lugar de células.
 \end{itemize}
-Tamaño de muestra en la serie principal: $9$ cultivos de ratón ($101$ sesiones), $11$ cultivos humanos ($138$), $6$ chips con medio ($80$), $20$ cultivos en reposo ($42$), $3$ simulaciones ($38$); en total, $399$ sesiones. En la serie sobre la retroalimentación: $486$ sesiones en $3$ días, $3$ sesiones al día, con las condiciones “estímulo”, “silencio” y “sin retroalimentación” ($n=27$, $17$ y $15$). El aumento de la longitud media del peloteo de los primeros $5$ minutos a los últimos $15$ solo se obtuvo en cultivos vivos. En la serie sobre la retroalimentación, el aumento significativo en el tiempo solo se dio en la condición “estímulo”; al final de la sesión la condición “silencio” sí superaba a “sin retroalimentación”, pero con un efecto menor, y no hubo aprendizaje estable de una sesión a otra en los tres días~\cite{Kagan2022}.
+Tamaño de muestra en la serie principal: $9$ cultivos de ratón ($101$ sesiones), $11$ cultivos humanos ($138$), $6$ chips con medio ($80$), $20$ cultivos en reposo ($42$), $3$ simulaciones ($38$); en total, $399$ sesiones. En la serie sobre la realimentación: $486$ sesiones en $3$ días, $3$ sesiones al día, con las condiciones “estímulo”, “silencio” y “sin realimentación” ($n=27$, $17$ y $15$). El aumento de la longitud media del peloteo de los primeros $5$ minutos a los últimos $15$ solo se obtuvo en cultivos vivos. En la serie sobre la realimentación, el aumento significativo en el tiempo solo se dio en la condición “estímulo”; al final de la sesión la condición “silencio” sí superaba a “sin realimentación”, pero con un efecto menor, y no hubo aprendizaje estable de una sesión a otra en los tres días~\cite{Kagan2022}.
 
 \subsection*{El ciclo del banco paso a paso}
 

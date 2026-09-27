@@ -5,13 +5,13 @@
 
 Una red formada solo por neuronas \nt{GLUT} no sabe elegir, reiniciar la memoria ni contener la actividad antes de que se desborde en avalancha, y todo por la monotonía (proposición~\ref{prop:monotone}). Añadamos el segundo tipo de neurona más numeroso: \nt{GABA}. Las reglas son las de antes: solo lo que existe en un organismo vivo, y ninguna señal de reloj.
 
-El modelo de neurona es el mismo que~\eqref{eq:glutneuron}, pero una espiga de una neurona \nt{GABA} no eleva el voltaje del receptor, sino que lo baja. Ahora los pesos tienen dos signos, y el signo lo fija el emisor, según la regla~\eqref{eq:dalesign}.
+El modelo de neurona es el mismo que~\eqref{eq:glutneuron}, pero una espiga de una neurona \nt{GABA} no eleva el voltaje del destinatario, sino que lo baja. Ahora los pesos tienen dos signos, y el signo lo fija el emisor, según la regla~\eqref{eq:dalesign}.
 
 Algunos parámetros del circuito. Las neuronas \nt{GABA} son entre una quinta y una cuarta parte de las de la corteza~\cite{Hendry1987}. Sus salidas son cortas: inhiben a sus vecinas, no a regiones lejanas. La inhibición llega al cabo de un milisegundo y dura unos pocos milisegundos. Sin entrada, una neurona \nt{GABA} calla: para inhibir a alguien, ella misma debe recibir excitación, normalmente de las neuronas \nt{GLUT} de la misma red.
 
 Por eso una conexión negativa de una neurona \nt{GLUT} $A$ a una neurona $B$ hay que hacerla a través de un intermediario: $A$ excita a una neurona \nt{GABA}, y esta inhibe a $B$. El cambio de signo cuesta una neurona y un retardo, alrededor de un milisegundo.
 
-Para la inhibición no solo importa \emph{de quién} viene la conexión, sino también \emph{dónde} se asienta: el lugar de llegada determina en gran medida lo que hace la conexión~\cite{Markram2004}. Las salidas \nt{GLUT} llegan sobre todo a las ramas de entrada del receptor, sus \emph{dendritas}, y llevan datos: cada una de esas entradas es un sumando de la suma. Una salida sobre el cuerpo de la neurona actúa sobre la suma entera: así muchas neuronas \nt{GABA} rápidas dividen la respuesta del receptor y fijan cuándo debe dispararse. Una salida sobre el lugar donde nace la espiga del receptor es la última palabra, un veto sobre toda la salida a la vez. Y una salida sobre la terminal del cable de otra neurona cambia la probabilidad de liberación $p$ de una sola línea de entrada, sin tocar las demás~\cite{Rudomin1999}; así funcionan, en particular, las compuertas del dolor del capítulo~\ref{sec:pain}. Fuera del cerebro, las salidas llegan a las fibras musculares (capítulo~\ref{sec:muscles}) y a los órganos (capítulo~\ref{sec:chemoutput}), y algunas no llegan a ninguna parte y liberan el neurotransmisor en el volumen del tejido o en la sangre (capítulos~\ref{sec:serocomputer} y~\ref{sec:chemoutput}).
+Para la inhibición no solo importa \emph{de quién} viene la conexión, sino también \emph{dónde} se asienta: el lugar de llegada determina en gran medida lo que hace la conexión~\cite{Markram2004}. Las salidas \nt{GLUT} llegan sobre todo a las ramas de entrada del destinatario, sus \emph{dendritas}, y llevan datos: cada una de esas entradas es un sumando de la suma. Una salida sobre el cuerpo de la neurona actúa sobre la suma entera: así muchas neuronas \nt{GABA} rápidas dividen la respuesta del destinatario y fijan cuándo debe dispararse. Una salida sobre el lugar donde nace la espiga del destinatario es la última palabra, un veto sobre toda la salida a la vez. Y una salida sobre la terminal del cable de otra neurona cambia la probabilidad de liberación $p$ de una sola línea de entrada, sin tocar las demás~\cite{Rudomin1999}; así funciona, en particular, la compuerta del dolor del capítulo~\ref{sec:pain}. Fuera del cerebro, las salidas llegan a las fibras musculares (capítulo~\ref{sec:muscles}) y a los órganos (capítulo~\ref{sec:chemoutput}), y algunas no llegan a ninguna parte y liberan el neurotransmisor en el volumen del tejido o en la sangre (capítulos~\ref{sec:serocomputer} y~\ref{sec:chemoutput}).
 
 \section{NOT y veto}
 
@@ -211,7 +211,7 @@ Si $w_{EE}>1$, el coeficiente de $h_I$ en la segunda fórmula es negativo: si se
 
 Las oscilaciones cuando se viola la condición~(ii) también se dan en el cerebro. El lazo “\nt{GLUT} excita a \nt{GABA}, \nt{GABA} inhibe a \nt{GLUT}” con un retardo de unos pocos milisegundos genera un ritmo con un período del orden de $12$--$50\ms$ (frecuencia de $20$--$80$\,Hz), y estos ritmos rápidos de la corteza son bien conocidos~\cite{Cardin2009,Buzsaki2012}. No es el reloj de una computadora: el ritmo es local y solo surge cuando la red está activa. Pero durante unos cuantos ciclos divide el tiempo en ventanas en las que las neuronas pueden dispararse.
 
-\section{Balance}
+\section{Resumen}
 
 \begin{table}[t]
 \centering

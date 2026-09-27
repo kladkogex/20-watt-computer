@@ -93,7 +93,7 @@ x\vee y \;&\to\; \bigl(\;x\vee y,\;\; \bar x\wedge\bar y\;\bigr).
 \end{empheq}
 A la derecha todas las operaciones son monótonas, así que la proposición~\ref{prop:monotone} no se viola.
 
-Para un circuito asíncrono, el código de dos cables tiene una segunda ventaja, aún más importante. Un par de cables tiene tres estados: “sí”, “no” y, cuando ambos callan, \emph{“todavía no hay respuesta”}. El receptor sabe que el cálculo ha terminado no por un reloj, sino por la propia señal: en cada par se ha activado exactamente un cable. Entre estímulos los sensores callan, y la red vuelve al silencio, lista para la próxima vez. En la electrónica asíncrona, sobre este recurso se construyen circuitos que funcionan correctamente con cualquier retardo de sus elementos~\cite{Sparso2001}.
+Para un circuito asíncrono, el código de dos cables tiene una segunda ventaja, aún más importante. Un par de cables tiene tres estados: “sí”, “no” y, cuando ambos callan, \emph{“todavía no hay respuesta”}. El destinatario sabe que el cálculo ha terminado no por un reloj, sino por la propia señal: en cada par se ha activado exactamente un cable. Entre estímulos los sensores callan, y la red vuelve al silencio, lista para la próxima vez. En la electrónica asíncrona, sobre este recurso se construyen circuitos que funcionan correctamente con cualquier retardo de sus elementos~\cite{Sparso2001}.
 
 \begin{keyblock}
 \begin{proposition}[Cálculo asíncrono]
@@ -169,7 +169,7 @@ Solo se disparará el detector al que ambas señales llegaron dentro de la venta
 \label{fig:itd}
 \end{figure}
 
-Aquí no hay reloj, ni inhibición, ni siquiera código de dos cables: la red no responde “sí” o “no”, sino que señala una neurona entre muchas. Un circuito así, de líneas de retardo y detectores de coincidencias, parece funcionar realmente en el tronco auditivo de las aves~\cite{Carr1990}. La precisión de microsegundos no sale de la precisión de cada neurona, sino de que hay muchos detectores y cada uno vigila su propio retardo. En los mamíferos no se ha encontrado una fila de retardos así: allí la misma tarea parece resolverse con detectores de coincidencias ajustados por una inhibición de \nt{GLYC} temporizada con precisión~\cite{Brand2002,Grothe2010}. Cómo la inhibición estrecha la ventana de coincidencia lo veremos en el capítulo~\ref{sec:gaba} con el ejemplo de \nt{GABA}; la glicina inhibe del mismo modo, abriendo canales de cloro en el receptor.
+Aquí no hay reloj, ni inhibición, ni siquiera código de dos cables: la red no responde “sí” o “no”, sino que señala una neurona entre muchas. Un circuito así, de líneas de retardo y detectores de coincidencias, parece funcionar realmente en el tronco auditivo de las aves~\cite{Carr1990}. La precisión de microsegundos no sale de la precisión de cada neurona, sino de que hay muchos detectores y cada uno vigila su propio retardo. En los mamíferos no se ha encontrado una fila de retardos así: allí la misma tarea parece resolverse con detectores de coincidencias ajustados por una inhibición de \nt{GLYC} temporizada con precisión~\cite{Brand2002,Grothe2010}. Cómo la inhibición estrecha la ventana de coincidencia lo veremos en el capítulo~\ref{sec:gaba} con el ejemplo de \nt{GABA}; la glicina inhibe del mismo modo, abriendo canales de cloro en el destinatario.
 
 \section{Memoria}
 
@@ -242,7 +242,7 @@ Una cadena así mide el tiempo desde un evento: si se disparó el eslabón núme
 
 A diferencia de un reloj, la cadena calla mientras no se la arranca, funciona una sola vez y mide el tiempo solo para quienes están conectados a ella. La red sigue sin tener un ciclo de reloj común.
 
-\section{Lo que falta}
+\section{Qué falta}
 
 Con neuronas \nt{GLUT} solas, sin inhibición, se logra mucho. Pero faltan tres cosas, y las tres por la proposición~\ref{prop:monotone}.
 
@@ -283,10 +283,10 @@ Los tres males se curan con un solo remedio: una neurona que apaga una espiga co
 
 \begin{exercise}[\lvlA]
 \label{ex:02:6}
-\emph{La cadena como temporizador.} Un eslabón de la cadena tiene $100$ neuronas \nt{GLUT} y un retardo de $2\ms$ con una dispersión independiente de $0.2\ms$. (a)~¿Cuántas neuronas hacen falta para medir $1$~s y cuál es el error relativo? ¿Cómo depende del intervalo? (b)~Un temporizador real tiene un error del $5\%$ para cualquier intervalo. ¿Qué fuente de dispersión produce esto?
+\emph{La cadena como temporizador.} Un eslabón tiene $100$ neuronas \nt{GLUT} y un retardo de $2\ms$ con una dispersión independiente de $0.2\ms$. (a)~¿Cuántas neuronas hacen falta para medir $1$~s y cuál es el error relativo? ¿Cómo depende del intervalo? (b)~Un temporizador real tiene un error del $5\%$ para cualquier intervalo. ¿Qué dispersión lo produce?
 \end{exercise}
 
 \begin{exercise}[\lvlC]
 \label{ex:02:7}
-\emph{Investigación: biestable o condensador.} $100$ neuronas mantienen un bit durante $10$~s. Biestable: cada una emite $20$ espigas por segundo. Condensador: la facilitación $u$ decae con $\tau_F=1$~s, el bit se lee si $u\ge u_{\max}/2$, y el refresco es una ráfaga de tres espigas en cada neurona. ¿Cuántas veces más económico es el condensador, y qué le pasa al bit si el grupo se silencia durante $200\ms$?
+\emph{Investigación: biestable o condensador.} $100$ neuronas mantienen un bit durante $10$~s. Biestable: cada una emite $20$ espigas/s. Condensador: la facilitación $u$ decae con $\tau_F=1$~s, el bit se lee si $u\ge u_{\max}/2$, y el refresco, una ráfaga de tres espigas por neurona. ¿Cuántas veces más económico es el condensador y qué le pasa al bit si el grupo calla $200\ms$?
 \end{exercise}

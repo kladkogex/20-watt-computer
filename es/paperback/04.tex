@@ -5,7 +5,7 @@ El código Morse tiene dos signos, punto y raya, y las pausas entre ellos. El al
 
 \section*{Cuánto se puede decir con clics}
 
-Empecemos como un ingeniero de telecomunicaciones: ¿cuánta información cabe en un canal así? Si el receptor distingue el momento de llegada de un clic con precisión de un milisegundo, un solo clic puede llevar unos ocho bits. Si en cambio el receptor solo cuenta cuántos clics llegaron en un segundo, del mismo flujo sacará decenas de veces menos. Casi toda la capacidad del canal está en el \emph{tiempo}.
+Empecemos como un ingeniero de telecomunicaciones: ¿cuánta información cabe en un canal así? Si el destinatario distingue el momento de llegada de un clic con precisión de un milisegundo, un solo clic puede llevar unos ocho bits. Si en cambio el destinatario solo cuenta cuántos clics llegaron en un segundo, del mismo flujo sacará decenas de veces menos. Casi toda la capacidad del canal está en el \emph{tiempo}.
 
 \pencilfig{4}{\pencilart{4}}{Arriba, código Morse; abajo, una neurona: un solo signo, el clic; todo el mensaje está en las pausas.}
 
@@ -35,7 +35,7 @@ La salida es tomar muchas neuronas a la vez: no un oyente que cuenta clics duran
 
 \section*{Rápido: quién llega primero}
 
-La segunda salida es escribir el número en el tiempo. Una señal fuerte hará que la neurona haga clic temprano; una débil, tarde. Un único clic ya lleva un número. Pero ¿desde cuándo se cuenta el tiempo, si no hay reloj? Se pueden comparar las neuronas entre sí: quién hizo clic primero, quién segundo. El orden de llegada de los clics de diez neuronas lleva más de veinte bits. Además, una descarga común sirve de marca de inicio, como la pausa larga entre palabras en el código Morse.
+La segunda salida es escribir el número en el tiempo. Una señal fuerte hará que la neurona haga clic temprano; una débil, tarde. Un único clic ya lleva un número. Pero ¿desde cuándo se cuenta el tiempo, si no hay reloj? Se pueden comparar las neuronas entre sí: quién hizo clic primero, quién segundo. El orden de llegada de los clics de diez neuronas lleva más de veinte bits. Además, una salva común sirve de marca de inicio, como la pausa larga entre palabras en el código Morse.
 
 \pencilfig{121}{%
 % latency code: one click per neuron; the stronger the input, the earlier the click
@@ -53,7 +53,7 @@ La segunda salida es escribir el número en el tiempo. Una señal fuerte hará q
 
 \section*{El código lo elige el oyente}
 
-Una misma secuencia de clics lleva a la vez la frecuencia, los tiempos y el orden. Qué se leerá de todo eso lo decide el receptor. Una neurona con un “agujero ancho” en el balde acumula agua despacio y solo oye la frecuencia. Una neurona que olvida rápido solo oye las coincidencias. Y los frenos, como vimos, saben pasar una neurona de un modo al otro.
+Una misma secuencia de clics lleva a la vez la frecuencia, los tiempos y el orden. Qué se leerá de todo eso lo decide el destinatario. Una neurona con un “agujero ancho” en el balde acumula agua despacio y solo oye la frecuencia. Una neurona que olvida rápido solo oye las coincidencias. Y los frenos, como vimos, saben pasar una neurona de un modo al otro.
 
 Hasta las conexiones filtran la señal. Unas se cansan rápido y por eso no comunican la frecuencia, sino su \emph{cambio}. Otras, al contrario, dejan pasar mejor las ráfagas de varios clics seguidos: la neurona gana una “raya”. Mientras tanto, las neuronas inhibidoras ponen la puntuación: cortan el flujo en ventanas y lo atenúan cuando suena demasiado fuerte.
 

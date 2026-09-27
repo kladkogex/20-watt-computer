@@ -29,15 +29,15 @@ resonador & circuito resonante, filtro pasa banda & responde mejor a una entrada
 integrador sin fugas & integrador con amplificador operacional & convierte velocidad en posición y la mantiene & sección~\ref{sec:perfectint} \\
 \midrule
 \multicolumn{4}{l}{\emph{Convertidores}} \\
-neurona tónica & convertidor tensión---frecuencia & la frecuencia sigue linealmente a la entrada y casi no se fatiga & cap.~\ref{sec:code} \\
-neurona graduada (sin espigas) & amplificador analógico, búfer & transmite una tensión continua a corta distancia & cap.~\ref{sec:sensors} \\
+neurona tónica & convertidor voltaje---frecuencia & la frecuencia sigue linealmente a la entrada y casi no se fatiga & cap.~\ref{sec:code} \\
+neurona graduada (sin espigas) & amplificador analógico, búfer & transmite un voltaje continuo a corta distancia & cap.~\ref{sec:sensors} \\
 neurona rectificadora & rectificador de media onda & la frecuencia nunca es negativa, $[u]_+$ & caps.~\ref{sec:glutcomputer}, \ref{sec:gaba} \\
 par “encendido---apagado” & par de rectificadores, código de dos cables & una responde a “más”, la otra a “menos” & cap.~\ref{sec:glutcomputer}, \eqref{eq:dualrail} \\
 neurona con inhibición de derivación & divisor analógico, control de ganancia & divide la entrada en vez de restarle & cap.~\ref{sec:gaba}, \eqref{eq:shunt} \\
 \midrule
 \multicolumn{4}{l}{\emph{Generadores y tiempo}} \\
 marcapasos & oscilador de relajación, multivibrador & emite espigas por sí solo a frecuencia constante & caps.~\ref{sec:serocomputer}, \ref{sec:dofa} \\
-marcapasos con entrada & oscilador controlado por tensión & ritmo propio que la entrada acelera o frena & cap.~\ref{sec:chemoutput} \\
+marcapasos con entrada & oscilador controlado por voltaje & ritmo propio que la entrada acelera o frena & cap.~\ref{sec:chemoutput} \\
 neurona de ráfagas & generador de ráfagas con compuerta & emite ráfagas de espigas rápidas: las “rayas” & cap.~\ref{sec:code}, \eqref{eq:burst} \\
 neurona ligada a la fase & detector de fase, lazo de enganche de fase & dispara en una fase determinada de la onda de entrada & caps.~\ref{sec:sensors}, \ref{sec:chemoutput} \\
 axón con retardo & línea de retardo & retrasa la señal un tiempo dado & cap.~\ref{sec:glutcomputer}, fig.~\ref{fig:itd} \\
@@ -55,7 +55,7 @@ Una salvedad importa más que toda la tabla: no son células distintas, sino \em
 \subsection{El resonador}
 \label{sec:resonator}
 
-Algunas neuronas tienen una corriente lenta que se opone a cualquier cambio de tensión: si la tensión sube, la corriente tira de ella hacia abajo; si baja, hacia arriba, pero con retardo. Para un electrónico, esa corriente se comporta como una inductancia, y junto con la capacidad de la membrana forma un circuito resonante. La neurona responde con más fuerza a una entrada de cierta frecuencia, normalmente de unos pocos hercios a una o dos decenas, y más débilmente a entradas más lentas y más rápidas~\cite{HutcheonYarom2000}. Es un filtro pasa banda en una sola célula: de una entrada ruidosa selecciona el ritmo de su frecuencia, por ejemplo el ritmo local del capítulo~\ref{sec:gaba}.
+Algunas neuronas tienen una corriente lenta que se opone a cualquier cambio de voltaje: si el voltaje sube, la corriente tira de él hacia abajo; si baja, hacia arriba, pero con retardo. Para un electrónico, esa corriente se comporta como una inductancia, y junto con la capacidad de la membrana forma un circuito resonante. La neurona responde con más fuerza a una entrada de cierta frecuencia, normalmente de unos pocos hercios a una o dos decenas, y más débilmente a entradas más lentas y más rápidas~\cite{HutcheonYarom2000}. Es un filtro pasa banda en una sola célula: de una entrada ruidosa selecciona el ritmo de su frecuencia, por ejemplo el ritmo local del capítulo~\ref{sec:gaba}.
 
 \subsection{El integrador sin fugas}
 \label{sec:perfectint}
@@ -74,12 +74,12 @@ En los capítulos~\ref{sec:glutcomputer} y~\ref{sec:gaba} el biestable se constr
 
 \subsection{Integradores y resonadores}
 
-La teoría divide las células excitables en dos clases~\cite{Izhikevich2007}. Los \emph{integradores} se parecen a un oscilador controlado por tensión que arranca desde cero: justo por encima del umbral la neurona dispara tan despacio como se quiera, y la frecuencia crece suavemente con la entrada. Una neurona así suma todo lo que llega y transmite bien con su frecuencia la magnitud de la entrada. Los \emph{resonadores} se parecen a un oscilador con frecuencia mínima: no saben disparar despacio; con una entrada en el umbral emiten de inmediato espigas a una frecuencia finita y prefieren una entrada de su propia frecuencia. Los primeros son los instrumentos naturales del código de frecuencia del capítulo~\ref{sec:code}; los segundos, del código temporal.
+La teoría divide las células excitables en dos clases~\cite{Izhikevich2007}. Los \emph{integradores} se parecen a un oscilador controlado por voltaje que arranca desde cero: justo por encima del umbral la neurona dispara tan despacio como se quiera, y la frecuencia crece suavemente con la entrada. Una neurona así suma todo lo que llega y transmite bien con su frecuencia la magnitud de la entrada. Los \emph{resonadores} se parecen a un oscilador con frecuencia mínima: no saben disparar despacio; con una entrada en el umbral emiten de inmediato espigas a una frecuencia finita y prefieren una entrada de su propia frecuencia. Los primeros son los instrumentos naturales del código de frecuencia del capítulo~\ref{sec:code}; los segundos, del código temporal.
 
 \begin{keyblock}
 \begin{proposition}[Una neurona, muchos instrumentos]
 \label{prop:eetypes}
-Por su función eléctrica, las neuronas funcionan como integradores con fugas y sin ellas, detectores de coincidencias, filtros pasa altos y pasa banda, convertidores tensión---frecuencia, rectificadores, divisores, osciladores, líneas de retardo y biestables. Qué instrumento resulta de una célula dada lo fijan sus canales iónicos y los canales de difusión que los ajustan. Los modos en sí están medidos; hasta qué punto usa el cerebro esta reconfiguración para calcular es sobre todo una hipótesis.
+Por su función eléctrica, las neuronas funcionan como integradores con fugas y sin ellas, detectores de coincidencias, filtros pasa altos y pasa banda, convertidores voltaje---frecuencia, rectificadores, divisores, osciladores, líneas de retardo y biestables. Qué instrumento resulta de una célula dada lo fijan sus canales iónicos y los canales de difusión que los ajustan. Los modos en sí están medidos; hasta qué punto usa el cerebro esta reconfiguración para calcular es sobre todo una hipótesis.
 \end{proposition}
 \end{keyblock}
 
@@ -94,7 +94,7 @@ Para un ingeniero, esto se parece a una matriz lógica programable: el hardware 
 
 \begin{exercise}[\lvlB]
 \label{ex:18:2}
-\emph{El resonador como circuito.} Describamos la corriente lenta de la sección~\ref{sec:resonator} con una variable $W$: $C\,\dd V/\dd t=-g_LV-g_wW+I$, $\tau_w\,\dd W/\dd t=V-W$. Muestre que es un circuito $RC$ con una rama paralela $R_w=1/g_w$, $L_w=\tau_w/g_w$, y con $C/g_L=10\ms$, $\tau_w=100\ms$, $\alpha=g_w/g_L=4$ halle la frecuencia de resonancia y la ganancia de $|Z|$ en ella sobre $|Z(0)|$.
+\emph{El resonador como circuito.} Describamos la corriente lenta de la sección~\ref{sec:resonator} con una variable $W$: $C\,\dd V/\dd t=-g_LV-g_wW+I$, $\tau_w\,\dd W/\dd t=V-W$. Muestre que es un circuito $RC$ con una rama paralela $R_w=1/g_w$, $L_w=\tau_w/g_w$, y con $C/g_L=10\ms$, $\tau_w=100\ms$, $\alpha=g_w/g_L=4$ halle la frecuencia de resonancia y el cociente $|Z|/|Z(0)|$ en ella.
 \end{exercise}
 
 \begin{exercise}[\lvlB]

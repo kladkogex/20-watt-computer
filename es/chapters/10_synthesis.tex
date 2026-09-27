@@ -44,7 +44,7 @@ La imagen del capítulo~\ref{sec:neurontypes} se confirmó y se volvió más pre
 \draw[bc] (H.south) -- (10.0,2.1) -- (8.8,1.35);
 \draw[bc] (H.south east) to[bend left=20] (A.north east);
 \draw[->,thick] (2.85,1.35) -- (2.85,2.75) -- (D.west) node[pos=0.25,left,font=\scriptsize] {$V$};
-\draw[->,thick,green!45!black] (0.4,3.2) node[left,black,font=\small] {premio $r$} -- (2.2,3.2) -- (D.west);
+\draw[->,thick,green!45!black] (0.4,3.2) node[left,black,font=\scriptsize] {recompensa $r$} -- (2.2,3.2) -- (D.west);
 \pic[scale=0.9] at (-0.45,3.7) {juice};
 \draw[->,thick,densely dotted,gray!50!black] ([yshift=0.45cm]D.north) to[bend left=18] node[above,font=\scriptsize,black] {sorpresa} ([yshift=0.45cm]N.north);
 \end{tikzpicture}
@@ -66,12 +66,12 @@ Las perillas pueden reunirse en una sola fórmula esquemática. No es un modelo 
 \end{empheq}
 Aquí $r_i$ son las frecuencias de las neuronas \nt{GLUT}, $x_i$ es la entrada de los sensores, $W_{ij}\ge0$ son sus pesos mutuos (capítulo~\ref{sec:glutcomputer}); $q_k$ son las frecuencias de las neuronas \nt{GABA} y $M_{ik}\ge0$, la fuerza de su inhibición (capítulo~\ref{sec:gaba}); $e_{ij}$ es la traza de elegibilidad y $\delta$, el error de \nt{DOPA} (capítulo~\ref{sec:dofa}); $\tau_\gamma$ es el horizonte, fijado según la hipótesis por \nt{SERO}; $g$ es la ganancia de \nt{NORA} (capítulo~\ref{sec:nora}); $a$ es el nivel de \nt{ACET} (capítulo~\ref{sec:acet}).
 
-Observe lo que \emph{no} hay en~\eqref{eq:machine}. No hay ciclo de reloj: todo está escrito con ecuaciones diferenciales, y cada neurona cambia por sí sola. No hay una memoria aparte: recuerdan los mismos $W_{ij}$ por los que pasa el cálculo y la misma actividad $r_i$. No hay correcciones personales para la inmensa mayoría de las sinapsis: su aprendizaje es el producto de una traza local por un único número común; un cable de error propio para cada salida existe solo en el circuito que enseña los movimientos (capítulo~\ref{sec:motorlearning}). Y las señales de control son apenas de cuatro clases, $\delta$, $\tau_\gamma$, $g$ y $a$, para ochenta mil millones de neuronas. Cada una de ellas no es en realidad un solo número, sino un pequeño haz de líneas paralelas (proposición~\ref{prop:bundle}), pero las líneas de un haz se cuentan con los dedos.
+Observe lo que \emph{no} hay en~\eqref{eq:machine}. No hay ciclo de reloj: todo está escrito con ecuaciones diferenciales, y cada neurona cambia por sí sola. No hay una memoria aparte: recuerdan los mismos $W_{ij}$ por los que pasa el cálculo y la misma actividad $r_i$. No hay correcciones personales para la inmensa mayoría de las sinapsis: su aprendizaje es el producto de una traza local por un único número común; un cable de error propio para cada salida existe solo en el circuito que enseña los movimientos (capítulo~\ref{sec:motorlearning}). Y las señales de control son apenas de cuatro clases, $\delta$, $\tau_\gamma$, $g$ y $a$, para ochenta mil millones de neuronas. Cada una de ellas no es en realidad un solo número, sino un pequeño mazo de líneas paralelas (proposición~\ref{prop:bundle}), pero las líneas de un mazo se cuentan con los dedos.
 
 \begin{keyblock}
 \begin{proposition}[Arquitectura]
 \label{prop:architecture}
-La máquina del cerebro, hasta donde hoy la entendemos, puede describirse con tres capas. Los datos viajan por el bus de direcciones \nt{GLUT}. Las neuronas \nt{GABA} direccionadas guían, limitan y normalizan el flujo de datos. El modo de trabajo lo fijan unos pocos canales de difusión, cada uno un pequeño haz de líneas paralelas comunes a grandes zonas de la red. Las dos primeras capas están firmemente establecidas; el reparto de papeles entre los canales de difusión es sobre todo una hipótesis.
+La máquina del cerebro, hasta donde hoy la entendemos, puede describirse con tres capas. Los datos viajan por el bus de direcciones \nt{GLUT}. Las neuronas \nt{GABA} direccionadas guían, limitan y normalizan el flujo de datos. El modo de trabajo lo fijan unos pocos canales de difusión, cada uno un pequeño mazo de líneas paralelas comunes a grandes zonas de la red. Las dos primeras capas están firmemente establecidas; el reparto de papeles entre los canales de difusión es sobre todo una hipótesis.
 \end{proposition}
 \end{keyblock}
 
@@ -93,7 +93,7 @@ Tipo & Cap. & Qué calcula & Tiempo & Bus & Qué se sabe \\
 \nt{SERO} & \ref{sec:serocomputer}, \ref{sec:pain}, \ref{sec:sleep} & regulador de nivel, suavizado; horizonte $\tau_\gamma$; volumen del dolor; modos del sueño & segundos & volumen & autoinhibición medida; horizonte: hipótesis \\
 \nt{DOPA} & \ref{sec:dofa}, \ref{sec:dofaalt} & error de predicción $\delta$; nivel lento: precio del tiempo & $0.1$\,s y minutos & difusión & $\delta$ medido; extensiones: cap.~\ref{sec:dofaalt} \\
 \nt{NORA} & \ref{sec:nora}, \ref{sec:pain}, \ref{sec:chemoutput}, \ref{sec:sleep} & ganancia $g$: buscar o decidir; sorpresa; “acelerador” de los órganos & segundos & difusión & aumento de la relación señal/ruido medido; papel en la búsqueda: hipótesis \\
-\nt{ACET} & \ref{sec:acet}, \ref{sec:muscles}, \ref{sec:chemoutput}, \ref{sec:sleep} & escritura o lectura; velocidad de aprendizaje; salida al músculo; “freno” de los órganos & segundos & ambos & tres efectos medidos; cambio de modo: hipótesis \\
+\nt{ACET} & \ref{sec:acet}, \ref{sec:muscles}, \ref{sec:chemoutput}, \ref{sec:sleep} & escritura o lectura; tasa de aprendizaje; salida al músculo; “freno” de los órganos & segundos & ambos & tres efectos medidos; cambio de modo: hipótesis \\
 \nt{GLYC} & \ref{sec:muscles}, \ref{sec:pain} & peso negativo en la médula espinal y el tronco: veto del músculo antagonista & ms & de direcciones & establecido \\
 \nt{HIST} & --- & señal global de “mantente despierto” & lento & difusión & papel en el cálculo no estudiado \\
 \nt{ADRE} & \ref{sec:chemoutput} & “acelerador” de todo el cuerpo a través de la sangre; en el cerebro, desconocido & lento & difusión & establecido fuera del cerebro; papel en el cerebro incierto \\
@@ -160,7 +160,7 @@ elementos & compuertas binarias fiables & elementos analógicos de umbral; la si
 signo de la conexión & cualquiera & lo fija la neurona emisora (cap.~\ref{sec:neurontypes}) \\
 memoria & separada del procesador & en las mismas conexiones que el cálculo y en la actividad autosostenida (caps.~\ref{sec:glutcomputer}, \ref{sec:acet}) \\
 aprendizaje & retropropagación del error & reglas locales, un único número de difusión $\delta$ (cap.~\ref{sec:dofa}) y cables de error hacia las salidas del circuito de movimientos (cap.~\ref{sec:motorlearning}) \\
-control & registros y bus de instrucciones & cuatro canales de difusión, cada uno un haz de unas pocas líneas (caps.~\ref{sec:serocomputer}, \ref{sec:dofa}--\ref{sec:acet}) \\
+control & registros y bus de instrucciones & cuatro canales de difusión, cada uno un mazo de unas pocas líneas (caps.~\ref{sec:serocomputer}, \ref{sec:dofa}--\ref{sec:acet}) \\
 energía & decenas a cientos de vatios por procesador & unos $20$ vatios para todo el cerebro, en promedio cerca de una espiga por segundo por neurona (cap.~\ref{sec:code}) \\
 \bottomrule
 \end{tabular}
@@ -174,9 +174,9 @@ La tabla~\ref{tab:computer} resume las diferencias principales. Ninguna de ellas
 
 Lo más honesto es cerrar este resumen con una lista de lo que no sabemos. Cada punto es un problema para un ingeniero.
 
-\emph{El código.} Conocemos la capacidad del canal de espigas y sabemos que el receptor elige qué parte del mensaje leer (capítulo~\ref{sec:code}). Pero no se sabe cuánto aprovecha la corteza el tiempo exacto de las espigas ni si las neuronas tienen “palabras”.
+\emph{El código.} Conocemos la capacidad del canal de espigas y sabemos que el destinatario elige qué parte del mensaje leer (capítulo~\ref{sec:code}). Pero no se sabe cuánto aprovecha la corteza el tiempo exacto de las espigas ni si las neuronas tienen “palabras”.
 
-\emph{Aprendizaje a través de muchas capas.} Una señal de difusión enseña despacio, y más despacio con cada neurona que influye en el resultado (proposición~\ref{prop:broadcastcost}). No se sabe entonces cómo ajusta la corteza miles de millones de pesos en circuitos de muchas capas; hay modelos en los que el error entre capas lo reparten las ráfagas de espigas~\cite{Payeur2021}. Quizá parte de la respuesta esté en los cálculos dentro de las ramas de la propia neurona, donde una neurona se comporta como una pequeña red de muchas capas: para reproducir la respuesta del modelo de una sola neurona cortical, una red artificial necesita de cinco a ocho capas~\cite{Beniaguev2021}, y las ramas de las neuronas humanas llegan a calcular incluso el O exclusivo~\cite{Gidon2020}. Otro candidato es el autoaprendizaje: si la corteza aprende a predecir sus propias entradas, el error surge en el lugar, en cada capa, y no hace falta una señal común (capítulo~\ref{sec:dofa})~\cite{Keller2018}.
+\emph{Aprendizaje a través de muchas capas.} Una señal de difusión enseña despacio, y más despacio con cada neurona que influye en el resultado (proposición~\ref{prop:broadcastcost}). No se sabe entonces cómo ajusta la corteza miles de millones de pesos en circuitos de muchas capas; hay modelos en los que el error entre capas lo reparten las ráfagas de espigas~\cite{Payeur2021}. Quizá parte de la respuesta esté en los cálculos dentro de las ramas de la propia neurona, donde una neurona se comporta como una pequeña red de muchas capas: para reproducir la respuesta del modelo de una sola neurona cortical, una red artificial necesita de cinco a ocho capas~\cite{Beniaguev2021}, y las ramas de las neuronas humanas llegan a calcular incluso el OR exclusivo~\cite{Gidon2020}. Otro candidato es el autoaprendizaje: si la corteza aprende a predecir sus propias entradas, el error surge en el lugar, en cada capa, y no hace falta una señal común (capítulo~\ref{sec:dofa})~\cite{Keller2018}.
 
 \emph{Qué transmiten en realidad los canales de difusión.} Para \nt{DOPA} hay una imagen estándar y seis extensiones (capítulo~\ref{sec:dofaalt}); para \nt{NORA} y \nt{ACET}, hipótesis verosímiles (capítulos~\ref{sec:nora}, \ref{sec:acet}); para \nt{SERO}, sobre todo conjeturas.
 
@@ -196,7 +196,7 @@ Los ejercicios de este capítulo combinan resultados de distintos capítulos: ca
 
 \begin{exercise}[\lvlA]
 \label{ex:10:1}
-\emph{Bus y registros.} Los cuatro canales de difusión son haces de unas cinco líneas (proposición~\ref{prop:bundle}); cada línea cambia una vez por segundo y se distingue en cuatro niveles. ¿Cuántos años necesitaría el control para transmitir lo que el bus \nt{GLUT} ($8.6\cdot10^{10}$ neuronas con la frecuencia~\eqref{eq:energy}, precisión de $1\ms$ según~\eqref{eq:spikeentropy}) transmite en un segundo?
+\emph{Bus y registros.} Los cuatro canales de difusión son mazos de unas cinco líneas (proposición~\ref{prop:bundle}); cada línea cambia una vez por segundo y se distingue en cuatro niveles. ¿Cuántos años necesitaría el control para transmitir lo que el bus \nt{GLUT} ($8.6\cdot10^{10}$ neuronas con la frecuencia~\eqref{eq:energy}, precisión de $1\ms$ según~\eqref{eq:spikeentropy}) transmite en un segundo?
 \end{exercise}
 
 \begin{exercise}[\lvlB]
@@ -211,7 +211,7 @@ Los ejercicios de este capítulo combinan resultados de distintos capítulos: ca
 
 \begin{exercise}[\lvlB]
 \label{ex:10:4}
-\emph{Asociar un sonido y un destello.} El sonido llega al bus a los $5\ms$; el destello, a los $30\ms$ más la latencia de la primera espiga~\eqref{eq:latency} ($\tau=10\ms$, $U$ de $1.2\theta$ a $4\theta$); el fondo en cada entrada es de $5$ espigas por segundo. Elija el retardo de la línea auditiva y la ventana de coincidencia mínima para todos los contrastes. ¿Cuántas asociaciones falsas por segundo dará el fondo?
+\emph{Asociar un sonido y un destello.} El sonido llega al bus a los $5\ms$; el destello, a los $30\ms$ más la latencia de la primera espiga~\eqref{eq:latency} ($\tau=10\ms$, $U$ de $1.2\theta$ a $4\theta$); el fondo en cada entrada, $5$ espigas/s. Elija el retardo de la línea auditiva y la ventana de coincidencia mínima para todos los contrastes. ¿Cuántas asociaciones falsas por segundo dará el fondo?
 \end{exercise}
 
 \begin{exercise}[\lvlB]
@@ -226,5 +226,5 @@ Los ejercicios de este capítulo combinan resultados de distintos capítulos: ca
 
 \begin{exercise}[\lvlC]
 \label{ex:10:7}
-\emph{Un haz en lugar de un cable.} Las salidas son $y_k=w_k+\xi_k$, la recompensa $R=-\sum_ky_k^2$; una línea del haz envía a un grupo de $G$ neuronas el error de sus salidas, $w_k\leftarrow w_k+\eta\,\delta_l\xi_k$. Muestre que con el mejor $\eta$ se necesitan $\approx(G+2)\ln(1/\varepsilon)$ intentos para llegar a $\sum w_k^2=\varepsilon\sum w_k^2(0)$. ¿Cuánto tarda en aprender, con $\varepsilon=0.01$, un circuito de $10^6$ neuronas con cinco líneas y un intento cada tres segundos?
+\emph{Un mazo en lugar de un cable.} Las salidas son $y_k=w_k+\xi_k$, la recompensa $R=-\sum_ky_k^2$; una línea del mazo envía a un grupo de $G$ neuronas el error de sus salidas, $w_k\leftarrow w_k+\eta\,\delta_l\xi_k$. Muestre que con el mejor $\eta$ se necesitan $\approx(G+2)\ln(1/\varepsilon)$ intentos para llegar a $\sum w_k^2=\varepsilon\sum w_k^2(0)$. ¿Cuánto tarda en aprender, con $\varepsilon=0.01$, un circuito de $10^6$ neuronas con cinco líneas y un intento cada tres segundos?
 \end{exercise}

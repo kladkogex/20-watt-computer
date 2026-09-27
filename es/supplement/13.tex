@@ -6,12 +6,12 @@ La estructura de la salida (unidades motoras, margen de seguridad de la sinapsis
 \setlength{\tabcolsep}{3pt}\renewcommand{\arraystretch}{1.15}
 \begin{longtable}{>{\raggedright}p{0.5cm}>{\raggedright}p{4.0cm}>{\raggedright}p{5.6cm}>{\raggedright}p{2.3cm}>{\raggedright\arraybackslash}p{1.7cm}}
 \toprule
-N.º & Proposición & Experimento y qué se midió & Fuente & Estado \\
+N.º & Afirmación & Experimento y qué se midió & Fuente & Estado \\
 \midrule\endfirsthead
 \toprule
-N.º & Proposición & Experimento y qué se midió & Fuente & Estado \\
+N.º & Afirmación & Experimento y qué se midió & Fuente & Estado \\
 \midrule\endhead
-1 & Unidad motora: una neurona \nt{ACET} controla un grupo de fibras, de unos cientos a un par de miles; en los músculos de ajuste fino las unidades son más pequeñas & Músculos humanos, recuento de axones motores y de fibras musculares: en promedio unas $340$ fibras por neurona en un músculo interóseo de la mano, unas $410$ en el braquial, unas $1930$ en el gastrocnemio medial. El capítulo no da una cifra exacta para las unidades más pequeñas. & \cite{Feinstein1955mu} & medido \\
+1 & Unidad motora: una neurona \nt{ACET} controla un grupo de fibras, de unos cientos a un par de miles; en los músculos de ajuste fino las unidades son más pequeñas & Músculos humanos, recuento de axones motores y de fibras musculares: en promedio unas $340$ fibras por neurona en un músculo interóseo de la mano, unas $410$ en el braquiorradial, unas $1930$ en el gastrocnemio medial. El capítulo no da una cifra exacta para las unidades más pequeñas. & \cite{Feinstein1955mu} & medido \\
 2 & La sinapsis sobre el músculo libera varias veces más neurotransmisor del necesario para activar la fibra & Revisión de mediciones en sinapsis neuromusculares: el margen de seguridad (cociente entre el neurotransmisor liberado y el umbral) en mamíferos adultos suele ser de $3$--$5$; en humanos, el margen se apoya más en los pliegues de la membrana receptora que en la cantidad liberada. & \cite{WoodSlater2001} & medido \\
 3 & La sacudida~\eqref{eq:twitch} sube en un tiempo $T_c$ del orden de $50\ms$ & Unidades motoras individuales de la mano humana con esfuerzo voluntario, fuerza promediada sobre las espigas de la unidad: tiempo de subida de $30$--$100\ms$, menos de $70\ms$ en el $80\,\%$ de las unidades. La función $(t/T_c)e^{1-t/T_c}$ es una aproximación tomada de un modelo del conjunto de unidades. & \cite{MilnerBrown1973rec, Fuglevand1993} & medido \\
 4 & Suma de sacudidas~\eqref{eq:forcesum}: con $5$, $15$ y $40$ espigas/s, fuerza de $0.2$--$1.1F_1$, $1.8$--$2.2F_1$ y cerca de $5.4F_1$ (fig.~\ref{fig:tetanus}) & Cálculo con \texttt{models/\allowbreak muscle\_\allowbreak models.py}, $T_c=50\ms$: $0.21$--$1.10$, $1.76$--$2.19$ y $5.28$--$5.49\,F_1$ en los últimos $0.3\,\text{s}$. La suma lineal es una simplificación: el modelo no incluye la saturación del músculo real. & \texttt{models/\allowbreak muscle\_\allowbreak models.py} & modelo \\
