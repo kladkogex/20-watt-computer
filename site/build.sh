@@ -26,7 +26,7 @@ cp site/llms.txt _site/
 base=https://kladkogex.github.io/20-watt-computer/
 {
   printf '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
-  for u in "" breadboard/ author/ $(cd _site && ls read/*.html) pdf/20-watt-computer-ru.pdf pdf/20-watt-computer-ru-paperback.pdf; do
+  for u in "" breadboard/ author/ $(cd _site && ls read/*/*.html pdf/*.pdf); do
     printf '  <url><loc>%s%s</loc></url>\n' "$base" "$u"
   done
   printf '</urlset>\n'

@@ -56,6 +56,8 @@ a{color:inherit}
 .logo{font:700 20px/1.1 var(--cond);text-decoration:none;color:var(--ink)}
 .logo .w{color:var(--spike)}
 .tools{display:flex;gap:6px;flex-wrap:wrap}
+.readlang{display:flex;align-items:center;gap:8px;font:600 12px/1 var(--cond);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.readlang select{flex:1;min-width:0;font:500 14px/1.2 var(--sans);color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:5px 6px;text-transform:none;letter-spacing:0}
 .star{display:flex;align-items:center;justify-content:space-between;gap:8px;text-decoration:none;border:1px solid var(--ink);border-radius:8px;padding:7px 10px;font:600 14px/1.2 var(--cond);letter-spacing:.02em}
 .star:hover{background:var(--ink);color:var(--bg)}
 .star .count{font:500 13px var(--mono);color:var(--muted)}
@@ -124,6 +126,8 @@ footer{font-size:13px;color:var(--muted);border-top:1px solid var(--line);paddin
         <button class="chip" id="lang-en" type="button">EN</button>
         <button class="chip theme" id="theme" type="button" aria-label="Light or dark theme" title="Light / dark">☾</button>
       </div>
+      <label class="readlang"><span data-ru="Читать на" data-en="Read in">Читать на</span>
+        <select id="readlang" aria-label="Edition"></select></label>
       <a class="star" href="https://github.com/kladkogex/20-watt-computer" target="_blank" rel="noopener"><span data-ru="★ Звезда на GitHub" data-en="★ Star on GitHub">★ Звезда на GitHub</span><span class="count" id="stars"></span></a>
     </div>
     <nav class="menu" id="menu" aria-label="Book"></nav>
@@ -139,7 +143,7 @@ footer{font-size:13px;color:var(--muted);border-top:1px solid var(--line);paddin
           <p class="lead" data-ru="Мозг глазами инженера: схемы, сигналы, коды, правила обучения и энергия. Каждое число в книге получено из небольшой программы, которую можно запустить и изменить, а каждое главное утверждение сверено с опытом."
              data-en="The brain as an engineer sees it: circuits, signals, codes, learning rules and energy. Every number in the book comes from a small program you can run and change, and every major claim is checked against experiments.">Мозг глазами инженера.</p>
           <div class="actions">
-            <a class="btn primary" href="#read/00"><b data-ru="Читать онлайн" data-en="Read online">Читать онлайн</b><span data-ru="каждая глава коротко и полностью" data-en="each chapter short or in full">каждая глава коротко и полностью</span></a>
+            <a class="btn primary" id="read-btn" href="#read/00"><b data-ru="Читать онлайн" data-en="Read online">Читать онлайн</b><span data-ru="каждая глава коротко и полностью" data-en="each chapter short or in full">каждая глава коротко и полностью</span></a>
             <a class="btn" href="pdf/20-watt-computer-ru.pdf"><b data-ru="Скачать книгу" data-en="Download the book">Скачать книгу</b><span data-ru="PDF · 249 страниц · по-русски" data-en="PDF · 249 pages · Russian">PDF · 249 страниц · по-русски</span></a>
             <a class="btn" href="pdf/20-watt-computer-en.pdf"><b data-ru="English edition" data-en="English edition">English edition</b><span data-ru="PDF · 240 страниц" data-en="PDF · 240 pages">PDF · 240 pages</span></a>
             <a class="btn" href="pdf/20-watt-computer-ru-paperback.pdf"><b data-ru="Карманная версия" data-en="Paperback edition">Карманная версия</b><span data-ru="PDF · без формул, с рисунками · 90 страниц" data-en="PDF · no formulas, with drawings · 90 pages">PDF · без формул, с рисунками · 90 страниц</span></a>
@@ -157,7 +161,7 @@ footer{font-size:13px;color:var(--muted);border-top:1px solid var(--line);paddin
              data-en="The book is free and open. If it is useful to you, star it on GitHub: that is how other engineers find it, and how you hear about new chapters and translations.">.</p>
           <a class="btn primary" href="https://github.com/kladkogex/20-watt-computer" target="_blank" rel="noopener"><b data-ru="★ Поставить звезду" data-en="★ Star on GitHub">★</b><span>github.com/kladkogex/20-watt-computer</span></a>
         </section>
-        <p class="note" data-ru='Книга выходит на восьми языках: <a href="pdf/20-watt-computer-ru.pdf">Русский</a> · <a href="pdf/20-watt-computer-en.pdf">English</a> · <a href="pdf/20-watt-computer-zh.pdf">中文</a> · <a href="pdf/20-watt-computer-ja.pdf">日本語</a> · <a href="pdf/20-watt-computer-ko.pdf">한국어</a> · <a href="pdf/20-watt-computer-es.pdf">Español</a> · <a href="pdf/20-watt-computer-pt.pdf">Português</a> · <a href="pdf/20-watt-computer-uk.pdf">Українська</a>. Карманные версии — в меню слева. Онлайн-читалка пока по-русски.' data-en='The book comes in eight languages: <a href="pdf/20-watt-computer-ru.pdf">Русский</a> · <a href="pdf/20-watt-computer-en.pdf">English</a> · <a href="pdf/20-watt-computer-zh.pdf">中文</a> · <a href="pdf/20-watt-computer-ja.pdf">日本語</a> · <a href="pdf/20-watt-computer-ko.pdf">한국어</a> · <a href="pdf/20-watt-computer-es.pdf">Español</a> · <a href="pdf/20-watt-computer-pt.pdf">Português</a> · <a href="pdf/20-watt-computer-uk.pdf">Українська</a>. Paperbacks are in the menu on the left. The online reader is in Russian for now.'>.</p>
+        <p class="note" data-ru='Книга выходит на восьми языках: <a href="pdf/20-watt-computer-ru.pdf">Русский</a> · <a href="pdf/20-watt-computer-en.pdf">English</a> · <a href="pdf/20-watt-computer-zh.pdf">中文</a> · <a href="pdf/20-watt-computer-ja.pdf">日本語</a> · <a href="pdf/20-watt-computer-ko.pdf">한국어</a> · <a href="pdf/20-watt-computer-es.pdf">Español</a> · <a href="pdf/20-watt-computer-pt.pdf">Português</a> · <a href="pdf/20-watt-computer-uk.pdf">Українська</a>. Карманные версии — в меню слева. Читать онлайн: <span class="reader-langs"></span>.' data-en='The book comes in eight languages: <a href="pdf/20-watt-computer-ru.pdf">Русский</a> · <a href="pdf/20-watt-computer-en.pdf">English</a> · <a href="pdf/20-watt-computer-zh.pdf">中文</a> · <a href="pdf/20-watt-computer-ja.pdf">日本語</a> · <a href="pdf/20-watt-computer-ko.pdf">한국어</a> · <a href="pdf/20-watt-computer-es.pdf">Español</a> · <a href="pdf/20-watt-computer-pt.pdf">Português</a> · <a href="pdf/20-watt-computer-uk.pdf">Українська</a>. Paperbacks are in the menu on the left. Read online in: <span class="reader-langs"></span>.'>.</p>
         <footer>
           <a href="#author" data-ru="Константин Кладько" data-en="Konstantin Kladko">Константин Кладько</a>
           <a href="https://github.com/kladkogex/20-watt-computer" data-ru="Исходный текст и модели на GitHub" data-en="Source text and models on GitHub">GitHub</a>
@@ -233,6 +237,31 @@ footer{font-size:13px;color:var(--muted);border-top:1px solid var(--line);paddin
   ];
   const store = {get(k){try{return localStorage.getItem(k)}catch(e){return null}}, set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
   let lang = store.get("20w-lang") || ((navigator.language||"").toLowerCase().startsWith("ru") ? "ru" : "en");
+  // editions of the online reader (read/langs.json is written by site/web/build.sh)
+  const EDITION = {ru: "Русский", en: "English", zh: "中文", ja: "日本語", ko: "한국어", es: "Español", pt: "Português", uk: "Українська", fr: "Français", vi: "Tiếng Việt", ar: "العربية"};
+  let readerLangs = ["ru"], readLang = "ru";
+  const navCache = {};
+  function pickReadLang(){
+    const saved = store.get("20w-read-lang");
+    if (saved && readerLangs.includes(saved)) return saved;
+    const nav2 = (navigator.language || "").slice(0, 2).toLowerCase();
+    if (readerLangs.includes(nav2)) return nav2;
+    return readerLangs.includes("en") ? "en" : readerLangs[0];
+  }
+  function loadNav(l){
+    if (navCache[l]) return Promise.resolve(navCache[l]);
+    return fetch("read/" + l + "/nav.json").then(r => r.ok ? r.json() : []).then(j => {
+      navCache[l] = {}; j.forEach(p => { navCache[l][p.slug] = p.title; }); return navCache[l]; }).catch(() => ({}));
+  }
+  function setReadLang(l, navigate){
+    if (!readerLangs.includes(l)) return;
+    readLang = l; store.set("20w-read-lang", l);
+    document.getElementById("readlang").value = l;
+    document.getElementById("read-btn").setAttribute("href", "#read/" + l + "/00");
+    loadNav(l).then(renderMenu);
+    const r = currentRoute();
+    if (navigate && r.slug && r.lang !== l) location.hash = "#read/" + l + "/" + r.slug;
+  }
   const menu = document.getElementById("menu"), pane = document.getElementById("pane"), home = document.getElementById("home-view");
 
   function renderMenu(){
@@ -241,7 +270,10 @@ footer{font-size:13px;color:var(--muted);border-top:1px solid var(--line);paddin
       if (route === null) { const d = document.createElement("div"); d.className = "grp"; d.innerHTML = lang === "ru" ? ru : en; menu.appendChild(d); return; }
       const a = document.createElement("a");
       const external = route.startsWith("http") || route.startsWith("pdf/");
-      a.href = external ? route : "#" + route;
+      const slug = route.startsWith("read/") ? route.slice(5) : null;
+      a.href = external ? route : "#" + (slug ? "read/" + readLang + "/" + slug : route);
+      const t = slug && navCache[readLang] && navCache[readLang][slug];
+      if (t) { ru = t; en = t; }
       if (route.startsWith("http")) { a.target = "_blank"; a.rel = "noopener"; }
       a.dataset.route = route;
       a.innerHTML = `<span class="n">${n === null ? "" : n}</span><span>${lang === "ru" ? ru : en}</span>`;
@@ -257,8 +289,10 @@ footer{font-size:13px;color:var(--muted);border-top:1px solid var(--line);paddin
   function currentRoute(){
     const h = decodeURIComponent(location.hash.replace(/^#\/?/, ""));
     if (!h || h === "home" || h === "toc") return {page: "home"};
-    const m = h.match(/^read\/([0-9]{2}|[a-d]|refs)(?:\/(.*))?$/);
-    if (m) return {page: "read/" + m[1], src: "read/" + m[1] + ".html" + (m[2] ? "#" + m[2] : "")};
+    // #read/<lang>/<slug>[/<anchor>]; links from before the multilingual reader (#read/<slug>) are Russian
+    const m = h.match(/^read\/(?:([a-z]{2})\/)?([0-9]{2}|[a-d]|refs)(?:\/(.*))?$/);
+    if (m) { const l = m[1] || "ru";
+      return {page: "read/" + m[2], slug: m[2], lang: l, src: "read/" + l + "/" + m[2] + ".html" + (m[3] ? "#" + m[3] : "")}; }
     if (h === "breadboard" || h.startsWith("breadboard")) return {page: "breadboard", src: "breadboard/"};
     if (h === "author") return {page: "author", src: "author/"};
     return {page: "home"};
@@ -266,6 +300,7 @@ footer{font-size:13px;color:var(--muted);border-top:1px solid var(--line);paddin
   let lastSrc = null;
   function show(){
     const r = currentRoute();
+    if (r.lang && r.lang !== readLang && readerLangs.includes(r.lang)) setReadLang(r.lang, false);
     document.body.classList.remove("menu-open");
     document.getElementById("menu-btn").setAttribute("aria-expanded", "false");
     if (r.page === "home") { pane.hidden = true; home.hidden = false; }
@@ -283,9 +318,12 @@ footer{font-size:13px;color:var(--muted);border-top:1px solid var(--line);paddin
   pane.addEventListener("load", () => {
     try {
       const p = pane.contentWindow.location.pathname;
-      const m = p.match(/\/read\/([0-9]{2}|[a-d]|refs)\.html$/);
-      const route = m ? "read/" + m[1] : (p.endsWith("/breadboard/") ? "breadboard" : (p.endsWith("/author/") ? "author" : null));
-      if (route && currentRoute().page !== route) { lastSrc = pane.getAttribute("src"); history.replaceState(null, "", "#" + route); markCurrent(); }
+      const m = p.match(/\/read\/(?:([a-z]{2})\/)?([0-9]{2}|[a-d]|refs)\.html$/);
+      const route = m ? "read/" + (m[1] || "ru") + "/" + m[2] : (p.endsWith("/breadboard/") ? "breadboard" : (p.endsWith("/author/") ? "author" : null));
+      const cur = currentRoute();
+      const curKey = cur.slug ? "read/" + cur.lang + "/" + cur.slug : cur.page;
+      if (route && curKey !== route) { lastSrc = pane.getAttribute("src"); history.replaceState(null, "", "#" + route);
+        if (m && (m[1] || "ru") !== readLang) setReadLang(m[1] || "ru", false); markCurrent(); }
     } catch(e) {}
   });
   window.addEventListener("hashchange", show);
@@ -317,7 +355,24 @@ footer{font-size:13px;color:var(--muted);border-top:1px solid var(--line);paddin
     }).catch(() => {});
   })();
 
+  const rl = document.getElementById("readlang");
+  rl.addEventListener("change", () => setReadLang(rl.value, true));
+  function fillEditions(){
+    rl.innerHTML = readerLangs.map(l => `<option value="${l}">${EDITION[l] || l}</option>`).join("");
+    document.querySelectorAll(".reader-langs").forEach(el => { el.textContent = readerLangs.map(l => EDITION[l] || l).join(" · "); });
+  }
   setLang(lang === "en" ? "en" : "ru");
+  fetch("read/langs.json").then(r => r.ok ? r.json() : ["ru"]).catch(() => ["ru"]).then(list => {
+    readerLangs = list.length ? list : ["ru"];
+    const orig = setLang;
+    fillEditions();
+    const r = currentRoute();
+    setReadLang(r.lang && readerLangs.includes(r.lang) ? r.lang : pickReadLang(), false);
+  });
+  // the interface language re-renders the notes; keep the editions list in them
+  const _setLang = setLang;
+  document.getElementById("lang-ru").onclick = () => { _setLang("ru"); fillEditions(); };
+  document.getElementById("lang-en").onclick = () => { _setLang("en"); fillEditions(); };
 })();
 </script>
 <script>

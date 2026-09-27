@@ -1,50 +1,50 @@
 <!doctype html>
-<html lang="ru">
+<html lang="{{HTMLLANG}}" dir="{{DIR}}">
 <head>
 <meta charset="utf-8">
 <script>try{var t=localStorage.getItem("20w-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);}catch(e){}if(window.self!==window.top)document.documentElement.classList.add("embedded");</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>{{TITLE}} · Компьютер на 20 ваттах</title>
+<title>{{TITLE}} · {{BOOKTITLE}}</title>
 <meta name="description" content="{{DESC}}">
 <link rel="canonical" href="{{CANON}}">
+{{ALTERNATES}}
 <meta property="og:type" content="book">
-<meta property="og:title" content="{{TITLE}} · Компьютер на 20 ваттах">
+<meta property="og:title" content="{{TITLE}} · {{BOOKTITLE}}">
 <meta property="og:description" content="{{DESC}}">
 <meta property="og:url" content="{{CANON}}">
-<meta property="og:locale" content="ru_RU">
+<meta property="og:locale" content="{{OGLOCALE}}">
 <meta property="og:image" content="https://kladkogex.github.io/20-watt-computer/og-card.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Your brain runs on 20 watts. Here is its datasheet. The 20-Watt Computer, a free textbook for engineers.">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://kladkogex.github.io/20-watt-computer/og-card.png">
-<meta name="twitter:title" content="{{TITLE}} · The 20-Watt Computer">
+<meta name="twitter:title" content="{{TITLE}} · {{BOOKTITLE}}">
 <meta name="twitter:description" content="{{DESC}}">
 <script type="application/ld+json">{{JSONLD}}</script>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap">
+<link rel="stylesheet" href="{{FONTS}}">
 <link rel="stylesheet" href="book.css">
 </head>
 <body>
 <header class="bar">
-  <a class="home" href="../#toc"><span class="w">20</span> <span data-ru="Компьютер на 20 ваттах" data-en="The 20-Watt Computer">Компьютер на 20 ваттах</span></a>
-  <label class="jump"><span class="sr" data-ru="Перейти к главе" data-en="Go to chapter">Перейти к главе</span>
+  <a class="home" href="../../#toc"><span class="w">20</span> <span>{{BOOKTITLE}}</span></a>
+  <label class="jump"><span class="sr">{{UI_GOTO}}</span>
     <select id="jump"></select></label>
-  <div class="langs" role="group" aria-label="Language">
-    <button class="chip" id="lang-ru" type="button">RU</button>
-    <button class="chip" id="lang-en" type="button">EN</button>
+  <div class="langs" role="group" aria-label="Language and theme">
+    <label class="sr" for="edition">{{UI_EDITION}}</label>
+    <select class="chip edition" id="edition" aria-label="{{UI_EDITION}}">{{EDITIONS}}</select>
     <button class="chip theme" id="theme" type="button" aria-label="Light or dark theme" title="Light / dark">☾</button>
   </div>
 </header>
 
 <main class="page">
   <div class="pagehead">
-    <p class="kicker" data-ru="{{KICKER_RU}}" data-en="{{KICKER_EN}}">{{KICKER_RU}}</p>
+    <p class="kicker">{{KICKER}}</p>
     <h1><span class="t-full">{{FTITLE}}</span><span class="t-short">{{STITLE}}</span></h1>
     <div class="mode" role="group" aria-label="Version" data-has-short="{{HASSHORT}}">
-      <button type="button" class="seg" data-mode="short"><b data-ru="Коротко" data-en="Short">Коротко</b><span data-ru="без формул, с рисунками" data-en="no formulas, with drawings">без формул, с рисунками</span></button>
-      <button type="button" class="seg" data-mode="full"><b data-ru="Полностью" data-en="Full">Полностью</b><span data-ru="формулы, модели, задачи" data-en="formulas, models, exercises">формулы, модели, задачи</span></button>
+      <button type="button" class="seg" data-mode="short"><b>{{UI_SHORT}}</b><span>{{UI_SHORT_SUB}}</span></button>
+      <button type="button" class="seg" data-mode="full"><b>{{UI_FULL}}</b><span>{{UI_FULL_SUB}}</span></button>
     </div>
-    <p class="lang-note" data-ru="" data-en="The online reader is in Russian for now; the book in other languages is in the PDF downloads in the menu.">.</p>
   </div>
 
   <article class="text full" id="text-full">
@@ -54,14 +54,14 @@
 {{SHORT}}
   </article>
 
-  <aside class="starline"><span data-ru="Книга бесплатная и открытая. Если глава была полезной, поставьте книге звезду на GitHub: так её найдут другие." data-en="The book is free and open. If this chapter was useful, star the book on GitHub so others can find it.">Книга бесплатная и открытая.</span> <a href="https://github.com/kladkogex/20-watt-computer" target="_blank" rel="noopener" data-ru="★ Звезда на GitHub" data-en="★ Star on GitHub">★ Звезда на GitHub</a></aside>
+  <aside class="starline"><span>{{UI_STARLINE}}</span> <a href="https://github.com/kladkogex/20-watt-computer" target="_blank" rel="noopener">★ {{UI_STAR}}</a></aside>
   <nav class="pager">
-    <a class="prev" href="{{PREV}}"><span data-ru="← Назад" data-en="← Previous">← Назад</span><b>{{PREV_TITLE}}</b></a>
-    <a class="next" href="{{NEXT}}"><span data-ru="Дальше →" data-en="Next →">Дальше →</span><b>{{NEXT_TITLE}}</b></a>
+    <a class="prev" href="{{PREV}}"><span>{{ARROW_PREV}} {{UI_PREV}}</span><b>{{PREV_TITLE}}</b></a>
+    <a class="next" href="{{NEXT}}"><span>{{UI_NEXT}} {{ARROW_NEXT}}</span><b>{{NEXT_TITLE}}</b></a>
   </nav>
   <footer>
-    <span data-ru='Константин Кладько · текст — <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.ru">CC BY-NC-SA 4.0</a>' data-en='Konstantin Kladko · text: <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>'>Константин Кладько</span>
-    <span><a href="../pdf/20-watt-computer-ru.pdf">PDF</a> · <a href="../breadboard/" data-ru="Макетная плата" data-en="Breadboard">Макетная плата</a> · <a href="https://github.com/kladkogex/20-watt-computer">GitHub</a></span>
+    <span><a href="../../author/">{{AUTHOR}}</a> · <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></span>
+    <span><a href="../../pdf/20-watt-computer-{{LANG}}.pdf">PDF</a> · <a href="../../breadboard/">{{UI_BREADBOARD}}</a> · <a href="https://github.com/kladkogex/20-watt-computer">GitHub</a></span>
   </footer>
 </main>
 
@@ -77,7 +77,11 @@
     o.textContent = (p.kicker ? p.kicker + ". " : "") + p.title; if (p.slug === SLUG) o.selected = true; sel.appendChild(o); });
   sel.addEventListener("change", () => { location.href = sel.value + ".html" + (location.hash === "#short" ? "#short" : ""); });
 
-  // Коротко / Полностью
+  // the same chapter in another edition
+  const ed = document.getElementById("edition");
+  ed.addEventListener("change", () => { store.set("20w-read-lang", ed.value); location.href = "../" + ed.value + "/" + SLUG + ".html" + (document.body.dataset.mode === "short" ? "#short" : ""); });
+
+  // short / full
   const modeBox = document.querySelector(".mode");
   const hasShort = modeBox.dataset.hasShort === "true";
   const full = document.getElementById("text-full"), short = document.getElementById("text-short");
@@ -102,22 +106,10 @@
   setMode(store.get("20w-mode") || "full", false);
   follow();
   window.addEventListener("hashchange", follow);
-  // links that leave the book open in the whole window when the page sits inside the reader
+  // inside the single-page reader: links that leave the book open in the whole window
   if (document.documentElement.classList.contains("embedded"))
-    document.querySelectorAll('a[href^="../"], a[href^="http"]').forEach(a => { a.target = a.href.startsWith(location.origin) ? "_top" : "_blank"; });
-
-  // interface language (the text itself is Russian)
-  function setLang(l){
-    document.querySelectorAll("[data-ru]").forEach(el => { el.innerHTML = el.dataset[l]; });
-    document.getElementById("lang-ru").setAttribute("aria-pressed", l === "ru");
-    document.getElementById("lang-en").setAttribute("aria-pressed", l === "en");
-    store.set("20w-lang", l);
-  }
-  document.getElementById("lang-ru").onclick = () => setLang("ru");
-  document.getElementById("lang-en").onclick = () => setLang("en");
-  setLang(store.get("20w-lang") === "en" ? "en" : "ru");
+    document.querySelectorAll('a[href^="../../"], a[href^="http"]').forEach(a => { a.target = a.href.startsWith(location.origin) ? "_top" : "_blank"; });
   window.addEventListener("storage", e => {
-    if (e.key === "20w-lang" && (e.newValue === "ru" || e.newValue === "en")) setLang(e.newValue);
     if (e.key === "20w-theme" && (e.newValue === "light" || e.newValue === "dark")) document.documentElement.setAttribute("data-theme", e.newValue);
   });
 })();
