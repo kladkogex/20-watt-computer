@@ -1,0 +1,178 @@
+\chapter{How the Machine Learns to Move}
+\chaptermark{How the Machine Learns to Move}
+\label{sec:motorlearning}
+
+\section{Three teachers}
+
+In Chapter~\ref{sec:muscles} we saw how the machine moves its muscles, and we stopped at a hypothesis: fast and precise movements require an internal model of the body that predicts the result of a command~\cite{WolpertGhahramani2000}. Where does this model come from? It has to be learned, and learned differently from the way we have learned so far.
+
+The book has already had two teachers. The first is \emph{none at all}: the Hebb rule (Chapter~\ref{sec:dofa}) strengthens what often happens together and compresses the inputs. The second is \emph{reward}: \nt{DOPA} sends everyone a single number, ``better or worse than expected.'' Movement needs a third teacher, \emph{error}. The hand missed the cup by two centimeters to the left: that is not ``worse,'' it is a vector that tells each output where and by how much it was wrong. An engineer would call this supervised learning.
+
+The difference between the second and the third teacher is the difference between one wire for everyone and a separate wire for each output. In Proposition~\ref{prop:broadcastcost}, learning from one shared number slowed down with each neuron whose noise affected the result. If instead each output $i$ receives its own error $e_i$, the weights can be changed by the simplest rule:
+\begin{empheq}[box=\keybox]{equation}
+\frac{\dd w_{ij}}{\dd t} \;=\; -\eta\,e_i(t)\,x_j(t) .
+\label{eq:lms}
+\end{empheq}
+This is the least-mean-squares rule, long known in adaptive-filter engineering~\cite{WidrowHoff1960}: a weight changes in proportion to the product of its input and the error of its output and, on average, follows the gradient of the squared error. No exploratory noise is needed, as it was in Chapter~\ref{sec:dofa}: the direction of the correction arrives directly over the error wire. And the speed does not drop with the number of outputs, because other outputs' errors do not reach the synapse.
+
+\begin{keyblock}
+\begin{proposition}[Three teachers]
+\label{prop:teachers}
+The Hebb rule teaches, without a teacher, what is frequent; the \nt{DOPA} signal teaches, with one number for the whole network, what pays off, and more slowly with each neuron; an error wire to each output teaches, by the rule~\eqref{eq:lms}, what is accurate, at a speed that does not depend on the number of outputs. The price of the third way is a separate wire for each output and someone who knows the right answer.
+\end{proposition}
+\end{keyblock}
+
+\section{The error wire}
+
+Who can know the right answer for a movement? The sensors themselves. If the hand has drifted to the left of the target, the eye and the stretch sensors of Chapter~\ref{sec:sensors} report it. What is needed is a circuit that delivers this error to the right outputs.
+
+The brain has a region that seems to be built for exactly this~\cite{Marr1969,Albus1971}. Its circuitry is unusually regular, almost crystalline, and the rule~\eqref{eq:lms} is easy to recognize in it (Fig.~\ref{fig:errorwire}).
+
+\emph{Input expander.} Signals about the command and about the state of the body arrive at a huge layer of small \nt{GLUT} neurons. There are about seventy billion of them, more than in all the rest of the brain combined~\cite{Azevedo2009}. Each of them mixes several inputs, and the signal is spread out into a very long vector. The trick is familiar to an engineer: raise the dimension of the input, and in the new space almost any desired dependence can be obtained by a simple weighted sum~\cite{Cover1965}.
+
+\emph{Output neurons.} The weighted sum is computed by about thirty million large output neurons~\cite{Andersen1992cereb}, each with on the order of a hundred thousand inputs from the expander. And these are \nt{GABA} neurons: the result of learning is passed on not by excitation but by inhibition, as in the veto of Chapter~\ref{sec:gaba}.
+
+\emph{The error wire.} Each output neuron receives one more input, a special one: exactly one \nt{GLUT} wire, which fires rarely, about once per second, but each time evokes a powerful burst in the output neuron~\cite{Ito2001}. This is $e_i$: the probability of the burst depends on the direction of the movement error~\cite{Herzfeld2018}. Coincidence of the error burst with activity of an input weakens that input, which is exactly the term $-\eta\,e_i x_j$ in~\eqref{eq:lms}.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  gran/.style={circle,draw,thick,fill=blue!6,minimum size=0.32cm,inner sep=0pt},
+  outn/.style={circle,draw,very thick,fill=red!10,minimum size=1.1cm,inner sep=0pt,font=\scriptsize},
+  inh/.style={-{Bar[width=7pt]},very thick,red!70!black}]
+% inputs
+\foreach \y/\lab in {1.6/{command},0.4/{body state}}{
+  \draw[->,thick,blue!60!black] (-0.6,\y) node[left,font=\scriptsize,black] {\lab} -- (0.35,\y);}
+% expansion layer
+\foreach \i in {0,...,11}{\node[gran] (g\i) at ({0.8+0.28*mod(\i,2)},{-0.3+0.23*\i}) {};}
+\foreach \i in {0,...,11}{\pgfmathsetmacro{\yy}{mod(\i,3)>0 ? 1.6 : 0.4}\draw[gray!60!black] (0.35,\yy) -- (g\i);}
+\node[font=\scriptsize,align=center] at (0.95,-1.05) {expander\\$\sim7\cdot10^{10}$ \nt{GLUT}};
+% parallel wires to the output neuron
+\foreach \i in {0,...,11}{\draw[->,gray!70!black] (g\i.east) -- (4.1,{1.0+0.07*(\i-5.5)});}
+\node[outn] (P) at (4.6,1.0) {\nt{GABA}};
+\node[font=\scriptsize,align=center,above=2pt] at (P.north) {output neuron\\$\sim10^5$ inputs $x_j$, weights $w_{ij}$};
+\draw[inh] (P) -- (6.8,1.0) node[right,font=\scriptsize,align=left] {correction\\to movement};
+% error wire
+\draw[->,very thick,red!70!black,densely dashed] (4.6,-1.4) node[below,font=\scriptsize,black,align=center] {one error wire $e_i$\\\nt{GLUT}, $\sim1$ per s} -- (P.south);
+\end{tikzpicture}
+\caption{The supervised-learning circuit as the brain apparently implements it. A huge layer of \nt{GLUT} neurons spreads the command and body state out into a long vector $x_j$; the output \nt{GABA} neuron sums it with weights $w_{ij}$. The single error wire brings $e_i$; coincidence of the error with an active input weakens the weight of that input, as in the rule~\eqref{eq:lms}.}
+\label{fig:errorwire}
+\end{figure}
+
+One difficulty is familiar from Chapter~\ref{sec:dofa}: the error arrives later than the input that caused it. A miss is visible tens to hundreds of milliseconds after the command. So the synapse must remember that it was active; an eligibility trace is needed, as in the rule~\eqref{eq:threefactor}. And the length of this trace, judging by experiments, is tuned to the feedback delay of each task: where the error arrives after a hundred milliseconds, the input that was active a hundred milliseconds before it is weakened most~\cite{Suvrathan2016}.
+
+\begin{keyblock}
+\begin{proposition}[The error wire]
+\label{prop:errorwire}
+In the circuit shown in Fig.~\ref{fig:errorwire}, each output neuron receives exactly one error wire, and coincidence of the error with an input weakens that input. This is the least-mean-squares rule~\eqref{eq:lms} applied to an input expanded to a huge dimension. The structure of the circuit and the weakening on coincidence have been measured; that the whole circuit works as supervised learning is the leading hypothesis.
+\end{proposition}
+\end{keyblock}
+
+\section{The internal model as an adaptive filter}
+
+What does such a circuit learn? The most natural answer is prediction. Let the input be a command $u(t)$ passed through a set of filters with different time constants, as in the expander: $x_j(t)=(g_j*u)(t)$. The output is their weighted sum, a prediction of what the sensors will report:
+\begin{empheq}[box=\keybox]{equation}
+\hat y(t) \;=\; \sum_j w_j\,(g_j*u)(t), \qquad e(t) \;=\; \hat y(t) - y(t) ,
+\label{eq:adaptivefilter}
+\end{empheq}
+and the weights learn by~\eqref{eq:lms}. This is an \emph{adaptive filter}: a circuit that tunes its own transfer function so as to reproduce an unknown system~\cite{Fujita1982}. Here the unknown system is one's own body, with its mass, elasticity, and delays. The learned filter is the internal model of Chapter~\ref{sec:muscles}: it says what the sensors will report without waiting for them.
+
+Such a model is useful twice over. First, its prediction can be used in place of the delayed feedback, and then the stability condition~\eqref{eq:delaystable} no longer ties the controller's hands: corrections can be made quickly, from the model. Second, the difference between what was predicted and what was received is a signal of the \emph{unexpected}. Everything the machine did itself, the model predicted and subtracted; what remains is what the world did. That, according to one hypothesis, is why we cannot tickle ourselves~\cite{Blakemore1998}.
+
+\section{When the world changes: fast and slow}
+
+Let us test the circuit with an experiment that is easy to set up. A person reaches for a target, and the world changes unexpectedly: for example, a sideways force acts on the arm. The first movements miss, and then the miss shrinks. If the force is removed, the arm at first misses to the \emph{other} side: the model has learned the force and keeps compensating for it. This is direct evidence that a model has been learned, not just that things ``started to work.''
+
+Experiments also show something subtler: two processes learn at the same time, a fast one that learns quickly and forgets quickly, and a slow one that learns slowly and remembers for a long time~\cite{Smith2006}. The corrections are updated after each movement, event by event:
+\begin{empheq}[box=\keybox]{equation}
+e = p - (x_f + x_s), \qquad x_f \leftarrow A_f\,x_f + B_f\,e, \qquad x_s \leftarrow A_s\,x_s + B_s\,e ,
+\label{eq:tworate}
+\end{empheq}
+where $p$ is the perturbation, $x_f$ and $x_s$ are the learned corrections of the two processes, $A$ is how much of a correction is retained until the next movement, and $B$ is how strongly it learns from the error. The fast process has a large $B$ and an $A$ noticeably below one; the slow process is the opposite.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=0.034cm,y=1.9cm]
+\draw[->,gray!70!black] (0,0) -- (355,0) node[right,font=\small,black] {movement};
+\draw[->,gray!70!black] (0,-1.15) -- (0,1.25);
+\foreach \v in {-1,1}{\draw[gray!60!black] (-3,\v) -- (3,\v); \node[left,font=\scriptsize] at (0,\v) {$\v$};}
+\foreach \n in {100,200,300}{\draw[gray!60!black] (\n,-0.04) -- (\n,0.04); \node[below,font=\scriptsize] at (\n,0) {\n};}
+\draw[thin,gray!70!black] plot file {figures/tworate_p.dat};
+\draw[thick,orange!85!black] plot file {figures/tworate_fast.dat};
+\draw[thick,blue!60!black] plot file {figures/tworate_slow.dat};
+\draw[very thick,black] plot file {figures/tworate_net.dat};
+\node[font=\scriptsize,gray!50!black] at (120,1.12) {perturbation $p$};
+\node[font=\scriptsize,black,anchor=west] at (238,0.52) {sum: rebound};
+\node[font=\scriptsize,blue!60!black,anchor=west] at (150,0.39) {slow $x_s$};
+\node[font=\scriptsize,orange!85!black,anchor=west] at (60,0.08) {fast $x_f$};
+\draw[densely dashed,gray!60!black] (226,-1.15) -- (226,1.25);
+\node[font=\scriptsize,align=center,anchor=south west] at (228,-1.1) {no more\\errors};
+\end{tikzpicture}
+\caption{Two learning processes by the model~\eqref{eq:tworate}, $A_f=0.92$, $B_f=0.1$, $A_s=0.996$, $B_s=0.02$. Two hundred movements with perturbation $p=1$, then six with the reverse, $p=-1$, until the sum returns to zero. After the dashed line errors stop arriving, and the sum returns by itself toward the old correction: the fast process has forgotten the reverse perturbation, while the slow one remembers the original.}
+\label{fig:tworate}
+\end{figure}
+
+The model~\eqref{eq:tworate} explains an experiment that is hard to understand without it (Fig.~\ref{fig:tworate}). In our calculation, after two hundred movements with the perturbation the sum of the corrections reaches $0.84$, with most of it held by the slow process, $0.63$. Then six movements with the reverse perturbation bring the sum back to zero: the fast process has gone negative, $-0.53$, while the slow one is still positive, $0.46$. If errors now stop being reported, the fast process forgets its correction within tens of movements and the slow one much more slowly, and the sum rises \emph{by itself} to $0.37$ within forty movements: the old skill returns without any training. Such spontaneous recovery has been measured in humans; a model with a single process cannot produce it, since without errors it simply decays to zero.
+
+Why two processes? A plausible engineering answer comes from the optimal filter of Chapter~\ref{sec:acet}. The body changes for different reasons at different rates: muscles tire within minutes, and grow and weaken over months. If disturbances come both fast and slow, the best estimate consists of two filters with different time constants, each catching its own kind~\cite{Kording2007}. The fast process is a temporary correction, ``the arm is tired''; the slow one is ``the arm has changed.'' This is still a hypothesis, but it explains why a skill learned in one day is partly lost by the next and why it is learned faster the second time.
+
+\section{Summary}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{3.0cm}>{\raggedright}p{4.6cm}>{\raggedright\arraybackslash}p{5.2cm}}
+\toprule
+What the circuit does & How & What is known \\
+\midrule
+learns with a teacher & an error wire to each output, the rule~\eqref{eq:lms} & circuit structure and weakening on coincidence measured; supervised learning is the leading hypothesis \\
+expands the input & seventy billion \nt{GLUT} neurons & number of neurons measured; role of expansion is theory \\
+accounts for the error delay & a trace tuned to the delay & measured \\
+builds an internal model & adaptive filter~\eqref{eq:adaptivefilter} & well-founded hypothesis \\
+learns at two rates & fast and slow processes~\eqref{eq:tworate} & aftereffect and spontaneous recovery measured; two processes are a model \\
+\bottomrule
+\end{tabular}
+\caption{How the machine learns to move.}
+\label{tab:motorlearning}
+\end{table}
+
+The machine now has three teachers (Table~\ref{tab:motorlearning}). Hebb compresses what is frequent; \nt{DOPA} teaches, with one number, to choose what pays off; the error wire teaches accuracy, and teaches it quickly, because each output gets its own error. The brain apparently uses all three, each where it is cheapest: the broadcast signal for a few decisions, and separate wires for precise tuning of the body, where the sensors themselves report the right answer.
+
+\section{Exercises}
+
+\begin{exercise}[\lvlA]
+\label{ex:15:1}
+\emph{Capacity of the error-wire circuit.} The circuit has $3\cdot10^7$ output neurons with $10^5$ inputs each, each with its own error wire ($1$~spike/s). A neuron with $n$ inputs can learn any labeling of $\approx2n$ vectors~\cite{Cover1965}. (a)~How many associations does the circuit store? (b)~Using~\eqref{eq:spikeentropy} with $\Delta t=10\ms$, estimate the shortest time to fill one neuron's capacity.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:15:2}
+\emph{Speed of the least-mean-squares rule.} The modes of the rule~\eqref{eq:lms} decay at rates $\eta\lambda_k(C)$. For five filters~\eqref{eq:adaptivefilter} driven by white noise, $C_{jk}=2\sqrt{\tau_j\tau_k}/(\tau_j+\tau_k)$. Find the ratio of the fastest to the slowest rate if the $\tau_j$ grow by a factor of $2$ ($10$--$160\ms$) and by a factor of $4$.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:15:3}
+\emph{Analysis of the two processes.} Write the model~\eqref{eq:tworate} with the parameters of Fig.~\ref{fig:tworate} as $\mathbf x_{n+1}=M\mathbf x_n+\mathbf b\,p$. (a)~From the eigenvalues of $M$, find the time constants in movements. (b)~Find the steady-state $x_f$, $x_s$, and their sum for constant $p=1$.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:15:4}
+\emph{Simulation: faster the second time.} Using the model~\eqref{eq:tworate} with the parameters of \texttt{models/\allowbreak motor\_learning.py}, find the number of movements until $x_f+x_s\ge0.8$ at $p=1$: (a)~for an untrained machine; (b)~after $200$ movements with $p=1$ and a reverse perturbation until the sum is zero, as in Fig.~\ref{fig:tworate}. Can a single-process model speed up like this?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:15:5}
+\emph{A controller with an internal model.} A plant $\dd x/\dd t=ku$ is observed with delay $d$; the controller $u=-G\hat x$ predicts $\hat x(t)=x(t-d)+\hat k\int_{t-d}^{t}u\,\dd s$. (a)~With $\hat k=k=1$ and $d=150\ms$, find $G$ for a time constant of $20\ms$ and compare it with the limit~\eqref{eq:delaystable}. (b)~Is the circuit stable with $\hat k=0.4k$?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:15:6}
+\emph{An adaptive filter learns a muscle.} The plant is the twitch~\eqref{eq:twitch} of unit area, $T_c=50\ms$; the filters~\eqref{eq:adaptivefilter} are RC circuits with $\tau_j=12.5$, $25$, $50$, $100$, $200\ms$; the input is a new normal random number every $10\ms$. How many seconds does the rule~\eqref{eq:lms} with $\eta=50$ and $200$ take to reduce the error to $0.5\%$? Why are the weights still far from optimal even after $300$~s?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:15:7}
+\emph{Two processes as an optimal filter.} The perturbation is the sum of processes $p^{f,s}_{n+1}=A_{f,s}\,p^{f,s}_n+w^{f,s}_n$ with noise variances $q_f$, $q_s$, and the error is observed with noise of variance $R$; the Kalman filter gives~\eqref{eq:tworate}. For what $q_f/R$ and $q_s/R$ do $A_f=0.92$, $A_s=0.996$ yield $B_f=0.1$, $B_s=0.02$? How do $B_f$ and $B_s$ change if $q_s$ is quadrupled?
+\end{exercise}

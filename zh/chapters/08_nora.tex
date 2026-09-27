@@ -1,0 +1,199 @@
+\chapter{何时探索，何时决断：加入\nt{NORA}}
+\chaptermark{加入\nt{NORA}}
+\label{sec:nora}
+
+\section{还缺什么}
+
+在第~\ref{sec:dofa}~章中，网络借助噪声学习：活动的随机偏离就是搜索，而\nt{DOPA}报告这些偏离是否使结果变好。但那里还留下一个未设定的参数——搜索\emph{多少}。噪声太强，网络就会乱撞，不能利用已经知道的东西。噪声太弱，它就一次又一次地选择同一个选项，注意不到附近某处已经变好了。在强化学习中，这称为利用与探索之间的权衡，每个算法都为它设有一个旋钮。在第~\ref{sec:neurontypes}~章中我们推测，在脑中转动这个旋钮的是\nt{NORA}。
+
+人类的去甲肾上腺素神经元有几万个（表~\ref{tab:types}），几乎全部集中在一个小核团中，而它们的输出几乎散布到全脑，不过已经发现，这个核团的不同部分在一定程度上服务于不同的区域~\cite{Poe2020}。这是一个比\nt{DOPA}还要窄的广播通道。它以两种模式工作~\cite{AstonJones2005}。在\emph{紧张性}模式下，神经元平稳地发放脉冲，频率从每秒零点几个到几个不等，这一频率随觉醒程度缓慢变化。在\emph{时相性}模式下，它们对当前任务中的重要事件以短促的簇放电响应，大约出现在做出决定的时刻。瞳孔直径是一个方便但不精确的测试点：它随这些神经元的活动变化，但也随其他区域的活动~\cite{Joshi2016}以及皮层中胆碱能输出的活动~\cite{Reimer2016}变化。瞳孔反映的是总体的唤醒水平，而不单单是\nt{NORA}。
+
+\section{增益}
+
+已测量的是：去甲肾上腺素对神经元背景活动的抑制强于对其刺激响应的抑制，信号与背景之比升高~\cite{Foote1975NE}。至于单个神经元特性曲线的斜率是否真的被乘上一个系数，实验并未给出结论。和第~\ref{sec:neurontypes}~章一样，我们采用一个能再现这一效应的简单模型：去甲肾上腺素改变接收者传递特性的斜率~\cite{ServanSchreiber1990}。于是弱的阈下输入（背景）产生的输出更小，强的输入产生的输出更大。设神经元以频率
+\begin{empheq}[box=\keybox]{equation}
+r \;=\; F\bigl(g\,(u-\theta)\bigr), \qquad F(z)=\frac{r_{\max}}{1+e^{-z}}
+\label{eq:gain}
+\end{empheq}
+响应，其中$u$是输入电流，$\theta$是阈值，$g$是增益，在模型中由\nt{NORA}控制。$g$小时，频率在很宽的范围内平滑地跟随输入：神经元是\emph{模拟放大器}。$g$大时，几乎任何高于阈值的输入都给出满频率，低于阈值则为零：神经元是\emph{比较器}，几乎是数字元件（图~\ref{fig:gaincurves}）。一个旋钮就能让同一个神经元在两种模式间切换，而在电子学中这两种模式由不同的电路实现。
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=1.1cm,y=2.4cm]
+\draw[->,gray!70!black] (-3.3,0) -- (3.4,0) node[below left,black] {\small $u$};
+\draw[->,gray!70!black] (-3.3,0) -- (-3.3,1.2) node[left,black] {\small $r$};
+\draw[densely dashed,gray!60!black] (0,0) -- (0,1.1);
+\node[below,font=\small] at (0,0) {$\theta$};
+\draw[densely dotted,gray!60!black] (-3.3,1) -- (3.2,1) node[right,black,font=\small] {$r_{\max}$};
+\draw[very thick,blue!60!black] plot[domain=-3.2:3.2,samples=60] (\x,{1/(1+exp(-0.8*\x))});
+\draw[very thick,orange!85!black] plot[domain=-3.2:3.2,samples=60] (\x,{1/(1+exp(-2*\x))});
+\draw[very thick,red!70!black] plot[domain=-3.2:3.2,samples=120] (\x,{1/(1+exp(min(-8*\x,9)))});
+\node[blue!60!black,font=\small,anchor=west] at (0.5,0.12) {小$g$：放大器};
+\node[red!70!black,font=\small,anchor=east] at (-0.3,0.85) {大$g$：比较器};
+\end{tikzpicture}
+\caption{增益$g$取三个值时的传递特性~\eqref{eq:gain}。}
+\label{fig:gaincurves}
+\end{figure}
+
+大增益能对抗噪声吗？不一定。设两个输入相差$\Delta u$，需要判断哪个更大。如果噪声$\sigma_{\text{前}}$是在放大器\emph{之前}加到输入上的，那么信号和噪声一起被放大，二者之比不变。如果噪声$\sigma_{\text{后}}$是在放大器\emph{之后}加入的——来自不可靠的突触和网络自身的随机脉冲，如第~\ref{sec:code}~章——那么信噪比
+\begin{empheq}[box=\keybox]{equation}
+d' \;=\; \frac{g\,\Delta u}{\sqrt{g^2\sigma_{\text{前}}^2+\sigma_{\text{后}}^2}}
+\label{eq:gainsnr}
+\end{empheq}
+随$g$增大，直到$g\sigma_{\text{前}}$与$\sigma_{\text{后}}$相当为止~\cite{ServanSchreiber1990}。
+
+\begin{keyblock}
+\begin{proposition}[增益何时有用]
+\label{prop:gainnoise}
+\nt{NORA}提高增益，只能改善对放大器\emph{之后}、在网络内部产生的噪声的输入分辨。随输入一起到来的噪声，增益无法去除。
+\end{proposition}
+\end{keyblock}
+
+\section{二选一中的增益}
+
+回到第~\ref{sec:gaba}~章的选择：两组\nt{GLUT}神经元，输入为$I_1$、$I_2$，以强度$\beta$相互抑制。现在每组都有增益$g$：在选择方程~\eqref{eq:wta}中，括号内的表达式乘以$g$。只要两组都在工作，稳态频率由$r_1=g(I_1-\beta r_2)$、$r_2=g(I_2-\beta r_1)$求出。把两式相加和相减，得到和$r_1+r_2=g(I_1+I_2)/(1+g\beta)$与差$r_1-r_2=g(I_1-I_2)/(1-g\beta)$。二者之比就是网络偏好一个输入胜过另一个的鲜明程度：
+\begin{empheq}[box=\keybox]{equation}
+\frac{r_1-r_2}{r_1+r_2} \;=\; \varepsilon\,\frac{1+g\beta}{1-g\beta}, \qquad \varepsilon=\frac{I_1-I_2}{I_1+I_2}, \quad g\beta<1 .
+\label{eq:wtagain}
+\end{empheq}
+输入的微小差别$\varepsilon$被放大$(1+g\beta)/(1-g\beta)$倍，当$g\beta$接近一时，这个倍数无限增大。当$g\beta>1$时，两组都工作的状态是不稳定的，正如命题~\ref{prop:wta}：一组获胜，另一组沉默（图~\ref{fig:pitchfork}）。
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=3.2cm,y=1.5cm]
+\draw[->,gray!70!black] (0,0) -- (2.15,0) node[below left,black] {\small $g\beta$};
+\draw[->,gray!70!black] (0,-1.25) -- (0,1.35) node[above,black] {\small $(r_1-r_2)/(r_1+r_2)$};
+\draw[gray!60!black] (1,-0.04) -- (1,0.04); \node[below right,font=\small] at (1,0) {$1$};
+\node[left,font=\scriptsize] at (0,1) {$1$}; \node[left,font=\scriptsize] at (0,-1) {$-1$};
+\draw[very thick,blue!60!black] plot[domain=0:0.905,samples=60] (\x,{0.05*(1+\x)/(1-\x)}) -- (1,1) -- (2.05,1);
+\draw[very thick,blue!60!black] (1.105,-1) -- (2.05,-1);
+\draw[thick,densely dashed,gray!60!black] (1,0) -- (2.05,0);
+\node[font=\small,align=center] at (0.45,-0.62) {在斟酌：\\两组\\都在工作};
+\node[font=\small,align=center] at (1.55,0.45) {已决断：\\只有一组工作};
+\node[font=\small,blue!60!black,anchor=south west] at (1.05,-0.97) {弱输入先胜出——就保持下去};
+\end{tikzpicture}
+\caption{不同增益下的二选一，输入相差$\varepsilon=0.05$。当$g\beta>1$时两个决定都是稳定的（实线；弱输入获胜在$g\beta>(1+\varepsilon)/(1-\varepsilon)\approx1.1$时成为可能），网络保持已经做出的那个；对称状态（虚线）不稳定。}
+\label{fig:pitchfork}
+\end{figure}
+
+\begin{keyblock}
+\begin{proposition}[增益切换选择模式]
+\label{prop:gainwta}
+在相互抑制为$\beta$的选择网络中，增益$g$使网络越过边界$g\beta=1$。低于它时网络在“斟酌”：两组都在工作，输入之差按~\eqref{eq:wtagain}被放大。高于它时网络“已决断”：只有一组工作，决定保持不变。\nt{NORA}改变$g$，就能在这两种模式之间切换网络，而不触动任何一个权重。
+\end{proposition}
+\end{keyblock}
+
+\section{增益即温度}
+
+现在给选择加上在网络内部、放大器之后产生的噪声。哪一组获胜，取决于量$g(u_A-u_B)+\eta$的符号，其中$u_A-u_B$是输入之差，即第~\ref{sec:dofa}~章学到的权重之差，$\eta$是尺度为$\sigma$的噪声。如果噪声服从逻辑斯谛分布（对高斯分布，曲线几乎相同），选择$A$的概率为
+\begin{empheq}[box=\keybox]{equation}
+P(A) \;=\; \frac{1}{1+e^{-g\,(u_A-u_B)/\sigma}} .
+\label{eq:softmax}
+\end{empheq}
+程序员会认出这是温度为$T=\sigma/g$的 softmax 选择。增益就是逆温度。$g$小时，即使明显更好的选项也只比差的选项稍常被选中：网络在大量探索。$g$大时，已知的最佳选项几乎总被选中：网络在利用已知。
+
+需要说明~\eqref{eq:wtagain}和~\eqref{eq:softmax}中的$g$是什么：它是选择时刻对当前任务输入之差的\emph{有效}增益。\nt{NORA}的两种模式对它的作用相反。决策时刻的时相性簇放电提高它，网络巩固选择。反之，高紧张性活动伴随着探索：人在随机选择之前基线瞳孔更大~\cite{JepmaNieuwenhuis2011}，而在大鼠中，\nt{NORA}向前扣带皮层的输入使选择转入随机模式~\cite{Tervo2014stochastic}。可见，高紧张性\nt{NORA}对应\emph{小}的有效$g$，簇放电则对应大的有效$g$。
+
+\section{探索多少}
+
+哪种增益最好？我们在模型上做了检验。网络按~\eqref{eq:softmax}从两个动作中选一个；每个动作以某个概率带来奖励，网络像第~\ref{sec:dofa}~章那样，根据所选动作的奖励来估计这个概率。世界不时变化：两个概率都重新抽取。变化的可能是所选的动作，也可能是网络很久没有尝试的那个；后者只有通过探索才能发现。图~\ref{fig:invertedU}显示了在不同的恒定$g$下网络获得的最佳可能奖励的比例。
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=1.2cm,y=1cm]
+\draw[->,gray!70!black] (0,0) -- (7.6,0) node[below left,black] {\small $g$};
+\draw[->,gray!70!black] (0,0) -- (0,4.4) node[above,black,font=\small] {最佳奖励的比例};
+\foreach \x/\l in {0/0.5,1/1,2/2,3/4,4/8,5/16,6/32,7/64}{\draw[gray!60!black] (\x,-0.06) -- (\x,0.06); \node[below,font=\scriptsize] at (\x,0) {\l};}
+\foreach \v/\y in {0.8/0.8,0.9/2.4,1.0/4.0}{\draw[gray!60!black] (-0.06,\y) -- (0.06,\y); \node[left,font=\scriptsize] at (0,\y) {\v};}
+\draw[very thick,blue!60!black] plot[mark=*,mark size=1.3pt] coordinates {(0,0.368) (1,0.880) (2,1.728) (3,2.784) (4,3.456) (5,3.616) (6,3.488) (7,3.264)};
+\draw[very thick,red!70!black] plot[mark=*,mark size=1.3pt] coordinates {(0,0.368) (1,0.672) (2,1.184) (3,1.840) (4,2.176) (5,1.920) (6,1.456) (7,1.104)};
+\node[blue!60!black,font=\small,anchor=south] at (5,3.7) {平稳的世界};
+\node[red!70!black,font=\small,anchor=north] at (5.1,1.25) {快速变化的世界};
+\draw[->,thick,blue!60!black] (5,3.25) -- (5,3.55);
+\draw[->,thick,red!70!black] (4,1.8) -- (4,2.1);
+\node[font=\small\itshape,gray!35!black,anchor=west] at (0.15,2.3) {盲目探索};
+\node[font=\small\itshape,gray!35!black] at (6.45,2.55) {察觉不到变化};
+\end{tikzpicture}
+\caption{恒定增益$g$下获得的最佳可能奖励的比例（$g$轴为对数刻度）。蓝线：世界平均每一千次尝试变化一次；红线：每二十次变化一次。箭头标出最佳$g$：在快速变化的世界中它小一半。为 60 次运行、每次 4000 次尝试的平均。}
+\label{fig:invertedU}
+\end{figure}
+
+$g=0.5$时网络几乎不利用知识，只得到可能奖励的约四分之三；$g$很大时则错过变化。最佳值：世界每一千次尝试变化一次时为$g=16$（比例$0.976$），每二十次变化一次时为$g=8$（$0.886$）。
+
+\begin{keyblock}
+\begin{proposition}[倒 U 形]
+\label{prop:explore}
+网络收集到的奖励与增益呈倒 U 形关系：$g$太小，尝试浪费在探索上；$g$太大，察觉不到变化。世界变化越快，最佳$g$越小。
+\end{proposition}
+\end{keyblock}
+
+倒 U 形在实验中也能观察到：在\nt{NORA}神经元紧张性活动适中、时相性响应清晰时，动物完成任务最好，而在紧张性活动很高时，它们会分心，在任务之间切换~\cite{AstonJones2005}。这与上一节中模式的区别相符：决策时刻的时相性簇放电恰在需要选择时给出大的有效$g$，而没有簇放电的高紧张性活动会不加区分地放大一切，包括无关输入，因此对当前任务的有效$g$下降——这就是探索。
+
+\section{谁来转动旋钮}
+
+既然最佳增益取决于世界变化得多快，最好能对它进行调节。但\nt{NORA}神经元怎么知道世界变了？一个自然的标志是\emph{意外}：预测误差比平常大了。重要的是区分两种不确定性。如果奖励只是随机的，误差总是很大，这是预料之中的。如果误差突然比平常的大小增大了，那就说明有什么东西变了。按照一种假说，\nt{NORA}报告的正是这种非预期的不确定性，而预期的不确定性由\nt{ACET}报告~\cite{YuDayan2005}。
+
+拿这个信号做什么？可以降低增益，多做探索。可以提高学习速率，以便更快地忘掉过时的估计：实验表明，在突然的变化之后人学得更快，同时瞳孔扩大~\cite{Nassar2012}；提醒一下，瞳孔不仅是\nt{NORA}的指标，也是\nt{ACET}的指标~\cite{Reimer2016}。也可以二者同时进行：按照另一种假说，\nt{NORA}的时相性簇放电起着\emph{中断}的作用——网络据此复位当前状态，重新适应新环境~\cite{BouretSara2005}，就像处理器的公共中断线。
+
+坦白地说说我们没找到什么。在模型中，我们试了两种简单的调节方式：当平滑后的误差超过其长期平均值时，降低$g$或提高学习速率。在一个时而长期稳定、时而频繁变化的世界中，两种方式的最佳设置都得到最佳奖励的$0.926$--$0.927$——几乎与最佳恒定$g$（$g=8$时为$0.925$）或恒定但足够大的学习速率（$0.928$）相同，而设置不当时则更低。图~\ref{fig:invertedU}中的曲线在顶点附近很平坦，在这样的世界中几乎没有什么可调的。调节应当在不同状态要求截然不同设置的地方才能带来回报。\nt{NORA}究竟实现了怎样的控制律，目前尚未确定。
+
+\section{小结}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{3.0cm}>{\raggedright}p{4.4cm}>{\raggedright\arraybackslash}p{6.0cm}}
+\toprule
+\nt{NORA}做什么 & 怎样做 & 已知情况 \\
+\midrule
+改变神经元响应的斜率 & \eqref{eq:gain}中的增益$g$ & 信噪比提高已测得；乘法模型是一种简化 \\
+切换选择 & 使网络越过$g\beta=1$ & 由模型~\eqref{eq:wtagain}推出；没有对阈值的直接测量 \\
+决定探索多少 & $g$是逆温度~\eqref{eq:softmax}；紧张性活动对应小的有效$g$（探索），簇放电对应大的（决断） & 倒 U 形和两种工作模式已测得；与探索的联系是有充分依据的假说 \\
+报告变化 & 非预期的不确定性 & 变化后瞳孔和学习速率增大——已测得；这是\nt{NORA}的信号——假说 \\
+中断并复位 & 对意外事件的时相性簇放电 & 对重要事件的簇放电已测得；“中断”是假说 \\
+\bottomrule
+\end{tabular}
+\caption{\nt{NORA}为\nt{GLUT}、\nt{GABA}和\nt{DOPA}网络增加了什么。}
+\label{tab:nora}
+\end{table}
+
+\nt{DOPA}告诉网络权重\emph{往哪里}改。\nt{NORA}不改变任何一个权重，却决定网络\emph{如何}利用已知的东西（表~\ref{tab:nora}）：一个旋钮——增益——把神经元从放大器变成比较器，把选择网络从“斟酌”变成“已决断”，把选择从探索变成利用。\nt{NORA}如何得知世界变化得多快，仍是一个悬而未决的问题。
+
+\section{习题}
+
+\begin{exercise}[\lvlA]
+\label{ex:08:1}
+\emph{全脑一个旋钮。}（a）~根据表~\ref{tab:types}估计每个\nt{NORA}神经元对应多少个脑神经元。（b）~放大器前的噪声为$\sigma_{\text{前}}=0.5$，之后为$\sigma_{\text{后}}=4$。$g$为多少时，\eqref{eq:gainsnr}中的$d'$达到其极限的$90\,\%$？
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:08:2}
+\emph{带增益的选择。}$\tau\,\dd r_1/\dd t=-r_1+g[I_1-\beta r_2]_+$，$\tau\,\dd r_2/\dd t=-r_2+g[I_2-\beta r_1]_+$，$\tau=20\ms$。（a）~$g\beta=0.5$和$0.9$时，$r_1-r_2$衰减需要多长时间？（b）~当$\varepsilon=0.05$时，求出一个$g\beta$值：低于它两组都工作，高于它弱输入的获胜是稳定的。
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:08:3}
+\emph{由噪声得到 softmax。}$K$组中每组各得到自己的 Gumbel 噪声，$P(\eta_k<z)=\exp(-e^{-z/\sigma})$，$gu_k+\eta_k$最大者获胜。求$P(k)$。当$u_A-u_B=0.1$、$\sigma=1$时，$g$为多少才能使两个选项中较好的那个在$90\,\%$的情况下被选中？
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:08:4}
+\emph{估计最佳增益。}在图~\ref{fig:invertedU}的模型中，变化之后的奖励概率在$[0,1]$上均匀分布。网络每$e^{g\Delta}$次尝试试一次较差的动作；令其等于$1/h$，得$g^*\approx\ln(1/h)/\bar\Delta$。求$\bar\Delta=\langle|p_A-p_B|\rangle$以及$h=0.001$、$0.01$、$0.05$时的$g^*$。
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:08:5}
+\emph{仿真：增益与变化速度。}用\texttt{models/\allowbreak nora\_explore.py}的副本（它把文件写到当前目录）求$h$从$0.001$到$0.2$时的$g^*(h)$。习题~\ref{ex:08:4}的估计在哪里成立？为什么在快速变化时$g^*$不再减小？
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:08:6}
+\emph{设计：选择网络的中断。}习题~\ref{ex:08:2}的网络，$\beta=2$，$\tau=20\ms$，$g=1$，保持着$r_1=0.9$、$r_2=0$，尽管现在输入为$I_1=0.9$、$I_2=1.0$。\nt{NORA}在时间$T_p$内把$g$降到$g_{\text{lo}}$。对$g_{\text{lo}}=0$解析地求出最小的$T_p$，对$g_{\text{lo}}=0.25$用模型求出。
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:08:7}
+\emph{调节何时有回报。}一个先知知道当前是平稳时期还是多变时期，并在每个时期设定各自的$g$。（a）~用模型求它在本章的世界中（每个时期$1000$次尝试，$h=0.001$和$0.05$）相对于最佳恒定$g$的收益。（b）~构造一个收益更大的世界，并求按意外进行的调节能拿到其中多少。
+\end{exercise}

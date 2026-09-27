@@ -1,0 +1,168 @@
+\chapter{Pain: An Alarm Signal}
+\chaptermark{Pain}
+\label{sec:pain}
+
+\section{An alarm, not a measurement}
+
+All the sensors of Chapter~\ref{sec:sensors} measured the world: how much light, what pitch of sound, what pressure. Pain works differently. It reports not ``what is out there'' but ``danger, drop everything.'' To an engineer this is not a measurement channel but an \emph{alarm signal}: a top-priority line that must break through whatever the machine is currently doing.
+
+An alarm differs from a measurement channel in three properties, and pain has all three. First, it is hard to mute by adaptation: pain sensors adapt far less than touch sensors, and after mild injury they even become more sensitive~\cite{LaMotte1982hyper}; a weakening of the response after strong heating has been measured in only one of their types~\cite{Treede1995heat}. A light sensor falls silent against a constant background (Fig.~\ref{fig:adaptation}), but an alarm that goes quiet after a minute is useless. Second, it has a high threshold: pain sensors fire only when a stimulus is close to dangerous; for heating, for example, the thresholds of different sensors range from $41^\circ$ to $46$--$48^\circ$, depending on the type~\cite{Treede1995heat, Weidner1999cfib}. Third, and this is the main point of the chapter, the volume of the alarm is decided not only by the sensor but by the machine itself. The same wound hurts differently in different circumstances. Let us see which familiar parts this is built from.
+
+Pain sensors are \nt{GLUT} neurons, like the other sensory neurons of Chapter~\ref{sec:sensors}. Some of them release, along with glutamate, substance~P from Appendix~\ref{sec:othermediators}, which slowly enhances transmission.
+
+\section{Two wires: fast and slow pain}
+
+Hit your finger and you feel pain twice: first short and sharp, then, a second later, dull and lasting. These are two different wires. The fast wire is insulated and conducts spikes at a speed $v$ of $5$ to $30$ meters per second; the slow one is thin and bare, $0.5$--$2$ meters per second. A signal from the foot travels about a meter, and the arrival time
+\begin{empheq}[box=\keybox]{equation}
+t \;=\; \frac{L}{v}
+\label{eq:paintime}
+\end{empheq}
+is tens of milliseconds for the fast wire and about a second for the slow one. The two wires carry two messages. The fast one says \emph{where} and \emph{when}: its spikes arrive earlier and more precisely, as in the timing code of Chapter~\ref{sec:code}. The slow one says \emph{how bad}, and its long dull pain keeps the machine in alarm mode until the damage has passed.
+
+\section{A gate in the spinal cord}
+
+The first place a pain signal arrives is the spinal cord, and there it passes through a \emph{gate}~\cite{MelzackWall1965}; the specific neurons of this gate were found relatively recently~\cite{Duan2014}. The pain wire and the touch wire converge on an output \nt{GLUT} neuron that passes pain on to the brain. Next to it sits an inhibitory interneuron, \nt{GABA} or \nt{GLYC}, which is excited by touch (Fig.~\ref{fig:gate}). Touch closes the gate. In the original gate theory~\cite{MelzackWall1965}, pain, conversely, switches this interneuron off, and strong pain opens the gate; this is an assumption of the theory and has not been shown directly on the gate neurons that were found.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  nrn/.style={circle,draw,very thick,minimum size=1.0cm,inner sep=0pt,font=\scriptsize},
+  inh/.style={-{Bar[width=7pt]},thick,red!70!black},
+  bc/.style={->,thick,densely dashed,orange!85!black}]
+\node[nrn,fill=blue!6] (Z) at (6,0) {\nt{GLUT}};
+\node[nrn,fill=red!10] (Q) at (3.6,-1.6) {\nt{GABA}};
+\draw[->,very thick,red!70!black] (0,0.6) node[left,font=\small,black,align=right] {pain $\nu$} -- (5.45,0.15);
+\draw[->,very thick,blue!60!black] (0,-2.6) node[left,font=\small,black,align=right] {touch $\mu$} -- (2.9,-2.0);
+\draw[->,thick,blue!60!black] (1.8,-2.35) -- (5.5,-0.35) node[pos=0.8,below right=-2pt,font=\scriptsize] {$w_{z\mu}$};
+\draw[inh] (1.6,0.5) -- (3.35,-1.1) node[pos=0.5,left=1pt,font=\scriptsize] {$w_{q\nu}$};
+\draw[inh] (Q) -- (Z) node[pos=0.5,above left=-1pt,font=\scriptsize] {$\beta$};
+\draw[->,very thick] (Z) -- (8.2,0) node[right,font=\small,align=left] {to the brain: $z$};
+\draw[bc] (6,2.1) node[above,font=\scriptsize,black,align=center] {from above: \nt{SERO}, \nt{NORA}, opioids} -- (Z.north) node[pos=0.45,right,font=\scriptsize,black] {gain $g$};
+\end{tikzpicture}
+\caption{The pain gate in the spinal cord according to the model~\eqref{eq:gate}. The output \nt{GLUT} neuron receives pain $\nu$ and weak excitation from touch $\mu$. The inhibitory interneuron (\nt{GABA} or \nt{GLYC}) is excited by touch and, by an assumption of gate theory, switched off by pain. The gain $g$ arrives from above over the broadcast channels.}
+\label{fig:gate}
+\end{figure}
+
+Let us write this for rates, as in Chapter~\ref{sec:gaba}. The interneuron rate $q$ and the output rate $z$ are
+\begin{empheq}[box=\keybox]{equation}
+q \;=\; \bigl[w_{q\mu}\,\mu + q_0 - w_{q\nu}\,\nu\bigr]_+ ,
+\qquad
+z \;=\; \bigl[\,g\,(\nu + w_{z\mu}\,\mu) - \beta\,q\,\bigr]_+ ,
+\label{eq:gate}
+\end{empheq}
+where $\nu$ is the pain input, $\mu$ the touch input, $w$ the connection weights (first index: to whom; second: from whom), $\beta$ the strength of inhibition, $q_0$ the interneuron's own background activity, and $g$ the gain set from above (more on it below). This is the veto~\eqref{eq:veto} of Chapter~\ref{sec:gaba}, ``pain, but not with touch,'' with one amendment taken from gate theory as an assumption: strong pain itself switches off the vetoing neuron.
+
+We computed the model with $w_{q\mu}=1$, $q_0=0.2$, $w_{q\nu}=0.5$, $w_{z\mu}=0.3$, and $\beta=1.5$ (Fig.~\ref{fig:gatecurves}). Without touch, pain begins to get through at $\nu\approx0.18$. With touch the threshold rises to $0.86$, and at $\nu=1$ the output drops fourfold, from $1$ to $0.25$. But with strong pain, $\nu=2$, touch no longer changes anything: the gate is wide open. It is the same in life: rubbing a bruise helps, but not with a serious injury. Touch by itself, without pain, does not get through the gate: a touch does not raise the alarm.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=5.2cm,y=1.35cm]
+\draw[->,gray!70!black] (0,0) -- (2.12,0) node[right,font=\small,black] {pain $\nu$};
+\draw[->,gray!70!black] (0,0) -- (0,4.3) node[left,font=\small,black] {$z$};
+\foreach \t in {0,0.5,1,1.5,2}{\draw[gray!60!black] (\t,-0.05) -- (\t,0.05); \node[below,font=\scriptsize] at (\t,0) {\t};}
+\foreach \f in {1,2,3,4}{\draw[gray!60!black] (-0.01,\f) -- (0.01,\f); \node[left,font=\scriptsize] at (0,\f) {\f};}
+\draw[very thick,red!70!black] plot file {figures/pain_gate_notouch.dat};
+\draw[very thick,blue!60!black] plot file {figures/pain_gate_touch.dat};
+\draw[very thick,orange!85!black,densely dashed] plot file {figures/pain_gate_sens.dat};
+\draw[very thick,red!70!black] (0.08,3.9) -- (0.2,3.9) node[right,font=\scriptsize,black] {without touch};
+\draw[very thick,blue!60!black] (0.08,3.45) -- (0.2,3.45) node[right,font=\scriptsize,black] {with touch};
+\draw[very thick,orange!85!black,densely dashed] (0.08,3.0) -- (0.2,3.0) node[right,font=\scriptsize,black] {after sensitization, $g=2$};
+\end{tikzpicture}
+\caption{Output of the gate~\eqref{eq:gate} as a function of pain intensity. Touch raises the threshold and dampens weak and moderate pain, but not strong pain. Sensitization (dashed line) doubles the gain: the same pain is transmitted twice as loudly, and the threshold drops.}
+\label{fig:gatecurves}
+\end{figure}
+
+\section{A volume knob from above}
+
+The gate is controlled not only from below. Descending pathways run to it from the brainstem and change the gain $g$ in~\eqref{eq:gate}: \nt{SERO}, \nt{NORA}, and the opioid peptides of Appendix~\ref{sec:othermediators}~\cite{Fields2004}. These are the same broadcast channels as in Chapters~\ref{sec:serocomputer}--\ref{sec:acet}, except that here their knob is the volume of the alarm. They can turn it both ways: the same descending circuits can both dampen pain and amplify it.
+
+Why would the machine turn the alarm down? Because an alarm is an interrupt, and an interrupt is not always appropriate. An animal fleeing a predator should not stop because of an injured paw: run first, lick the wound later. Expecting relief also dampens pain, and part of this effect disappears when the opioid receptors are blocked~\cite{Levine1978}: an expectation computed in the brain descends through the opioid channel to the gate. This picture itself has been measured; exactly how the brain decides what the volume should be is a hypothesis.
+
+\section{Sensitization: an alarm that learns}
+
+After injury the output neurons of the gate become more sensitive: the same input produces a larger output, and the threshold drops~\cite{Woolf1983}. In the model~\eqref{eq:gate} this is a rise in the gain $g$, and its simplest description is a slow RC circuit charged by the pain itself:
+\begin{empheq}[box=\keybox]{equation}
+\tau_s\,\frac{\dd g}{\dd t} \;=\; -(g-1) + k_s\,z ,
+\label{eq:sensitization}
+\end{empheq}
+where $\tau_s$ is the time it takes sensitivity to return to normal (it is longer than the pain itself, because sensitization persists after the damaging stimulus has stopped~\cite{Woolf1983}) and $k_s$ is the charging strength. While the tissue is damaged, the gate output holds $g$ above one, and everything that happens near the wound is transmitted more loudly (the dashed line in Fig.~\ref{fig:gatecurves}: at $g=2$ the threshold drops to $0.11$, and the output doubles). This is a sensible alarm setting: until the damage has healed, it is better to be safe than sorry.
+
+To an engineer this is positive feedback with a slow leak: pain raises the gain, and the gain raises the pain. While the loop is weak, $g$ returns to normal once the wound has healed. If the loop is strong, however, the alarm can get stuck in the on state even after the damage is gone, like the group with strong feedback in Fig.~\ref{fig:bistable}. The model~\eqref{eq:sensitization} is a simplification; that central sensitization exists has been measured.
+
+\section{Pain as teacher and as interrupt}
+
+Besides raising the alarm, pain has two jobs in the machine.
+
+\emph{Teacher.} Pain is a negative reward: in the error formula~\eqref{eq:ctd} it enters as $r<0$. Everything said in Chapter~\ref{sec:dofa} works here too: a predictor of pain starts to produce an error in advance, and the network learns to avoid what leads to pain. Experiments in humans show that brain activity during learning from pain follows exactly the temporal-difference error~\cite{Seymour2004}, and some \nt{DOPA} neurons also respond to unpleasant events (Chapter~\ref{sec:dofaalt}).
+
+\emph{Interrupt.} Pain pulls attention away from the current task; this is its purpose, not a side effect~\cite{EcclestonCrombez1999}. In Chapter~\ref{sec:nora} the same ``interrupt'' role was discussed for the phasic \nt{NORA} burst. And the fastest response does not even reach the brain: pulling the hand away from something hot is wired directly in the spinal cord, using the same pair of muscles and the same veto on the opponent as in Fig.~\ref{fig:antagonists}.
+
+\begin{keyblock}
+\begin{proposition}[Alarm signal]
+\label{prop:pain}
+Pain is not a measurement but a high-priority alarm signal. It adapts far less than the measurement channels, travels over two wires (the fast one for ``where,'' the slow one for ``how bad''), passes through a gate that touch closes (and strong pain, by an assumption of gate theory, opens), and its volume is set from above by the broadcast channels. These mechanisms have been measured, except the opening of the gate by pain; the simple models~\eqref{eq:gate} and~\eqref{eq:sensitization} are simplifications.
+\end{proposition}
+\end{keyblock}
+
+\section{Summary}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{3.0cm}>{\raggedright}p{4.9cm}>{\raggedright\arraybackslash}p{4.9cm}}
+\toprule
+What pain does & How & What is known \\
+\midrule
+raises the alarm & high threshold, weaker adaptation than touch & threshold measured; comparison of adaptation is an estimate \\
+reports ``where'' and ``how bad'' & two wires of different speed~\eqref{eq:paintime} & measured \\
+passes through a gate & veto through \nt{GABA}/\nt{GLYC}~\eqref{eq:gate} & gate measured; opening by pain is an assumption of the theory; the model is a simplification \\
+changes the volume & descending \nt{SERO}, \nt{NORA}, opioids & measured; the rule for choosing the volume is a hypothesis \\
+learns after injury & rise in gain~\eqref{eq:sensitization} & sensitization measured; the model is a simplification \\
+teaches avoidance & negative reward in~\eqref{eq:ctd} & similarity to the temporal-difference error measured \\
+interrupts work & capture of attention; withdrawal reflex & measured \\
+\bottomrule
+\end{tabular}
+\caption{Pain as an alarm signal.}
+\label{tab:pain}
+\end{table}
+
+Pain is assembled from parts we have already seen (Table~\ref{tab:pain}): \nt{GLUT} sensors, two wires, a veto through an inhibitory interneuron, a broadcast volume knob, a slow RC circuit, a prediction error, and an interrupt. Only one thing about it is new: it is the only input of the machine whose volume the machine sets itself, an alarm that its owner can both dampen and retune.
+
+\section{Exercises}
+
+\begin{exercise}[\lvlA]
+\label{ex:14:1}
+\emph{Two wires.} A signal comes from the foot, $L=1$~m. (a)~A volley travels along a bundle of wires of one type whose speeds fill the range~\eqref{eq:paintime}. How much does it spread out by the time it reaches the spinal cord, for the fast and the slow type? (b)~Pain waves along wires of $15$ and $1$~m/s are distinguishable if they differ by at least $0.1$~s. From what distance do they merge?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:14:2}
+\emph{When touch hurts.} The gate~\eqref{eq:gate} has the parameters of the text, and the gain $g$ grows with sensitization. Up to what $g$ does touch without pain fail to get through the gate at any strength $\mu$? At what $g$ does a touch of $\mu=1$ start to get through?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:14:3}
+\emph{Stability of sensitization.} The inputs are constant, and the gate output is linear in $g$: $z=gA-C$, $A=\nu+w_{z\mu}\mu$, $C=\beta q\ge0$. (a)~Find the equilibrium $g^*$ of the model~\eqref{eq:sensitization} and the condition for its stability. (b)~For $k_s=0.5$, find the pain intensity above which the model runs away, without touch and with touch $\mu=1$.
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:14:4}
+\emph{A predictor of pain.} A cue at time $0$ predicts pain at time $T=2$~s; in~\eqref{eq:ctd} $r(t)=-P\,\delta(t-T)$ and $\tau_\gamma=2$~s. (a)~Find the area of the $\delta$ transient at the moment of the cue. (b)~An action at time $t_e=1$~s cancels the pain. What is the $\delta$ burst at that moment, and what will it teach the network?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:14:5}
+\emph{An alarm that latches.} Extend the gate of \texttt{models/\allowbreak pain\_gate.py} with the dynamics~\eqref{eq:sensitization} and saturation $z\le4$. Touch $\mu=1$ is always present, damage $\nu=2$ lasts a time $T$, then $\nu=0$. By simulation, find the smallest $T$ (in units of $\tau_s$) after which the alarm stays on, for $k_s=4$, $4.6$, $5$, $6$, and $8$.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:14:6}
+\emph{Designing the gate.} With $\beta=1.5$, $w_{z\mu}=0.3$, and $g=1$, choose $q_0$, $w_{q\nu}$, and $w_{q\mu}$ in~\eqref{eq:gate} so that the pain threshold is $0.2$ without touch and $1.0$ with touch $\mu=1$, and touch stops dampening pain at $\nu_\times=2.5$. Up to what gain $g$ does touch without pain fail to get through the gate?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:14:7}
+\emph{The volume knob.} Work yields value $V$ per unit time, working with damage $\nu$ costs $c\nu$, so interrupting pays when $\nu>V/c$; pain interrupts when $z>\theta=0.5$. (a)~What gain $g^*$ of the gate~\eqref{eq:gate} without touch gives this threshold for $V/c=0.25$, $0.5$, and $2$? (b)~From which signals of the book could the machine estimate $V$ and $c$?
+\end{exercise}

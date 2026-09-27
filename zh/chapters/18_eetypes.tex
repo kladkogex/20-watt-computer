@@ -1,0 +1,123 @@
+\chapter{按电学功能划分的神经元类型}
+\chaptermark{作为器件的神经元}
+\label{sec:eetypes}
+
+在第~\ref{sec:neurontypes}~章中，我们按照神经元输出端释放的神经递质对它们进行了分类。电子工程师会用另一种方式分类：看神经元对自己的信号做了什么——它作为哪种器件工作。本书的主要器件我们从第~\ref{sec:glutcomputer}~章起就认识了：泄漏积分神经元~\eqref{eq:glutneuron}，即带比较器的 RC 电路。但大脑中还有别的器件。表~\ref{tab:eetypes}~把它们分成四组，而且几乎每一种都已在书中出现过。
+
+\begin{center}
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{>{\raggedright}p{3.1cm}>{\raggedright}p{3.3cm}>{\raggedright}p{4.7cm}>{\raggedright\arraybackslash}p{2.4cm}}
+\caption{作为器件的神经元：名称、电子学中的对应物、器件的作用以及它在书中出现的位置。}\label{tab:eetypes}\\
+\toprule
+神经元 & 器件 & 作用 & 书中位置 \\
+\midrule
+\endfirsthead
+\toprule
+神经元 & 器件 & 作用 & 书中位置 \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+\multicolumn{4}{l}{\emph{滤波器和积分器}} \\
+泄漏积分神经元 & 带比较器的 RC 积分器 & 在窗口 $\tau$ 内对输入求和，到达阈值时发放 & 第~\ref{sec:glutcomputer}~章，\eqref{eq:glutneuron} \\
+符合检测器 & 带时间窗的与门 & 只有输入几乎同时到达时才发放；$\tau$ 很小 & 第~\ref{sec:glutcomputer}、\ref{sec:code}~章，\eqref{eq:window} \\
+相位型神经元 & 高通滤波器，边沿检测器 & 对输入的变化作出响应，随后沉默 & 第~\ref{sec:sensors}~章 \\
+适应型神经元 & 带自动增益控制的高通滤波器 & 输入恒定时频率下降 & 第~\ref{sec:sensors}~章，\eqref{eq:nakarushton} \\
+谐振器 & 振荡回路，带通滤波器 & 对自身频率的输入响应最强 & 第~\ref{sec:resonator}~节 \\
+无泄漏积分器 & 运算放大器积分器 & 把速度变成位置并保持它 & 第~\ref{sec:perfectint}~节 \\
+\midrule
+\multicolumn{4}{l}{\emph{转换器}} \\
+紧张型神经元 & 电压—频率转换器 & 频率线性跟随输入，几乎不疲劳 & 第~\ref{sec:code}~章 \\
+分级电位神经元（无脉冲） & 模拟放大器，缓冲器 & 在短距离上传递平滑的电压 & 第~\ref{sec:sensors}~章 \\
+整流神经元 & 半波整流器 & 频率不会为负，$[u]_+$ & 第~\ref{sec:glutcomputer}、\ref{sec:gaba}~章 \\
+“开—关”对 & 一对整流器，双导线编码 & 一个响应“更多”，另一个响应“更少” & 第~\ref{sec:glutcomputer}~章，\eqref{eq:dualrail} \\
+带分流抑制的神经元 & 模拟除法器，增益控制 & 对输入做除法，而不是做减法 & 第~\ref{sec:gaba}~章，\eqref{eq:shunt} \\
+\midrule
+\multicolumn{4}{l}{\emph{振荡器与时间}} \\
+起搏器 & 弛张振荡器，多谐振荡器 & 自己以恒定频率输出脉冲 & 第~\ref{sec:serocomputer}、\ref{sec:dofa}~章 \\
+带输入的起搏器 & 压控振荡器 & 有自己的节律，输入使其加快或减慢 & 第~\ref{sec:chemoutput}~章 \\
+簇放电神经元 & 门控簇脉冲发生器 & 输出密集脉冲的簇——“长划” & 第~\ref{sec:code}~章，\eqref{eq:burst} \\
+锁相神经元 & 鉴相器，锁相环 & 在输入波的特定相位发放 & 第~\ref{sec:sensors}、\ref{sec:chemoutput}~章 \\
+带延迟的轴突 & 延迟线 & 把信号延迟一段给定的时间 & 第~\ref{sec:glutcomputer}~章，图~\ref{fig:itd} \\
+\midrule
+\multicolumn{4}{l}{\emph{存储与切换}} \\
+双稳态神经元 & 施密特触发器，锁存器 & 短暂的输入使它进入持久状态 & 第~\ref{sec:bistable}~节 \\
+带树突分支的神经元 & 多路复用器，小型多层网络 & 只有存在允许输入时，分支才让输入通过 & 第~\ref{sec:synthesis}~章 \\
+\end{longtable}
+\end{center}
+
+有一条说明比整张表更重要：这些不是不同的细胞，而是不同的\emph{模式}。同一个神经元在输入缓慢时可以是积分器，在抑制缩短了它的 $\tau$ 时又可以是符合检测器（第~\ref{sec:code}~章）；清醒时是起搏器，睡眠时是沉默的接收器。最终得到哪种器件，由膜上的离子通道以及调节这些通道的广播通道决定。
+
+\section{书中尚未出现的四种器件}
+
+\subsection{谐振器}
+\label{sec:resonator}
+
+有些神经元具有一种慢电流，它会对抗电压的任何变化：电压升高，电流把它往下拉；电压下降，电流把它往上拉，但有延迟。对电子工程师来说，这种电流的行为像一个电感，它与膜电容一起构成振荡回路。神经元对特定频率的输入响应最强，这个频率通常在几赫兹到一二十赫兹之间，对更慢和更快的输入响应较弱\cite{HutcheonYarom2000}。这是单个细胞中的带通滤波器：它从嘈杂的输入中挑出自身频率的节律，例如第~\ref{sec:gaba}~章的局部节律。
+
+\subsection{无泄漏积分器}
+\label{sec:perfectint}
+
+泄漏积分器只能记住输入 $\tau$ 这么长的时间——几十毫秒。但眼睛要保持不动，就需要把自己的位置记住好几秒：“转动”指令以短暂的速度形式到来，而眼睛必须保持在新的位置上。网络用与第~\ref{sec:glutcomputer}~章的记忆相同的反馈解决这个问题。如果一群时间常数为 $\tau$ 的神经元以权重 $w$ 自我兴奋，那么 $\tau\,\dd r/\dd t=-r+w\,r+I$，这群神经元的时间常数为
+\begin{empheq}[box=\keybox]{equation}
+\tau_{\text{eff}} \;=\; \frac{\tau}{1-w} .
+\label{eq:perfectint}
+\end{empheq}
+当 $\tau=0.1\,\text{s}$、$w=0.995$ 时得到 $20\,\text{s}$：用每个都只能记住十分之一秒的神经元，造出了几乎理想的积分器\cite{Seung1996}。代价是精细调节：$w$ 稍大于一，积分器就会饱和；稍小于一，它就很快遗忘。因此这种积分器需要通过学习不断调节，就像第~\ref{sec:motorlearning}~章所描述的那样。
+
+\subsection{双稳态神经元}
+\label{sec:bistable}
+
+在第~\ref{sec:glutcomputer}~章和第~\ref{sec:gaba}~章中，触发器是由一群神经元组装的。但单个细胞中也有触发器。有些神经元具有一种电流，一旦开启就会自己维持兴奋：短暂的输入使神经元进入持久的工作状态——\emph{平台}——而抑制使它回到静息。这就是施密特触发器：神经元有两个稳定状态，两者之间有迟滞。例如，控制肌肉的 \nt{ACET} 神经元就是这样，而这一特性由广播通道开启：当血清素到达神经元时，平台才会出现\cite{Hounsgaard1988}。同一个细胞有 \nt{SERO} 时是锁存器，没有时是普通的积分器。
+
+\subsection{积分器与谐振器}
+
+理论把可兴奋细胞分为两类\cite{Izhikevich2007}。\emph{积分器}像一个从零开始的压控振荡器：略高于阈值时神经元可以工作得任意慢，频率随输入平滑增加。这样的神经元对到来的一切求和，能用频率很好地传递输入的大小。\emph{谐振器}像一个有最低频率的振荡器：它们不会慢速工作，在阈值输入下立即以有限的频率输出脉冲，并偏好自身频率的输入。前者是第~\ref{sec:code}~章频率编码的天然器件，后者是时间编码的天然器件。
+
+\begin{keyblock}
+\begin{proposition}[一个神经元，多种器件]
+\label{prop:eetypes}
+按电学功能划分，神经元可以作为有泄漏和无泄漏的积分器、符合检测器、高通和带通滤波器、电压—频率转换器、整流器、除法器、振荡器、延迟线和触发器工作。一个给定的细胞成为哪种器件，由它的离子通道以及调节这些通道的广播通道决定。这些模式本身已有测量；大脑在多大程度上利用这种重构进行计算，主要还是假说。
+\end{proposition}
+\end{keyblock}
+
+对工程师来说，这类似于可编程逻辑阵列：硬件是同一套，器件由配置决定。只不过这里的配置不是在烧录时改变，而是在运行中改变——由第~\ref{sec:serocomputer}--\ref{sec:acet}~章讨论过的慢速广播通道改变。
+
+\section{习题}
+
+\begin{exercise}[\lvlA]
+\label{ex:18:1}
+\emph{无泄漏积分器的容差。}$\tau=0.1$~s 的神经元按~\eqref{eq:perfectint}~在 $T=1$~s 内保持眼睛位置，双向误差不超过 $5\%$。(a)~求 $w$ 的允许范围。(b)~$w$ 是 $K$ 个突触权重之和，每个突触有独立的 $10\%$ 误差。$K$ 为多少时和的离散落在容差之内？
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:18:2}
+\emph{作为回路的谐振器。}用变量 $W$ 描述第~\ref{sec:resonator}~节的慢电流：$C\,\dd V/\dd t=-g_LV-g_wW+I$，$\tau_w\,\dd W/\dd t=V-W$。证明这是一个带并联支路 $R_w=1/g_w$、$L_w=\tau_w/g_w$ 的 $RC$ 电路；并在 $C/g_L=10\ms$、$\tau_w=100\ms$、$\alpha=g_w/g_L=4$ 时求谐振频率以及谐振处 $|Z|$ 相对 $|Z(0)|$ 的增益。
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:18:3}
+\emph{积分器如何开始工作。}(a)~神经元 $\tau\,\dd V/\dd t=-V+\mu$，$\tau=10\ms$，阈值 $\theta$，复位到零。$\mu/\theta-1$ 为多少时频率为 $1$~Hz？(b)~模型 $\tau\,\dd v/\dd t=v^2+\mu$（脉冲即 $v$ 趋于 $+\infty$，复位到 $-\infty$）在 $\mu=0.01$ 时给出什么频率？
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:18:4}
+\emph{建模：积分器与谐振器。}习题~\ref{ex:18:2}~的模型取 $g_L=1$、$\tau_m=10\ms$、$\tau_w=100\ms$，阈值 $1$，复位 $V\to0$（$W$ 不变），输入 $\mu=1.5\sin2\pi ft$，$f=1$--$40$~Hz。$\alpha=0$ 和 $\alpha=4$ 时，神经元在哪个频带内输出脉冲？与条件 $1.5\,|Z(f)|>1$ 进行比较。
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:18:5}
+\emph{单细胞锁存器。}带平台电流的神经元：$\tau\,\dd r/\dd t=-r+F(wr+I)$，$F(x)=\min(1,\max(0,x))$，$\tau=10\ms$，$w=1.5$，背景 $I=-0.2$。(a)~幅度 $I=0.3$ 的脉冲至少要持续多久，才能使神经元从 $r=0$ 进入平台？(b)~长脉冲 $I=-0.2-B$ 的幅度 $B$ 至少多大，才能使它回到静息？
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:18:6}
+\emph{积分器的自我调节。}注视时输入 $I=0$，滑动传感器给出漂移速度 $e=\dd r/\dd t$，且 $\dd w/\dd t=-\eta\,e\,r$。在 $w=0.95$、$\tau=0.1$~s、$\langle r^2\rangle=1$ 时，求 $\eta$，使得在 $60$~s 的注视内 $|1-w|$ 进入习题~\ref{ex:18:1}~的容差。如果在眼睛转动时也进行学习，会出什么问题？
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:18:7}
+\emph{为什么要重构器件？}广播通道把习题~\ref{ex:18:2}~模型的 $\alpha$ 在 $0$ 和 $4$ 之间切换。对于白噪声电流中的弱正弦信号，在 $11$~Hz 和 $1$~Hz 处，谐振器的信噪比比积分器高多少倍？设计一个恰好需要切换模式才占优的任务。
+\end{exercise}

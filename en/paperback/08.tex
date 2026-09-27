@@ -1,0 +1,45 @@
+\chapter{The Adventure Knob}
+% full version: chapters/08_nora.tex
+
+You are choosing where to have lunch. Go to the café you know, or try a new one? If you always go to the one you know, you will never find out that there is a better one around the corner. If you keep trying new ones, you will often have a bad lunch. Where is the happy medium? This problem, whether to explore or to exploit what you have found, faces every creature that learns. In the brain it is apparently handled by the \nt{NORA} radio station: noradrenaline.
+
+\section*{The Contrast Knob}
+
+Noradrenaline changes how sharply a neuron responds to a signal. With a weak effect the neuron is like a smooth dimmer: a little more signal, a little brighter response. With a strong effect it is like a switch: below the threshold, silence; above it, a full response. More precisely, experiments show that noradrenaline suppresses the background chatter of neurons more than their response to a real signal; the ``contrast knob'' is a convenient model of this effect.
+
+\pencilfig{8}{\pencilart{8}}{The adventure knob: turn it left, and the machine tries new things; turn it right, and it firmly picks the proven one.}
+
+\section*{Weigh or Decide}
+
+Recall the two groups from the third chapter that inhibit each other. When the contrast is low, both work, the weaker one a little more quietly: the network is still ``thinking,'' weighing the options. When the contrast rises above a certain threshold, the network abruptly switches to ``decided'': one group wins, the other falls silent. A single knob switches the machine between deliberation and decision.
+
+\section*{How Much to Explore}
+
+Let us add noise. At low contrast the noise easily outweighs a small difference between the options, and the machine often tries an option that is not the best: it explores. At high contrast the noise decides nothing, and the machine always takes what it considers best: it exploits.
+
+In our model the world changes from time to time: the best option becomes the worst. The payoff depends on the knob like an upside-down letter U. Too little contrast, and the machine wanders blindly. Too much, and it fails to notice that the world has changed and stubbornly keeps going to the café that has gone downhill. And the more often the world changes, the lower the best setting: in a changeable world it pays to explore.
+
+\pencilfig{108}{%
+% points: models/nora_explore.py, reward as a share of the best possible, gain 0.5 ... 64 (doubling); the y axis starts at 0.70, hence the break mark
+\draw[pen] (0,0) -- (6.3,0); \draw[pen] (0,0) -- (0,0.18); \draw[pen] (0,0.34) -- (0,2.4);
+\draw[pcGray, line width=0.6pt] (-0.1,0.14) -- (0.1,0.22); \draw[pcGray, line width=0.6pt] (-0.1,0.3) -- (0.1,0.38);
+\node[lbl, anchor=north] at (3.0,-0.05) {contrast knob};
+\node[lbl, anchor=south, rotate=90] at (-0.1,1.3) {payoff};
+\draw[penlite=pcBlue] plot[smooth] coordinates {(0.00,0.55) (0.85,0.79) (1.70,1.19) (2.55,1.68) (3.40,2.00) (4.25,2.07) (5.10,2.01) (5.95,1.91)};
+\draw[penlite=pcRed] plot[smooth] coordinates {(0.00,0.55) (0.85,0.69) (1.70,0.93) (2.55,1.24) (3.40,1.40) (4.25,1.28) (5.10,1.06) (5.95,0.89)};
+\draw[dotpen=pcBlue, wash=pcBlue] (4.25,2.07) circle (0.07);
+\draw[dotpen=pcRed, wash=pcRed] (3.40,1.40) circle (0.07);
+\node[lbl, text=pcBlue, anchor=south] at (4.25,2.15) {the world changes rarely};
+\node[lbl, text=pcRed, anchor=north] at (3.40,1.30) {often};
+\node[lbl, anchor=north west, align=left] at (0.05,-0.35) {wanders\\blindly}; \node[lbl, anchor=north east, align=right] at (6.3,-0.35) {misses\\the change};
+}{The model's payoff at different knob settings. Each curve has a peak; when the world changes often, the peak is lower and further left.}
+
+\section*{Who Turns the Knob}
+
+A natural sign of change is surprise: the errors have become larger than usual. According to one hypothesis, noradrenaline reports exactly such an unexpected change. There is an important subtlety: the steady, background level of noradrenaline goes more with exploring and distraction, while short bursts at an important event go with focus and decision. Perhaps a burst works like an interrupt in a computer: ``drop what you are doing, the world has changed, rebuild the plan.''
+
+An indirect sign of this system is visible from the outside: the pupil widens when something changes unexpectedly and people start learning faster. True, the pupil tracks more than noradrenaline, so it is a hint, not an instrument.
+
+And an honest admission: in our model, adjusting the knob by surprise gained very little over the best fixed setting. Where exactly such adjustment pays off remains to be understood.
+
+\fullversion{8}

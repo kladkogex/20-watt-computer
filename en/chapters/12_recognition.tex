@@ -1,0 +1,225 @@
+\chapter{Recognizing Images and Video}
+\chaptermark{Recognition}
+\label{sec:recognition}
+
+\section{The problem: the same thing, different pixels}
+
+Chapter~\ref{sec:sensors} brought the image to the input of the machine: about a million output neurons of the eye, a compressed stream that carries mostly edges and changes. But between the sensor and the action there is a step we have not discussed yet. A cat in a picture is not a set of pixels. Shift it by half a frame, rotate it, move it farther away, turn off half the light: almost every pixel changes, yet the answer ``cat'' must stay the same. An engineer calls this \emph{invariance}: the output of a classifier must not change with shift, scale, rotation, or lighting.
+
+A simple experiment shows how hard this is. Take a one-dimensional ``retina'' of $24$ points and two shapes of five points each that can sit anywhere. A classifier that compares the input with a template stored at one position is right $49$--$52\%$ of the time, as often as a coin. A shift breaks pixel-by-pixel comparison completely. We need a different circuit.
+
+\section{A pipeline of stages}
+
+We already know from Chapter~\ref{sec:code} how fast the brain does this: an animal in a briefly flashed picture is recognized in about $150\ms$, and the signal passes through about ten stages, $10$--$20\ms$ each~\cite{Thorpe1996}. At each stage a neuron has time to fire zero or one spike. So fast recognition is a single pass through a pipeline, with no long deliberation and no repeats. The question is what each stage does.
+
+The answer suggested by measurements at the first stages of vision~\cite{HubelWiesel1962} consists of two alternating operations (Fig.~\ref{fig:conveyor}).
+
+\emph{Selectivity.} A neuron of stage $S$ looks at a small patch of the input and fires only if a particular combination of parts is there: this edge, and that one next to it. This is AND over parts: the threshold neuron of Chapter~\ref{sec:glutcomputer}, whose threshold is higher than any single part can supply.
+
+\emph{Invariance.} A neuron of stage $C$ collects the outputs of many $S$ neurons that look for the same combination at different places, and fires if it was found anywhere. This is OR over positions, or more precisely, taking the maximum.
+
+For the one-dimensional model the two operations read
+\begin{empheq}[box=\keybox]{equation}
+s_{f,p} \;=\; \Bigl[\sum_i t_{f,i}\,x_{p+i} - \theta\Bigr]_+ ,
+\qquad
+c_f \;=\; \max_p\, s_{f,p} ,
+\label{eq:scstage}
+\end{empheq}
+where $x$ is the input, $t_{f,i}$ is the template of feature $f$, $p$ is the position, and $\theta$ is the threshold. The first expression makes the response selective, the second makes it independent of position. The network gets the maximum of many inputs with the tools of Chapter~\ref{sec:gaba}: mutual inhibition keeps the strongest input (Proposition~\ref{prop:wta}), and division by the total activity equalizes responses across brightness levels~\cite{Carandini2012}.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  px/.style={draw,minimum size=0.36cm,inner sep=0pt},
+  on/.style={px,fill=blue!55!black},
+  snode/.style={circle,draw,very thick,minimum size=0.62cm,inner sep=0pt,font=\scriptsize,fill=blue!6},
+  cnode/.style={circle,draw,very thick,minimum size=0.8cm,inner sep=0pt,font=\scriptsize,fill=red!10}]
+% two inputs: the same shape at two positions
+\foreach \row/\sh/\lab in {0/1/{frame 1},1/7/{frame 2}}{
+  \begin{scope}[yshift=-\row*1.0cm]
+  \node[left,font=\scriptsize] at (-0.25,0) {\lab};
+  \foreach \i in {0,...,13}{\node[px] at (\i*0.4,0) {};}
+  \foreach \d in {0,1,3,4}{\node[on] at ({(\sh+\d)*0.4},0) {};}
+  \end{scope}}
+% S stage: detectors of the shape at several positions
+\foreach \k in {0,...,5}{
+  \node[snode] (S\k) at ({0.8+0.8*\k},1.7) {$S$};}
+\node[font=\scriptsize,left] at (-0.25,1.7) {stage $S$: AND over parts};
+\draw[->,thick,blue!60!black] (1.2,0.25) -- (S1.south);
+\draw[->,thick,orange!85!black] (3.6,0.25) -- (S4.south);
+\node[font=\scriptsize,blue!60!black,anchor=east] at (1.25,0.85) {frame 1};
+\node[font=\scriptsize,orange!85!black,anchor=west] at (3.9,0.85) {frame 2};
+% C stage
+\node[cnode] (C) at (2.8,3.25) {$C$};
+\node[font=\scriptsize,left] at (-0.25,3.25) {stage $C$: OR over positions};
+\foreach \k in {0,...,5}{\draw[->,gray!60!black] (S\k.north) -- (C);}
+\draw[->,very thick,red!70!black] (C.north) -- ++(0,0.6) node[above,font=\scriptsize,black] {``shape present'' in both frames};
+% next stages
+\draw[decorate,decoration={brace,amplitude=5pt},gray!60!black] (6.3,1.4) -- (6.3,-1.3);
+\node[right,font=\scriptsize,align=left] at (6.5,0.05) {the same\\object, different\\pixels};
+\draw[->,thick,densely dashed,gray!60!black] (3.6,3.25) -- (5.9,3.25) node[right,font=\scriptsize,black,align=left] {next pairs\\$S$, $C$: larger,\\more complex, more invariant};
+\end{tikzpicture}
+\caption{One pair of pipeline stages. The $S$ neurons look for the same combination of parts at different places; the $C$ neuron responds if it was found anywhere~\eqref{eq:scstage}. The shape in frame 1 and in frame 2 excites different $S$ neurons but the same $C$. The next pairs of stages repeat this on ever larger and more complex combinations.}
+\label{fig:conveyor}
+\end{figure}
+
+In the same one-dimensional model, a pair of stages~\eqref{eq:scstage} recognizes the shape at any position without errors; if each input point is randomly flipped with probability $0.1$, it is right $86\%$ of the time, and with probability $0.2$, $70\%$. The coin still gives one half. Stack several such pairs on top of one another: the first looks for edges, the next for combinations of edges, higher up for parts of objects, and at the top for whole objects. With each pair the combinations get larger, and the answer depends less and less on where and how the object lies~\cite{Riesenhuber1999}.
+
+\begin{keyblock}
+\begin{proposition}[A pipeline of selectivity and invariance]
+\label{prop:conveyor}
+Fast recognition is a single pass through about ten stages. At each pair of stages, AND over parts~\eqref{eq:scstage} makes the response selective, and OR over positions makes it independent of shift. Alternating these two operations gives a response that tells objects apart and barely depends on where and how they are seen. The structure of the first stages and the speed of the pass are measured; that the whole chain reduces to these two operations is a simplification.
+\end{proposition}
+\end{keyblock}
+
+If this design looks familiar, it should. Exactly this alternation, searching for a feature at every position and then pooling over neighboring positions, is what engineers carried over into artificial \emph{convolutional} networks~\cite{Fukushima1980}. Recently the traffic went the other way: convolutional networks trained to recognize objects turned out to be the best known model of neuron responses at the upper stages of vision~\cite{Yamins2014}. The result at the top is easy to read out: from the summed rates of about a hundred neurons of the last stage, a linear decision unit recognizes the object a tenth of a second after it is shown~\cite{Hung2005}. This is the population rate code of Chapter~\ref{sec:code}.
+
+\section{The missing teacher: learning from video}
+
+A convolutional network is trained on millions of labeled pictures. Almost nobody gives the brain labels: a child looks at objects for hours but hears the word ``cup'' only now and then. How, then, do the $C$ stages know which $S$ neurons to pool? To pool ``this shape here'' with ``this shape there,'' you must already know that it is the same shape.
+
+The video itself gives the hint. The world changes continuously: an object in view remains the same object while it moves, turns, and changes lighting, and only occasionally does the gaze move to another one. Whatever changes \emph{slowly} most likely belongs to the object, and whatever changes quickly belongs to its position and view~\cite{WiskottSejnowski2002}. So the $C$ neuron needs only the Hebb rule of Chapter~\ref{sec:dofa} with an eligibility trace: link what came in sequence, not just what came at the same time~\cite{Foldiak1991}:
+\begin{empheq}[box=\keybox]{equation}
+\tau_{\text{tr}}\,\frac{\dd\bar y_k}{\dd t} \;=\; -\bar y_k + y_k ,
+\qquad
+\frac{\dd\mathbf w_k}{\dd t} \;=\; \eta\,\bar y_k\,\bigl(\mathbf x - \mathbf w_k\bigr) .
+\label{eq:traceinvariance}
+\end{empheq}
+Here $y_k$ is the activity of $C$ neuron $k$, which won the competition through inhibition, $\bar y_k$ is its trace (the same RC circuit as in rule~\eqref{eq:threefactor}), and $\mathbf x$ is the output of the $S$ neurons. The neuron that won on the first view of an object still remembers it when the second view arrives, and pulls that view in too.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=1.0cm,y=1.0cm]
+\foreach \i/\lab in {0/1,1/2,2/3,3/4}{
+  \node[draw,thick,fill=blue!8,minimum width=0.9cm,minimum height=0.55cm,font=\scriptsize] at (\i+0.5,2.2) {$A$ at \lab};}
+\foreach \i/\lab in {0/4,1/3,2/2,3/1}{
+  \node[draw,thick,fill=orange!12,minimum width=0.9cm,minimum height=0.55cm,font=\scriptsize] at (\i+6.5,2.2) {$B$ at \lab};}
+\node[font=\scriptsize,gray!40!black] at (5.0,2.2) {pause};
+\draw[->,gray!70!black] (0,0) -- (10.4,0) node[below left,font=\scriptsize,black] {time};
+% traces
+\draw[thick,blue!60!black] (0,0.05) .. controls (0.4,1.2) and (0.8,1.3) .. (1.2,1.35) -- (4,1.4) .. controls (4.6,0.5) and (5.2,0.15) .. (6,0.08) -- (10,0.05);
+\draw[thick,orange!85!black] (0,0.05) -- (6,0.05) .. controls (6.4,1.2) and (6.8,1.3) .. (7.2,1.35) -- (10,1.4);
+\node[font=\scriptsize,blue!60!black,anchor=west] at (1.4,1.65) {trace $\bar y_1$ lasts the whole pass of $A$};
+\node[font=\scriptsize,orange!85!black,anchor=west] at (7.2,1.65) {trace $\bar y_2$};
+\draw[decorate,decoration={brace,amplitude=4pt},gray!60!black] (4.0,2.6) -- (0,2.6);
+\draw[decorate,decoration={brace,amplitude=4pt,mirror},gray!60!black] (0,-0.35) -- (4,-0.35) node[midway,below=4pt,font=\scriptsize,black] {all views of $A$ are linked to neuron 1};
+\end{tikzpicture}
+\caption{How video teaches invariance, schematic. Object $A$ passes through four positions, then a pause, then object $B$. The trace~\eqref{eq:traceinvariance} of the neuron that won on the first view of $A$ lasts the whole pass, and all views of $A$ end up linked to one neuron. The pause erases the trace, and $B$ goes to another neuron.}
+\label{fig:tracevideo}
+\end{figure}
+
+We tested this in a model (Fig.~\ref{fig:tracevideo}). Two $C$ neurons compete for inputs from $16$ $S$ neurons: two shapes at eight positions. A shape sweeps through all positions, $50\ms$ at each, then comes a $0.3\,\text{s}$ pause and the next random shape. No labels at all. If the trace is short, $\tau_{\text{tr}}=5\ms$, the neurons split the input by \emph{position}, and their answer matches the shape no better than a coin: $52\%$ on average over ten runs. If the trace is comparable to the time one position is shown, from $\tau_{\text{tr}}\approx20\ms$ up, each neuron collects \emph{all} positions of its shape (at $20$, $50$, and $200\ms$, in all ten runs): invariance is learned from video alone. The pause between objects matters: without it the trace spills over onto the next object and confuses the two.
+
+The same thing shows up in experiment. If an object is covertly swapped while the eye jumps from one place to another, neurons of the upper stages begin, within an hour or two, to respond to the swapped object as if it were the same one: they link what came in sequence~\cite{LiDiCarlo2008}. Invariance in the brain really is learned from the continuity of time. How much of visual learning this rule explains is a hypothesis.
+
+\section{Video is motion}
+
+Video is not only a stream of frames to learn from but also a task in itself: what is moving, where, and how fast. The first step is familiar: the direction detector of Chapter~\ref{sec:gaba} (Fig.~\ref{fig:direction}), in which delayed inhibition cancels motion in one direction. Such detectors cover the whole visual field, and from there on they are treated just like shape features: stages that collect many detectors of the same direction at different places respond to the motion of a large object regardless of where it is. This is the same AND and OR pair~\eqref{eq:scstage}, except that the feature is not ``an edge'' but ``an edge that moved within time $d$.''
+
+Video is also predictable: the next frame is almost the same as the previous one. According to the \emph{predictive coding} hypothesis, the upper stages send a prediction down to the lower ones, and what goes up is mainly the error, whatever the prediction missed~\cite{RaoBallard1999}. This is the same spike economy as in Proposition~\ref{prop:economy}: pay for the news, not for what is already known. Some observations agree with this hypothesis, but it has not been proven as the general design of the pipeline.
+
+\section{The brain and the convolutional network}
+
+How far does the similarity go? For fast recognition of a single object it runs deep~\cite{Yamins2014}. But the brain also has things a plain convolutional network lacks.
+
+\emph{Feedback.} The brain's pipeline is not only feedforward: every stage has connections backward and sideways. For hard pictures (occluded, poorly lit) the response of the upper stages forms later, and these late responses are better described by networks with feedback than by feedforward ones~\cite{Kar2019}. A single pass solves the easy cases; the hard ones need several rounds.
+
+\emph{Robustness.} An artificial network can be fooled by a pixel forgery invisible to the eye~\cite{Szegedy2014}: a change a human cannot see turns a ``panda'' into a ``gibbon''~\cite{Goodfellow2015}. Human vision is far more robust to such forgeries, but not immune: images that fool many networks at once also shift human choices when shown briefly~\cite{Elsayed2018}. Why robustness differs so much is an open question; the candidates are noise, division by the total activity, and feedback.
+
+\emph{The teacher.} A network needs millions of labeled examples; the brain needs mostly unlabeled video~\eqref{eq:traceinvariance} and a few hints from \nt{DOPA} about what matters.
+
+\emph{Energy.} The whole brain uses about $20$ watts (Proposition~\ref{prop:economy}), and recognition takes only part of that; a trained convolutional network on a graphics accelerator uses hundreds of watts.
+
+\section{Illusions: where the machine errs and why}
+\label{sec:illusions}
+
+An engineer who wants to understand someone else's circuit feeds it unusual signals and watches where it fails. For vision such signals were invented long ago: they are visual illusions. An illusion is not a malfunction. Each one points to a particular mechanism of the machine that works correctly in ordinary conditions and gives itself away on a specially chosen picture.
+
+\emph{Reasonable expectations.} The input is noisy, and the machine fills it in with what is usual in the world. Slow motions are more common than fast ones; when the input is unreliable, for example when the picture has little contrast, the speed estimate shifts toward slow, and a faint object seems to move more slowly than a bright one~\cite{Weiss2002}. Many brightness illusions are explained the same way: we see not the brightness of a pixel but the surface that such brightness most often corresponded to in the past~\cite{Purves2011}. The photograph of a dress that some see as white and gold and others as blue and black is the same mechanism: the picture is ambiguous, and people differ in what they unconsciously assume the lighting to be~\cite{LaferSousa2015,Wallisch2017}. The differences between people are measured; that the brain here combines input with expectation by the rules of probability theory is a well-founded hypothesis.
+
+\emph{Gain control.} Stare at a waterfall for a minute, then at motionless rocks: the rocks will drift upward. The ``down'' and ``up'' channels are a pair of wires, as in~\eqref{eq:dualrail}; gain control~\eqref{eq:nakarushton} has turned down the fatigued channel, and the balance of the pair has shifted. Tilt and contrast illusions, in which the surround changes how the center looks, are explained by division by the activity of the neighbors~\cite{Schwartz2009}, as in Chapter~\ref{sec:gaba}. There is also an instructive case for caution: the dark spots at the intersections of the white bars of a grid were long explained by simple inhibition from neighbors, but experiments with a modified grid showed that this explanation does not work~\cite{SchillerCarvey2005}.
+
+\emph{Delay compensation.} The path from the eye to the upper stages takes tens of milliseconds, and a moving object shifts in that time. If a stationary dot flashes next to it, the object appears ahead of the flash, although the two were aligned~\cite{Nijhawan1994}. According to one explanation, the machine extrapolates the motion forward to compensate for the delay, as in Chapter~\ref{sec:muscles}: with delayed feedback one has to predict. This illusion has several explanations, and the debate is not settled.
+
+\emph{An error in the timing code.} A still image of rings with sharp color transitions appears to rotate. High-contrast regions are processed faster than faint ones, and the difference in latencies~\eqref{eq:latency} is read by direction detectors as motion~\cite{Conway2005}. The illusion is triggered by small involuntary jumps of the eye and by blinks: each jump refreshes the input, and the detectors see ``motion'' again~\cite{OteroMillan2012}. This is the timing code of Chapter~\ref{sec:code}, read incorrectly.
+
+\emph{Two pictures in one.} A wire-frame cube that faces us first with one side and then with another, or different pictures in the two eyes: perception flips every few seconds. The best models are mutual inhibition between the two interpretations, slow fatigue, and noise~\cite{MorenoBote2007}, that is, the very circuit~\eqref{eq:halfcentre} that in Chapter~\ref{sec:muscles} generated the stepping rhythm. The switching time is set by noise and fatigue; in the model of~\cite{MorenoBote2007} noise plays the main role, and fatigue only helps.
+
+And artificial networks? A network trained to predict the next video frame sees rotation in the same still rings and does not see it in control pictures~\cite{Watanabe2018}. Networks trained to denoise and sharpen images fall for the same color and brightness illusions as people~\cite{GomezVilla2020}. So some illusions follow from the task the machine learns, not from peculiarities of neural tissue. Which illusions belong to the brain alone is a good test for any model of vision.
+
+\begin{keyblock}
+\begin{proposition}[Illusions as fingerprints of mechanisms]
+\label{prop:illusions}
+An illusion arises when a mechanism that is useful in the ordinary world receives an unusual input: expectation overrides an unreliable input, gain control shifts a pair of channels, delay compensation carries an object forward, a difference in latencies is read as motion, mutual inhibition with noise and fatigue flips. Each illusion is a test signal pointing to its own mechanism. The illusions themselves are measured; their explanations range from well founded to disputed.
+\end{proposition}
+\end{keyblock}
+
+\section{Summary}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{3.0cm}>{\raggedright}p{4.6cm}>{\raggedright\arraybackslash}p{5.2cm}}
+\toprule
+What the machine does & How & What is known \\
+\midrule
+recognizes in $150\ms$ & a single pass through about ten stages & speed measured \\
+makes the response selective & AND over parts, stage $S$~\eqref{eq:scstage} & measured at the first stages \\
+makes the response invariant & OR over positions, stage $C$; inhibition and division & measured at the first stages; for the upper ones, a simplification \\
+gives the answer & rates of about a hundred neurons of the last stage, linear readout & measured \\
+learns without labels & Hebb rule with a trace~\eqref{eq:traceinvariance} on continuous video & object swap changes responses: measured; as the main rule: hypothesis \\
+sees motion & direction detectors, then the same AND/OR pair & measured \\
+saves on the predictable & the prediction error goes up & hypothesis \\
+solves hard cases & feedback, several rounds & late responses and the role of feedback measured \\
+errs predictably & illusions: expectations, gain control, delays, mutual inhibition with noise and fatigue & illusions measured; explanations from well founded to disputed \\
+\bottomrule
+\end{tabular}
+\caption{How the machine recognizes images and video.}
+\label{tab:recognition}
+\end{table}
+
+Recognition is built from parts we already had (Table~\ref{tab:recognition}): the threshold gives AND over parts, mutual inhibition gives OR over positions, division gives independence from brightness, and the Hebb rule with a trace stands in for the missing teacher. Engineers took from vision the alternation of selectivity and invariance and built convolutional networks on it; the brain has not yet given away its main secret: learning from unlabeled video on almost no energy.
+
+\section{Exercises}
+
+\begin{exercise}[\lvlA]
+\label{ex:12:1}
+\emph{Rate at a single stage.} A pipeline stage lasts $15\ms$, neurons fire at $20$ spikes/s, and the noise is correlated with $c=0.1$~\eqref{eq:correlated}. What is the relative error of the rate of a group of a hundred neurons, and its limit for an arbitrarily large group? How many rate levels can a stage distinguish?
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:12:2}
+\emph{The energy of one recognition.} In a single $150\ms$ pass, ten stages of $10^7$ neurons each fire at most one spike each, at $10^{-10}$~J per spike. (a)~What fraction of the whole brain's energy over those $150\ms$ does recognition cost? (b)~How many times more does a $300$~W accelerator spend if it recognizes a picture in $10\ms$?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:12:3}
+\emph{Thresholds of stage $S$.} A ``retina'' of $24$ points, shapes $A=11011$ and $B=10101$; the template~\eqref{eq:scstage} is $+1$ on the ones of the shape and $-1$ on the zeros. (a)~For which thresholds does an $S$ neuron forgive one flipped point but stay silent on the other shape? (b)~How many $S$ neurons are needed for ten $5\times5$ features on a $100\times100$ picture?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:12:4}
+\emph{How long one of two pictures lasts.} In the flipping circuit~\eqref{eq:halfcentre} with $\tau\ll\tau_a$, while group~1 wins, $r_2=0$ and $r_1=I-a_1$. (a)~Find the duration of a win for $I=1$, $\beta=2$, $b=2$, $\tau_a=0.4\,\text{s}$. (b)~What $\tau_a$ gives a switch every three seconds?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:12:5}
+\emph{Simulation: the cost of invariance.} Using the function \texttt{two\_stage} from \texttt{models/\allowbreak recognition\_models.py} ($4000$ trials), find the point-flip probability $p$ at which the $S$, $C$ pair with $N=24$ errs in one case out of four. How does the fraction of correct answers at $p=0.1$ change from $N=8$ to $N=192$?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:12:6}
+\emph{Simulation: the trace window.} With ten runs of \texttt{trace\_learning} from \texttt{models/\allowbreak recognition\_models.py} and a $0.3\,\text{s}$ pause, find for which $\tau_{\text{tr}}$ between $5\ms$ and $2\,\text{s}$ all runs learn invariance without errors. Where does the upper edge of this window come from?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:12:7}
+\emph{Motion anywhere.} Direction detectors of Chapter~\ref{sec:gaba} sit at neighboring points of a row spaced $0.1^\circ$ apart: inhibition from $A$ with delay $d$ cancels excitation from $B$ if the two are at most $5\ms$ apart; a stage $C$ sits above them. What delays keep $C$ silent for reverse motion at speeds from $5$ to $20^\circ$ per second?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:12:8}
+\emph{Pixel forgery.} How many flipped points does it take to change the answer of the \texttt{two\_stage} model ($N=24$) on a clean shape? And for the classifier ``more than $3.5$ ones in the input means $A$,'' which is also shift invariant? What is its fraction of correct answers at $p=0.1$, against $0.86$ for the pair of stages?
+\end{exercise}

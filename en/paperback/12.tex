@@ -1,0 +1,44 @@
+\chapter{How to Recognize a Cat}
+% full version: chapters/12_recognition.tex
+
+\pencilfig{12}{\pencilart{12}}{A big cat and a small one are completely different pictures on the eye's sensors, yet the answer is the same.}
+
+A cat in a picture can be on the left or on the right, near or far, in the sun or in the shade. Each time a completely different pattern falls on the eye's sensors, yet you recognize it in a fraction of a second. That is the difficulty of recognition: the same thing has to be recognized in thousands of different views.
+
+\section*{The Assembly Line}
+
+The brain solves the problem with an assembly line of about ten stages, and the signal passes through it in about a hundred and fifty milliseconds. Each stage does two things. First, ``and'': a neuron fires if the right details stand in the right arrangement, say, two segments meet in a corner. Then, ``or over all places'': the next neuron fires if there is a corner anywhere nearby, no matter exactly where. The first operation makes recognition discerning, the second makes it tolerant of shifts. Stage by stage, details add up to parts and parts to objects, while shifts and scales are forgiven.
+
+\pencilfig{112}{%
+\foreach \i/\y/\cx/\cy in {1/1.2/0.15/0.3,2/0.3/0.3/0.1,3/-0.6/0.05/0.05}{
+  \draw[penlite] (0,\y-0.3) rectangle (0.6,\y+0.3);
+  \draw[pcGray, line width=0.8pt] (\cx,\y-0.3+\cy+0.35) -- (\cx,\y-0.3+\cy) -- (\cx+0.3,\y-0.3+\cy);
+  \draw[pen=pcBlue, wash=pcBlue] (1.9,\y) circle (0.2);
+  \draw[arr] (0.65,\y) -- (1.65,\y);
+  \draw[arr=pcBlue] (2.12,\y) -- (3.62,{0.3+0.12*(2-\i)});}
+\draw[pen=pcBlue, wash=pcBlue] (3.9,0.3) circle (0.25);
+\draw[arr] (4.2,0.3) -- (5.75,0.3); \node[lbl, anchor=south] at (4.97,0.35) {more stages};
+% a small cat
+\draw[penlite] (6.3,0.3) circle (0.32);
+\draw[penlite] (6.03,0.5) -- (6.07,0.82) -- (6.23,0.6); \draw[penlite] (6.57,0.5) -- (6.53,0.82) -- (6.37,0.6);
+\node[lbl, anchor=north] at (0.3,-1.0) {picture}; \node[lbl, anchor=north, align=center] at (1.9,-1.0) {AND: corner\\right here};
+\node[lbl, anchor=north, align=center] at (3.9,-1.0) {OR: corner\\anywhere}; \node[lbl, anchor=north] at (6.3,-1.0) {cat};
+}{One stage of the assembly line: ``and'' assembles a corner in one place, ``or'' forgives exactly where it stands.}
+
+This is exactly the scheme copied by the convolutional neural networks that recognize pictures in your phone. And they return the favor: networks trained to recognize objects predict fairly well how neurons at the upper stages of vision respond.
+
+\section*{Learning from Video}
+
+But who taught the brain? Nobody showed you a million pictures labeled ``cat.'' A plausible answer is video. The world flows continuously, and within a fraction of a second an object hardly changes, while its position and lighting do. If connections strengthen between what is seen now and what was seen a moment ago, the network will link different views of one object by itself: what is slow is the object, what is fast is the circumstances. There is an experiment in which objects were quietly swapped during eye movements, and the neurons began to treat different objects as one. As a general rule this is still a hypothesis.
+
+\section*{Illusions Are Fingerprints of Mechanisms}
+
+Illusions are not breakdowns but traces of how the machine is built. If the eye looks at a waterfall for a long time and then at motionless rocks, the rocks ``crawl'' upward: the pair of ``down'' and ``up'' channels is thrown off balance because one of them is tired. The famous dress that some see as white and gold and others as blue and black divides people by the lighting their brain silently assumes. The drawn ``rotating snakes'' seem to move because bright patches are processed slightly faster than dim ones, and the time difference is read as motion. And a cube that pops out and then sinks in is two groups of neurons competing with each other; according to one model, the switch in outcome is decided mostly by noise.
+
+Curiously, a neural network trained to predict the next frame of a video also ``sees'' the snakes rotate. So some illusions are the unavoidable price of being able to predict.
+
+\section*{Brain versus Neural Network}
+
+The resemblance is not complete. The brain needs few examples, learns almost without labels, and spends twenty watts on everything. A neural network can be fooled by a doctored picture that a human would not notice. True, such doctored pictures also throw people off a little if they are flashed for an instant. Where the real boundary between these two machines lies is still being worked out.
+
+\fullversion{12}

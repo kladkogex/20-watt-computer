@@ -1,0 +1,194 @@
+\chapter{What Neurons Do During Sleep}
+\chaptermark{Sleep}
+\label{sec:sleep}
+
+\section{Sleep is not a shutdown but a different mode}
+
+An engineer looking at a switched-off computer will say: it is doing nothing. That does not work for a sleeping brain. Neurons are not silent in sleep: in deep sleep the cortex emits spikes, and in REM sleep almost as many as during the day. What changes is not \emph{whether} neurons work but \emph{how} they work. Sleep is a set of machine modes, and they are switched by the same broadcast channels as during the day.
+
+For each mode one can write down the ``register state'' (Table~\ref{tab:sleepmodes}). During the day \nt{ACET}, \nt{NORA}, and \nt{SERO} are active, the sensors are connected, and the muscles obey. In slow-wave, deep sleep all three channels quiet down, and the input from the senses is weakened~\cite{Hasselmo1999}: acetylcholine release in the cortex falls, and \nt{NORA} and \nt{SERO} neurons fire less often than during the day~\cite{Marrosu1995,AstonJonesBloom1981,McGintyHarper1976}. In REM sleep the picture is strange: \nt{ACET} rises again to its daytime level~\cite{Marrosu1995}, while \nt{NORA} and \nt{SERO} fall almost completely silent~\cite{AstonJonesBloom1981,McGintyHarper1976,JacobsAzmitia1992}. The body's muscles are switched off in REM sleep: the \nt{ACET} neurons that control them are strongly inhibited through \nt{GABA} and \nt{GLYC}~\cite{BrooksPeever2012}, by the same veto as in Chapter~\ref{sec:gaba}, only now imposed on the whole output at once.
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{3.1cm}>{\raggedright}p{2.9cm}>{\raggedright}p{3.2cm}>{\raggedright\arraybackslash}p{3.4cm}}
+\toprule
+& wakefulness & slow-wave sleep & REM sleep \\
+\midrule
+\nt{ACET} (write, Ch.~\ref{sec:acet}) & high & low & high \\
+\nt{NORA} (gain, Ch.~\ref{sec:nora}) & medium, bursts & low & nearly silent \\
+\nt{SERO} (Ch.~\ref{sec:serocomputer}) & medium & low & nearly silent \\
+input from sensors & connected & weakened & weakened \\
+output to muscles & connected & weakened & switched off by inhibition \\
+cortical activity & steady & slow swings: activity/silence & steady, as in the day \\
+\bottomrule
+\end{tabular}
+\caption{The machine's register state in three modes. All rows are measured; the levels of \nt{ACET}, \nt{NORA}, and \nt{SERO}, by direct recordings across sleep stages~\cite{Marrosu1995,AstonJonesBloom1981,McGintyHarper1976}.}
+\label{tab:sleepmodes}
+\end{table}
+
+\section{When to sleep: a relay with hysteresis}
+
+What decides when the machine should switch into sleep? A simple two-part scheme works well~\cite{Borbely1982}. The first part is \emph{sleep pressure} $S$, which accumulates while we are awake and is discharged while we sleep. It is a capacitor that charges during the day and discharges at night:
+\begin{empheq}[box=\keybox]{equation}
+\frac{\dd S}{\dd t} \;=\; \frac{1-S}{\tau_r}\ \ \text{(wake)},\qquad
+\frac{\dd S}{\dd t} \;=\; -\frac{S}{\tau_d}\ \ \text{(sleep)} .
+\label{eq:sleeppressure}
+\end{empheq}
+The second part is two thresholds: the machine falls asleep when $S$ reaches the upper threshold $H(t)$ and wakes up when $S$ drops to the lower one $L(t)$. Both thresholds swing smoothly in step with the daily rhythm of Chapter~\ref{sec:chemoutput}. The result is a relay with hysteresis, the Schmitt trigger of Section~\ref{sec:bistable}, and together with the capacitor it forms a relaxation oscillator phase-locked by the daily rhythm~\eqref{eq:pll}.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=0.16cm,y=4.2cm]
+\foreach \a/\b in {0/4.3,21.2/29.3,45.4/53.4,69.5/72}{\fill[blue!8] (\a,0) rectangle (\b,1);}
+\draw[->,gray!70!black] (0,0) -- (75,0) node[right,font=\small,black] {$t$, h};
+\draw[->,gray!70!black] (0,0) -- (0,1.08) node[left,font=\small,black] {$S$};
+\foreach \t in {0,24,48,72}{\draw[gray!60!black] (\t,-0.02) -- (\t,0.02); \node[below,font=\scriptsize] at (\t,0) {\t};}
+\draw[thick,densely dashed,red!70!black] plot file {figures/sleep_H.dat};
+\draw[thick,densely dashed,green!45!black] plot file {figures/sleep_L.dat};
+\draw[very thick,blue!60!black] plot file {figures/sleep_S.dat};
+\node[font=\scriptsize,red!70!black,anchor=west] at (73,0.72) {$H$: fall asleep};
+\node[font=\scriptsize,green!45!black,anchor=west] at (73,0.24) {$L$: wake up};
+\node[font=\scriptsize,blue!60!black] at (25.25,0.93) {sleep};
+\node[font=\scriptsize,blue!60!black] at (49.4,0.93) {sleep};
+\end{tikzpicture}
+\caption{Sleep pressure $S$~\eqref{eq:sleeppressure} with $\tau_r=18.2$~h, $\tau_d=4.2$~h. During the day $S$ charges up to the upper threshold $H$; at night (shaded) it discharges to the lower threshold $L$; both thresholds swing with the daily rhythm. The machine settles by itself into a regime of about $16$ hours awake and $8$ hours asleep.}
+\label{fig:twoprocess}
+\end{figure}
+
+In our model, with the usual values $\tau_r=18.2$~h and $\tau_d=4.2$~h, the machine settles by itself into $16.1$ hours awake and $8.0$ hours asleep (Fig.~\ref{fig:twoprocess}). The model also explains something that seems odd: after forty hours without sleep the pressure reaches $0.90$, yet recovery sleep in the model lasts only $8.8$ hours, not a day longer than usual. The discharge is exponential, and a high charge drains quickly; the ``debt'' is repaid not by the length of sleep but by its depth.
+
+What physically plays the role of $S$? A strong candidate is adenosine, the ``load counter'' of Appendix~\ref{sec:othermediators}: its concentration rises during wakefulness and falls during sleep~\cite{PorkkaHeiskanen1997,Dunwiddie2001}. That sleep pressure is adenosine and nothing else is a hypothesis.
+
+\section{Slow-wave sleep: the whole network as a relaxation oscillator}
+
+In deep sleep the cortical neurons work in turns as a whole group: less than once a second they switch on together for a few hundred milliseconds (the \emph{active state}) and fall silent together (the \emph{silent state}); these swings run below $1$~Hz, most often at $0.3$--$0.4$~Hz under anesthesia~\cite{Steriade1993}. We can build these slow swings from parts we already have. Take a group of \nt{GLUT} neurons with strong feedback onto itself, the memory of Chapter~\ref{sec:glutcomputer} with its two stable states, and add slow fatigue, as in the rhythm generator of Chapter~\ref{sec:muscles}:
+\begin{empheq}[box=\keybox]{equation}
+\tau\,\frac{\dd r}{\dd t} = -r + F\bigl(w\,r + I - a\bigr),
+\qquad
+\tau_a\,\frac{\dd a}{\dd t} = -a + b\,r .
+\label{eq:updown}
+\end{empheq}
+The group switches on, works, and tires; fatigue $a$ eats away the upper state, and the group drops into silence; in silence the fatigue wears off, the lower state disappears, and the group switches on again. The result is the same relaxation oscillator as sleep pressure, only about eighty thousand times faster.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=2.9cm,y=1.0cm]
+\begin{scope}[yshift=1.9cm]
+\draw[->,gray!70!black] (0,0) -- (4.1,0);
+\draw[->,gray!70!black] (0,0) -- (0,1.25) node[left,font=\small,black] {$r$};
+\draw[thick,blue!60!black] plot file {figures/updown_sleep.dat};
+\node[font=\scriptsize,anchor=west] at (4.15,0.5) {sleep: $b=5$};
+\end{scope}
+\draw[->,gray!70!black] (0,0) -- (4.1,0) node[right,font=\small,black] {$t$, s};
+\draw[->,gray!70!black] (0,0) -- (0,1.25) node[left,font=\small,black] {$r$};
+\draw[thick,red!70!black] plot file {figures/updown_wake.dat};
+\node[font=\scriptsize,anchor=west] at (4.15,0.5) {day: $b=1$};
+\foreach \t in {0,1,2,3,4}{\draw[gray!60!black] (\t,-0.05) -- (\t,0.05); \node[below,font=\scriptsize] at (\t,0) {\t};}
+\end{tikzpicture}
+\caption{The same group~\eqref{eq:updown} in two modes: $w=5$, $I=2$, $\theta=2.5$, $\tau=10\ms$, $\tau_a=0.3$~s. With strong fatigue ($b=5$, as in slow-wave sleep) the group swings between activity and silence with a period of $1.1$~s (a model value; in the cortex the period is longer than a second, about $3$~s under anesthesia). Weaken the fatigue ($b=1$), which is what acetylcholine does, and the same group works steadily.}
+\label{fig:updown}
+\end{figure}
+
+What moves the network from swings to steady daytime work? Acetylcholine suppresses the slow currents in neurons that create fatigue~\cite{McCormick1992}. In our model, with strong fatigue, $b=5$, the group swings with a period of $1.1$~s (faster than the measured swings, but of the same order) and is active about $35\%$ of the time, averaged over a whole number of periods; with weak fatigue, $b=1$, the same group works steadily (Fig.~\ref{fig:updown}). One register, the \nt{ACET} level, switches an oscillator into an amplifier. On top of the slow swings, sleep also carries faster bursts of a $7$--$15$ cycles-per-second rhythm; they are generated by the \nt{GLUT}--\nt{GABA} loop between the cortex and an intermediate relay node~\cite{SteriadeMcCormickSejnowski1993}, a relative of the rhythm of Chapter~\ref{sec:gaba}.
+
+\section{Replays: fast-forwarding the day}
+
+In Chapter~\ref{sec:acet} we saw that in slow-wave sleep neurons that worked together during the day fire together again, in the same order. Let us add one engineering detail: the replays run \emph{fast-forward}. A sequence that took seconds during the day is played back in sleep in tenths of a second~\cite{Nadasdy1999}: in the hippocampus about twenty times faster~\cite{LeeWilson2002}, in the cortex six to seven times faster~\cite{Euston2007}. And it is not played back at random moments: the short bursts of replay in one region align with the swings of activity and silence and with the fast rhythm bursts in the cortex. If this alignment is artificially strengthened, memory improves~\cite{Maingret2016}; this is a causal link, not a coincidence.
+
+Why would the machine fast-forward the day? Engineers know a difficulty called \emph{catastrophic forgetting}: a network that learns new things in sequence, one after another, corrupts the old. The cure is \emph{interleaving}: learn the new mixed with the old, in small portions, many times. The hypothesis of two learning systems~\cite{McClelland1995} is that a fast memory records the whole day, and during sleep it plays it back to the slow cortex little by little, interleaved, many times. This is the same ``fast buffer, slow storage'' pair as in Chapter~\ref{sec:acet}, and the same pair of fast and slow learners as in Chapter~\ref{sec:motorlearning}. Replays and their alignment are measured; that their purpose is interleaved training of the slow memory is a well-founded hypothesis.
+
+\section{Renormalizing the weights}
+
+During the day the Hebbian rules of Chapter~\ref{sec:dofa} mostly strengthen connections. If they only strengthen, the weights grow, and with them the energy cost grows and the sensitivity falls: a neuron whose inputs are all strong stops distinguishing them. According to the \emph{synaptic homeostasis} hypothesis~\cite{TononiCirelli2014}, sleep is needed, among other things, to bring the weights back to a working level: all connections are weakened by the same factor, so their \emph{ratios}, which hold what was learned, are preserved. To an engineer this is normalization, as in rule~\eqref{eq:oja}, only done not on the fly but at a separate time.
+
+Direct measurements do not contradict this: in mice, the contact area of cortical synapses after sleep is about $18\%$ smaller than after wakefulness, the reduction is proportional to size, and the largest, most stable contacts hardly change~\cite{deVivo2017}. Weight scaling is measured; that it is the main job of sleep is a hypothesis.
+
+\section{REM sleep: a machine disconnected from its inputs and outputs}
+
+In REM sleep the cortex works almost as during the day, but the input from the senses is weakened and the output to the muscles is switched off by inhibition. To an engineer this is a familiar mode: \emph{a bench test}. The circuit runs at full power, but its inputs are tied to an internal generator and its outputs are disconnected from the actuators so that nothing breaks. According to one hypothesis, dreams are exactly such an internal run of the world model assembled during the day; what exactly the network does then, and whether it learns, is unknown. Only what is recorded in Table~\ref{tab:sleepmodes} is measured here: which channel is on, which is silent, and that the output is blocked.
+
+\section{Maintenance and local sleep}
+
+It was long believed that during sleep the extracellular gaps widen and the brain is flushed of metabolic waste faster~\cite{Xie2013}. Recent experiments that measured clearance by a different method found the opposite: it is slower during sleep~\cite{Miao2024}. The question is currently open, and we leave it open.
+
+Another fact is more solid: sleep is a property of local networks, not of the whole machine at once. If an animal is kept awake for a long time, individual patches of its cortex briefly drop into silence, as in slow-wave sleep, while the animal is awake and moving, and at those moments the animal makes more errors~\cite{Vyazovskiy2011}. Each network tires on its own and switches on its own; a global mode arises when the broadcast channels switch all networks at once.
+
+\begin{keyblock}
+\begin{proposition}[Sleep as a set of modes]
+\label{prop:sleep}
+Neurons do not switch off in sleep: the broadcast channels move the machine into other modes. When to sleep is decided by a relay with hysteresis~\eqref{eq:sleeppressure}, locked to the daily rhythm. In slow-wave sleep the network becomes a relaxation oscillator~\eqref{eq:updown} and replays the day fast-forward; in REM sleep it works disconnected from its inputs and outputs. The modes, the replays, and the weight scaling are measured; their purposes, interleaved learning and renormalization, are well-founded hypotheses.
+\end{proposition}
+\end{keyblock}
+
+\section{Summary}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{3.2cm}>{\raggedright}p{4.4cm}>{\raggedright\arraybackslash}p{5.2cm}}
+\toprule
+What happens & How & What is known \\
+\midrule
+mode switching & registers \nt{ACET}, \nt{NORA}, \nt{SERO} (Table~\ref{tab:sleepmodes}) & measured \\
+when to sleep & capacitor $S$ and relay with hysteresis~\eqref{eq:sleeppressure} & the model describes experiments well; adenosine as $S$ is a hypothesis \\
+slow swings & group with feedback and fatigue~\eqref{eq:updown} & swings measured; the model is the simplest circuit \\
+fast-forwarding the day & replays $6$--$20$ times faster, aligned with the swings & measured; strengthening the alignment improves memory \\
+why replay & interleaved training of the slow memory & well-founded hypothesis \\
+renormalizing weights & scaling of connections during sleep & reduction of contacts measured; as the main role of sleep, a hypothesis \\
+REM sleep & work with inputs and output disconnected & mode measured; purpose unknown \\
+flushing & widening of extracellular gaps & conflicting results \\
+local sleep & individual patches drop into silence & measured \\
+\bottomrule
+\end{tabular}
+\caption{What neurons do during sleep.}
+\label{tab:sleep}
+\end{table}
+
+Table~\ref{tab:sleep} sums up the chapter. Sleep turned out to be not a pause in the machine's work but maintenance on the run: mode switching by the same broadcast channels, an oscillator built from the same parts as the stepping rhythm, fast-forward replay of the day for the slow memory, and renormalization of the weights. By day the machine writes; by night it rewrites and puts in order what was written.
+
+\section{Exercises}
+
+\begin{exercise}[\lvlA]
+\label{ex:20:1}
+\emph{A relay without the daily rhythm.} Let the thresholds be constant: $H=0.67$, $L=0.17$ (the mean thresholds of the model in Fig.~\ref{fig:twoprocess}). Derive from~\eqref{eq:sleeppressure} the durations of wake and sleep and the oscillator period for $\tau_r=18.2$~h, $\tau_d=4.2$~h. Why does the model with swinging thresholds still settle at $16.1+8.0=24$~h? Which device of Chapter~\ref{sec:chemoutput} does this effect belong to?
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:20:2}
+\emph{Sleep debt.} Sleep begun at pressure $S_0$ lasts $t_s=\tau_d\ln(S_0/L)$, $\tau_d=4.2$~h, where $L$ is the lower threshold at waking. (a)~After $40$~h without sleep $S_0=0.90$, and sleep lasted $8.8$~h. What was $L$? How long would sleep last with the usual $L\approx0.092$? (b)~Overnight the synaptic contact area shrinks by $18\%$. By how much must the weights grow during the day?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:20:3}
+\emph{Designing the thresholds.} Choose constant thresholds $H$ and $L$ for which relay~\eqref{eq:sleeppressure} with $\tau_r=18.2$~h and $\tau_d=4.2$~h gives exactly $16$~h of wake and $8$~h of sleep. How is such a machine worse than one with swinging thresholds if one night it is woken after $4$~hours?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:20:4}
+\emph{The period of the slow swings.} In model~\eqref{eq:updown} $F(x)=1/\bigl(1+e^{-(x-\theta)/k}\bigr)$, $w=5$, $I=2$, $\theta=2.5$, $k=0.25$, $b=5$, $\tau\ll\tau_a=0.3$~s. (a)~Find the turning points $a_{\text{hi}}$ and $a_{\text{lo}}$ of the curve $r=F(wr+I-a)$ where activity and silence disappear. (b)~Taking $r\approx1$ during activity and $r\approx0$ during silence, find the period and the active fraction.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:20:5}
+\emph{When the swings switch off.} In the model of Exercise~\ref{ex:20:4} the fixed point lies at the intersection of the curve $a=wr+I-F^{-1}(r)$ with the line $a=br$. Oscillations run while the intersection is on the middle branch, between the turning points. For what $b$ is this so? How does \nt{ACET}, by changing $b$, switch the oscillator into an amplifier?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:20:6}
+\emph{Simulation: debt or phase.} In \texttt{sleep\_models.py} take the first waking after $48$~h and keep the machine awake for $D=24$, $32$, $40$, $48$, $64$~h (\texttt{stay\_awake}, \texttt{days=8}). How long does recovery sleep last for each $D$? What determines its duration?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:20:7}
+\emph{Simulation: forgetting and interleaving.} A linear neuron $y=\mathbf w\cdot\mathbf x$, $n=40$, learns by the rule $\mathbf w\leftarrow\mathbf w-0.5\,(y-y^*)\,\mathbf x$. Tasks A and B have $10$ patterns each, $x_j\sim\mathcal N(0,1/n)$, $y^*=\pm1$. What is the mean squared error on A after $200$ epochs of A followed by $200$ epochs of B? And after $200$ epochs of A and B interleaved?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:20:8}
+\emph{Research: interleaving or renormalization?} The neuron of Exercise~\ref{ex:20:7} with a threshold; two night procedures: (i)~all weights are multiplied by $0.82$; (ii)~old patterns are replayed interleaved with new ones. What does each do to the weight ratios and to the neuron's responses? How can the hypotheses be told apart by synapse sizes after sleep?
+\end{exercise}

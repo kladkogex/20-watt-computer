@@ -1,0 +1,191 @@
+\chapter{何时写入，何时读出：加入\nt{ACET}}
+\chaptermark{加入\nt{ACET}}
+\label{sec:acet}
+
+\section{还缺什么}
+
+存储芯片除了地址线和数据线，还有一条线——写使能。它关闭时，存储器只能读；打开时，数据线上的内容被写入。没有这条线，存储器就无法工作：如果每次读都同时写入点什么，读出的内容，包括读错的内容，会立即被写回去。
+
+在脑中，这个问题比在芯片中更尖锐。在第~\ref{sec:glutcomputer}~章中，存储器是一组\nt{GLUT}神经元，由其自身的连接维持在开启状态（图~\ref{fig:bistable}）。在第~\ref{sec:dofa}~章中我们看到，这些连接在工作过程中直接按赫布规则学习。也就是说，同一批突触既保存旧内容又接收新内容，而且没有单独的写入阶段，也没有时钟。网络怎样区分需要记住眼前所见的时刻和需要回忆已知内容的时刻？在第~\ref{sec:neurontypes}~章中我们推测，这条线由\nt{ACET}掌控。本章将检验这样一条线应当如何工作，以及为什么缺了它不行。
+
+\section{一根导线的三种作用}
+
+在脑内部工作的乙酰胆碱神经元不多，集中在几个小核团中，而它们的输出遍布整个皮层。这是一个广播通道，和\nt{DOPA}、\nt{NORA}一样。皮层中的乙酰胆碱水平在专注清醒时高，在慢波睡眠时低~\cite{Hasselmo1999}。与多巴胺一样，信号的含义由接收者的受体决定（命题~\ref{prop:receptor}）：乙酰胆碱既有打开通道的快速受体，也有在细胞内启动反应的慢速受体。对我们重要的是三种作用。
+
+\emph{第一：削弱内部连接。}在嗅皮层脑片上的实验表明，乙酰胆碱强烈抑制同一区域内神经元之间连接的传递，而几乎不影响从外部进入该区域的输入~\cite{HasselmoBower1992}。
+
+\emph{第二：增强输入。}乙酰胆碱提高神经元的兴奋性，并易化某些输入通路的传递；来自感觉器官的信号变得比网络自身的活动更响亮~\cite{Hasselmo2006}。
+
+\emph{第三：使权重更容易改变。}乙酰胆碱水平高时，连接更容易改变~\cite{Hasselmo2006}。
+
+对工程师来说，这三种作用是同一个操作：从“读”模式切换到“写”模式。网络不再听自己，开始听输入，并记住它听到的东西。
+
+\section{补全的网络}
+
+取$N$个相互连接的\nt{GLUT}神经元。用赫布规则~\cite{Hebb1949}在它们的连接中存入几个模式——每个模式是$pN$个同时活跃的神经元的集合。如果向这样的网络输入模式的一半，连接会激发缺失的另一半：网络根据部分\emph{补全}模式，正如图~\ref{fig:bistable}中的神经元组自我维持一样。这就是联想记忆：内容的一部分充当地址。\nt{GABA}像第~\ref{sec:gaba}~章那样把活跃神经元的总数维持在$pN$左右，使两个模式不能同时点亮。
+
+记乙酰胆碱水平为$a$，取值从$0$到$1$，并把它的三种作用直接写进模型：
+\begin{empheq}[box=\keybox]{equation}
+\tau\frac{\dd r_i}{\dd t} = -r_i + F\Bigl(\tfrac{1+a}{2}\,x_i + (1-a)\sum_j W_{ij}\,r_j - g\Bigr),
+\qquad
+\frac{\dd W_{ij}}{\dd t} = \eta\,a\,(r_i-p)(r_j-p) .
+\label{eq:acetnet}
+\end{empheq}
+这里$r_i$是神经元$i$的频率，$x_i$是它来自感觉器官的输入，$F$是带阈值的传递特性，$g$是来自\nt{GABA}的总体抑制，当活跃神经元多于$pN$时增大。因子$\frac{1+a}{2}$是输入的增强，$1-a$是内部连接的削弱，$\eta a$是学习速率。第二个方程是赫布规则~\eqref{eq:hebb}的一种便于处理稀疏模式的形式~\cite{Tsodyks1988}：两个神经元都比平时活跃时权重增大，只有一个活跃时权重减小。权重的负值部分一如既往由\nt{GABA}中介实现。没有时钟：神经元和权重都连续变化。
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  nrn/.style={circle,draw,very thick,fill=blue!6,minimum size=0.8cm,inner sep=0pt,font=\small},
+  acet/.style={circle,draw,very thick,double,double distance=1.2pt,fill=orange!15,minimum size=1.35cm,inner sep=0pt,font=\scriptsize},
+  bc/.style={->,thick,densely dashed,orange!85!black}]
+\foreach \i/\y in {1/2.4,2/1.2,3/0}{
+  \node[nrn] (N\i) at (3,\y) {$r_\i$};
+  \draw[->,thick,blue!60!black] (0,\y) node[left,black] {\small $x_\i$} -- (N\i);}
+\node[left,align=right,font=\small] at (-0.5,1.2) {来自\\感觉器官};
+\draw[->,thick,gray!60!black] (N1) to[bend left=30] (N2);
+\draw[->,thick,gray!60!black] (N2) to[bend left=30] (N1);
+\draw[->,thick,gray!60!black] (N2) to[bend left=30] (N3);
+\draw[->,thick,gray!60!black] (N3) to[bend left=30] (N2);
+\draw[->,thick,gray!60!black] (N1.east) .. controls (4.6,2.0) and (4.6,0.4) .. (N3.east);
+\node[right,font=\small,gray!40!black,align=left] at (4.7,1.2) {内部\\连接$W$};
+\node[acet] (A) at (1.2,-1.9) {\nt{ACET}};
+\draw[bc] (A) -- (1.6,-0.15);
+\node[font=\small,orange!60!black,anchor=east] at (0.95,-0.9) {$+$输入};
+\draw[bc] (A) -- (4.3,0.6);
+\node[font=\small,orange!60!black,anchor=west] at (4.3,0.1) {$-$内部连接，$+$学习速率};
+\node[right,font=\small,align=left] at (2.2,-1.9) {高水平：“写”\\低水平：“读”};
+\end{tikzpicture}
+\caption{\nt{ACET}作为写使能线。神经元$r_i$从感觉器官接收输入$x_i$（蓝色箭头），并通过存有模式的内部连接$W$（灰色）相互兴奋。乙酰胆碱（虚线箭头）增强输入、削弱内部连接并使权重更容易改变，如~\eqref{eq:acetnet}所示。}
+\label{fig:acetnet}
+\end{figure}
+
+\section{写入与读出相互妨碍}
+
+我们在一个写入与读出确实相冲突的任务上检验模型~\eqref{eq:acetnet}。一个$200$个神经元的网络已经存有五个模式，每个$20$个活跃神经元。现在需要记住第六个，它与一个旧模式有一半重合：有十个神经元是共同的。这种情况经常发生：新房间像熟悉的房间，新面孔像旧面孔。
+
+\emph{低$a$时的写入。}首先把乙酰胆碱的前两种作用与第三种分开：学习速率保持满值，只改变输入的增强和内部连接的削弱。$a=0$时，输入点亮共同的十个神经元，它们经内部连接点亮\emph{旧}模式的其余一半。\nt{GABA}不允许两者同时点亮，于是有自身连接支撑的旧模式挤掉只靠输入维持的新模式。网络看到的不是眼前的东西，而是记得的东西——而赫布规则勤勤恳恳地把看到的写了下来。
+
+结果，新模式根本没有记住：凭它的特有一半，网络什么也想不起来。而旧模式被破坏了：用它自己的特有一半唤起时，它平均带出十个外来神经元中的六个。$a=0.1$时新模式已能记住，但与旧模式融合，破坏甚至更严重：两个模式各自用自己的一半唤起时，都会带出约八个外来神经元；从$a=0.2$开始写入是干净的：回忆时多余的神经元不到一个（十次运行的平均）。
+
+\emph{采用真实学习速率的写入。}现在让乙酰胆碱像~\eqref{eq:acetnet}中那样也设定学习速率。一次呈现就完整记住新模式，只在$a\ge0.9$时发生；$a=0.75$时记住十分之八，$a\le0.5$时完全记不住。
+
+\emph{读出。}向存有五个干净写入模式的网络输入某个模式的一半，然后再撤去。$a\le0.2$时网络把模式完整补全并自行维持；$a=0.3$时几乎完整；$a\ge0.4$时内部连接被削弱得太厉害，提示一消失，活动就熄灭（图~\ref{fig:acetsim}）。
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=9cm,y=3.2cm]
+\draw[->,gray!70!black] (0,0) -- (1.1,0) node[right,black] {\small $a$};
+\draw[->,gray!70!black] (0,0) -- (0,1.2);
+\foreach \x in {0,0.2,0.4,0.6,0.8,1.0}{\draw[gray!60!black] (\x,-0.02) -- (\x,0.02); \node[below,font=\scriptsize] at (\x,0) {$\x$};}
+\foreach \y in {0,0.5,1}{\draw[gray!60!black] (-0.01,\y) -- (0.01,\y); \node[left,font=\scriptsize] at (0,\y) {$\y$};}
+\node[rotate=90,font=\small] at (-0.1,0.6) {模式恢复的比例};
+\draw[very thick,blue!60!black] plot[mark=*,mark size=1.6pt] coordinates {(0,1.00) (0.1,1.00) (0.2,1.00) (0.3,0.96) (0.4,0.04) (0.5,0.00) (0.75,0.00) (1.0,0.00)};
+\draw[very thick,red!70!black] plot[mark=*,mark size=1.6pt] coordinates {(0.1,0.00) (0.2,0.00) (0.3,0.00) (0.5,0.00) (0.75,0.80) (0.9,1.00) (1.0,1.00)};
+\node[font=\small,blue!60!black,anchor=west,align=left] at (0.03,0.5) {读出：\\凭一半\\恢复模式};
+\node[font=\small,red!70!black,anchor=east,align=right] at (1.0,0.35) {写入：\\一次记住\\新模式};
+\end{tikzpicture}
+\caption{模型~\eqref{eq:acetnet}：$200$个神经元，每个模式$20$个活跃神经元，十次运行的平均。蓝点为读出：撤去提示后，凭一半恢复了模式的多大比例。红点为写入：若乙酰胆碱也设定学习速率，一个与旧模式一半相似的新模式在一次呈现后能回忆起多大比例。读出在$a\le0.3$时有效，写入在$a\ge0.9$时有效。}
+\label{fig:acetsim}
+\end{figure}
+
+\begin{keyblock}
+\begin{proposition}[写入和读出需要不同的模式]
+\label{prop:writeread}
+在模型~\eqref{eq:acetnet}中，同一批连接既保存旧内容又学习新内容，而乙酰胆碱同时设定学习速率，此时不存在一个$a$值能使写入和读出同样顺利。写入时必须削弱内部连接，否则网络写下的不是输入，而是回忆出的东西；读出时必须加强它们，否则网络无法根据部分补全模式。需要一个开关，而一根广播导线就能充当它。
+\end{proposition}
+\end{keyblock}
+
+如果乙酰胆碱不改变学习速率，那么窄带$0.2\le a\le0.3$对两件事都适用。但那样的话，网络在每次读出时也会学习，也就是把读出的内容连同其错误重新写入。在学习期间抑制内部连接这一想法，来自根据脑片测量建立的模型~\cite{HasselmoAndersonBower1992}。上面的数字属于我们简化的模型；脑中各模式的边界究竟在哪里，还不知道。
+
+\section{该在多大程度上相信眼睛}
+
+“写/读”开关是一个更一般问题的极端情况：在多大程度上相信输入，在多大程度上相信记忆？对这个问题工程师有确切的答案，它也说明了为什么一根导线能同时控制模式和学习速率。
+
+设网络跟踪一个缓慢游走的量$s(t)$：它的方差每秒增加$q$。感觉器官报告$y(t)=s(t)+$噪声，噪声强度为$R$。连续时间中的最佳估计$\hat s$由卡尔曼—布西滤波器给出~\cite{KalmanBucy1961}：
+\begin{empheq}[box=\keybox]{equation}
+\frac{\dd\hat s}{\dd t} \;=\; \frac{P}{R}\,\bigl(y-\hat s\bigr),
+\qquad
+\frac{\dd P}{\dd t} \;=\; q-\frac{P^2}{R} ,
+\label{eq:kalman}
+\end{empheq}
+其中$P$是估计误差的方差，即网络自己对所知内容有多不确定。第一个方程就是神经元模型~\eqref{eq:glutneuron}中膜的那种 RC 电路，只是时间常数$R/P$是变化的。网络不确定时，$P$大，时间常数小，估计迅速跟随输入：这是“写”。网络确定时，$P$小，估计几乎不听输入，依赖记忆：这是“读”。
+
+在稳态下$P=\sqrt{qR}$，记忆的时间常数为$\sqrt{R/q}$：如果世界每一百秒漂移一个单位，$q=0.01$，而感觉噪声$R=1$，那么记忆应保持约十秒。
+
+这里的关键是，一个数$P/R$同时决定了两件事：输入相对于记忆的权重，以及所存估计变化的速度。这恰恰就是乙酰胆碱在~\eqref{eq:acetnet}中所做的。按照一种假说~\cite{YuDayan2005}，乙酰胆碱向网络报告的正是一个类似$P$的量——\emph{预期的}不确定性，即网络事先就知道的那种。这个通道并不总是缓慢的：一部分\nt{ACET}神经元在二十毫秒左右内对奖励和惩罚作出响应，强化越出乎意料，响应越强~\cite{Hangya2015}。
+
+\begin{keyblock}
+\begin{proposition}[输入权重和学习速率共用一个旋钮]
+\label{prop:kalman}
+在最优滤波器~\eqref{eq:kalman}中，输入与记忆混合时的权重和学习速率是同一个量$P/R$。因此用一个信号控制它们是合理的。当世界的性质不变时，这个信号趋于恒定水平$\sqrt{q/R}$，只有当世界的性质变化时才需要调节它。
+\end{proposition}
+\end{keyblock}
+
+命题的第二句解释了第~\ref{sec:nora}~章的结果：在那里，按意外调节学习速率并没有胜过最佳的恒定速率——在变化性质不变的世界中，最佳学习速率就是恒定的。当世界突然变得不同时，才会有收益。这时估计突然远离输入，而$P$对此一无所知。正确的做法是急剧提高$P$，从而进入写入模式。按照我们在第~\ref{sec:nora}~章讨论过的假说，报告这种\emph{非预期}变化的是\nt{NORA}~\cite{YuDayan2005}。分工便自然形成：\nt{NORA}发现世界变了，\nt{ACET}让网络保持在写入模式，直到新环境被学会。
+
+\section{睡眠作为读出模式}
+
+如果高乙酰胆碱水平是写入模式，那么在低水平时网络做什么？在慢波睡眠中，乙酰胆碱水平下降，内部连接摆脱抑制，来自感觉器官的输入几乎没有。处于无提示读出模式的网络回放其中记录的内容。活动记录显示，白天一起工作的神经元在慢波睡眠中再次一起发放~\cite{WilsonMcNaughton1994}，甚至按相同的顺序~\cite{Skaggs1996}。按照一种假说~\cite{Hasselmo1999}，这些回放把白天快速学到的内容转写到长期记忆中（人为延长短暂的回放爆发能改善记忆~\cite{FernandezRuiz2019}）：白天从输入写入，夜间从内部重写。对工程师来说，这类似于白天写入快速缓冲区、夜间把它转存到慢速的永久存储器。
+
+\section{小结}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{3.2cm}>{\raggedright}p{4.2cm}>{\raggedright\arraybackslash}p{6.0cm}}
+\toprule
+\nt{ACET}做什么 & 怎样做 & 已知情况 \\
+\midrule
+削弱内部连接 & \eqref{eq:acetnet}中的因子$1-a$ & 已在脑片上测得 \\
+增强输入 & 因子$\frac{1+a}{2}$ & 兴奋性和输入通路传递的提高已测得 \\
+使学习更容易 & 速率$\eta a$ & 已测量 \\
+切换“写/读” & 命题~\ref{prop:writeread} & 由模型推出；没有对模式的直接测量 \\
+报告预期的不确定性 & \eqref{eq:kalman}中的$P$ & 假说 \\
+让网络在睡眠中空出来进行回放 & 慢波睡眠中的低$a$ & 睡眠中的低水平和回放已测得；转写到长期记忆是假说 \\
+\bottomrule
+\end{tabular}
+\caption{\nt{ACET}为\nt{GLUT}、\nt{GABA}、\nt{DOPA}和\nt{NORA}网络增加了什么。}
+\label{tab:acet}
+\end{table}
+
+\nt{DOPA}告诉网络权重往哪里改，\nt{NORA}告诉它以多大的决断利用已知的东西，而\nt{ACET}告诉它该听世界还是听自己（表~\ref{tab:acet}）。这是表~\ref{tab:types}中最后一条广播控制线：写使能。没有它，用同一批连接既保存模式又读出模式的存储器，每读一次就会损坏自己一次。
+
+\section{习题}
+
+\begin{exercise}[\lvlA]
+\label{ex:09:1}
+\emph{记住多久。}$q=0.01$、$R=1$的滤波器~\eqref{eq:kalman}记忆约$10$~s。求$P_\infty$和记忆$\sqrt{R/q}$，如果（a）~传感器噪声的幅度增大一倍；（b）~世界游走的速度快一百倍。（c）~噪声需增大多少倍，网络才能记住一分钟？
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:09:2}
+\emph{变化之后的写入模式。}世界变了，$q=0.01$、$R=1$的滤波器~\eqref{eq:kalman}的不确定性跃升到$P_0\to\infty$。（a）~$P$以什么时间常数回到$P_\infty$？（b）~多少秒后学习速率超出稳态值不超过$10\,\%$？
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:09:3}
+\emph{恒定学习速率。}网络按$\dd\hat s/\dd t=(y-\hat s)/T$学习；世界游走，$\dd s/\dd t=w$，$y=s+n$，其中$w$和$n$是强度为$q$和$R$的白噪声。求最佳$T$及此时误差的方差。如果$T$错了$2$倍和$10$倍，方差增大多少倍？
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:09:4}
+\emph{写入的边界在哪里。}在\texttt{models/\allowbreak acet\_memory.py}中，阈值$\theta=0.35$，模式内权重$w=0.041$（理想值$0.045$）。新模式与旧模式共有$m=10$个神经元。在~\eqref{eq:acetnet}中$a$为多少时，旧模式的其余神经元不会被这$m$个点亮（阈值是陡的）？
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:09:5}
+\emph{仿真：记忆容量。}修改\texttt{models/\allowbreak acet\_memory.py}中的函数\texttt{read\_sweep}：在$a=1$时写入$M$个模式（$M$从$5$到$100$），然后在$a=0$时凭一半读出前十个。$M$为多少时开始出错？极限$M_{\max}$如何依赖于$N$和$p$？
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:09:6}
+\emph{设计：无泄漏的写入。}学习速率为$\eta a$时，网络在读出时也在学习。提出一个单调的$\eta(a)\le\eta$，在$a\le0.3$时为零，在$a\ge0.9$时不差于$\eta a$。检验：在$a=0.2$下用含三个外来神经元的提示读出$20$次之后，有多少外来神经元进入了模式？
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:09:7}
+\emph{夜间如何转存缓冲区。}（a）~睡眠中$a=0.05$，一次回放持续$0.1\,\text{s}$，而白天$a=1$时为$0.2\,\text{s}$。在速率$\eta a$和习题~\ref{ex:09:6}的$\eta(a)$下，多少次回放才能累积一次白天呈现所产生的权重变化？（b）~永久存储的学习速度比缓冲区慢$100$倍，每晚听到模式$20$次，每次$0.1\,\text{s}$。需要多少个夜晚？
+\end{exercise}

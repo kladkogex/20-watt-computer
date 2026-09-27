@@ -1,0 +1,28 @@
+\chapter{How to Fix a Machine Without a Schematic}
+% full version: chapters/17_debugging.tex
+
+\pencilfig{17}{\pencilart{17}}{A board without a schematic: the probe hears only a few wires out of billions.}
+
+Imagine you are handed a working circuit board without a schematic and asked to repair it. An engineer has four tools: a probe to listen to a signal; a signal generator to feed in a signal of one's own; the option of disconnecting a part and seeing what breaks; and access to the control registers. The brain is studied with exactly these tools.
+
+\section*{A Probe for a Thousand Neurons}
+
+An electrode stuck into the brain hears the clicks of a few neurons nearby. It would seem that a thousand electrodes are nothing against eighty-six billion. Yet they are enough to control a cursor on a screen. Why? Neighboring neurons have similar noise, and the activity that controls a hand is really described by just ten or twenty shared variables. There is no need to listen to everyone; it is enough to hear these few ``voices.''
+
+The raw signal from a thousand electrodes is hundreds of millions of bits per second: too much for a radio link from under the skull. The clicks themselves carry about a thousand times less. So it pays to pick out the clicks right on the implant and send only them outside: the same compression trick as in the eye.
+
+\section*{What Neuralink Does}
+
+The company Neuralink took on the engineering side of the problem: thin flexible threads instead of rigid needles, a robot that implants them, and a sealed wireless implant. Its published paper describes a system connected to the computer by a cable, and names compression and wireless communication as plans. The data on a person with paralyzed hands who controls a cursor are so far known mainly from the company's own reports; according to them, the implant has about a thousand channels on a few dozen threads, and some threads moved after implantation. The idea itself is not new: academic groups with rigid arrays of about a hundred electrodes have already let people control a cursor, ``write'' letters by thought, and turn attempts to speak into text on a screen at about sixty words per minute.
+
+\section*{Reading and Writing}
+
+The decoder reads the click rates of many neurons and gets less than ten bits per second, a tiny fraction of what the neurons themselves carry. On the other hand, the brain and the decoder learn from each other: the person adapts to the decoder, and the decoder to the person. Two learners adapting to each other are a delicate problem: even when each is stable on its own, together they can start to swing.
+
+Writing into the brain is harder than reading. Current through an electrode excites everything around it, not the one neuron you want. You can ``draw'' dots of light, like glowing pixels, and a person will make out simple letters. But nobody yet knows how to write the eye's compressed code so that the brain sees a picture.
+
+\section*{What the Probe Does Not See}
+
+An electrode hears the telephone network of data. But the radio stations, dopamine, serotonin, noradrenaline, and acetylcholine, are concentrations of substances, and the probe does not hear them. Nor does it see the strengths of the connections, where all the memory is stored. And it does not see pain as a person feels it. A debugger that sees the data but not the registers will always wonder why the same input gives different answers.
+
+\fullversion{17}

@@ -1,0 +1,81 @@
+\chapter*{如何阅读本书}
+\addcontentsline{toc}{chapter}{如何阅读本书}
+
+本书不必按顺序通读。第1--4章是共同的基础：神经元有哪些类型，\nt{GLUT}和\nt{GABA}计算什么，它们用什么语言交流。之后全书分成几条支线。图~\ref{fig:roadmap} 的地图标出了各章之间的依赖关系：从第 $A$ 章指向第 $B$ 章的箭头表示第 $B$ 章用到了第 $A$ 章的概念和公式。地图只画出主要的依赖；零星的回溯引用不影响阅读。
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[>=Stealth,scale=0.95,
+  ch/.style={draw,thick,rounded corners=3pt,align=center,font=\scriptsize,text width=1.85cm,minimum height=0.62cm,inner sep=2pt},
+  base/.style={ch,fill=blue!8}, bus/.style={ch,fill=orange!14}, sum/.style={ch,fill=gray!18},
+  io/.style={ch,fill=green!10}, sort/.style={ch,fill=cyan!8}, lab/.style={ch,fill=violet!10},
+  dep/.style={->,thick,gray!60!black}]
+% foundation
+\node[base] (c1) at (0,0) {1 神经元类型};
+\node[base] (c2) at (2.3,0) {2 \nt{GLUT}};
+\node[base] (c3) at (4.6,0) {3 \nt{GLUT}与\nt{GABA}};
+\node[base] (c4) at (6.9,0) {4 摩尔斯电码};
+% broadcast channels and the synthesis
+\node[bus] (c5) at (4.6,-1.5) {5 \nt{SERO}};
+\node[bus] (c6) at (7.3,-1.5) {6 \nt{DOPA}};
+\node[bus] (c7) at (9.2,-0.9) {7 多巴胺理论};
+\node[bus] (c8) at (9.2,-2.1) {8 \nt{NORA}};
+\node[bus] (c9) at (11.5,-2.1) {9 \nt{ACET}};
+\node[sum] (c10) at (13.8,-0.9) {10 整台机器};
+% inputs and outputs
+\node[io] (c12) at (2.3,-4.1) {12 识别};
+\node[io] (c11) at (4.6,-4.1) {11 输入};
+\node[io] (c13) at (6.9,-4.1) {13 肌肉};
+\node[io] (c14) at (9.2,-3.05) {14 疼痛};
+\node[io] (c15) at (9.2,-4.1) {15 运动学习};
+\node[io] (c16) at (9.2,-5.15) {16 身体化学};
+% lab, sorting, sleep
+\node[lab] (c17) at (11.5,-4.1) {17 调试};
+\node[lab] (c21) at (13.8,-4.1) {21 活体机器};
+\node[lab] (c22) at (13.8,-5.15) {22 DishBrain};
+\node[sort] (c18) at (11.5,-5.15) {18 仪器式\\神经元};
+\node[sort] (c19) at (13.8,-6.2) {19 树突数目};
+\node[bus] (c20) at (11.5,-6.2) {20 睡眠};
+% dependencies
+\draw[dep] (c1) -- (c2); \draw[dep] (c2) -- (c3); \draw[dep] (c3) -- (c4);
+\draw[dep] (c1) -- (c5); \draw[dep] (c4) -- (c6); \draw[dep] (c5) -- (c6);
+\draw[dep] (c6) -- (c7); \draw[dep] (c6) -- (c8); \draw[dep] (c8) -- (c9);
+\draw[dep] (c7) -- (c10); \draw[dep] (c9) -- (c10);
+\draw[dep] (c4) -- (c11); \draw[dep] (c11) -- (c12); \draw[dep] (c11) -- (c13); \draw[dep] (c5) -- (c13);
+\draw[dep] (c13) -- (c14); \draw[dep] (c13) -- (c15); \draw[dep] (c13) -- (c16);
+\draw[dep] (c15) -- (c17); \draw[dep] (c9) -- (c17); \draw[dep] (c17) -- (c21); \draw[dep] (c21) -- (c22);
+\draw[dep] (c16) -- (c18); \draw[dep] (c18) -- (c19); \draw[dep] (c16) -- (c20);
+% legend
+\begin{scope}[yshift=-7.25cm]
+\foreach \s/\t [count=\i] in {base/基础, bus/通道与工作模式, sum/总结, io/输入与输出, sort/神经元的分类, lab/实验室}{
+  \pgfmathtruncatemacro{\col}{mod(\i-1,3)}\pgfmathtruncatemacro{\row}{(\i-1)/3}
+  \node[\s,text width=0.3cm,minimum height=0.32cm] at ({\col*4.8+0.2},{-\row*0.55}) {};
+  \node[anchor=west,font=\scriptsize] at ({\col*4.8+0.55},{-\row*0.55}) {\t};}
+\end{scope}
+\end{tikzpicture}
+\caption{各章地图。箭头从一章指向依赖它的那一章。章与章之间的其他引用只是指引，不构成依赖。}
+\label{fig:roadmap}
+\end{figure}
+
+\section*{阅读路线}
+
+\begin{center}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{>{\raggedright}p{3.0cm}>{\raggedright}p{3.9cm}>{\raggedright\arraybackslash}p{6.4cm}}
+\toprule
+路线 & 适合谁 & 按顺序阅读的章节 \\
+\midrule
+一学季课程 & 教师，10周 & 第1周：第1--2章；2：第3章；3：第4章；4：第5--6章；5：第7--8章；6：第9章；7：第10章；8：第11--12章；9：第13和15章；10：第17章 \\
+人工智能与机器学习 & 熟悉神经网络、想弄懂大脑如何学习的读者 & 1--4，5（略读），6，7，8，9，11（略读），12，13（略读），15 \\
+电子与硬件 & 电路设计师、神经形态芯片开发者 & 1--4，5，11，13，16，18，19，17（第9和15章略读） \\
+神经接口与活体计算 & 搭建脑机接口和活体神经元芯片的人 & 1，2，4，11，13，17（第9和15章略读），21，22（第12章略读） \\
+快速浏览 & 只有一个周末的工程师 & 1，2，3，6，10；第6章对第4--5章的引用可从上下文理解 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+“略读”的意思是：读完一章的开头、黄色方框中的命题和末尾的总结表就够了。
+
+每章末尾都有习题：估算、推导、建模和设计；简要答案汇集在附录~\ref{sec:answers}。全部符号见附录~\ref{sec:notation}；每章主要命题所依据的实验见附录~\ref{sec:supplement}。书中的数字都由\texttt{models/}目录中的小程序算出，可以运行，也可以修改。

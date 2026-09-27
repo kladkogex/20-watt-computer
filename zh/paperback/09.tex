@@ -1,0 +1,42 @@
+\chapter{写入与读取}
+% 完整版：chapters/09_acet.tex
+
+大脑中的记忆有一个不方便的特点：保存记忆的，正是承担日常工作的那些连接。没有单独的硬盘。网络每回忆一次，就要用到自己的连接——每学习一次，就要改变它们。写入新东西时，怎样才能不破坏旧的？计算机里为此有一个专门的信号——“写使能”。在大脑里，扮演这个角色的看来是\nt{ACET}电台——乙酰胆碱。
+
+\section*{两种模式}
+
+想象一张存着几幅图画的网络：给它看一半，它就把其余部分补全。这就是读取。现在给它看一幅新图，和某幅旧图很像。如果网络照老习惯去补全，它看到的就不是新图，而是旧图——并且学到一个错误。要写入新东西，网络必须暂时不再相信自己的记忆，而去看世界。
+
+\pencilfig{9}{\pencilart{9}}{一根导线切换网络：写入新的，还是回忆旧的。}
+
+乙酰胆碱做的恰好就是这件事，它的三种效应都已测量到：它削弱网络内部那些用于“回忆”的连接，增强来自感官的信号，并使连接更容易改变。乙酰胆碱多——写入模式：网络倾听世界并学习。乙酰胆碱少——读取模式：网络依靠记忆来补全。
+
+在我们的模型里，不存在一个能让两件事都做好的水平。写入时内部连接需要调弱，读取时则需要它们全力工作。所以开关是必需的。
+
+\section*{眼睛可信几分}
+
+工程师早就解决过类似的问题。船沿航线航行时，领航员手里有一个推算——船应该在哪里，还有一些新的但不精确的观测。各自该信几分？最优滤波器的回答是：对推算越没把握，就越该相信观测。同一个配方里还有第二条：把握越小，重新学习就应该越快。一个旋钮同时控制输入的权重和学习的速度。这正是乙酰胆碱所做的事。由此得出一个假说：它告诉网络，网络自己的世界模型有多不确定。
+
+\pencilfig{124}{%
+% optimal blending: the less sure the model, the more weight on the observation (and the faster it relearns)
+\foreach \dx/\wm/\we/\ttop/\bbot in {0/2.4pt/0.6pt/{模型有把握}/{乙酰胆碱少}, 4.3/0.6pt/2.4pt/{模型没把握}/{乙酰胆碱多}}{
+  \begin{scope}[xshift=\dx cm]
+  \draw[penlite=pcViolet, wash=pcViolet, rounded corners=3pt] (0,0.95) rectangle (1.3,1.45); \node[lbl, text=black] at (0.65,1.2) {记忆};
+  \draw[penlite=pcBlue, wash=pcBlue, rounded corners=3pt] (0,-0.25) rectangle (1.3,0.25); \node[lbl, text=black] at (0.65,0) {眼睛};
+  \draw[dotpen=pcAmber, wash=pcAmber] (2.95,0.6) circle (0.55); \node[lbl, text=black] at (2.95,0.6) {估计};
+  \draw[pcViolet, line width=\wm, line cap=round, -{Stealth[length=5pt]}] (1.35,1.2) -- (2.4,0.8);
+  \draw[pcBlue, line width=\we, line cap=round, -{Stealth[length=5pt]}] (1.35,0) -- (2.4,0.4);
+  \node[font=\small\itshape, text=pcGray, anchor=south] at (1.55,1.6) {\ttop};
+  \node[lbl, anchor=north] at (1.55,-0.4) {\bbot};
+  \end{scope}}
+}{眼睛可信几分。如果网络对自己的世界模型有把握，估计几乎全部来自记忆。如果没把握——就来自观测，与此同时网络也重新学习得更快。按照假说，转动这个旋钮的是乙酰胆碱。}
+
+\section*{分工}
+
+回想上一章。当世界突然改变时，按照假说，去甲肾上腺素会察觉到意外。而乙酰胆碱让网络保持在写入模式，直到新环境被学会。一个报告“有东西变了”，另一个说“写吧”。
+
+\section*{夜间重写}
+
+深睡眠期间，乙酰胆碱水平很低。网络与世界断开，处于读取模式。正是在这段时间里，白天的事件在网络中“回放”——这已测量到。与此同时，白天学到的东西被改写进长期记忆——这是一个可信的假说，我们会在讲睡眠的那一章回到它。
+
+\fullversion{9}

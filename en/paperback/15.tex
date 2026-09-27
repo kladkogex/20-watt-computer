@@ -1,0 +1,43 @@
+\chapter{How the Machine Learns to Move}
+% full version: chapters/15_motorlearning.tex
+
+We have seen two ways of learning. Without a teacher, ``together means connected,'' the machine remembers what occurs often. With dopamine it learns from surprises: things went better or worse than expected. But when you miss while throwing a ball at a basket, you know more than that things went badly. You know \emph{by how much} and \emph{in which direction} you missed. This is the third teacher: an error with a direction, personal to each output.
+
+\section*{The Error Wire}
+
+The brain has a separate circuit for learning movements, and it is built in a very unusual way. A huge number of small \nt{GLUT} neurons, tens of billions, spread the input signals out into a very long list of features. The output neurons of this circuit are braking \nt{GABA} neurons; there are tens of millions of them, and each listens to a hundred thousand inputs. And to each output neuron runs exactly one special wire: the error wire. If an error arrives while an input was active, that input weakens. This is the classic ``reduce the error'' rule that engineers use to train adaptive filters.
+
+\pencilfig{15}{\pencilart{15}}{A miss reports not only ``bad'' but also ``by how much and in which direction.''}
+
+Such a teacher is faster than the dopamine one: each output has its own error, and there is no need to fish its share out of one signal common to all. True, the error arrives late, and the connection again needs a ``sticker'' that remembers it took part. Experiments show that the lifetime of this sticker is matched to the delay of the error.
+
+\section*{The Internal Model}
+
+What does such a circuit learn? A model of its own body: what result a command will produce. With it there is no need to wait for the lagging sensors; the result can be predicted in advance. According to one hypothesis, this is why you cannot tickle yourself: the brain knows in advance what will happen and subtracts the prediction.
+
+\section*{A Fast and a Slow Learner}
+
+Put on glasses that shift the picture sideways, and throw darts. The first throws go off to the side, but within dozens of tries you adapt. Take the glasses off, and you miss again, now to the other side. The interesting part comes next. The experiments are described well by two learners at once: the fast one learns fast and forgets fast, the slow one learns slowly but remembers long. If after a long adaptation you briefly relearn the other way, the total correction returns to zero, but the old skill then partly resurfaces by itself: the fast learner has forgotten, but the slow one remembers. A model with one learner cannot do this, but people can.
+
+\pencilfig{115}{%
+% figures/tworate_*.dat from models/motor_learning.py: adapt 200 throws, reverse until the sum is back to zero, then no errors at all
+\begin{scope}[x=0.026cm, y=1.45cm]
+\fill[pcGray, opacity=0.08] (220,-1.1) rectangle (226,1.1);
+\draw[pen] (0,0) -- (340,0);
+\draw[pcGray, line width=0.4pt] plot file {figures/tworate_p.dat};
+\draw[penlite=pcAmber] plot file {figures/tworate_fast.dat};
+\draw[penlite=pcBlue] plot file {figures/tworate_slow.dat};
+\draw[pcGray!40!black, line width=1.1pt] plot file {figures/tworate_net.dat};
+\draw[pcGray, densely dashed, line width=0.4pt] (226,-1.1) -- (226,1.1);
+\end{scope}
+\node[lbl, anchor=south] at (3.1,1.47) {glasses on};
+\node[lbl, anchor=north west, align=left] at (6.3,-0.55) {briefly\\relearned};
+\node[lbl, anchor=south west] at (6.0,1.47) {no errors};
+\node[lbl, text=pcBlue, anchor=north] at (4.4,0.8) {slow};
+\node[lbl, text=pcAmber!80!black, anchor=south west] at (1.15,0.5) {fast};
+\node[lbl, text=pcGray!40!black, anchor=south] at (7.7,0.95) {the sum resurfaces};
+}{The correction of the two learners in the model. After brief relearning the sum is at zero, but the slow learner remembers the old skill, and it resurfaces by itself.}
+
+Why two learners? According to the hypothesis, it is the same recipe as the navigator's from Chapter Nine: the world changes both fast and slowly, and it is wise to track both.
+
+\fullversion{15}

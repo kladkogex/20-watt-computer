@@ -1,0 +1,230 @@
+\chapter{The Whole Machine}
+\chaptermark{The Whole Machine}
+\label{sec:synthesis}
+
+\section{What we have assembled}
+
+We took the neuron types of Table~\ref{tab:types} one at a time and asked what each adds to a computing machine. The rules were the same every time: only what exists in a living organism, and no global clock. Now we put the parts together into one machine and watch how they work jointly.
+
+The picture from Chapter~\ref{sec:neurontypes} has held up and become sharper. A huge addressed network of \nt{GLUT} neurons carries the data. \nt{GABA} neurons control the flow of that data. Above the network sit four broadcast channels, each with its own knob: \nt{DOPA} says which weight changes to keep, \nt{SERO} holds the overall level and, by hypothesis, the planning horizon, \nt{NORA} chooses between searching and deciding, and \nt{ACET} chooses between writing and reading (Fig.~\ref{fig:machine}).
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  blk/.style={draw,very thick,rounded corners=3pt,align=center,font=\small},
+  reg/.style={draw,very thick,double,double distance=1.2pt,circle,minimum size=1.25cm,inner sep=0pt,font=\scriptsize,fill=orange!15},
+  bc/.style={->,thick,densely dashed,orange!85!black}]
+% sensors, bus, actions
+\node[blk,fill=green!8,text width=1.7cm] (S) at (0.9,0) {sensors\\\scriptsize on/off};
+\draw[very thick,rounded corners=4pt,fill=blue!5] (2.6,-1.35) rectangle (9.0,1.35);
+\node[font=\small] at (5.8,0.95) {\nt{GLUT} bus: data};
+\node[font=\scriptsize,align=center] at (4.3,0.25) {coincidences, delays,\\logic (Ch.~\ref{sec:glutcomputer})};
+\node[font=\scriptsize,align=center] at (7.4,0.25) {memory, code\\(Ch.~\ref{sec:code}, \ref{sec:acet})};
+\draw[thick,red!70!black,fill=red!8,rounded corners=2pt] (2.8,-1.15) rectangle (8.8,-0.55);
+\node[font=\scriptsize,red!60!black] at (5.8,-0.85) {\nt{GABA} (Ch.~\ref{sec:gaba}): veto, choice, division, rhythm};
+\node[blk,fill=blue!5,text width=2.0cm] (A) at (10.9,0) {action\\selection};
+\draw[->,very thick] (S) -- (2.6,0);
+\draw[->,very thick] (9.0,0) -- (A);
+\draw[->,very thick] (A) -- (12.6,0) node[right,font=\small] {muscles};
+\pic[scale=1.1] at (13.2,-0.5) {spring};
+\pic[scale=1.15] at (0.4,0.85) {eyepic};
+\pic[scale=1.05] at (1.35,0.85) {speaker};
+% registers
+\node[reg] (D) at (3.4,3.2) {\nt{DOPA}};
+\node[reg] (C) at (5.6,3.2) {\nt{SERO}};
+\node[reg] (N) at (7.8,3.2) {\nt{NORA}};
+\node[reg] (H) at (10.0,3.2) {\nt{ACET}};
+\node[font=\scriptsize,align=center,above=1pt] at (D.north) {error $\delta$};
+\node[font=\scriptsize,align=center,above=1pt] at (C.north) {level, $\tau_\gamma$};
+\node[font=\scriptsize,align=center,above=1pt] at (N.north) {gain $g$};
+\node[font=\scriptsize,align=center,above=1pt] at (H.north) {write $a$};
+\draw[bc] (D.south) -- (3.4,1.35);
+\draw[bc] (C.south) -- (5.6,1.35);
+\draw[bc] (N.south) -- (7.8,1.35);
+\draw[bc] (H.south) -- (10.0,2.1) -- (8.8,1.35);
+\draw[bc] (H.south east) to[bend left=20] (A.north east);
+\draw[->,thick] (2.85,1.35) -- (2.85,2.75) -- (D.west) node[pos=0.25,left,font=\scriptsize] {$V$};
+\draw[->,thick,green!45!black] (0.4,3.2) node[left,black,font=\small] {reward $r$} -- (2.2,3.2) -- (D.west);
+\pic[scale=0.9] at (-0.45,3.7) {juice};
+\draw[->,thick,densely dotted,gray!50!black] ([yshift=0.45cm]D.north) to[bend left=18] node[above,font=\scriptsize,black] {surprise} ([yshift=0.45cm]N.north);
+\end{tikzpicture}
+\caption{The whole machine. The \nt{GLUT} bus carries data from the sensors to action selection; \nt{GABA} controls the flow inside it. Double circles are broadcast channels; dashed arrows send their signals to the whole network, each with its own knob. \nt{DOPA} receives the reward $r$ and the expectation $V$ from a critic inside the bus (Ch.~\ref{sec:dofa}); the dotted arrow is the hypothesis that \nt{NORA} learns of surprise from unusually large errors (Ch.~\ref{sec:nora}).}
+\label{fig:machine}
+\end{figure}
+
+\section{One formula for all the knobs}
+
+The knobs can be gathered into one schematic formula. This is not a new model but a summary of the models of Chapters~\ref{sec:glutcomputer}--\ref{sec:acet}: each symbol comes from its own chapter.
+\begin{empheq}[box=\keybox]{equation}
+\begin{aligned}
+\tau\,\frac{\dd r_i}{\dd t} \;&=\; -r_i + F\Bigl(g\,\Bigl[\tfrac{1+a}{2}\,x_i + (1-a)\sum_j W_{ij}\,r_j - \sum_k M_{ik}\,q_k - \theta\Bigr]\Bigr),\\
+\frac{\dd W_{ij}}{\dd t} \;&=\; \eta\,a\,\delta(t)\,e_{ij}(t),
+\qquad \tau_e\,\frac{\dd e_{ij}}{\dd t} = -e_{ij} + r_i\,r_j,
+\qquad \delta = r + \frac{\dd V}{\dd t} - \frac{V}{\tau_\gamma} .
+\end{aligned}
+\label{eq:machine}
+\end{empheq}
+Here $r_i$ are the rates of the \nt{GLUT} neurons, $x_i$ is the input from the sensors, and $W_{ij}\ge0$ are their mutual weights (Chapter~\ref{sec:glutcomputer}); $q_k$ are the rates of the \nt{GABA} neurons and $M_{ik}\ge0$ the strength of their inhibition (Chapter~\ref{sec:gaba}); $e_{ij}$ is the eligibility trace and $\delta$ the \nt{DOPA} error (Chapter~\ref{sec:dofa}); $\tau_\gamma$ is the horizon, set by \nt{SERO} according to the hypothesis; $g$ is the \nt{NORA} gain (Chapter~\ref{sec:nora}); $a$ is the \nt{ACET} level (Chapter~\ref{sec:acet}).
+
+Look at what is missing from~\eqref{eq:machine}. There is no clock tick: everything is written as differential equations, and each neuron changes on its own. There is no separate memory: the same $W_{ij}$ that carry the computation do the remembering, and so does the same activity $r_i$. There are no individual corrections for the vast majority of synapses: their learning is the product of a local trace and one shared number; a separate error wire to each output exists only in the circuit that learns movements (Chapter~\ref{sec:motorlearning}). And there are only four kinds of control signal, $\delta$, $\tau_\gamma$, $g$, and $a$, for eighty billion neurons. Each of them is really not a single number but a small bundle of parallel lines (Proposition~\ref{prop:bundle}), yet a bundle holds only a handful of lines.
+
+\begin{keyblock}
+\begin{proposition}[Architecture]
+\label{prop:architecture}
+The brain's machine, as far as we understand it today, can be described in three layers. Data travel along the \nt{GLUT} address bus. Addressed \nt{GABA} neurons steer, limit, and normalize the data flow. The operating mode is set by a few broadcast channels, each a small bundle of parallel lines shared by large parts of the network. The first two layers are firmly established; the division of roles among the broadcast channels is mostly hypothesis.
+\end{proposition}
+\end{keyblock}
+
+\section{All the types in one table}
+
+Table~\ref{tab:synthesis} collects all the neuron types of the book. The four types that did not get a chapter of their own each take one row in it; two of them found a role in the chapters on the machine's outputs: \nt{GLYC} in the loops of the spinal cord (Chapter~\ref{sec:muscles}) and \nt{ADRE} in the chemical output (Chapter~\ref{sec:chemoutput}). The role of the other two in computation is either simple or unknown. Substances that do not define a neuron type are collected in Appendix~\ref{sec:othermediators}.
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{1.3cm}>{\raggedright}p{1.0cm}>{\raggedright}p{3.9cm}>{\raggedright}p{1.5cm}>{\raggedright}p{1.8cm}>{\raggedright\arraybackslash}p{3.8cm}}
+\toprule
+Type & Ch. & What it computes & Time & Bus & What is known \\
+\midrule
+\nt{GLUT} & \ref{sec:glutcomputer}, \ref{sec:code}, \ref{sec:sensors}, \ref{sec:motorlearning}, \ref{sec:dendrites} & data: coincidences, delays, logic, memory, sequences & ms & address & established \\
+\nt{GABA} & \ref{sec:gaba}, \ref{sec:code}, \ref{sec:pain}, \ref{sec:motorlearning} & flow control: veto, selection, division, stability, rhythm; the pain gate & ms & address & established; division of rate only together with background noise \\
+\nt{SERO} & \ref{sec:serocomputer}, \ref{sec:pain}, \ref{sec:sleep} & level regulator, smoothing; horizon $\tau_\gamma$; pain volume; sleep modes & seconds & volume & self-inhibition measured; horizon is a hypothesis \\
+\nt{DOPA} & \ref{sec:dofa}, \ref{sec:dofaalt} & prediction error $\delta$; slow level is the price of time & $0.1$\,s and minutes & broadcast & $\delta$ measured; extensions in Ch.~\ref{sec:dofaalt} \\
+\nt{NORA} & \ref{sec:nora}, \ref{sec:pain}, \ref{sec:chemoutput}, \ref{sec:sleep} & gain $g$: search or decide; surprise; ``accelerator'' for the organs & seconds & broadcast & rise in signal-to-noise ratio measured; role in search is a hypothesis \\
+\nt{ACET} & \ref{sec:acet}, \ref{sec:muscles}, \ref{sec:chemoutput}, \ref{sec:sleep} & write or read; learning rate; output to muscle; ``brake'' for the organs & seconds & both & three effects measured; mode switching is a hypothesis \\
+\nt{GLYC} & \ref{sec:muscles}, \ref{sec:pain} & negative weight in the spinal cord and brainstem: veto on the opposing muscle & ms & address & established \\
+\nt{HIST} & --- & global ``stay awake'' signal & slow & broadcast & role in computation not studied \\
+\nt{ADRE} & \ref{sec:chemoutput} & ``accelerator'' for the whole body through the blood; unknown in the brain & slow & broadcast & established outside the brain; role in the brain unclear \\
+\nt{ASPA} & --- & weak positive weight & ms & address & role disputed \\
+\bottomrule
+\end{tabular}
+\caption{All the neuron types of the book: what each computes and how well that is known.}
+\label{tab:synthesis}
+\end{table}
+
+\section{How the knobs work together}
+
+So far each chapter turned one knob. Let us now follow one event through the whole machine (Fig.~\ref{fig:timeline}). The animal learned long ago that action $A$ brings juice. At some moment the world changes: $A$ no longer brings juice, and it is action $B$, which the animal hardly ever tries, that does.
+
+\emph{Error.} No juice arrives after $A$, and the \nt{DOPA} neurons respond with a dip, $\delta<0$ by the error formula~\eqref{eq:ctd}. The synapses that just chose $A$ carry a trace and weaken.
+
+\emph{Surprise.} A single dip is ordinary chance. But the dips repeat, and the errors grow larger than usual. By the hypothesis of Chapter~\ref{sec:nora}, this is exactly the \nt{NORA} signal: the world has changed. The gain $g$ drops, the choice becomes soft, and noise leads to a trial of $B$ more often.
+
+\emph{Writing.} By the hypothesis of Chapter~\ref{sec:acet}, after the change \nt{ACET} rises and puts the network into write mode: the internal connections that store the old habit are weakened, the input from the sensors is amplified, and the weights change easily.
+
+\emph{New habit.} Trying $B$ brings juice that nobody expected: a burst, $\delta>0$, and the synapses that chose $B$ strengthen. A few such trials, and the expectation $V$ catches up with the new world; the errors are small again.
+
+\emph{Return.} The surprise is over, \nt{NORA} restores high gain, and the choice is hard again; \nt{ACET} falls, and the network, in read mode, uses what it has learned. All this time \nt{SERO}, by hypothesis, sets the horizon $\tau_\gamma$: how distant a juice is still worth waiting for.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=1.1cm,y=0.95cm]
+\foreach \y/\lab in {4/{$\delta$ (\nt{DOPA})},3/{$g$ (\nt{NORA})},2/{$a$ (\nt{ACET})},1/{choice of $B$}}{
+  \draw[gray!60!black] (0,\y-0.35) -- (10,\y-0.35);
+  \node[left,font=\scriptsize] at (0,\y) {\lab};}
+\draw[densely dashed,gray!60!black] (2,0.4) -- (2,4.55) node[above,font=\scriptsize,black] {the world changed};
+\draw[densely dashed,gray!60!black] (5,0.4) -- (5,4.55) node[above,font=\scriptsize,black] {first juice for $B$};
+\pic[scale=0.85] at (2,5.25) {nojuice};
+\pic[scale=0.85] at (5,5.25) {juice};
+% delta: dips after the change, burst at the first juice for B, then back to zero
+\draw[thick,red!70!black] (0,3.65) -- (2.3,3.65) -- (2.3,3.3) -- (2.5,3.3) -- (2.5,3.65) -- (3.2,3.65) -- (3.2,3.3) -- (3.4,3.3) -- (3.4,3.65) -- (4.1,3.65) -- (4.1,3.35) -- (4.3,3.35) -- (4.3,3.65) -- (5.0,3.65) -- (5.0,4.35) -- (5.2,4.35) -- (5.2,3.65) -- (5.8,3.65) -- (5.8,4.1) -- (6.0,4.1) -- (6.0,3.65) -- (6.6,3.65) -- (6.6,3.85) -- (6.8,3.85) -- (6.8,3.65) -- (10,3.65);
+% gain: high, drops after surprise, recovers
+\draw[thick,blue!60!black] (0,3.2) -- (3.0,3.2) -- (3.4,2.75) -- (5.8,2.75) -- (7.2,3.2) -- (10,3.2);
+% ACh: low, rises after the change, falls after learning
+\draw[thick,green!45!black] (0,1.75) -- (2.8,1.75) -- (3.3,2.25) -- (6.8,2.25) -- (7.8,1.75) -- (10,1.75);
+% choice of B
+\draw[thick,black] (0,0.7) -- (3.0,0.7) plot[domain=3:10,samples=40] (\x,{0.7+0.6/(1+exp(-(\x-5.3)*1.8))});
+\draw[->,gray!70!black] (0,0.2) -- (10.2,0.2) node[below left,font=\scriptsize,black] {time};
+\end{tikzpicture}
+\caption{One event followed through the whole machine. This is a qualitative sketch based on the models and hypotheses of Chapters~\ref{sec:dofa}--\ref{sec:acet}, not the result of a calculation. After the change \nt{DOPA} responds with dips; repeated dips, by hypothesis, raise the surprise signal, \nt{NORA} lowers the gain, and \nt{ACET} turns on writing; the first juice for $B$ gives a burst, the choice moves to $B$, and the knobs return.}
+\label{fig:timeline}
+\end{figure}
+
+Notice that no knob knows what the others are doing. Each responds to its own cues (the error, its unusual size, uncertainty), and the order of operations arises by itself, as in an asynchronous circuit where each block fires when its inputs are ready. As far as we know, this coordinated operation as a whole has not yet been tested: the knobs have been measured one by one, but their joint operation is a hypothesis.
+
+\section{How this machine differs from a computer}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{2.2cm}>{\raggedright}p{4.2cm}>{\raggedright\arraybackslash}p{6.6cm}}
+\toprule
+& Ordinary computer & Brain \\
+\midrule
+time & a shared clock of about a gigahertz & no clock; each neuron changes on its own, windows are set by events and local rhythms (Ch.~\ref{sec:glutcomputer}, \ref{sec:gaba}, \ref{sec:code}) \\
+elements & reliable binary gates & analog threshold elements; a synapse loses most spikes (Ch.~\ref{sec:code}) \\
+sign of a connection & any & set by the sending neuron (Ch.~\ref{sec:neurontypes}) \\
+memory & separate from the processor & in the same connections as the computation, and in self-sustaining activity (Ch.~\ref{sec:glutcomputer}, \ref{sec:acet}) \\
+learning & error backpropagation & local rules, one broadcast number $\delta$ (Ch.~\ref{sec:dofa}), and error wires to the outputs of the movement circuit (Ch.~\ref{sec:motorlearning}) \\
+control & registers and a command bus & four broadcast channels, each a bundle of a few lines (Ch.~\ref{sec:serocomputer}, \ref{sec:dofa}--\ref{sec:acet}) \\
+energy & tens to hundreds of watts per processor & about $20$ watts for the whole brain, on average about one spike per second per neuron (Ch.~\ref{sec:code}) \\
+\bottomrule
+\end{tabular}
+\caption{The brain and an ordinary computer.}
+\label{tab:computer}
+\end{table}
+
+Table~\ref{tab:computer} summarizes the main differences. Each of them is not a flaw that nature did not get around to fixing but part of a single design. Without a shared clock you need on/off sensors and coincidence detectors. Unreliable elements need the redundancy of many neurons. Memory combined with computation needs \nt{ACET} so that writing does not spoil reading. Learning without backward wires needs \nt{DOPA} and noise. And the energy limit of one spike per second forces the whole language to be frugal and to spend spikes on news.
+
+\section{What we do not know}
+
+The most honest way to end this summary is with a list of what we do not know. Each item is a problem for an engineer.
+
+\emph{The code.} We know the capacity of the spike channel, and we know that the receiver chooses which part of the message to read (Chapter~\ref{sec:code}). But how much the cortex uses the precise timing of spikes, and whether neurons have ``words,'' is unknown.
+
+\emph{Learning through many layers.} A broadcast signal teaches slowly, and more slowly with each neuron that affects the result (Proposition~\ref{prop:broadcastcost}). How the cortex then tunes billions of weights in multilayer circuits is unknown; there are models in which bursts of spikes carry the error between layers~\cite{Payeur2021}. Part of the answer may lie in computation inside the branches of the neuron itself, where a single neuron behaves like a small multilayer network: to reproduce the response of a model of one cortical neuron, an artificial network needs five to eight layers~\cite{Beniaguev2021}, and the branches of human neurons can even compute exclusive OR~\cite{Gidon2020}. Another candidate is self-supervised learning: if the cortex learns to predict its own inputs, the error arises on the spot, in every layer, and no shared signal is needed for it (Chapter~\ref{sec:dofa})~\cite{Keller2018}.
+
+\emph{What the broadcast channels really carry.} For \nt{DOPA} there is a standard picture and six extensions of it (Chapter~\ref{sec:dofaalt}); for \nt{NORA} and \nt{ACET} there are plausible hypotheses (Chapters~\ref{sec:nora}, \ref{sec:acet}); for \nt{SERO} there are mostly guesses.
+
+\emph{Coordination in time.} We have seen how to compute a function, measure time from an event, and slice the stream into windows with a local rhythm. But how a huge network with no shared clock coordinates the work of distant areas is understood only in part.
+
+\emph{Energy.} Twenty watts for everything. We understand why the code must be sparse (Proposition~\ref{prop:economy}), but nobody yet knows how to build a machine that would do the same thing at the same power~\cite{MehonicKenyon2022}.
+
+The brain is a computing machine built not by an engineer, yet by laws any engineer will recognize: RC circuits, thresholds, feedback, filters, buses, and broadcast registers. We have read its schematic only in part. It will be read to the end by those who know how to read schematics.
+
+\section{What comes next in the book}
+
+This chapter assembled the computational core of the machine. The remaining chapters go beyond it. Chapters~\ref{sec:sensors} and~\ref{sec:recognition} are about the inputs: how sensors turn light, sound, and molecules into spikes, and how the machine recognizes objects in them. Chapters~\ref{sec:muscles}--\ref{sec:chemoutput} are about the outputs and what serves them: muscles, pain as an alarm signal, learning movements through dedicated error wires, and the slow chemical output to the body. Chapter~\ref{sec:debugging} is about how the machine is debugged from outside, including through brain--computer interfaces. Chapters~\ref{sec:eetypes} and~\ref{sec:dendrites} sort the neurons once more, now by electrical function and by the number of inputs. Chapter~\ref{sec:sleep} is about what the machine does when it is disconnected from the world, and Chapters~\ref{sec:livingmachine} and~\ref{sec:dishbrain} are about machines built from living neurons on a chip.
+
+\section{Exercises}
+
+The exercises of this chapter connect results from different chapters: each relies on at least two of them.
+
+\begin{exercise}[\lvlA]
+\label{ex:10:1}
+\emph{Bus and registers.} The four broadcast channels are bundles of about five lines each (Proposition~\ref{prop:bundle}); each line changes once per second and has four distinguishable levels. How many years would the control channels need to transmit what the \nt{GLUT} bus ($8.6\cdot10^{10}$ neurons at the rate~\eqref{eq:energy}, $1\ms$ precision by~\eqref{eq:spikeentropy}) transmits in one second?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:10:2}
+\emph{Two knobs on one loop.} In the loop~\eqref{eq:ei} the knobs of~\eqref{eq:machine} act on excitation: $\tau_E\dot E=-E+g[(1-a)w_{EE}E-w_{EI}I+h]$, and they do not control \nt{GABA}. With the numbers of Fig.~\ref{fig:ei}, a \nt{NORA} burst raises $g$ to $6$. What is the smallest $a$ for which the loop is stable? Can the \nt{NORA} and \nt{ACET} knobs be turned independently?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:10:3}
+\emph{Where the cost of broadcasting comes from.} The outputs of $N$ neurons are $y_k=f(u_k)+\xi_k$ with independent Gaussian noise of variance $\sigma^2$; $R\approx R_0+\sum_kR'_k\xi_k$ with equal $R'_k$, and \nt{DOPA} broadcasts $\delta=R-R_0$. Find the signal-to-noise ratio of the correction $\delta\,\xi_jx_j$ in one trial. How does the number of trials grow with $N$?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:10:4}
+\emph{Binding a sound and a flash.} A sound reaches the bus after $5\ms$, a flash after $30\ms$ plus the first-spike latency~\eqref{eq:latency} ($\tau=10\ms$, $U$ from $1.2\theta$ to $4\theta$); the background on each input is $5$ spikes per second. Choose the delay of the sound line and the smallest coincidence window that covers all contrasts. How many false bindings per second will the background produce?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:10:5}
+\emph{Simulation: who notices the change.} A critic sees $y=s+\text{noise}$ ($R=1$); with probability $1/200$, $s$ jumps to a new value with variance $J^2=4$. Simulate a Kalman filter with $q=0$ that raises $P$ to $J^2$ when $E\leftarrow0.9E+\delta^2/(P+R)$ exceeds $20$. How much smaller is its error than with the best constant $\alpha$?
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:10:6}
+\emph{How many trials to change a habit.} A network has learned $Q_A=0.8$, $Q_B=0.2$ and chooses by~\eqref{eq:softmax}, $\sigma=1$, $g=8$. Now $A$ gives juice with probability $0.2$; $Q_A\leftarrow Q_A+\alpha(r-Q_A)$, and $Q_B$ does not change. After how many choices of $A$ does the probability of choosing $A$ fall to $0.6$ for $\alpha=0.1$ and $0.5$? And if \nt{NORA} lowers $g$ to $2$?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:10:7}
+\emph{A bundle instead of a wire.} Outputs $y_k=w_k+\xi_k$, reward $R=-\sum_ky_k^2$; a line of the bundle sends a group of $G$ neurons the error of its outputs, $w_k\leftarrow w_k+\eta\,\delta_l\xi_k$. Show that with the best $\eta$, reaching $\sum w_k^2=\varepsilon\sum w_k^2(0)$ takes $\approx(G+2)\ln(1/\varepsilon)$ trials. For $\varepsilon=0.01$, how long does a circuit of $10^6$ neurons on five lines take to learn, with one trial every three seconds?
+\end{exercise}

@@ -1,0 +1,218 @@
+\chapter{基于多巴胺的其他现代学习理论}
+\chaptermark{\nt{DOPA}的其他理论}
+\label{sec:dofaalt}
+
+\section{导线上实际传送的是什么}
+
+在第~\ref{sec:dofa}~章中，\nt{DOPA}系统对我们来说是一根导线，上面传送一个数——奖励预测误差$\delta$~\eqref{eq:ctd}。这幅图景解释了很多事情，但多巴胺测得越精确，发现的与之不符的东西就越多。有些神经元对厌恶事件的响应和对奖励一样；动物奔向目标时多巴胺浓度不断上升，尽管并没有发生任何意外；不同的\nt{DOPA}神经元表现各不相同。
+
+对工程师来说，所有这些发现都归结为一个问题：\emph{广播总线上信号的格式是什么？}是一个数还是一个向量？导线上是一个信号，还是按频率分开的几个？它像$\delta$那样谈论未来，还是谈论过去？下面给出六种现代答案；对每一种，我们都把已测量的与推测的分开。
+
+\section{不是一个数，而是一个分布}
+
+误差~\eqref{eq:ctd}教给评论器的是奖励的\emph{平均}期望。但必定到手的半滴果汁和概率为二分之一的一滴果汁平均值相同。要区分它们，需要奖励的整个分布。
+
+取最简单的任务：预示信号之后到来一个大小随机的奖励$r$。设有许多\nt{DOPA}神经元，第$i$个负责自己的估计$V_i$，因此在奖励时刻它的误差为$\delta_i=r-V_i$。再设每个神经元以权重$\alpha_i^+$计入正误差，以权重$\alpha_i^-$计入负误差。每次奖励之后，估计移动
+\begin{equation}
+\Delta V_i \;=\; \eta\,\bigl(\alpha_i^+\,[\delta_i]_+ \;-\; \alpha_i^-\,[-\delta_i]_+\bigr).
+\label{eq:asymmetric}
+\end{equation}
+当正修正与负修正在平均意义上相互平衡时，估计不再变化：
+\begin{empheq}[box=\keybox]{equation}
+\alpha_i^+\,\bigl\langle[r-V_i]_+\bigr\rangle \;=\; \alpha_i^-\,\bigl\langle[V_i-r]_+\bigr\rangle ,
+\qquad
+\kappa_i \;=\; \frac{\alpha_i^+}{\alpha_i^++\alpha_i^-} .
+\label{eq:expectile}
+\end{empheq}
+$\kappa_i=1/2$时这就是普通的平均值。$\kappa_i>1/2$时神经元是“乐观者”：它的估计偏向分布的上端；$\kappa_i<1/2$时是“悲观者”。
+
+例：果汁以概率$1/2$到来，每滴大小为$1$。于是~\eqref{eq:expectile}给出$\kappa_i\cdot\tfrac12(1-V_i)=(1-\kappa_i)\cdot\tfrac12V_i$，即$V_i=\kappa_i$（图~\ref{fig:expectiles}）。一组$\kappa_i$各不相同的神经元记录奖励分布，就像统计学中一组分位数记录一个分布一样。
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=7cm,y=3cm]
+\draw[->,gray!70!black] (-0.08,0) -- (1.15,0) node[right,black] {\small 奖励};
+\draw[->,gray!70!black] (-0.08,0) -- (-0.08,0.75) node[left,black] {\small 概率};
+\fill[blue!25] (-0.03,0) rectangle (0.03,0.5);
+\fill[blue!25] (0.97,0) rectangle (1.03,0.5);
+\node[below,font=\small] at (0,0) {$0$};
+\node[below,font=\small] at (1,0) {$1$};
+\node[left,font=\scriptsize] at (-0.08,0.5) {$1/2$};
+\foreach \k/\c/\lab/\h in {0.2/blue!60!black/{悲观者，$\kappa=0.2$}/0.62, 0.5/gray!50!black/{平均，$\kappa=0.5$}/0.42, 0.8/red!70!black/{乐观者，$\kappa=0.8$}/0.22}{
+  \draw[very thick,\c] (\k,0) -- (\k,\h);
+  \node[above,font=\scriptsize,\c] at (\k,\h) {\lab};}
+\end{tikzpicture}
+\caption{奖励分布由一组\nt{DOPA}神经元记录。奖励以概率$1/2$为$0$或$1$（蓝色柱）；比例为$\kappa$的神经元收敛到估计$V=\kappa$~\eqref{eq:expectile}。}
+\label{fig:expectiles}
+\end{figure}
+
+已测量的是：不同\nt{DOPA}神经元的“翻转点”——响应从尖峰变为低谷的奖励大小——各不相同，而对正负误差响应不对称性更大的神经元在更大的奖励处翻转，正如~\eqref{eq:expectile}所要求的~\cite{Dabney2020}。从一组神经元的响应中可以重建分布的形状。这是离散性的主要功能而不是副作用，则是假说。
+
+\begin{keyblock}
+\begin{proposition}[由不对称得到分布]
+\label{prop:expectile}
+如果\nt{DOPA}神经元计入正误差的比例$\kappa_i$各不相同，它们的估计就收敛到奖励分布的不同点~\eqref{eq:expectile}。一组神经元传送的不是平均值，而是分布，从而也传送了风险。
+\end{proposition}
+\end{keyblock}
+
+\section{不只是误差，还有重要性}
+
+按误差公式~\eqref{eq:ctd}，厌恶事件——电击、苦味——应当引起低谷：结果比预期差。一部分\nt{DOPA}神经元确实如此，另一部分却对厌恶事件以\emph{尖峰}响应，就像对奖励一样~\cite{Matsumoto2009}。这些神经元报告的不是误差的符号，而是发生了某件\emph{重要}的事：意外的、强烈的、需要注意的~\cite{BrombergMartin2010}。
+
+工程师可以把它看作两个信号。第一个是有符号的误差$\delta$：权重往哪个方向改。第二个是它的模$|\delta|$或事件的新异性：改变权重的\emph{幅度}，也就是学习速率；意外事件之后应当学得更快。就含义而言，它接近第~\ref{sec:neurontypes}~章中去甲肾上腺素的增益。
+
+还有第三种可能：为单独的一个维度设一根单独的导线。投射到某个动作选择区域的\nt{DOPA}神经元不对奖励响应，而对刺激的新异性和强度响应，动物要学会躲避危险就需要它们~\cite{Menegas2018}：导线上传送的不是“更好还是更差”，而是“危险还是不危险”。
+
+已测量的是：不同组的\nt{DOPA}神经元对厌恶事件和新异事件的响应不同，不同的输出教不同的东西。脑究竟如何使用重要性信号——作为学习速率、作为注意信号，还是作为危险维度上的单独误差——仍在讨论中。
+
+\section{不只是教，还要催}
+
+多巴胺还有即时作用：多巴胺越多，动物越愿意、越快地行动。这怎样与学习相协调？
+
+工程上的回答是\emph{按频率分离}。持续几百毫秒的快速尖峰和低谷携带$\delta$，负责教学。在几分钟内变化的慢电平携带另一个量——单位时间的平均奖励$\bar R$~\cite{Niv2007}。设在时间$\tau_a$内完成一个动作需要付出努力$C/\tau_a$：越快越贵。但每拖延一秒要损失$\bar R$——这一秒本可以得到的奖励。总代价$C/\tau_a+\bar R\,\tau_a$在下式时最小：
+\begin{empheq}[box=\keybox]{equation}
+\tau_a^{*} \;=\; \sqrt{\frac{C}{\bar R}} .
+\label{eq:vigor}
+\end{empheq}
+环境越富足，时间越贵，快速行动就越划算：若$\bar R$加倍，动作时间就除以$\sqrt2\approx1.4$。注意，$\bar R$正是第~\ref{sec:dofa}~章中被减去的那个期望奖励。
+
+多巴胺在目标处的释放可以在脉冲频率不变的情况下改变：输出端本身的局部信号会调节它~\cite{Mohebi2019}。但脉冲本身也有慢成分：在下一节的实验中，接近奖励时的平缓上升在\nt{DOPA}神经元的频率中也能看到~\cite{Kim2020}。可见，慢电平由两个来源组成——脉冲频率和释放的局部调节——哪一个为主，看来取决于输出和任务。
+
+\begin{keyblock}
+\begin{proposition}[一根导线上的两个信号]
+\label{prop:multiplex}
+\nt{DOPA}系统至少传送两个在时间上分开的量：负责教学的快速误差$\delta$，以及设定时间代价~\eqref{eq:vigor}、从而设定动作速度的慢电平。已测得快成分和慢成分表现不同；慢成分恰好等于$\bar R$，是假说。
+\end{proposition}
+\end{keyblock}
+
+\section{接近时的上升}
+
+如果动物沿走廊奔向远处的奖励，动作选择区域中的多巴胺浓度会在目标接近的几秒内平缓上升~\cite{Hamid2016}。按第~\ref{sec:dofa}~章，这不应该发生：一切都按计划进行，$\delta$应为零。
+
+第一种解释：这种上升不是$\delta$，而是期望$V$本身，即上一节中“目标很近，值得努力”的信号~\cite{Hamid2016}。第二种解释保留了$\delta$~\cite{Kim2020}。如果期望是准确的，那么在视野为$\tau_\gamma$时，通往奖励$R$的途中它按$V=Re^{-(T-t)/\tau_\gamma}$增长，按误差公式~\eqref{eq:ctd}有$\dd V/\dd t-V/\tau_\gamma=0$。但设在远处期望偏低，随着接近估计不断修正。那么期望增长得更陡，比如$V=Re^{-(T-t)/\tau_v}$，$\tau_v<\tau_\gamma$，于是
+\begin{empheq}[box=\keybox]{equation}
+\delta(t) \;=\; \frac{\dd V}{\dd t}-\frac{V}{\tau_\gamma} \;=\; V\Bigl(\frac{1}{\tau_v}-\frac{1}{\tau_\gamma}\Bigr) \;>\; 0 .
+\label{eq:ramp}
+\end{empheq}
+误差为正，并随$V$一起增长——正是那种平缓上升（图~\ref{fig:ramp}）。当$\tau_\gamma=4\,\text{s}$、$\tau_v=1\,\text{s}$时，得到每秒$\delta=0.75\,V$。这一版本在虚拟走廊中得到检验：把动物瞬间移到离目标更近处，多巴胺以尖峰响应，这正是导数应有的表现，而不是平缓的电平~\cite{Kim2020}。
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=1.6cm,y=2.6cm]
+\draw[->,gray!70!black] (-4.2,0) -- (0.5,0) node[below left,black] {\small $t$};
+\draw[->,gray!70!black] (-4.2,0) -- (-4.2,1.2);
+\foreach \x/\l in {-4/{$T-4$},-2/{$T-2$},0/{$T$}}{\draw[gray!60!black] (\x,-0.03) -- (\x,0.03); \node[below,font=\scriptsize] at (\x,0) {\l\,s};}
+\draw[thick,densely dashed,gray!60!black] plot[domain=-4:0,samples=40] (\x,{exp(\x/4)});
+\draw[very thick,blue!60!black] plot[domain=-4:0,samples=60] (\x,{exp(\x)});
+\draw[very thick,red!70!black] plot[domain=-4:0,samples=60] (\x,{0.75*exp(\x)});
+\node[anchor=south east,font=\small,gray!50!black] at (-1.3,0.77) {$\tau_v=\tau_\gamma$时的$V$：$\delta=0$};
+\node[right,font=\small,blue!60!black] at (0.05,1.0) {$\tau_v=1\,\text{s}$时的$V$};
+\node[right,font=\small,red!70!black] at (0.05,0.72) {按~\eqref{eq:ramp}的$\delta$};
+\end{tikzpicture}
+\caption{接近奖励时多巴胺的上升被解释为预测误差，$\tau_\gamma=4\,\text{s}$。虚线：恰好按视野要求增长的期望（$\delta=0$）；蓝线：增长更陡的期望；红线：误差~\eqref{eq:ramp}。}
+\label{fig:ramp}
+\end{figure}
+
+已测量的是：平缓上升确实存在——在多巴胺浓度中，也在\nt{DOPA}神经元的脉冲频率中~\cite{Kim2020}——而环境的瞬间跳变会引起多巴胺的跳变。两种解释哪一种正确，或者两者在不同输出上都正确，仍在讨论中。
+
+\section{向后看}
+
+上面所有的理论都是向\emph{前}看的。一种现代理论把方向反了过来~\cite{Jeong2022}。设脑学习的不是根据预示信号预测奖励，而是在得到奖励之后\emph{回顾}：哪个事件最常出现在它之前？这种联系的度量是两个概率之差：
+\begin{empheq}[box=\keybox]{equation}
+M \;=\; P(\text{奖励前出现预示信号}) \;-\; P(\text{随机窗口中出现预示信号}) .
+\label{eq:retro}
+\end{empheq}
+如果预示信号在没有奖励时也常出现，第二项就大，联系就弱。在这一理论中，多巴胺报告的不是预测误差，而是该事件在多大程度上可能是奖励的\emph{原因}。
+
+回顾的机制要求的东西与第~\ref{sec:dofa}~章的三因子规则相同：每个事件都必须留下一条逐渐消退的迹，以便在奖励时刻能读出之前发生了什么。区别不在突触，而在\nt{DOPA}传送的内容。
+
+在理论~\eqref{eq:retro}与误差~\eqref{eq:ctd}预测不同的实验中，多巴胺释放在若干情况下遵循前者~\cite{Jeong2022}。但在另一些实验中，学习过程中多巴胺的响应逐渐从奖励时刻移到预示信号时刻——正如按误差~\eqref{eq:ctd}学习所要求的~\cite{Amo2022}。哪一种理论描述了脑，目前还不知道。
+
+\section{不只是关于奖励的误差}
+
+最后一种扩展涉及误差是\emph{关于什么}的。如果把预期的果汁换成另一种同样有价值但味道不同的果汁，价值没有改变，误差~\eqref{eq:ctd}为零。然而\nt{DOPA}神经元对这种替换有响应~\cite{Takahashi2017}。人为诱发的多巴胺尖峰还能在完全没有奖励的情况下，教会动物两个中性刺激之间的联系~\cite{Sharpe2017}。看来，\nt{DOPA}报告的不仅是奖励的预测误差，还有对将\emph{发生什么}的预测误差。
+
+形式上这是~\eqref{eq:ctd}的简单推广：不再用单一的奖励流$r$，而用一组描述当前事件的特征$\varphi_k$——味道、位置、声音——每个特征都有自己的期望$M_k$和自己的误差~\cite{Gardner2018}：
+\begin{empheq}[box=\keybox]{equation}
+\delta_k(t) \;=\; \varphi_k(t) \;+\; \frac{\dd M_k}{\dd t} \;-\; \frac{M_k}{\tau_\gamma} ,
+\qquad k=1,\dots,K .
+\label{eq:vectortd}
+\end{empheq}
+奖励只是特征之一，误差向量教会的不仅是什么好，还有什么之后跟着什么——即世界模型。
+
+\nt{DOPA}神经元的异质性与此一致：在同一个任务中，不同神经元携带不同的量——有的与奖励相关，有的与运动相关，有的与注意指向相关~\cite{Engelhard2019}。
+
+\begin{keyblock}
+\begin{proposition}[线束代替导线]
+\label{prop:bundle}
+\nt{DOPA}系统的信号不是一个数。它按神经元展开（分布~\eqref{eq:expectile}、不同特征~\eqref{eq:vectortd}、单独的危险维度），也按时间展开（快速误差和慢电平~\eqref{eq:vigor}）。标量误差~\eqref{eq:ctd}是这个信号的一阶近似，正如带阈值的加法器是神经元的一阶近似。
+\end{proposition}
+\end{keyblock}
+
+\section{小结}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{2.5cm}>{\raggedright}p{3.2cm}>{\raggedright}p{3.6cm}>{\raggedright\arraybackslash}p{4.2cm}}
+\toprule
+理论 & 导线上传送什么 & 主要测量 & 已知情况 \\
+\midrule
+预测误差（第~\ref{sec:dofa}~章） & 标量$\delta$~\eqref{eq:ctd} & 尖峰、向预示信号转移、低谷 & 已测量；一阶近似 \\
+分布 & 一组不对称性各异的$\delta_i$ & 不同神经元翻转点不同 & 与实验相符；离散的作用是假说 \\
+重要性 & $|\delta|$、新异性；危险维度 & 部分神经元对厌恶事件出现尖峰 & 已测量；如何使用仍在讨论 \\
+时间代价 & 慢电平$\bar R$ & 多巴胺加快动作；慢成分既见于输出端的释放，也见于脉冲频率 & 快慢分离已测得；$\bar R$是假说 \\
+接近时的上升 & $V$，或估计修正时的$\delta$~\eqref{eq:ramp} & 平缓上升，走廊中瞬移时的跳变 & 上升已测得；解释仍在讨论 \\
+向后看 & 因果联系的度量~\eqref{eq:retro} & 两种理论预测相悖的实验 & 结果相互矛盾 \\
+误差向量 & 按特征的$\delta_k$~\eqref{eq:vectortd} & 对味道替换的响应；无奖励学习 & 已测量；向量形式是假说 \\
+\bottomrule
+\end{tabular}
+\caption{\nt{DOPA}系统传送什么：第~\ref{sec:dofa}~章的标准图景及其现代扩展。}
+\label{tab:dofaalt}
+\end{table}
+
+表~\ref{tab:dofaalt}中的理论并不相互排斥：几乎所有理论都把预测误差保留为基础，只是扩展了它的格式。真正与之竞争的只有向后看，这场争论要由实验来裁决。对工程师来说结论很简单：如果导线实际上是许多根通往不同目的地的导线，命题~\ref{prop:broadcastcost}中的广播代价就会下降。
+
+\section{习题}
+
+\begin{exercise}[\lvlA]
+\label{ex:07:1}
+\emph{单滴奖励的分布点。}大小为$1$的果汁以概率$p=0.2$到来，否则奖励为$0$。按~\eqref{eq:expectile}求$\kappa_i=0.2$、$0.5$、$0.8$时的$V_i$。这一奖励的中位数是多少？点~\eqref{eq:expectile}与分位数有何不同？
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:07:2}
+\emph{由两个神经元得到分布。}奖励为$0$或$x$，取$x$的概率为$p$。两个按规则~\eqref{eq:asymmetric}工作的神经元报告$V(1/2)=0.25$和$V(0.8)=0.5$。求出$p$、$x$和奖励的标准差。$\kappa=0.2$的神经元会报告什么？
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:07:3}
+\emph{仿真：由不对称得到分布。}仿真九个$\kappa_i=0.1,\dots,0.9$、按规则~\eqref{eq:asymmetric}工作的\nt{DOPA}神经元，$\alpha_i^+=2\kappa_i$，$\alpha_i^-=2(1-\kappa_i)$，奖励在$[0,1]$上均匀分布。$V_i$的离散如何依赖于$\eta$？要把这个分布与两个等概率的$0.25$和$0.75$区分开，需要多大的$\eta$？
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:07:4}
+\emph{时间代价。}（a）~推导~\eqref{eq:vigor}，并求最优点的总代价。（b）~脑对$\bar R$的估计偏差为$k$倍。求$k=2$和$k=4$时的相对多付代价。多巴胺慢电平需要多精确地报告$\bar R$？
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:07:5}
+\emph{瞬移时的尖峰。}期望按~\eqref{eq:ramp}增长，$\tau_v=1\,\text{s}$，$\tau_\gamma=4\,\text{s}$；把动物从$T-2\,\text{s}$处瞬间移到$T-1\,\text{s}$处。以$R$为单位求$\delta$尖峰的面积，以及它替代了瞬移前多少秒的上升。如果多巴胺报告的是$V$本身，瞬移会显示什么？
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:07:6}
+\emph{设计：一根导线上的两个信号。}\nt{DOPA}导线上传送一个电平，其增长速度为每秒增加$s=1/60$个脉冲每秒，还有每次$A=3$个脉冲的事件。资格迹$\tau_e=1\,\text{s}$的突触从频率中减去其以$\tau_f$平滑的副本。$\tau_f$取何值时，事件损失不超过$10\,\%$，且在资格迹时间内电平的贡献小于事件贡献的$10\,\%$？
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:07:7}
+\emph{实验设计：向后看对误差。}在一个窗口内预示信号出现的概率为$0.1$，其后奖励出现的概率为$0.8$。比较$\Delta P=P(\text{奖励}\mid\text{预示})-P(\text{奖励}\mid\text{无})$与~\eqref{eq:retro}中的$M$，如果（a）~加入无预示信号的奖励，每个窗口$0.08$；（b）~把无奖励的预示信号频率加倍。
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:07:8}
+\emph{线束与广播的代价。}在习题~\ref{ex:06:8}的模型中，$N$个神经元分成$K$组，各有自己的导线，每根导线中渗入比例为$\rho$的其他组的误差。证明学习常数为$N/K+2+\rho^2N(1-1/K)$。当$K\to\infty$、$N=10^{10}$、$\rho=0.01$时，它对应多少次尝试？
+\end{exercise}

@@ -1,0 +1,167 @@
+\chapter{Neurons by Number of Dendrites}
+\chaptermark{Number of Dendrites}
+\label{sec:dendrites}
+
+\section{The number of inputs as a circuit parameter}
+
+In Chapter~\ref{sec:neurontypes} we sorted neurons by what their output releases, and in Chapter~\ref{sec:eetypes} by what device they act as. There is a third feature an engineer will notice at once: \emph{how many inputs a neuron has}. Inputs are collected by dendrites, the branches on which other neurons' axons land (Chapter~\ref{sec:dofa}, Section~\ref{sec:weightstore}). Some neurons have no dendrites at all, others one or two, still others a tree that collects a hundred thousand inputs. To an electronics engineer this is fan-in, and it almost always matches the task.
+
+A simple estimate shows why the number and size of dendrites matter so much. The membrane is a capacitor with specific capacitance $c_m\approx1$~\textmu F/cm$^2$, and the larger the area $A$ of the neuron together with its dendrites, the more charge must be delivered to raise the voltage by $\Delta V$. Ignoring leakage, the time it takes an input current $I$ to do this is
+\begin{empheq}[box=\keybox]{equation}
+t \;\approx\; \frac{c_m\,A\,\Delta V}{I} .
+\label{eq:dendriteload}
+\end{empheq}
+A small neuron with a few short dendrites has an area of about $2\cdot10^{-5}$~cm$^2$ and a capacitance of about $20$~pF. A single large synapse with a current of a few nanoamperes raises it by $20\mV$ in less than a tenth of a millisecond. A neuron with a large tree has about fifteen times the area and a capacitance of about $300$~pF; an ordinary synapse with a current of about $0.1$~nA would charge it in $60\ms$, much longer than the leak time constant, which means it would never charge it. Such a neuron needs dozens of simultaneous inputs. The numbers here are orders of magnitude, but the conclusion does not depend on them: \emph{few inputs means fast and precise; many inputs means slow and by the sum}.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  soma/.style={circle,draw,very thick,fill=blue!6,minimum size=0.55cm,inner sep=0pt},
+  ax/.style={->,very thick,red!70!black},
+  den/.style={very thick,blue!60!black}]
+% 0 dendrites: sensor on a line
+\begin{scope}[xshift=0cm]
+\draw[den,decorate,decoration={snake,amplitude=1pt,segment length=4pt}] (-0.9,0) -- (0,0);
+\node[font=\scriptsize] at (-0.9,0.3) {sensor};
+\draw[ax] (0,0) -- (1.0,0);
+\draw[thick] (0.1,0) -- (0.1,0.45);
+\node[soma,minimum size=0.4cm] at (0.1,0.65) {};
+\node[font=\scriptsize,align=center] at (0.05,-0.75) {$0$\\line with sensor};
+\end{scope}
+% 1 dendrite
+\begin{scope}[xshift=3.3cm]
+\draw[den] (-0.9,0) -- (-0.28,0);
+\node[soma] at (0,0) {};
+\draw[ax] (0.28,0) -- (0.9,0);
+\node[font=\scriptsize,align=center] at (0,-0.75) {$1$\\buffer, repeater};
+\end{scope}
+% 2 dendrites: one per ear
+\begin{scope}[xshift=6.2cm]
+\draw[den] (-0.28,0) -- (-0.9,0); \draw[den] (0.28,0) -- (0.9,0);
+\node[soma] at (0,0) {};
+\draw[ax] (0,-0.28) -- (0,-0.6);
+\node[font=\scriptsize] at (-0.9,0.25) {left}; \node[font=\scriptsize] at (0.9,0.25) {right};
+\node[font=\scriptsize,align=center] at (0,-1.0) {$2$\\AND in time};
+\end{scope}
+% ~4 short dendrites: mixer
+\begin{scope}[xshift=9.0cm]
+\foreach \a in {45,135,225,315}{\draw[den] (\a:0.28) -- (\a:0.7); \fill[blue!60!black] (\a:0.72) circle (0.06);}
+\node[soma] at (0,0) {};
+\draw[ax] (0.28,0) -- (1.0,0);
+\node[font=\scriptsize,align=center] at (0,-1.0) {$\sim4$\\mixer};
+\end{scope}
+% many: summing tree
+\begin{scope}[xshift=12.0cm]
+\foreach \a in {60,90,120}{\draw[den] (0,0.28) -- ++(\a:0.55) coordinate (b); \foreach \d in {-20,20}{\draw[den] (b) -- ++(\a+\d:0.35);}}
+\foreach \a in {-120,-60}{\draw[den] (0,-0.28) -- ++(\a:0.45);}
+\node[soma] at (0,0) {};
+\draw[ax] (0.28,0) -- (1.0,0);
+\node[font=\scriptsize,align=center] at (0,-1.0) {$10^4$--$10^5$\\summer};
+\end{scope}
+\end{tikzpicture}
+\caption{Five classes by number of inputs. Blue: dendrites (inputs); red: axon (output). The fewer the inputs, the faster and more precisely the neuron transmits an individual signal; the more inputs, the better it sums and classifies. A schematic, not a drawing of cell shapes.}
+\label{fig:dendriteclasses}
+\end{figure}
+
+\section{Zero dendrites: a sensor at the end of a line}
+
+The sensory neurons of touch, pain, and muscle stretch (Chapters~\ref{sec:sensors}, \ref{sec:pain}, \ref{sec:muscles}) have not a single dendrite on the cell body. The axon leaves the body as one twig and immediately splits in two: one branch goes to the skin or muscle, and its ending itself serves as the sensor; the other goes to the spinal cord. The spike runs from the sensor straight into the spinal cord, bypassing the cell body. To an engineer this is a communication line with the sensor at the far end and the cell body hanging off to the side like a power supply: it feeds the line but takes no part in transmission. The benefit is speed and reliability: there is not a single place on the path where the signal would have to be summed and a new decision made on whether to pass it on.
+
+The light and sound sensors are an even more extreme case: they are not collecting neurons but the transducers themselves, whose input is not a synapse but a receptor protein (Fig.~\ref{fig:transducer}).
+
+\section{One dendrite: a buffer}
+
+A neuron with one dendrite and one axon receives one input line and passes it on. Olfactory neurons are built this way: a single dendrite reaches the surface of the nose and carries a single type of receptor~\cite{Mombaerts2004}; so are the relay cells of the retina between the light sensors and the output neurons of the eye; so are the neurons linking the ear's sensors to the brain. An engineer would call them a buffer or a repeater: they do not compute but deliver one signal, sometimes changing its form, for example turning a sensor's smooth voltage into spikes, as in Chapter~\ref{sec:sensors}.
+
+\section{Two dendrites: AND in time}
+
+The coincidence detectors that determine the direction of a sound (Fig.~\ref{fig:itd}) in mammals often have exactly two dendrites pointing in opposite directions: one receives inputs from the left ear, the other from the right~\cite{Grothe2010}. Why keep the inputs apart? Recall Eq.~\eqref{eq:shunt}: when many excitatory channels are open on one patch of membrane, the voltage there approaches the reversal potential, and each additional input adds less and less. So many inputs from one ear, gathered on one dendrite, saturate it and cannot on their own drive the neuron to threshold. But one input from each dendrite sum almost linearly. Two dendrites turn the neuron into a stricter AND: fire only if the signals came from both sides and together. Models show that such separation does improve coincidence detection~\cite{AgmonSnir1998}.
+
+\section{A few short dendrites: mixer and relay}
+
+\emph{Mixers.} In the motor learning circuit of Chapter~\ref{sec:motorlearning}, about seventy billion small \nt{GLUT} neurons expand the input into a very long vector. Each of them has only about four short dendrites, each ending in a ``claw'' that grips the terminal of one input. Each mixer thus sees only about four inputs out of many and works as a small AND element over its four. From $M$ input lines one can choose $\binom{M}{4}$ different quadruples: for $M=100$ this is almost four million. Why so many? A threshold element with $n$ inputs can correctly split into two classes at most
+\begin{empheq}[box=\keybox]{equation}
+P_{\max} \;\approx\; 2n
+\label{eq:cover}
+\end{empheq}
+random patterns~\cite{Cover1965}. The output neuron of the same circuit receives about $10^5$ inputs from mixers, and by~\eqref{eq:cover} its upper bound is about $2\cdot10^5$ different associations. This is the limit for an ideal element: if all weights are positive, as for excitatory synapses, and a margin against noise is needed, the estimate for the same neuron is about $4\cdot10^4$ associations~\cite{Brunel2004}. Mixers with few inputs are needed precisely so that the large summer has many different, nearly independent inputs~\cite{Marr1969,Albus1971}.
+
+\emph{Relays.} On the path from the ear to the direction detectors there are neurons with a few short dendrites that receive only a few huge synapses, and some receive essentially one. By~\eqref{eq:dendriteload} this is exactly what is needed: a small capacitance and a large current, so the neuron fires within a fraction of a millisecond after each input spike, losing almost no timing precision. One of these relays receives \nt{GLUT} and outputs \nt{GLYC}: an inverter with a precision of tens of microseconds that supplies fast inhibition to the direction detectors~\cite{BorstSoria2012}.
+
+\section{Thousands of inputs: summer and classifier}
+
+At the other end of the scale are the cortical \nt{GLUT} neurons with ten thousand inputs and the output \nt{GABA} neurons of the motor learning circuit with a hundred thousand. By~\eqref{eq:dendriteload} such a neuron is slow and cannot respond to an individual input: it sums. This is the integrating neuron of Chapter~\ref{sec:glutcomputer} and the summer from which classifiers are built. A large tree adds something new as well: its branches act as separate subcircuits with their own thresholds, so that one neuron behaves like a small multilayer network~\cite{Beniaguev2021,Gidon2020}.
+
+\section{Dendrites that are also an output}
+
+Some neurons have no axon at all, and their dendrites serve as both input and output: they receive signals and release transmitter themselves. The best-studied example is the retinal \nt{GABA} neurons involved in detecting the direction of motion (Chapter~\ref{sec:gaba}, Fig.~\ref{fig:direction}). In such a neuron each branch on its own responds to motion from the cell body toward its tip and delivers inhibition from that tip~\cite{Euler2002}. One neuron is several independent direction detectors, one per branch. To an engineer this is not one element but a chip with several channels in one package.
+
+\section{Summary}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{1.9cm}>{\raggedright}p{3.4cm}>{\raggedright}p{2.6cm}>{\raggedright}p{1.8cm}>{\raggedright\arraybackslash}p{3.8cm}}
+\toprule
+Dendrites & Example & Device & Inputs & What is known \\
+\midrule
+$0$ & touch, pain, and stretch sensors & line with a sensor at the end & --- & established \\
+$1$ & olfactory neurons, retinal relay cells, ear neurons & buffer, repeater & $1$ to a few & established \\
+$2$ & sound direction detectors & AND in time & two bundles & structure established; the gain from separating inputs shown in models \\
+$\sim4$ & mixers of the motor learning circuit & small AND element & $\sim4$ & established; the role of input expansion is a well-founded hypothesis \\
+a few, short & relays on the path from the ear & relay, inverter & $1$ to a few huge & established \\
+thousands & cortical \nt{GLUT} neurons, output neurons of motor learning & summer, classifier & $10^4$--$10^5$ & established; branches as subcircuits measured in individual cases \\
+output dendrites & retinal direction \nt{GABA} neurons & multichannel chip & many & measured \\
+\bottomrule
+\end{tabular}
+\caption{Neurons by number of dendrites.}
+\label{tab:dendrites}
+\end{table}
+
+\begin{keyblock}
+\begin{proposition}[The number of inputs follows the task]
+\label{prop:dendrites}
+Where the speed and precision of an individual signal are needed (in sensors, relays, and coincidence detectors), neurons have few dendrites, few inputs, and large synapses: the small capacitance~\eqref{eq:dendriteload} charges quickly. Where summing and classifying are needed, neurons have large trees with thousands of inputs. The structure of the classes is measured; the computational explanation is well founded but for many classes remains a hypothesis.
+\end{proposition}
+\end{keyblock}
+
+Table~\ref{tab:dendrites} complements the two earlier sortings: by transmitter (Table~\ref{tab:types}) and by device (Table~\ref{tab:eetypes}). All three look at the same element from different sides: what it outputs, what it computes, and how much it listens to.
+
+\section{Exercises}
+
+\begin{exercise}[\lvlA]
+\label{ex:19:1}
+\emph{How many inputs a large neuron needs.} A neuron with $C=300$~pF and $\tau_m=20\ms$ receives synapses that are current sources of $0.1$~nA each; threshold is $20\mV$ above rest. (a)~How many synapses must act simultaneously to reach threshold at all; within $10\ms$; within $5\ms$? (b)~How long does a neuron with $C=20$~pF take to reach threshold from a $4$~nA synapse?
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:19:2}
+\emph{Why four.} A mixer is an AND over $k$ lines out of $M=100$; half the lines are active in a pattern; there are $7\cdot10^{10}$ mixers. (a)~How many respond to a pattern for $k=2$; $4$; $40$? (b)~By what factor do mixers increase the number of associations~\eqref{eq:cover} of an output neuron with $10^5$ inputs over $M=100$ direct lines?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:19:3}
+\emph{Where $2n$ comes from.} A hyperplane through the origin splits $P$ points in general position in $n$-dimensional space into two classes in $C(P,n)=2\sum_{k=0}^{n-1}\binom{P-1}{k}$ ways. (a)~Prove that for $P=2n$ exactly half of the $2^P$ splits are separable. (b)~What fraction is separable for $n=100$ and $P=180$; $220$?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:19:4}
+\emph{Two dendrites as a strict AND.} A dendrite is a patch with leak $g_L$; each input opens a conductance $g_0=0.5\,g_L$ on it with reversal potential $E_E$; the soma sees $\kappa(V_1+V_2)$; threshold is $\theta=1.1\,\kappa E_E$. Why can no number of inputs on one dendrite fire the neuron, and how many inputs are needed on each?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:19:5}
+\emph{Designing a relay.} Spike jitter is $\sigma_t=\sigma_V/\dot V$, where $\dot V$ is the voltage slope at threshold. We need $\sigma_t\le20$~\textmu s with noise $\sigma_V=1\mV$; neglect leakage. How many synchronous $0.1$~nA synapses does a neuron with $C=300$~pF need for this, and what is the jitter of a neuron with $C=20$~pF and a single $4$~nA synapse?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:19:6}
+\emph{Simulation: charging a long dendrite.} Simulate a passive cable $\tau_m\partial_tV=\lambda^2\partial_x^2V-V+i/g$ of length $L=\ell/\lambda$ with sealed ends ($40$ compartments, Euler). A brief current pulse is injected at the far end: when, and to what fraction of the voltage from the same charge spread over the whole dendrite, does the near end rise for $L=0.2$; $1$; $2$?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:19:7}
+\emph{Research: the optimal number of inputs.} The capacitance is $C=C_0+nc_s$, $m$ inputs of current $I_s$ act simultaneously, and the neuron stores $P\approx2n$ associations~\eqref{eq:cover}. How does the response time depend on $P$ at constant $m$ and at a constant fraction $m=\varphi n$? Propose a cost criterion and find the optimal $n$ for a relay and for a classifier.
+\end{exercise}

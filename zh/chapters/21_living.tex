@@ -1,0 +1,164 @@
+\chapter{用活神经元搭成的机器}
+\chaptermark{用活神经元搭成的机器}
+\label{sec:livingmachine}
+
+\section{电路图公开的试验台}
+
+在第~\ref{sec:debugging}~章里，我们调试的是一台没有电路图的机器：探针在八百亿个神经元中只能听到一千个，其余全靠猜。处在这种境地的工程师会做一件简单的事：在面包板上搭一小块电路，每个元件都看得见。对神经元也可以这样做。
+
+把皮层神经元分散开，培养在带电极阵列的芯片上，电极从几十个到几万个不等。几周后，细胞长出突起，彼此连接成由几千到几十万个神经元组成的网络，其中大部分是 \nt{GLUT}，较小的一部分是 \nt{GABA}，这一比例取决于标本：在海马培养物中约占神经元的 $6\%$~\cite{Benson1994}。每个电极既能像第~\ref{sec:debugging}~章的探针那样监听，也能像测试信号那样注入电流。试验台的第二种形式是\emph{类器官}：由人类干细胞培养出的三维神经组织小团，大小约一毫米~\cite{Lancaster2013}。在这样的试验台上，活的网络可以工作好几个月；有的平台允许通过网络远程在类器官上做实验，连续一百多天~\cite{Jordan2024}。这一领域被称为\emph{生物计算}或\emph{类器官智能}~\cite{Smirnova2023}。
+
+试验台与大脑有两个重要区别。它极小：神经元数量少十万倍。而且它没有广播通道：皮层培养物中没有 \nt{DOPA}、\nt{SERO}、\nt{NORA} 和 \nt{ACET} 神经元。这是一台有数据总线和流量控制、却没有控制寄存器的机器。我们来看看它能做什么。
+
+\section{网络自己在做什么}
+
+放着不管的培养物既不沉默，也不均匀地产生噪声。每隔一段时间，几乎整个网络会同时爆发一次\emph{群放电}，然后又安静下来；群放电之间的间隔从一秒到几分钟不等，因培养物而异~\cite{Wagenaar2006}。对工程师来说这是熟悉的画面：带强正反馈、又没有负载的放大器会变成振荡器。
+
+机制我们已经知道。\nt{GLUT} 神经元之间强烈的相互连接会引发雪崩，就像第~\ref{sec:gaba}~章中命题~\ref{prop:ei} 的条件被破坏时那样。雪崩迅速耗尽突触中的神经递质储备~\eqref{eq:depression}，网络随之沉寂。储备以时间常数 $\tau_{\text{rec}}$ 恢复，当恢复到足以引发新雪崩的比例 $x^*$ 时，下一次群放电到来。群放电之间的间隔为
+\begin{empheq}[box=\keybox]{equation}
+T_{\text{burst}} \;\approx\; \tau_{\text{rec}}\,\ln\frac{1}{1-x^*} .
+\label{eq:burstinterval}
+\end{empheq}
+取第~\ref{sec:code}~章的 $\tau_{\text{rec}}=0.8\,\text{s}$ 和 $x^*=0.9$，约为两秒；$x^*=0.99$ 时约为四秒。这是用本书 $\tau_{\text{rec}}$ 得到的模型估计，落在实测间隔的短端。在微培养物上的直接测量表明，群放电后递质储备要几十秒才能恢复~\cite{CohenSegal2011}，也就是说那里的 $\tau_{\text{rec}}$ 更大；用这样的 $\tau_{\text{rec}}$，公式~\eqref{eq:burstinterval} 给出几十秒乃至几分钟，与慢速培养物一致。这是一个弛张振荡器，与第~\ref{sec:muscles}~章的节律发生器同属一类：那里给它“充电”的是肌群的疲劳，这里是递质储备。
+
+群放电是网络无事可做时所做的事。在活的大脑中，类似的图景出现在深度睡眠中（第~\ref{sec:sleep}~章），也出现在真正的输入尚未接入的发育期大脑中。这种相似性发人深思，但两者机制相同只是一个假说。
+
+\section{没有多巴胺老师，怎样教网络}
+
+培养物中没有 \nt{DOPA}，“更好还是更差”的信号只能由我们自己通过电极给出。实验表明，试验台上的网络确实会改变响应，而其中最有意思的是用\emph{什么}来教它。
+
+\emph{会闭嘴的老师。}通过一个电极每一到三秒刺激一次网络，直到另一个电极在刺激后 $50\pm10\ms$ 出现所需的响应。一旦出现，就关掉刺激五分钟。经过几个这样的循环后，所需响应在刺激后立刻出现~\cite{Shahaf2001}。这里的奖励是安静：刺激会扰动网络，而停止刺激则让网络停留在给出正确响应的那个状态。这就是第~\ref{sec:dofa}~章中通过随机偏离做梯度下降（命题~\ref{prop:gradient}），其中扮演误差角色的是“被扰动”这件事本身：一直扰动，直到对为止。
+
+\emph{会打网球的网络。}在一项使用高密度电极阵列试验台的实验中，约一百万个神经元被接入一个单球拍的电脑网球游戏~\cite{Kagan2022}。球的位置以电流形式送到“感觉”电极上：球在哪里用位置编码，距离多远用频率编码。两个“运动”区的活动让球拍上下移动。学习规则很不寻常：如果球拍接住了球，网络得到一个短暂的\emph{可预测}刺激；如果没接住，则得到几秒钟\emph{不可预测}的随机电流。二十分钟的游戏中，连续击球的回合变长了。只有在完整反馈下，一次会话内才有显著提升；把刺激换成安静时，培养物到会话结束时也比没有反馈时打得好，但效果较小；而在几天里跨会话的稳定学习并未出现。对这项实验的详细分析见第~\ref{sec:dishbrain}~章。
+
+作者用一个假说来解释这一结果：网络的行为是为了让自己的输入变得可预测~\cite{Friston2010}。这与第~\ref{sec:code}~章中节省脉冲、第~\ref{sec:recognition}~章中预测画面是同一个思想：输入在意料之中时，机器花费更少。但这项实验本身，尤其是作者关于培养物“有感知能力”的说法，招致了尖锐的批评：效应不大，而且可以用更简单的方式解释~\cite{Balci2023}。诚实的评价是：试验台上的培养物在反馈作用下改变行为，这是已测量的；至于它学的恰恰是预测自己的输入，则是假说。
+
+\emph{会驾驶身体的网络。}以类似方式，人们把培养物接到一个简单的虚拟“身体”上，通过挑选训练刺激的时空模式，教它朝目标移动~\cite{Bakkum2008}。这些实验中都没有多巴胺：充当老师的是工程师选定的电流模式。当老师换成程序或多巴胺本身时会有什么变化，见第~\ref{sec:dishdopamine}--\ref{sec:cartpole}~节。
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  blk/.style={draw,very thick,rounded corners=2pt,align=center,font=\footnotesize,minimum height=0.8cm,fill=blue!5}]
+% (a) closed loop
+\node[font=\small] at (1.5,4.3) {(a) 闭环};
+\node[blk,text width=2.6cm] (G) at (1.5,3.3) {游戏：球和球拍};
+\draw[very thick,fill=orange!10,rounded corners=3pt] (0.5,0.2) rectangle (2.5,1.6);
+\foreach \x in {0.7,1.0,...,2.35}{\foreach \y in {0.4,0.7,1.0,1.3}{\fill[gray!60] (\x,\y) circle (0.04);}}
+\draw[->,thick,blue!60!black] (G.west) -| (-0.5,0.9) -- (0.5,0.9);
+\node[font=\scriptsize,blue!60!black,anchor=east] at (-0.6,2.1) {球 $\to$ 电流};
+\draw[->,thick,red!70!black] (2.5,0.9) -- (3.5,0.9) |- (G.east);
+\node[font=\scriptsize,red!70!black,anchor=west] at (3.6,2.1) {脉冲 $\to$ 球拍};
+\node[font=\scriptsize] at (1.5,-0.2) {电极阵列上的神经元};
+\node[font=\scriptsize,align=center] at (1.5,-0.85) {接住：可预测刺激\\未接住：随机电流};
+% (b) reservoir
+\begin{scope}[xshift=7.9cm]
+\node[font=\small] at (1.6,4.3) {(b) 储备池};
+\node[blk,text width=1.1cm] (X) at (-0.4,1.0) {输入\\$u(t)$};
+\draw[very thick,fill=orange!10] (1.6,1.0) circle (0.8);
+\foreach \a/\r in {20/0.35,80/0.5,150/0.3,210/0.55,280/0.4,330/0.2,110/0.15}{\fill[red!60!black] ({1.6+\r*cos(\a)},{1.0+\r*sin(\a)}) circle (0.05);}
+\node[font=\scriptsize] at (1.6,-0.2) {类器官：无监督};
+\node[blk,text width=1.8cm,fill=green!8] (W) at (4.0,1.0) {读出\\$W_{\text{out}}$};
+\draw[->,thick] (X) -- (0.8,1.0);
+\draw[->,thick] (2.4,1.0) -- node[above,font=\scriptsize] {$\mathbf r(t)$} (W);
+\draw[->,thick] (W) -- (4.0,2.3) node[above,font=\scriptsize] {$y(t)$};
+\node[font=\scriptsize,green!40!black] at (4.0,0.3) {有监督训练};
+\end{scope}
+\end{tikzpicture}
+\caption{让活网络做计算的两种方式。(a) 闭环：球的位置以电流输入，运动区的脉冲移动球拍，击球后的可预测刺激或随机刺激充当老师。(b) 储备池~\eqref{eq:reservoir}：不给类器官任何教学信号，它把输入分解成许多带记忆的非线性响应；按误差学习的只有外部的一个线性读出。类器官自身的连接同时也在变化，但是无监督的。}
+\label{fig:livingmachine}
+\end{figure}
+
+\section{活的储备池}
+
+使用活网络还有另一种方式：根本不去教它。在工程上这称为\emph{储备池计算}~\cite{Maass2002,JaegerHaas2004}。取一个现成的、带记忆的非线性系统，什么系统都行，只要它对输入的响应足够丰富，并且依赖于最近的过去。输入 $u(t)$ 激励它，得到响应向量 $\mathbf r(t)$，只训练线性读出
+\begin{empheq}[box=\keybox]{equation}
+y(t) \;=\; W_{\text{out}}\,\mathbf r(t) ,
+\label{eq:reservoir}
+\end{empheq}
+其权重用第~\ref{sec:motorlearning}~章的最小二乘规则~\eqref{eq:lms} 求得。储备池做的正是第~\ref{sec:motorlearning}~章里小 \nt{GLUT} 神经元做的事：把输入展开成一个长向量，使所需的类别在其中可以用平面分开（第~\ref{sec:dendrites}~章）。
+
+电极阵列上的类器官正好可以充当这样的储备池。把语音以电流模式输入给它，只训练一个线性读出后，辨别说话人的准确率约为 $78\%$~\cite{Cai2023}。$78\%$ 这个数字是作者自己报告、媒体跟着转述的。这个结果有用，但要弄清其中的“智能”在哪里：类器官提供非线性和衰减的记忆，按误差学习是在外部、在硅片上完成的（图~\ref{fig:livingmachine}）。同时，类器官本身也并非一成不变：据作者报告，训练期间它自身的功能连接发生了变化，他们称之为类器官内部的无监督学习~\cite{Cai2023}。准确率中有多少来自这种变化、多少来自读出，并未区分。
+
+\section{试验台告诉我们关于这台机器的什么}
+
+\emph{能量。}按估计~\eqref{eq:energy}，一个脉冲约耗 $10^{-10}$~J。一百万个神经元的培养物，每个神经元每秒发放一个脉冲，用于信号传递的功耗为
+\begin{empheq}[box=\keybox]{equation}
+P \;\approx\; 10^{6}\times1\,\text{s}^{-1}\times10^{-10}\,\text{J} \;=\; 10^{-4}\,\text{W},
+\label{eq:dishpower}
+\end{empheq}
+即十分之一毫瓦。刺激、记录和处理这些脉冲的电子设备功耗要高出几个数量级。与第~\ref{sec:debugging}~章一样，瓶颈不在计算，而在与计算的连接。
+
+\emph{缺少的部件。}试验台展示了带 \nt{GABA} 流量控制、却没有控制寄存器的 \nt{GLUT} 总线能做多少事：自组织、产生群放电、在反馈作用下改变响应，以及充当好的储备池。没有控制寄存器，它做不到的是自己决定什么算成功。在试验台上这个信号由工程师给出，而在大脑中，正如我们在第~\ref{sec:dofa}--\ref{sec:acet}~章所见，由广播通道给出。
+
+\emph{伦理。}类器官由人类细胞培养而成，它们越复杂，这种组织能否有所感受的问题就越严肃。工程视角给出一个部分答案：第~\ref{sec:pain}~章中的疼痛不是某一个传感器的信号，而是一整套带闸门、音量调节器和广播通道的警报系统，而试验台上没有这些。但这只是推理，不是证明；该领域本身也主张从一开始就让伦理评估与实验同步进行~\cite{Smirnova2023}。
+
+\begin{keyblock}
+\begin{proposition}[试验台上的活网络]
+\label{prop:livingmachine}
+电极阵列上由 \nt{GLUT} 和 \nt{GABA} 神经元组成的网络会自发产生群放电~\eqref{eq:burstinterval}，在反馈作用下改变响应，并可充当储备池~\eqref{eq:reservoir}，供外部训练的读出使用。这些都是已测量的。至于这样的网络按某种普遍规则学习，例如学习预测自己的输入，则是假说；而关于其“有感知能力”的高调说法，大多数专家并不接受。
+\end{proposition}
+\end{keyblock}
+
+\input{chapters/21_living_dopamine}
+
+\section{小结}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{2.8cm}>{\raggedright}p{4.2cm}>{\raggedright\arraybackslash}p{5.8cm}}
+\toprule
+实验 & 活网络做什么 & 已知情况 \\
+\midrule
+无输入的网络 & 群放电，间隔从一秒到几分钟~\eqref{eq:burstinterval} & 已测量；通过突触耗竭的机制是公认模型 \\
+会闭嘴的老师 & 关掉刺激时，所需响应被固定下来 & 已测量 \\
+打网球 & 连续击球回合变长；一次会话内的显著提升只出现在完整反馈下 & 行为变化已测量；跨会话学习不稳定；效应大小和“预测输入”的解释有争议 \\
+虚拟身体 & 在挑选好的刺激模式下朝目标移动 & 已测量 \\
+储备池 & 为读出~\eqref{eq:reservoir} 提供非线性和记忆 & 已测量；按误差学习在外部、在硅片上完成；类器官的连接也在变化 \\
+能量 & 每一百万个神经元约 $10^{-4}$~W~\eqref{eq:dishpower} & 按~\eqref{eq:energy} 估计 \\
+\bottomrule
+\end{tabular}
+\caption{用活神经元搭成的机器展示了什么。}
+\label{tab:livingmachine}
+\end{table}
+
+用活神经元搭成的机器（表~\ref{tab:livingmachine}）是一个试验台，从中可以看出：没有控制寄存器时，数据总线和流量控制能做些什么。它们能做很多事，却不能自己决定什么是好。在试验台上，这个角色由工程师和他的电流模式扮演；在大脑中，由本书中间部分所讲的那几条广播导线扮演。
+
+\section{习题}
+
+\begin{exercise}[\lvlA]
+\label{ex:21:1}
+\emph{群放电间隔。}一次群放电把储备耗尽到零，随后 $\tau_{\text{rec}}\,\dd x/\dd t=1-x$，当 $x=x^*$ 时开始新的群放电；$\tau_{\text{rec}}=0.8$~s。(a)~求 $x^*=0.9$ 和 $0.99$ 时的间隔。(b)~阈值 $x^*$ 在 $0.99$ 附近随机变化 $\pm0.005$，间隔落在什么范围内？
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:21:2}
+\emph{试验台的能量。}(a)~对整个大脑（$8.6\cdot10^{10}$ 个神经元），估计~\eqref{eq:dishpower} 给出多大功率？(b)~试验台以 $20$~kHz 的采样率记录 $1024$ 个电极，每个采样 $10$~bit。按每 bit $1$~nJ 计，传输这一数据流的功耗是培养物本身功耗的多少倍？
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:21:3}
+\emph{设计：抑制群放电。}通过许多电极的稀疏刺激使每个突触以频率 $r_b$ 释放递质；储备满足 $\tau_{\text{rec}}\,\dd x/\dd t=1-x-Ur_b\tau_{\text{rec}}x$，$U=0.5$，$\tau_{\text{rec}}=0.8$~s。$r_b$ 至少多大时，储备长不到 $x^*=0.9$；$0.99$？此时突触减弱多少？
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:21:4}
+\emph{储备池的记忆不超过神经元数。}有 $N$ 个输出 $\mathbf r(t)$ 的储备池接收零均值、单位方差的白噪声输入 $u(t)$；$m_k$ 是读出 $\mathbf w_k\cdot\mathbf r(t)$ 与 $u(t-k)$ 的相关系数平方的最大值。证明记忆容量 $\mathrm{MC}=\sum_{k\ge0}m_k\le N$。
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:21:5}
+\emph{建模：硅片中的储备池。}储备池 $\mathbf r(t+1)=\tanh(W\mathbf r(t)+\mathbf v\,u(t)+\mathbf c)$，$N=30$，$W$ 为随机矩阵，谱半径 $0.9$，$v_i\sim U(-0.5,0.5)$，$c_i\sim U(-0.2,0.2)$，$u\sim U(-1,1)$，读出用岭回归。求带 $\tanh$ 和不带它时习题~\ref{ex:21:4} 的记忆容量。哪个储备池记得更多？
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:21:6}
+\emph{为活储备池设计读出。}类器官提供 $1024$ 个通道和两类共 $P=240$ 条训练记录。(a)~按习题~\ref{ex:19:3} 的公式，最多保留多少个特征 $n$，才能使随机标注可分的概率不超过 $1\%$？(b)~在 $100$ 条测试记录上 $78\%$ 的准确率比随机猜测高出几个标准差？
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:21:7}
+\emph{研究：没有广播通道的老师。}提出一个刺激方案，通过 $8$--$1024$ 个电极在试验台上实现第~\ref{sec:dofa}~章的三因子规则；再设计一个冻结读出的对照，用来区分权重学习与网络状态漂移。什么结果会否定“学习”这一假说？
+\end{exercise}

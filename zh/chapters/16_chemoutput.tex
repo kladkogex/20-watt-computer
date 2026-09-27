@@ -1,0 +1,175 @@
+\chapter{第二个输出：大脑如何控制身体的化学}
+\chaptermark{化学输出}
+\label{sec:chemoutput}
+
+\section{快输出与慢输出}
+
+在第~\ref{sec:muscles}~章中，我们看到了这台机器的快输出——肌肉。但它还有第二个输出，一个慢输出。大脑把体温、心率、体内的水和糖维持在所需的范围内，让身体准备好奔跑或入睡。为此它不去移动关节，而是释放化学信号。途径有两条。第一条是直接通往内脏器官的神经：通往心脏、血管、肠道和腺体。第二条是血液：一些神经元和腺体不把物质释放到通向邻居的间隙里，而是直接释放进血流。
+
+血液是本书中出现过的最“广播”的总线。第~\ref{sec:serocomputer}--\ref{sec:acet}~章的广播通道把信号发送到大脑的大片区域；血液则把信号发送到身体的每一个细胞。血液绕身体一周大约需要一分钟，因此消息在几十秒内就能到达所有地方，并在物质被分解之前持续几分钟乃至几小时。这种发送根本没有地址。和命题~\ref{prop:receptor}~一样，消息的含义由接收方选择：只有带有该物质受体的细胞才会响应。
+
+\section{油门与刹车：通往器官的两根导线}
+
+最好的例子是心脏。心脏有自己的起搏器，就像第~\ref{sec:serocomputer}~章的 \nt{SERO} 神经元：它自己设定节律，即使切断所有神经，心脏也会以大约每分钟一百次的频率跳动。大脑并不产生节律，只是调节它，而且用的是两根符号相反的导线（图~\ref{fig:gasbrake}）。一根传送 \nt{NORA}：这是\emph{油门}，它加快节律。另一根传送 \nt{ACET}：这是\emph{刹车}，它减慢节律。粗略地说，
+\begin{empheq}[box=\keybox]{equation}
+f \;\approx\; f_0 \;+\; a_S\,S \;-\; a_P\,P ,
+\label{eq:gasbrake}
+\end{empheq}
+其中 $f_0\approx100$ 次/分是起搏器的固有节律，$S$ 和 $P$ 分别是油门和刹车的活动。静息时刹车是踩着的，心脏通常每分钟跳六七十次；负荷时松开刹车、踩下油门。
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  blk/.style={draw,very thick,rounded corners=2pt,align=center,font=\small},
+  pace/.style={circle,draw,very thick,double,double distance=1.2pt,minimum size=1.8cm,inner sep=0pt,font=\scriptsize,fill=red!8,align=center},
+  inh/.style={-{Bar[width=7pt]},thick,red!70!black}]
+\node[blk,fill=blue!5,text width=1.6cm] (B) at (0,0) {大脑\\指令};
+\node[pace] (H) at (6.2,0) {起搏器};
+\draw[->,very thick,orange!85!black] (B.north east) to[bend left=20] node[above,font=\scriptsize,black,align=center] {\nt{NORA}：油门，秒级} (H.north west);
+\draw[inh,very thick,blue!60!black] (B.south east) to[bend right=20] node[below,font=\scriptsize,black,align=center] {\nt{ACET}：刹车，亚秒级} (H.south west);
+\draw[->,very thick] (H) -- (8.4,0) node[right,font=\small] {频率 $f$};
+\node[blk,fill=orange!10,text width=1.6cm] (A) at (0,-2.6) {\nt{ADRE}\\进入血液};
+\draw[->,thick,orange!85!black] (B) -- (A);
+\foreach \y/\lab in {-2.0/{心脏},-2.6/{血管},-3.2/{肝脏、肌肉}}{
+  \draw[->,thick,densely dashed,orange!85!black] (A.east) -- (4.3,\y) node[right,font=\scriptsize,black] {\lab};}
+\end{tikzpicture}
+\caption{通往心脏起搏器的两根符号相反的导线：油门 \nt{NORA} 慢，刹车 \nt{ACET} 快。下方是走广播总线的同一个油门：\nt{ADRE} 细胞把肾上腺素释放到血液中，所有带有相应受体的器官都会收到信号（虚线箭头）。}
+\label{fig:gasbrake}
+\end{figure}
+
+这就是第~\ref{sec:glutcomputer}~章的双导线编码和第~\ref{sec:muscles}~章的成对肌肉，只是现在导线控制的不是关节，而是起搏器的节奏。而且两根导线的速度不同。两者都相当于低通滤波器，但刹车传递变化的速度是油门的好几倍\cite{Berger1989}：\nt{ACET} 的路径很短，与受体结合的蛋白质直接打开钾通道，不需要细胞内的第二信使\cite{Logothetis1987gbg}；而 \nt{NORA} 要通过细胞内的一连串反应起作用。工程师会在这里认出双速执行器的手法：快的负责精确的即时微调，慢的负责大而持久的变化。
+
+\nt{ADRE} 的角色也在这里找到了。表~\ref{tab:types}~中写过，它在大脑中的作用尚不清楚。但在大脑之外，它的作用很清楚。油门通路中有一部分细胞不向器官发送导线，而是把肾上腺素直接释放进血液。这是同一个油门，只不过走的是广播总线：几十秒内它同时到达心脏、血管、肝脏和肌肉，并持续几分钟。寻址的油门 \nt{NORA} 调节一个器官；广播的油门 \nt{ADRE} 让整个身体切换到奔跑模式。
+
+\section{带反馈的级联}
+
+许多激素不是由一个腺体释放，而是由一个级联释放。大脑底部的一小群神经元向血液释放第一个信号；它促使中间腺体释放第二个信号；第二个信号再促使终端腺体释放真正作用于身体的激素。而终端激素又回到前面几级并抑制它们。这样就得到一个由三级组成、外加负反馈的放大器——一个电平调节器，就像公式~\eqref{eq:feedback}~中的 \nt{SERO} 系统。
+
+用时间常数为 $\tau$、增益为 $g$ 的 RC 电路描述每一级，用系数 $k$ 描述反馈：
+\begin{equation}
+\tau\,\frac{\dd x_1}{\dd t} = -x_1 + g\bigl[u - k\,x_3\bigr]_+ ,\qquad
+\tau\,\frac{\dd x_2}{\dd t} = -x_2 + g\,x_1 ,\qquad
+\tau\,\frac{\dd x_3}{\dd t} = -x_3 + g\,x_2 ,
+\label{eq:cascade}
+\end{equation}
+其中 $u$ 是大脑的指令，$x_3$ 是终端激素的水平。环路增益 $K=g^3k$。平衡时 $x_3=g^3u/(1+K)$；和任何反馈调节器一样，大的环路增益使水平对各级增益的离散不敏感。但每一级都会产生相移：在频率 $\omega=\sqrt3/\tau$ 处，三个相同的级合起来给出半周的相移和八倍的衰减。由此得到控制理论的经典结果：
+\begin{empheq}[box=\keybox]{equation}
+K \;<\; 8 ,
+\label{eq:cascadestable}
+\end{empheq}
+否则调节器开始振荡，周期约为 $2\pi\tau/\sqrt3\approx3.6\,\tau$。
+
+\begin{keyblock}
+\begin{proposition}[精度与稳定性的权衡]
+\label{prop:cascade}
+带比例反馈的三级级联，其电平误差为 $1/(1+K)$，而只有在 $K<8$ 时才稳定。因此这种调节器保持电平的精度不会优于大约百分之十；试图提高增益会把它变成振荡器。
+\end{proposition}
+\end{keyblock}
+
+我们在模型~\eqref{eq:cascade}~上验证了这一点（图~\ref{fig:cascade}）。$K=4$ 时，接通后电平稍有振荡，然后稳定下来。$K=7$ 时也会稳定，但很慢。$K=12$ 时振荡既不衰减，也不会无限增长：一级不能输出负信号，于是级联进入平稳的脉动，在平均水平的 $0.83$ 到 $1.24$ 倍之间起伏，周期为 $3.7$--$3.9\,\tau$。
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=0.3cm,y=1.2cm]
+\draw[->,gray!70!black] (0,0) -- (41.5,0) node[right,font=\small,black] {$t/\tau$};
+\draw[->,gray!70!black] (0,0) -- (0,2.8) node[left,font=\small,black] {$x_3/x_3^*$};
+\foreach \t in {0,10,20,30,40}{\draw[gray!60!black] (\t,-0.05) -- (\t,0.05); \node[below,font=\scriptsize] at (\t,0) {\t};}
+\foreach \f in {1,2}{\draw[gray!60!black] (-0.3,\f) -- (0.3,\f); \node[left,font=\scriptsize] at (0,\f) {\f};}
+\draw[densely dashed,gray!60!black] (0,1) -- (40,1);
+\draw[thick,blue!60!black] plot file {figures/cascade_K4.dat};
+\draw[thick,red!70!black] plot file {figures/cascade_K12.dat};
+\node[font=\scriptsize,blue!60!black,anchor=west] at (16,0.55) {$K=4$：趋于稳定};
+\node[font=\scriptsize,red!70!black,anchor=west] at (16,1.75) {$K=12$：持续脉动};
+\end{tikzpicture}
+\caption{按~\eqref{eq:cascade}~带反馈的三级级联，终端激素水平以平衡值 $x_3^*$ 为单位。环路增益低于八时电平趋于稳定；高于八时级联自己产生平稳的脉动。}
+\label{fig:cascade}
+\end{figure}
+
+真实的级联激素确实以脉冲形式释放：例如，应激激素的水平以大约一小时的周期起伏。有一种假说认为，这些脉动正是由各级之间带延迟的反馈本身产生的，并不需要单独的节律发生器\cite{Walker2010}。这与命题~\ref{prop:ei}~中 \nt{GLUT}--\nt{GABA} 环路以及条件~\eqref{eq:delaystable}~中肌肉牵张环路的振荡原因相同：负反馈存在延迟。
+
+\section{激素的脉冲编码}
+
+脉冲不仅可以是副作用，也可以是编码。控制生殖的神经元大约每小时一次，以短促的剂量把信号释放到血液中。如果给接收腺体施加同样的信号，但不是分剂量而是连续施加，它并不会像受到脉冲时那样全力工作，而是沉默下来；如果再改回每小时一次的剂量，功能就会恢复\cite{Belchetz1978}。可见，接收方读取的不是水平，而是剂量的\emph{频率}。
+
+对工程师来说，这里没有什么谜团。在物质长时间作用下会疲劳、不再响应的受体，是一个高通滤波器，就像第~\ref{sec:code}~章中会耗竭的突触~\eqref{eq:depression}。它抑制恒定信号，只让变化通过。对这样的接收方，只能用脉冲传递信息，于是信息从水平转移到剂量的频率和形状中。此外，不同的剂量频率对同一腺体中不同的细胞有不同的作用，所以一条化学线路可以传递不止一个量——就像第~\ref{sec:dofaalt}~章中一根 \nt{DOPA} 导线同时传递快分量和慢分量。
+
+\section{昼夜节律：慢速的模式发生器}
+
+身体最慢的节律是昼夜节律。它由细胞内带延迟的负反馈产生：基因生成的蛋白质在延迟几个小时后抑制自身的生成\cite{TakahashiJS2017}。又是带延迟的负反馈——这是本书中的第四次——又是一个节律，这一次周期约为一天。主发生器是大脑底部一小群神经元，数量为几万个，它们的节律使身体其余细胞同步。
+
+人体这个发生器的固有周期并不正好是一天，平均为 $24.18$ 小时\cite{Czeisler1999}。每天由来自眼睛传感器的光对它进行校准（第~\ref{sec:sensors}~章）。对电子工程师来说，这就是\emph{锁相环}：固有频率为 $\omega_0$ 的振荡器跟踪频率为 $\omega$ 的外部信号，相位差 $\varphi$ 满足方程
+\begin{empheq}[box=\keybox]{equation}
+\frac{\dd\varphi}{\dd t} \;=\; (\omega-\omega_0) \;-\; K_\varphi\,\sin\varphi .
+\label{eq:pll}
+\end{empheq}
+若 $|\omega-\omega_0|<K_\varphi$，锁定就能保持。周期为 $24.18$ 小时的振荡器每天需要移动约十一分钟；早晨的光通常足以完成这样的移动。在极夜或没有光的洞穴里无法校准，节律就会漂移到自己的固有周期。
+
+昼夜节律发生器不是计算机的时钟发生器。它不为计算计步，也不同步神经元的脉冲。它切换的是\emph{模式}：睡眠与清醒、激素水平、体温、进食准备。它是与第~\ref{sec:serocomputer}--\ref{sec:acet}~章的寄存器同一类的慢速广播寄存器，只是它的值按照一张对准太阳的时间表变化。
+
+\begin{keyblock}
+\begin{proposition}[化学输出]
+\label{prop:chemoutput}
+这台机器的慢输出与快输出由同样的部件构成。各器官接收两根符号相反、速度不同的导线——油门 \nt{NORA} 和刹车 \nt{ACET}——而整个机体同时接收经血液传送的广播信号，其中包括肾上腺素 \nt{ADRE}。激素水平由带负反馈的级联维持，其精度受稳定性限制；一部分激素用剂量频率编码；昼夜节律是一个按光进行相位校准的慢速振荡器。通路的结构、剂量实验和周期实验均已测量；级联脉动由反馈本身产生的解释是假说。
+\end{proposition}
+\end{keyblock}
+
+\section{小结}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{3.1cm}>{\raggedright}p{4.8cm}>{\raggedright\arraybackslash}p{4.9cm}}
+\toprule
+化学输出做什么 & 怎样做 & 已知什么 \\
+\midrule
+调节器官 & 油门 \nt{NORA} 和刹车 \nt{ACET}~\eqref{eq:gasbrake} & 已测量；刹车比油门快 \\
+让全身切换到奔跑模式 & 肾上腺素 \nt{ADRE} 进入血液 & 已测量 \\
+维持激素水平 & 带反馈的级联，$K<8$~\eqref{eq:cascadestable} & 级联和反馈已测量；脉动源于环路本身是假说 \\
+用剂量频率传递信息 & 疲劳的受体相当于高通滤波器 & 对剂量方式的依赖已测量 \\
+按昼夜切换模式 & 按光进行相位校准的振荡器~\eqref{eq:pll} & 周期和光校准已测量 \\
+\bottomrule
+\end{tabular}
+\caption{这台机器如何控制身体的化学。}
+\label{tab:chemoutput}
+\end{table}
+
+这台机器有两个输出（表~\ref{tab:chemoutput}）。快输出是肌肉：毫秒级，寻址，送到每个关节。慢输出是身体的化学：秒、分钟乃至昼夜，经两根导线通往器官，经血液同时送达全身。两个输出的部件是相同的——符号相反的两根导线、起搏器、反馈及其延迟——也正是构成机器内部的那些部件。
+
+\section{习题}
+
+\begin{exercise}[\lvlA]
+\label{ex:16:1}
+\emph{血液作为滤波器。}某激素从血液中清除的半衰期为 $t_{1/2}=10$~min，每隔 $T=60$~min 以短促剂量释放一次。浓度最大值是最小值的多少倍？剂量的基波被衰减了多少倍？$t_{1/2}$ 为多少时最大值仅为最小值的两倍？
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:16:2}
+\emph{昼夜锁相。}振荡器~\eqref{eq:pll}~的固有周期为 $24.18$~h，光每天移动相位不超过一小时：$K_\varphi=2\pi/24$~rad/d。求稳态相位差 $\varphi^*$（以分钟计）和弛豫时间。外部信号跳变 $\pm6$~h 后，经过多少天失配会小于一小时？
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:16:3}
+\emph{精度与稳定性。}把线性化的级联~\eqref{eq:cascade}~延长为 $n$ 个相同的级。求临界增益 $K_c(n)$，以及 $n=3$ 和 $n=6$ 时可达到的最小误差 $1/(1+K_c)$。当 $n\to\infty$ 时，这个误差趋于多少？
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:16:4}
+\emph{油门与刹车。}在~\eqref{eq:gasbrake}~中，油门和刹车的贡献是 $\tau_S=2$~s 和 $\tau_P=0.4$~s 的 RC 电路的输出，指令分别不超过 $80$ 和 $60$ 次/分。节律 $f_0=100$；静息时刹车 $35$，油门 $0$，$f=65$。最快多久能达到 $f=120$？如果不松开刹车、只用油门呢？
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:16:5}
+\emph{建模：带延迟的级联。}在 \texttt{models/\allowbreak chem\_models.py} 中函数 \texttt{cascade} 的反馈里（复制该函数，不要运行文件）加入延迟 $d$：第一级看到的是 $x_3(t-d)$。求 $d/\tau=0$、$0.5$、$1$、$2$ 时的 $K_c$ 和临界处的周期，并在 $0.9K_c$ 和 $1.1K_c$ 下用模拟加以验证。
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:16:6}
+\emph{读取剂量的接收方。}受体会疲劳：$y=[c-a]_+$，$\tau_a\,\dd a/\dd t=c-a$，$\tau_a=30$~min。激素以每次 $6$~min 的剂量、周期 $T$ 到达，平均剂量 $\bar c$ 不变。求 $T=15$、$60$、$120$~min 以及 $T\to\infty$ 时的平均响应。浓度恒定为 $\bar c$ 时响应是多少？
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:16:7}
+\emph{振荡器还是反馈？}设计一个实验，区分由级联~\eqref{eq:cascade}~的延迟反馈产生的脉动与由独立起搏器产生的脉动。如果 $K$ 只能改变一点五倍，而周期的测量精度为 $5\%$，能否依据周期的偏移区分这两种假说？
+\end{exercise}

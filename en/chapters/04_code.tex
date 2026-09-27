@@ -1,0 +1,352 @@
+\chapter{Morse Code: What We Know About the Language of \nt{GLUT} and \nt{GABA} Neurons}
+\chaptermark{Morse Code}
+\label{sec:code}
+
+\section{An Alphabet of One Symbol}
+
+Morse code has two symbols, the dot and the dash, and pauses of three lengths between them. A neuron's alphabet, as we saw in Chapter~\ref{sec:neurontypes}, is poorer still: it has one symbol. A spike lasts about a millisecond, and all the spikes of a neuron have the same height and shape. So the whole message is in the pauses, that is, in the sequence of times $t_1,t_2,t_3,\dots$ It is a code with no dashes, in which only the rhythm of the dots carries meaning (Fig.~\ref{fig:morse}).
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=0.08cm,y=1cm]
+% Morse letter: dot, dash, dot
+\node[left,font=\small] at (-6,2.55) {Morse:};
+\fill[black] (0,2.45) rectangle (6,2.65);
+\fill[black] (14,2.45) rectangle (32,2.65);
+\fill[black] (40,2.45) rectangle (46,2.65);
+\node[right,font=\small,gray!40!black] at (52,2.55) {dot, dash, dot: the meaning is in durations and pauses};
+% stimulus onset
+\node[left,font=\small] at (-6,0.4) {neuron:};
+\draw[->,thick,green!45!black] (0,-0.55) -- (0,-0.05);
+\node[below,font=\scriptsize,green!45!black] at (0,-0.55) {stimulus};
+\draw[gray!70!black] (0,0) -- (152,0) node[right,black] {\small $t$};
+% spikes: single ones blue, the burst red
+\foreach \s in {14,26,41,88,112,131}{\draw[very thick,blue!60!black] (\s,0) -- (\s,0.8);}
+\foreach \s in {60,63,66,69}{\draw[very thick,red!70!black] (\s,0) -- (\s,0.8);}
+% latency
+\draw[<->,thick] (0,1.1) -- node[above,font=\scriptsize] {$t_1$: first-spike time} (14,1.1);
+% burst
+\draw[decorate,decoration={brace,amplitude=4pt},red!70!black] (58,0.95) -- (71,0.95) node[midway,above=4pt,font=\scriptsize] {burst: a ``dash''};
+% counting windows
+\foreach \a/\b/\n in {0/50/3,50/100/5,100/150/2}{
+  \draw[decorate,decoration={brace,amplitude=4pt,mirror},gray!50!black] (\a+1,-0.2) -- (\b-1,-0.2) node[midway,below=4pt,font=\small] {$n=\n$};}
+\node[font=\scriptsize,gray!40!black] at (75,-1.05) {rate code: the number of spikes $n$ in each window};
+\foreach \x in {0,50,100,150}{\draw[gray!60!black] (\x,-0.06) -- (\x,0.06);}
+\end{tikzpicture}
+\caption{Morse code and the neuron's code. The same spike train can be read in different ways: count the spikes in $50\ms$ windows (Section~\ref{sec:rate}), measure the latency $t_1$~\eqref{eq:latency}, or notice the burst, a ``dash''~\eqref{eq:burst}.}
+\label{fig:morse}
+\end{figure}
+
+What pauses are possible at all? From below they are limited by refractoriness: after a spike a neuron cannot fire again for about a millisecond, so more than a few hundred spikes per second do not occur. From above nothing limits them: a neuron can stay silent for minutes. In cortical \nt{GLUT} neurons, rates range from a fraction of a spike to a few tens of spikes per second, and most neurons spend most of the time near the lower end.
+
+In Chapters~\ref{sec:glutcomputer} and~\ref{sec:gaba} we adopted one or another way of writing numbers with spikes as we went along. Now let us ask directly: what language do \nt{GLUT} and \nt{GABA} neurons use to talk to each other? There is no complete answer; this language has not been deciphered. But some things about it are firmly known, and almost everything known can be obtained by reasoning like a communications engineer: channel capacity, noise, receiver, cost of transmission.
+
+\section{How Much Can Be Transmitted}
+
+Let us start with an upper bound. Suppose the recipient resolves spike times with precision $\Delta t$: shifts smaller than $\Delta t$ are indistinguishable to it. Cut time into bins of length $\Delta t$, shorter than the refractory time, so that each bin holds either one spike or none (Fig.~\ref{fig:cells}). At mean rate $r$, a spike falls into a bin with probability $p=r\Delta t$. The stream carries the most information when the bins are independent, and then each bin gives an entropy of $-p\log_2p-(1-p)\log_2(1-p)\approx p\log_2(e/p)$ bits for $p\ll1$. Dividing by $\Delta t$, we get the limiting transmission rate and its share per spike~\cite{MacKay1952}:
+\begin{empheq}[box=\keybox]{equation}
+R_{\max} \;\approx\; r\,\log_2\frac{e}{r\,\Delta t}\ \ \text{bits/s},
+\qquad
+\frac{R_{\max}}{r} \;\approx\; \log_2\frac{e}{r\,\Delta t}\ \ \text{bits per spike}.
+\label{eq:spikeentropy}
+\end{empheq}
+For $r=10$ spikes per second and $\Delta t=1\ms$, this is about eight bits per spike and eighty bits per second.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=0.5cm,y=1cm]
+% time cut into cells of width Delta t; a cell holds one impulse or none
+\foreach \k in {0,...,23}{\draw[gray!55] (\k,0) rectangle (\k+1,0.7);}
+\foreach \k in {2,7,8,15,21}{
+  \fill[red!10] (\k,0) rectangle (\k+1,0.7);
+  \draw[very thick,red!70!black] (\k+0.5,0.05) -- (\k+0.5,0.65);}
+\foreach \k in {0,...,23}{
+  \pgfmathtruncatemacro{\bit}{(\k==2)||(\k==7)||(\k==8)||(\k==15)||(\k==21)}
+  \ifnum\bit=1 \def\bitcol{red!70!black}\else \def\bitcol{gray!60!black}\fi
+  \node[font=\scriptsize,text=\bitcol] at (\k+0.5,-0.25) {\bit};}
+\draw[<->,gray!60!black] (0,0.95) -- (1,0.95) node[midway,above,font=\scriptsize,black] {$\Delta t$};
+\node[font=\small,anchor=east] at (-0.3,0.35) {spikes};
+\node[font=\small,anchor=east] at (-0.3,-0.25) {bits};
+\draw[decorate,decoration={brace,amplitude=5pt,mirror},gray!60!black] (0,-0.55) -- (24,-0.55)
+  node[midway,below=6pt,font=\scriptsize,black,align=center] {a recipient that only counts: ``$n=5$'';\\ a recipient that sees the bins: which $5$ of the $24$, that is $\log_2\binom{24}{5}\approx15$ bits};
+\end{tikzpicture}
+\caption{Where capacity~\eqref{eq:spikeentropy} comes from. Time is cut into bins of length $\Delta t$; each bin either has a spike ($1$) or not ($0$): the spike train is a binary string. A spike falls into a bin with probability $p=r\Delta t$. The finer the bins, the longer the string and the more bits; a spike counter loses almost everything recorded in \emph{where} the ones are.}
+\label{fig:cells}
+\end{figure}
+
+Bits per spike depend on timing precision only logarithmically: at a precision of $10\ms$, about five bits per spike remain. But if the recipient only counts spikes per second, then at $r=10$ it gets less than two bits for the whole second (Section~\ref{sec:rate}).
+
+\begin{keyblock}
+\begin{proposition}[Capacity of a spike channel]
+\label{prop:capacity}
+A spike train with mean rate $r$, read with timing precision $\Delta t$, carries no more than~\eqref{eq:spikeentropy}. Almost all of this capacity lies in the \emph{timing} of the spikes: a recipient that only counts spikes extracts tens of times less from the same stream than one that resolves their times to within a millisecond.
+\end{proposition}
+\end{keyblock}
+
+This is an upper bound, not a measurement. Measurements on sensory neurons whose stimulus is known give from one to several bits per spike; in the best cases this is up to half the bound computed for their precision~\cite{Rieke1997}. So at least at the input to the nervous system, spike timing is used rather than wasted.
+
+\section{A Noisy Channel}
+
+Capacity~\eqref{eq:spikeentropy} was computed without noise. About where noise arises, three facts are firmly established.
+
+\emph{The spike generator itself is precise.} If a cortical neuron, taken out of the brain together with a slice of tissue, is given the same rapidly fluctuating current many times over, its spikes repeat with a precision of about a millisecond~\cite{Mainen1995}. If the current is constant, the spike times drift from trial to trial: precise timing is produced by fast transients of the input, not by the neuron itself.
+
+\emph{The synapse is unreliable.} A spike that reaches a \nt{GLUT} synapse releases a packet of transmitter only with some probability $p$. At hippocampal synapses more than half of the spikes simply never reach the recipient, and the cause is precisely the randomness of release, not conduction failures~\cite{AllenStevens1994}. To a communications engineer this is an erasure channel; several synapses between two neurons partly save the situation.
+
+\emph{In living cortex the spike train looks random.} The intervals between spikes are scattered roughly as in a random Poisson stream, and when the same stimulus is repeated, the spike count per window varies so that its variance is close to its mean~\cite{Softky1993}.
+
+How does a precise element produce a random stream? A neuron receives thousands of inputs, each unreliable, while excitation and inhibition are balanced, as in Chapter~\ref{sec:gaba}. The membrane voltage jitters near threshold, and these jitters set the spike times. Whether this is noise or a message we cannot read is largely an open question. Part of the ``noise'' has already turned out to be a message: in the visual cortex a considerable share of the variability follows the animal's own movements~\cite{Stringer2019}. The difficulty here is fundamental: to someone who does not know the code, a well-compressed message is indistinguishable from a random stream.
+
+\section{Rate: Slow but Reliable}
+\label{sec:rate}
+
+The simplest code is the \emph{rate code}: the number is written in how many spikes the neuron fires in a window $T$. Neither erasures nor timing jitter hurt such a code. But it has a price. If the stream is Poisson, the spike count $n$ in a window has mean $rT$ and spread $\sqrt{rT}$:
+\begin{empheq}[box=\keybox]{equation}
+\frac{\sigma_n}{\bar n} \;=\; \frac{1}{\sqrt{r\,T}} .
+\label{eq:rateerror}
+\end{empheq}
+To learn a rate to within ten percent takes a hundred spikes, which at twenty spikes per second is five seconds. Neighboring levels are distinguishable if they are a couple of spreads apart, so up to rate $r$ in time $T$ about $\sqrt{rT}$ levels can be distinguished: at $r=10$ and $T=1\,\text{s}$ that is three or four levels, less than two bits.
+The brain does not work that slowly. A person recognizes an animal in a picture flashed for an instant, and the response in the brain appears after about $150\ms$~\cite{Thorpe1996}. By a rough estimate, in that time the signal passes through about ten successive processing stages, $10$--$20\ms$ per stage. At the usual cortical rates, each neuron manages to fire zero or one spike per stage, and its rate in such a window is undefined. There are two ways out: take many neurons, or look at timing.
+
+\emph{Many neurons.} Suppose $N$ neurons carry the same number, and the recipient adds up their spikes. If their noise is independent, $rT$ in~\eqref{eq:rateerror} is replaced by $NrT$: a hundred neurons at $r=20$ give thirty spikes in $15\ms$ and a precision of about twenty percent. Space substitutes for time. However, the noise of neighboring cortical neurons is not independent: the correlation coefficient of the spike counts of a pair of neighbors is typically about $0.1$~\cite{Zohary1994}. If it equals $c$, the variance of the average over $N$ neurons is
+\begin{empheq}[box=\keybox]{equation}
+\sigma^2_N \;=\; \sigma^2_1\,\frac{1+(N-1)\,c}{N}
+\;\xrightarrow[N\to\infty]{}\; c\,\sigma^2_1 .
+\label{eq:correlated}
+\end{empheq}
+
+\begin{keyblock}
+\begin{proposition}[The limit of averaging]
+\label{prop:pooling}
+With correlated noise, averaging over a group reduces the error by no more than a factor of $1/\sqrt{c}$. For $c=0.1$ that is threefold, and this gain is reached already with a few tens of neurons; adding more is useless.
+\end{proposition}
+\end{keyblock}
+
+Not every correlation is equally harmful. What limits precision is only the part of the shared noise that \emph{looks like the signal itself}, that is, that shifts the whole group the same way a change in the measured quantity would~\cite{MorenoBote2014}. How much such noise the brain actually has is still being worked out.
+
+There is another way to use many neurons: write the number in \emph{which} neuron fired, as in the sound-direction finder (Fig.~\ref{fig:itd}). This is the \emph{place} code, the most reliable one known: for sensory neurons the index of the wire tells which point of the skin was touched or what pitch a sound has, and this has been established many times over. It is expensive in neurons but fast: a message takes one delay.
+
+\section{Timing: Fast, but Measured from What?}
+
+The second way out is to write the number in the time of a spike. Take neuron~\eqref{eq:glutneuron} and, from time $t=0$, apply a constant input that would raise the voltage to level $U$. The voltage grows as $V=U\bigl(1-e^{-t/\tau}\bigr)$ and reaches the threshold $\theta$ at time
+\begin{empheq}[box=\keybox]{equation}
+t_1 \;=\; \tau\,\ln\frac{U}{U-\theta}, \qquad U>\theta .
+\label{eq:latency}
+\end{empheq}
+A strong input gives an early spike, a weak one a late spike, a subthreshold one none at all. With $\tau=10\ms$, input $U=4\theta$ gives the first spike after $2.9\ms$, $U=2\theta$ after $6.9\ms$, and $U=1.2\theta$ after $17.9\ms$. A single spike carries a number.
+
+But from what moment is $t_1$ measured? There is no clock, and the recipient does not know when the stimulus began. There are three answers.
+
+\emph{Relative latency.} Two neurons see the same stimulus, and the difference of their latencies $t_1^A-t_1^B$ depends only on their inputs, not on the moment of onset. Coincidence detectors with delays compare the times (Fig.~\ref{fig:itd}). If $N$ neurons each fire one spike, the very \emph{order} of their arrival carries up to $\log_2N!$ bits: for ten neurons about twenty-two bits, whereas the answer ``fired or not'' would give no more than ten. In the retina it has been shown that an image can be reconstructed quickly and reliably from the relative latencies of the first spikes of its output neurons~\cite{Gollisch2008}.
+
+\emph{A volley as the start of a word.} An abrupt change in the stimulus makes many neurons fire almost simultaneously. Such a volley itself serves as a start mark, like the long pause between words in Morse code, and the recipient measures latencies from it.
+
+\emph{A local rhythm.} In Chapter~\ref{sec:gaba} the \nt{GLUT}--\nt{GABA} loop generated a local rhythm with a period of $12$--$50\ms$. It is not a clock, but within its cycle a neuron with strong input manages to fire before a neuron with weak input, and~\eqref{eq:latency} turns into a \emph{phase} code: the number is written in which part of the cycle the spike arrived. Such a code has been observed: neurons responsible for a particular place in space fire earlier and earlier in the cycle of a slow local rhythm as the animal moves through ``its'' place~\cite{OKeefe1993}. How widely the brain uses phase is still unknown.
+
+\section{The Recipient Chooses the Code}
+
+A spike train contains rate, timing, and order. Which of these gets read is decided by the recipient, and it decides with one parameter, its time constant $\tau$.
+
+Average equation~\eqref{eq:glutneuron} over time. If independent streams with rates $r_j$ arrive at the neuron, the mean voltage and its relative jitter are
+\begin{empheq}[box=\keybox]{equation}
+\bar V \;=\; \tau\sum_j w_j\,r_j ,
+\qquad
+\frac{\sigma_V}{\bar V} \;\approx\; \frac{1}{\sqrt{2\,r_{\text{in}}\,\tau}} ,
+\label{eq:reader}
+\end{empheq}
+where the second equality is written for equal weights, and $r_{\text{in}}$ is the total rate of all inputs. When $\tau$ is large, the voltage hardly jitters and follows the weighted sum of rates: the recipient is an \emph{integrator}, it reads rates and forgets timing. When $\tau$ is small, the voltage has time to fall between spikes, and threshold is reached only when several spikes arrive within the window~\eqref{eq:window}: the recipient is a \emph{coincidence detector}, it reads timing (Fig.~\ref{fig:reader}). A thousand inputs at five spikes per second with $\tau=10\ms$ give a jitter of about ten percent, almost pure integration. If inhibition, as in Chapter~\ref{sec:gaba}, has shortened $\tau$ to $2\ms$, the jitter grows to over twenty percent, and the neuron begins to notice coincidences.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=0.115cm,y=1cm]
+% common input: the same spike train for both receivers
+\foreach \s in {6,21,22,38,52,55.5,59,62.5,66,69.5,73,76.5,80,83.5,87,90.5,94,97.5}{\draw[thick,gray!40!black] (\s,5.25) -- (\s,5.65);}
+\draw[gray!70!black] (0,5.25) -- (105,5.25);
+\node[left,font=\small] at (-1,5.45) {input};
+\node[above,font=\scriptsize,gray!40!black] at (13.5,5.65) {sparse};
+\node[above,font=\scriptsize,gray!40!black] at (21.5,6.0) {pair};
+\node[above,font=\scriptsize,gray!40!black] at (75,5.65) {dense};
+% axes and thresholds
+\foreach \y/\th in {2.7/2.5,0/1.5}{
+  \draw[gray!70!black] (0,\y) -- (106,\y) node[right,black] {\small $t$};
+  \draw[densely dashed,gray!60!black] (0,\y+0.6*\th) -- (104,\y+0.6*\th) node[right,black,font=\small] {$\theta$};
+}
+\node[anchor=south west,font=\small] at (0,4.3) {$\tau=10\ms$: integrator};
+\node[anchor=south east,font=\small] at (104,1.0) {$\tau=2\ms$: coincidence detector};
+% integrator: tau=10 ms, theta=2.5w
+\begin{scope}[yshift=2.7cm]
+\foreach \a/\b/\v in {0/6/0.000,6/21/1.000,21/22/1.223,22/38/2.107,38/52/1.425,52/55.5/1.351,55.5/59/1.952,59/62.5/2.376,62.5/66/0.000,66/69.5/1.000,69.5/73/1.705,73/76.5/2.201,76.5/80/0.000,80/83.5/1.000,83.5/87/1.705,87/90.5/2.201,90.5/94/0.000,94/97.5/1.000,97.5/104/1.705}{\draw[very thick,blue!60!black] plot[domain=\a:\b,samples=14] (\x,{0.6*\v*exp(-(\x-\a)/10)});}
+\foreach \s/\p/\q in {6/0.000/1.000,21/0.223/1.223,22/1.107/2.107,38/0.425/1.425,52/0.351/1.351,55.5/0.952/1.952,59/1.376/2.376,62.5/1.674/2.500,62.5/2.500/0.000,66/0.000/1.000,69.5/0.705/1.705,73/1.201/2.201,76.5/1.551/2.500,76.5/2.500/0.000,80/0.000/1.000,83.5/0.705/1.705,87/1.201/2.201,90.5/1.551/2.500,90.5/2.500/0.000,94/0.000/1.000,97.5/0.705/1.705}{\draw[very thick,blue!60!black] (\s,0.6*\p) -- (\s,0.6*\q);}
+\foreach \s in {62.5,76.5,90.5}{\draw[->,thick,red!70!black] (\s,1.58) -- (\s,1.95);}
+\end{scope}
+% coincidence: tau=2 ms, theta=1.5w
+\begin{scope}[yshift=0cm]
+\foreach \a/\b/\v in {0/6/0.000,6/21/1.000,21/22/1.001,22/38/0.000,38/52/1.000,52/55.5/1.001,55.5/59/1.174,59/62.5/1.204,62.5/66/1.209,66/69.5/1.210,69.5/73/1.210,73/76.5/1.210,76.5/80/1.210,80/83.5/1.210,83.5/87/1.210,87/90.5/1.210,90.5/94/1.210,94/97.5/1.210,97.5/104/1.210}{\draw[very thick,blue!60!black] plot[domain=\a:\b,samples=14] (\x,{0.6*\v*exp(-(\x-\a)/2)});}
+\foreach \s/\p/\q in {6/0.000/1.000,21/0.001/1.001,22/0.607/1.500,22/1.500/0.000,38/0.000/1.000,52/0.001/1.001,55.5/0.174/1.174,59/0.204/1.204,62.5/0.209/1.209,66/0.210/1.210,69.5/0.210/1.210,73/0.210/1.210,76.5/0.210/1.210,80/0.210/1.210,83.5/0.210/1.210,87/0.210/1.210,90.5/0.210/1.210,94/0.210/1.210,97.5/0.210/1.210}{\draw[very thick,blue!60!black] (\s,0.6*\p) -- (\s,0.6*\q);}
+\foreach \s in {22}{\draw[->,thick,red!70!black] (\s,0.98) -- (\s,1.35);}
+\end{scope}
+\foreach \x in {0,50,100}{\draw[gray!60!black] (\x,-0.06) -- (\x,0.06) node[below,font=\scriptsize] {\x\,ms};}
+\end{tikzpicture}
+\caption{The same input, two different recipients. Each spike raises the voltage by $w$, after which it leaks away, as in neuron model~\eqref{eq:glutneuron}; red arrows are the recipient's spikes. The slow recipient ($\tau=10\ms$, $\theta=2.5w$) fires where spikes are \emph{many} and does not notice the pair. The fast one ($\tau=2\ms$, $\theta=1.5w$) fires only on the pair within window~\eqref{eq:window} and lets a dense but non-coincident stream pass.}
+\label{fig:reader}
+\end{figure}
+
+Measurements show that in active cortex the membrane conductance increases severalfold compared with rest~\cite{Destexhe2003}. So $\tau$ there is shorter, and cortical neurons in their working regime are closer to coincidence detectors than to integrators.
+
+\begin{keyblock}
+\begin{proposition}[The recipient sets the code]
+\label{prop:reader}
+One and the same spike train carries rate for a slow recipient, timing for a fast one, and, for a volume into which transmitter is released, a concentration level smoothed over seconds (Chapter~\ref{sec:serocomputer}). Which code is used is determined not by the sender but by the recipient's time constant, and inhibition adjusts that constant.
+\end{proposition}
+\end{keyblock}
+\section{Dots and Dashes: The Synapse as a Filter}
+
+So far our synapse has been a wire with a weight. In fact its response depends on the preceding spikes, and this gives the language of neurons a second symbol.
+
+\emph{Depression: the synapse transmits changes.} Each release uses up a fraction $U$ of the stock of transmitter ready for release~\cite{Tsodyks1997}, and the stock recovers with a time constant $\tau_{\text{rec}}$ on the order of hundreds of milliseconds. At rate $r$ the amplitude of the response to a spike settles at approximately $A(r)=A_0/(1+U r\tau_{\text{rec}})$, where $A_0$ is the response of a rested synapse. The current the recipient receives per unit time is
+\begin{empheq}[box=\keybox]{equation}
+r\,A(r) \;=\; \frac{A_0\,r}{1+U r\,\tau_{\text{rec}}}
+\;\xrightarrow[r\to\infty]{}\; \frac{A_0}{U\tau_{\text{rec}}} .
+\label{eq:depression}
+\end{empheq}
+With $U=0.5$ and $\tau_{\text{rec}}=0.8\,\text{s}$, saturation begins already at $1/(U\tau_{\text{rec}})=2.5$ spikes per second. If the rate rises from five to twenty, the steady-state current grows by only a third. But the first spikes at the new rate arrive while the stock is still at its old level, and the current momentarily jumps fourfold, then decays within $\tau_{\text{rec}}/(1+Ur\tau_{\text{rec}})\approx90\ms$ (Fig.~\ref{fig:depression}).
+
+Such a synapse transmits not the rate but its \emph{change}, essentially the relative change $\Delta r/r$~\cite{Abbott1997depression}. To an electronics engineer this is a high-pass filter built right into the wire.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=12.5cm,y=1cm]
+% input rate
+\draw[->,gray!70!black] (0,2.6) -- (0.9,2.6) node[right,black] {\small $t$};
+\draw[->,gray!70!black] (0,2.6) -- (0,4.3) node[above,black] {\small $r$};
+\draw[very thick,blue!60!black] (0,2.9) -- (0.2,2.9) -- (0.2,3.8) -- (0.8,3.8);
+\node[left,font=\scriptsize] at (0,2.9) {$5$};
+\node[left,font=\scriptsize] at (0,3.8) {$20$};
+\node[right,font=\small,blue!60!black] at (0.4,4.1) {rate at the synapse input};
+% output current
+\draw[->,gray!70!black] (0,0) -- (0.9,0) node[right,black] {\small $t$};
+\draw[->,gray!70!black] (0,0) -- (0,2.45) node[left,black] {\small $rA$};
+\draw[densely dashed,gray!60!black] (0,0.667) -- (0.8,0.667);
+\draw[very thick,red!70!black] (0,0.5) -- (0.2,0.5) -- (0.2,2.0)
+   plot[domain=0.2:0.8,samples=60] (\x,{0.667+(2.0-0.667)*exp(-(\x-0.2)/0.089)});
+\node[left,font=\scriptsize] at (0,0.5) {$1.7$};
+\node[left,font=\scriptsize] at (0,2.0) {$6.7$};
+\node[right,font=\scriptsize] at (0.8,0.667) {$2.2$};
+\node[right,font=\small,red!70!black] at (0.28,1.6) {current to the recipient: a jump, then decay within $\approx90\ms$};
+\draw[gray!60!black] (0.2,-0.08) -- (0.2,0.08); \node[below,font=\scriptsize] at (0.2,0) {$0.2\,\text{s}$};
+\draw[gray!60!black] (0.8,-0.08) -- (0.8,0.08); \node[below,font=\scriptsize] at (0.8,0) {$0.8\,\text{s}$};
+\end{tikzpicture}
+\caption{A depressing synapse according to formula~\eqref{eq:depression} with $U=0.5$, $\tau_{\text{rec}}=0.8\,\text{s}$; current in units of $A_0$ per second; the dashed line is the steady-state current: it rose only from $1.7$ to $2.2$, but at the moment of the step it jumped to $6.7$. The synapse tells the recipient that the rate has changed, not what it is.}
+\label{fig:depression}
+\end{figure}
+
+\emph{Facilitation: a burst as a dash.} At other synapses the release probability is low but rises for tens of milliseconds after each spike. A single spike through such a synapse is most often lost. But a \emph{burst}, several spikes in a row a few milliseconds apart, gets through almost certainly. Even without facilitation, the probability that all $k$ spikes of a burst are lost is
+\begin{empheq}[box=\keybox]{equation}
+P_{\text{loss}} \;=\; (1-p)^k ,
+\label{eq:burst}
+\end{empheq}
+which for $p=0.2$ is $0.8$ for a single spike and $0.41$ for a burst of four; facilitation lowers it further still. So the neuron acquires a second symbol: a single spike is a dot, a burst is a dash. A depressing synapse best transmits the first spike after a pause; a facilitating one passes bursts and suppresses isolated dots. That bursts are transmitted more reliably has been measured; that the brain actually uses them as a separate symbol is a plausible hypothesis~\cite{Lisman1997}.
+
+\section{How \nt{GABA} Neurons Speak}
+
+The most numerous of them in the cortex are the fast ones~\cite{Tremblay2016}. Their spikes are shorter than those of \nt{GLUT} neurons, and they can fire them steadily for long periods at hundreds per second, with almost no fatigue. Their synapses are more reliable: the connection to each recipient consists of many release sites, and a spike is almost never lost. Their outputs land near the site where the recipient's spike is born, so they control not how the recipient sums its inputs but whether and when it fires.
+
+They themselves receive excitation from many neighboring \nt{GLUT} neurons and report the total activity around them, which is exactly what the division of Chapter~\ref{sec:gaba} needs. Finally, fast \nt{GABA} neurons are connected to one another and readily fire together; they are the ones that set the local rhythm discussed above~\cite{Cardin2009}.
+
+In the language of Morse code, \nt{GABA} neurons are responsible not for the letters but for the \emph{pauses}. They cut the continuous stream of \nt{GLUT} spikes into windows within which the recipient can fire, narrow the coincidence windows, and turn down the whole stream when it gets too loud.
+
+\begin{keyblock}
+\begin{proposition}[Division of roles]
+\label{prop:punctuation}
+\nt{GLUT} neurons carry the content of the message: \emph{what} and \emph{how much}. Fast \nt{GABA} neurons carry its markup: \emph{when} one may speak and \emph{how loudly}; one more class, by inhibiting the inhibitors, decides \emph{for whom} the gates are open. Individual parts of this division have been measured; as a general rule it is a working hypothesis.
+\end{proposition}
+\end{keyblock}
+
+There are also other, slower \nt{GABA} neurons whose outputs land on individual inputs of the recipient. They work as the veto~\eqref{eq:veto} of Chapter~\ref{sec:gaba}: they shut off one stream of \nt{GLUT} spikes without touching the others.
+
+The division into fast and slow \nt{GABA} neurons is an old picture, and it is incomplete. Today at least three large classes are distinguished in the cortex~\cite{Tremblay2016}, and the third is arranged unexpectedly: it inhibits not \nt{GLUT} neurons but other \nt{GABA} neurons, above all those that close off inputs~\cite{Pfeffer2013}. Inhibition of inhibition is a double negation. Such a neuron \emph{opens} the gates without sending the recipient a single excitatory spike. It is switched on by signals from other cortical areas and by the broadcast channels, so it works as an enable input for a whole part of the network: while it is active, the vetoes are lifted and the stream gets through~\cite{Pi2013}. In Appendix~\ref{sec:othermediators} this trick is called disinhibition.
+\section{An Economical Language}
+
+The last thing firmly known about the language of neurons is that it is expensive. A spike, together with the synaptic work it causes, costs about $10^9$ ATP molecules (an estimate for rodent cortex~\cite{Attwell2001}), and one molecule yields about $10^{-19}$ joules. So a spike costs on the order of $E_{\text{spk}}\sim10^{-10}$ joules. The whole brain consumes about $20$ watts, and if half of that goes to signaling, $P\sim10$ watts, the mean rate of one neuron is
+\begin{empheq}[box=\keybox]{equation}
+\bar r \;\approx\; \frac{P}{N\,E_{\text{spk}}}
+\;\sim\; \frac{10\ \text{W}}{8.6\cdot10^{10}\cdot10^{-10}\ \text{J}}
+\;\approx\; 1\ \text{spike per second}.
+\label{eq:energy}
+\end{empheq}
+More detailed estimates for the cortex give even less~\cite{Lennie2003}. The brain's code must be \emph{sparse}: only a small fraction of neurons can be firing fast.
+
+From~\eqref{eq:spikeentropy} one sees that this is not so bad. At a precision of $1\ms$, a spike of a neuron firing at $100$ per second carries no more than five bits, while a spike of a neuron firing once a second carries up to eleven. If you pay per spike, it pays to speak rarely. The cortex does in fact trade precision for energy: when food is scarce, neurons keep their firing rate but spend less on synaptic currents, and their responses become less precise~\cite{Padamsey2022}.
+
+In Morse code, frequent letters are short: the most frequent letter of English text, E, is a single dot. The neurons' code, as far as is known, follows the same rule in another form: what is expected costs few spikes~\cite{Barlow1961}. A neuron under a constant stimulus gradually lowers its rate, the sensors of Chapter~\ref{sec:glutcomputer} respond to changes rather than levels, and the \nt{DOPA} neurons of Chapter~\ref{sec:neurontypes} report only the reward-prediction error.
+
+\begin{keyblock}
+\begin{proposition}[Economy]
+\label{prop:economy}
+Energy limits a neuron's mean rate to about one spike per second. That is why the language of \nt{GLUT} neurons is sparse and spends its spikes on news: on what has changed or was not predicted. The energy limit has been measured; that the brain's code is tuned for the greatest number of bits per joule is a well-founded hypothesis.
+\end{proposition}
+\end{keyblock}
+
+\section{Summary}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{2.6cm}>{\raggedright}p{2.3cm}>{\raggedright}p{3.0cm}>{\raggedright}p{2.0cm}>{\raggedright\arraybackslash}p{3.6cm}}
+\toprule
+Encoding & What it carries & Who reads it & Time per message & What is known \\
+\midrule
+index of the neuron that fired (place code) & which value & any recipient; coincidence detectors & one delay & established for sensory neurons and in sound localization \\
+rate of one neuron & magnitude & integrator with large $\tau$; the volume (ch.~\ref{sec:serocomputer}) & hundreds of ms to seconds & established; too slow for a $10$--$20\ms$ processing stage \\
+group rate & magnitude & neuron with thousands of inputs & $10$--$50\ms$ & established; gain limited by correlations~\eqref{eq:correlated} \\
+first-spike time, order & magnitude, order & coincidence detectors with delays & one delay & established at the input of the nervous system; debated in the cortex \\
+phase in a local rhythm & magnitude, position & neurons sharing a rhythm & cycle of $12$--$50\ms$ and slower & observed in some areas; general role is a hypothesis \\
+burst (``dash'') & ``important'': reliable delivery & facilitating synapse & $\sim10\ms$ & reliability measured; a separate symbol is a hypothesis \\
+rate change & news & depressing synapse & $\sim0.1\,\text{s}$ & established \\
+spikes of fast \nt{GABA} neurons & when and how loudly & all neighboring \nt{GLUT} neurons & $1$--$30\ms$ & rhythm and division measured; ``punctuation'' as a rule is a hypothesis \\
+\bottomrule
+\end{tabular}
+\caption{The ways \nt{GLUT} and \nt{GABA} neurons encode messages in spikes. The right-hand column separates what has been measured from what is assumed.}
+\label{tab:code}
+\end{table}
+
+Table~\ref{tab:code} collects what we know; it also shows what we do not know. We do not know how much the cortex uses precise spike timing rather than only group rates. We do not know whether neurons have ``words,'' stable combinations of spikes from many neurons that are read as a whole. And we do not know whether the language is the same in different parts of the brain. Morse code can be learned in an evening because its table is known. The table of the neurons' language has yet to be compiled, and the ones who compile it will most likely be communications engineers.
+
+\section{Exercises}
+
+\begin{exercise}[\lvlA]
+\label{ex:04:1}
+\emph{Capacity in numbers.} $\Delta t=1\ms$. (a)~How many bits per joule does a neuron firing $1$ spike per second give at the spike cost of~\eqref{eq:energy}? (b)~At $r=10$, by what factor less than bound~\eqref{eq:spikeentropy} does a recipient extract if it only counts spikes per second?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:04:2}
+\emph{The optimal rate.} A neuron spends power $P_0+rE_{\text{spk}}$, where $P_0$ is the other half of the $20$~W divided among all neurons, and $E_{\text{spk}}=10^{-10}$~J. At what rate $r$ is the number of bits per joule $R_{\max}(r)/(P_0+rE_{\text{spk}})$ from~\eqref{eq:spikeentropy} with $\Delta t=1\ms$ greatest?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:04:3}
+\emph{Which correlation hurts.} $N=1000$ neurons, variance $\sigma^2=1$, pairwise correlation $c=0.1$. Compute the Fisher information $\mathcal I=f'^{\mathsf T}\Sigma^{-1}f'$ ($\Sigma$ is the covariance matrix) for equal slopes $f'=\mathbf 1$ and for slopes $\pm1$ with $\mathbf 1^{\mathsf T}f'=0$. By what factor do they differ?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:04:4}
+\emph{Simulation: a coincidence detector.} Neuron~\eqref{eq:glutneuron} receives $1000$ Poisson inputs at $5$ spikes per second each, $w=1$; the threshold $\theta$ is set so that the free voltage crosses it once a second. By simulation, find how many simultaneous inputs $m$ fire the neuron with probability $1/2$ for $\tau=10$ and $2\ms$.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:04:5}
+\emph{Design: a detector of relative changes.} Choose synapse~\eqref{eq:depression} so that the steady-state current at $40$ spikes per second is no more than $10\,\%$ above that at $10$, and after a step to $40$ the current settles to its new level with a time constant of no more than $50\ms$. What is the smallest $\tau_{\text{rec}}$, and at what $U$?
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:04:6}
+\emph{First-spike time and bursts.} (a)~Using~\eqref{eq:latency}, find the input for which the first spike arrives exactly one time constant later. What does it depend on? (b)~With release probability $p=0.2$, how many spikes must a burst have for the probability of losing them all to be below $5\,\%$?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:04:7}
+\emph{Research: how many bits are in the arrangement.} The neuron is a set of independent bins~\eqref{eq:spikeentropy}, $r=10$, $\Delta t=1\ms$. (a)~Split the entropy of a ``word'' of $20$ bins into the entropy of the spike count and the remainder. (b)~Simulate estimating the entropy from word frequencies with $N=30$ and $10^4$ recordings. How much is it underestimated?
+\end{exercise}

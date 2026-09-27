@@ -1,0 +1,43 @@
+\chapter{机器如何学会运动}
+% 完整版：chapters/15_motorlearning.tex
+
+我们已经见过两种学习方式。没有老师——“一起工作，就连在一起”——机器记住常见的东西。有了多巴胺，它从意外中学习：结果比预期的好还是差。但当你投篮没投进时，你知道的不只是结果不好。你还知道偏了\emph{多少}、偏向\emph{哪一边}。这是第三位老师——带方向的误差，每个输出各有一份专属的误差。
+
+\section*{误差导线}
+
+大脑里有一套专门用来学习动作的电路，它的构造非常特别。数量庞大的小\nt{GLUT}神经元，数以百亿计，把输入信号展开成一张极长的特征清单。这套电路的输出神经元是抑制性的\nt{GABA}神经元，有几千万个，每一个都听着十万个输入。每个输出神经元都恰好接着一根特殊的导线——误差导线。如果误差在某个输入活跃时到来，这个输入就会减弱。这是经典的“减小误差”规则，工程师就用它来训练自适应滤波器。
+
+\pencilfig{15}{\pencilart{15}}{没打中报告的不只是“不好”，还有“偏了多少、偏向哪边”。}
+
+这样的老师比多巴胺快：每个输出都有自己的误差，不需要从人人共用的信号里打捞属于自己的那一份。不过，误差到得晚，连接又需要一张“便利贴”，记住自己参与过。实验表明，这张便利贴能贴多久，正好与误差的延迟相匹配。
+
+\section*{内部模型}
+
+这样一套电路学到的是什么？是自己身体的模型：一条指令会产生什么结果。有了它，就不必等待迟到的传感器——结果可以提前预测出来。按照一种假说，这就是你没法给自己挠痒痒的原因：大脑事先知道会发生什么，并把预测到的部分减掉了。
+
+\section*{快学生与慢学生}
+
+戴上一副把图像往旁边偏移的眼镜，然后投飞镖。头几次会偏到一边，但几十次之后你就适应了。摘下眼镜——又没投中，这回偏向另一边。有趣的在后头。实验能被“同时有两个学生”很好地描述：快学生学得快、忘得也快，慢学生学得慢、却记得久。如果在长时间适应之后，再短暂地反向学习一下，总的校正会回到零——但随后，旧的技能会部分地自己冒出来：快学生忘了，慢学生还记得。只有一个学生的模型做不到这一点，人却做得到。
+
+\pencilfig{115}{%
+% figures/tworate_*.dat from models/motor_learning.py: adapt 200 throws, reverse until the sum is back to zero, then no errors at all
+\begin{scope}[x=0.026cm, y=1.45cm]
+\fill[pcGray, opacity=0.08] (220,-1.1) rectangle (226,1.1);
+\draw[pen] (0,0) -- (340,0);
+\draw[pcGray, line width=0.4pt] plot file {figures/tworate_p.dat};
+\draw[penlite=pcAmber] plot file {figures/tworate_fast.dat};
+\draw[penlite=pcBlue] plot file {figures/tworate_slow.dat};
+\draw[pcGray!40!black, line width=1.1pt] plot file {figures/tworate_net.dat};
+\draw[pcGray, densely dashed, line width=0.4pt] (226,-1.1) -- (226,1.1);
+\end{scope}
+\node[lbl, anchor=south] at (3.1,1.47) {戴着眼镜};
+\node[lbl, anchor=north west, align=left] at (6.3,-0.55) {短暂\\反向学习};
+\node[lbl, anchor=south west] at (6.0,1.47) {没有误差};
+\node[lbl, text=pcBlue, anchor=north] at (4.4,0.8) {慢学生};
+\node[lbl, text=pcAmber!80!black, anchor=south west] at (1.15,0.5) {快学生};
+\node[lbl, text=pcGray!40!black, anchor=south] at (7.7,0.95) {总和冒了出来};
+}{模型中两个学生的校正量。短暂反向学习之后，总和为零，但慢学生记得旧的，于是旧技能自己冒了出来。}
+
+为什么要两个学生？按照假说，这和第九章领航员的配方是一回事：世界既有快的变化，也有慢的变化，两者都跟踪才是明智的。
+
+\fullversion{15}

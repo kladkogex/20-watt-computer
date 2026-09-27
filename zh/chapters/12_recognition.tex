@@ -1,0 +1,225 @@
+\chapter{图像和视频识别}
+\chaptermark{识别}
+\label{sec:recognition}
+
+\section{问题：像素不同，东西相同}
+
+第~\ref{sec:sensors}~章把图像送到了机器的输入端：约一百万个眼睛输出神经元，一路压缩过的数据流，其中主要传送边缘和变化。但在传感器和动作之间还有一步，我们至今没有谈到。图中的猫不是一组像素。把它平移半个画面、旋转、推远、关掉一半的灯——几乎所有像素都会变，而“猫”这个答案应当不变。工程师称之为\emph{不变性}：分类器的答案不应随平移、缩放、旋转和光照而改变。
+
+一个简单的实验就能看出困难所在。取一维的“视网膜”，共$24$个点，再取两个各由五个点组成的图形，它们可以出现在任何位置。把输入与存储在某一位置的样板相比较的分类器，正确率为$49$--$52\%$——和抛硬币一样。平移彻底破坏了逐像素比较。需要另一种方案。
+
+\section{多级流水线}
+
+大脑做这件事有多快，我们已经从第~\ref{sec:code}~章知道：闪现的图片上的动物约在$150\ms$内被认出，信号经过大约十级，每级$10$--$20\ms$~\cite{Thorpe1996}。在每一级，神经元只来得及发出零个或一个脉冲。可见，快速识别是沿流水线走一遍，没有长时间的思考和反复。问题是每一级做什么。
+
+视觉最初几级的测量提示了答案~\cite{HubelWiesel1962}：它由两种交替进行的操作组成（图~\ref{fig:conveyor}）。
+
+\emph{选择性。}$S$级的神经元观察输入的一小块区域，只有当那里出现特定的部件组合时才发放：这里有这条边，旁边有那条边。这是对部件的“与”——第~\ref{sec:glutcomputer}~章的阈值神经元，其阈值高于任何单个部件所能提供的输入。
+
+\emph{不变性。}$C$级的神经元汇集许多$S$神经元的输出，这些$S$神经元在不同位置寻找同一组合；只要在任何地方找到它，$C$神经元就发放。这是对位置的“或”——更确切地说，是取最大值。
+
+对一维模型，这两种操作写作：
+\begin{empheq}[box=\keybox]{equation}
+s_{f,p} \;=\; \Bigl[\sum_i t_{f,i}\,x_{p+i} - \theta\Bigr]_+ ,
+\qquad
+c_f \;=\; \max_p\, s_{f,p} ,
+\label{eq:scstage}
+\end{empheq}
+其中$x$是输入，$t_{f,i}$是特征$f$的样板，$p$是位置，$\theta$是阈值。第一个式子使响应具有选择性，第二个式子使响应与位置无关。网络用第~\ref{sec:gaba}~章的手段求出许多输入中的最大值：相互抑制只留下最强的输入（命题~\ref{prop:wta}），而除以总活动使不同亮度下的响应保持一致~\cite{Carandini2012}。
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  px/.style={draw,minimum size=0.36cm,inner sep=0pt},
+  on/.style={px,fill=blue!55!black},
+  snode/.style={circle,draw,very thick,minimum size=0.62cm,inner sep=0pt,font=\scriptsize,fill=blue!6},
+  cnode/.style={circle,draw,very thick,minimum size=0.8cm,inner sep=0pt,font=\scriptsize,fill=red!10}]
+% two inputs: the same shape at two positions
+\foreach \row/\sh/\lab in {0/1/{第1帧},1/7/{第2帧}}{
+  \begin{scope}[yshift=-\row*1.0cm]
+  \node[left,font=\scriptsize] at (-0.25,0) {\lab};
+  \foreach \i in {0,...,13}{\node[px] at (\i*0.4,0) {};}
+  \foreach \d in {0,1,3,4}{\node[on] at ({(\sh+\d)*0.4},0) {};}
+  \end{scope}}
+% S stage: detectors of the shape at several positions
+\foreach \k in {0,...,5}{
+  \node[snode] (S\k) at ({0.8+0.8*\k},1.7) {$S$};}
+\node[font=\scriptsize,left] at (-0.25,1.7) {$S$级：对部件取“与”};
+\draw[->,thick,blue!60!black] (1.2,0.25) -- (S1.south);
+\draw[->,thick,orange!85!black] (3.6,0.25) -- (S4.south);
+\node[font=\scriptsize,blue!60!black,anchor=east] at (1.25,0.85) {第1帧};
+\node[font=\scriptsize,orange!85!black,anchor=west] at (3.9,0.85) {第2帧};
+% C stage
+\node[cnode] (C) at (2.8,3.25) {$C$};
+\node[font=\scriptsize,left] at (-0.25,3.25) {$C$级：对位置取“或”};
+\foreach \k in {0,...,5}{\draw[->,gray!60!black] (S\k.north) -- (C);}
+\draw[->,very thick,red!70!black] (C.north) -- ++(0,0.6) node[above,font=\scriptsize,black] {“有这个图形”——两帧都是};
+% next stages
+\draw[decorate,decoration={brace,amplitude=5pt},gray!60!black] (6.3,1.4) -- (6.3,-1.3);
+\node[right,font=\scriptsize,align=left] at (6.5,0.05) {同一个物体，\\不同的像素};
+\draw[->,thick,densely dashed,gray!60!black] (3.6,3.25) -- (5.9,3.25) node[right,font=\scriptsize,black,align=left] {后续的$S$、$C$对——\\更大、更复杂、\\更不变};
+\end{tikzpicture}
+\caption{流水线中的一对级。$S$神经元在不同位置寻找同一个部件组合；只要在任何地方找到它，$C$神经元就作出响应~\eqref{eq:scstage}。第1帧和第2帧中的图形激活不同的$S$神经元，却激活同一个$C$神经元。后续的级对在越来越大、越来越复杂的组合上重复同样的操作。}
+\label{fig:conveyor}
+\end{figure}
+
+在同一个一维模型中，一对级~\eqref{eq:scstage}能在任何位置无误地认出图形；如果输入的每个点以$0.1$的概率随机翻转，正确率为$86\%$，概率为$0.2$时为$70\%$。硬币仍然只有一半。把几对这样的级叠起来：第一对寻找边缘，下一对寻找边缘的组合，再往上是物体的部件，顶部是完整的物体。每上一对，组合更大，而响应越来越不依赖物体在哪里、以什么方式摆放~\cite{Riesenhuber1999}。
+
+\begin{keyblock}
+\begin{proposition}[选择性与不变性流水线]
+\label{prop:conveyor}
+快速识别是沿大约十级走一遍。在每一对级中，对部件的“与”~\eqref{eq:scstage}使响应具有选择性，对位置的“或”使响应与平移无关。这两种操作交替进行，得到的响应既能区分物体，又几乎不依赖于物体在哪里、以什么方式被看到。最初几级的结构和通过速度已经测量；整条链可归结为这两种操作，则是一种简化。
+\end{proposition}
+\end{keyblock}
+
+如果这种结构看起来眼熟，那是理所当然的。正是这种交替——在所有位置寻找特征，再在相邻位置间合并——被工程师移植到了人工\emph{卷积}网络中~\cite{Fukushima1980}。最近又反过来：为识别物体而训练的卷积网络，成了已知最好的视觉高层神经元响应模型~\cite{Yamins2014}。顶层的结果读起来很简单：根据最后一级约一百个神经元的总频率，线性判决器在图片呈现十分之一秒后就能认出物体~\cite{Hung2005}。这就是第~\ref{sec:code}~章的群体频率编码。
+
+\section{不存在的老师：从视频中学习}
+
+卷积网络要用数以百万计带标注的图片来训练。几乎没有人给大脑标注：孩子一连几小时看着各种物体，却只偶尔听到“杯子”这个词。那么$C$级怎么知道该合并哪些$S$神经元？要把“这里的这个图形”和“那里的这个图形”合并，就得先知道它们是同一个图形。
+
+提示来自视频本身。世界是连续变化的：视野中的物体在平移、旋转、光照改变时仍是同一个物体，只是偶尔视线才转向另一个物体。凡是变化\emph{缓慢}的，多半属于物体本身；变化快的，则属于它的位置和外观~\cite{WiskottSejnowski2002}。因此，$C$神经元只需第~\ref{sec:dofa}~章带资格迹的赫布规则：把先后出现的东西联系起来，而不只是同时出现的东西~\cite{Foldiak1991}：
+\begin{empheq}[box=\keybox]{equation}
+\tau_{\text{tr}}\,\frac{\dd\bar y_k}{\dd t} \;=\; -\bar y_k + y_k ,
+\qquad
+\frac{\dd\mathbf w_k}{\dd t} \;=\; \eta\,\bar y_k\,\bigl(\mathbf x - \mathbf w_k\bigr) .
+\label{eq:traceinvariance}
+\end{empheq}
+其中$y_k$是通过抑制竞争获胜的$C$神经元$k$的活动，$\bar y_k$是它的资格迹，与规则~\eqref{eq:threefactor}中的RC电路相同，$\mathbf x$是$S$神经元的输出。在物体的第一个视图上获胜的神经元，在第二个视图到来时仍然记得这一点，于是也把第二个视图拉向自己。
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=1.0cm,y=1.0cm]
+\foreach \i/\lab in {0/1,1/2,2/3,3/4}{
+  \node[draw,thick,fill=blue!8,minimum width=0.9cm,minimum height=0.55cm,font=\scriptsize] at (\i+0.5,2.2) {$A$在\lab};}
+\foreach \i/\lab in {0/4,1/3,2/2,3/1}{
+  \node[draw,thick,fill=orange!12,minimum width=0.9cm,minimum height=0.55cm,font=\scriptsize] at (\i+6.5,2.2) {$B$在\lab};}
+\node[font=\scriptsize,gray!40!black] at (5.0,2.2) {停顿};
+\draw[->,gray!70!black] (0,0) -- (10.4,0) node[below left,font=\scriptsize,black] {时间};
+% traces
+\draw[thick,blue!60!black] (0,0.05) .. controls (0.4,1.2) and (0.8,1.3) .. (1.2,1.35) -- (4,1.4) .. controls (4.6,0.5) and (5.2,0.15) .. (6,0.08) -- (10,0.05);
+\draw[thick,orange!85!black] (0,0.05) -- (6,0.05) .. controls (6.4,1.2) and (6.8,1.3) .. (7.2,1.35) -- (10,1.4);
+\node[font=\scriptsize,blue!60!black,anchor=west] at (1.4,1.65) {资格迹$\bar y_1$——在$A$的整个经过期间保持};
+\node[font=\scriptsize,orange!85!black,anchor=west] at (7.2,1.65) {资格迹$\bar y_2$};
+\draw[decorate,decoration={brace,amplitude=4pt},gray!60!black] (4.0,2.6) -- (0,2.6);
+\draw[decorate,decoration={brace,amplitude=4pt,mirror},gray!60!black] (0,-0.35) -- (4,-0.35) node[midway,below=4pt,font=\scriptsize,black] {$A$的所有视图都与神经元1相连};
+\end{tikzpicture}
+\caption{视频如何教会不变性（示意图）。物体$A$经过四个位置，然后停顿，然后是物体$B$。在$A$的第一个视图上获胜的神经元，其资格迹~\eqref{eq:traceinvariance}在整个经过期间保持，于是$A$的所有视图都与同一个神经元相连。停顿抹去资格迹，$B$归另一个神经元。}
+\label{fig:tracevideo}
+\end{figure}
+
+我们在模型上检验了这一点（图~\ref{fig:tracevideo}）。两个$C$神经元争夺来自$16$个$S$神经元的输入：两个图形，各有八个位置。图形依次经过所有位置，每个位置$50\ms$，然后停顿$0.3\,\text{s}$，再换下一个随机图形。没有任何标注。如果资格迹很短，$\tau_{\text{tr}}=5\ms$，神经元就按\emph{位置}瓜分输入，响应与图形的吻合程度不比硬币好：十次运行平均$52\%$。如果资格迹与一个位置的呈现时间相当，从$\tau_{\text{tr}}\approx20\ms$起，每个神经元都收集到自己图形的\emph{所有}位置（在$20$、$50$和$200\ms$时，十次运行全部如此）：仅凭视频就学会了不变性。物体之间的停顿很重要：没有停顿，资格迹就会延续到下一个物体上，把它们混在一起。
+
+实验中也能看到同样的情况。如果在眼睛从一处跳到另一处时悄悄替换物体，那么高层神经元在一两个小时内就开始把被替换的物体当成同一个来响应：它们把先后出现的东西联系起来了~\cite{LiDiCarlo2008}。大脑中的不变性确实是从时间的连续性中学到的。这条规则能在多大程度上解释全部视觉学习，还是假说。
+
+\section{视频就是运动}
+
+视频不仅是用于学习的帧流，它本身也是任务：什么在动，往哪里动，动得多快。第一步我们已经熟悉——第~\ref{sec:gaba}~章的方向检测器（图~\ref{fig:direction}），其中延迟的抑制抵消朝某一方向的运动。这样的检测器遍布整个视野，接下来对它们的处理与对形状特征的处理相同：汇集不同位置上许多同方向检测器的级，对大物体的运动作出响应，而与物体所在位置无关。这还是那一对“与”和“或”~\eqref{eq:scstage}，只不过特征不是“边缘”，而是“在时间$d$内移动了的边缘”。
+
+视频还是可预测的：下一帧几乎和上一帧相同。按照\emph{预测编码}假说，高层向低层发送预测，而向上传送的主要是误差——预测没有考虑到的部分~\cite{RaoBallard1999}。这与命题~\ref{prop:economy}中节省脉冲的道理相同：为新消息付费，而不为已知的东西付费。个别观察与这一假说相符，但作为流水线的总体结构，它尚未得到证明。
+
+\section{大脑与卷积网络}
+
+相似性能走多远？对单个物体的快速识别，相似性确实很深~\cite{Yamins2014}。但大脑也有简单卷积网络所没有的东西。
+
+\emph{反馈。}大脑的流水线不只是前向的：每一级都有向后和向侧面的连接。对于困难的图片——有遮挡、光线差——高层的响应形成得较晚，而这些较晚的响应用带反馈的网络描述，比用前馈网络更好~\cite{Kar2019}。走一遍能解决容易的情况，困难的情况需要绕几圈。
+
+\emph{稳健性。}人工网络可能被肉眼察觉不到的像素篡改所欺骗~\cite{Szegedy2014}：人看不出来的改动，会把“熊猫”变成“长臂猿”~\cite{Goodfellow2015}。人的视觉对这种篡改要稳健得多，但并非无懈可击：同时欺骗许多网络的图片在短暂呈现时也会改变人的选择~\cite{Elsayed2018}。为什么稳健性相差如此之大，仍是开放问题；候选因素有噪声、除以总活动和反馈。
+
+\emph{老师。}网络需要数以百万计的标注样本，大脑主要依靠无标注的视频~\eqref{eq:traceinvariance}，外加\nt{DOPA}关于什么重要的少量提示。
+
+\emph{能量。}整个大脑约$20$瓦（命题~\ref{prop:economy}），识别只占其中一部分；在图形加速器上运行的训练好的卷积网络要消耗几百瓦。
+
+\section{错觉：机器在哪里出错，为什么}
+\label{sec:illusions}
+
+想弄懂别人电路的工程师，会给它输入不寻常的信号，看它在哪里出错。对视觉来说，这样的信号早已被发明出来——那就是视错觉。错觉不是故障。每种错觉都指向机器的某个特定机制，这个机制在寻常环境中工作正确，却在专门挑选的图片上暴露了自己。
+
+\emph{合理的预期。}输入含有噪声，机器用世界上通常出现的情况来补全它。慢速运动比快速运动常见；当输入不可靠时——例如图片对比度很低——速度估计就偏向慢速，于是暗淡的物体看起来比明亮的物体移动得慢~\cite{Weiss2002}。许多亮度错觉也这样解释：我们看到的不是像素的亮度，而是过去最常与这种亮度对应的表面~\cite{Purves2011}。一张连衣裙的照片，有人看成白金色，有人看成蓝黑色，也是同一机制：图片有歧义，人们在下意识地假定何种光照上意见不一~\cite{LaferSousa2015,Wallisch2017}。人与人之间的差异已经测量；大脑在这里按照概率论的规则把输入与预期结合起来，是一个有充分依据的假说。
+
+\emph{增益调节。}盯着瀑布看一分钟，再看静止的岩石：岩石会向上漂。“向下”和“向上”通道是一对导线，如式~\eqref{eq:dualrail}；增益调节~\eqref{eq:nakarushton}压低了疲劳的那个通道，这对导线的平衡随之偏移。周围环境改变中心外观的倾斜错觉和对比度错觉，用除以邻居的活动来解释~\cite{Schwartz2009}，与第~\ref{sec:gaba}~章相同。也有一个值得警惕的例子：白色栅格交叉处的暗斑长期被解释为简单的邻域抑制，但改变栅格形状的实验表明，这种解释并不成立~\cite{SchillerCarvey2005}。
+
+\emph{延迟补偿。}从眼睛到高层的路径需要几十毫秒，运动的物体在这段时间里已经移动了。如果在它旁边闪现一个静止的点，物体看起来会在闪光的前方，尽管二者实际上是对齐的~\cite{Nijhawan1994}。一种解释是，机器把运动向前外推，以补偿延迟——这与第~\ref{sec:muscles}~章相同：反馈有延迟时，就不得不预测。这种错觉的解释有好几种，争论尚无定论。
+
+\emph{时间编码中的错误。}一幅由色彩过渡鲜明的圆环构成的静止图片，看起来在旋转。高对比度区域比暗淡区域处理得快，延迟之差~\eqref{eq:latency}被方向检测器读成了运动~\cite{Conway2005}。触发这种错觉的是眼睛微小的不自主跳动和眨眼：每次跳动都刷新输入，检测器再次看到“运动”~\cite{OteroMillan2012}。这是第~\ref{sec:code}~章的时间编码被读错了。
+
+\emph{一图两像。}立方体线框时而以一个面朝向我们，时而以另一个面；或者两只眼睛看到不同的图片：知觉每隔几秒就会跳变一次。最好的模型是两种解释之间的相互抑制、缓慢疲劳和噪声~\cite{MorenoBote2007}，也就是在第~\ref{sec:muscles}~章产生步行节律的那个方案~\eqref{eq:halfcentre}。切换的时间由噪声和疲劳决定；按照模型~\cite{MorenoBote2007}，起主要作用的是噪声，疲劳只起辅助作用。
+
+那么人工网络呢？训练来预测视频下一帧的网络，在同样的静止圆环上看到了旋转，而在对照图片上看不到~\cite{Watanabe2018}。训练来去噪和锐化图像的网络，会受到与人相同的颜色和亮度错觉的影响~\cite{GomezVilla2020}。可见，一部分错觉是机器所学任务本身的结果，而不是神经组织的特性。哪些错觉是大脑独有的，这是对任何视觉模型的很好检验。
+
+\begin{keyblock}
+\begin{proposition}[错觉是机制的印记]
+\label{prop:illusions}
+当一个在寻常世界中有用的机制得到不寻常的输入时，就会产生错觉：预期压倒了不可靠的输入，增益调节使一对通道失衡，延迟补偿把物体推向前方，延迟之差被读成运动，带有噪声和疲劳的相互抑制发生跳变。每种错觉都是指向相应机制的测试信号。错觉本身已经测量；对它们的解释从有充分依据到存在争议不等。
+\end{proposition}
+\end{keyblock}
+
+\section{小结}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{3.0cm}>{\raggedright}p{4.6cm}>{\raggedright\arraybackslash}p{5.2cm}}
+\toprule
+机器做什么 & 怎么做 & 已知程度 \\
+\midrule
+在$150\ms$内认出 & 沿大约十级走一遍 & 速度已测量 \\
+使响应具有选择性 & 对部件取“与”，$S$级~\eqref{eq:scstage} & 在最初几级已测量 \\
+使响应具有不变性 & 对位置取“或”，$C$级；抑制和除法 & 在最初几级已测量；对高层是简化 \\
+给出答案 & 最后一级约一百个神经元的频率，线性读出 & 已测量 \\
+无标注学习 & 在连续视频上使用带资格迹的赫布规则~\eqref{eq:traceinvariance} & 替换物体会改变响应——已测量；作为主要规则——假说 \\
+看到运动 & 方向检测器，然后是同样的“与/或”对 & 已测量 \\
+在可预测的内容上节省 & 向上传送预测误差 & 假说 \\
+解决困难情况 & 反馈，绕几圈 & 较晚的响应和反馈的作用已测量 \\
+以可预测的方式出错 & 错觉：预期、增益调节、延迟、带噪声和疲劳的相互抑制 & 错觉已测量；解释从有依据到有争议 \\
+\bottomrule
+\end{tabular}
+\caption{机器如何识别图像和视频。}
+\label{tab:recognition}
+\end{table}
+
+识别是由我们已有的部件组装起来的（表~\ref{tab:recognition}）：阈值给出对部件的“与”，相互抑制给出对位置的“或”，除法给出与亮度无关的特性，带资格迹的赫布规则代替了不存在的老师。工程师从视觉那里借来了选择性与不变性的交替，并据此建造了卷积网络；而大脑最重要的本领还没有交出来——几乎不耗能量、从无标注的视频中学习。
+
+\section{习题}
+
+\begin{exercise}[\lvlA]
+\label{ex:12:1}
+\emph{一级之内的频率。}流水线的一级持续$15\ms$，神经元的频率为每秒$20$个脉冲，噪声相关系数$c=0.1$~\eqref{eq:correlated}。一百个神经元的群体频率的相对误差是多少？群体任意大时的极限是多少？一级之内能分辨多少个频率等级？
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:12:2}
+\emph{一次识别的能量。}在$150\ms$的一次通过中，十级、每级$10^7$个神经元，每个神经元至多发出一个脉冲，每个脉冲耗能$10^{-10}$\,J。(a)~识别占这$150\ms$内全脑能量的多大比例？(b)~一台$300$\,W、$10\ms$认出一张图片的加速器，耗能是它的多少倍？
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:12:3}
+\emph{$S$级的阈值。}$24$点的“视网膜”，图形$A=11011$和$B=10101$，样板~\eqref{eq:scstage}在图形的1上取$+1$，在0上取$-1$。(a)~阈值取多少时，$S$神经元能容忍一个翻转点，却对另一个图形保持沉默？(b)~在$100\times100$的图片上检测十种$5\times5$特征，需要多少个$S$神经元？
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:12:4}
+\emph{一图两像中的一像持续多久。}在跳变方案~\eqref{eq:halfcentre}中，设$\tau\ll\tau_a$，当第1组获胜时，$r_2=0$，$r_1=I-a_1$。(a)~求$I=1$、$\beta=2$、$b=2$、$\tau_a=0.4\,\text{s}$时获胜的持续时间。(b)~$\tau_a$取多少时，图像每三秒切换一次？
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:12:5}
+\emph{建模：不变性的代价。}用\texttt{models/\allowbreak recognition\_models.py}中的函数\texttt{two\_stage}（$4000$次试验）求：点的翻转概率$p$为多少时，$N=24$的$S$、$C$级对每四次错一次？$p=0.1$时，从$N=8$到$N=192$，正确率如何变化？
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:12:6}
+\emph{建模：资格迹的窗口。}用\texttt{models/\allowbreak recognition\_models.py}中的\texttt{trace\_learning}以$0.3\,\text{s}$的停顿运行十次：在$5\ms$到$2\,\text{s}$之间，$\tau_{\text{tr}}$取哪些值时，所有运行都无误地学会不变性？这个窗口的上限从何而来？
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:12:7}
+\emph{任何位置的运动。}在一排间距为$0.1^\circ$的相邻点上放置第~\ref{sec:gaba}~章的方向检测器：来自$A$、延迟为$d$的抑制，若与来自$B$的兴奋相差不超过$5\ms$，就将其抵消；其上是$C$级。要使$C$对每秒$5$到$20^\circ$的反向运动保持沉默，需要哪些延迟？
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:12:8}
+\emph{像素篡改。}要改变模型\texttt{two\_stage}（$N=24$）对干净图形的答案，需要翻转几个点？对同样具有平移不变性的分类器“输入中1多于$3.5$个就是$A$”呢？$p=0.1$时它的正确率是多少？级对为$0.86$。
+\end{exercise}

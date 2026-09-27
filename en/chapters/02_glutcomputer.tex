@@ -1,0 +1,292 @@
+\chapter{What \nt{GLUT} Neurons Compute}
+\label{sec:glutcomputer}
+
+\section{The Rules of the Game}
+
+In Chapter~\ref{sec:neurontypes} we saw that the overwhelming majority of the brain's neurons are \nt{GLUT}: they only excite, and their weights are only positive. Let us take as many such neurons as we like and ask: what can such a network compute if we allow ourselves only what happens in a living organism?
+
+A living organism has no clock generator that switches all the elements at once. Each neuron works on its own, in continuous time: spikes come and go whenever they happen to, with various delays. There are \emph{inputs}, sensory neurons that fire in response to light, sound, or pressure, and \emph{outputs}, neurons that drive the muscles. Between them lies the network, and no one tells it when to start computing and when to stop. To an electronics engineer this is an \emph{asynchronous} circuit whose elements have delays that are not known precisely in advance.
+
+We take the simplest neuron model among those that work honestly in continuous time. The voltage $V$ across the neuron's membrane is zero at rest. Each spike arriving from neuron $j$ raises it by a jump of $w_j\ge0$, after which the voltage leaks back to zero on its own with time constant $\tau$:
+\begin{empheq}[box=\keybox]{equation}
+\tau\,\frac{\dd V}{\dd t} \;=\; -V \;+\; \tau\sum_j w_j \sum_k \delta\bigl(t-t_j^{(k)}-d_j\bigr), \qquad w_j\ge 0 .
+\label{eq:glutneuron}
+\end{empheq}
+Here $t_j^{(k)}$ are the spike times of neuron $j$, $d_j$ is the delay on the path from it, and $\delta$ is the delta function, which stands for an instantaneous jump. When $V$ reaches the threshold $\theta$, the neuron fires a spike, $V$ is reset to zero, and for about a millisecond the neuron cannot fire again. Typical numbers: $\tau$ ranges from a fraction of a millisecond to twenty milliseconds in different neurons, and delays from a fraction of a millisecond to tens of milliseconds. This is the \emph{leaky integrate-and-fire neuron}: an RC circuit with a threshold. It is a deliberate simplification: in cortical neurons the input branches generate local spikes of their own~\cite{Smith2013}, and a single neuron behaves more like a small multilayer network (Chapter~\ref{sec:synthesis}). For the questions of this chapter one RC circuit is enough.
+
+The main difference from a logic gate is the leak: the neuron remembers a spike not forever but for about $\tau$, and only what arrives within this window adds up.
+
+\section{OR and AND}
+
+Let us start with gates. If a single spike lifts the voltage above threshold, $w\ge\theta$, the neuron fires on every spike from any input. That is \emph{OR}.
+
+AND is more interesting. Let $w<\theta<2w$: one spike is not enough, two are needed. But now the question ``did both arrive?'' makes no sense until we say \emph{within what time}. Let the first spike arrive at time $0$ and the second a time $\Delta$ later. By the time the second arrives, $we^{-\Delta/\tau}$ remains of the first, and the neuron fires if $we^{-\Delta/\tau}+w\ge\theta$. Hence the coincidence window:
+\begin{empheq}[box=\keybox]{equation}
+\Delta \;\le\; \Delta_{\max} \;=\; \tau\,\ln\frac{w}{\theta-w} .
+\label{eq:window}
+\end{empheq}
+This is not a logical AND but a \emph{coincidence detector}: an AND in time (Fig.~\ref{fig:coincidence}). With $\theta=1.5w$ the window is $\tau\ln2\approx0.7\tau$. For a cortical neuron with $\tau=10\ms$ that is about seven milliseconds. In neurons of the auditory system, where $\tau$ is less than a millisecond, the window shrinks to a fraction of a millisecond.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=0.9cm,y=1.6cm]
+\foreach \dx/\lab/\c [count=\i] in {0.5/{coincident}/red!70!black, 2.6/{not coincident}/blue!60!black}{
+ \begin{scope}[xshift={(\i-1)*7.2cm}]
+  \draw[->,gray!70!black] (0,0) -- (6.3,0) node[below left,black] {\small $t$};
+  \draw[->,gray!70!black] (0,0) -- (0,1.75) node[left,black] {\small $V$};
+  \draw[densely dashed,gray!60!black] (0,1.5) -- (6.0,1.5) node[right,black] {\small $\theta$};
+  \draw[very thick,\c] (0,0) -- (1,0) -- (1,1)
+      plot[domain=1:1+\dx,samples=30] (\x,{exp(-(\x-1)/1.5)});
+  \pgfmathsetmacro{\v}{exp(-\dx/1.5)+1}
+  \draw[very thick,\c] (1+\dx,{exp(-\dx/1.5)}) -- (1+\dx,{min(\v,1.5)});
+  \ifdim\v pt<1.5pt
+    \draw[very thick,\c] plot[domain=1+\dx:6,samples=40] (\x,{\v*exp(-(\x-1-\dx)/1.5)});
+  \else
+    \draw[very thick,\c] (1+\dx,1.5) -- (1+\dx,0) -- (6,0);
+    \draw[->,thick,\c] (1+\dx,1.55) -- (1+\dx,1.72) node[above,font=\scriptsize] {spike};
+  \fi
+  \draw[->,thick] (1,-0.35) -- (1,-0.08); \draw[->,thick] (1+\dx,-0.35) -- (1+\dx,-0.08);
+  \draw[decorate,decoration={brace,amplitude=3pt,mirror}] (1,-0.42) -- (1+\dx,-0.42) node[midway,below=3pt] {\scriptsize $\Delta$};
+  \node[\c] at (3.5,-0.95) {\small \lab};
+ \end{scope}}
+\end{tikzpicture}
+\caption{Coincidence detector, threshold $\theta=1.5w$. Left: the second spike arrived after $\Delta<\Delta_{\max}$, the sum reached threshold, and the neuron fired. Right: $\Delta>\Delta_{\max}$; almost nothing was left of the first spike, and the neuron stayed silent.}
+\label{fig:coincidence}
+\end{figure}
+
+Another way to get AND is through duration rather than precise timing. While a light is on, a sensory neuron fires frequently and steadily; if one such input is not enough for the threshold but two are, the neuron is active as long as both are. In this way the network computes on \emph{levels}, and the precise arrival times of spikes do not matter. Most of what follows will work this way.
+
+\section{What Cannot Be Done}
+
+Now let us try to build NOT: a neuron that is active when its input is silent. It will not work: with no input spikes, \eqref{eq:glutneuron} has not a single jump, and the voltage stays at zero, below threshold. What about a network of many neurons? No again, and this can be proved for all networks at once.
+
+It is most convenient to talk about rates. Let $r_i$ be the firing rate of neuron $i$, $I_i$ the drive from the inputs, and $f_i$ its transfer characteristic: how the rate depends on the total drive. For an integrating neuron this characteristic is nondecreasing: more drive, more frequent spikes. The rates in a network that has come to equilibrium satisfy the equations
+\begin{equation}
+r_i \;=\; f_i\Bigl(\sum_j w_{ij}\,r_j + I_i\Bigr), \qquad w_{ij}\ge 0 .
+\label{eq:ratenet}
+\end{equation}
+
+\begin{keyblock}
+\begin{proposition}[Monotonicity]
+\label{prop:monotone}
+Let network~\eqref{eq:ratenet} consist of \nt{GLUT} neurons only and start from complete silence. If the inputs are strengthened, the steady-state rate of no neuron decreases. Everything such a network computes is a \emph{monotone} function of its inputs.
+\end{proposition}
+\end{keyblock}
+
+Proof. Start from silence, $r^{(0)}=0$, and keep substituting the rates into the right-hand side of~\eqref{eq:ratenet}: $r^{(k+1)}=F\bigl(r^{(k)}\bigr)$. The right-hand side $F$ is nondecreasing in every argument, because the weights are nonnegative and the $f_i$ are nondecreasing. Since $r^{(1)}\ge0=r^{(0)}$, by induction $r^{(k+1)}\ge r^{(k)}$: the rates only grow and converge to the smallest solution of~\eqref{eq:ratenet}. If the inputs $I$ are replaced by larger $I'$, then at every step $r^{(k)}(I)\le r^{(k)}(I')$, and so in the limit too. A real network reaches equilibrium not in steps but continuously, yet the same holds for it: with positive connections, an inequality between two runs that holds at the start is preserved for all time.
+
+For individual spikes the statement is not literally true: an extra input spike can make a neuron fire slightly earlier, and because of the millisecond of refractoriness its next spike is lost. But the effect is weak and unreliable, and one cannot compute with it. For rates, monotonicity is strict.
+
+The consequences are the same as for any circuit without inverters. No NOT. No exclusive OR: adding a second input cannot turn the output off. And the most unpleasant one: \emph{activity cannot be stopped by activity}; one can only remove what sustains it.
+
+\section{Two Wires: On and Off}
+
+The way out is suggested by the organism itself. In many sense organs a stimulus is transmitted by two sets of neurons: in vision, some cells respond to an increase in light, others to a decrease~\cite{Schiller1992}. Let us call them \emph{on} and \emph{off} neurons. Instead of one wire $x$ the network receives a pair $(x,\bar x)$, and the absence that it cannot compute is reported to it by the sensor itself.
+
+With a pair of wires, NOT is free: just swap the wires. AND and OR each take two neurons:
+\begin{empheq}[box=\keybox]{equation}
+\begin{aligned}
+x\wedge y \;&\to\; \bigl(\;x\wedge y,\;\; \bar x\vee\bar y\;\bigr),\\
+x\vee y \;&\to\; \bigl(\;x\vee y,\;\; \bar x\wedge\bar y\;\bigr).
+\end{aligned}
+\label{eq:dualrail}
+\end{empheq}
+All operations on the right are monotone, so Proposition~\ref{prop:monotone} is not violated.
+
+For an asynchronous circuit the dual-rail code has a second, even more important advantage. A pair of wires has three states: ``yes,'' ``no,'' and, when both are silent, \emph{``no answer yet.''} The recipient learns that the computation is finished not from a clock but from the signal itself: exactly one wire in each pair has become active. Between stimuli the sensors are silent, and the network returns to silence, ready for the next time. In asynchronous electronics this trick is used to build circuits that work correctly for any element delays~\cite{Sparso2001}.
+
+\begin{keyblock}
+\begin{proposition}[Asynchronous computation]
+\label{prop:dualrail}
+If each input arrives as an on/off pair of wires, a network of \nt{GLUT} neurons can compute any logical function of its inputs. The answer also arrives as pairs of wires, and its readiness is seen from the fact that one wire in each pair has become active. No clock is needed for this. The price is roughly twice as many neurons.
+\end{proposition}
+\end{keyblock}
+
+An example is exclusive OR: ``exactly one of two stimuli has changed.'' The direct wire of the answer is $(x\wedge\bar y)\vee(\bar x\wedge y)$, the complementary one is $(x\wedge y)\vee(\bar x\wedge\bar y)$. That is six neurons, and none of them needs inhibition (Fig.~\ref{fig:dualxor}).
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=1cm,y=1cm,
+  nrn/.style={circle,draw,very thick,fill=blue!6,minimum size=0.75cm,inner sep=0pt,font=\small},
+  inp/.style={font=\small}]
+\node[inp] (X)  at (0,3.3) {$x$};
+\node[inp] (Xb) at (0,2.2) {$\bar x$};
+\node[inp] (Y)  at (0,1.1) {$y$};
+\node[inp] (Yb) at (0,0)   {$\bar y$};
+\node[nrn] (A1) at (3.2,3.3) {$2$};
+\node[nrn] (A2) at (3.2,2.2) {$2$};
+\node[nrn] (A3) at (3.2,1.1) {$2$};
+\node[nrn] (A4) at (3.2,0)   {$2$};
+\node[nrn] (O)  at (7.2,2.75) {$1$};
+\node[nrn] (Ob) at (7.2,0.55) {$1$};
+\foreach \s/\t in {X/A1,Yb/A1,Xb/A2,Y/A2,X/A3,Y/A3,Xb/A4,Yb/A4}{\draw[->,thick,blue!60!black] (\s) -- (\t);}
+\draw[->,thick,blue!60!black] (A1) -- node[pos=0.45,above,sloped,font=\scriptsize,black] {$x\wedge\bar y$} (O);
+\draw[->,thick,blue!60!black] (A2) -- node[pos=0.45,below,sloped,font=\scriptsize,black] {$\bar x\wedge y$} (O);
+\draw[->,thick,blue!60!black] (A3) -- node[pos=0.45,above,sloped,font=\scriptsize,black] {$x\wedge y$} (Ob);
+\draw[->,thick,blue!60!black] (A4) -- node[pos=0.45,below,sloped,font=\scriptsize,black] {$\bar x\wedge\bar y$} (Ob);
+\draw[->,very thick,red!70!black] (O) -- (8.6,2.75) node[right,black] {$x\oplus y$: ``yes''};
+\draw[->,very thick,red!70!black] (Ob) -- (8.6,0.55) node[right,black] {$\overline{x\oplus y}$: ``no''};
+\node[below,font=\small,gray!40!black] at (3.2,-0.55) {AND: threshold $2$};
+\node[below,font=\small,gray!40!black] at (7.2,-0.55) {OR: threshold $1$};
+\node[below,font=\small,gray!40!black] at (0,-0.55) {wire pairs};
+\end{tikzpicture}
+\caption{Exclusive OR in the dual-rail code, built from \nt{GLUT} neurons only. The number in a circle is the threshold in units of one input's weight. Four AND neurons recognize the four input combinations, and two OR neurons collect them into the answer's pair of wires.}
+\label{fig:dualxor}
+\end{figure}
+
+\section{Delays Instead of a Clock}
+
+For computations involving time, wire delays and coincidence detectors are enough. The best example is how the brain determines where a sound came from.
+
+Sound from a source off to one side reaches the near ear earlier than the far one. The difference depends on direction: from zero when the source is straight ahead to $0.22\,\text{m}/343\,\text{m/s}\approx0.6\ms$ in humans when it is directly to the side. The brain distinguishes differences of about ten \emph{microseconds}~\cite{KlumppEady1956,Grothe2010}, although the neurons themselves fire with a precision no better than a fraction of a millisecond. How?
+
+Run a wire from the left ear along a row of coincidence detectors from left to right, and one from the right ear from right to left (Fig.~\ref{fig:itd}). The signal travels along the wire at speed $v$. To the detector located at distance $x$ from the left end of a row of length $L$, the left signal takes time $x/v$, the right one $(L-x)/v$. If the sound reached the right ear later by $\delta t$, the two signals meet simultaneously at the point where
+\begin{empheq}[box=\keybox]{equation}
+\frac{x}{v} \;=\; \frac{L-x}{v} + \delta t
+\quad\Longrightarrow\quad
+x \;=\; \frac{L}{2} + \frac{v\,\delta t}{2} .
+\label{eq:itd}
+\end{empheq}
+Only the detector at which both signals arrive within the window~\eqref{eq:window} fires. The index of the detector that fired is the direction to the source. A time difference has turned into a \emph{place}.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  nrn/.style={circle,draw,very thick,fill=blue!6,minimum size=0.7cm,inner sep=0pt}]
+\foreach \k in {0,...,6}{\node[nrn] (D\k) at (1.4*\k,0) {\scriptsize $2$};}
+\node[nrn,fill=red!15] at (D4) {\scriptsize $2$};
+\draw[->,thick,blue!60!black] (-1.4,0.9) node[left,black] {\small left ear} -- (9.2,0.9);
+\draw[->,thick,orange!85!black] (9.8,-0.9) node[right,black] {\small right ear} -- (-0.8,-0.9);
+\foreach \k in {0,...,6}{
+  \draw[->,blue!60!black] (1.4*\k,0.9) -- (D\k.north);
+  \draw[->,orange!85!black] (1.4*\k,-0.9) -- (D\k.south);}
+\draw[->,thick,red!70!black] (D4.north east) ++(0.1,0.05) -- ++(0.5,0.45) node[above right,font=\small,black] {fired};
+\node[font=\small,gray!40!black] at (4.2,-1.5) {delay grows $\longrightarrow$ \hspace{2.2cm} $\longleftarrow$ delay grows};
+\pic[scale=1.4] at (-2.3,1.75) {speaker};
+\node[font=\scriptsize,align=center] at (-2.3,2.35) {source on the left};
+\end{tikzpicture}
+\caption{Finding the direction of a sound. The signals from the two ears run toward each other; each circle is a coincidence detector with threshold $2$. If the sound reached the right ear later, the signals meet to the right of the middle, by formula~\eqref{eq:itd}. The output of the network is the index of the neuron that fired. Here the source is on the left: the sound reached the left ear first.}
+\label{fig:itd}
+\end{figure}
+
+There is no clock here, no inhibition, not even a dual-rail code: the network does not answer ``yes'' or ``no'' but points to one neuron out of many. Such a circuit of delay lines and coincidence detectors apparently does operate in the auditory brainstem of birds~\cite{Carr1990}. The microsecond precision comes not from the precision of each neuron but from there being many detectors, each looking at its own delay. In mammals no such row of delays has been found: there the same task is apparently solved by coincidence detectors tuned by precisely timed inhibition from \nt{GLYC} neurons~\cite{Brand2002,Grothe2010}. How inhibition narrows the coincidence window we will work out in Chapter~\ref{sec:gaba} using \nt{GABA} as the example; glycine inhibits the same way, by opening chloride channels in the recipient.
+
+\section{Memory}
+
+A computer needs memory. In such a network, memory is activity that sustains itself. Take a group of \nt{GLUT} neurons strongly connected to one another and describe it by a single rate $r$ (Fig.~\ref{fig:recurrentgroup}a). At equilibrium $r=f(wr+I)$, where $w$ is the strength of the group's feedback onto itself and $I$ is the external drive. Let us solve this equation graphically by intersecting the curve $f(wr+I)$ with the line $r$ (Fig.~\ref{fig:bistable}).
+
+\begin{figure}[t]
+\centering
+% (b): tau dr/dt = -r + f(w r + I), f as in fig:bistable, w=1, I=0.6; Euler dt=0.001 tau.
+\begin{tikzpicture}[>=Stealth,
+  nrn/.style={circle,draw,thick,fill=blue!6,minimum size=0.5cm,inner sep=0pt}]
+\begin{scope}
+\node[font=\small] at (-0.5,1.55) {(a)};
+\foreach \k in {1,...,6}{\node[nrn] (n\k) at ({1.4+1.0*cos(60*\k)},{1.0*sin(60*\k)}) {};}
+\foreach \a/\b in {1/2,2/3,3/4,4/5,5/6,6/1,1/4,2/5,3/6}{\draw[<->,blue!60!black] (n\a) -- (n\b);}
+\foreach \k in {2,3,4}{\draw[->,thick,green!45!black] ($(n\k)+(-0.95,0)$) -- (n\k);}
+\node[font=\small,green!45!black] at (-0.35,-0.45) {$I$};
+\node[font=\Large] at (3.1,0) {$\approx$};
+\node[nrn,minimum size=0.85cm,font=\small] (R) at (4.35,-0.1) {$r$};
+\draw[->,thick,blue!60!black] (R) edge[loop above,looseness=6] node[above,font=\small] {$w$} (R);
+\draw[->,thick,green!45!black] (3.55,-0.95) node[left,font=\small] {$I$} -- (R);
+\end{scope}
+\begin{scope}[xshift=6.3cm,y=2.6cm,x=1.05cm]
+\node[font=\small] at (-0.6,1.25) {(b)};
+\draw[->,gray!70!black] (0,0) -- (7.3,0) node[below left,font=\small,black] {$t/\tau$};
+\draw[->,gray!70!black] (0,0) -- (0,1.12) node[left,font=\small,black] {$r$};
+\foreach \t in {0,2,4,6}{\draw[gray!60!black] (\t,-0.02) -- (\t,0.02); \node[below,font=\scriptsize] at (\t,0) {\t};}
+\draw[densely dotted,gray!60!black] (0,0.5) -- (7,0.5) node[right,font=\scriptsize,black,align=left] {write\\threshold};
+\fill[green!45!black,opacity=0.25] (1,-0.2) rectangle (2,-0.13);
+\fill[gray!60!black,opacity=0.35] (1,-0.29) rectangle (1.5,-0.22);
+\draw[very thick,blue!60!black] plot coordinates {(0.0,0.002) (0.1,0.002) (0.2,0.002) (0.3,0.002) (0.4,0.002) (0.5,0.002) (0.6,0.002) (0.7,0.002) (0.8,0.002) (0.9,0.002) (1.0,0.002) (1.1,0.083) (1.2,0.165) (1.3,0.242) (1.4,0.313) (1.5,0.378) (1.6,0.437) (1.7,0.491) (1.8,0.539) (1.9,0.583) (2.0,0.623) (2.1,0.643) (2.2,0.665) (2.3,0.688) (2.4,0.71) (2.5,0.732) (2.6,0.753) (2.7,0.773) (2.8,0.792) (2.9,0.81) (3.0,0.826) (3.2,0.855) (3.4,0.88) (3.6,0.9) (3.8,0.917) (4.0,0.931) (4.4,0.953) (4.8,0.967) (5.2,0.977) (5.6,0.984) (6.0,0.988) (6.5,0.992) (7.0,0.994)};
+\draw[very thick,gray!60!black,densely dashed] plot coordinates {(0.0,0.002) (0.1,0.002) (0.2,0.002) (0.3,0.002) (0.4,0.002) (0.5,0.002) (0.6,0.002) (0.7,0.002) (0.8,0.002) (0.9,0.002) (1.0,0.002) (1.1,0.083) (1.2,0.165) (1.3,0.242) (1.4,0.313) (1.5,0.378) (1.6,0.358) (1.7,0.336) (1.8,0.313) (1.9,0.291) (2.0,0.269) (2.2,0.228) (2.4,0.191) (2.6,0.159) (2.8,0.133) (3.0,0.11) (3.2,0.091) (3.4,0.076) (3.6,0.063) (3.8,0.052) (4.0,0.043) (4.4,0.03) (4.8,0.021) (5.2,0.015) (5.6,0.011) (6.0,0.008) (6.5,0.006) (7.0,0.004)};
+\node[font=\scriptsize,blue!60!black,anchor=west] at (3.3,0.8) {drive for $1\tau$: written};
+\node[font=\scriptsize,gray!50!black,anchor=west] at (2.3,0.3) {drive for $0.5\tau$: died out};
+\end{scope}
+\end{tikzpicture}
+\caption{A group strongly connected to itself. (a)~Many \nt{GLUT} neurons exciting one another behave like a single neuron with rate $r$ that excites itself with strength $w$; an external drive $I$ comes in from outside. (b)~The group's rate over time for $w=1$ and the same curve $f$ as in Fig.~\ref{fig:bistable}. The drive $I=0.6$ is applied for the time marked by the bar under the axis. If it lasts $1\tau$, the group gets past the unstable point $r=0.5$, flares up, and stays on after the drive ends. If only $0.5\tau$, it does not reach that point and dies back down: to write a bit, the drive must last longer than about $0.7\tau$.}
+\label{fig:recurrentgroup}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=5cm,y=3.2cm]
+\draw[->,gray!70!black] (0,0) -- (1.1,0) node[below left,black] {\small $r$};
+\draw[->,gray!70!black] (0,0) -- (0,1.1);
+\draw[thick,gray!60!black] (0,0) -- (1.05,1.05) node[right,black] {\small $r$};
+\draw[very thick,blue!60!black] plot[domain=0:1.05,samples=80] (\x,{1/(1+exp(-(\x-0.5)/0.08))});
+\draw[very thick,red!70!black,densely dashed] plot[domain=0:1.05,samples=80] (\x,{1/(1+exp(-(\x+0.3-0.5)/0.08))});
+\fill[blue!60!black] (0.002,0.002) circle (0.018);
+\draw[blue!60!black,fill=white,thick] (0.5,0.5) circle (0.018);
+\fill[blue!60!black] (0.998,0.998) circle (0.018);
+\node[below right,font=\small] at (0.02,0.0) {off};
+\node[right,font=\small] at (0.52,0.46) {unstable};
+\node[below,font=\small] at (0.99,0.96) {on};
+\node[anchor=east,font=\small,red!70!black] at (0.19,0.62) {$f(wr+I)$};
+\node[anchor=west,font=\small,blue!60!black] at (0.45,0.1) {$f(wr)$};
+\end{tikzpicture}
+\caption{Memory from a group of \nt{GLUT} neurons with strong feedback. Solid curve: no external drive; two stable intersections with the line $r$, ``off'' and ``on,'' and an unstable one between them. A brief drive $I$ (dashed curve) leaves only the upper one.}
+\label{fig:bistable}
+\end{figure}
+
+If the feedback is strong, there are three intersections: the lower one is silence, the upper one is the group firing at full rate, and the middle one is unstable. We have obtained an element with two stable states, a flip-flop. Writing a one into it is easy: a brief drive lifts the curve, the lower intersection disappears, and the group flares up and stays on after the drive ends (Fig.~\ref{fig:recurrentgroup}b). A drive that is too short fails to bring the group to the unstable point, and it dies back down. Such self-sustaining activity, which persists for seconds after the stimulus is gone, is indeed observed in the brain and is considered the basis of short-term memory~\cite{Wang2001}. But it is not the only way to remember for seconds. The record can also be kept in a slow variable of the synapses themselves: after a burst of spikes, facilitation, as in the ``dash'' synapse of Chapter~\ref{sec:code}, lasts about a second, and between brief flashes the network can be almost silent: not a flip-flop but a charged capacitor~\cite{Mongillo2008}. Such ``quiet'' intervals during memory maintenance are observed~\cite{Stokes2015}, and storage without continuous spiking is cheaper in energy. Which of the two ways the cortex uses in which case is under debate.
+
+And how does one erase? By Proposition~\ref{prop:monotone}, not by activity; something has to be \emph{removed}. The first way is to remove the support: if the group stays on only together with the drive from another group, the memory dies out along with it. The second is fatigue. In real synapses the stock of transmitter is depleted during prolonged activity~\cite{Tsodyks1997}, and in neurons slow currents that lower excitability build up. The feedback weakens, the upper intersection disappears, and the group goes out by itself within seconds. The result is a memory that is switched on by a signal and switched off only by time.
+
+\section{Sequences}
+
+Instead of a clock one can have an \emph{event-triggered timer}. Connect groups of \nt{GLUT} neurons into a chain: the first excites the second, the second the third, and so on. An external signal ignites the first group, and a wave of activity runs along the chain, each link one or two delays after the previous one and only once: right after a spike the neurons are refractory, and the wave has already moved on.
+
+Such a chain measures time from an event: link number $k$ has fired, which means $k$ delays have passed since the start. Its outputs can be fed to the muscles to produce a sequence of movements that unfolds on its own. In songbirds, during singing, individual \nt{GLUT} neurons in one brain region fire strictly in turn, each at its own moment of the song, much like such a chain~\cite{Hahnloser2002}.
+
+Unlike a clock, the chain is silent until triggered, runs once, and measures time only for those connected to it. The network still has no common beat.
+
+\section{What Is Missing}
+
+A lot can be built from \nt{GLUT} neurons alone, without inhibition. But three things are missing, and all three because of Proposition~\ref{prop:monotone}.
+
+\emph{Selection.} The network must choose one direction, one action. If two stimuli are nearly equal, both outputs of the network in Fig.~\ref{fig:itd} will fire, and there is nothing to suppress the weaker in favor of the stronger.
+
+\emph{Reset.} A memory cannot be erased by a signal.
+
+\emph{Stability.} In a network whose connections do not arise from an engineer's plan, positive feedback loops are inevitable, and activity in them can build up like an avalanche (Chapter~\ref{sec:neurontypes}). The only brake is the same fatigue, slow and crude.
+
+All three troubles are cured by one remedy: a neuron that cancels a spike with a spike. That is \nt{GABA}, and it is needed not to compute but to select, to reset, and to keep the computation under control.
+
+\section{Exercises}
+
+\begin{exercise}[\lvlA]
+\label{ex:02:1}
+\emph{A row of detectors for sound.} The signals from the ears run along the wires of Fig.~\ref{fig:itd} at $5$~m/s, and the largest arrival difference is $0.64\ms$. The detectors, neurons~\eqref{eq:glutneuron} with $\tau=0.5\ms$, $\theta=1.5w$, are spaced so that neighbors differ by $10$~\textmu s. How many detectors are in the row, and how many of them fire for one sound?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:02:2}
+\emph{Unequal inputs shift the window.} A coincidence detector~\eqref{eq:glutneuron} with $\tau=0.5\ms$, $\theta=1.5$ receives one spike from each of two inputs with weights $1$ and $0.8$. Find the coincidence window and its center. By how many microseconds will the row of Fig.~\ref{fig:itd} err if the input from one ear is $20\,\%$ weaker than from the other?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:02:3}
+\emph{Which networks do not oscillate.} The network $\tau\dot r_i=-r_i+f_i\bigl(\textstyle\sum_jw_{ij}r_j+I_i\bigr)$ with nondecreasing $f_i$ and $w_{ij}\ge0$ for $i\ne j$ is monotone and does not oscillate stably. Prove that a network with an even number of inhibitory connections in every cycle reduces to it by the substitution $r_i\to\pm r_i$. Can mutual inhibition of two groups oscillate? A \nt{GLUT}--\nt{GABA} loop?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:02:4}
+\emph{Design: a dual-rail adder.} Each bit is carried by a pair of wires $(x,\bar x)$. Build a full adder of three bits that outputs the pairs $(S,\bar S)$ for the sum and $(C,\bar C)$ for the carry from \nt{GLUT} neurons, giving weights and thresholds. Use no more than eight neurons. How many would a circuit of AND and OR elements, as in Fig.~\ref{fig:dualxor}, require?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:02:5}
+\emph{Simulation: how long a write takes.} The group of Fig.~\ref{fig:recurrentgroup}: $\tau\dot r=-r+f(r+I)$, $f(u)=1/\bigl(1+e^{-(u-0.5)/0.08}\bigr)$, in the lower state before the write; the drive $I$ is applied for time $T$. Find numerically the smallest $T$ that writes the bit at $I=0.6$, and the threshold $I_c$ below which no $T$ writes the bit.
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:02:6}
+\emph{A chain as a timer.} A link of the chain is $100$ \nt{GLUT} neurons with a delay of $2\ms$ and an independent scatter of $0.2\ms$. (a)~How many neurons are needed to measure $1$~s, and what is the relative error? How does it depend on the interval? (b)~A real timer has a $5\,\%$ error at any interval. What source of scatter produces this?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:02:7}
+\emph{Research: flip-flop or capacitor.} $100$ neurons hold a bit for $10$~s. Flip-flop: each fires $20$ spikes per second. Capacitor: facilitation $u$ decays with $\tau_F=1$~s, the bit is read when $u\ge u_{\max}/2$, and a refresh is a burst of three spikes from each neuron. How many times more economical is the capacitor, and what happens to the bit after the group is silenced for $200\ms$?
+\end{exercise}

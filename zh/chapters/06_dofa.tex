@@ -1,0 +1,362 @@
+\chapter{会学习的神经网络：加入\nt{DOPA}}
+\chaptermark{会学习的网络}
+\label{sec:dofa}
+
+\section{游戏规则}
+
+在前几章的所有电路中，权重都是由工程师设定的。体内没有工程师。权重必须在工作过程中自己确定下来，并使网络做出有用的事。这就叫学习。
+
+在原有规则之外再加一条。突触自己改变自己的权重，而它能知道的只有\emph{它附近}发生的事：发送者的活动$x$、接收者的活动$y$，以及能到达它的那些物质。谁也不能给某个突触单独寄来一份修正。
+
+这就排除了人工神经网络的主要方法——误差反向传播。在那里，输出误差沿着同样的权重反向穿过网络，在前向传递之后的一个单独阶段进行，每个权重都得到自己的修正。这需要与前向导线精确对应的反向导线，以及统一的时钟节拍。二者在脑中都没有找到，至少没有以人工网络中的那种形式存在~\cite{Lillicrap2020,WhittingtonBogacz2019}。
+
+我们把权重的变化写成一个缓慢的连续过程：
+\begin{equation}
+\frac{\dd w}{\dd t} \;=\; \eta\,\Phi(\text{突触所知道的信息}),
+\label{eq:plasticity}
+\end{equation}
+其中$\eta$是学习速率，它小到在一个脉冲的时间内权重几乎不变。整章讨论的就是函数$\Phi$可以是什么样子。
+
+\section{权重存储在哪里}
+\label{sec:weightstore}
+
+一个“改变自己权重”的突触是什么？连接有两侧：发送者导线的末梢（\emph{突触前}侧）和接收者带受体的一片膜（\emph{突触后}侧），二者之间是一条窄缝。在\nt{GLUT}连接中，接收者的膜通常位于\emph{树突棘}上——接收者输入分支上的一个小突起。连接的权重可以方便地分解为三个因子~\cite{delCastillo1954}：
+\begin{empheq}[box=\keybox]{equation}
+w \;=\; N_s\,p\,A_1 .
+\label{eq:quantal}
+\end{empheq}
+这里$N_s$是两个神经元之间释放位点的数目，$p$是一个脉冲在一个位点释放一份递质的概率（就是第~\ref{sec:code}~章中的那个$p$），$A_1$是接收者对一份递质的响应，即有多少受体捕获它。因子$p$位于发送者一侧，$A_1$位于接收者一侧，而$N_s$需要两侧共同参与：新的释放位点长出来，旧的消失，这一过程持续终生。
+
+\emph{由接收者决定。}在典型的\nt{GLUT}突触中，有一种谷氨酸受体只有在两个条件同时满足时才导通电流：谷氨酸从发送者到来，并且接收者的膜已经被兴奋~\cite{Nowak1984}。这是内置于一个分子中的赫布规则——第~\ref{sec:glutcomputer}~章的符合检测器，安装在突触本身的输入端。受体一旦触发，就让钙进入接收者，钙启动权重的变化。接收者是唯一能同时看到输入和输出的地方，所以决定在这里做出。
+
+\emph{执行决定的可以是任何一侧。}研究最多的长时程增强发生在接收者一侧：新的受体嵌入膜中~\cite{Malinow2002}，树突棘长大~\cite{Matsuzaki2004}——$A_1$增大。但接收者也能改变$p$：它释放一种物质，穿过间隙逆向回到发送者——即附录~\ref{sec:othermediators}中的反向通道——于是发送者开始释放更少的递质~\cite{WilsonNicoll2001}。而权重的短时变化，即第~\ref{sec:code}~章中的耗竭和易化，是发送者根据自己近期的活动自行调整的$p$的变化。
+
+对工程师来说，权重寄存器分布在两块芯片上。学习规则由接收者执行，而结果它既可以写在自己这边，也可以通过反向通道写在发送者那边。因此，本章规则中“局部”一词指的不是连接的某一侧，而是整个连接。
+
+\section{无教师学习}
+
+突触能做的最简单的事，是在发送者和接收者同时活跃时增强：
+\begin{equation}
+\frac{\dd w}{\dd t} \;=\; \eta\,x\,y .
+\label{eq:hebb}
+\end{equation}
+这就是赫布规则~\cite{Hebb1949}。它是局部的，也不需要时钟。但它和第~\ref{sec:glutcomputer}~章中的\nt{GLUT}网络有同样的毛病：正反馈。强的权重使$y$增大，大的$y$又进一步增强权重，权重无限增长。解药是对权重施加负反馈：让权重同时按$y^2$成比例地衰减。对输入为$\mathbf x$、输出为线性$y=\mathbf w\cdot\mathbf x$的神经元，得到
+\begin{empheq}[box=\keybox]{equation}
+\frac{\dd\mathbf w}{\dd t} \;=\; \eta\,y\,\bigl(\mathbf x - y\,\mathbf w\bigr) .
+\label{eq:oja}
+\end{empheq}
+这条规则仍然是局部的：突触知道自己的输入$x_i$、输出$y$和权重$w_i$。
+
+\begin{keyblock}
+\begin{proposition}[赫布规则找到什么]
+\label{prop:oja}
+规则~\eqref{eq:oja}使权重向量收敛到单位长度，并指向输入变化最强的方向——即输入相关矩阵$C=\langle\mathbf x\mathbf x^{\mathsf T}\rangle$的主特征向量~\cite{Oja1982}。神经元学会输出最有表现力的那一个量，把它的输入压缩到其中。
+\end{proposition}
+\end{keyblock}
+
+证明。对输入求~\eqref{eq:oja}的平均：$\dd\mathbf w/\dd t=\eta\bigl(C\mathbf w-(\mathbf w^{\mathsf T}C\mathbf w)\,\mathbf w\bigr)$。不动点是$C$的单位长度特征向量。若$\mathbf w$接近特征值为$\lambda_k$的特征向量$\mathbf e_k$，沿另一个向量$\mathbf e_j$的小扰动按$e^{\eta(\lambda_j-\lambda_k)t}$增长。只有所有$\lambda_j<\lambda_k$的那个点是稳定的，也就是主向量。
+
+赫布规则还有一种看脉冲时间的变体。如果发送者的脉冲比接收者的脉冲早$s$毫秒到达，权重增加$A_+e^{-s/\tau_+}$；如果晚$s$毫秒，则减少$A_-e^{-s/\tau_-}$，$\tau_\pm$约为二十毫秒。这样的规则已在\nt{GLUT}神经元的突触上测得~\cite{BiPoo1998}。它增强那些\emph{可能是}响应原因的连接，削弱迟到的连接（图~\ref{fig:stdp}）。让同一个兴奋序列多次通过网络，网络中就会自己长出从每一环指向下一环的连接——这正是第~\ref{sec:glutcomputer}~章的链，只不过无需工程师就搭成了。
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=0.07cm,y=1.3cm]
+\draw[->,gray!70!black] (-66,0) -- (68,0) node[right,black] {\small $s$};
+\draw[->,gray!70!black] (0,-1.2) -- (0,1.35) node[above,black] {\small 权重变化};
+\draw[very thick,blue!60!black] plot[domain=0.5:60,samples=50] (\x,{exp(-\x/20)});
+\draw[very thick,red!70!black] plot[domain=-60:-0.5,samples=50] (\x,{-0.6*exp(\x/20)});
+\draw[blue!60!black,thick] (0.5,0) -- (0.5,1);
+\draw[red!70!black,thick] (-0.5,0) -- (-0.5,-0.6);
+\foreach \x in {-40,-20,20,40}{\draw[gray!60!black] (\x,-0.04) -- (\x,0.04);}
+\node[below,font=\scriptsize] at (20,-0.04) {$20\ms$};
+\node[above,font=\scriptsize] at (-20,0.04) {$-20\ms$};
+\node[align=left,font=\small,blue!60!black,anchor=west] at (22,0.95) {发送者在先：\\ 连接增强};
+\node[align=right,font=\small,red!70!black,anchor=east] at (-12,-0.95) {发送者在后：\\ 连接减弱};
+\end{tikzpicture}
+\caption{按时间的赫布规则。横轴为$s=t_{\text{接收}}-t_{\text{发送}}$，即接收者的脉冲比发送者的脉冲晚多少；$\tau_\pm=20\ms$，$A_-=0.6A_+$。宽几十毫秒的窗口与符合窗口~\eqref{eq:window}同一量级。}
+\label{fig:stdp}
+\end{figure}
+
+但本节所有的规则教会的都是\emph{常见}的东西，而不是\emph{有用}的东西。一个只知道$x$和$y$的突触，不知道这个动作带来的是果汁还是疼痛。要从结果中学习，突触需要第三个信号。
+
+\section{第三个因子}
+
+第三个信号由\nt{DOPA}带来：多巴胺神经元广播一个数——奖励预测误差$\delta$~\eqref{eq:rpe}（第~\ref{sec:neurontypes}~章）。设权重的变化与三个因子的乘积成正比：发送者的活动、接收者的活动和$\delta$。
+
+难点在于，奖励并不是在网络选择动作的时刻到来，而是在几百毫秒或几秒之后。等$\delta$到来时，乘积$xy$早已为零，突触需要记住自己曾经参与过。最简单的记忆就是我们熟悉的 RC 电路：
+\begin{empheq}[box=\keybox]{equation}
+\tau_e\,\frac{\dd e}{\dd t} \;=\; -e \;+\; x\,y ,
+\qquad
+\frac{\dd w}{\dd t} \;=\; \eta\,\delta(t)\,e(t) .
+\label{eq:threefactor}
+\end{empheq}
+量$e$称为\emph{资格迹}~\cite{Fremaux2016}。共同活动在突触中留下一个标记，它在时间$\tau_e$内消退。如果在此期间多巴胺到来，权重就按$\delta$的符号变化；如果没有，标记便消失得无影无踪（图~\ref{fig:trace}）。在\nt{GLUT}突触上测得：在共同活动之后一两秒内到来的多巴胺会把它变成连接的增强，更晚到来的则不会~\cite{Yagishita2014}。在第三个信号不是多巴胺、而是接收者自身强烈兴奋的地方，也发现了长达数秒的可塑性窗口~\cite{Bittner2017}。
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=7cm,y=1cm]
+\fill[orange!12] (0.7,-0.2) rectangle (0.8,5.2);
+% rows: x*y, delta, traces, weights
+\foreach \y/\lab in {4.4/{$x\,y$},3.1/{$\delta$},1.4/{资格迹$e$},0/{权重$w$}}{
+  \draw[gray!70!black] (0,\y) -- (1.42,\y);
+  \node[left,font=\small] at (-0.02,\y+0.3) {\lab};}
+\draw[very thick,blue!60!black] (0,4.4) -- (0,4.9) -- (0.2,4.9) -- (0.2,4.4);
+\node[right,font=\scriptsize,blue!60!black] at (0.21,4.8) {发送者和接收者同时活跃};
+\draw[very thick,orange!85!black] (0,3.1) -- (0.7,3.1) -- (0.7,3.7) -- (0.8,3.7) -- (0.8,3.1) -- (1.4,3.1);
+\node[right,font=\scriptsize,orange!85!black] at (0.81,3.6) {多巴胺到达};
+% traces, each in units of its own maximum
+\draw[very thick,blue!60!black] plot[domain=0:0.2,samples=20] (\x,{1.4+1.1*(1-exp(-\x))/(1-exp(-0.2))})
+  plot[domain=0.2:1.4,samples=60] (\x,{1.4+1.1*exp(-(\x-0.2))});
+\draw[thick,densely dashed,gray!50!black] plot[domain=0:0.2,samples=30] (\x,{1.4+1.1*(1-exp(-\x/0.05))/(1-exp(-4))})
+  plot[domain=0.2:1.4,samples=80] (\x,{1.4+1.1*exp(-(\x-0.2)/0.05)});
+\node[right,font=\scriptsize,blue!60!black] at (1.0,2.15) {$\tau_e=1\,\text{s}$};
+\node[right,font=\scriptsize,gray!40!black] at (0.3,1.65) {$\tau_e=50\ms$};
+% weights
+\draw[very thick,blue!60!black] (0,0.25) -- (0.7,0.25) -- (0.8,0.8) -- (1.4,0.8) node[right,font=\scriptsize] {$\tau_e=1\,\text{s}$：权重增大};
+\draw[thick,densely dashed,gray!50!black] (0,0.2) -- (1.4,0.2) node[right,font=\scriptsize,gray!40!black] {$\tau_e=50\ms$：不变};
+% time axis marks
+\foreach \x/\l in {0/0,0.2/0.2,0.7/0.7,1.4/1.4}{\draw[gray!60!black] (\x,-0.05) -- (\x,0.05) node[below=3pt,font=\scriptsize] {\l\,s};}
+\draw[<->,thick,gray!50!black] (0.2,5.35) -- node[above,font=\scriptsize,black] {奖励延迟$0.5\,\text{s}$} (0.7,5.35);
+\end{tikzpicture}
+\caption{按规则~\eqref{eq:threefactor}的资格迹。共同活动持续$0.2\,\text{s}$，多巴胺在其结束半秒后到达。资格迹以各自最大值的比例表示。慢的资格迹（$\tau_e=1\,\text{s}$）此刻仍然存在，快的（$\tau_e=50\ms$）早已消退。}
+\label{fig:trace}
+\end{figure}
+
+\begin{keyblock}
+\begin{proposition}[用广播信号学习]
+\label{prop:threefactor}
+规则~\eqref{eq:threefactor}只改变在最近$\tau_e$时间内参与了网络工作的那些突触，改变方向由公共信号$\delta$给定。广播信号加上局部资格迹，就得到有地址的修正。只要动作与结果之间的延迟不超过$\tau_e$，这种延迟就是允许的。
+\end{proposition}
+\end{keyblock}
+
+\section{为什么行得通：噪声即搜索}
+\label{sec:dofagradient}
+
+为什么规则~\eqref{eq:threefactor}会使结果变好？答案来自第~\ref{sec:code}~章的噪声。设神经元的输出$y=f(u)+\xi$，其中$u=\sum_jw_jx_j$，$\xi$是均值为零、方差为$\sigma^2$的随机抖动。奖励$R$取决于$y$。我们不取$x_jy$本身作为资格迹，而取它的随机部分$x_j\xi$，并取误差$\delta=R-\bar R$作为第三个因子，其中$\bar R$是期望奖励。噪声很小时$R\approx R\bigl(f(u)\bigr)+R'\,\xi$，因此
+\begin{empheq}[box=\keybox]{equation}
+\bigl\langle \delta\,\xi\,x_j \bigr\rangle \;=\; \sigma^2\,R'\,x_j \;=\; \frac{\sigma^2}{f'(u)}\,\frac{\partial\langle R\rangle}{\partial w_j} .
+\label{eq:perturbation}
+\end{empheq}
+平均步长沿着期望奖励的梯度~\cite{Williams1992}。谁也没有计算导数：网络随机地偏离了一下，多巴胺报告结果是否变好，参与的突触就向有利的方向移动（图~\ref{fig:perturbation}）。第~\ref{sec:code}~章中妨碍传送信息的噪声，在这里变成了搜索。
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=2cm,y=3cm]
+\draw[->,gray!70!black] (0,0) -- (4.2,0) node[below left,font=\small,black] {输出$y$};
+\draw[->,gray!70!black] (0,0) -- (0,1.2) node[left,font=\small,black] {奖励$R$};
+% reward hill
+\draw[very thick,blue!60!black] plot[domain=0:4,samples=60] (\x,{max(0,1-((\x-3)/2.2)^2)});
+\node[font=\scriptsize,blue!60!black,anchor=south] at (3,1.02) {最佳输出};
+% noise around f(u)
+\draw[thick,gray!60!black] plot[domain=0.6:2.4,samples=50] (\x,{0.28*exp(-((\x-1.5)/0.3)^2/2)});
+\draw[densely dashed,gray!60!black] (1.5,0) -- (1.5,0.535);
+\node[below,font=\small] at (1.5,0) {$f(u)$};
+\node[font=\scriptsize,gray!50!black] at (1.5,-0.2) {抖动$\xi$};
+% expected reward
+\draw[densely dotted,gray!60!black] (0.5,0.535) node[left,font=\scriptsize,black] {$\bar R$} -- (2.1,0.535);
+% two random deviations
+\fill[green!45!black] (2.1,0.833) circle (0.035);
+\draw[very thick,green!45!black] (2.1,0.535) -- (2.1,0.833);
+\node[font=\scriptsize,green!45!black,anchor=west,align=left] at (2.18,0.6) {$\xi>0$：更好，\\ $\delta>0$};
+\fill[red!70!black] (0.9,0.089) circle (0.035);
+\draw[very thick,red!70!black] (0.9,0.535) -- (0.9,0.089);
+\node[font=\scriptsize,red!70!black,anchor=east,align=right] at (0.83,0.27) {$\xi<0$：更差，\\ $\delta<0$};
+% resulting step
+\draw[->,very thick,orange!85!black] (1.55,0.4) -- (1.95,0.4) node[right,font=\scriptsize,black] {步长};
+\end{tikzpicture}
+\caption{噪声即搜索~\eqref{eq:perturbation}。神经元的输出在$f(u)$附近抖动。向右的随机偏离（绿色）得到的比预期多，$\delta>0$；向左的（红色）得到的少，$\delta<0$。两种情况下乘积$\delta\,\xi$都是正的，权重向右移动，即向奖励增大的方向。平均而言，步长与斜率$R'$成正比：在山顶，向两侧的偏离同样糟糕，步长相互抵消。}
+\label{fig:perturbation}
+\end{figure}
+
+\begin{keyblock}
+\begin{proposition}[无需反向导线的梯度下降]
+\label{prop:gradient}
+如果网络中存在活动的随机偏离，而广播信号等于奖励预测误差、并且在每种情境下平均为零，那么规则~\eqref{eq:threefactor}平均而言沿期望奖励的梯度改变权重。这不需要反向导线，也不需要单独的学习阶段。
+\end{proposition}
+\end{keyblock}
+
+现在就明白了，为什么多巴胺报告的不是奖励本身，而是奖励预测的\emph{误差}。如果第三个因子是奖励本身$R\ge0$，式~\eqref{eq:perturbation}中的平均不会变，但会出现两个麻烦。第一，有用部分之外会多出一项$\bar R\,\xi x_j$：平均为零，但噪声很强。第二，更糟的是，真实的突触无法把资格迹$x_jy$中的随机部分和非随机部分分开。在给定输入下，$x_jf(u)$在每次尝试中都是同一个数；如果$\delta$在这一情境下平均为零，这部分资格迹不产生任何改变，而若$\delta\ge0$，它就会一次又一次地增强网络所做的一切——对的和错的。因此$\bar R$必须是\emph{在给定情境下}的期望，而不是整个一生的平均。计算它是评论器的事，下面会讲到。
+
+我们在模型上检验了这一点。两组\nt{GLUT}神经元通过相互抑制在两个动作中选一个，如图~\ref{fig:wta}；从“开始”信号到两组的权重起初相等，由噪声决定谁获胜。动作$A$以概率$0.8$带来果汁，动作$B$以概率$0.2$带来果汁，果汁在选择后半秒到达。当$\tau_e=1\,\text{s}$、$\delta=R-\bar R$时，五百次尝试中选择$A$的比例从前一百次的$0.65$--$0.8$升到最后一百次的$0.96$--$1.0$，而权重保持在$0.85$--$1.35$范围内。当$\tau_e=50\ms$、小于奖励延迟时，网络什么也没学会：选择$A$的比例始终在一半左右。当$\delta=R$、不减去期望时，网络也开始选择$A$，但获胜者的权重在同样五百次尝试中增长了一千倍，并且还在继续增长；而在同样$\delta=R$、学习速率大十倍时，三次运行中有一次网络永久固定了自己最初的随机选择——更差的那个。
+
+\section{一根导线的代价}
+
+信号$\delta$对所有人只有一个，而它所评估的噪声是影响结果的全部$N$个神经元抖动之和。每个突触在$\delta$中看到的是自己的有用部分和$N-1$个邻居的外来噪声。为了把自己的部分分离出来，必须在许多次尝试上求平均，学习时间与$N$成正比地增长~\cite{Werfel2005}。反向传播无需付出这种代价。
+
+\begin{keyblock}
+\begin{proposition}[广播的代价]
+\label{prop:broadcastcost}
+依靠一个公共信号学习，所需时间与其噪声影响结果的神经元数目成正比地增长。这种学习适合从少数几个选项中做选择的小电路，但不适合调节数十亿个权重。
+\end{proposition}
+\end{keyblock}
+
+脑看来正是这样分工的：\nt{DOPA}神经元的输出主要通向选择动作的区域（第~\ref{sec:neurontypes}~章），而皮层庞大的\nt{GLUT}网络——绝大多数权重都在这里——主要依靠局部规则学习，不需要外部教师。过去人们把这些规则归结为赫布规则~\eqref{eq:oja}。现在越来越多的证据表明，皮层有自己的目标——\emph{预测}自己的下一个输入，于是误差就在原地计算，即预测值与实际到来值之差~\cite{Keller2018}：教师内置于网络本身。在第三个信号是接收者自身强烈兴奋的地方，长达数秒的可塑性窗口~\cite{Bittner2017}表明，突触处确实存在局部误差信号。这在多大程度上是皮层的普遍规则，还是假说。
+
+\section{误差从何而来：连续时间中的评论器}
+
+剩下的问题是，\nt{DOPA}神经元自己如何计算$\delta$。在强化学习程序中，预测误差按步$t,t+1,\dots$计算。体内没有步，所以我们在连续时间中写出它~\cite{Doya2000}。设$r(t)$为奖励流，$V(t)$为对全部未来奖励的期望，其中越远的奖励价值越低：
+\begin{equation}
+V(t) \;=\; \int_t^{\infty} e^{-(s-t)/\tau_\gamma}\,r(s)\,\dd s .
+\end{equation}
+求导得$\dd V/\dd t=V/\tau_\gamma-r$。这个等式的残差就是预测误差：
+\begin{empheq}[box=\keybox]{equation}
+\delta(t) \;=\; r(t) \;+\; \frac{\dd V}{\dd t} \;-\; \frac{V}{\tau_\gamma} .
+\label{eq:ctd}
+\end{empheq}
+常数$\tau_\gamma$是规划视野，即系数$\gamma$的连续时间对应物；按照假说，它由\nt{SERO}设定（第~\ref{sec:horizon}~节），这样~\eqref{eq:patience}就是值得等多久的规则。我们检查三种情况（图~\ref{fig:ctdcases}）。预示果汁的灯亮了：$V$跃升，$\dd V/\dd t$很大，出现一个尖峰。承诺的果汁到了：$r>0$，但期望在同一时刻耗尽，$\dd V/\dd t\approx-r$，没有尖峰。果汁没来：期望在没有奖励的情况下消失，$\dd V/\dd t<0$，出现低谷。
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=1.15cm,y=1cm]
+\foreach \col/\ttl/\lampon/\juice in {0/{意外的果汁}/0/1, 1/{承诺的果汁}/1/1, 2/{果汁没来}/1/0}{
+ \begin{scope}[xshift=\col*4.6cm]
+  \node[font=\small] at (1.5,3.55) {\ttl};
+  \foreach \yy in {2.4,1.2,0}{\draw[gray!60!black] (0,\yy) -- (3.1,\yy);}
+  % reward r
+  \ifnum\juice=1
+    \fill[green!45!black] (1.95,2.4) rectangle (2.05,2.85);
+    \pic[scale=0.55] at (2.0,3.1) {juice};
+  \else
+    \pic[scale=0.55] at (2.0,3.1) {nojuice};
+  \fi
+  % expectation V and error delta
+  \ifnum\lampon=1
+    \pic[scale=0.55] at (1.0,3.1) {lamp};
+    \draw[very thick,blue!60!black] (0,1.2) -- (1,1.2) -- (1,1.45)
+      plot[domain=1:2,samples=20] (\x,{1.2+0.25*exp((\x-1)/1.5)}) -- (2,{1.2+0.25*exp(1/1.5)}) -- (2,1.2) -- (3.1,1.2);
+    \draw[very thick,red!70!black] (0,0) -- (0.95,0) -- (0.95,0.5) -- (1.05,0.5) -- (1.05,0) -- (3.1,0);
+    \ifnum\juice=0
+      \draw[very thick,red!70!black] (1.95,0) -- (1.95,-0.45) -- (2.05,-0.45) -- (2.05,0);
+      \node[font=\scriptsize,red!70!black,anchor=west] at (2.1,-0.35) {低谷};
+    \else
+      \node[font=\scriptsize,gray!50!black,anchor=north,align=center] at (2.0,-0.08) {$r$与$V$的下降\\ 相互抵消};
+    \fi
+  \else
+    \draw[very thick,blue!60!black] (0,1.2) -- (3.1,1.2);
+    \draw[very thick,red!70!black] (0,0) -- (1.95,0) -- (1.95,0.5) -- (2.05,0.5) -- (2.05,0) -- (3.1,0);
+  \fi
+  \ifnum\col=0
+    \node[font=\small,anchor=east] at (-0.1,2.55) {$r$};
+    \node[font=\small,anchor=east] at (-0.1,1.35) {$V$};
+    \node[font=\small,anchor=east] at (-0.1,0.1) {$\delta$};
+  \fi
+ \end{scope}}
+\end{tikzpicture}
+\caption{误差~\eqref{eq:ctd}的三种情况；自上而下依次为奖励$r$、期望$V$和误差$\delta$。左：没有期望，果汁完全出乎意料。中：灯使$V$跃升，这是$\dd V/\dd t$的跃变，$\delta$的尖峰落在灯亮时。之后$V$恰好按视野的要求增长，$\delta=0$；果汁到来时，奖励$r$与$V$的下降相互抵消。右：$V$在没有奖励时下降——低谷。这就是图~\ref{fig:rpe}中的尖峰、转移和低谷，只是现在能看出它们从何而来。}
+\label{fig:ctdcases}
+\end{figure}
+
+用我们已有的电路实现~\eqref{eq:ctd}需要什么？三样东西。
+
+\emph{估计值$V$本身。}它由一组\nt{GLUT}神经元——评论器——输出，其权重用同样的规则~\eqref{eq:threefactor}、同样的$\delta$学习：若$\delta>0$，说明期望偏低，此前活跃的连接就增强。
+
+\emph{导数$\dd V/\dd t$。}任何对变化而非对电平作出响应的电路都能计算它：直接兴奋加上经\nt{GABA}中介的延迟抑制，如第~\ref{sec:gaba}~章的方向检测器；或者第~\ref{sec:code}~章的耗竭型突触~\eqref{eq:depression}。
+
+\emph{一根导线中的符号。}误差可正可负，而脉冲频率只能为正。解决办法与第~\ref{sec:serocomputer}~章中\nt{SERO}神经元的相同：\nt{DOPA}神经元是起搏器。它平稳的每秒几个脉冲表示$\delta=0$，簇放电表示$\delta>0$，停顿表示$\delta<0$。负误差的余地更小：频率不能降到零以下。真实的\nt{DOPA}神经元的低谷确实比尖峰浅~\cite{Bayer2005}。
+
+多巴胺的行为像$\delta$，这是测量结果。脑究竟如何计算$\dd V/\dd t$，还是假说。
+
+\section{行动者与评论器}
+
+把所有部分组装起来（图~\ref{fig:actorcritic}）。情境神经元兴奋各动作组，动作组通过\nt{GABA}选出获胜者（命题~\ref{prop:wta}）——这是\emph{行动者}；情境神经元同时兴奋输出$V$的评论器~\cite{SuttonBarto2018}。\nt{DOPA}神经元接收奖励$r$和$V$，计算~\eqref{eq:ctd}，并把$\delta$广播给行动者和评论器的所有突触。
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  nrn/.style={circle,draw,very thick,fill=blue!6,minimum size=0.9cm,inner sep=0pt,font=\small},
+  gab/.style={circle,draw,very thick,fill=red!10,minimum size=0.6cm,inner sep=0pt},
+  dofa/.style={circle,draw,very thick,double,double distance=1.2pt,fill=orange!15,minimum size=1.35cm,inner sep=0pt,font=\scriptsize},
+  inh/.style={-{Bar[width=7pt]},thick,red!70!black},
+  bc/.style={->,thick,densely dashed,orange!85!black}]
+\node[nrn] (S1) at (0,2.4) {$x_1$};
+\node[nrn] (S2) at (0,1.2) {$x_2$};
+\node[nrn] (S3) at (0,0) {$x_3$};
+\node[left=0.15cm,align=right,font=\small] at (-0.5,1.2) {情境};
+\node[nrn] (A) at (4,2.6) {$A$};
+\node[nrn] (B) at (4,1.0) {$B$};
+\node[gab] (G) at (5.2,1.8) {};
+\draw[->,thick] (A) -- (G); \draw[->,thick] (B) -- (G);
+\draw[inh] (G) to[bend left=35] (A);
+\draw[inh] (G) to[bend right=35] (B);
+\node[above,font=\small] at (4.6,3.05) {行动者：选择动作};
+\node[nrn] (V) at (4,-1.1) {$V$};
+\node[below,font=\small] at (4,-1.6) {评论器};
+\foreach \s in {S1,S2,S3}{\foreach \t in {A,B,V}{\draw[->,gray!60!black] (\s) -- (\t);}}
+\node[dofa] (D) at (8.0,-1.1) {\nt{DOPA}};
+\draw[->,thick] (V) -- node[above,font=\scriptsize] {$V,\ \dd V/\dd t$} (D);
+\draw[->,thick,green!45!black] (10.0,-1.1) node[right,black,font=\small] {奖励$r$} -- (D);
+\pic[scale=1.1] at (10.6,-0.5) {juice};
+\draw[bc] (D.north) -- (8.0,4.0) -- node[above,font=\small,black] {$\delta$——送往行动者和评论器的所有突触} (2.2,4.0) -- (2.2,3.0);
+\draw[bc] (D.south) -- (8.0,-2.4) -- (2.2,-2.4) -- (2.2,-0.6);
+\end{tikzpicture}
+\caption{学习选择动作的网络。灰色箭头是权重可变的\nt{GLUT}突触；红色小圆是\nt{GABA}神经元；双圆圈是按~\eqref{eq:ctd}计算$\delta$的\nt{DOPA}起搏器；虚线箭头是$\delta$的广播。}
+\label{fig:actorcritic}
+\end{figure}
+
+递质作用的符号由接收者选择（命题~\ref{prop:receptor}），在动作选择区域，一部分神经元带有一个家族的多巴胺受体，另一部分带有另一个家族的。在脑片实验中，多巴胺与共同活动一起使前者的突触增强，使后者的突触减弱~\cite{Shen2008}；在模型中，这意味着对后者而言，\eqref{eq:threefactor}中$\delta$的符号是反的。前者学习\emph{值得做}什么，后者学习\emph{不值得做}什么。
+
+\section{小结}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{2.6cm}>{\raggedright}p{2.7cm}>{\raggedright}p{3.1cm}>{\raggedright\arraybackslash}p{5.0cm}}
+\toprule
+规则 & 突触知道什么 & 网络学到什么 & 已知情况 \\
+\midrule
+按频率的赫布规则~\eqref{eq:oja} & $x$、$y$、自身权重 & 压缩输入：主方向 & 共同活动时的增强已测得；限制权重的机制仍在研究中 \\
+按时间的赫布规则 & $\sim20\ms$内$x$和$y$脉冲的先后次序 & 因果联系、序列 & 已在\nt{GLUT}突触上测得 \\
+三因子规则~\eqref{eq:threefactor} & $x$、$y$、资格迹$e$、公共信号$\delta$ & 带来奖励的动作 & 活动后数秒内多巴胺的作用已测得；作为学习选择的主要机制，是有充分依据的假说 \\
+评论器~\eqref{eq:ctd} & 同上 & 奖励期望$V$ & 多巴胺与$\delta$的相似已测得；计算$\dd V/\dd t$的电路是假说 \\
+误差反向传播 & 每个权重各自的修正 & 一切，但需要反向导线和时钟节拍 & 在脑中未发现这种形式；人们在寻找它的近似 \\
+\bottomrule
+\end{tabular}
+\caption{由\nt{GLUT}、\nt{GABA}和\nt{DOPA}神经元构成的网络中的学习规则。}
+\label{tab:learning}
+\end{table}
+
+学习规则汇总于表~\ref{tab:learning}。\nt{GLUT}携带数据，\nt{GABA}控制数据流，而\nt{DOPA}决定网络中保留哪些改变。
+
+\section{习题}
+
+\begin{exercise}[\lvlA]
+\label{ex:06:1}
+\emph{资格迹能存活多久。}共同活动$xy=1$持续$T_a=0.2\,\text{s}$，从$e=0$开始，多巴胺在其结束后$d=0.5\,\text{s}$到达。（a）~此刻$\tau_e=1\,\text{s}$时的资格迹~\eqref{eq:threefactor}是$\tau_e=50\ms$时的多少倍？（b）~$\tau_e$为多少时它最大？
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:06:2}
+\emph{赫布规则的漂移。}发送者和接收者输出独立的泊松脉冲流，各为每秒$10$个脉冲，每一对脉冲都按图~\ref{fig:stdp}的窗口改变权重，$\tau_\pm=20\ms$，$A_-=0.6A_+$。完全随机的活动持续一小时，权重增长多少个$A_+$？$\tau_-$为多少时漂移消失？
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:06:3}
+\emph{是相关，而不是协方差。}命题~\ref{prop:oja}的规则找到$C=\langle\mathbf x\mathbf x^{\mathsf T}\rangle$的主特征向量。频率为正：$\mathbf x=\mathbf m+\mathbf n$，$\mathbf m=(\mu,0)$，噪声协方差为$\operatorname{diag}(s_1^2,s_2^2)$。在什么条件下神经元会学到$\mathbf e_1$？当$\mu=1$、$s_1=0.1$、$s_2=0.5$时它学到什么？
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:06:4}
+\emph{尖峰中的视野。}灯在不可预测的时刻亮起，大小为$R$的果汁在$L=1\,\text{s}$后到达。证明对于按~\eqref{eq:ctd}学到的期望，灯与果汁之间$\delta\equiv0$，并求$\tau_\gamma=2\,\text{s}$和$\tau_\gamma=4\,\text{s}$时灯亮尖峰的面积。
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:06:5}
+\emph{广播的代价从何而来。}$N$个神经元独立抖动，$\xi_i\sim\mathcal N(0,\sigma^2)$，误差$\delta=a\sum_i\xi_i$，突触$j$用$\delta\,\xi_jx_j$估计梯度。求单次尝试的信噪比。单个神经元用$100$次、每次$5\,\text{s}$的尝试学会：$N=10^4$和$N=10^{10}$时学习需要多久？
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:06:6}
+\emph{设计：计算$\delta$的电路。}\nt{DOPA}神经元接收$r$、权重为$k_1$的$V$，以及以$\tau_d$平滑、权重为$-k_2$的$V$的副本。（a）~选取$k_1$、$k_2$，使对慢变的$V$输出为~\eqref{eq:ctd}。（b）~当$V=V_0e^{t/\tau_\gamma}$时，真实的$\delta=0$。若$\tau_\gamma=2\,\text{s}$，$\tau_d$为多少时电路的虚假误差不超过$V/\tau_\gamma$的$5\,\%$？
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:06:7}
+\emph{仿真：奖励延迟的极限。}在\texttt{models/\allowbreak dofa\_learning.py}副本的\texttt{run()}中加入奖励延迟$d$。求$d=0.5\,\text{s}$、$\tau_e=0.05$、$0.2$、$1$、$4\,\text{s}$时，以及$\tau_e=1\,\text{s}$、$d=3\,\text{s}$时，$500$次尝试中最后一百次选择$A$的比例。资格迹存活到奖励时刻的比例（习题~\ref{ex:06:1}）为多少时，学习消失？
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:06:8}
+\emph{能否绕过广播的代价。}$N$个神经元：$y_i=w_i+\xi_i$，$\xi_i\sim\mathcal N(0,\sigma^2)$，奖励$R=-\sum_i(y_i-w_i^*)^2$，规则$\Delta w_i=\eta\,(R-\langle R\rangle)\,\xi_i$。在最优$\eta$下，误差$\sum_i(w_i-w_i^*)^2$缩小为$1/e$需要多少次尝试？如果$N$个神经元中只有$m$个随机选出的神经元抖动呢？稀疏搜索有帮助吗？
+\end{exercise}

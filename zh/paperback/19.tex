@@ -1,0 +1,47 @@
+\chapter{需要多少个输入}
+% 完整版：chapters/19_dendrites.tex
+
+神经元有分叉的输入突起——树突。有些神经元的树突是一整棵带有成千上万个接点的树，另一些只有一两根分枝，或者干脆没有。对工程师来说，输入的数目是电路的一个参数，它是按任务挑选的。
+
+\section*{从零到十万}
+
+触觉和痛觉传感器根本没有树突：导线直接从皮肤延伸到脊髓，传感器就位于导线的末端。这是一条远端带传感器的线路。
+
+\pencilfig{19}{\pencilart{19}}{输入多——加法器；一个巨大的输入——又快又准的中继器。}
+
+嗅觉神经元，以及从眼睛和耳朵的传感器传递信号的神经元，都只有一根树突。一个输入，一个输出：这是跟随器，也就是缓冲器。
+
+声音方向检测器有两根树突，朝向相反，每只耳朵各一根。把两个输入分放在不同的分枝上，神经元的“与”就更严格：两份电流挤在同一根分枝里会互相干扰。
+
+动作学习电路里的小神经元大约有四根短树突，每根抓住一个输入。这样的神经元有几百亿个，每个只把四个信号加起来。但它们合在一起能把输入展开成几百万种组合，而一个拥有十万个输入的大输出神经元从中挑出需要的那些。
+
+最后，拥有巨大树冠和成千上万个输入的神经元，是加法器和分类器，它们的各个分枝几乎像一个个独立的小电路那样工作。
+
+\section*{为什么这样}
+
+一切取决于充电。一个输入不多的小神经元，从一个大连接那里不到一毫秒就能充满电：这样的神经元时间精确，能可靠地把信号传下去。大树冠靠一个连接永远充不满——电荷早就漏光了。它需要几十个同时到达的信号，好处是它能把这些信号相加和比较。输入少、连接大——为了精确的时间。输入多——为了计数。
+
+\pencilfig{128}{%
+% charging: a small neuron reaches threshold from one large synapse at once; a big tree barely moves
+% from one input and needs many inputs arriving together
+\foreach \dx/\t in {0/{输入少}, 4.3/{大树冠}}{
+  \draw[pen] (\dx,0) -- (\dx+3.6,0);
+  \draw[pcGray, densely dashed, line width=0.5pt] (\dx,0.9) -- (\dx+3.6,0.9);
+  \node[font=\small\itshape, text=pcGray, anchor=south] at (\dx+1.8,1.75) {\t};}
+\node[lbl, anchor=east] at (-0.05,0.9) {阈值};
+% small neuron
+\draw[pcBlue, line width=2pt] (0.6,-0.15) -- (0.6,-0.6);
+\draw[penlite=pcBlue] (0,0) -- (0.6,0) -- plot[domain=0.6:0.8, samples=12] (\x,{1.3*(1-exp(-(\x-0.6)/0.18))}) -- (0.8,1.6) -- (0.84,0) -- (3.5,0);
+\node[lbl, text=pcRed, anchor=west] at (0.85,1.45) {立刻咔嗒};
+\node[lbl, text=pcBlue, anchor=north] at (0.6,-0.62) {一个大输入};
+% big tree
+\draw[pcBlue, line width=0.6pt] (4.8,-0.15) -- (4.8,-0.45);
+\foreach \s in {6.15,6.2,6.25,6.3,6.35,6.4,6.45,6.5}{\draw[pcBlue, line width=0.6pt] (\s,-0.15) -- (\s,-0.45);}
+\draw[penlite=pcBlue] (4.3,0) -- (4.8,0) -- plot[domain=4.8:6.15, samples=20] (\x,{0.16*((\x-4.8)/0.15)*exp(1-(\x-4.8)/0.15)}) -- plot[domain=6.15:6.62, samples=14] (\x,{1.25*(1-exp(-(\x-6.15)/0.4))}) -- (6.62,1.6) -- (6.66,0) -- (7.9,0);
+\node[lbl, anchor=south] at (4.95,0.2) {几乎不动};
+\node[lbl, text=pcBlue, anchor=north] at (6.33,-0.47) {许多同时到};
+}{小神经元从一个大连接那里不到一毫秒就充满电，立刻咔嗒一声。大树冠靠一个输入几乎纹丝不动：它需要几十个同时到达的信号。}
+
+这样，我们就有了神经元的第三种分类：按物质，按器件，按输入数目。每一种都从新的角度看同一台机器。
+
+\fullversion{19}

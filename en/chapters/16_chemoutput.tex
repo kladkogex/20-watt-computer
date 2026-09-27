@@ -1,0 +1,175 @@
+\chapter{The Second Output: How the Brain Controls Body Chemistry}
+\chaptermark{The Chemical Output}
+\label{sec:chemoutput}
+
+\section{The fast and the slow outputs}
+
+In Chapter~\ref{sec:muscles} we saw the machine's fast output: the muscles. But it also has a second, slow one. The brain keeps body temperature, heart rate, and the amounts of water and sugar within the right limits, and it prepares the body for running or for sleep. To do this it does not move joints; it releases chemical signals. There are two routes. The first is the nerves that run directly to the internal organs: the heart, blood vessels, gut, and glands. The second is the blood: some neurons and glands release their substance not into the cleft to a neighbor but straight into the bloodstream.
+
+The blood is the most broadcast bus of any we have met in this book. The broadcast channels of Chapters~\ref{sec:serocomputer}--\ref{sec:acet} sent a signal to large regions of the brain; the blood sends it to every cell of the body. Blood circulates through the body in about a minute, so a message reaches everyone within tens of seconds and lasts minutes to hours, until the substance is broken down. Such a broadcast has no address at all. As in Proposition~\ref{prop:receptor}, the receiver chooses the meaning of the message: only cells that have a receptor for the substance respond.
+
+\section{Gas and brake: two wires to the organs}
+
+The best example is the heart. The heart has its own pacemaker, like the \nt{SERO} neuron of Chapter~\ref{sec:serocomputer}: it sets the rhythm by itself, and with all nerves cut the heart beats about a hundred times a minute. The brain does not generate the rhythm; it only adjusts it, and it does so over two wires of opposite sign (Fig.~\ref{fig:gasbrake}). One carries \nt{NORA}: this is the \emph{gas}, which speeds the rhythm up. The other carries \nt{ACET}: this is the \emph{brake}, which slows it down. Roughly,
+\begin{empheq}[box=\keybox]{equation}
+f \;\approx\; f_0 \;+\; a_S\,S \;-\; a_P\,P ,
+\label{eq:gasbrake}
+\end{empheq}
+where $f_0\approx100$ beats per minute is the pacemaker's intrinsic rhythm, and $S$ and $P$ are the activity of the gas and the brake. At rest the brake is on, and the heart usually beats about sixty to seventy times a minute; under load the brake is released and the gas is pressed.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  blk/.style={draw,very thick,rounded corners=2pt,align=center,font=\small},
+  pace/.style={circle,draw,very thick,double,double distance=1.2pt,minimum size=1.8cm,inner sep=0pt,font=\scriptsize,fill=red!8,align=center},
+  inh/.style={-{Bar[width=7pt]},thick,red!70!black}]
+\node[blk,fill=blue!5,text width=1.6cm] (B) at (0,0) {brain\\command};
+\node[pace] (H) at (6.2,0) {pace-\\maker};
+\draw[->,very thick,orange!85!black] (B.north east) to[bend left=20] node[above,font=\scriptsize,black,align=center] {\nt{NORA}: gas, seconds} (H.north west);
+\draw[inh,very thick,blue!60!black] (B.south east) to[bend right=20] node[below,font=\scriptsize,black,align=center] {\nt{ACET}: brake, fractions of a second} (H.south west);
+\draw[->,very thick] (H) -- (8.4,0) node[right,font=\small] {rate $f$};
+\node[blk,fill=orange!10,text width=1.6cm] (A) at (0,-2.6) {\nt{ADRE}\\into blood};
+\draw[->,thick,orange!85!black] (B) -- (A);
+\foreach \y/\lab in {-2.0/{heart},-2.6/{vessels},-3.2/{liver, muscles}}{
+  \draw[->,thick,densely dashed,orange!85!black] (A.east) -- (4.3,\y) node[right,font=\scriptsize,black] {\lab};}
+\end{tikzpicture}
+\caption{Two wires of opposite sign to the heart's pacemaker: the \nt{NORA} gas is slow, the \nt{ACET} brake is fast. Below, the same gas over the broadcast bus: \nt{ADRE} cells release adrenaline into the blood, and every organ with a matching receptor receives the signal (dashed arrows).}
+\label{fig:gasbrake}
+\end{figure}
+
+This is the two-wire code of Chapter~\ref{sec:glutcomputer} and the muscle pair of Chapter~\ref{sec:muscles}, except that now the wires control not a joint but the tempo of a pacemaker. And the wires have different speeds. Both act as low-pass filters, but the brake passes changes several times faster than the gas~\cite{Berger1989}. \nt{ACET} takes a short path: the protein bound to the receptor opens a potassium channel by itself, with no second messenger inside the cell~\cite{Logothetis1987gbg}, whereas \nt{NORA} acts through a chain of reactions inside the cell. An engineer will recognize the trick of two actuators of different speed: the fast one does precise instant trimming, the slow one makes large, lasting changes.
+
+This is also where \nt{ADRE} finds its role; Table~\ref{tab:types} said that its role in the brain is unclear. Outside the brain it is clear. Some cells of the gas pathway do not send a wire to an organ but release adrenaline straight into the blood. It is the same gas, but on the broadcast bus: within tens of seconds it reaches the heart, vessels, liver, and muscles all at once and lasts for minutes. The addressed \nt{NORA} gas trims one organ; the broadcast \nt{ADRE} gas switches the whole body into running mode.
+
+\section{A cascade with feedback}
+
+Many hormones are released not by a single gland but by a cascade. A small group of neurons at the base of the brain releases a first signal into the blood; it makes an intermediate gland release a second one; that one makes the final gland release the hormone that actually acts on the body. And the final hormone comes back to the first stages and inhibits them. The result is a three-stage amplifier enclosed in negative feedback: a level regulator, like the \nt{SERO} system in Eq.~\eqref{eq:feedback}.
+
+We describe each stage as an RC circuit with time constant $\tau$ and gain $g$, and the feedback by a coefficient $k$:
+\begin{equation}
+\tau\,\frac{\dd x_1}{\dd t} = -x_1 + g\bigl[u - k\,x_3\bigr]_+ ,\qquad
+\tau\,\frac{\dd x_2}{\dd t} = -x_2 + g\,x_1 ,\qquad
+\tau\,\frac{\dd x_3}{\dd t} = -x_3 + g\,x_2 ,
+\label{eq:cascade}
+\end{equation}
+where $u$ is the brain's command and $x_3$ is the level of the final hormone. The loop gain is $K=g^3k$. At equilibrium $x_3=g^3u/(1+K)$, and, as with any feedback regulator, a large loop gain makes the level insensitive to the spread in the stage gains. But each stage shifts the phase: at the frequency $\omega=\sqrt3/\tau$ the three identical stages together give a half-turn shift and an attenuation by a factor of eight. Hence the classical result of control theory:
+\begin{empheq}[box=\keybox]{equation}
+K \;<\; 8 ,
+\label{eq:cascadestable}
+\end{empheq}
+otherwise the regulator starts to oscillate, with a period of about $2\pi\tau/\sqrt3\approx3.6\,\tau$.
+
+\begin{keyblock}
+\begin{proposition}[Accuracy versus stability]
+\label{prop:cascade}
+For a three-stage cascade with proportional feedback the level error is $1/(1+K)$, and the cascade is stable only for $K<8$. Such a regulator therefore cannot hold the level more accurately than about ten percent; trying to raise the gain turns it into an oscillator.
+\end{proposition}
+\end{keyblock}
+
+We checked this on model~\eqref{eq:cascade} (Fig.~\ref{fig:cascade}). At $K=4$ the level oscillates a little after switch-on and settles. At $K=7$ it also settles, but slowly. At $K=12$ the oscillations neither decay nor grow without bound: a stage cannot output a negative signal, and the cascade enters steady pulsations between $0.83$ and $1.24$ of the mean level with a period of $3.7$--$3.9\,\tau$.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=0.3cm,y=1.2cm]
+\draw[->,gray!70!black] (0,0) -- (41.5,0) node[right,font=\small,black] {$t/\tau$};
+\draw[->,gray!70!black] (0,0) -- (0,2.8) node[left,font=\small,black] {$x_3/x_3^*$};
+\foreach \t in {0,10,20,30,40}{\draw[gray!60!black] (\t,-0.05) -- (\t,0.05); \node[below,font=\scriptsize] at (\t,0) {\t};}
+\foreach \f in {1,2}{\draw[gray!60!black] (-0.3,\f) -- (0.3,\f); \node[left,font=\scriptsize] at (0,\f) {\f};}
+\draw[densely dashed,gray!60!black] (0,1) -- (40,1);
+\draw[thick,blue!60!black] plot file {figures/cascade_K4.dat};
+\draw[thick,red!70!black] plot file {figures/cascade_K12.dat};
+\node[font=\scriptsize,blue!60!black,anchor=west] at (16,0.55) {$K=4$: settles};
+\node[font=\scriptsize,red!70!black,anchor=west] at (16,1.75) {$K=12$: pulsates};
+\end{tikzpicture}
+\caption{A three-stage cascade with feedback, Eq.~\eqref{eq:cascade}; the level of the final hormone as a fraction of its equilibrium value $x_3^*$. With a loop gain below eight the level settles; above eight the cascade generates steady pulsations on its own.}
+\label{fig:cascade}
+\end{figure}
+
+Real cascade hormones do come out in pulses: the level of the stress hormone, for example, oscillates with a period of about an hour. According to one hypothesis, these pulsations are generated by the delayed feedback between the stages itself, and no separate rhythm generator is needed~\cite{Walker2010}. This is the same cause of oscillation as in the \nt{GLUT}--\nt{GABA} loop of Proposition~\ref{prop:ei} and in the muscle stretch loop of condition~\eqref{eq:delaystable}: negative feedback that comes late.
+
+\section{The pulse code of hormones}
+
+Pulses are not only a side effect; they can also be a code. The neurons that control reproduction release their signal into the blood in short pulses about once an hour. If the receiving gland is given the same signal continuously instead of in pulses, it does not work at full strength as it does with pulses; it falls silent. If hourly pulses are resumed, it works again~\cite{Belchetz1978}. So the receiver reads not the level but the \emph{frequency} of the pulses.
+
+For an engineer there is no mystery here. A receptor that tires under prolonged exposure and stops responding is a high-pass filter, like the depressing synapse~\eqref{eq:depression} of Chapter~\ref{sec:code}. It suppresses a constant signal and passes changes. Such a receiver can be told anything only through pulses, and the information moves from the level into the frequency and shape of the pulses. Moreover, different pulse frequencies act differently on different cells of the same gland, so one chemical line can carry more than one quantity, just as the single \nt{DOPA} wire of Chapter~\ref{sec:dofaalt} carried a fast and a slow component.
+
+\section{The daily rhythm: a slow mode generator}
+
+The slowest rhythm of the body is the daily one. It is generated by delayed negative feedback inside cells: genes produce proteins that, with a delay of several hours, suppress their own production~\cite{TakahashiJS2017}. Delayed negative feedback once again, the fourth time in this book, and once again a rhythm, this time with a period of about a day. The master generator is a small group of tens of thousands of neurons at the base of the brain, whose rhythm synchronizes the other cells of the body.
+
+In humans the intrinsic period of this generator is not exactly a day but $24.18$ hours on average~\cite{Czeisler1999}. Every day it is adjusted by light arriving from the sensors of the eye (Chapter~\ref{sec:sensors}). To an electronics engineer this is a \emph{phase-locked loop}: an oscillator with its own frequency $\omega_0$ locks to an external signal of frequency $\omega$, and the phase difference $\varphi$ obeys
+\begin{empheq}[box=\keybox]{equation}
+\frac{\dd\varphi}{\dd t} \;=\; (\omega-\omega_0) \;-\; K_\varphi\,\sin\varphi .
+\label{eq:pll}
+\end{empheq}
+Lock holds if $|\omega-\omega_0|<K_\varphi$. A generator with a period of $24.18$ hours must shift by about eleven minutes every day; morning light is usually enough for such a shift. In the polar night, or in a cave without light, there is no locking, and the rhythm drifts to its own period.
+
+The daily generator is not a computer's clock generator. It does not count computation steps and does not synchronize neuron spikes. It switches \emph{modes}: sleep and wakefulness, hormone levels, body temperature, readiness to eat. It is a slow broadcast register of the same kind as the registers of Chapters~\ref{sec:serocomputer}--\ref{sec:acet}, except that its value changes on a schedule set to the sun.
+
+\begin{keyblock}
+\begin{proposition}[The chemical output]
+\label{prop:chemoutput}
+The machine's slow output is built from the same parts as the fast one. The organs receive two wires of opposite sign and different speed, the \nt{NORA} gas and the \nt{ACET} brake, while the whole organism at once receives broadcast signals through the blood, including \nt{ADRE} adrenaline. Hormone levels are held by cascades with negative feedback, whose accuracy is limited by stability; some hormones are coded by pulse frequency; the daily rhythm is a slow oscillator phase-locked to light. The layout of the pathways and the experiments with pulses and with the period are measured; the explanation of cascade pulsations by the feedback itself is a hypothesis.
+\end{proposition}
+\end{keyblock}
+
+\section{Summary}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{3.1cm}>{\raggedright}p{4.8cm}>{\raggedright\arraybackslash}p{4.9cm}}
+\toprule
+What the chemical output does & How & What is known \\
+\midrule
+trims the organs & \nt{NORA} gas and \nt{ACET} brake~\eqref{eq:gasbrake} & measured; the brake is faster than the gas \\
+switches the whole body into running mode & \nt{ADRE} adrenaline into the blood & measured \\
+holds hormone levels & cascade with feedback, $K<8$~\eqref{eq:cascadestable} & cascades and feedback measured; pulsations from the loop itself are a hypothesis \\
+transmits by pulse frequency & a tiring receptor as a high-pass filter & dependence on pulses measured \\
+switches modes over the day & oscillator phase-locked to light~\eqref{eq:pll} & period and light locking measured \\
+\bottomrule
+\end{tabular}
+\caption{How the machine controls body chemistry.}
+\label{tab:chemoutput}
+\end{table}
+
+The machine has two outputs (Table~\ref{tab:chemoutput}). The fast one is the muscles: milliseconds, addressed, to each joint. The slow one is body chemistry: seconds, minutes, and days, over two wires to the organs and through the blood to everyone at once. Both outputs use the same parts (two wires of opposite sign, pacemakers, feedback and its delay), and they are the same parts from which the machine is built inside.
+
+\section{Exercises}
+
+\begin{exercise}[\lvlA]
+\label{ex:16:1}
+\emph{Blood as a filter.} A hormone is cleared from the blood with half-life $t_{1/2}=10$~min and released in short pulses every $T=60$~min. By what factor does the peak concentration exceed the trough, and by what factor is the fundamental harmonic of the pulses attenuated? For what $t_{1/2}$ is the peak only twice the trough?
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:16:2}
+\emph{Daily locking.} The intrinsic period of generator~\eqref{eq:pll} is $24.18$~h, and light shifts the phase by at most an hour per day: $K_\varphi=2\pi/24$~rad/day. Find the steady phase difference $\varphi^*$ in minutes and the relaxation time. How many days after a $\pm6$~h jump of the external signal until the mismatch is below an hour?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:16:3}
+\emph{Accuracy versus stability.} The linearized cascade~\eqref{eq:cascade} is lengthened to $n$ identical stages. Find the critical gain $K_c(n)$ and the smallest achievable error $1/(1+K_c)$ for $n=3$ and $n=6$. What does this error tend to as $n\to\infty$?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:16:4}
+\emph{Gas and brake.} In~\eqref{eq:gasbrake} the gas and brake contributions are outputs of RC circuits with $\tau_S=2$~s and $\tau_P=0.4$~s, with commands of at most $80$ and $60$ beats per minute. The rhythm is $f_0=100$; at rest the brake is $35$, the gas $0$, and $f=65$. How fast can $f=120$ be reached? And if the brake is kept on and only the gas is used?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:16:5}
+\emph{Simulation: a cascade with delay.} Add a delay $d$ to the feedback of the function \texttt{cascade} from \texttt{models/\allowbreak chem\_models.py} (copy it; do not run the file): the first stage sees $x_3(t-d)$. Find $K_c$ and the period at the boundary for $d/\tau=0$, $0.5$, $1$, $2$, and check by simulation at $0.9K_c$ and $1.1K_c$.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:16:6}
+\emph{A receiver that reads pulses.} The receptor tires: $y=[c-a]_+$, $\tau_a\,\dd a/\dd t=c-a$, $\tau_a=30$~min. The hormone arrives in $6$-min pulses with period $T$ at the same mean dose $\bar c$. Find the mean response for $T=15$, $60$, $120$~min and $T\to\infty$. What is it at a constant concentration $\bar c$?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:16:7}
+\emph{Oscillator or feedback?} Propose an experiment that distinguishes pulsations generated by the delayed feedback of cascade~\eqref{eq:cascade} from a separate pacemaker. Can the hypotheses be told apart by the shift of the period if $K$ can be changed only by a factor of one and a half and the period is measured to $5\%$?
+\end{exercise}

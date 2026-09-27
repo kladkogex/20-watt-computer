@@ -1,0 +1,63 @@
+\section{Dopamine on a flash of light}
+\label{sec:dishdopamine}
+
+The only direct experiment we know of in which a culture was given dopamine as a teacher was run on a platform of organoids that researchers access remotely~\cite{Jordan2024}. Dopamine in a light-sensitive ``cage'' was added to the fluid bathing the organoids: the bound molecule does not act on receptors. The concentration of caged dopamine is $1$~mM. When the network is to be rewarded, it is illuminated with ultraviolet light: the cage breaks apart, and dopamine is released into the volume.
+
+The loop works like this. The same stimulus is delivered over and over; if it evoked more spikes than before, a flash is triggered and dopamine is released. Over $240$ repetitions the number of evoked spikes grew overall. The authors themselves write that a single experiment of this kind cannot show that the growth was caused by dopamine~\cite{Jordan2024}.
+
+For an engineer this is a first attempt to build the three-factor rule~\eqref{eq:threefactor} in a dish: sender and receiver activity leaves an eligibility trace, and a common signal decides whether to lock in the change. But here the signal can only be positive: reward is either present or absent, and the setup cannot deliver a negative error $\delta<0$. Dopamine also spreads out and is cleared slowly, like the concentration in~\eqref{eq:lowpass}, so frequent flashes may simply raise its overall level. To tell learning apart from this, two controls are needed: the same number of flashes at random times unrelated to the network's response, and the same flashes without caged dopamine. A test after rest is also needed: does the change persist once the dopamine is gone?
+
+\section{Dopamine teaches silicon}
+\label{sec:biohybrid}
+
+In the reverse experiment, living cells teach electronics~\cite{Keene2020}. Dopamine-releasing cells are grown in a microchannel above an organic neuromorphic element, a transistor whose channel conductance plays the role of a synaptic weight. Dopamine released by the cells is oxidized at the element's electrode, and this changes the conductance. The device also mimics the mechanism that clears transmitter from the cleft, so the weight can not only be changed for a long time but also reset.
+
+In circuit terms this is a leaky integrator with a chemical input: the weight accumulates the dopamine flux, and ``clearance'' sets how fast it is forgotten, the same RC circuit as in~\eqref{eq:lowpass}. What matters here is the direction of the link. The probe of chapter~\ref{sec:debugging} cannot see the broadcast registers because they are chemical. This element reads exactly a chemical register and turns it into an electrical weight. For brain--computer interfaces this is a path toward a sensor that hears not only the data bus but also the control registers.
+
+\section{Organoids with their own dopamine neurons}
+\label{sec:midbrainorg}
+
+Organoids resembling the brain region that houses the \nt{DOPA} neurons can be grown from human stem cells. They contain working dopamine neurons that release dopamine~\cite{Jo2016}. Such organoids are grown mainly to study disease. We found no experiments in which their dopamine served as a teacher for another network.
+
+For a machine made of living neurons this is the missing part. The bench of chapter~\ref{sec:livingmachine} is a data bus and flow control without control registers; here a source of the broadcast signal already exists. What is missing is a critic: a network that would compute the prediction error~\eqref{eq:ctd} and drive these neurons. Connecting a cortical organoid to such an organoid so that dopamine is released on error is an open problem, and for now it is a hypothesis, not an experiment.
+
+\section{An organoid balances a pole without dopamine}
+\label{sec:cartpole}
+
+The most complete of the recent experiments does without dopamine altogether~\cite{Robbins2026}. Mouse cortical organoids were connected in a closed loop to the cart-pole task: organoid activity moves the cart, and the pole position is fed back by stimulation. Between trials the organoid receives short high-frequency training stimuli. Which ones is chosen by a reinforcement-learning program.
+
+The results are measured:
+\begin{itemize}
+\item in most organoids, training signals chosen by the program gave better performance than randomly chosen signals or no signal;
+\item after $45$ minutes of rest the improvement did not persist;
+\item blocking both types of glutamate receptors, AMPA and NMDA, abolished the improvement.
+\end{itemize}
+
+The last point says where the learned change lives: in \nt{GLUT} synapses, and through the receptor that in section~\ref{sec:weightstore} works as a detector of input--output coincidence. The second point shows what is missing: there is a fast change but no consolidation, like the fast learner of chapter~\ref{sec:motorlearning} without the slow one. And the teacher's role has changed: the engineer choosing a current pattern has been replaced by a program, but the teacher still stands outside the dish.
+
+Among earlier experiments on training cultures on electrode arrays we likewise found none that used dopamine: the training signal was always electrical stimulation.
+
+\section{Who teaches the culture}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{2.7cm}>{\raggedright}p{2.5cm}>{\raggedright}p{3.2cm}>{\raggedright\arraybackslash}p{4.4cm}}
+\toprule
+Experiment & Who teaches & Training signal & What is known \\
+\midrule
+stimulation stops at the desired response & engineer & end of stimulation & the response is locked in: measured \\
+DishBrain (ch.~\ref{sec:dishbrain}) & engineer & predictable or random current & significant growth of rallies within a session only with full feedback, a smaller effect with silence: measured; not robust from session to session; the cause is debated \\
+cart-pole & reinforcement-learning program & high-frequency stimuli chosen by the program & better than random, but not retained after rest: measured \\
+dopamine on a flash & rule ``more spikes means reward'' & dopamine released by light & growth in spikes: observation; role of dopamine not proven \\
+biohybrid synapse & living cells & dopamine from cells & long-lasting change and reset of the element's weight: measured \\
+organoids with \nt{DOPA} neurons & --- & --- & a dopamine source exists; not used as a teacher \\
+\bottomrule
+\end{tabular}
+\caption{Who teaches living neurons on a chip, and with what.}
+\label{tab:dishteachers}
+\end{table}
+
+In every experiment where the culture itself learns, the teacher is still outside (table~\ref{tab:dishteachers}): an engineer, a program, or a rule set by an engineer. Dopamine has entered the dish only once, and its role remains to be proven. Building a real broadcast channel in a dish, with a critic, an error, and an eligibility trace as in chapter~\ref{sec:dofa}, is the next step, and no one has taken it yet.

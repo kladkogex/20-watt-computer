@@ -1,0 +1,178 @@
+\chapter{机器如何学会运动}
+\chaptermark{机器如何学会运动}
+\label{sec:motorlearning}
+
+\section{三位老师}
+
+在第~\ref{sec:muscles}~章中，我们看到了机器如何驱动肌肉，并停在一个假说上：快速而精确的动作需要身体的内部模型，由它预测指令的结果~\cite{WolpertGhahramani2000}。这个模型从哪里来？它必须学出来，而且学法与我们迄今为止的学习方式不同。
+
+本书已经出现过两位老师。第一位是\emph{没有老师}：赫布规则（第~\ref{sec:dofa}~章）加强经常一起出现的东西，并压缩输入。第二位是\emph{奖励}：\nt{DOPA}向所有神经元广播同一个数，“比预期好还是差”。运动需要第三位老师——\emph{误差}。手够杯子时向左偏了两厘米：这不是“更差”，而是一个向量，它告诉每个输出错在哪个方向、错了多少。工程师会称之为有监督学习。
+
+第二位老师与第三位老师的区别，就是所有输出共用一根导线与每个输出各有一根导线的区别。在命题~\ref{prop:broadcastcost}中，按一个公共数学习时，每多一个其噪声影响结果的神经元，学习就更慢。而如果每个输出$i$都得到自己的误差$e_i$，就可以按最简单的规则改变权重：
+\begin{empheq}[box=\keybox]{equation}
+\frac{\dd w_{ij}}{\dd t} \;=\; -\eta\,e_i(t)\,x_j(t) .
+\label{eq:lms}
+\end{empheq}
+这是最小均方规则，在自适应滤波器技术中早已为人熟知~\cite{WidrowHoff1960}：权重的变化与其输入和其输出误差的乘积成正比，平均而言沿误差平方的梯度下降。不需要第~\ref{sec:dofa}~章那种靠噪声的搜索：修正的方向直接沿误差导线送来。速度也不随输出数目下降，因为别的输出的误差不会到达这个突触。
+
+\begin{keyblock}
+\begin{proposition}[三位老师]
+\label{prop:teachers}
+赫布规则无需老师，教会的是常见的东西；\nt{DOPA}信号用全网一个数教会的是有利的东西，而且每多一个神经元就更慢；通往每个输出的误差导线按规则~\eqref{eq:lms}教会的是精确的东西，速度与输出数目无关。第三种方式的代价是每个输出一根单独的导线，以及某个知道正确答案的来源。
+\end{proposition}
+\end{keyblock}
+
+\section{误差导线}
+
+谁能知道动作的正确答案？传感器本身。如果手偏到了目标左边，眼睛和第~\ref{sec:sensors}~章的牵拉传感器会报告这一点。需要一套线路把这个误差送到相应的输出。
+
+大脑中有一个区域，看来正是为此而构造的~\cite{Marr1969,Albus1971}。它的线路异常规整，几乎像晶体，很容易从中认出规则~\eqref{eq:lms}（图~\ref{fig:errorwire}）。
+
+\emph{输入扩展层。}关于指令和身体状态的信号到达由大量小型\nt{GLUT}神经元组成的一层。它们约有七百亿个——比大脑其余部分加起来还多~\cite{Azevedo2009}。每个神经元混合若干输入，信号被展开成一个非常长的向量。工程师熟悉这一手法：把输入的维数升高，在新的空间里，几乎任何所需的关系都能用简单的加权和得到~\cite{Cover1965}。
+
+\emph{输出神经元。}加权和由约三千万个大型输出神经元计算~\cite{Andersen1992cereb}，每个有来自扩展层的约十万个输入。而且它们是\nt{GABA}神经元：学习的结果不是以兴奋、而是以抑制的形式往下传，就像第~\ref{sec:gaba}~章的禁止。
+
+\emph{误差导线。}每个输出神经元还有一个特殊的输入：恰好一根\nt{GLUT}导线，它很少发放，约每秒一次，但每次都在输出神经元中引起强烈的爆发~\cite{Ito2001}。这就是$e_i$：爆发的概率取决于动作误差的方向~\cite{Herzfeld2018}。误差爆发与输入活动同时出现，会削弱这个输入——正是式~\eqref{eq:lms}中的$-\eta\,e_i x_j$项。
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  gran/.style={circle,draw,thick,fill=blue!6,minimum size=0.32cm,inner sep=0pt},
+  outn/.style={circle,draw,very thick,fill=red!10,minimum size=1.1cm,inner sep=0pt,font=\scriptsize},
+  inh/.style={-{Bar[width=7pt]},very thick,red!70!black}]
+% inputs
+\foreach \y/\lab in {1.6/{指令},0.4/{身体状态}}{
+  \draw[->,thick,blue!60!black] (-0.6,\y) node[left,font=\scriptsize,black] {\lab} -- (0.35,\y);}
+% expansion layer
+\foreach \i in {0,...,11}{\node[gran] (g\i) at ({0.8+0.28*mod(\i,2)},{-0.3+0.23*\i}) {};}
+\foreach \i in {0,...,11}{\pgfmathsetmacro{\yy}{mod(\i,3)>0 ? 1.6 : 0.4}\draw[gray!60!black] (0.35,\yy) -- (g\i);}
+\node[font=\scriptsize,align=center] at (0.95,-1.05) {扩展层\\$\sim7\cdot10^{10}$ \nt{GLUT}};
+% parallel wires to the output neuron
+\foreach \i in {0,...,11}{\draw[->,gray!70!black] (g\i.east) -- (4.1,{1.0+0.07*(\i-5.5)});}
+\node[outn] (P) at (4.6,1.0) {\nt{GABA}};
+\node[font=\scriptsize,align=center,above=2pt] at (P.north) {输出神经元\\$\sim10^5$个输入$x_j$，权重$w_{ij}$};
+\draw[inh] (P) -- (6.8,1.0) node[right,font=\scriptsize,align=left] {对动作的\\修正};
+% error wire
+\draw[->,very thick,red!70!black,densely dashed] (4.6,-1.4) node[below,font=\scriptsize,black,align=center] {一根误差导线$e_i$\\\nt{GLUT}，$\sim1$次/秒} -- (P.south);
+\end{tikzpicture}
+\caption{大脑看来所实现的有监督学习线路。指令和身体状态被庞大的\nt{GLUT}神经元层展开成长向量$x_j$；输出\nt{GABA}神经元以权重$w_{ij}$对其求和。唯一的误差导线送来$e_i$；误差与活跃输入同时出现，就削弱该输入的权重，如规则~\eqref{eq:lms}所示。}
+\label{fig:errorwire}
+\end{figure}
+
+有一个困难我们在第~\ref{sec:dofa}~章已经见过：误差比导致它的输入来得晚。失误在指令发出几十到几百毫秒后才能看到。因此突触必须记住自己曾经活跃过——需要资格迹，就像规则~\eqref{eq:threefactor}中那样。从实验来看，这条资格迹的长度与每项任务中的反馈延迟相匹配：在误差延迟一百毫秒到达的地方，被削弱得最多的是在误差之前一百毫秒活跃的输入~\cite{Suvrathan2016}。
+
+\begin{keyblock}
+\begin{proposition}[误差导线]
+\label{prop:errorwire}
+在图~\ref{fig:errorwire}所示的线路中，每个输出神经元恰好得到一根误差导线，误差与输入同时出现会削弱该输入。这是应用于被扩展到极高维数的输入上的最小均方规则~\eqref{eq:lms}。线路的结构和同时出现时的削弱已经测量；整条线路作为有监督学习来工作，是主流假说。
+\end{proposition}
+\end{keyblock}
+
+\section{内部模型即自适应滤波器}
+
+这样的线路学的是什么？最自然的答案是预测。设输入是指令$u(t)$经过一组具有不同时间常数的滤波器，如在扩展层中那样：$x_j(t)=(g_j*u)(t)$。输出是它们的加权和，即对传感器将要报告的内容的预测：
+\begin{empheq}[box=\keybox]{equation}
+\hat y(t) \;=\; \sum_j w_j\,(g_j*u)(t), \qquad e(t) \;=\; \hat y(t) - y(t) ,
+\label{eq:adaptivefilter}
+\end{empheq}
+而权重按式~\eqref{eq:lms}学习。这是一个\emph{自适应滤波器}：它自行调整自己的传递函数，以复现一个未知系统~\cite{Fujita1982}。这里的未知系统就是自己的身体，连同它的质量、弹性和延迟。学到的滤波器就是第~\ref{sec:muscles}~章的内部模型：它不等传感器回报，就说出传感器将报告什么。
+
+这样的模型有两重用处。第一，它的预测可以代替有延迟的反馈，于是稳定条件~\eqref{eq:delaystable}不再束手束脚：可以依据模型快速纠正。第二，预测与实际之差是关于\emph{意外}的信号。机器自己做的一切，模型都已预测并减去；剩下的是世界做的事。按照一种假说，这就是我们无法给自己挠痒的原因~\cite{Blakemore1998}。
+
+\section{当世界改变时：快与慢}
+
+用一个容易做的实验来检验这套线路。一个人伸手够目标，而世界突然改变：例如手臂受到一个侧向的力。最初几次动作都偏了，随后偏差减小。如果撤去这个力，手臂起初会偏向\emph{另一侧}——模型学到了这个力，仍在补偿它。这直接证明学到的是模型，而不只是“做顺手了”。
+
+实验还揭示了更细微的现象：同时有两个过程在学习——一个快过程，学得快也忘得快；一个慢过程，学得慢却记得久~\cite{Smith2006}。修正在每次动作之后按事件更新：
+\begin{empheq}[box=\keybox]{equation}
+e = p - (x_f + x_s), \qquad x_f \leftarrow A_f\,x_f + B_f\,e, \qquad x_s \leftarrow A_s\,x_s + B_s\,e ,
+\label{eq:tworate}
+\end{empheq}
+其中$p$是扰动，$x_f$和$x_s$是两个过程学到的修正，$A$表示修正保留到下一次动作的程度，$B$表示它从误差中学习的强度。快过程的$B$大，而$A$明显小于1；慢过程正好相反。
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=0.034cm,y=1.9cm]
+\draw[->,gray!70!black] (0,0) -- (355,0) node[right,font=\small,black] {动作};
+\draw[->,gray!70!black] (0,-1.15) -- (0,1.25);
+\foreach \v in {-1,1}{\draw[gray!60!black] (-3,\v) -- (3,\v); \node[left,font=\scriptsize] at (0,\v) {$\v$};}
+\foreach \n in {100,200,300}{\draw[gray!60!black] (\n,-0.04) -- (\n,0.04); \node[below,font=\scriptsize] at (\n,0) {\n};}
+\draw[thin,gray!70!black] plot file {figures/tworate_p.dat};
+\draw[thick,orange!85!black] plot file {figures/tworate_fast.dat};
+\draw[thick,blue!60!black] plot file {figures/tworate_slow.dat};
+\draw[very thick,black] plot file {figures/tworate_net.dat};
+\node[font=\scriptsize,gray!50!black] at (120,1.12) {扰动$p$};
+\node[font=\scriptsize,black,anchor=west] at (238,0.52) {总和：回升};
+\node[font=\scriptsize,blue!60!black,anchor=west] at (150,0.39) {慢过程$x_s$};
+\node[font=\scriptsize,orange!85!black,anchor=west] at (60,0.08) {快过程$x_f$};
+\draw[densely dashed,gray!60!black] (226,-1.15) -- (226,1.25);
+\node[font=\scriptsize,align=center,anchor=south west] at (228,-1.1) {不再有\\误差};
+\end{tikzpicture}
+\caption{按模型~\eqref{eq:tworate}的两个学习过程，$A_f=0.92$，$B_f=0.1$，$A_s=0.996$，$B_s=0.02$。先是二百次扰动为$p=1$的动作，然后是反向扰动$p=-1$的六次动作，直到总和回到零。虚线之后误差不再送达，总和自行回到原来的修正：快过程忘掉了反向扰动，慢过程还记得正向扰动。}
+\label{fig:tworate}
+\end{figure}
+
+模型~\eqref{eq:tworate}解释了一个没有它就难以理解的实验（图~\ref{fig:tworate}）。在我们的计算中，二百次带扰动的动作后，修正总和达到$0.84$，其中大部分由慢过程承担，为$0.63$。然后，六次反向扰动的动作使总和回到零：快过程变成负值，$-0.53$，慢过程仍为正值，$0.46$。如果此时不再报告误差，快过程在几十次动作内就忘掉了它的修正，慢过程则要久得多，于是总和在四十次动作内\emph{自行}升到$0.37$：旧技能不经任何训练就回来了。这种自发恢复已在人身上测量；单过程的模型做不到这一点——没有误差时，它只会衰减到零。
+
+为什么要两个过程？第~\ref{sec:acet}~章的最优滤波器给出了一个合理的工程答案。身体因各种原因以不同速度变化：肌肉在几分钟内疲劳，在几个月内增长或衰弱。如果干扰有快有慢，最佳估计就由两个时间常数不同的滤波器组成，各自捕捉自己的那一种~\cite{Kording2007}。快过程是临时修正，“手累了”；慢过程是“手变了”。这目前还是假说，但它解释了为什么一天学会的技能到第二天会部分丢失，以及为什么第二次学得更快。
+
+\section{小结}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{3.0cm}>{\raggedright}p{4.6cm}>{\raggedright\arraybackslash}p{5.2cm}}
+\toprule
+线路做什么 & 怎么做 & 已知程度 \\
+\midrule
+有监督学习 & 通往每个输出的误差导线，规则~\eqref{eq:lms} & 线路结构和同时出现时的削弱已测量；有监督学习是主流假说 \\
+扩展输入 & 七百亿个\nt{GLUT}神经元 & 神经元数目已测量；扩展的作用是理论 \\
+考虑误差延迟 & 与延迟匹配的资格迹 & 已测量 \\
+建立内部模型 & 自适应滤波器~\eqref{eq:adaptivefilter} & 有充分依据的假说 \\
+以两种速度学习 & 快过程和慢过程~\eqref{eq:tworate} & 后效和自发恢复已测量；两个过程是模型 \\
+\bottomrule
+\end{tabular}
+\caption{机器如何学会运动。}
+\label{tab:motorlearning}
+\end{table}
+
+现在机器有了三位老师（表~\ref{tab:motorlearning}）。赫布压缩常见的东西；\nt{DOPA}用一个数教会选择有利的东西；误差导线教会精确，而且教得快，因为每个输出都有自己的误差。大脑看来三者都用，并且各用在最便宜的地方：广播信号用于为数不多的决策，单独的导线用于身体的精细调节，在那里正确答案由传感器本身报告。
+
+\section{习题}
+
+\begin{exercise}[\lvlA]
+\label{ex:15:1}
+\emph{误差导线线路的容量。}线路中有$3\cdot10^7$个输出神经元，每个有$10^5$个输入和自己的误差导线（$1$次/秒）。有$n$个输入的神经元能学会$\approx2n$个向量的任意标注~\cite{Cover1965}。(a)~线路能存储多少个关联？(b)~按式~\eqref{eq:spikeentropy}，取$\Delta t=10\ms$，估计填满一个神经元容量的最短时间。
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:15:2}
+\emph{最小均方规则的速度。}规则~\eqref{eq:lms}的各模式以速率$\eta\lambda_k(C)$衰减。对白噪声输入下的五个滤波器~\eqref{eq:adaptivefilter}，$C_{jk}=2\sqrt{\tau_j\tau_k}/(\tau_j+\tau_k)$。若$\tau_j$按$2$倍递增（$10$--$160\ms$）以及按$4$倍递增，求最快与最慢速率之比。
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:15:3}
+\emph{两个过程的分析。}把取图~\ref{fig:tworate}参数的模型~\eqref{eq:tworate}写成$\mathbf x_{n+1}=M\mathbf x_n+\mathbf b\,p$。(a)~由$M$的特征值求以动作次数计的时间常数。(b)~求恒定$p=1$时的稳态$x_f$、$x_s$及其和。
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:15:4}
+\emph{建模：第二次更快。}按模型~\eqref{eq:tworate}，取\texttt{models/\allowbreak motor\_learning.py}中的参数，求$p=1$时达到$x_f+x_s\ge0.8$所需的动作次数：(a)~未经训练的机器；(b)~像图~\ref{fig:tworate}那样，先做$200$次$p=1$的动作，再用反向扰动使总和归零之后。单过程模型能这样加速吗？
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:15:5}
+\emph{带内部模型的调节器。}对象$\dd x/\dd t=ku$以延迟$d$被观测；调节器$u=-G\hat x$预测$\hat x(t)=x(t-d)+\hat k\int_{t-d}^{t}u\,\dd s$。(a)~$\hat k=k=1$、$d=150\ms$时，求使时间常数为$20\ms$的$G$，并与极限~\eqref{eq:delaystable}比较。(b)~$\hat k=0.4k$时方案是否稳定？
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:15:6}
+\emph{自适应滤波器学习肌肉。}对象是单位面积的抽搐~\eqref{eq:twitch}，$T_c=50\ms$；滤波器~\eqref{eq:adaptivefilter}是$\tau_j=12.5$、$25$、$50$、$100$、$200\ms$的RC电路；输入每$10\ms$取一个新的正态随机数。$\eta=50$和$200$时，规则~\eqref{eq:lms}要多少秒才能把误差降到$0.5\%$？为什么过了$300$\,s权重仍远非最优？
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:15:7}
+\emph{两个过程即最优滤波器。}扰动是两个过程之和$p^{f,s}_{n+1}=A_{f,s}\,p^{f,s}_n+w^{f,s}_n$，噪声方差为$q_f$、$q_s$，误差的观测噪声方差为$R$；卡尔曼滤波器给出式~\eqref{eq:tworate}。在$A_f=0.92$、$A_s=0.996$下，$q_f/R$、$q_s/R$取何值时得到$B_f=0.1$、$B_s=0.02$？若把$q_s$增至四倍，$B_f$、$B_s$如何变化？
+\end{exercise}

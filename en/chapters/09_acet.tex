@@ -1,0 +1,191 @@
+\chapter{When to Write and When to Read: Adding \nt{ACET}}
+\chaptermark{Adding \nt{ACET}}
+\label{sec:acet}
+
+\section{What is missing}
+
+Besides its address and data lines, a memory chip has one more line: write enable. While it is off, the memory is only read; when it is on, whatever is on the data lines is written. Without such a line memory does not work: if every read also writes something, whatever was read, including anything read in error, is immediately written back.
+
+In the brain this problem is more acute than in a chip. In Chapter~\ref{sec:glutcomputer}, memory was a group of \nt{GLUT} neurons kept switched on by its own connections (Fig.~\ref{fig:bistable}). In Chapter~\ref{sec:dofa} we saw that these connections learn by Hebb's rule right in the course of operation. So the same synapses both store the old and take in the new, and there is no separate write phase, just as there is no clock. How does the network tell the moment when it should memorize what it sees from the moment when it should recall what it knows? In Chapter~\ref{sec:neurontypes} we proposed that this line is held by \nt{ACET}. In this chapter we examine how such a line should work and why it cannot be done without.
+
+\section{Three actions of one wire}
+
+The acetylcholine neurons that work inside the brain are few, gathered in a few small groups, and their outputs spread throughout the cortex. This is a broadcast channel, just like \nt{DOPA} and \nt{NORA}. The acetylcholine level in the cortex is high during attentive waking and low in slow-wave sleep~\cite{Hasselmo1999}. As with dopamine, the meaning of the signal is set by the recipient's receptor (Proposition~\ref{prop:receptor}): acetylcholine has both fast receptors, which open a channel, and slow ones, which trigger reactions inside the cell. Three actions matter to us.
+
+\emph{First: weaken the internal connections.} Slice experiments on the olfactory cortex showed that acetylcholine strongly suppresses transmission along connections between neurons of the same region and hardly touches the inputs arriving from outside~\cite{HasselmoBower1992}.
+
+\emph{Second: strengthen the inputs.} Acetylcholine raises the excitability of neurons and facilitates transmission along some input pathways; the signal from the senses becomes louder than the network's own activity~\cite{Hasselmo2006}.
+
+\emph{Third: make weight changes easier.} At a high acetylcholine level, connections change more easily~\cite{Hasselmo2006}.
+
+For an engineer, all three actions are a single operation: switching from ``read'' mode to ``write'' mode. The network stops listening to itself, starts listening to the input, and memorizes what it hears.
+
+\section{A network that completes}
+
+Take $N$ \nt{GLUT} neurons connected to one another. Store several patterns in their connections by Hebb's rule~\cite{Hebb1949}, each pattern being a set of $pN$ simultaneously active neurons. If half a pattern is presented to such a network, the connections excite the missing half: the network \emph{completes} the pattern from a part, just as the group in Fig.~\ref{fig:bistable} sustained itself. This is associative memory: part of the content serves as the address. \nt{GABA}, as in Chapter~\ref{sec:gaba}, keeps the total number of active neurons near $pN$, so that two patterns cannot light up together.
+
+Denote the acetylcholine level by $a$, from $0$ to $1$, and write its three actions directly into the model:
+\begin{empheq}[box=\keybox]{equation}
+\tau\frac{\dd r_i}{\dd t} = -r_i + F\Bigl(\tfrac{1+a}{2}\,x_i + (1-a)\sum_j W_{ij}\,r_j - g\Bigr),
+\qquad
+\frac{\dd W_{ij}}{\dd t} = \eta\,a\,(r_i-p)(r_j-p) .
+\label{eq:acetnet}
+\end{empheq}
+Here $r_i$ is the rate of neuron $i$, $x_i$ is its input from the senses, $F$ is a threshold transfer function, and $g$ is the global inhibition from \nt{GABA}, which grows when more than $pN$ neurons are active. The factor $\frac{1+a}{2}$ is the input gain, $1-a$ the weakening of internal connections, and $\eta a$ the learning rate. The second equation is Hebb's rule~\eqref{eq:hebb} in a form suited to sparse patterns~\cite{Tsodyks1988}: the weight grows when both neurons are more active than usual and decreases when only one is active. The negative part of the weights, as always, is implemented by \nt{GABA} intermediaries. There is no clock: both neurons and weights change continuously.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  nrn/.style={circle,draw,very thick,fill=blue!6,minimum size=0.8cm,inner sep=0pt,font=\small},
+  acet/.style={circle,draw,very thick,double,double distance=1.2pt,fill=orange!15,minimum size=1.35cm,inner sep=0pt,font=\scriptsize},
+  bc/.style={->,thick,densely dashed,orange!85!black}]
+\foreach \i/\y in {1/2.4,2/1.2,3/0}{
+  \node[nrn] (N\i) at (3,\y) {$r_\i$};
+  \draw[->,thick,blue!60!black] (0,\y) node[left,black] {\small $x_\i$} -- (N\i);}
+\node[left,align=right,font=\small] at (-0.5,1.2) {from the\\senses};
+\draw[->,thick,gray!60!black] (N1) to[bend left=30] (N2);
+\draw[->,thick,gray!60!black] (N2) to[bend left=30] (N1);
+\draw[->,thick,gray!60!black] (N2) to[bend left=30] (N3);
+\draw[->,thick,gray!60!black] (N3) to[bend left=30] (N2);
+\draw[->,thick,gray!60!black] (N1.east) .. controls (4.6,2.0) and (4.6,0.4) .. (N3.east);
+\node[right,font=\small,gray!40!black,align=left] at (4.7,1.2) {internal\\connections $W$};
+\node[acet] (A) at (1.2,-1.9) {\nt{ACET}};
+\draw[bc] (A) -- (1.6,-0.15);
+\node[font=\small,orange!60!black,anchor=east] at (0.95,-0.9) {$+$ input};
+\draw[bc] (A) -- (4.3,0.6);
+\node[font=\small,orange!60!black,anchor=west] at (4.3,0.1) {$-$ internal connections, $+$ learning rate};
+\node[right,font=\small,align=left] at (2.2,-1.9) {high level: ``write''\\low level: ``read''};
+\end{tikzpicture}
+\caption{\nt{ACET} as a write-enable line. Neurons $r_i$ receive input $x_i$ from the senses (blue arrows) and excite one another through internal connections $W$ (gray), in which the patterns are stored. Acetylcholine (dashed arrows) strengthens the input, weakens the internal connections and makes weight changes easier, as in~\eqref{eq:acetnet}.}
+\label{fig:acetnet}
+\end{figure}
+
+\section{Writing and reading interfere}
+
+Let us test model~\eqref{eq:acetnet} on a task in which writing and reading really do conflict. A network of $200$ neurons already stores five patterns of $20$ active neurons each. Now it must memorize a sixth, which half overlaps one of the old ones: they share ten neurons. This happens all the time: a new room resembles a familiar one, a new face an old one.
+
+\emph{Writing at low $a$.} First let us separate the first two actions of acetylcholine from the third: we keep the learning rate at full value and vary only the input gain and the weakening of internal connections. At $a=0$ the input lights up the ten shared neurons, and they, through the internal connections, light up the remaining half of the \emph{old} pattern. \nt{GABA} does not let both burn at once, and the old pattern, supported by its own connections, displaces the new one, which is held only by the input. The network sees not what is in front of it but what it remembers, and Hebb's rule diligently writes down what it sees.
+
+As a result, the new pattern is not memorized at all: from its distinctive half, the network recalls nothing. And the old one is corrupted: when evoked by its own distinctive half, it drags along on average six foreign neurons out of ten. At $a=0.1$ the new pattern is memorized, but it merges with the old one, and the corruption is even worse: each of the two, evoked by its own half, drags along about eight foreign neurons; from $a=0.2$ on, writing is clean: fewer than one extra neuron on recall (averaged over ten runs).
+
+\emph{Writing with the actual learning rate.} Now let acetylcholine, as in~\eqref{eq:acetnet}, also set the learning rate. After a single presentation the new pattern is memorized in full only for $a\ge0.9$; at $a=0.75$, to eight tenths; for $a\le0.5$, not at all.
+
+\emph{Reading.} Present half of a pattern to the network with five cleanly written patterns, and then remove it too. For $a\le0.2$ the network completes the pattern in full and holds it on its own; at $a=0.3$, almost in full; for $a\ge0.4$ the internal connections are weakened too much, and once the cue is gone the activity dies out (Fig.~\ref{fig:acetsim}).
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=9cm,y=3.2cm]
+\draw[->,gray!70!black] (0,0) -- (1.1,0) node[right,black] {\small $a$};
+\draw[->,gray!70!black] (0,0) -- (0,1.2);
+\foreach \x in {0,0.2,0.4,0.6,0.8,1.0}{\draw[gray!60!black] (\x,-0.02) -- (\x,0.02); \node[below,font=\scriptsize] at (\x,0) {$\x$};}
+\foreach \y in {0,0.5,1}{\draw[gray!60!black] (-0.01,\y) -- (0.01,\y); \node[left,font=\scriptsize] at (0,\y) {$\y$};}
+\node[rotate=90,font=\small] at (-0.1,0.6) {fraction of pattern recovered};
+\draw[very thick,blue!60!black] plot[mark=*,mark size=1.6pt] coordinates {(0,1.00) (0.1,1.00) (0.2,1.00) (0.3,0.96) (0.4,0.04) (0.5,0.00) (0.75,0.00) (1.0,0.00)};
+\draw[very thick,red!70!black] plot[mark=*,mark size=1.6pt] coordinates {(0.1,0.00) (0.2,0.00) (0.3,0.00) (0.5,0.00) (0.75,0.80) (0.9,1.00) (1.0,1.00)};
+\node[font=\small,blue!60!black,anchor=west,align=left] at (0.03,0.5) {reading:\\pattern\\from half};
+\node[font=\small,red!70!black,anchor=east,align=right] at (1.0,0.35) {writing:\\new pattern\\in one go};
+\end{tikzpicture}
+\caption{Model~\eqref{eq:acetnet}: $200$ neurons, patterns of $20$ active neurons, averaged over ten runs. Blue points, reading: the fraction of a pattern recovered from its half after the cue is removed. Red points, writing: the fraction of a new pattern, half similar to an old one, recalled after a single presentation, when acetylcholine also sets the learning rate. Reading works for $a\le0.3$, writing for $a\ge0.9$.}
+\label{fig:acetsim}
+\end{figure}
+
+\begin{keyblock}
+\begin{proposition}[Writing and reading require different modes]
+\label{prop:writeread}
+In model~\eqref{eq:acetnet}, where the same connections store the old and learn the new, and acetylcholine also sets the learning rate, there is no level $a$ at which writing and reading both work equally well. For writing, the internal connections must be weakened, or else the network writes down not the input but what it recalled; for reading, they must be strengthened, or else it cannot complete a pattern from a part. A switch is needed, and a single broadcast wire can serve as one.
+\end{proposition}
+\end{keyblock}
+
+If acetylcholine did not change the learning rate, a narrow band $0.2\le a\le0.3$ would suit both tasks. But then the network would also learn during every read, that is, it would rewrite what it read, errors included. The idea itself, suppressing internal connections during learning, comes from models built on slice measurements~\cite{HasselmoAndersonBower1992}. The numbers above refer to our simplified model; exactly where the mode boundaries lie in the brain is unknown.
+
+\section{How much to trust your eyes}
+
+The write/read switch is an extreme case of a more general question: how much to trust the input and how much to trust memory? Engineers have an exact answer to this question, and it sheds light on why one wire controls both the mode and the learning rate.
+
+Let the network track a quantity $s(t)$ that drifts slowly: its variance grows by $q$ per second. The senses report $y(t)=s(t)+{}$noise of intensity $R$. The best estimate $\hat s$ in continuous time is given by the Kalman--Bucy filter~\cite{KalmanBucy1961}:
+\begin{empheq}[box=\keybox]{equation}
+\frac{\dd\hat s}{\dd t} \;=\; \frac{P}{R}\,\bigl(y-\hat s\bigr),
+\qquad
+\frac{\dd P}{\dd t} \;=\; q-\frac{P^2}{R} ,
+\label{eq:kalman}
+\end{empheq}
+where $P$ is the variance of the estimation error, that is, how unsure the network itself is of what it knows. The first equation is the same RC circuit as the membrane in the neuron model~\eqref{eq:glutneuron}, but with a time constant $R/P$ that varies. When the network is unsure, $P$ is large, the time constant is small, and the estimate quickly follows the input: this is ``write.'' When it is sure, $P$ is small, and the estimate hardly listens to the input, holding on to memory: this is ``read.''
+
+In steady state $P=\sqrt{qR}$, and the memory time constant is $\sqrt{R/q}$: if the world drifts by one unit in a hundred seconds, $q=0.01$, and the sensory noise is $R=1$, then memory should last about ten seconds.
+
+The main point here is that one number, $P/R$, sets two things at once: the weight of the input relative to memory, and the rate at which the stored estimate changes. This is exactly what acetylcholine does in~\eqref{eq:acetnet}. According to a hypothesis~\cite{YuDayan2005}, acetylcholine tells the network a quantity like $P$: the \emph{expected} uncertainty, the kind the network knows about in advance. This channel is not always slow: some \nt{ACET} neurons respond to reward and punishment within twenty milliseconds or so, and the more unexpected the reinforcement, the stronger the response~\cite{Hangya2015}.
+
+\begin{keyblock}
+\begin{proposition}[One knob for input weight and learning rate]
+\label{prop:kalman}
+In the optimal filter~\eqref{eq:kalman}, the weight with which the input is mixed with memory and the learning rate are one and the same quantity, $P/R$. It therefore makes sense to control them with one signal. When the properties of the world do not change, this signal settles at a constant level $\sqrt{q/R}$, and it needs adjusting only when the properties of the world change.
+\end{proposition}
+\end{keyblock}
+
+The second sentence of the proposition explains the result of Chapter~\ref{sec:nora}, where surprise-driven adjustment of the learning rate did not beat the best constant rate: in a world whose rate of change is fixed, the best learning rate is a constant. A gain appears when the world suddenly becomes different. Then the estimate is suddenly far from the input, and $P$ knows nothing about it. The right action is to raise $P$ sharply and thereby switch to write mode. According to the hypothesis we discussed in Chapter~\ref{sec:nora}, such an \emph{unexpected} change is reported by \nt{NORA}~\cite{YuDayan2005}. The division of labor is natural: \nt{NORA} notices that the world has changed, and \nt{ACET} keeps the network in write mode until the new situation has been learned.
+
+\section{Sleep as read mode}
+
+If a high acetylcholine level is write mode, what does the network do at a low one? In slow-wave sleep the acetylcholine level falls, the internal connections are released from suppression, and there is almost no input from the senses. The network, in read mode with no cue, replays what is stored in it. Recordings show that neurons that worked together during the day fire together again in slow-wave sleep~\cite{WilsonMcNaughton1994}, and even in the same order~\cite{Skaggs1996}. According to a hypothesis~\cite{Hasselmo1999}, these replays copy what was quickly learned during the day into long-term memory (artificially lengthening the brief bursts of replay improves memory~\cite{FernandezRuiz2019}): by day, writing from the input; by night, rewriting from within. For an engineer this resembles writing to a fast buffer during the day and flushing it to slow permanent storage at night.
+
+\section{Summary}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{3.2cm}>{\raggedright}p{4.2cm}>{\raggedright\arraybackslash}p{6.0cm}}
+\toprule
+What \nt{ACET} does & How & What is known \\
+\midrule
+weakens internal connections & factor $1-a$ in~\eqref{eq:acetnet} & measured in slices \\
+strengthens the input & factor $\frac{1+a}{2}$ & increased excitability and transmission along input pathways are measured \\
+facilitates learning & rate $\eta a$ & measured \\
+switches ``write/read'' & Proposition~\ref{prop:writeread} & follows from models; no direct measurement of the modes \\
+reports expected uncertainty & $P$ in~\eqref{eq:kalman} & hypothesis \\
+frees the network for replay in sleep & low $a$ in slow-wave sleep & the low level in sleep and the replays are measured; rewriting into long-term memory is a hypothesis \\
+\bottomrule
+\end{tabular}
+\caption{What \nt{ACET} adds to a network of \nt{GLUT}, \nt{GABA}, \nt{DOPA} and \nt{NORA}.}
+\label{tab:acet}
+\end{table}
+
+\nt{DOPA} tells the network where to change the weights, \nt{NORA} how decisively to use what it knows, and \nt{ACET} whether to listen to the world or to itself (Table~\ref{tab:acet}). This is the last broadcast control line of Table~\ref{tab:types}: write enable, without which a memory that stores patterns in the same connections it reads them with would corrupt itself on every read.
+
+\section{Exercises}
+
+\begin{exercise}[\lvlA]
+\label{ex:09:1}
+\emph{How long to remember.} The filter~\eqref{eq:kalman} with $q=0.01$, $R=1$ remembers for about $10$~s. Find $P_\infty$ and the memory $\sqrt{R/q}$ if (a)~the sensor noise doubles in amplitude; (b)~the world starts drifting a hundred times faster. (c)~By what factor must the noise grow for the network to remember for a minute?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:09:2}
+\emph{Write mode after a change.} The world has changed, and the uncertainty of the filter~\eqref{eq:kalman} with $q=0.01$, $R=1$ has jumped to $P_0\to\infty$. (a)~With what time constant does $P$ return to $P_\infty$? (b)~After how many seconds does the learning rate exceed its steady-state value by no more than $10\,\%$?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:09:3}
+\emph{A constant learning rate.} The network learns as $\dd\hat s/\dd t=(y-\hat s)/T$; the world drifts, $\dd s/\dd t=w$, $y=s+n$, where $w$ and $n$ are white noises of intensities $q$ and $R$. Find the best $T$ and the error variance at it. By what factor does the variance grow if $T$ is off by a factor of $2$ and of $10$?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:09:4}
+\emph{Where the write boundary lies.} In \texttt{models/\allowbreak acet\_memory.py} the threshold is $\theta=0.35$ and the weight within a pattern is $w=0.041$ (ideally $0.045$). A new pattern shares $m=10$ neurons with an old one. For what $a$ in~\eqref{eq:acetnet} do the remaining neurons of the old pattern not light up from these $m$ (sharp threshold)?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:09:5}
+\emph{Simulation: memory capacity.} Modify the function \texttt{read\_sweep} in \texttt{models/\allowbreak acet\_memory.py}: at $a=1$ write $M$ patterns ($M$ from $5$ to $100$), then at $a=0$ read the first ten from halves. At what $M$ do errors appear, and how does the limit $M_{\max}$ depend on $N$ and $p$?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:09:6}
+\emph{Design: writing without leakage.} With learning rate $\eta a$, the network also learns while reading. Propose a monotonic $\eta(a)\le\eta$ that is zero for $a\le0.3$ and no worse than $\eta a$ for $a\ge0.9$. Check: after $20$ reads at $a=0.2$ with a cue containing three foreign neurons, how many of them have entered the pattern?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:09:7}
+\emph{How to rewrite the buffer at night.} (a)~In sleep $a=0.05$, and a replay lasts $0.1\,\text{s}$ versus $0.2\,\text{s}$ during the day at $a=1$. How many replays accumulate the weight change of one daytime presentation with rate $\eta a$, and with $\eta(a)$ from Exercise~\ref{ex:09:6}? (b)~The long-term store learns $100$ times more slowly than the buffer and hears the pattern $20$ times per night for $0.1\,\text{s}$ each. How many nights are needed?
+\end{exercise}

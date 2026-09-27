@@ -1,0 +1,331 @@
+\chapter{Neuron Types}
+\label{sec:neurontypes}
+
+\section{The Neuron as a Black Box}
+
+Suppose you are handed a sack of eighty-six billion neurons~\cite{Azevedo2009} and asked to sort them into piles. How would you do it?
+
+An engineer handed a sack of unfamiliar chips would not sort them by the shape of the package. He would ask: how many inputs does the part have, how many outputs, and what does it put out? Let us draw the neuron the same way, as a block in a schematic (Fig.~\ref{fig:blackbox}).
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=1cm,y=1cm]
+% the box
+\node[draw,very thick,minimum width=2.6cm,minimum height=2.6cm,fill=blue!6] (N) at (0,0) {};
+\node at (0,0.55) {\small neuron};
+\node at (0,-0.15) {$\displaystyle u=\sum_i w_i x_i$};
+\node at (0,-0.8) {\small $y=\Theta(u-\theta)$};
+% inputs
+\foreach \k/\y/\lab in {1/1.05/{x_1},2/0.55/{x_2},3/0.05/{x_3}}{
+  \draw[->,thick,blue!60!black] (-4.2,\y) -- (-1.3,\y);
+  \node[left] at (-4.2,\y) {$\lab$};
+  \node[above,blue!60!black] at (-2.1,\y-0.06) {\scriptsize $w_{\k}$};}
+\node at (-4.45,-0.4) {$\vdots$};
+\node at (-2.1,-0.4) {$\vdots$};
+\draw[->,thick,blue!60!black] (-4.2,-1.05) -- (-1.3,-1.05);
+\node[left] at (-4.2,-1.05) {$x_n$};
+\node[above,blue!60!black] at (-2.1,-1.11) {\scriptsize $w_{n}$};
+\draw[decorate,decoration={brace,amplitude=5pt},gray!60!black] (-4.9,-1.2) -- (-4.9,1.2);
+\node[left,align=right,gray!40!black] at (-5.1,0) {\small $n\sim10^3$--$10^5$\\[-2pt]\small inputs};
+% single output wire, then fan-out
+\draw[very thick,red!70!black] (1.3,0) -- (3.2,0);
+\foreach \x in {1.6,2.2,2.34,2.9}{\draw[thick,red!70!black] (\x,0) -- (\x,0.4);}
+\node[above right,font=\tiny\itshape,gray!30!black,inner sep=1pt] at (1.42,0.45) {click\dots\ click-click\dots};
+\node[below,red!70!black,align=center] at (2.25,-0.05) {\scriptsize one output $y$};
+\fill[red!70!black] (3.2,0) circle (0.06);
+\foreach \y in {1.3,0.65,0,-0.65,-1.3}{
+  \draw[->,thick,red!70!black] (3.2,0) -- (5.0,\y);}
+\draw[decorate,decoration={brace,amplitude=5pt},gray!60!black] (5.3,1.45) -- (5.3,-1.45);
+\node[right,align=left,gray!40!black] at (5.5,0) {\small copies of $y$\\[-2pt]\small to $10^3$--$10^4$\\[-2pt]\small other neurons};
+\end{tikzpicture}
+\caption{The neuron through an engineer's eyes. Many inputs $x_i$, each with its own weight $w_i$; inside, a weighted sum $u$ and a comparison with the threshold $\theta$ ($\Theta$ is the step function: $1$ if its argument is positive and $0$ otherwise); one output $y$, a train of spikes, copied by branching to thousands of recipients.}
+\label{fig:blackbox}
+\end{figure}
+
+The output of the block is not a number but a train of short voltage spikes: ``click,'' a pause, ``click-click,'' a long pause. Every spike has the same height, so all the information is in \emph{when} they occur. Inside the block, to a first rough approximation, sit an adder and a comparator: the inputs are summed with weights, and if the sum crosses a threshold, the block fires a spike. In the next chapter we will replace this with a model that works honestly in continuous time.
+
+There is one output, but the wire branches, and every branch carries \emph{the very same} copy of the signal. In electronics this is called fan-out. For a cortical neuron it is on the order of several thousand; a logic gate on a chip typically drives a handful of other gates.
+
+\emph{What}, then, travels along the output wire to the recipient? The spike runs to the end of each branch and there turns into a chemical signal: the branch releases a pinch of a particular substance, a \emph{neurotransmitter}, into the narrow gap between the cells, and it changes the recipient's input current. That gives us a sorting criterion: \emph{which transmitter does the neuron's output release?}
+
+\section{One Output, One Signal Type}
+
+Sorting makes sense only if each neuron has a single output type. Is that so? Experiment says: almost.
+
+\begin{keyblock}
+\begin{proposition}[One neuron, one output type]
+\label{prop:dale}
+Almost every neuron has one principal transmitter, and it releases it from every branch of its output. The type of a neuron is therefore set by its principal transmitter~\cite{Strata1999}.
+\end{proposition}
+\end{keyblock}
+
+Let us agree to label a neuron type by \emph{the first four letters of the name of its principal transmitter}. A neuron whose principal transmitter is glutamate is a \nt{GLUT} neuron. All the types are collected in Table~\ref{tab:types}.
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{1.0cm}>{\raggedright}p{2.05cm}>{\raggedright}p{1.75cm}>{\raggedright}p{1.6cm}>{\centering}p{0.7cm}>{\raggedright}p{1.55cm}>{\raggedright}p{1.8cm}>{\raggedright\arraybackslash}p{3.2cm}}
+\toprule
+Type & Principal transmitter & Bus & Speed & Sign & Neurons in the brain & Outputs per neuron & Role in computation \\
+\midrule
+\nt{GLUT} & glutamate & address & fast and slow & $+$ & $\sim8\cdot10^{10}$ & $\sim10^4$ & main positive weight \\
+\nt{GABA} & GABA & address & fast and slow & $-$ & $\sim3\cdot10^{9}$ & $10^3$--$10^4$ & main negative weight \\
+\nt{GLYC} & glycine & address & fast & $-$ & $10^6$--$10^7$ & $10^2$--$10^3$ & negative weight in the spinal cord and brainstem; second key for one of the glutamate receptors \\
+\nt{ACET} & acetylcholine & both & fast and slow & $\pm$ & $\sim10^6$ & muscle: $10$--$10^3$; brain: $\sim10^5$ & output to muscle; in the brain, learning rate (hypothesis) \\
+\nt{DOPA} & dopamine & broadcast & slow & $\pm$ & $\sim5\cdot10^{5}$ & $10^5$--$10^6$ & reward-prediction error $\delta$ \\
+\nt{SERO} & serotonin & broadcast & slow (one receptor type is fast) & $\pm$ & $\sim3\cdot10^{5}$ & $\sim10^5$ & planning horizon (hypothesis) \\
+\nt{HIST} & histamine & broadcast & slow & $+$ & $\sim6\cdot10^{4}$ & no estimate & global ``stay awake'' signal \\
+\nt{NORA} & noradrenaline & broadcast & slow & $\pm$ & $\sim5\cdot10^{4}$ & $\sim10^5$ & gain (hypothesis) \\
+\nt{ADRE} & adrenaline & broadcast & slow & $\pm$ & $\sim10^4$ & no estimate & few neurons; role in the brain unclear \\
+\nt{ASPA} & aspartate & address & fast & $+$ & no estimate & no estimate & weak positive weight; role disputed \\
+\bottomrule
+\end{tabular}
+\caption{Neuron types, in decreasing order of their number in the brain. \emph{Bus}: address, the transmitter is released into a narrow gap toward a specific recipient; broadcast, from a small group of source neurons onto large regions (Section~\ref{sec:buses}). \emph{Speed}: fast, through ionotropic receptors, milliseconds; slow, through metabotropic receptors, hundreds of milliseconds and longer. \emph{Sign}: the usual one; the recipient has the final say (Section~\ref{sec:receiver}), and $\pm$ means both signs occur. \emph{Neurons in the brain}: how many neurons of this type the whole human brain has, to order of magnitude; the total is about $8.6\cdot10^{10}$~\cite{Azevedo2009}. Nearly all \nt{GLUT} neurons, about $7\cdot10^{10}$, are the small input neurons of the cerebellum; the \nt{GLUT} and \nt{GABA} numbers come from this count and the fraction of \nt{GABA} neurons in the cortex~\cite{Hendry1987}. Of the sparse types, only \nt{HIST}~\cite{Airaksinen1991} and the main one of the two \nt{DOPA} groups~\cite{Pakkenberg1991} have been counted directly, so the \nt{DOPA} figure is a lower bound; the \nt{SERO} figure is the sum of two partial counts~\cite{Baker1990,Baker1991}. The numbers for \nt{NORA}, \nt{GLYC}, \nt{ACET}, and \nt{ADRE} are rough order-of-magnitude estimates with no direct count. \emph{Outputs per neuron}: how many synaptic terminals a single neuron has, that is, release sites on the branches of its output wire (Fig.~\ref{fig:blackbox}), to order of magnitude. For the broadcast types the terminals have not been counted directly: for \nt{DOPA} the number is inferred from what fraction of its target the branching of a single output wire covers~\cite{Matsuda2009}; for the others the estimates are rougher still. \nt{ACET} has two cases: the neuron that drives a muscle and the broadcast neuron in the brain.}
+\label{tab:types}
+\end{table}
+
+% the pie is a table-type float with a figure caption, so it can never float ahead of Table~\ref{tab:types}
+\begin{table}[tb]
+\makeatletter\def\@captype{figure}\makeatother
+\centering
+\definecolor{vizglut}{HTML}{2A78D6}
+\definecolor{vizgaba}{HTML}{E34948}
+\definecolor{vizrest}{HTML}{8A8986}
+\begin{tikzpicture}[>=Stealth]
+% pie: GLUT 96.4 %, GABA 3.6 % (13.0 degrees), the rest 0.006 % (a hairline at 0 degrees)
+\fill[vizglut] (0,0) -- (13:1.9) arc (13:360:1.9) -- cycle;
+\fill[vizgaba] (0,0) -- (0:1.9) arc (0:13:1.9) -- cycle;
+\draw[white,line width=1pt] (0,0) -- (13:1.9);
+\draw[vizrest,line width=1.2pt] (0,0) -- (0:1.9);
+\node[white,align=center,font=\small] at (190:0.95) {\nt{GLUT}\\$96.4\,\%$};
+\draw[gray!60!black] (6.5:1.75) -- (2.05,2.1);
+\node[anchor=west,font=\small] at (2.05,2.1) {\nt{GABA} $3.6\,\%$};
+% zoom box for the remaining types
+\draw[densely dashed,vizrest] (1.9,0) -- (3.1,1.65);
+\draw[densely dashed,vizrest] (1.9,0) -- (3.1,-2.2);
+\draw[vizrest,rounded corners=3pt] (3.1,-2.2) rectangle (10.1,1.65);
+\node[anchor=west,font=\scriptsize] at (3.2,1.4) {all others together: $\approx0.006\,\%$; log scale};
+\foreach \code/\lg/\y/\val/\lx in {GLYC/6.477/1.0/{$10^6$--$10^7$}/4.05,ACET/6.0/0.6/{$\sim10^6$}/3.0,DOPA/5.699/0.2/{$\sim5\cdot10^5$}/2.699,SERO/5.477/-0.2/{$\sim3\cdot10^5$}/2.477,HIST/4.778/-0.6/{$\sim6\cdot10^4$}/1.778,NORA/4.699/-1.0/{$\sim5\cdot10^4$}/1.699,ADRE/4.0/-1.4/{$\sim10^4$}/1.0}{
+  \node[anchor=east,font=\scriptsize] at (4.35,\y) {\nt{\code}};
+  \fill[vizrest] (4.45,\y-0.13) rectangle ({4.45+\lg-3},\y+0.13);
+  \node[anchor=west,font=\scriptsize] at ({4.5+\lx},\y) {\val};}
+\draw[vizrest,thick] (7.45,1.0) -- (8.45,1.0);
+\draw[vizrest,thick] (7.45,0.92) -- (7.45,1.08);
+\draw[vizrest,thick] (8.45,0.92) -- (8.45,1.08);
+\draw[gray!60!black] (4.45,-1.72) -- (8.45,-1.72);
+\foreach \e in {3,4,5,6,7}{
+  \draw[gray!60!black] ({4.45+\e-3},-1.72) -- ({4.45+\e-3},-1.66);
+  \node[below,font=\scriptsize] at ({4.45+\e-3},-1.72) {$10^{\e}$};}
+\end{tikzpicture}
+\caption{Shares of neuron types in the brain, from the estimates of Table~\ref{tab:types}. \nt{GLUT} fills almost the entire circle; \nt{GABA} is a narrow sector, and all the other types together are a hairline at the edge. On the right, that hairline is magnified on a logarithmic scale of neuron count; for \nt{GLYC} the bar reaches the middle of the $10^6$--$10^7$ range, and the segment shows the whole range. \nt{ASPA} has no estimate and is not shown.}
+\label{fig:typepie}
+\end{table}
+
+Figure~\ref{fig:typepie} shows how unequal these piles are: out of every thousand neurons, $964$ are \nt{GLUT} and $36$ are \nt{GABA}, while all the other types together account for about six neurons in a hundred thousand.
+
+GABA is already a four-letter name. Substances that are almost never a principal transmitter, namely neuropeptides, gases, lipids, and purines, get no code of their own; they are covered in Appendix~\ref{sec:othermediators}. The word ``almost'' in Proposition~\ref{prop:dale} matters. Many neurons release auxiliary substances along with the principal transmitter~\cite{Yao2023}. Some also release a second fast transmitter, even one of the opposite sign: some \nt{DOPA} neurons also release GABA~\cite{Tritsch2012}. And some neurons release different transmitters from different branches of one and the same output~\cite{Zhang2015}. All of this has been measured, so ``one neuron, one transmitter'' is a rule with exceptions, not a law. But as a first division it holds up: in the cell atlas of the mouse brain, where neurons are sorted into more than five thousand groups by the genes active in them, the neurons still split into large classes primarily by principal transmitter~\cite{Yao2023}.
+
+This rule has a consequence that immediately sets the brain apart from an artificial neural network. In an artificial network one and the same neuron can have a positive weight to one recipient and a negative weight to another: the weights $w_{ij}$ are just numbers in a matrix. In the brain the sign of the action is set mainly by the transmitter, and a neuron has one transmitter. So if neuron $j$ excites one recipient, it excites all the others as well. The entire \emph{column} of the weight matrix leaving neuron $j$ has one sign:
+\begin{empheq}[box=\keybox]{equation}
+\operatorname{sign} w_{ij} \;=\; s_j \quad\text{for all recipients } i, \qquad s_j\in\{+1,-1\}.
+\label{eq:dalesign}
+\end{empheq}
+Neurons divide into excitatory ($s_j=+1$) and inhibitory ($s_j=-1$), and this is a property of the neuron itself, not of the connection. If a network needs a negative connection from an excitatory neuron, it has to route it through an intermediary: the excitatory neuron excites an inhibitory one, which inhibits the target: a negative weight with a one-link delay.
+
+More than a hundred transmitters are known, but almost all of the brain's work rests on half a dozen, and they fall into two completely different classes.
+
+\section{Two Buses: Address and Broadcast}
+\label{sec:buses}
+
+Computer networks have two ways of delivering a message. The first is \emph{addressed}, unicast: a packet goes from one sender to a specific recipient, quickly, and no one else sees it. The second is \emph{broadcast}: the sender transmits one message to every node of the network at once. Neurons use both, and the transmitters divide exactly along this line (Fig.~\ref{fig:phone_radio}).
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,scale=0.95]
+% ---- unicast: point-to-point wiring
+\node[above] at (2.0,3.3) {\small \textbf{Address}: glutamate and GABA};
+\foreach \i in {0,...,4}{
+  \fill[blue!60!black] (0.2+0.9*\i,2.5) circle (0.1);
+  \fill[blue!60!black] (0.2+0.9*\i,0.6) circle (0.1);}
+\foreach \a/\b in {0/0,0/1,1/1,1/3,2/2,3/2,3/4,4/4,2/0}{
+  \draw[->,blue!60!black] (0.2+0.9*\a,2.38) -- (0.2+0.9*\b,0.72);}
+\fill[red!70!black] (1.1,1.55) circle (0.09);
+\pic[scale=1.2] at (1.75,1.9) {letter};
+\draw[->,red!70!black,thick] (1.1,1.55) -- (0.28,0.7);
+\draw[->,red!70!black,thick] (1.1,1.55) -- (1.95,0.72);
+\node[align=center,below] at (2.0,0.2) {\small billions of neurons,\\[-2pt]\small each with its own addressees,\\[-2pt]\small time: milliseconds};
+% ---- broadcast: one small source, global targets
+\begin{scope}[xshift=7.2cm]
+\node[above] at (1.8,3.3) {\small \textbf{Broadcast}: dopamine, \dots};
+\foreach \i in {0,...,8}{\fill[blue!60!black] (-0.2+0.5*\i,2.75) circle (0.08);}
+\fill[orange!85!black] (1.8,0.35) ellipse (0.35 and 0.18);
+\pic[scale=1.5] at (2.7,0.75) {mast};
+\foreach \x in {-0.2,0.3,0.8,1.3,1.8,2.3,2.8,3.3,3.8}{
+  \draw[->,orange!85!black] (1.8,0.5) .. controls (1.8,1.3) and (\x,1.6) .. (\x,2.62);}
+\node[align=center,below] at (1.8,0.1) {\small thousands to hundreds of thousands of neurons,\\[-2pt]\small one message to all,\\[-2pt]\small time: hundreds of milliseconds and longer};
+\end{scope}
+\end{tikzpicture}
+\caption{Two ways of transmitting. Left, the address bus, like mail with an address on the envelope; one neuron and two of its recipients are shown in red. Right, the broadcast bus, like a radio station: a small group of source neurons, and everyone receives the same message.}
+\label{fig:phone_radio}
+\end{figure}
+
+The \emph{address bus} is glutamate and GABA. The overwhelming majority of neurons release them. Each output leads to specific cells, the transmitter acts only within the narrow gap of the contact, and it acts fast: the recipient's ion channels open within a millisecond, and it is all over within a few milliseconds. This is the \emph{data} bus: it carries what the brain computes.
+
+The \emph{broadcast bus} is dopamine, serotonin, noradrenaline, and partly acetylcholine. They are released by tiny groups of neurons, but the output of each of these neurons branches incredibly widely. The transmitter is often released not into a narrow gap but into the extracellular space, where it spreads out and acts on everyone nearby. It acts slowly: rather than opening channels directly, it triggers a chain of chemical reactions inside the recipient. This bus carries not data but \emph{control parameters}, shared by large parts of the network, that change its operating mode: the gain, the learning rate, the signal ``that was good.'' That is why such transmitters are called \emph{modulators}. For a long time each such channel was thought to be a single number for the whole brain. Modern measurements have refined the picture: a channel is not one wire but a small bundle of parallel lines. The source neurons of one transmitter divide into subsystems with their own recipients and their own message, and how much transmitter to release on site is also adjusted by local signals~\cite{Ren2018,Poe2020}. The number of such lines is in the units or tens, not billions, so the channel remains a broadcast channel.
+
+If you need one picture from this chapter, here it is. The brain is a huge network with addressed data transfer, above which hang a few broadcast channels carrying control signals. A programmer will recognize a familiar design: computation plus a small set of control variables, each shared by a large part of the network.
+
+\section{\nt{GLUT}: The Positive Weight}
+
+Glutamate is the brain's main excitatory transmitter. When a neuron's output releases glutamate, channels open in the recipient through which sodium flows in, the voltage across the recipient's membrane rises, and its chance of firing a spike of its own increases. In the language of Fig.~\ref{fig:blackbox}, this is an input with a \emph{positive} weight, $w_i>0$.
+
+Who puts out glutamate? Almost everyone who transmits data over long distances: three-quarters to four-fifths of cortical neurons and most of the neurons that connect different brain regions. The brain's network is first and foremost a network of glutamate connections.
+
+One engineering detail. After release, the glutamate concentration in the gap shoots up a thousandfold, to about a millimolar, and decays with a time constant of about a millisecond~\cite{Clements1992}: glutamate diffuses out of the gap, and dedicated pump proteins carry it back into cells. Why? For the same reason a communication line returns the signal to zero after each symbol. If the transmitter were not cleared, the next spike would arrive on a ``busy'' line, and spikes a few milliseconds apart would merge.
+
+\section{\nt{GABA}: The Negative Weight}
+
+Imagine a network in which all weights are positive. If on average each spike gives rise to more than one next spike, activity grows exponentially and within a few steps engulfs the whole network. An electronics engineer will recognize a positive feedback loop with gain above one: the circuit saturates. To prevent this, negative weights are needed. Their main source is gamma-aminobutyric acid, GABA for short.
+
+GABA opens channels in the recipient that pass chloride ions. The chloride equilibrium potential lies near the resting potential or slightly below it, so open chloride channels hold the membrane near rest and keep the voltage from rising to threshold. This is an input with a \emph{negative} weight, $w_i<0$. GABA neurons make up a fifth to a quarter of cortical neurons~\cite{Hendry1987}. Their outputs are short, and they inhibit their nearest neighbors.
+
+Inhibition in the brain does much more than subtract. It works as negative feedback that holds the whole network at its operating point. In a normally working cortex, the excitatory and inhibitory currents arriving at a neuron are thought to balance each other almost exactly: this regime was predicted by theory~\cite{vanVreeswijk1996} and is seen in current measurements in living cortex~\cite{Haider2006}, and the neuron sits near threshold all the time. A circuit stabilized by strong negative feedback around an unstable point responds quickly and sensitively to small signals, an old engineering trick.
+
+\section{\nt{DOPA}: The Error Signal}
+
+The first broadcast channel is dopamine. Humans have on the order of half a million dopamine neurons, roughly one in a hundred seventy thousand; that is the count in the main one of their two groups~\cite{Pakkenberg1991}, so it is a lower bound. Their outputs spread to the regions that select actions.
+
+What does this channel transmit? The answer comes from experiments that record the spikes of dopamine neurons in an animal receiving a reward~\cite{Schultz1997}. From time to time the animal is unexpectedly given a drop of juice, and the dopamine neurons respond with a short burst of spikes. Then a lamp is lit before the juice, always one second ahead of it. Once the animal has learned this association, the neurons start responding with a burst to the \emph{lamp}, and to the juice itself, arriving right on time, they do not respond at all. And if the juice is withheld after the lamp, then at the moment it should have arrived the neurons \emph{fall silent}, and their rate drops below the usual level.
+
+The rule that explains all three cases (Fig.~\ref{fig:rpe}): the neurons report not how good things are but how much \emph{better or worse than expected} they are.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=3.4cm,y=1cm]
+\foreach \y/\lab in {2.8/{unexpected juice},1.4/{juice after lamp},0/{lamp, but no juice}}{
+  \draw[gray!70!black] (0,\y) -- (3,\y);
+  \draw[densely dotted,gray!60!black] (0,\y+0.3) -- (3,\y+0.3);
+  \node[left,align=right,font=\small] at (-0.03,\y+0.35) {\lab};}
+% row 1: juice without a cue -> burst at the juice
+\draw[very thick,orange!85!black] plot[domain=0:3,samples=120] (\x,{2.8+0.3+0.75*exp(-((\x-2.08)/0.07)^2)});
+\pic[scale=0.8] at (2,2.58) {juice};
+% row 2: cue then juice -> burst at the cue, nothing at the juice
+\draw[very thick,orange!85!black] plot[domain=0:3,samples=120] (\x,{1.4+0.3+0.75*exp(-((\x-1.08)/0.07)^2)});
+\pic[scale=0.85] at (1,1.15) {lamp}; \pic[scale=0.85] at (2,1.15) {juice};
+% row 3: cue, juice omitted -> burst at the cue, dip when the juice was due
+\draw[very thick,orange!85!black] plot[domain=0:3,samples=120] (\x,{0.3+0.75*exp(-((\x-1.08)/0.07)^2)-0.28*exp(-((\x-2.1)/0.12)^2)});
+\pic[scale=0.85] at (1,-0.25) {lamp}; \pic[scale=0.85] at (2,-0.25) {nojuice};
+\node[right,font=\scriptsize] at (2.36,0.1) {dip};
+\node[right,font=\scriptsize] at (2.13,3.75) {surprise!};
+\node[left,font=\scriptsize] at (0.97,2.25) {burst at the lamp};
+\node[above,font=\scriptsize] at (2,1.75) {nothing};
+\draw[->,gray!70!black] (0,-0.75) -- (3.05,-0.75) node[right,black,font=\small] {$t$};
+\draw[gray!60!black] (1,-0.8) -- (1,-0.7) node[below=2pt,font=\scriptsize] {lamp, $1\,\text{s}$};
+\draw[gray!60!black] (2,-0.8) -- (2,-0.7) node[below=2pt,font=\scriptsize] {juice, $2\,\text{s}$};
+\end{tikzpicture}
+\caption{Firing rate of \nt{DOPA} neurons in three experiments (schematic, after~\cite{Schultz1997}). The dotted line is the steady background rate. Lamp: the cue; drop: the juice; crossed-out drop: juice that was promised but not given. The response is the prediction error~\eqref{eq:rpe}.}
+\label{fig:rpe}
+\end{figure}
+
+A programmer familiar with reinforcement learning~\cite{SuttonBarto2018} will recognize this quantity at once. An agent learning to choose actions keeps an estimate $V(s)$ of how much reward it expects in state $s$. After each step it compares the expectation with what it got:
+\begin{empheq}[box=\keybox]{equation}
+\delta_t \;=\; r_t \;+\; \gamma\,V(s_{t+1}) \;-\; V(s_t) ,
+\label{eq:rpe}
+\end{empheq}
+and corrects the estimate: $V(s_t)\leftarrow V(s_t)+\alpha\,\delta_t$. Here $r_t$ is the reward received, $\gamma<1$ is the discount factor (how much less future reward is worth than immediate reward), and $\alpha$ is the learning rate. The quantity $\delta_t$ is called the \emph{temporal-difference error}.
+
+It behaves exactly like the dopamine neurons. Unexpected juice: $V$ is still zero, $r>0$, $\delta>0$. Learned juice: the lamp predicted the reward, $V(s_t)$ before the juice already equals $r$, and $\delta=0$. The juice did not come: $V(s_t)=r$ but $r_t=0$, $\delta<0$. And the burst moves to the lamp because it is at the moment of the lamp that the expectation jumps up: $\gamma V(s_{t+1})-V(s_t)>0$. The steps $t,t+1,\dots$ here are a convention of the algorithm: the body has no clock that ticks out steps, and we will obtain the same quantity in continuous time in Chapter~\ref{sec:dofa}.
+
+So dopamine is a broadcast of a scalar error signal $\delta$ to everyone who must learn from it. To a first approximation it is one wire for the whole brain and one number at each moment; how much of a bundle this wire really is, is taken up in Chapter~\ref{sec:dofaalt}.
+
+\section{The Other Broadcast Channels}
+
+For the other modulators there are only working hypotheses that translate their roles into the same language of global parameters~\cite{Doya2002}. Hold them as exactly that: hypotheses.
+
+\emph{\nt{NORA}, noradrenaline: gain.} There are even fewer noradrenaline neurons than dopamine neurons, by a rough estimate several tens of thousands, and their outputs spread through practically the entire brain. They become sharply active when something unexpected or important happens. Noradrenaline changes the steepness of the transfer characteristic of the recipient neurons: weak inputs become weaker, strong ones stronger. This is measured as follows: the recipient's background spikes are suppressed more than its response to the input, and the signal-to-noise ratio increases~\cite{Foote1975NE}. A simple model describes this with one number: if a neuron responds with rate $f=F\bigl(g\cdot u\bigr)$ to input current $u$, noradrenaline increases the gain $g$~\cite{AstonJones2005} (more in Chapter~\ref{sec:nora}). A network with large $g$ works with ``more contrast'' and decides faster; with small $g$ it works ``blurred'' and tries out more options, like a reinforcement-learning agent in exploration mode.
+
+\emph{\nt{ACET}, acetylcholine: learning rate.} Acetylcholine controls how much the network listens to the current input and how much to its own stored data. When the acetylcholine level is high, inputs from the sense organs are amplified, the internal, ``recalling'' connections are weakened, and at the same time weight changes are made easier~\cite{Hasselmo2006}. Roughly speaking, it is a ``write/read'' switch and, together with it, the learning rate $\alpha$.
+
+\emph{\nt{SERO}, serotonin: planning horizon.} What serotonin transmits is the least understood. One hypothesis ties it to the discount factor $\gamma$ in~\eqref{eq:rpe}: a high serotonin level corresponds to a willingness to wait for a large reward rather than grab a small one now. Serotonin neurons work steadily and slowly, a few spikes per second during waking, and fall almost silent in one of the phases of sleep~\cite{JacobsAzmitia1992}.
+
+All six transmitters are collected in Table~\ref{tab:transmitters}.
+
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{>{\raggedright}p{2.4cm}>{\raggedright}p{3.0cm}>{\raggedright}p{2.0cm}>{\raggedright\arraybackslash}p{5.2cm}}
+\toprule
+Neuron type & Fraction of neurons & Bus & Role in computation \\
+\midrule
+\nt{GLUT} (glutamate) & majority & address & positive weight, $w>0$ \\
+\nt{GABA} (GABA) & 20--25\% in the cortex & address & negative weight, $w<0$; stabilization \\
+\nt{DOPA} (dopamine) & $\sim 6\cdot10^{-6}$ & broadcast & prediction error $\delta$ \\
+\nt{NORA} (noradrenaline) & $\sim 6\cdot10^{-7}$ & broadcast & gain $g$ (hypothesis) \\
+\nt{ACET} (acetylcholine) & small & both & learning rate $\alpha$; ``write/read'' (hypothesis) \\
+\nt{SERO} (serotonin) & $\sim 3\cdot10^{-6}$ & broadcast & discounting $\gamma$ (hypothesis) \\
+\bottomrule
+\end{tabular}
+\caption{The brain's main transmitters in the language of computation. The right-hand column is a strong simplification: reliable for glutamate, GABA, and dopamine; for the others these are hypotheses.}
+\label{tab:transmitters}
+\end{table}
+
+\section{The Recipient Sets the Sign}
+\label{sec:receiver}
+
+I misled you a little when I said glutamate is a positive weight and GABA a negative one. No molecule carries a sign within it. A molecule is just a key. What happens when it is caught is decided by the \emph{lock}: the receptor on the recipient cell.
+
+The best example is dopamine. It has receptors of two families~\cite{Beaulieu2011}. At one it makes the cell easier to excite, at the other harder. In the region that selects actions, some neurons carry receptors of the first type and others of the second, and one and the same dopamine signal simultaneously strengthens one group and weakens the other. It is like a single broadcast packet that different network nodes interpret differently.
+
+\begin{keyblock}
+\begin{proposition}[The recipient sets the meaning of the message]
+\label{prop:receptor}
+The sign and speed of a transmitter's action are set not by the transmitter itself but by the receptor it binds to. Receptors come in two kinds. \emph{Ionotropic} receptors are themselves ion channels and open within a fraction of a millisecond: this is direct control of current, like the gate of a transistor. \emph{Metabotropic} receptors trigger a chain of chemical reactions inside the cell and act over hundreds of milliseconds and longer: this is more like a write to a settings register that changes the cell's subsequent operation. The address bus speaks mainly through the former, the broadcast bus mainly through the latter.
+\end{proposition}
+\end{keyblock}
+
+Why, then, can one say ``glutamate excites'' at all? Because almost all the glutamate receptors met in practice are excitatory, and almost all GABA receptors are inhibitory. This is not a law of nature but a very reliable convention, and rule~\eqref{eq:dalesign} rests on it.
+
+\section{What to Take Away}
+
+The overwhelming majority of neurons form the addressed data bus, with weights of a single sign per neuron; a tiny minority form broadcast channels that deliver a few shared control signals to large parts of the brain. About two neurons in every hundred thousand, and on them depends how the entire rest of the network learns and in what mode it works. To an engineer this is no surprise: every computer has vastly fewer control registers than memory cells, and yet the machine does not work without them.
+
+In the next chapter we will test what a network of \nt{GLUT} neurons alone, the most numerous type, can compute while running in continuous time.
+
+\section{Exercises}
+
+\begin{exercise}[\lvlA]
+\label{ex:01:1}
+\emph{Piles and wires.} From Table~\ref{tab:types} (midpoint of each range on a logarithmic scale; \nt{ACET}: $10^5$ outputs): (a)~if a neuron were a person, how many Earth populations would the \nt{GLUT} neurons make, and how big a city would all the broadcast neurons make? (b)~By what factor does the share of terminals of \nt{DOPA}, \nt{SERO}, \nt{NORA}, and \nt{ACET} exceed the share of their neurons?
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:01:2}
+\emph{Return to zero.} Glutamate in the gap decays as $c_0e^{-t/\tau_c}$, $c_0=1\mM$, $\tau_c=1\ms$; the recipient detects concentrations above $10$~\textmu M. (a)~How long is the line ``busy'' after one release? (b)~The pumps are partly blocked, $\tau_c=10\ms$. Up to what release rate does the line still manage to clear?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:01:3}
+\emph{Where the burst moves.} In the experiment of Fig.~\ref{fig:rpe}, the lamp is followed by states $s_0\to\dots\to s_{K-1}$ with step $\Delta$, $T=K\Delta$; the reward $r$ arrives on the last transition, and the moment of the lamp is unpredictable. Find the learned $V(s_k)$ and the response $\delta$ to the lamp. Setting $\gamma=e^{-\Delta/\tau_\gamma}$, find $\tau_\gamma$ for $T=1$~s, $\Delta=0.1$~s, $\gamma=0.95$.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:01:4}
+\emph{Simulation: learning from error.} Simulate the chain of Exercise~\ref{ex:01:3} with $K=10$, $\gamma=0.95$, $r=1$ and the rule $V(s_t)\leftarrow V(s_t)+\alpha\delta_t$. On which trial $n^*$ does the response to the lamp first overtake the response to the juice for $\alpha=0.05$, $0.1$, $0.2$, $0.5$? How does $n^*$ depend on $\alpha$?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:01:5}
+\emph{Design: broadcasting one number.} The number $\delta$ must reach all $10^{10}$ neurons; every recipient, relays included, must receive $10$ terminals from the previous layer, and each link adds $1\ms$. How many neurons and links does the most economical relay tree need with $10^4$ outputs per neuron (\nt{GLUT}) and with $10^{5.5}$ (\nt{DOPA})?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:01:6}
+\emph{Why balance is sensitive.} A network is $80\,\%$ \nt{GLUT} and $20\,\%$ \nt{GABA}, all-to-all with weights $J_E/N$ and $-J_I/N$; $\tau\dot r=-r+Wr+h$. At $J_E=10$ the only nonzero eigenvalue of $W$ is $0.5$. Find the ratio of inhibitory to excitatory current, and by what percentage it suffices to weaken inhibition for the network to run away into an avalanche.
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:01:7}
+\emph{Research: is \nt{SERO} the $\gamma$?} By Exercise~\ref{ex:01:3}, the response of \nt{DOPA} neurons to the lamp is $re^{-T/\tau_\gamma}$. Delays $T=1,\dots,5$~s, $n$ presentations each, and $\ln\delta$ is measured with scatter $0.5$. How large must $n$ be to tell $\tau_\gamma=2$~s from $2.4$~s (level $0.05$, power $0.8$)? What mechanism other than $\gamma$ would give the same decline with $T$?
+\end{exercise}

@@ -1,0 +1,59 @@
+\chapter{A Machine Without a Conductor}
+% full version: chapters/02_glutcomputer.tex
+
+Your computer has a conductor: the clock generator. Billions of times a second it gives the beat, and all the elements of the circuit switch at once, in step. The brain has no conductor at all. Each neuron works on its own: signals arrive at it whenever they happen to, and leave it whenever they happen to. Let us see what such a machine can compute if we take only \nt{GLUT} neurons, the ``pluses'' alone.
+
+\section*{The Leaky Bucket}
+
+It helps to picture a neuron as a bucket with a hole. Each incoming spike is a scoop of water. The water slowly drains out through the hole. If scoops arrive often, the water has time to rise to the brim, and the bucket tips over: the neuron clicks, the bucket is empty, and everything starts again. If scoops arrive rarely, the water has time to drain, and nothing happens.
+
+\pencilfig{2}{\pencilart{2}}{A neuron is a leaky bucket: drops of input fill it, the water drains away; when it reaches the line, a click.}
+
+The hole is the main difference between a neuron and a logic gate. A neuron does not remember an incoming spike forever, only for some milliseconds. Everything that arrives within this window adds up; whatever came earlier is forgotten.
+
+\section*{``Or'' and ``And''}
+
+If one scoop is enough to tip the bucket, the neuron fires on any input. This is ``or.'' If two scoops are needed, things get interesting: without a conductor, ``did both arrive?'' makes no sense until we say \emph{within what time}. The neuron fires only if the two spikes arrive almost together, before the first scoop drains away. This is ``and in time,'' a coincidence detector. For some neurons the window is a few milliseconds; for hearing neurons, a fraction of a millisecond.
+
+\section*{What ``Pluses'' Alone Cannot Do}
+
+Try to build ``not'': a neuron that works when its input is silent. It will not work: silence pours no water into the bucket. And this holds not only for one neuron but for any network of ``pluses'' alone: if you strengthen the inputs, no neuron in such a network will become less active. Hence the nastiest property: \emph{activity cannot be put out by activity}. A fire that has flared up can be stopped in only one way: stop throwing on wood.
+
+Nature found a way around. In many sense organs the same stimulus is carried by two groups of neurons. In the eye some cells report ``it got brighter,'' others ``it got darker.'' If instead of one wire you have a pair of wires, ``yes'' and ``no,'' then ``not'' comes for free: just swap the wires. With such pairs you can build any logic circuit from ``pluses'' alone, and even tell that the computation is finished: in every pair exactly one wire has lit up. Engineers build asynchronous circuits this way, circuits that work correctly with any delays.
+
+\section*{Time from Delays}
+
+Without a conductor there is no common clock, but time can still be computed. Sound from a source off to one side reaches the near ear earlier than the far one, by a fraction of a millisecond. Let us run a wire from the left ear left to right along a row of coincidence detectors, and one from the right ear right to left. The two signals run toward each other and meet at the point both reach at the same moment. The detector at exactly that spot fires. The time difference has turned into the \emph{number} of the neuron that fired, that is, into the direction of the sound. The precision is about ten microseconds, even though each single neuron is far less precise: what saves the day is that there are many detectors.
+
+\pencilfig{102}{%
+% delay line: the left-ear wire runs right along the top, the right-ear wire runs left along the bottom
+\draw[pen=pcBlue] (0,0.6) -- (5.6,0.6); \draw[pen=pcBlue] (6.0,-0.6) -- (0.4,-0.6);
+\foreach \i in {1,...,7}{
+  \pgfmathsetmacro{\x}{0.75*\i}
+  \draw[pen=pcBlue] (\x,0.6) -- (\x,0.24); \draw[pen=pcBlue] (\x,-0.6) -- (\x,-0.24);
+  \ifnum\i=5 \draw[dotpen=pcAmber, wash=pcAmber, line width=1.1pt] (\x,0) circle (0.2);
+  \else \draw[dotpen=pcBlue, wash=pcBlue] (\x,0) circle (0.2); \fi}
+\draw[arr=pcBlue] (0.95,0.78) -- (1.75,0.78); \draw[arr=pcBlue] (5.3,-0.78) -- (4.5,-0.78);
+\node[lbl, anchor=east] at (-0.05,0.6) {left ear};
+\node[lbl, anchor=west] at (6.05,-0.6) {right ear};
+\node[lbl, text=pcAmber!70!black, anchor=south] at (3.75,0.95) {they meet here};
+\draw[arr=pcAmber!70!black] (3.75,0.95) -- (3.75,0.68);
+% sound source on the left
+\draw[penlite] (-1.25,-0.25) -- (-1.05,-0.25) -- (-0.8,-0.45) -- (-0.8,0.05) -- (-1.05,-0.15) -- (-1.25,-0.15) -- cycle;
+\foreach \r in {0.2,0.35}{\draw[penlite] ($(-0.75,-0.2)+(-40:\r)$) arc (-40:40:\r);}
+\node[lbl, anchor=north] at (-0.95,-0.5) {sound on the left};
+}{Sound from the left reaches the left ear first, its signal gets farther along, and the meeting lands to the right of the middle. The number of the neuron that fires is the direction of the sound.}
+
+\section*{Memory Is a Campfire}
+
+Take a group of neurons that strongly excite one another. If you light it with a brief signal, it will keep itself going, like a campfire that feeds its own flames. The signal is over, but the group keeps burning: it remembers that the signal was there. This is a memory cell. And if the signal was too brief, the fire has no time to catch and dies out.
+
+But here is the trouble: how do you erase such a memory? With activity, there is no way. All that remains is to wait until the neurons tire and the fire burns out.
+
+\section*{A Timer Started by an Event}
+
+Let us chain the groups: the first lights the second, the second the third. Push the first, and a wave runs down the chain like a row of falling dominoes. The number of the fallen domino tells how much time has passed since the push. This is not a clock that always ticks but a timer that is switched on by an event and runs once. In songbirds, during a song, the neurons of one region fire strictly in turn, much like such a chain.
+
+So a lot can be built from ``pluses'' alone. Three things are missing: picking one out of many, erasing memory on command, and keeping the network from catching fire. All three come from the ``minuses,'' the subject of the next chapter.
+
+\fullversion{2}

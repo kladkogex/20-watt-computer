@@ -1,0 +1,194 @@
+\chapter{神经元在睡眠中做什么}
+\chaptermark{睡眠}
+\label{sec:sleep}
+
+\section{睡眠不是关机，而是另一种模式}
+
+工程师看到一台关掉的计算机，会说：它什么也没做。对沉睡的大脑却不能这么说。神经元在睡眠中并不沉默：在深睡眠中，皮层照样发放脉冲；在快速眼动睡眠中，发放几乎和白天一样多。改变的不是神经元\emph{是否工作}，而是它们\emph{如何}工作。睡眠是这台机器的一组模式，切换这些模式的正是白天也在工作的那些广播通道。
+
+对每种模式，都可以写出“寄存器状态”（表~\ref{tab:sleepmodes}）。白天 \nt{ACET}、\nt{NORA} 和 \nt{SERO} 都在工作，传感器接通，肌肉听从指挥。在慢波深睡眠中，这三个通道都安静下来，来自感官的输入减弱\cite{Hasselmo1999}：皮层中乙酰胆碱的释放下降，\nt{NORA} 和 \nt{SERO} 神经元发放脉冲比白天少\cite{Marrosu1995,AstonJonesBloom1981,McGintyHarper1976}。快速眼动睡眠中的图景很奇特：\nt{ACET} 重新升到白天的水平\cite{Marrosu1995}，而 \nt{NORA} 和 \nt{SERO} 几乎完全沉默\cite{AstonJonesBloom1981,McGintyHarper1976,JacobsAzmitia1992}。快速眼动睡眠中身体的肌肉是关闭的：控制它们的 \nt{ACET} 神经元经 \nt{GABA} 和 \nt{GLYC} 受到强烈抑制\cite{BrooksPeever2012}——这正是第~\ref{sec:gaba}~章中的禁止，只不过一次施加在整个输出上。
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{3.1cm}>{\raggedright}p{2.9cm}>{\raggedright}p{3.2cm}>{\raggedright\arraybackslash}p{3.4cm}}
+\toprule
+& 清醒 & 慢波睡眠 & 快速眼动睡眠 \\
+\midrule
+\nt{ACET}（写入，第~\ref{sec:acet}~章） & 高 & 低 & 高 \\
+\nt{NORA}（增益，第~\ref{sec:nora}~章） & 中等，有爆发 & 低 & 几乎沉默 \\
+\nt{SERO}（第~\ref{sec:serocomputer}~章） & 中等 & 低 & 几乎沉默 \\
+来自传感器的输入 & 接通 & 减弱 & 减弱 \\
+到肌肉的输出 & 接通 & 减弱 & 被抑制关闭 \\
+皮层活动 & 平稳 & 慢摆动：工作—静默 & 平稳，如同白天 \\
+\bottomrule
+\end{tabular}
+\caption{这台机器在三种模式下的寄存器状态。所有各行均已测量；\nt{ACET}、\nt{NORA} 和 \nt{SERO} 的水平来自按睡眠阶段所作的直接记录\cite{Marrosu1995,AstonJonesBloom1981,McGintyHarper1976}。}
+\label{tab:sleepmodes}
+\end{table}
+
+\section{何时入睡：带迟滞的继电器}
+
+是什么决定机器何时切换到睡眠？一个由两部分组成的简单方案效果很好\cite{Borbely1982}。第一部分是\emph{睡眠压力} $S$，它在我们清醒时积累，在睡眠时释放。这是一个白天充电、夜里放电的电容器：
+\begin{empheq}[box=\keybox]{equation}
+\frac{\dd S}{\dd t} \;=\; \frac{1-S}{\tau_r}\ \ \text{（清醒）},\qquad
+\frac{\dd S}{\dd t} \;=\; -\frac{S}{\tau_d}\ \ \text{（睡眠）} .
+\label{eq:sleeppressure}
+\end{empheq}
+第二部分是两个阈值：当 $S$ 达到上阈值 $H(t)$ 时机器入睡，当 $S$ 降到下阈值 $L(t)$ 时醒来。两个阈值都随第~\ref{sec:chemoutput}~章的昼夜节律平缓摆动。这就得到一个带迟滞的继电器——第~\ref{sec:bistable}~节的施密特触发器——它与电容器一起构成一个弛张振荡器，由昼夜节律~\eqref{eq:pll}~进行相位校准。
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=0.16cm,y=4.2cm]
+\foreach \a/\b in {0/4.3,21.2/29.3,45.4/53.4,69.5/72}{\fill[blue!8] (\a,0) rectangle (\b,1);}
+\draw[->,gray!70!black] (0,0) -- (75,0) node[right,font=\small,black] {$t$，h};
+\draw[->,gray!70!black] (0,0) -- (0,1.08) node[left,font=\small,black] {$S$};
+\foreach \t in {0,24,48,72}{\draw[gray!60!black] (\t,-0.02) -- (\t,0.02); \node[below,font=\scriptsize] at (\t,0) {\t};}
+\draw[thick,densely dashed,red!70!black] plot file {figures/sleep_H.dat};
+\draw[thick,densely dashed,green!45!black] plot file {figures/sleep_L.dat};
+\draw[very thick,blue!60!black] plot file {figures/sleep_S.dat};
+\node[font=\scriptsize,red!70!black,anchor=west] at (73,0.72) {$H$：入睡};
+\node[font=\scriptsize,green!45!black,anchor=west] at (73,0.24) {$L$：醒来};
+\node[font=\scriptsize,blue!60!black] at (25.25,0.93) {睡眠};
+\node[font=\scriptsize,blue!60!black] at (49.4,0.93) {睡眠};
+\end{tikzpicture}
+\caption{$\tau_r=18.2$~h、$\tau_d=4.2$~h 时的睡眠压力 $S$~\eqref{eq:sleeppressure}。白天 $S$ 充电到上阈值 $H$，夜里（阴影部分）放电到下阈值 $L$；两个阈值都随昼夜节律摆动。机器自己进入大约 $16$ 小时清醒、$8$ 小时睡眠的模式。}
+\label{fig:twoprocess}
+\end{figure}
+
+在我们的模型中，取常用值 $\tau_r=18.2$~h 和 $\tau_d=4.2$~h，机器会自己进入 $16.1$ 小时清醒、$8.0$ 小时睡眠的状态（图~\ref{fig:twoprocess}）。模型还解释了一件看似奇怪的事：四十小时不睡之后，压力达到 $0.90$，但模型中的恢复性睡眠只持续 $8.8$ 小时，而不是比平时多一整天。放电是指数式的，高电荷很快就放掉；“欠债”靠睡眠的深度而不是长度来偿还。
+
+物理上扮演 $S$ 角色的是什么？一个有力的候选者是腺苷，即附录~\ref{sec:othermediators}~中的“负荷计数器”：它的浓度在清醒期间上升，在睡眠中下降\cite{PorkkaHeiskanen1997,Dunwiddie2001}。睡眠压力恰恰就是腺苷而不是别的东西，这是假说。
+
+\section{慢波睡眠：整个网络成为弛张振荡器}
+
+在深睡眠中，皮层神经元以整个群体为单位轮流工作：每秒不到一次，它们一起开启几百毫秒（\emph{工作状态}），又一起沉默（\emph{静默状态}）：这种摆动的频率低于 $1$~Hz，在麻醉下最常见的是 $0.3$--$0.4$~Hz\cite{Steriade1993}。这种慢摆动可以用我们已有的部件组装出来。取一群自身反馈很强的 \nt{GLUT} 神经元——即第~\ref{sec:glutcomputer}~章中有两个稳定状态的记忆——再加上慢疲劳，就像第~\ref{sec:muscles}~章的节律发生器那样：
+\begin{empheq}[box=\keybox]{equation}
+\tau\,\frac{\dd r}{\dd t} = -r + F\bigl(w\,r + I - a\bigr),
+\qquad
+\tau_a\,\frac{\dd a}{\dd t} = -a + b\,r .
+\label{eq:updown}
+\end{empheq}
+群体开启、工作、疲劳；疲劳 $a$ 吃掉上状态，群体落入静默；在静默中疲劳消退，下状态消失，群体再次开启。这就得到与睡眠压力相同的弛张振荡器，只是快了大约八万倍。
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=2.9cm,y=1.0cm]
+\begin{scope}[yshift=1.9cm]
+\draw[->,gray!70!black] (0,0) -- (4.1,0);
+\draw[->,gray!70!black] (0,0) -- (0,1.25) node[left,font=\small,black] {$r$};
+\draw[thick,blue!60!black] plot file {figures/updown_sleep.dat};
+\node[font=\scriptsize,anchor=west] at (4.15,0.5) {睡眠：$b=5$};
+\end{scope}
+\draw[->,gray!70!black] (0,0) -- (4.1,0) node[right,font=\small,black] {$t$，s};
+\draw[->,gray!70!black] (0,0) -- (0,1.25) node[left,font=\small,black] {$r$};
+\draw[thick,red!70!black] plot file {figures/updown_wake.dat};
+\node[font=\scriptsize,anchor=west] at (4.15,0.5) {白天：$b=1$};
+\foreach \t in {0,1,2,3,4}{\draw[gray!60!black] (\t,-0.05) -- (\t,0.05); \node[below,font=\scriptsize] at (\t,0) {\t};}
+\end{tikzpicture}
+\caption{同一个群体~\eqref{eq:updown}~在两种模式下：$w=5$，$I=2$，$\theta=2.5$，$\tau=10\ms$，$\tau_a=0.3$~s。疲劳强时（$b=5$，如同慢波睡眠），群体在工作和静默之间摆动，周期为 $1.1$~s（模型值；皮层中周期超过一秒，麻醉下约为 $3$~s）。减弱疲劳（$b=1$）——乙酰胆碱就是这样起作用的——同一个群体便平稳地工作。}
+\label{fig:updown}
+\end{figure}
+
+那么，是什么把网络从摆动转为白天的平稳工作？乙酰胆碱抑制神经元中产生疲劳的慢电流\cite{McCormick1992}。在我们的模型中，疲劳强时（$b=5$），群体以 $1.1$~s 的周期摆动——比实测的摆动快，但数量级相同——若按整数个周期平均，约有 $35\%$ 的时间在工作；疲劳弱时（$b=1$），同一个群体平稳地工作（图~\ref{fig:updown}）。一个寄存器——\nt{ACET} 的水平——就把振荡器切换成了放大器。在睡眠中，慢摆动之上还叠加着每秒 $7$--$15$ 次的较快节律爆发；它们由皮层和一个中间中继核团之间的 \nt{GLUT}--\nt{GABA} 环路产生\cite{SteriadeMcCormickSejnowski1993}，与第~\ref{sec:gaba}~章的节律是近亲。
+
+\section{重放：快进播放白天}
+
+在第~\ref{sec:acet}~章中我们看到，在慢波睡眠中，白天一起工作的神经元会再次一起发放，并且顺序相同。再补充一个工程细节：重放是\emph{快进}的。白天占几秒的序列，在睡眠中只用十分之几秒就播放完\cite{Nadasdy1999}：在海马中大约快二十倍\cite{LeeWilson2002}，在皮层中快六七倍\cite{Euston2007}。而且重放并不是随时发生的：一个区域中短暂的重放爆发会与皮层中工作—静默的摆动以及快速的节律爆发对齐。如果人为增强这种协调，记忆就会改善\cite{Maingret2016}——这已经是因果关系，而不是巧合。
+
+机器为什么要快进播放白天？工程师熟悉一种称为\emph{灾难性遗忘}的困难：一个网络如果一件接一件地连续学习新东西，就会破坏旧的东西。解决办法是\emph{交错}：把新东西和旧东西混在一起，小批量地多次学习。互补学习系统假说\cite{McClelland1995}认为，快速记忆把白天整体记录下来，然后在睡眠中一点一点地、交错地、多次地向慢速的皮层重放。这正是第~\ref{sec:acet}~章中“快速缓冲区—慢速存储器”的组合，也是第~\ref{sec:motorlearning}~章中快慢两个学习者的组合。重放及其协调已有测量；其目的是对慢速记忆进行交错训练，这是有充分依据的假说。
+
+\section{权重的重新归一化}
+
+白天，第~\ref{sec:dofa}~章的赫布规则主要是增强连接。如果只增强，权重就会增长，能耗也随之增长，而灵敏度下降：所有输入都很强的神经元将无法区分它们。按照\emph{突触稳态}假说\cite{TononiCirelli2014}，睡眠的用途之一就是把权重恢复到工作水平：所有连接按同一比例减弱，因此它们的\emph{比值}——也就是学到的东西——得以保留。对工程师来说，这就是归一化，就像规则~\eqref{eq:oja}~那样，只不过不是在运行中进行，而是在单独的时间段进行。
+
+直接测量与此并不矛盾：在小鼠中，睡眠后皮层突触的接触面积比清醒后小约 $18\%$，减小量与大小成正比，而最大、最稳定的接触几乎不变\cite{deVivo2017}。权重的缩放已有测量；这是睡眠的主要任务，则是假说。
+
+\section{快速眼动睡眠：与输入输出断开的机器}
+
+在快速眼动睡眠中，皮层的工作几乎和白天一样，但来自感官的输入减弱，到肌肉的输出被抑制关闭。对工程师来说，这是一个熟悉的模式：\emph{台架测试}。电路满负荷运行，但它的输入接到内部信号发生器上，输出与执行机构断开，以免弄坏任何东西。按照一种假说，梦正是对白天建立起来的世界模型进行的这种内部试运行；网络此时究竟在做什么、是否在学习，尚不清楚。这里测量到的只有表~\ref{tab:sleepmodes}~中记录的内容：哪个通道开着，哪个沉默，以及输出被封锁。
+
+\section{维护与局部睡眠}
+
+长期以来人们认为，睡眠时细胞间隙扩大，大脑能更快地冲洗掉代谢产物\cite{Xie2013}。最近用另一种方法测量冲洗的实验得到了相反的结果：睡眠时冲洗更慢\cite{Miao2024}。这个问题目前悬而未决，我们也让它保持开放。
+
+另一个事实更可靠：睡眠是局部网络的属性，而不是整台机器同时的属性。如果长时间不让动物睡觉，那么在动物清醒并活动时，它皮层的个别区域会短暂地陷入静默，就像在慢波睡眠中一样，而在这些时刻动物更容易出错\cite{Vyazovskiy2011}。每个网络自己疲劳，自己切换；当广播通道把所有网络同时切换时，就形成了全局模式。
+
+\begin{keyblock}
+\begin{proposition}[睡眠是一组模式]
+\label{prop:sleep}
+睡眠中神经元并不关闭：广播通道把机器切换到别的模式。何时睡眠，由经昼夜节律校准的带迟滞继电器~\eqref{eq:sleeppressure}~决定。在慢波睡眠中，网络成为弛张振荡器~\eqref{eq:updown}，并快进重放白天；在快速眼动睡眠中，它在与输入和输出断开的状态下工作。模式、重放和权重缩放都已测量；它们的目的——交错学习和重新归一化——是有充分依据的假说。
+\end{proposition}
+\end{keyblock}
+
+\section{小结}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{3.2cm}>{\raggedright}p{4.4cm}>{\raggedright\arraybackslash}p{5.2cm}}
+\toprule
+发生了什么 & 怎样实现 & 已知什么 \\
+\midrule
+模式切换 & 寄存器 \nt{ACET}、\nt{NORA}、\nt{SERO}（表~\ref{tab:sleepmodes}） & 已测量 \\
+何时睡眠 & 电容器 $S$ 和带迟滞的继电器~\eqref{eq:sleeppressure} & 模型很好地描述了实验；腺苷作为 $S$ 是假说 \\
+慢摆动 & 带反馈和疲劳的群体~\eqref{eq:updown} & 摆动已测量；模型是最简单的电路 \\
+快进播放白天 & 快 $6$--$20$ 倍、与摆动协调的重放 & 已测量；增强协调可改善记忆 \\
+为什么要重放 & 对慢速记忆的交错训练 & 有充分依据的假说 \\
+权重重新归一化 & 睡眠中连接的缩放 & 接触减小已测量；作为睡眠的主要作用是假说 \\
+快速眼动睡眠 & 在输入和输出断开时工作 & 模式已测量；目的未知 \\
+冲洗 & 细胞间隙扩大 & 结果相互矛盾 \\
+局部睡眠 & 个别区域陷入静默 & 已测量 \\
+\bottomrule
+\end{tabular}
+\caption{神经元在睡眠中做什么。}
+\label{tab:sleep}
+\end{table}
+
+表~\ref{tab:sleep}~汇总了本章。睡眠原来不是机器工作中的暂停，而是它在运行中的维护：由同样的广播通道切换模式，由与步行节律相同的部件构成振荡器，为慢速记忆快进播放白天，以及重新归一化权重。白天机器写入，夜里它重写并整理写下的东西。
+
+\section{习题}
+
+\begin{exercise}[\lvlA]
+\label{ex:20:1}
+\emph{没有昼夜节律的继电器。}设阈值恒定：$H=0.67$，$L=0.17$（图~\ref{fig:twoprocess}~模型阈值的平均值）。由~\eqref{eq:sleeppressure}~推出 $\tau_r=18.2$~h、$\tau_d=4.2$~h 时清醒和睡眠的时长以及振荡器的周期。为什么阈值摆动的模型仍然达到 $16.1+8.0=24$~h？这一效应属于第~\ref{sec:chemoutput}~章的哪种器件？
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:20:2}
+\emph{睡眠债。}在压力 $S_0$ 下开始的睡眠持续 $t_s=\tau_d\ln(S_0/L)$，$\tau_d=4.2$~h，$L$ 是醒来时的下阈值。(a)~$40$~h 不睡后 $S_0=0.90$，睡眠持续了 $8.8$~h。$L$ 是多少？在通常的 $L\approx0.092$ 下睡眠会持续多久？(b)~一夜之间突触接触面积减少 $18\%$。白天权重应增长多少？
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:20:3}
+\emph{设计阈值。}选取恒定阈值 $H$ 和 $L$，使 $\tau_r=18.2$~h、$\tau_d=4.2$~h 的继电器~\eqref{eq:sleeppressure}~恰好给出 $16$~h 清醒和 $8$~h 睡眠。如果某天夜里在 $4$ 小时后被叫醒，这样的机器比阈值摆动的机器差在哪里？
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:20:4}
+\emph{慢摆动的周期。}在模型~\eqref{eq:updown}~中，$F(x)=1/\bigl(1+e^{-(x-\theta)/k}\bigr)$，$w=5$，$I=2$，$\theta=2.5$，$k=0.25$，$b=5$，$\tau\ll\tau_a=0.3$~s。(a)~求曲线 $r=F(wr+I-a)$ 的拐点 $a_{\text{上}}$ 和 $a_{\text{下}}$，工作状态和静默状态分别在这里消失。(b)~取工作时 $r\approx1$、静默时 $r\approx0$，求周期和工作时间比例。
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:20:5}
+\emph{摆动何时关闭。}在习题~\ref{ex:20:4}~的模型中，不动点位于曲线 $a=wr+I-F^{-1}(r)$ 与直线 $a=br$ 的交点。只要交点位于中间分支、在两个拐点之间，振荡就会持续。$b$ 为何值时如此？\nt{ACET} 如何通过改变 $b$ 把振荡器切换成放大器？
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:20:6}
+\emph{建模：欠债还是相位。}在 \texttt{sleep\_models.py} 中，取 $48$~h 后的第一次醒来，让机器保持清醒 $D=24$、$32$、$40$、$48$、$64$~h（\texttt{stay\_awake}，\texttt{days=8}）。每个 $D$ 下恢复性睡眠持续多久？是什么决定了它的时长？
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:20:7}
+\emph{建模：遗忘与交错。}线性神经元 $y=\mathbf w\cdot\mathbf x$，$n=40$，按规则 $\mathbf w\leftarrow\mathbf w-0.5\,(y-y^*)\,\mathbf x$ 学习。任务 A 和 B 各有 $10$ 个模式，$x_j\sim\mathcal N(0,1/n)$，$y^*=\pm1$。先学 $200$ 轮 A、再学 $200$ 轮 B 之后，A 上的均方误差是多少？A 和 B 交错学习 $200$ 轮之后呢？
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:20:8}
+\emph{研究：交错还是重新归一化？}习题~\ref{ex:20:7}~的神经元加上阈值；两种夜间程序：(i)~所有权重乘以 $0.82$；(ii)~旧模式与新模式交错重复。每种程序对权重比值和神经元的回答有什么影响？如何根据睡眠后突触的大小区分这两种假说？
+\end{exercise}

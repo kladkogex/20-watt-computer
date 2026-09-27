@@ -1,0 +1,237 @@
+\chapter{\nt{SERO}神经元计算什么}
+\label{sec:serocomputer}
+
+\section{第一个广播通道}
+
+到目前为止，书中所有的神经元都通过寻址总线通信：\nt{GLUT}和\nt{GABA}把脉冲发给确定的接收者，我们也弄清了这样的网络计算什么、用什么语言说话。现在转向第~\ref{sec:buses}~节中的第二条总线——广播总线。它的第一个通道是\nt{SERO}。和以前一样，我们只允许自己使用活体中真实存在的东西。
+
+本章会出现三种器件，以后所有广播通道都会用到它们：一种神经元，在平稳的背景输入下自己工作，直到被叫停；一根导线，实际上是一块组织体积；以及用缓慢的浓度代替单个脉冲。第~\ref{sec:dofa}--\ref{sec:acet}~章中的\nt{DOPA}、\nt{NORA}和\nt{ACET}也由同样的零件搭成。
+
+从工程师的角度看，\nt{SERO}神经元有四个重要的不同之处。
+
+\emph{第一：符号由接收者选择。}血清素的受体两种符号都有，规则~\eqref{eq:dalesign}在这里不适用：符号不由发送者决定，而由接收者的受体决定（命题~\ref{prop:receptor}）~\cite{BarnesSharp1999}。
+
+\emph{第二：只要有平稳的背景输入，\nt{SERO}神经元就自己工作。}清醒时它平稳地每秒发放几个脉冲，并不需要每个脉冲都有一次推动：这是一个起搏器。但它需要持续的背景输入。在脑片中没有这种输入，大多数这类细胞保持沉默；如果通过$\alpha_1$受体给予去甲肾上腺素，平稳的节律就会恢复，而阻断这些受体则使节律熄灭~\cite{VandermaelenAghajanian1983}。在体内，这个背景来自\nt{NORA}。对电路而言，这是一个需要供电的振荡器：只要有电，它就自己工作，直到被抑制叫停。
+
+\emph{第三：它很慢。}血清素受体几乎都是代谢型的：它们自己不打开通道，而是在细胞内启动一连串反应。响应很慢：经主要受体的抑制性电流在大约一秒内升起又衰减~\cite{CourtneyFord2016}——比\nt{GLUT}快突触的响应长几十倍。
+
+\emph{第四：它把神经递质释放到体积中，而不是导线里。}在\nt{SERO}神经元输出到达的区域，血清素常常不是释放到狭窄的突触间隙，而是释放到细胞间隙中并向四周扩散~\cite{Bunin1998}。接收者感受到的是浓度，无法知道分子来自哪个发送者。
+
+在这样的时间尺度上，单个脉冲已经不重要，因此我们用频率$r_j$和浓度来描述网络。神经元$j$释放递质的那个体积中，血清素浓度$c$因释放而上升，又因递质被泵回而下降：
+\begin{empheq}[box=\keybox]{equation}
+\tau_c\,\frac{\dd c}{\dd t} \;=\; -c \;+\; \kappa\sum_j r_j ,
+\qquad
+r_i \;=\; f_i\bigl(b_i + s_i\,g\,c\bigr), \quad s_i=\pm1 .
+\label{eq:seroneuron}
+\end{empheq}
+这是读取脉冲流的又一种方式，补充了命题~\ref{prop:reader}：体积既看不到单个脉冲，也看不到它们的顺序，只看到在时间$\tau_c$内平均的频率。第一个方程就是与膜相同的 RC 电路：$\tau_c$是递质在体积中的寿命，它没有被直接测量，我们取其量级为一秒；$\kappa$是一个脉冲贡献的递质量。第二个方程描述接收者：$b_i$是它自身的输入，起搏器的$b_i$为正（其中也包括来自\nt{NORA}的平稳背景输入）；$g$是受体的灵敏度；符号$s_i$由接收者选择；$f_i$是不减的传递特性。
+
+\section{一个神经元实现“非”}
+
+取一个带抑制性受体的起搏器，$s=-1$。周围没有血清素时，它靠自身输入$b$工作。血清素出现后，输入减少$gc$，若$gc>b$，神经元就沉默。这就是“非”：输入没有时，输出才有。它只用了一个神经元（图~\ref{fig:serogates}）。命题~\ref{prop:monotone}在这里不适用：它要求权重为正。
+
+如果同一个起搏器受到来自两个不同体积的血清素作用，那么只要其中至少一个有血清素，它就沉默。这是“或非”，而用“或非”可以搭出任何逻辑函数。这里不需要\nt{GLUT}网络的双导线编码：信号的缺失由那些一直工作、直到被叫停的神经元来计算。
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  nrn/.style={circle,draw,very thick,fill=blue!6,minimum size=0.95cm,inner sep=0pt},
+  pace/.style={nrn,double,double distance=1.2pt},
+  inh/.style={-{Bar[width=7pt]},thick,red!70!black}]
+\node[pace] (N1) at (0,0) {};
+\draw[inh] (-1.6,0) node[left,black] {$c$} -- (N1);
+\draw[->,very thick,red!70!black] (N1) -- (1.3,0) node[right,black] {$\bar c$};
+\node[below=0.55cm] at (0,0) {\small 非};
+\node[pace] (N2) at (5,0) {};
+\draw[inh] (3.4,0.45) node[left,black] {$c_1$} -- (N2);
+\draw[inh] (3.4,-0.45) node[left,black] {$c_2$} -- (N2);
+\draw[->,very thick,red!70!black] (N2) -- (6.3,0) node[right,black] {$\overline{c_1\vee c_2}$};
+\node[below=0.55cm] at (5,0) {\small 或非};
+\end{tikzpicture}
+\caption{由\nt{SERO}神经元构成的逻辑。双圆圈是起搏器：在平稳的背景输入下它自己工作，直到被抑制。带横杠的线是抑制性受体，$s=-1$；$c$、$c_1$、$c_2$是接收者周围各体积中的血清素浓度。左为“非”，右为“或非”。}
+\label{fig:serogates}
+\end{figure}
+
+\begin{keyblock}
+\begin{proposition}[\nt{SERO}逻辑的完备性]
+\label{prop:serocomplete}
+如果网络中有带抑制性受体的起搏器，且释放到不同体积中的递质互不混合，那么网络~\eqref{eq:seroneuron}可以计算任何逻辑函数，而且每一位只用一根导线传送。
+\end{proposition}
+\end{keyblock}
+
+在逻辑上，\nt{SERO}网络比\nt{GLUT}更强，但“释放到不同体积中的递质互不混合”这一条件在脑中并不成立（第~\ref{sec:volume}~节）。
+
+\section{负反馈}
+
+血清素神经元自身带有抑制性受体~\cite{Sprouse1987}。它们释放的血清素回到它们自己身上，使它们放慢。对工程师来说这是熟悉的电路：带负反馈的放大器（图~\ref{fig:serofeedback}）。
+
+哪些是测量结果，哪些是模型。在\nt{SERO}神经元所在的中缝核内部，血清素抑制邻居并不经过公共体积，而是通过突触点对点进行：转运体迅速把它清除，不让它在间隙外积累。单次释放只造成放电中的短暂停顿，平均频率并不因此改变~\cite{CourtneyFord2016}。因此，下面这个经公共体积闭合的回路是一个模型：我们计算的是，如果这种反馈在平均频率的层面上工作，它会做什么。
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  nrn/.style={circle,draw,very thick,fill=blue!6,minimum size=0.95cm,inner sep=0pt},
+  pace/.style={nrn,double,double distance=1.2pt},
+  blk/.style={draw,very thick,rounded corners=2pt,fill=orange!10,minimum height=0.9cm,minimum width=2.2cm,align=center,font=\small},
+  inh/.style={-{Bar[width=7pt]},thick,red!70!black}]
+\node[pace] (N) at (0,0) {};
+\node[blk] (V) at (3.6,0) {体积\\$\tau_c$};
+\draw[->,very thick] (N) -- node[above] {\small $r$} (V);
+\draw[->,very thick] (V) -- (6.0,0) node[right] {\small $c$——送往所有接收者};
+\draw[inh] (V.south) -- ++(0,-0.9) -| node[pos=0.25,below] {\small $-g\,c$} (N.south);
+\draw[->,thick,blue!60!black] (-1.7,0) node[left,black] {\small $b$} -- (N);
+\end{tikzpicture}
+\caption{经自身递质形成反馈的\nt{SERO}神经元：浓度$c$送往所有接收者，同时抑制神经元自己。在模型中这是一个电平调节器；在脑中回路是否起这种作用，还是假说。}
+\label{fig:serofeedback}
+\end{figure}
+
+我们来算一算这个回路做什么。设传递特性是线性的，$u>0$时$f(u)=au$。平衡时$c=\kappa r$且$r=a(b-gc)$。把一个代入另一个，得到
+\begin{empheq}[box=\keybox]{equation}
+r \;=\; \frac{a\,b}{1+G}, \qquad G \;=\; a\,g\,\kappa .
+\label{eq:feedback}
+\end{empheq}
+量$G$是环路增益。这和任何负反馈放大器的公式相同，并带来同样的两个好处。
+
+\emph{对参数离散的稳健性。}设神经元的兴奋性$a$变化了比例$\varepsilon$。没有反馈时，频率也会变化同样的比例。有反馈且$G\gg1$时，频率$r\approx b/(g\kappa)$几乎与$a$无关：它的变化是无反馈时的$1+G$分之一。$G=9$时，离散被压低到十分之一。
+
+\emph{速度。}把$r=a(b-gc)$代入第一个方程~\eqref{eq:seroneuron}，得到$\tau_c\,\dd c/\dd t=-(1+G)\,c+\kappa ab$。浓度以时间常数$\tau_c/(1+G)$趋近自己的水平——比没有反馈时快$1+G$倍。
+
+这就是\nt{SERO}系统可能执行的第一种计算：把脑中血清素的总体水平保持在设定值上，就像恒温器保持温度一样。这是假说：在实验中，自抑制目前只表现为短暂的停顿，并不改变平均频率。
+
+\section{从脉冲到电平}
+
+第二种计算藏在第一个方程~\eqref{eq:seroneuron}中。神经元发放的是单个脉冲，而接收者感受到的是浓度，它在时间$\tau_c$内把脉冲平滑。如果源的频率变化，浓度会滞后地跟随它：
+\begin{equation}
+c(t) \;=\; \frac{\kappa}{\tau_c}\int_{-\infty}^{t} e^{-(t-t')/\tau_c}\,\sum_j r_j(t')\,\dd t' .
+\label{eq:lowpass}
+\end{equation}
+这是源活动在最近几个$\tau_c$内的滑动平均——一个低通滤波器（图~\ref{fig:lowpass}）。最简单的数模转换器正是这样把脉冲送过 RC 电路，把它们的频率变成电平。\nt{SERO}系统同时对几十万个神经元做同样的事。
+
+这个量同时也是记忆。源沉默之后，浓度还会维持量级为$\tau_c$的时间。这不是一个比特，而是一条平缓消退的痕迹。
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=1.45cm,y=1cm]
+\draw[gray!70!black] (0,3.2) -- (8.1,3.2);
+\node[left,font=\small] at (-0.05,3.4) {脉冲};
+\node[above,font=\scriptsize,gray!40!black] at (1,3.65) {每秒$2$个};
+\node[above,font=\scriptsize,gray!40!black] at (3.5,3.65) {每秒$8$个};
+\node[above,font=\scriptsize,gray!40!black] at (6.5,3.65) {每秒$2$个};
+\draw[->,gray!70!black] (0,0) -- (8.3,0) node[right,black] {\small $t$};
+\draw[->,gray!70!black] (0,0) -- (0,2.75) node[left,black] {\small $c$};
+\foreach \s in {0.136,0.529,0.760,1.223,1.714,1.748,1.755,2.663,2.701,2.734,3.414,3.493,3.719,3.800,3.928,3.948,4.074,4.327,4.420,4.589,4.728,4.736,4.914,5.025,5.205,5.220,6.224,6.544,7.178}{\draw[thick,blue!60!black] (\s,3.2) -- (\s,3.6);}
+\foreach \a/\b/\v in {0.000/0.136/0.000,0.136/0.529/1.000,0.529/0.760/1.675,0.760/1.223/2.330,1.223/1.714/2.466,1.714/1.748/2.509,1.748/1.755/3.425,1.755/2.663/4.402,2.663/2.701/2.775,2.701/2.734/3.672,2.734/3.414/4.553,3.414/3.493/3.306,3.493/3.719/4.055,3.719/3.800/4.235,3.800/3.928/4.905,3.928/3.948/5.316,3.948/4.074/6.211,4.074/4.327/6.476,4.327/4.420/6.028,4.420/4.589/6.493,4.589/4.728/6.483,4.728/4.736/6.642,4.736/4.914/7.589,4.914/5.025/7.351,5.025/5.205/7.579,5.205/5.220/7.331,5.220/6.224/8.221,6.224/6.544/4.012,6.544/7.178/3.914,7.178/8.000/3.076}{\draw[very thick,orange!85!black] plot[domain=\a:\b,samples=10] (\x,{0.25*\v*exp(-(\x-\a))});}
+\foreach \s/\p/\q in {0.136/0.000/1.000,0.529/0.675/1.675,0.760/1.330/2.330,1.223/1.466/2.466,1.714/1.509/2.509,1.748/2.425/3.425,1.755/3.402/4.402,2.663/1.775/2.775,2.701/2.672/3.672,2.734/3.553/4.553,3.414/2.306/3.306,3.493/3.055/4.055,3.719/3.235/4.235,3.800/3.905/4.905,3.928/4.316/5.316,3.948/5.211/6.211,4.074/5.476/6.476,4.327/5.028/6.028,4.420/5.493/6.493,4.589/5.483/6.483,4.728/5.642/6.642,4.736/6.589/7.589,4.914/6.351/7.351,5.025/6.579/7.579,5.205/6.331/7.331,5.220/7.221/8.221,6.224/3.012/4.012,6.544/2.914/3.914,7.178/2.076/3.076}{\draw[very thick,orange!85!black] (\s,0.25*\p) -- (\s,0.25*\q);}
+\draw[thick,densely dashed,black] plot[domain=0:2,samples=30] (\x,{0.25*2*(1-exp(-\x))})
+  plot[domain=2:5,samples=40] (\x,{0.25*(8-6.271*exp(-(\x-2)))})
+  plot[domain=5:8,samples=40] (\x,{0.25*(2+5.688*exp(-(\x-5)))});
+\foreach \x in {0,2,5,8}{\draw[gray!60!black] (\x,-0.05) -- (\x,0.05) node[below=3pt,font=\scriptsize] {\x\,s};}
+\end{tikzpicture}
+\caption{从脉冲到电平。上方是\nt{SERO}神经元的脉冲：两秒稀疏，三秒密集，然后又变稀疏。下方是$\tau_c=1\,\text{s}$时的血清素浓度~\eqref{eq:lowpass}。虚线是脉冲完全均匀时的同一曲线。}
+\label{fig:lowpass}
+\end{figure}
+
+\section{导线就是体积}
+\label{sec:volume}
+
+回到命题~\ref{prop:serocomplete}的条件。不同发送者在附近释放的血清素会叠加成同一个浓度。
+
+\emph{这里的导线不是纤维，而是一块组织体积。}两个信号只有在释放区域之间的距离大于递质来得及扩散的距离时，才能保持区分。在时间$\tau$内，扩散系数为$D$的分子会走出
+\begin{empheq}[box=\keybox]{equation}
+\ell \;\sim\; \sqrt{D\,\tau}\, .
+\label{eq:diffusionlength}
+\end{empheq}
+细胞间隙的曲折使小分子的扩散减慢约$2.6$倍~\cite{Sykova2008}，而血清素本身在组织中的扩散系数没有测量过；按分子大小估计，它为几个$10^{-6}$~cm$^2$/s。如果信号存在$\tau\sim1$~s（也是估计），那么$\ell\sim\sqrt{3\cdot10^{-6}}$~cm $\approx20\um$。这种网络中的地址就是\emph{位置}：接收者只能凭自己所在的位置判断信号来自谁。
+
+真实的\nt{SERO}神经元的构造使这些独立地址几乎不复存在。每个神经元的输出散布在脑的巨大区域上：一个细胞的分支能到达许多彼此相距很远的区域~\cite{GagnonParent2014}。每个细胞的释放位点估计约有$10^5$个（表~\ref{tab:types}）；直接计数尚未做过。不同\nt{SERO}神经元的“导线”相互重叠、彼此混合。不过它们并没有完全合并成一根导线：\nt{SERO}神经元分成几个子系统，把输出送往不同区域，对同一事件的响应也不同~\cite{Ren2018}。但这样的子系统只有几个，而不是几十万个。
+
+\begin{keyblock}
+\begin{proposition}[独立导线的数目]
+\label{prop:volumewires}
+在采用容积传递的网络中，独立信号的数目不受神经元数目限制，而受它们释放递质的、互不重叠的、尺寸为$\ell\sim\sqrt{D\tau}$的区域数目限制。如果每个神经元的输出散布在很大的体积中，整个网络只能传送少数几个公共变量。
+\end{proposition}
+\end{keyblock}
+
+因此，在脑中没有材料来搭建命题~\ref{prop:serocomplete}中的逻辑电路。而调节器~\eqref{eq:feedback}和滤波器~\eqref{eq:lowpass}不需要单独的导线：一个公共量就够了。滤波器直接来自已测量到的、在目标区域向体积中的释放~\cite{Bunin1998}；电平调节器则是假说。
+
+\section{规划视野}
+\label{sec:horizon}
+
+一个公共的慢变量能派什么用场？一个好的候选者是这样的参数：它对整个网络必须相同，变化不快于秒或分钟的尺度。在第~\ref{sec:neurontypes}~章中已经出现过这样的参数：误差公式~\eqref{eq:rpe}中的系数$\gamma$，它表示未来的奖励比眼前的奖励便宜多少。在连续时间中，它的位置由\emph{视野}$\tau_\gamma$占据：需要等待时间$D$才能得到的奖励$R$，现在值$R\,e^{-D/\tau_\gamma}$。
+
+视野决定是否值得等待。假设可以立即拿到小奖励$r_0$，或者等待大奖励$R$。只要满足下式，等待就是划算的：
+\begin{empheq}[box=\keybox]{equation}
+D \;<\; \tau_\gamma\,\ln\frac{R}{r_0} .
+\label{eq:patience}
+\end{empheq}
+当$\tau_\gamma=2\,\text{s}$、延迟奖励大三倍时，值得等到$2.2\,\text{s}$；若视野长一倍，则可等到$4.4\,\text{s}$。耐心与视野成正比。
+
+公式~\eqref{eq:patience}依赖于指数折扣。在秒级延迟上测得的折扣更接近双曲线$R/(1+D/\tau_\gamma)$：猴子在选择中对延迟奖励的估值，以及\nt{DOPA}神经元对其预示信号的响应，都是这样下降的~\cite{KobayashiSchultz2008}。对双曲线，条件~\eqref{eq:patience}换成$D<\tau_\gamma\,(R/r_0-1)$：对奖励之比的依赖不再是对数的，而是线性的，在同样的数字下等待的界限几乎移动一倍。如果延迟是随机的，同一个指数也会给出双曲线（习题~\ref{ex:05:7}），而耐心与时间尺度成正比的关系依然保持。
+
+按照一种假说，视野正是由\nt{SERO}设定的~\cite{Doya2002}。它具备担当这一角色的一切条件：整个网络共享一个公共水平，在几秒内变化。也有直接的实验：人为激活血清素神经元，动物会等待延迟奖励更久才放弃~\cite{Miyazaki2014}，在奖励变得稀少的地方也会更久地尝试获取奖励~\cite{Lottem2018}。血清素浓度在网络内部究竟怎样变成$\tau_\gamma$，目前还不知道。下一章中，视野将进入\nt{DOPA}广播的误差。
+
+\section{小结}
+
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{>{\raggedright}p{3.6cm}>{\raggedright}p{4.3cm}>{\raggedright\arraybackslash}p{4.3cm}}
+\toprule
+& \nt{GLUT} & \nt{SERO} \\
+\midrule
+反应时间 & 毫秒 & 零点几秒到一秒 \\
+作用符号 & 只有$+$ & $+$和$-$，由接收者选择 \\
+没有输入时 & 沉默 & 在平稳背景输入下自己工作 \\
+寻址 & 点对点 & 体积，地址即位置 \\
+“非” & 只能通过“关断”检测器 & 一个神经元 \\
+记忆 & 自持活动，因疲劳而熄灭 & 浓度，在时间$\tau_c$内消退 \\
+主要计算 & 符合、延迟、逻辑、序列 & 平滑；电平调节与视野$\tau_\gamma$（假说） \\
+\bottomrule
+\end{tabular}
+\caption{仅由\nt{GLUT}神经元和仅由\nt{SERO}神经元构成的网络各计算什么。}
+\label{tab:glutvssero}
+\end{table}
+
+作为逻辑元件（表~\ref{tab:glutvssero}），\nt{SERO}神经元比\nt{GLUT}更丰富，但作为通信系统，它是一种广播：缓慢，几乎没有地址。因此它不去充当处理器，而是平滑并广播第~\ref{sec:neurontypes}~章谈到的几个公共量——按照假说，其中也包括规划视野。起搏器、体积和缓慢的浓度，我们还会再遇到三次：在\nt{DOPA}、\nt{NORA}和\nt{ACET}那里。
+
+\section{习题}
+
+\begin{exercise}[\lvlA]
+\label{ex:05:1}
+\emph{导线就是体积。}取血清素的$D=3\cdot10^{-6}$~cm$^2$/s（第~\ref{sec:volume}~节）。按~\eqref{eq:diffusionlength}求寿命为$1\,\text{s}$的信号的$\ell$，以及递质扩散到$5$~cm所需的时间。那么\nt{SERO}的广播性是靠扩散实现的，还是靠具有$\sim10^5$个释放位点的导线分支实现的？
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:05:2}
+\emph{电平调节器。}证明在~\eqref{eq:seroneuron}中，当$f(u)=au$时，相对灵敏度$S=(a/r)\,\partial r/\partial a$恰好等于$1/(1+G)$，而不仅仅在$G\gg1$时成立。设$G=9$，兴奋性$a$增大了$20\,\%$。不作线性化，$r$会变化百分之几？
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:05:3}
+\emph{回路中的慢受体。}\nt{SERO}受体的响应有延迟：$r(t)=a\bigl(b-gc(t-T)\bigr)$，体积按~\eqref{eq:seroneuron}。证明当$G>1$时，回路仅在$T<T^*=\tau_c\arccos(-1/G)/\sqrt{G^2-1}$时稳定。求$\tau_c=1\,\text{s}$时$G=2$和$G=9$的$T^*$。延迟为几百毫秒时，能实现多大的离散抑制？
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:05:4}
+\emph{电平的散粒噪声。}按~\eqref{eq:lowpass}，每个脉冲给$c$加上一个$\tau_c=1\,\text{s}$的指数。若全部$3\cdot10^5$个\nt{SERO}神经元都以每秒$2$个的频率向同一体积释放泊松脉冲，求$c$的变异系数。对单个频率为每秒$4$个脉冲的神经元，多大的$\tau_c$能给出$\mathrm{CV}=10\,\%$？
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:05:5}
+\emph{仿真：反馈对抗噪声。}仿真$N=50$个泊松起搏器，频率$r_i=a_i[b-gc]_+$，$a_i$在$[2.8,\,5.2]$上均匀分布，体积按~\eqref{eq:seroneuron}，$\kappa=1/N$，$\tau_c=1\,\text{s}$。与$b=0.1$、$g=0$相比，反馈（$b=1$，$g=2.25$）使电平$c$的 CV 降低多少倍？它能使各神经元的频率趋于一致吗？
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:05:6}
+\emph{设计：用\nt{SERO}逻辑实现 XOR。}门是一个起搏器，若$b-g\sum_kc_k>0$则输出$r_0$，否则输出$0$，送入自己的体积$\tau_c\,\dd c/\dd t=-c+\kappa r$；它计算“或非”。用五个这样的门搭出 XOR，并求$\tau_c=1\,\text{s}$、$G'=g\kappa r_0/b=2$时它的建立时间。
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:05:7}
+\emph{延迟未知时的耐心。}（a）~动物愿意等待三倍大的奖励，只要等待不超过$6\,\text{s}$。这意味着视野$\tau_\gamma$是多少？（b）~设延迟$D$服从均值为$\bar D$的指数分布。证明当$\bar D<\tau_\gamma(R/r_0-1)$时等待是划算的，并在$\tau_\gamma=2\,\text{s}$、$R=3r_0$时与固定延迟作比较。
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:05:8}
+\emph{浓度如何设定视野。}\nt{DOPA}神经元直接以权重$k_1$接收$V$，又经过一个以$\tau_d=0.1\,\text{s}$平滑的\nt{GABA}中介以权重$-k_2$接收$V$；对慢变的$V$，总和为$(k_1-k_2)V+k_2\tau_d\dot V$。选取$k_1$、$k_2$，使之符合~\eqref{eq:ctd}且$\tau_\gamma=2\,\text{s}$。\nt{SERO}把$k_1$乘以$m$：要使视野加倍，$m$需要改变多少？
+\end{exercise}

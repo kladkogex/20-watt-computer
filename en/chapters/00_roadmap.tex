@@ -1,0 +1,81 @@
+\chapter*{How to Read This Book}
+\addcontentsline{toc}{chapter}{How to Read This Book}
+
+You do not have to read this book from cover to cover. Chapters~1--4 are the common foundation: the neuron types, what \nt{GLUT} and \nt{GABA} compute, and the language they speak. After that the book branches. The map in Fig.~\ref{fig:roadmap} shows which chapters build on which: an arrow from chapter $A$ to chapter $B$ means that $B$ uses concepts and formulas from $A$. The map shows only the main dependencies; minor back-references do not get in the way.
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[>=Stealth,scale=0.95,
+  ch/.style={draw,thick,rounded corners=3pt,align=center,font=\scriptsize,text width=1.85cm,minimum height=0.62cm,inner sep=2pt},
+  base/.style={ch,fill=blue!8}, bus/.style={ch,fill=orange!14}, sum/.style={ch,fill=gray!18},
+  io/.style={ch,fill=green!10}, sort/.style={ch,fill=cyan!8}, lab/.style={ch,fill=violet!10},
+  dep/.style={->,thick,gray!60!black}]
+% foundation
+\node[base] (c1) at (0,0) {1 Neuron types};
+\node[base] (c2) at (2.3,0) {2 \nt{GLUT}};
+\node[base] (c3) at (4.6,0) {3 \nt{GLUT} and \nt{GABA}};
+\node[base] (c4) at (6.9,0) {4 Morse code};
+% broadcast channels and the synthesis
+\node[bus] (c5) at (4.6,-1.5) {5 \nt{SERO}};
+\node[bus] (c6) at (7.3,-1.5) {6 \nt{DOPA}};
+\node[bus] (c7) at (9.2,-0.9) {7 Dopamine theories};
+\node[bus] (c8) at (9.2,-2.1) {8 \nt{NORA}};
+\node[bus] (c9) at (11.5,-2.1) {9 \nt{ACET}};
+\node[sum] (c10) at (13.8,-0.9) {10 The whole machine};
+% inputs and outputs
+\node[io] (c12) at (2.3,-4.1) {12 Recog-\\nition};
+\node[io] (c11) at (4.6,-4.1) {11 Inputs};
+\node[io] (c13) at (6.9,-4.1) {13 Muscles};
+\node[io] (c14) at (9.2,-3.05) {14 Pain};
+\node[io] (c15) at (9.2,-4.1) {15 Motor\\learning};
+\node[io] (c16) at (9.2,-5.15) {16 Body\\chemistry};
+% lab, sorting, sleep
+\node[lab] (c17) at (11.5,-4.1) {17 Debugging};
+\node[lab] (c21) at (13.8,-4.1) {21 Living machines};
+\node[lab] (c22) at (13.8,-5.15) {22 DishBrain};
+\node[sort] (c18) at (11.5,-5.15) {18 Neurons as\\instruments};
+\node[sort] (c19) at (13.8,-6.2) {19 Dendrite\\count};
+\node[bus] (c20) at (11.5,-6.2) {20 Sleep};
+% dependencies
+\draw[dep] (c1) -- (c2); \draw[dep] (c2) -- (c3); \draw[dep] (c3) -- (c4);
+\draw[dep] (c1) -- (c5); \draw[dep] (c4) -- (c6); \draw[dep] (c5) -- (c6);
+\draw[dep] (c6) -- (c7); \draw[dep] (c6) -- (c8); \draw[dep] (c8) -- (c9);
+\draw[dep] (c7) -- (c10); \draw[dep] (c9) -- (c10);
+\draw[dep] (c4) -- (c11); \draw[dep] (c11) -- (c12); \draw[dep] (c11) -- (c13); \draw[dep] (c5) -- (c13);
+\draw[dep] (c13) -- (c14); \draw[dep] (c13) -- (c15); \draw[dep] (c13) -- (c16);
+\draw[dep] (c15) -- (c17); \draw[dep] (c9) -- (c17); \draw[dep] (c17) -- (c21); \draw[dep] (c21) -- (c22);
+\draw[dep] (c16) -- (c18); \draw[dep] (c18) -- (c19); \draw[dep] (c16) -- (c20);
+% legend
+\begin{scope}[yshift=-7.25cm]
+\foreach \s/\t [count=\i] in {base/foundation, bus/channels and modes, sum/synthesis, io/inputs and outputs, sort/neuron classifications, lab/laboratory}{
+  \pgfmathtruncatemacro{\col}{mod(\i-1,3)}\pgfmathtruncatemacro{\row}{(\i-1)/3}
+  \node[\s,text width=0.3cm,minimum height=0.32cm] at ({\col*4.8+0.2},{-\row*0.55}) {};
+  \node[anchor=west,font=\scriptsize] at ({\col*4.8+0.55},{-\row*0.55}) {\t};}
+\end{scope}
+\end{tikzpicture}
+\caption{Chapter map. An arrow leads from a chapter to the one that builds on it. Other cross-references between chapters are pointers, not dependencies.}
+\label{fig:roadmap}
+\end{figure}
+
+\section*{Paths Through the Book}
+
+\begin{center}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{>{\raggedright}p{3.0cm}>{\raggedright}p{3.9cm}>{\raggedright\arraybackslash}p{6.4cm}}
+\toprule
+Path & For whom & Chapters in order \\
+\midrule
+one-quarter course & instructor, 10 weeks & week 1: ch.~1--2; 2: ch.~3; 3: ch.~4; 4: ch.~5--6; 5: ch.~7--8; 6: ch.~9; 7: ch.~10; 8: ch.~11--12; 9: ch.~13 and~15; 10: ch.~17 \\
+AI and machine learning & someone who knows neural networks and wants to understand how the brain learns & 1--4, 5 (skim), 6, 7, 8, 9, 11 (skim), 12, 13 (skim), 15 \\
+electronics and hardware & circuit designer, neuromorphic chip developer & 1--4, 5, 11, 13, 16, 18, 19, 17 (skim chapters 9 and 15) \\
+neural interfaces and living computers & someone who builds brain--computer interfaces and chips with living neurons & 1, 2, 4, 11, 13, 17 (skim chapters 9 and 15), 21, 22 (skim chapter 12) \\
+quick overview & an engineer with a free weekend & 1, 2, 3, 6, 10; chapter~6's references to chapters~4--5 are clear from context \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+``Skim'' means: it is enough to read the beginning of the chapter, its statements in yellow boxes, and its summary table.
+
+Each chapter ends with exercises: estimates, derivations, simulations, and design problems; short answers are collected in Appendix~\ref{sec:answers}. All notation is in Appendix~\ref{sec:notation}, and the experiments behind each chapter's main claims are in Appendix~\ref{sec:supplement}. The numbers in the book come from small programs in the \texttt{models/} folder; you can run and modify them.

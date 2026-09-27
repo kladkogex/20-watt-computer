@@ -1,0 +1,41 @@
+\chapter{Talking Through the Air}
+% full version: chapters/05_serocomputer.tex
+
+\pencilfig{5}{\pencilart{5}}{On the left, a telephone: a wire from one to one. On the right, a radio: one message to everyone around at once.}
+
+So far the neurons have talked to one another by telephone: wire to wire, addressed. Now let us switch on the first radio station: the \nt{SERO} neurons, which release serotonin. There are only a few hundred thousand of them in the whole brain, but their wires spread over huge regions of it.
+
+\section*{Four Differences}
+
+A \nt{SERO} neuron is unlike a \nt{GLUT} neuron. First, the sign of its signal is chosen by the receiver: serotonin has ``locks'' of both signs. Second, it runs by itself: when we are awake, it clicks steadily a few times a second, as long as it gets a constant background supply. It is a metronome. Third, it is slow: its signal acts not in milliseconds but over hundreds of milliseconds. Fourth, it often releases its substance not into a narrow gap but into the space around, where it spreads like a drop of ink in water. The receiver senses the concentration and does not know which neuron a molecule came from.
+
+\section*{Logic That Isn't There}
+
+A metronome with a braking ``lock'' is a ready-made ``not'': while there is no serotonin, the neuron works; once it appears, the neuron falls silent. One neuron instead of a whole circuit. It seems the serotonin network is logically stronger than the \nt{GLUT} network.
+
+But there is a snag. A substance released into space gets mixed. Two signals stay distinct only if they are released at places farther apart than the substance has time to spread, and that is tens of micrometers. Each serotonin neuron, however, has a huge number of release sites scattered over large regions, and the ``wires'' of different neurons overlap. You cannot send separate bits through such a network. It can carry only a few global quantities, like a radio on which everyone listens to the same station.
+
+\pencilfig{123}{%
+% two release sites: far apart the clouds stay separate (two signals), close together they merge (one level)
+\foreach \x/\y in {0.9/1.55, 4.1/1.55, 1.9/0, 2.9/0}{
+  \foreach \r/\o in {0.95/0.07, 0.7/0.09, 0.45/0.12}{\fill[pcViolet, opacity=\o] (\x,\y) circle (\r);}
+  \draw[dotpen=pcViolet, fill=pcViolet] (\x,\y) circle (0.07);}
+\draw[arr] (1.95,1.55) -- (3.05,1.55); \draw[arr] (3.05,1.55) -- (1.95,1.55);
+\node[lbl, anchor=south, align=center] at (2.5,1.6) {farther than\\it spreads};
+\node[lbl, anchor=west] at (5.25,1.55) {two signals};
+\node[lbl, anchor=west] at (5.25,0) {one shared cloud};
+}{Serotonin is released into space and spreads as a cloud. Two sources give two different signals only if they are farther apart than the substance has time to spread. If they are closer, the clouds merge into one shared level.}
+
+\section*{What It Really Does}
+
+For one global quantity this system has everything it needs. The serotonin concentration smooths the separate clicks into a smooth level, the way the simplest converter turns a stream of pulses into a voltage. This level holds for seconds and fades by itself: not a bit that has to be erased, but a slowly vanishing trace.
+
+Serotonin neurons also carry ``locks'' on themselves: the serotonin they release slows down its own source. An engineer will recognize an amplifier with negative feedback here, a thermostat that holds the level. True, experiments show that this self-braking is addressed and causes only short pauses, so the thermostat role is for now more a hypothesis than a fact.
+
+\section*{What Waiting Is Worth}
+
+What global quantity is worth keeping slow and the same for the whole network? A good candidate is \emph{patience}. Picture a choice: a small reward now or a big one a few seconds later. How long you are willing to wait depends on how fast the future ``loses value'' for you. According to one hypothesis, this is the knob serotonin turns. Some experiments support it: if serotonin neurons are switched on artificially, a mouse waits longer for a delayed reward before giving up.
+
+This chapter introduces three devices that all the brain's radio stations will use: the metronome neuron, a ``wire'' that is really a volume, and a slow level in place of separate clicks.
+
+\fullversion{5}

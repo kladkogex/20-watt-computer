@@ -1,0 +1,209 @@
+\chapter{符号说明}
+\label{sec:notation}
+
+神经元类型用主要神经递质的四字母代码表示：\nt{GLUT}——谷氨酸，\nt{GABA}——$\gamma$-氨基丁酸，\nt{GLYC}——甘氨酸，\nt{ACET}——乙酰胆碱，\nt{DOPA}——多巴胺，\nt{SERO}——血清素（5-羟色胺），\nt{HIST}——组胺，\nt{NORA}——去甲肾上腺素，\nt{ADRE}——肾上腺素，\nt{ASPA}——天冬氨酸（表~\ref{tab:types}）。
+
+字母比物理量少，同一个字母在不同章节里有时表示不同的量。下表中每种含义各占一行；右栏给出引入它的公式。
+
+\begin{center}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.12}
+\begin{longtable}{>{\raggedright}p{2.0cm}>{\raggedright}p{9.6cm}>{\raggedright\arraybackslash}p{2.4cm}}
+\toprule
+符号 & 含义 & 引入处 \\
+\midrule
+\endfirsthead
+\toprule
+符号 & 含义 & 引入处 \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+$a$ & 线性传递特性的斜率，$f(u)=au$ & \eqref{eq:feedback} \\
+$a$ & \nt{ACET} 水平：$0$ 为读，$1$ 为写 & \eqref{eq:acetnet} \\
+$a_i$, $a$ & 神经元群的疲劳：在节律发生器中；在慢波睡眠的跷跷板中 & \eqref{eq:halfcentre}, \eqref{eq:updown} \\
+$a_S$, $a_P$ & 心率对油门和刹车的敏感度 & \eqref{eq:gasbrake} \\
+$A(r)$, $A_0$ & 频率为 $r$ 时突触对一个脉冲的响应；休息充分的突触的响应 & \eqref{eq:depression} \\
+$A_1$ & 接收者对一份递质的响应 & \eqref{eq:quantal} \\
+$A$ & 神经元连同树突在内的膜面积 & \eqref{eq:dendriteload} \\
+$A_f$, $A_s$ & 快过程和慢过程中保留到下一次运动的校正比例 & \eqref{eq:tworate} \\
+$b_i$ & 起搏器的自身输入 & \eqref{eq:seroneuron} \\
+$b$ & 节律发生器或睡眠跷跷板中，工作使神经元群疲劳的速度 & \eqref{eq:halfcentre}, \eqref{eq:updown} \\
+$b$ & 每个数字化采样的比特数 & \eqref{eq:probedata} \\
+$B_f$, $B_s$ & 快过程和慢过程中校正从误差中学习的强度 & \eqref{eq:tworate} \\
+$c$ & 空间中的递质浓度 & \eqref{eq:seroneuron} \\
+$c$ & 相邻神经元噪声的相关系数 & \eqref{eq:correlated} \\
+$c$ & 计数之差移动球拍的系数 & \eqref{eq:dishreadout} \\
+$c_f$ & $C$ 神经元的响应：所有位置上 $s_{f,p}$ 的最大值 & \eqref{eq:scstage} \\
+$c_m$ & 膜的比电容 & \eqref{eq:dendriteload} \\
+$C$ & 努力的代价：用时 $\tau_a$ 完成的动作代价为 $C/\tau_a$ & \eqref{eq:vigor} \\
+$d'$ & 两个输入的可区分度：差值除以噪声 & \eqref{eq:gainsnr} \\
+$d$, $d_j$ & 信号路径上的延迟 & \eqref{eq:glutneuron}, \eqref{eq:vstar} \\
+$d$ & 肌肉反馈回路的延迟 & \eqref{eq:delaystable} \\
+$D$ & 扩散系数 & \eqref{eq:diffusionlength} \\
+$D$ & \nt{GLUT}--\nt{GABA} 网络频率表达式中的分母 & \eqref{eq:isn} \\
+$D$ & 延迟奖励的等待时间 & \eqref{eq:patience} \\
+$e$, $e_{ij}$ & 突触中的资格迹 & \eqref{eq:threefactor} \\
+$e$, $e_i$ & 经误差导线传来的输出误差或运动误差 & \eqref{eq:lms}, \eqref{eq:adaptivefilter}, \eqref{eq:tworate} \\
+$E_{\text{spike}}$ & 一个脉冲的能量，包括突触的功耗 & \eqref{eq:energy} \\
+$E$ & \nt{GLUT} 群的频率 & \eqref{eq:ei} \\
+$E_E$ & 兴奋性突触的平衡电位 & \eqref{eq:shunt} \\
+$f$, $F$ & 传递特性：频率作为输入的函数 & \eqref{eq:ratenet}, \eqref{eq:gain} \\
+$f$, $f_0$ & 心跳频率；起搏器的固有节律 & \eqref{eq:gasbrake} \\
+$f_s$ & 单个电极的采样频率 & \eqref{eq:probedata} \\
+$F(t)$, $F_1$ & 肌肉力量；单次抽搐的力量 & \eqref{eq:forcesum} \\
+$F_1$, $F_2$ & 向相反方向拉动关节的两块肌肉的力 & \eqref{eq:antagonists} \\
+$g$ & 受体对浓度的敏感度 & \eqref{eq:seroneuron} \\
+$g_L$, $g_E$, $g_I$ & 泄漏、兴奋和抑制电导 & \eqref{eq:shunt} \\
+$g$ & 由 \nt{NORA} 设定的增益 & \eqref{eq:gain}, \eqref{eq:machine} \\
+$g$ & 记忆网络中来自 \nt{GABA} 的总抑制 & \eqref{eq:acetnet} \\
+$g$ & 由上级设定的疼痛闸门增益 & \eqref{eq:gate} \\
+$g$ & 激素级联中一级的增益 & \eqref{eq:cascade} \\
+$g_j$ & 自适应滤波器输入端的第 $j$ 个滤波器，有自己的时间常数 & \eqref{eq:adaptivefilter} \\
+$G$ & 反馈回路增益 & \eqref{eq:feedback} \\
+$G$ & 带延迟回路中的校正速度 & \eqref{eq:delaystable} \\
+$h$, $h_I$ & \nt{GLUT} 群和 \nt{GABA} 群的外部输入 & \eqref{eq:ei}, \eqref{eq:isn} \\
+$h(t)$ & 肌肉的单次抽搐 & \eqref{eq:twitch} \\
+$H(t)$ & 睡眠压力的上阈值：达到它，机器入睡 & \eqref{eq:sleeppressure} \\
+$I$, $I_i$ & 神经元或神经元群的外部输入 & \eqref{eq:ratenet}, \eqref{eq:wta}, \eqref{eq:updown} \\
+$I$ & \nt{GABA} 群的频率 & \eqref{eq:ei} \\
+$I$ & 刺激的亮度或强度 & \eqref{eq:photonnoise}, \eqref{eq:nakarushton} \\
+$I$ & 给膜充电的输入电流 & \eqref{eq:dendriteload} \\
+$k$ & 簇放电中的脉冲数 & \eqref{eq:burst} \\
+$k$ & 增量需超过噪声的倍数 & \eqref{eq:photonnoise} \\
+$k$ & 激素级联的反馈系数 & \eqref{eq:cascade} \\
+$k_s$ & 疼痛推高敏化的强度 & \eqref{eq:sensitization} \\
+$K$ & 结果特征的个数 & \eqref{eq:vectortd} \\
+$K$ & 关节刚度 & \eqref{eq:antagonists} \\
+$K$ & 激素级联的回路增益，$K=g^3k$ & \eqref{eq:cascade}, \eqref{eq:cascadestable} \\
+$K_\varphi$ & 昼夜振荡器向外部信号校准的强度 & \eqref{eq:pll} \\
+$L$ & 延迟线的长度 & \eqref{eq:itd} \\
+$L$ & 痛觉传感器导线的长度 & \eqref{eq:paintime} \\
+$L(t)$ & 睡眠压力的下阈值：达到它，机器醒来 & \eqref{eq:sleeppressure} \\
+$M$ & 预兆与奖励之间因果关系的度量 & \eqref{eq:retro} \\
+$M_k$ & 特征 $k$ 的期望 & \eqref{eq:vectortd} \\
+$M_{ik}$ & 来自 \nt{GABA} 神经元 $k$ 的抑制强度 & \eqref{eq:machine} \\
+$M$ & 关节的转矩 & \eqref{eq:antagonists} \\
+$M$ & 混合器的输入线数 & \eqref{eq:cover} \\
+$n$, $\bar n$ & 一个窗口内的脉冲数；其平均值 & \eqref{eq:rateerror} \\
+$n$ & 阈值元件的输入数 & \eqref{eq:cover} \\
+$n_\uparrow$, $n_\downarrow$ & “上”区和“下”区在一个窗口内的脉冲计数 & \eqref{eq:dishreadout} \\
+$N$ & 神经元数 & \eqref{eq:correlated}, \eqref{eq:energy} \\
+$N$ & 探针的电极数 & \eqref{eq:probedata} \\
+$N_s$ & 两个神经元之间的释放位点数 & \eqref{eq:quantal} \\
+$p$ & 每个脉冲释放递质的概率 & \eqref{eq:burst} \\
+$p$ & 记忆网络中活跃神经元的比例 & \eqref{eq:acetnet} \\
+$p$ & 需要学会补偿的扰动 & \eqref{eq:tworate} \\
+$P$ & 用于信号的功率 & \eqref{eq:energy}, \eqref{eq:dishpower} \\
+$P$ & 所存估计的不确定度 & \eqref{eq:kalman} \\
+$P$ & “刹车”的活动：通往心脏的 \nt{ACET} 导线 & \eqref{eq:gasbrake} \\
+$P_{\max}$ & 阈值元件能分成两类的随机模式的数目 & \eqref{eq:cover} \\
+$P_{\text{miss}}$ & 未接住的概率 & \eqref{eq:dishdensity} \\
+$q$ & 世界变化的速度 & \eqref{eq:kalman} \\
+$q_k$ & \nt{GABA} 神经元 $k$ 的频率 & \eqref{eq:machine} \\
+$q_0$ & 抑制性中间神经元的背景活动 & \eqref{eq:gate} \\
+$q$ & 疼痛闸门中抑制性中间神经元的频率 & \eqref{eq:gate} \\
+$q$ & 下一个运动单位比前一个强多少倍 & \eqref{eq:sizeprinciple} \\
+$r$, $r_i$ & 神经元的脉冲频率 & \eqref{eq:ratenet} \\
+$r$, $r_t$ & 奖励（奖励流） & \eqref{eq:rpe}, \eqref{eq:ctd} \\
+$\mathbf r(t)$ & 储备池的响应向量 & \eqref{eq:reservoir} \\
+$R$, $\bar R$ & 获得的奖励；其期望或单位时间平均值 & \eqref{eq:perturbation}, \eqref{eq:vigor} \\
+$R$ & 滤波器输入端噪声的方差 & \eqref{eq:kalman} \\
+$R$, $r_0$ & 延迟奖励和即时奖励 & \eqref{eq:patience} \\
+$R_{\max}$ & 极限传输速率，bit/s & \eqref{eq:spikeentropy} \\
+$r_{\max}$ & 最大脉冲频率 & \eqref{eq:gain}, \eqref{eq:nakarushton} \\
+$R_{\text{原始}}$, $R_{\text{脉冲}}$ & 探针的数据流：原始数据和仅脉冲，bit/s & \eqref{eq:probedata} \\
+$s_j$ & 神经元 $j$ 输出的符号 & \eqref{eq:dalesign} \\
+$s_i$ & 接收者受体的符号 & \eqref{eq:seroneuron} \\
+$s$, $\hat s$ & 世界的状态；其估计 & \eqref{eq:rpe}, \eqref{eq:kalman} \\
+$s_{f,p}$ & $S$ 神经元对位置 $p$ 处特征 $f$ 的响应 & \eqref{eq:scstage} \\
+$S$ & “油门”的活动：通往心脏的 \nt{NORA} 导线 & \eqref{eq:gasbrake} \\
+$S$ & 睡眠压力 & \eqref{eq:sleeppressure} \\
+$t_1$ & 第一个脉冲的时刻 & \eqref{eq:latency} \\
+$t_k$ & 第 $k$ 个脉冲的时刻 & \eqref{eq:forcesum} \\
+$t_{f,i}$ & 特征 $f$ 的模板 & \eqref{eq:scstage} \\
+$T$ & 脉冲计数窗口；光子积累时间 & \eqref{eq:rateerror}, \eqref{eq:photonnoise} \\
+$T_c$ & 肌肉抽搐的上升时间 & \eqref{eq:twitch} \\
+$T_{\text{burst}}$ & 培养物群放电之间的间隔 & \eqref{eq:burstinterval} \\
+$u$ & 神经元的总输入 & \eqref{eq:gain} \\
+$u$, $u(t)$ & 大脑的指令：自适应滤波器的输入；给激素级联的指令 & \eqref{eq:adaptivefilter}, \eqref{eq:cascade} \\
+$u(t)$ & 储备池的输入 & \eqref{eq:reservoir} \\
+$U$ & 恒定输入的水平 & \eqref{eq:latency} \\
+$U$ & 每个脉冲释放的递质储备比例 & \eqref{eq:depression} \\
+$v$ & 导线中信号的速度；光斑移动的速度 & \eqref{eq:itd}, \eqref{eq:vstar} \\
+$V$ & 膜电压 & \eqref{eq:glutneuron}, \eqref{eq:shunt} \\
+$V$ & 对未来奖励的期望 & \eqref{eq:rpe}, \eqref{eq:ctd} \\
+$w$, $w_{ij}$, $W_{ij}$ & 连接权重 & \eqref{eq:glutneuron}, \eqref{eq:ratenet}, \eqref{eq:acetnet}, \eqref{eq:lms}, \eqref{eq:adaptivefilter} \\
+$\mathbf w_k$ & $C$ 神经元 $k$ 的输入权重 & \eqref{eq:traceinvariance} \\
+$w_{q\mu}$, $w_{q\nu}$, $w_{z\mu}$ & 疼痛闸门中的连接权重 & \eqref{eq:gate} \\
+$W_{\text{out}}$ & 储备池线性读出的权重 & \eqref{eq:reservoir} \\
+$x$, $y$ & 逻辑输入和输出 & \eqref{eq:dualrail}, \eqref{eq:veto} \\
+$x$, $y$ & 发送者和接收者的活动 & \eqref{eq:hebb} \\
+$x$ & 检测器在延迟线上的位置 & \eqref{eq:itd} \\
+$x_i$ & 来自感觉器官的输入 & \eqref{eq:acetnet} \\
+$x_p$ & 位置 $p$ 处的输入 & \eqref{eq:scstage} \\
+$\mathbf x$ & $S$ 神经元的输出，即 $C$ 神经元的输入 & \eqref{eq:traceinvariance} \\
+$x_j$ & 自适应滤波器的第 $j$ 个输入：经过滤波器 $g_j$ 的指令 & \eqref{eq:lms}, \eqref{eq:adaptivefilter} \\
+$x_f$, $x_s$ & 快过程和慢过程的校正量 & \eqref{eq:tworate} \\
+$x_1$, $x_2$, $x_3$ & 激素级联三级上的水平；$x_3$ 为最终激素 & \eqref{eq:cascade} \\
+$x^*$ & 引发新雪崩所需的递质储备恢复比例 & \eqref{eq:burstinterval} \\
+$y$ & 滤波器的含噪输入 & \eqref{eq:kalman} \\
+$y$, $\hat y$ & 传感器信号；自适应滤波器对它的预测 & \eqref{eq:adaptivefilter} \\
+$y_k$, $\bar y_k$ & $C$ 神经元 $k$ 的活动；其迹 & \eqref{eq:traceinvariance} \\
+$y(t)$ & 储备池读出的输出 & \eqref{eq:reservoir} \\
+$z$ & 疼痛闸门输出的频率 & \eqref{eq:gate} \\
+\midrule
+$\alpha_i^\pm$ & 正误差和负误差的权重 & \eqref{eq:asymmetric} \\
+$\beta$ & 相互抑制的强度 & \eqref{eq:wta} \\
+$\beta$ & 疼痛闸门输出受抑制的强度 & \eqref{eq:gate} \\
+$\gamma$ & 折扣因子 & \eqref{eq:rpe} \\
+$\delta(\cdot)$ & $\delta$ 函数：瞬时跳变 & \eqref{eq:glutneuron} \\
+$\delta$, $\delta_t$ & 奖励预测误差 & \eqref{eq:rpe}, \eqref{eq:ctd} \\
+$\delta t$ & 声音到达两耳的时间差 & \eqref{eq:itd} \\
+$\Delta$, $\Delta_{\max}$ & 脉冲间隔；符合窗口 & \eqref{eq:window} \\
+$\Delta t$ & 接收者分辨时间的精度 & \eqref{eq:spikeentropy} \\
+$\Delta F$ & 下一个运动单位带来的力的增量 & \eqref{eq:sizeprinciple} \\
+$\Delta I$ & 可分辨的亮度增量 & \eqref{eq:photonnoise} \\
+$\Delta p$ & 一个窗口内球拍的位移 & \eqref{eq:dishreadout} \\
+$\Delta u$ & 两个神经元群的输入之差 & \eqref{eq:gainsnr} \\
+$\Delta V$ & 膜电压需要升高多少 & \eqref{eq:dendriteload} \\
+$\Delta x$ & 相邻传感器之间的距离 & \eqref{eq:vstar} \\
+$\varepsilon$ & 输入的相对差值 & \eqref{eq:wtagain} \\
+$\eta$ & 学习率 & \eqref{eq:plasticity}, \eqref{eq:lms}, \eqref{eq:traceinvariance} \\
+$\eta$ & 放大器之后网络中的噪声 & \eqref{eq:softmax} \\
+$\mu$ & 触觉进入疼痛闸门的输入 & \eqref{eq:gate} \\
+$\nu$ & 痛觉输入 & \eqref{eq:gate} \\
+$\theta$ & 触发阈值 & \eqref{eq:window}, \eqref{eq:scstage} \\
+$\kappa$ & 每个脉冲释放的递质量 & \eqref{eq:seroneuron} \\
+$\kappa_i$ & 正误差与负误差权重之比 & \eqref{eq:expectile} \\
+$\kappa_m$ & 肌肉力量与其刚度之间的关系 & \eqref{eq:antagonists} \\
+$\ell$ & 递质扩散所及的距离 & \eqref{eq:diffusionlength} \\
+$\ell$ & 肌肉拉动关节的力臂 & \eqref{eq:antagonists} \\
+$\xi$ & 神经元输出的随机抖动 & \eqref{eq:perturbation} \\
+$\rho(\boldsymbol\psi)$ & 停留在设置 $\boldsymbol\psi$ 的时间比例 & \eqref{eq:dishdensity} \\
+$\sigma$ & 离散度，噪声尺度 & \eqref{eq:rateerror}, \eqref{eq:softmax} \\
+$\sigma$ & 响应达到最大值一半时的亮度 & \eqref{eq:nakarushton} \\
+$\sigma_{\text{pre}}$, $\sigma_{\text{post}}$ & 放大器之前和之后的噪声 & \eqref{eq:gainsnr} \\
+$\tau$ & 膜时间常数 & \eqref{eq:glutneuron} \\
+$\tau$ & 激素级联中一级的时间常数 & \eqref{eq:cascade} \\
+$\tau_{\text{eff}}$ & 自我兴奋神经元群的时间常数 & \eqref{eq:perfectint} \\
+$\tau_c$ & 递质在空间中的寿命 & \eqref{eq:seroneuron} \\
+$\tau_E$, $\tau_I$ & \nt{GLUT} 群和 \nt{GABA} 群的时间常数 & \eqref{eq:ei} \\
+$\tau_e$ & 资格迹的寿命 & \eqref{eq:threefactor} \\
+$\tau_{\text{tr}}$ & $C$ 神经元活动迹的寿命 & \eqref{eq:traceinvariance} \\
+$\tau_s$ & 损伤后敏感度恢复的时间 & \eqref{eq:sensitization} \\
+$\tau_r$, $\tau_d$ & 清醒时睡眠压力积累的时间和睡眠中其释放的时间 & \eqref{eq:sleeppressure} \\
+$\tau_{\text{rec}}$ & 递质储备的恢复时间 & \eqref{eq:depression} \\
+$\tau_\gamma$ & 规划视野 & \eqref{eq:ctd} \\
+$\tau_v$ & 期望更新的速度 & \eqref{eq:ramp} \\
+$\tau_a$ & 节律发生器或睡眠跷跷板中的疲劳时间 & \eqref{eq:halfcentre}, \eqref{eq:updown} \\
+$\tau_a^*$ & 完成动作的最佳时间 & \eqref{eq:vigor} \\
+$\Phi$ & 学习规则的右端 & \eqref{eq:plasticity} \\
+$\Phi$ & 光子通量 & \eqref{eq:photonnoise} \\
+$\varphi_k$ & 所得结果的特征 $k$ & \eqref{eq:vectortd} \\
+$\varphi$ & 昼夜振荡器与外部信号的相位差 & \eqref{eq:pll} \\
+$\boldsymbol\psi$ & DishBrain 模型中网络的设置 & \eqref{eq:dishdensity} \\
+$\omega$, $\omega_0$ & 外部信号（光）的频率；昼夜振荡器的固有频率 & \eqref{eq:pll} \\
+\end{longtable}
+\end{center}

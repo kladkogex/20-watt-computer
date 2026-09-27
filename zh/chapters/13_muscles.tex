@@ -1,0 +1,214 @@
+\chapter{机器的输出：大脑如何控制肌肉}
+\chaptermark{机器的输出}
+\label{sec:muscles}
+
+\section{快速输出}
+
+机器在世界中快速完成的一切，都是用肌肉完成的。说话、注视、迈步、微笑——都是肌肉的收缩。第二种输出，即缓慢的身体化学输出，在第~\ref{sec:chemoutput}~章讨论。在图~\ref{fig:machine}中，输出只是一个标着“肌肉”的箭头；现在来看看箭头后面是什么。
+
+链条的最后一环是\nt{ACET}神经元，也就是表~\ref{tab:types}中注明“通往肌肉的输出”的那一类。每根肌纤维只接受恰好一个这样的神经元的输入，而一个神经元控制一组纤维——从几百根到两千来根~\cite{Feinstein1955mu}。需要精细调节的肌肉中，单位较小；腿部大肌肉中，单位较大。神经元连同它的纤维称为\emph{运动单位}：这是大脑能够单独启动的最小一块肌肉。
+
+神经元在肌肉上的突触与第~\ref{sec:code}~章的皮层突触完全不同。在那里，大部分脉冲都丢失了。在这里，每个脉冲释放的乙酰胆碱比使纤维兴奋所需的量多好几倍~\cite{WoodSlater2001}。这是一个带有\emph{安全系数}的突触：神经元的一个脉冲恰好引起纤维的一次收缩。在机器内部，可以容许不可靠的连接，靠冗余纠正错误；在输出端，一个错误的代价就是一次动作，于是可靠性直接在硬件上买下来。
+
+\section{力：频率与单位数}
+
+一个脉冲引起一次单收缩——抽搐：力在几十毫秒内上升，然后回落。它的一个良好近似是~\cite{Fuglevand1993}
+\begin{equation}
+h(t) \;=\; F_1\,\frac{t}{T_c}\,e^{\,1-t/T_c},
+\label{eq:twitch}
+\end{equation}
+其中$T_c$是上升时间，量级为$50\ms$，$F_1$是一次抽搐的力。如果脉冲来得更频繁，抽搐就叠加起来：
+\begin{empheq}[box=\keybox]{equation}
+F(t) \;=\; \sum_k h\bigl(t-t_k\bigr) .
+\label{eq:forcesum}
+\end{empheq}
+这与第~\ref{sec:serocomputer}~章把脉冲变成浓度的低通滤波器相同，只不过现在输出的不是浓度，而是力。肌肉是一个把脉冲转换为力的数模转换器（图~\ref{fig:tetanus}）。在我们的模型中，每秒五个脉冲时，抽搐几乎不重叠，力在$0.2F_1$到$1.1F_1$之间跳动；每秒十五个时，力已保持在$1.8F_1$到$2.2F_1$之间；每秒四十个时，力几乎平稳，约为$5.4F_1$。真实的肌肉在高频脉冲下会饱和，因此线性叠加~\eqref{eq:forcesum}只在每秒几十个脉冲以内成立。
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=20cm,y=0.55cm]
+\draw[->,gray!70!black] (0,0) -- (0.66,0) node[right,font=\small,black] {$t$，s};
+\draw[->,gray!70!black] (0,0) -- (0,6.4) node[left,font=\small,black] {$F/F_1$};
+\foreach \t in {0,0.2,0.4,0.6}{\draw[gray!60!black] (\t,-0.1) -- (\t,0.1); \node[below,font=\scriptsize] at (\t,0) {\t};}
+\foreach \f in {1,3,5}{\draw[gray!60!black] (-0.004,\f) -- (0.004,\f); \node[left,font=\scriptsize] at (0,\f) {\f};}
+\draw[thick,blue!60!black] plot file {figures/muscle_twitch_5.dat};
+\draw[thick,green!45!black] plot file {figures/muscle_twitch_15.dat};
+\draw[thick,red!70!black] plot file {figures/muscle_twitch_40.dat};
+\node[font=\scriptsize,blue!60!black,anchor=west] at (0.605,0.9) {5 次/秒};
+\node[font=\scriptsize,green!45!black,anchor=west] at (0.605,2.1) {15 次/秒};
+\node[font=\scriptsize,red!70!black,anchor=west] at (0.605,5.4) {40 次/秒};
+\end{tikzpicture}
+\caption{肌肉作为数模转换器：一个运动单位规则发放时的力~\eqref{eq:forcesum}，$T_c=50\ms$。稀疏的脉冲产生分离的抽搐，密集的脉冲融合成平稳的力——正如图~\ref{fig:lowpass}中密集的脉冲融合成平稳的浓度。}
+\label{fig:tetanus}
+\end{figure}
+
+大脑有两个控制力的旋钮：每个单位的脉冲频率，以及被启动的单位数。第二个旋钮的设计非常巧妙。肌肉中的单位各不相同：最弱的比最强的弱一百倍。当需要的力越来越大时，单位\emph{按大小顺序}启动，从小到大~\cite{Henneman1957}。没有谁去计算这个顺序：小神经元在同样的公共输入下就是更容易兴奋，所以启动顺序由硬件本身决定。
+
+这有什么好处？设每个后续单位比前一个强$q$倍，$q$略大于1。所有已启动单位的力是一个等比数列之和，几乎全部来自最后几个单位。于是，每再启动一个单位，就增加
+\begin{empheq}[box=\keybox]{equation}
+\frac{\Delta F}{F} \;\approx\; q-1 \;=\; \text{const} ,
+\label{eq:sizeprinciple}
+\end{empheq}
+也就是说，力的步长与力本身成正比。用力小时，大脑以细小的份额来调配；用力大时，份额也大。这是一个\emph{浮点数}：阶码由启动了多少单位决定，尾数由它们的脉冲频率决定。这与第~\ref{sec:sensors}~章传感器的对数刻度相同：机器的输入和输出都以相对比例来度量世界。
+
+浮点也有反面。力的离散程度同样与力本身成正比：用力大的动作必然不如用力小的动作精确。按照一个颇有影响的假说，正是这种依赖于信号的噪声解释了我们的动作为何平滑：平滑的指令使终点的离散最小~\cite{HarrisWolpert1998}。
+
+\section{只能拉，不能推：每个关节两根导线}
+
+肌肉只会拉。它不能推，正如\nt{GLUT}神经元不能输出负信号。解决办法在第~\ref{sec:glutcomputer}~章已经见过：\emph{两根导线}。每个关节由一对向相反方向拉的肌肉负责（图~\ref{fig:antagonists}）。若它们的力为$F_1$和$F_2$，力臂为$\ell$，则关节的力矩和刚度为
+\begin{empheq}[box=\keybox]{equation}
+M \;=\; \ell\,(F_1-F_2), \qquad K \;\approx\; \kappa_m\,(F_1+F_2),
+\label{eq:antagonists}
+\end{empheq}
+其中$\kappa_m$是把肌肉的力与其刚度联系起来的系数：绷紧的肌肉比放松的肌肉弹性更强。力之差决定力矩，力之和决定刚度~\cite{Hogan1984}。大脑用两根导线控制两个独立的量：关节转向哪里，以及把它握得多稳。要端住一杯水不洒出来时，我们同时绷紧两块肌肉：力矩不变，刚度更高，意外的碰撞就不那么容易使手偏移。
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  nrn/.style={circle,draw,very thick,minimum size=0.95cm,inner sep=0pt,font=\scriptsize},
+  inh/.style={-{Bar[width=7pt]},thick,red!70!black}]
+% the joint: a bar on a pivot, two springs pulling down on either side
+\fill[gray!30] (4.6,-0.25) -- (5.4,-0.25) -- (5,0.15) -- cycle;
+\draw[line width=3pt,gray!50!black] (2.4,0.2) -- (7.6,0.2);
+\fill[black] (5,0.2) circle (0.08);
+\draw[decorate,decoration={coil,segment length=5pt,amplitude=4pt},very thick,blue!60!black] (3.0,0.2) -- (3.0,-1.6);
+\draw[decorate,decoration={coil,segment length=5pt,amplitude=4pt},very thick,orange!85!black] (7.0,0.2) -- (7.0,-1.6);
+\draw[very thick] (2.5,-1.6) -- (3.5,-1.6); \draw[very thick] (6.5,-1.6) -- (7.5,-1.6);
+\node[font=\small,blue!60!black] at (2.35,-0.75) {$F_1$};
+\node[font=\small,orange!85!black] at (7.65,-0.75) {$F_2$};
+\draw[->,thick] (5.9,0.75) arc (60:120:1.8) node[above,font=\scriptsize,pos=0.5] {$M=\ell(F_1-F_2)$};
+% motor neurons and reflex circuit
+\node[nrn,fill=green!12] (M1) at (1.6,-3.0) {\nt{ACET}};
+\node[nrn,fill=green!12] (M2) at (8.4,-3.0) {\nt{ACET}};
+\node[nrn,fill=red!10] (G) at (5.0,-3.0) {\nt{GLYC}};
+\node[nrn,fill=blue!6] (S) at (1.6,-5.0) {\nt{GLUT}};
+\draw[->,very thick] (M1) -- (3.0,-1.7);
+\draw[->,very thick] (M2) -- (7.0,-1.7);
+\draw[->,thick] (S) -- (M1);
+\draw[->,thick] (S) -- (G);
+\draw[inh] (G) -- (M2);
+\draw[->,thick,densely dashed,gray!60!black] (3.15,-1.2) to[bend left=25] node[pos=0.35,right,font=\scriptsize,black] {牵拉} (S.north east);
+\draw[->,thick,blue!60!black] (-0.3,-3.0) node[left,font=\scriptsize,black,align=right] {大脑\\指令} -- (M1);
+\draw[->,thick,blue!60!black] (10.3,-3.0) node[right,font=\scriptsize,black,align=left] {大脑\\指令} -- (M2);
+\end{tikzpicture}
+\caption{一个关节上的两块肌肉和最快的反馈环路。\nt{ACET}神经元接收大脑的指令，把关节拉向不同方向；力之差使关节转动，力之和使它更僵硬。左侧肌肉的牵拉传感器（\nt{GLUT}）兴奋该肌肉自己的\nt{ACET}神经元，并经\nt{GLYC}中间神经元抑制拮抗肌的神经元——即第~\ref{sec:gaba}~章的禁止。}
+\label{fig:antagonists}
+\end{figure}
+
+\section{有延迟的反馈}
+
+肌肉不是盲目工作的。每块肌肉里都有表~\ref{tab:sensors}中提到的牵拉传感器，最短的环路直接在脊髓中闭合（图~\ref{fig:antagonists}）。肌肉被意外拉长——牵拉传感器就兴奋该肌肉自己的\nt{ACET}神经元，肌肉收缩，把关节拉回原位。与此同时，经由抑制性中间神经元关闭拮抗肌，使它不来妨碍。担任这个中间神经元的是\nt{GLYC}——表~\ref{tab:types}中那个没有单独成章的类型：它的位置正在这里，在脊髓的快速环路中。
+
+每个环路都有延迟$d$：对手臂而言，脊髓环路约为$25$--$30\ms$，经皮层的环路长一倍半到三倍，经眼睛的环路为$100$--$200\ms$。而我们在命题~\ref{prop:ei}中已经看到，有延迟的反馈会使系统振荡。对最简单的调节器，它根据$d$秒之前的信息以速率$G$纠正偏差$x$，$\dd x/\dd t=-G\,x(t-d)$，稳定条件为~\cite{Hayes1950}
+\begin{empheq}[box=\keybox]{equation}
+G\,d \;<\; \frac{\pi}{2} ,
+\label{eq:delaystable}
+\end{empheq}
+在边界上系统以频率$1/(4d)$振荡。我们在模型上检验了这一点：$d=30\ms$时，$G=40$每秒时偏差衰减，而$G=55$每秒时，略高于边界值$52$，系统开始振荡。
+
+由此得出两个推论。第一：环路越长，纠正就必须越慢。经过延迟约一百五十毫秒的眼睛，手的纠正不能快于大约十分之一秒，否则手就会颤抖。第二：脊髓环路的稳定边界$1/(4\cdot30\ms)\approx8$次/秒，接近每个健康人都有的细微颤动的频率——每秒八到十二次。牵拉环路是这种颤动的可能来源之一~\cite{McAuleyMarsden2000}。
+
+既然反馈有延迟，大脑又如何做到动作既快又准？一个流行的假说是：\emph{预测}。大脑保存身体的内部模型，不等传感器回报就计算出指令的结果~\cite{WolpertGhahramani2000}。传感器的作用是修正模型，而不是修正每一个动作。工程师会称之为带状态观测器的前馈控制。
+
+\section{运动节律发生器}
+
+步行、呼吸、咀嚼都是节律性动作。它们需要一个时钟来打拍子吗？不需要。脊髓和脑干中有一些小网络，即使输入中没有任何节律性的东西，它们自己也会产生节律~\cite{MarderBucher2001}。最简单的这种网络由我们已有的部件组成：两组\nt{GLUT}神经元，如图~\ref{fig:wta}那样经\nt{GABA}或\nt{GLYC}中间神经元相互抑制，并像第~\ref{sec:glutcomputer}~章的记忆那样缓慢疲劳：
+\begin{empheq}[box=\keybox]{equation}
+\tau\,\frac{\dd r_i}{\dd t} = -r_i + \bigl[I - \beta\,r_j - a_i\bigr]_+ ,
+\qquad
+\tau_a\,\frac{\dd a_i}{\dd t} = -a_i + b\,r_i ,
+\label{eq:halfcentre}
+\end{empheq}
+其中$a_i$是第$i$组的疲劳，$j$是另一组。$\beta>1$的相互抑制选出获胜者（命题~\ref{prop:wta}）。获胜者工作并逐渐疲劳；当疲劳吃掉了它的输入，已经休息过来的失败者便冲到前面，自己又开始疲劳。两组轮流工作，各自控制一对肌肉中的一块（图~\ref{fig:halfcentre}）。
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=3.2cm,y=2.4cm]
+\draw[->,gray!70!black] (0,0) -- (4.2,0) node[right,font=\small,black] {$t$，s};
+\draw[->,gray!70!black] (0,0) -- (0,1.2) node[left,font=\small,black] {$r$};
+\foreach \t in {0,1,2,3,4}{\draw[gray!60!black] (\t,-0.03) -- (\t,0.03); \node[below,font=\scriptsize] at (\t,0) {\t};}
+\draw[thick,blue!60!black] plot file {figures/halfcentre1.dat};
+\draw[thick,orange!85!black] plot file {figures/halfcentre2.dat};
+\node[font=\scriptsize,blue!60!black,anchor=west] at (1.6,1.28) {第1组：“向前”};
+\node[font=\scriptsize,orange!85!black,anchor=west] at (2.7,1.28) {第2组：“向后”};
+\end{tikzpicture}
+\caption{按模型~\eqref{eq:halfcentre}的节律发生器：$I=1$，$\beta=2$，$b=2$，$\tau=20\ms$，$\tau_a=0.4\,\text{s}$。两组神经元相互抑制并会疲劳，以$0.84\,\text{s}$的周期轮流工作，尽管输入是恒定信号。}
+\label{fig:halfcentre}
+\end{figure}
+
+在我们的模型中，输入恒定时，两组以$0.84\,\text{s}$的周期交替，约为疲劳时间$\tau_a$的两倍。来自上方的恒定指令——“走”——就地变成了节律。这是又一个局部节律，就像第~\ref{sec:gaba}~章\nt{GLUT}--\nt{GABA}环路的节律：它只在网络工作时出现，也只为它所控制的肌肉打拍子。
+
+\begin{keyblock}
+\begin{proposition}[机器的输出]
+\label{prop:muscles}
+大脑像一个分层的调节器体系那样控制肌肉。顶层选择动作（第~\ref{sec:dofa}~章）；下层的局部发生器把恒定指令变成节律，脊髓的快速环路稳住关节。力以浮点方式设定：阶码由按大小启动的单位数给出，尾数由脉冲频率给出。每个关节由一对只会拉的肌肉控制，其力之差决定力矩，力之和决定刚度。这些结构已经测量；大脑依赖身体的内部模型，是一个有充分依据的假说。
+\end{proposition}
+\end{keyblock}
+
+\section{小结}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{3.0cm}>{\raggedright}p{4.6cm}>{\raggedright\arraybackslash}p{5.2cm}}
+\toprule
+输出做什么 & 怎么做 & 已知程度 \\
+\midrule
+把脉冲变成力 & 抽搐叠加~\eqref{eq:forcesum}，低通滤波器 & 已测量；线性叠加是简化 \\
+调配力 & 按大小启动单位，浮点~\eqref{eq:sizeprinciple} & 启动顺序已测量 \\
+只会拉却能推 & 一对肌肉：力矩为差，刚度为和~\eqref{eq:antagonists} & 已测量 \\
+稳住关节 & 牵拉环路，经\nt{GLYC}禁止拮抗肌 & 已测量 \\
+不颤抖 & $Gd<\pi/2$~\eqref{eq:delaystable} & 来自控制理论；对颤动的贡献是可能的原因 \\
+动作迅速 & 依据内部模型预测 & 有充分依据的假说 \\
+有节律地行走和呼吸 & 节律发生器~\eqref{eq:halfcentre} & 发生器已测量；最简方案是模型 \\
+\bottomrule
+\end{tabular}
+\caption{机器如何控制肌肉。}
+\label{tab:muscles}
+\end{table}
+
+机器的输出采用与其他一切相同的手法（表~\ref{tab:muscles}）：用两根导线代替符号，用低通滤波器代替数模转换器，用对数刻度代替线性刻度，用相互抑制和疲劳代替时钟发生器。输入（第~\ref{sec:sensors}~章）和输出都以相对比例度量世界，而在二者之间工作的，就是本书所讲的这台机器。
+
+\section{习题}
+
+\begin{exercise}[\lvlA]
+\label{ex:13:1}
+\emph{浮点的具体数字。}一块肌肉有$N=100$个运动单位，力为$f_n=f_1q^{\,n-1}$；最强的比最弱的强$100$倍。(a)~求$q$、相对步长~\eqref{eq:sizeprinciple}以及以分贝计的动态范围。(b)~由$100$个相同单位组成、总力相同的“线性数模转换器”，在力为$10f_1$时步长是多少？
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:13:2}
+\emph{安全系数的代价。}肌纤维上的突触每个脉冲释放泊松分布、均值为$m$的量子数，纤维在量子数达到$n_{\text{th}}=20$及以上时兴奋；安全系数$S=m/n_{\text{th}}$。以每秒$20$个脉冲工作的单位，在$S=2$和$S=4$时每天各失败几次？
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:13:3}
+\emph{肌肉作为滤波器。}$T_c=50\ms$的抽搐~\eqref{eq:twitch}是一个线性系统的冲激响应。(a)~求其传递函数$H(s)$和截止频率。(b)~规则脉冲的频率为多少时，力的脉动幅度为平均力的$10\%$？
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:13:4}
+\emph{纠正快不过延迟。}调节器$\dd x/\dd t=-G\,x(t-d)$。(a)~证明当$Gd=1/e$时，偏差以最快的速度无振荡衰减，速率为$1/d$。(b)~对脊髓环路$d=30\ms$和经眼睛的环路$d=150\ms$，求这个$G$和衰减时间常数。
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:13:5}
+\emph{节律发生器的周期。}当$\tau\ll\tau_a$时，模型~\eqref{eq:halfcentre}的周期$T$由方程$(\beta-1)(1-E^{2+b})/(\beta-E)=b\,(1-E^{1+b})/(1+b)$给出，其中$E=e^{-T/(2\tau_a)}$。(a)~求$\beta=b=2$、$\tau_a=0.4$\,s时的$T$。(b)~证明$T$与输入$I$无关，且只有当$b>\beta-1$时才可能产生节律。
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:13:6}
+\emph{发生器建模。}从\texttt{models/\allowbreak muscle\_models.py}导入函数\texttt{halfcentre}（不要直接运行该文件），在$b=0.8$、$1.05$、$1.2$、$1.5$、$2$、$4$以及$I=0.5$、$1$、$2$时测量周期，舍去前两个周期。“走快点”的指令能通过$I$改变步频吗？
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:13:7}
+\emph{刚度与反射。}关节处于牵拉环路中：$\dd\theta/\dd t=-a\theta(t)-G\theta(t-d)$，$a=K/B$，$d=30\ms$。把它化为习题~\ref{ex:13:4}，求使偏差以$15\ms$的时间常数无振荡衰减的最小$a$及所需的$G$。当肌肉共同收缩增强时，应如何改变$G$？
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:13:8}
+\emph{步频旋钮。}按习题~\ref{ex:13:5}和~\ref{ex:13:6}，发生器~\eqref{eq:halfcentre}的输入$I$只改变幅度，不改变步频。用本书的部件提出对模型的最小改动，使得低于某个$I_{\min}$时没有节律，而高于它时周期随$I$增大而缩短，$I$增至三倍时至少缩短一半。求$\tau\ll\tau_a$时的$I_{\min}$，并用模拟验证。
+\end{exercise}

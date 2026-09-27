@@ -1,0 +1,154 @@
+\chapter{DishBrain}
+\chaptermark{DishBrain}
+\label{sec:dishbrain}
+
+\section{培养皿里的网络打网球}
+
+DishBrain 是作者给一个试验台起的名字：在这个试验台上，培养在带电极芯片上的活神经元在玩单球拍的简化网球~\cite{Kagan2022}。这是用活神经元搭成的机器中讨论最多的一项实验（这类机器的综述见第~\ref{sec:livingmachine}~章），对本书来说也格外合用。这里的小网络整个都摸得着：每个输入由实验者设定，每个输出都被记录下来。前面各章的所有问题，即信号如何编码、谁来教、探针能看到什么，都可以拿来问一个既没有眼睛、没有肌肉、也没有 \nt{DOPA} 神经元的网络。我们像工程师剖析别人的试验台那样来剖析这项实验：电路、输入、输出、老师、结果、争议。
+
+\section{试验台}
+
+神经元取自小鼠胚胎皮层，每块芯片约 $800\,000$ 个细胞；或由人类干细胞培养而来，每块芯片约一百万个。它们在芯片上生长几周，彼此长入对方，并开始自发地发放脉冲和簇放电。在它们下方 $8$~mm$^2$ 的区域上有 $26\,000$ 个铂电极；最多可同时记录其中的 $1024$ 个，而实际用于刺激的只有八个。
+
+培养物周围闭合着一个回路（图~\ref{fig:dishloop}）。计算机模拟游戏：球飞行、在墙上反弹，球拍上下移动。球的位置被转换成八个“感觉”电极上的电流。两个“运动”区的脉冲按 $10\ms$ 的窗口计数，用来移动球拍。每次击中或未击中后，培养物还会再收到一个刺激，即反馈。$10\ms$ 窗口是试验台计算机的时钟节拍，而不是培养物的：网络本身仍像本书中所有网络一样异步工作。
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  blk/.style={draw,very thick,rounded corners=3pt,align=center,font=\small,minimum height=1.2cm},
+  lab/.style={font=\scriptsize,align=center}]
+\node[blk,fill=blue!6,text width=3.4cm] (C) at (0,0) {芯片上的培养物\\\scriptsize $\sim10^6$ 个神经元，$26\,000$ 个电极};
+\node[blk,fill=orange!10,text width=3.0cm] (G) at (7.2,0) {计算机：\\网球游戏};
+\draw[->,very thick,blue!60!black] (G.north west) to[bend right=25] node[lab,above] {球：\emph{位置}——8 个电极中的哪一个，\\\emph{频率}——4--40 Hz} (C.north east);
+\draw[->,very thick,red!70!black] (C.south east) to[bend right=25] node[lab,below] {球拍：“上”区和“下”区\\在 $10\ms$ 内的脉冲计数} (G.south west);
+\draw[->,thick,densely dashed,green!45!black] (G.east) -- ++(0.9,0) |- ++(0,-2.6) -| node[lab,pos=0.25,below] {接住：可预测刺激；未接住：不可预测刺激} (C.south);
+\end{tikzpicture}
+\caption{DishBrain 回路。蓝色箭头是输入：球的位置用位置编码和频率编码表示（第~\ref{sec:code}~章）。红色箭头是输出：两个区的计数之差移动球拍。绿色虚线是每个回合之后的反馈，也是试验台上唯一的“老师”。}
+\label{fig:dishloop}
+\end{figure}
+
+\section{输入与输出}
+
+\emph{输入}同时用了第~\ref{sec:code}~章的两种编码。刺激八个电极中的哪一个，表示球在什么高度：这是位置编码，和第~\ref{sec:sensors}~章的传感器一样。刺激脉冲有多密，表示球有多远：球在远端墙边时每秒 $4$ 个，离球拍所在的墙越近线性增多，直到每秒 $40$ 个。这是频率编码；球的刺激脉冲幅度为 $75$~mV。培养物事先并不“认识”这两种编码中的任何一种：编码由实验者规定，网络必须学会读懂它。
+
+\emph{输出}的读取方式与第~\ref{sec:debugging}~章的接口相同。一个运动区的脉冲把球拍往上推，另一个往下推；最简单的写法是，每个窗口内
+\begin{empheq}[box=\keybox]{equation}
+\Delta p \;=\; c\,\bigl(n_\uparrow - n_\downarrow\bigr),
+\label{eq:dishreadout}
+\end{empheq}
+其中 $n_\uparrow$、$n_\downarrow$ 是两个区在 $10\ms$ 内的脉冲数，$c$ 是试验台的系数。这是第~\ref{sec:glutcomputer}~章的双线编码：运动方向不是由信号的符号携带，而是由两根导线中哪一根更响来携带。
+
+来看看这种输出的噪声。如果一个区每秒总共发出 $R$ 个脉冲，那么在 $T=10\ms$ 的窗口里平均有 $RT$ 个，按~\eqref{eq:rateerror}，相对离散度为 $1/\sqrt{RT}$。$R=1000$ 次/秒时每个窗口约为百分之 $30$；$R=100$ 时超过百分之百。球拍不可避免地会抖动，网络只能用一种方式学习：把计数之差的\emph{平均值}往正确方向推。这正是限制第~\ref{sec:debugging}~章中任何接口的同一套规律，只不过现在出现在回路的两侧。
+
+\section{没有多巴胺的老师}
+
+试验台最有意思的部分是老师。皮层神经元培养物里没有 \nt{DOPA} 神经元，试验台也不发送任何“比预期好”的信号。反馈是另一种形式。网络接住了球，所有八个感觉电极同时收到一个短暂的\emph{可预测}刺激：$75$~mV 的脉冲，每秒 $100$ 个，持续 $0.1\,\text{s}$。没接住，就是四秒钟作者称为\emph{不可预测}的刺激：$150$~mV 的脉冲，每秒 $5$ 个，在随机时刻施加到随机选择的电极上；随后是四秒钟不刺激的停顿，球重新发出~\cite{Kagan2022}。
+
+作者的出发点是一个假说：网络的行为是为了让自己的输入变得可预测~\cite{Friston2010}。对工程师来说含义很简单：培养物摆脱四秒随机噪声的办法只有一个，就是接住球。同样的思想我们在第~\ref{sec:code}~章的节省脉冲和第~\ref{sec:recognition}~章的画面预测中都见过。
+
+但这里需要的真是可预测性吗？还可能有更粗糙的机制。假设未接住后的不可预测刺激只是把网络中近期的变化\emph{打乱}，而接住后的平静刺激不去碰它们。用一个向量 $\boldsymbol\psi$ 描述网络的设置，设在设置 $\boldsymbol\psi$ 下网络未接住的概率为 $P_{\text{miss}}(\boldsymbol\psi)$。如果扰动是对称的，即从 $\boldsymbol\psi$ 到 $\boldsymbol\psi'$ 与反方向的可能性相同，那么在稳态下，离开每个设置的流量与进入的流量相平衡，网络停留在设置 $\boldsymbol\psi$ 的时间比例为
+\begin{empheq}[box=\keybox]{equation}
+\rho(\boldsymbol\psi) \;\propto\; \frac{1}{P_{\text{miss}}(\boldsymbol\psi)} .
+\label{eq:dishdensity}
+\end{empheq}
+未接住的次数少十倍的设置，保持的时间就长十倍。没有人告诉网络该往哪个方向改权重：好的设置只是更少被破坏。
+
+我们在一个模型上检验了这一点，把培养物简化为两个数：球到达高度 $y$ 时，球拍到达 $a\,y+b$，偏差小于 $0.1$ 就算接住。未接住后两个数都受到一次随机扰动，接住后保持不变。在 $2000$ 个回合中，接住的比例从前两百个回合的 $0.21$ 上升到最后五百个回合的 $0.38$（四十个“培养物”，图~\ref{fig:dishmodel}）。如果在\emph{每个}回合后都给扰动，反馈中就没有信息，比例停留在 $0.12$ 左右；如果完全没有扰动，比例保持在 $0.19$。试验台上的实验与此一致：一次会话内的显著提升只出现在完整反馈下。以安静代替刺激时，培养物到会话结束时仍比没有反馈时打得好，但效果较小~\cite{Kagan2022}；需要指出，在这种条件下，未接住后也跟着较长的停顿，接住后则较短，因此两种结局之间的差别并未完全消失。
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[x=1cm,y=5cm]
+\draw[->,gray!70!black] (0,0) -- (10.6,0);
+\draw[->,gray!70!black] (0,0) -- (0,0.5) node[above,font=\small,black] {接住比例};
+\foreach \v in {0.1,0.2,0.3,0.4}{\draw[gray!60!black] (-0.06,\v) -- (0.06,\v); \node[left,font=\scriptsize] at (0,\v) {\v};}
+\foreach \x/\f/\l/\lab in {1.8/0.21/0.38/{未接住后\\给噪声},5.2/0.13/0.11/{每个回合后\\都给噪声},8.6/0.19/0.19/{无噪声}}{
+  \fill[blue!35] (\x-0.8,0) rectangle (\x-0.05,\f);
+  \fill[red!60!black] (\x+0.05,0) rectangle (\x+0.8,\l);
+  \node[below,font=\scriptsize,align=center] at (\x,-0.01) {\lab};
+  \node[above,font=\scriptsize] at (\x-0.425,\f) {\f};
+  \node[above,font=\scriptsize] at (\x+0.425,\l) {\l};}
+\fill[blue!35] (7.4,0.47) rectangle (7.7,0.495); \node[right,font=\scriptsize] at (7.75,0.482) {前 200 个};
+\fill[red!60!black] (7.4,0.41) rectangle (7.7,0.435); \node[right,font=\scriptsize] at (7.75,0.422) {后 500 个};
+\end{tikzpicture}
+\caption{“未接住即打乱”模型（\texttt{dishbrain\_model.py}）：$2000$ 个回合开始和结束时的接住比例，四十个模型培养物的平均值。只有当扰动跟在未接住之后、而不跟在接住之后时，学习才会发生，这与实验一致：一次会话内的显著提升只出现在完整反馈下。}
+\label{fig:dishmodel}
+\end{figure}
+
+\begin{keyblock}
+\begin{proposition}[打乱式老师]
+\label{prop:dishscramble}
+如果失败会晃动网络、成功则让它保持原样，网络就会自行漂向更少出错的设置：停留在某个设置的时间与失败概率成反比~\eqref{eq:dishdensity}。这种学习既不需要奖励信号，也不需要其符号，也不需要可预测性本身，只需要成功后和失败后的反馈有所不同。培养物的行为变化已测量；培养皿里起作用的是哪种机制，是输入预测还是打乱，尚未确定。
+\end{proposition}
+\end{keyblock}
+
+与第~\ref{sec:dofa}~章比较一下。那里噪声也用于搜索，但多巴胺带有符号：误差 $\delta$ 指明权重该往哪个方向移动，步子沿梯度走~\eqref{eq:perturbation}。这里没有符号，只有“保留”或“晃动”。这种搜索更粗糙、更慢，但对网络的要求更少：不需要 \nt{DOPA} 神经元，不需要评论家，也不需要延续数秒的资格迹。
+
+\section{测到了什么，争的是什么}
+
+每局游戏持续 $20$ 分钟；比较的是前 $5$ 分钟和后 $15$ 分钟。在有完整反馈的培养物中，连续击球的回合变长，发球即丢的情况变少；在没有细胞、没有游戏以及由计算机控制“球拍”的对照中，都没有类似现象。人类细胞培养物平均能比小鼠培养物坚持更久。这一改进在统计上是可靠的，涉及九个小鼠培养物和十一个人类培养物，每组一百多局游戏，但幅度不大：网络并没有成为好球手，只是比随机稍好一点。它在一次会话内可靠；在几天里跨会话的稳定学习，作者并没有得到~\cite{Kagan2022}。同一小组的后续工作发现，游戏时培养物的活动会趋近\emph{临界}状态，即衰减与雪崩之间的边界，也就是第~\ref{sec:gaba}~章中那种处在边缘的状态，而且越接近临界，游戏打得越好~\cite{Habibollahi2023}。
+
+引起主要争议的不是数字，而是措辞。文章标题宣称培养皿中的神经元“表现出感知能力”（sentience），一组研究者对此提出反驳：闭环中的行为变化还不是智能，也不是感受，结论应当表述得更谨慎~\cite{Balci2023}。从工程角度看，有两个问题悬而未决，都关乎机制。第一，网络是在学习，即它的权重长期改变了，还是反馈只是移动了它的当前状态？第二，需要的真是可预测性，还是只要对成功和失败的响应有任何差别就够了，如命题~\ref{prop:dishscramble} 所述？在每个电极都可访问的试验台上，这两个问题都可以回答，这或许正是它最大的价值。
+
+\input{chapters/22_dishbrain_spec}
+
+\section{小结}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{2.1cm}>{\raggedright}p{4.2cm}>{\raggedright}p{1.9cm}>{\raggedright\arraybackslash}p{4.6cm}}
+\toprule
+试验台部件 & 结构 & 本书章节 & 已知情况 \\
+\midrule
+输入 & 位置（8 个电极中的哪一个）和频率（4--40 Hz） & \ref{sec:code}, \ref{sec:sensors} & 由实验者规定 \\
+输出 & 两个区在 $10\ms$ 内的计数之差~\eqref{eq:dishreadout} & \ref{sec:glutcomputer}, \ref{sec:debugging} & 由实验者规定；噪声按~\eqref{eq:rateerror} \\
+老师 & 接住后给可预测刺激，未接住后给不可预测刺激；没有多巴胺 & \ref{sec:dofa} & 一次会话内的显著提升只出现在完整反馈下；安静条件下效应较小；跨会话不稳定 \\
+机制 & 输入预测或未接住即打乱~\eqref{eq:dishdensity} & \ref{sec:dofa}, \ref{sec:recognition} & 未确定；两者都能解释结果 \\
+网络状态 & 游戏时趋近临界状态 & \ref{sec:gaba} & 与游戏水平的关系已测量 \\
+“感知能力” & 作者的论断 & --- & 未被证明；有争议 \\
+\bottomrule
+\end{tabular}
+\caption{工程师眼中的 DishBrain。}
+\label{tab:dishbrain}
+\end{table}
+
+DishBrain 是最简形式的活神经元机器：输入用编码给定，输出靠计数读取，老师就是对成功与失败的响应之差（表~\ref{tab:dishbrain}）。一个没有眼睛、肌肉和多巴胺的网络稍微学会了打球，单凭这一点，它就成了检验本书思想的试验台。无论最后的机制是预测、打乱还是别的什么，答案都会按第~\ref{sec:debugging}~章建议的方式找到：用探针、测试信号和关闭部件，在一台终于能整个看清的机器上。
+
+\section{习题}
+
+\begin{exercise}[\lvlA]
+\label{ex:22:1}
+\emph{计数要偏移多少。}两个区合计每秒发出 $R_\uparrow+R_\downarrow=2000$ 个脉冲，均为泊松流。(a)~$R=1000$ 和 $R=100$ 时，一个区在 $10\ms$ 内计数的相对离散度是多少？(b)~球飞行 $1$~s 期间位移~\eqref{eq:dishreadout} 累加。$R_\uparrow-R_\downarrow$ 至少多大，平均位移才是离散度的两倍？
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:22:2}
+\emph{要多少回合才能看出学习。}各回合独立，接住比例服从二项分布。两个时段中各需多少回合，才能使接住比例的增长超过差值的两个标准差：(a)~从 $0.20$ 到 $0.25$；(b)~如模型中那样从 $0.21$ 到 $0.38$？
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:22:3}
+\emph{推导~\eqref{eq:dishdensity}。}设置 $\boldsymbol\psi$ 取值于有限集合；未接住时（概率 $P(\boldsymbol\psi)>0$），网络以对称概率 $K(\boldsymbol\psi,\boldsymbol\psi')$ 转到 $\boldsymbol\psi'$，接住时保持不变。(a)~证明 $\rho\propto1/P$ 是平稳分布。(b)~两个设置分别为 $P=0.9$ 和 $P=0.1$ 时，未接住的比例是多少？
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:22:4}
+\emph{模型的吸收区。}球拍到达 $p=\min\bigl(1,\max(0,ay+b)\bigr)$，球到达高度 $y\sim U(0,1)$，$|p-y|<h=0.1$ 即接住。(a)~证明当 $|b|<h$ 且 $|a-1+b|<h$ 时网络接住所有球，并求该区域的面积。(b)~数值求 $a\sim U(-1,1)$、$b\sim U(0,1)$ 时的平均接住比例。
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:22:5}
+\emph{建模：给设置围上栅栏。}在 \texttt{dishbrain\_model.py} 的副本中，让 $200$ 个培养物各打 $20\,000$ 个回合。最后 $500$ 个回合的接住比例是多少？如果每次扰动后把设置裁剪到矩形 $a\in[-1,2]$、$b\in[-1,1]$ 内呢？用习题~\ref{ex:22:3} 解释差别。
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:22:6}
+\emph{设计输入编码。}高度误差小于 $h=0.1$ 即接住；网络在 $T=0.25$~s 内读取输入，频率不超过 $r$ 时约可区分 $\sqrt{rT}$ 个等级，刺激不超过每秒 $40$ 个脉冲。(a)~八个电极上的位置编码够用吗？(b)~能否用单个电极上的频率来传递高度？
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:22:7}
+\emph{研究：预测还是打乱？}把模型推广到 $d$ 个可调数（$p=\sum_{i<d}a_iy^i$）。在打乱规则下和在带误差符号的规则~\eqref{eq:perturbation} 下，达到接住比例 $0.5$ 所需的回合数如何随 $d$ 增长？试验台上什么实验能区分这两个假说？
+\end{exercise}

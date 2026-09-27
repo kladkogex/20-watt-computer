@@ -1,0 +1,128 @@
+\chapter{Debugging the Machine}
+\chaptermark{Debugging the Machine}
+\label{sec:debugging}
+
+\section{How to debug a machine without a schematic}
+
+An engineer handed a working board without a schematic debugs it with four techniques. Put on a \emph{probe} and watch what goes along a wire. \emph{Inject a test signal} and watch what changes. \emph{Disable} a piece of the circuit and watch what stops working. And \emph{read the control registers} to find out what mode the board is in. This whole book is an attempt to read the brain's schematic, and in this chapter we look at which of the four techniques engineers can already use and what the previous chapters tell them to expect.
+
+The most visible example of such debugging today is brain–computer interfaces: devices that read neuron spikes and turn them into commands for external machines or, conversely, feed signals into the brain from outside. Most of the chapter is devoted to them, and above all to what the company Neuralink is doing.
+
+\section{The probe: what an electrode hears}
+
+The brain's probe is a thin electrode inserted into the tissue. It hears the spikes of neurons lying within a radius of about a hundred micrometers, usually one to several of them. A spike on the electrode is a blip of tens to hundreds of microvolts lasting about a millisecond, and its shape lets one tell neighboring neurons apart. Large \nt{GLUT} neurons are heard best: they are the majority in the cortex (Table~\ref{tab:types}), and their currents are stronger.
+
+The main difficulty is obvious at once. A good probe today has hundreds or thousands of electrodes, while the brain has $8.6\cdot10^{10}$ neurons. We are eavesdropping on about one hundred-millionth of the machine. Why can anything be understood from such a tiny sample at all? Chapter~\ref{sec:code} gave the answer. Neighboring neurons are noisy in a correlated way, and averaging over a group hits a limit (Proposition~\ref{prop:pooling}): a hundred neurons carry almost as much as a thousand. Moreover, the task solved by the motor cortex is low-dimensional: the arm has few joints (Chapter~\ref{sec:muscles}), and the activity of the hundreds of neurons controlling it fits into a space of only one or two dozen shared variables~\cite{Gallego2017}. A probe on a hundred neurons hears almost all of these variables. If the brain stored an independent message in every neuron, such eavesdropping would be useless.
+
+\section{The data stream: compression right on the probe}
+
+A probe produces a huge stream. To see the spike shape, each electrode must be digitized about $20$ thousand times a second with a precision of about ten bits. A thousand electrodes give
+\begin{empheq}[box=\keybox]{equation}
+\begin{aligned}
+R_{\text{raw}} \;&=\; N\,f_s\,b \;\approx\; 10^3\cdot2\cdot10^4\cdot10 \;\approx\; 2\cdot10^8\ \text{bit/s},\\
+R_{\text{spk}} \;&\approx\; N\,r\,\log_2\frac{e}{r\,\Delta t} \;\approx\; 8\cdot10^4\ \text{bit/s}.
+\end{aligned}
+\label{eq:probedata}
+\end{empheq}
+The second estimate is the capacity of the spike stream~\eqref{eq:spikeentropy} at $r=10$ spikes per second and precision $\Delta t=1\ms$: everything the stream actually contains takes two and a half thousand times less. For an implanted device this difference is decisive: the raw stream cannot be sent by radio through the skin with the power that can be afforded inside the head without heating the tissue. So an implanted device must detect spikes right on the chip next to the electrodes and send out only events: the channel number and the time of the spike. The first description of the Neuralink system had not reached this point yet: the chips amplify and digitize the signals, the whole raw stream leaves over a cable, and spikes are detected by software outside; on-chip compression and wireless links are named there as a plan~\cite{Musk2019}.
+
+This is a familiar trick. The eye compresses the signal a hundredfold before sending it down a long cable (Chapter~\ref{sec:sensors}); an event camera transmits changes, not frames. To fit into its wire, the probe is forced to do what the brain itself does: speak in spikes, and only about news.
+
+\section{What Neuralink does}
+
+The Neuralink device is a probe built around these constraints~\cite{Musk2019}. Instead of a rigid array of needles there are many flexible threads thinner than a hair, with electrodes along each: in the first description of the system, up to $3072$ electrodes on $96$ threads, $32$ per thread, and in the device implanted in humans, according to the company, about a thousand channels on $64$ threads. Flexible threads damage the tissue less and tolerate better the fact that the brain constantly shifts slightly inside the skull. A robot inserts the threads, avoiding blood vessels. In the first description, as said above, the raw stream~\eqref{eq:probedata} went out over a cable. The device for humans, according to the company, is built differently: the housing is fully covered by skin, spikes are detected inside, data leave by radio, and power arrives wirelessly.
+
+The first device's task is reading. The threads are placed in the part of the cortex that plans arm movements, and a decoder turns spikes into cursor movement on a screen. A person with paralyzed arms controls a computer by imagining movement. The idea itself is not new: interfaces on rigid arrays of a hundred electrodes have long allowed controlling a cursor~\cite{Hochberg2006}, writing text by imagining handwriting movements~\cite{Willett2021}, and even turning attempts to speak into on-screen text at about sixty words per minute~\cite{Willett2023}. What is new at Neuralink is engineering: channel count, wireless operation, a sealed housing, and robotic insertion, that is, an attempt to make a probe that can be worn for years outside the lab. As far as we know, results of human trials have been published mostly by the company itself rather than in peer-reviewed papers; the company reported, in particular, that some threads shifted after insertion and the number of working channels dropped. For debugging this is a common nuisance: a probe that moves relative to the board is now hearing different wires.
+
+The company's second direction is writing: a vision device that feeds signals into the visual cortex of a person who has lost sight. More on it below, in the section on writing.
+
+\section{Reading: the decoder as a receiver}
+
+An interface decoder is a receiver in the sense of Proposition~\ref{prop:reader}: it decides for itself which part of the message to read. Practically all interfaces read \emph{group rates}: they count the spikes of each channel in windows of a few tens of milliseconds and sum them with weights chosen so as to produce the intended movement. This is the group rate code of Section~\ref{sec:rate}, and it is chosen for a reason: with a few spikes per window the rate of a single neuron is undefined, whereas the sum over a hundred already works.
+
+How much information can be extracted? Writing with the ``mental hand'' ran at about ninety characters per minute~\cite{Willett2021}, i.e., one and a half characters per second: even at five bits per character this is less than eight bits per second. Cursor control, according to Neuralink, gives about ten bits per second. Yet the upper bound~\eqref{eq:spikeentropy} for a \emph{single} neuron is tens of bits per second, and for a hundred, thousands. An interface extracts from the neurons it eavesdrops on a small fraction of what they could carry. The bottleneck is not the wire but how many independent variables the group carries (Proposition~\ref{prop:pooling}) and how well the decoder understands the code, which, as we saw in Chapter~\ref{sec:code}, has not been fully deciphered.
+
+There is a second feature, familiar from Chapter~\ref{sec:motorlearning}. The decoder and the brain learn from each other. The brain sees where the cursor went, gets an error, and adjusts its commands: the same motor learning over an error wire. And engineers periodically refit the decoder weights, because the neurons under the threads change and the connections in the network relearn. The result is two learners adapting to each other; to keep such a pair from running away, it helps to separate their learning rates: let one learn fast and the other slowly.
+
+\begin{keyblock}
+\begin{proposition}[Why a probe on a thousand neurons works]
+\label{prop:probe}
+An interface that eavesdrops on a tiny fraction of neurons can control movement because group activity is low-dimensional and its noise is correlated: a few hundred neurons carry almost all the shared variables. For the same reason an interface extracts only a few bits per second, as many as there are independent variables in the task, not as many as the spike stream can hold. The performance of interfaces is measured; how much better the decoder will become once the code is understood is an open question.
+\end{proposition}
+\end{keyblock}
+
+\section{Writing: harder than reading}
+
+Feeding a signal into the machine is harder than reading one. An electrode that passes current excites not one neuron but all the neurons and wires around it, regardless of type and sign. It cannot write a code in which it matters \emph{which} neuron fired and \emph{when} (Chapter~\ref{sec:code}); it can only roughly set \emph{where} and \emph{how strongly}.
+
+For vision this is partly enough. A person sees current through an electrode in the visual cortex as a spot of light at a particular place in the visual field; when spots were lit simultaneously, up to sixteen at once, a person who had lost sight recognized some letters and distinguished the edges of objects~\cite{Fernandez2021}. This is a place code, and it can be written. But recall Chapter~\ref{sec:sensors}: the eye sends the brain not pixels but a compressed description (edges, changes, brightening and darkening) over separate wires. Writing ``spots of light'' into the cortex is writing pixels into a machine that expects a completely different code at its input. That is why artificial vision is still cruder than the electrode count would suggest. There are also test signals that need no electrode: visual illusions feed an unusual input through the eye and push the machine out of its normal mode, and each error points to its own mechanism (Section~\ref{sec:illusions}).
+
+\section{What the probe does not see}
+
+An electrode hears the address bus: the spikes of \nt{GLUT} neurons and, less well, of small \nt{GABA} neurons. But in Chapters~\ref{sec:serocomputer}--\ref{sec:acet} we saw that the operating mode of the whole machine is set by broadcast registers: the concentrations of \nt{SERO}, \nt{DOPA}, \nt{NORA}, and \nt{ACET}. The electrode does not hear them: the source neurons are vanishingly few, and their signal is not a spike next to the probe but a concentration in a volume. A debugger who sees the data bus but not the control registers will always be puzzled: the same input will give different responses because somewhere $g$, $a$, or $\tau_\gamma$ has changed. Concentrations can be measured with chemical sensors right in the tissue~\cite{Bunin1998}, but such sensors are not yet used in interfaces. Entirely outside the probe's view is also the machine's second, slow output, the hormones in the blood (Chapter~\ref{sec:chemoutput}): they are measured in blood samples, not with an electrode.
+
+Nor does the probe see the weights, and it is in them that almost all memory and everything learned is stored. They can only be guessed from how the responses change. And it does not see pain the way a person feels it: in Chapter~\ref{sec:pain} we saw that the strength of the alarm signal is set by the machine itself, by gates in the spinal cord and regulators from above, so one cannot read from a sensor how much it hurts.
+
+\section{Summary: debugging and open questions}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{2.2cm}>{\raggedright}p{3.6cm}>{\raggedright}p{3.4cm}>{\raggedright\arraybackslash}p{4.0cm}}
+\toprule
+Debugging technique & What the interface does & What the book explains & What is known \\
+\midrule
+probe & hears hundreds to thousands of neurons & low dimensionality and correlated noise (Ch.~\ref{sec:code}) & measured \\
+compression on the probe & transmits events instead of the raw signal & capacity of the spike stream~\eqref{eq:spikeentropy} & solved in engineering \\
+reading & group rates $\to$ movement, text, speech & the decoder is a receiver; group rate code & works; a few bits per second \\
+joint learning & brain and decoder adapt to each other & error wire (Ch.~\ref{sec:motorlearning}) & observed; the adaptation rules are under study \\
+writing & current lights spots in the visual field & a place code can be written, a timing code cannot (Ch.~\ref{sec:sensors}) & spots measured; useful vision not yet \\
+reading registers & hardly done & broadcast channels (Ch.~\ref{sec:serocomputer}--\ref{sec:acet}) & chemical sensors exist in experiments \\
+\bottomrule
+\end{tabular}
+\caption{Debugging the machine: what brain–computer interfaces can do and what the book's chapters say about them.}
+\label{tab:debugging}
+\end{table}
+
+Table~\ref{tab:debugging} sums up the chapter. Brain–computer interfaces can already put a probe on the address bus and read a few bits per second from it, and the fact that this works at all is explained by the low dimensionality and correlated noise of Chapter~\ref{sec:code}. They can write into the machine only crudely, because its input code is compressed and addressed to individual wires. And the control registers and the weights, which make the machine trainable and tunable, are still almost invisible to the probe.
+
+Every open question of Chapter~\ref{sec:synthesis} is also a task for the debugger. Which code to read will be settled when probes become denser and decoders learn to use spike timing, not just rates. How a multilayer network learns can be tested by putting probes in several layers at once and watching how their responses change during learning. What the broadcast channels transmit will become visible when chemical probes join the electrical ones. This book is an attempt to read the machine's schematic from its behavior and from laws every engineer knows. The debuggers being built now will make it possible to check this schematic with a probe.
+
+\section{Exercises}
+
+\begin{exercise}[\lvlA]
+\label{ex:17:1}
+\emph{Radio link budget.} Transmission through the skin costs $1$~nJ per bit, and the transmitter may use at most $10$~mW. What power is needed for the raw stream~\eqref{eq:probedata} with $N=1000$ electrodes and for the spike stream? What energy per bit would the raw stream require?
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:17:2}
+\emph{How many bits in a hundred neurons.} A decoder sums the spikes of $N$ neurons over $50\ms$ windows at $r=20$~spikes/s; the pairwise noise correlation is $c=0.1$, and the signal changes the group rate by $30\%$ (rms). Estimate the rate $\tfrac12\log_2(1+\text{SNR})$ per window for $N=10$, $100$, $1000$ and $N\to\infty$. And for $c=0$, $N=1000$?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:17:3}
+\emph{Speed of a keyboard interface.} One and a half times a second an interface selects one of $N=32$ characters: the intended one with probability $P$, errors equally likely. How many bits per second does it transmit at $P=0.99$, $0.94$, $0.8$? How many characters per second are needed at $P=0.94$ for $10$~bit/s?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:17:4}
+\emph{Simulation: a group decoder.} $N$ neurons with $\lambda_i=[b+m\,\mathbf v\cdot\mathbf p_i]_+$, $b=20$, $m=15$~spikes/s, $50\ms$ windows, $\mathbf v$ with standard deviation $0.5$ per component; all see a shared noise, $\mathbf v+\boldsymbol\xi$, $\sigma_\xi=0.2$. Simulate an unbiased population-vector decoder. At what $N$ are the two noises equal, and how many bits per component per window does $N\to\infty$ give?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:17:5}
+\emph{Two learners.} The brain issues the command $m=b\,v^*$, the decoder outputs $v=d\,m$, $\langle v^{*2}\rangle=1$. After each trial both take a gradient step on $\tfrac12(v-v^*)^2$ with rate $\eta$. Simulate from $b=1.2$, $d=1$ at $\eta=0.8$, $1.1$, $1.5$, $2$. Each alone is stable for $\eta<2$; for what $\eta$ is the pair stable?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:17:6}
+\emph{Design: a probe pipeline.} $1024$ channels at $20$~thousand samples per second, neurons at $10$~spikes/s, radio at $1$~nJ/bit. What threshold on white sample noise gives at most $0.1$~Hz of false spikes per channel? We send spike counts per $20\ms$ at $2$~bits each: what is the power, and how many times lower is it than for raw $10$-bit samples?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:17:7}
+\emph{The speed limit of an interface.} Estimate $R\le DW\log_2(1+\text{SNR})$ for $D=10$ variables with bandwidth $W=5$~Hz at $\text{SNR}\approx0.9$ (signal-like noise) and $90$ (independent noise of $1000$ neurons). About $10$~bit/s is measured. What experiment would distinguish the two explanations of the gap: signal-like noise and ignorance of the code?
+\end{exercise}

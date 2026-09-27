@@ -1,0 +1,47 @@
+\chapter{How Many Inputs Are Needed}
+% full version: chapters/19_dendrites.tex
+
+A neuron has branching input processes: dendrites. In some neurons they form a whole tree with thousands of contacts; in others there are one or two branches or none at all. For an engineer the number of inputs is a circuit parameter, and it is chosen to suit the task.
+
+\section*{From Zero to a Hundred Thousand}
+
+Touch and pain sensors have no dendrites at all: the wire simply runs from the skin to the spinal cord, and the sensor sits at its very end. This is a line with a sensor at the far end.
+
+\pencilfig{19}{\pencilart{19}}{Many inputs make an adder; one huge input makes a fast and precise relay.}
+
+The neurons of smell, and the neurons that pass on the signal from the sensors of the eye and the ear, have one dendrite. One input, one output: a repeater, a buffer.
+
+The sound-direction detectors have two dendrites pointing in opposite directions, one for each ear. By putting the two inputs on different branches, the neuron makes its ``and'' stricter: two portions of current in one branch would get in each other's way.
+
+The small neurons of the circuit for learning movements have about four short dendrites, each grabbing its own input. There are tens of billions of such neurons, and each adds up only four signals. But together they spread the input out into millions of combinations, and a large output neuron with a hundred thousand inputs picks the right ones among them.
+
+And finally, the neurons with huge trees and thousands of inputs are adders and classifiers, whose individual branches work almost like independent small circuits.
+
+\section*{Why So}
+
+Charging decides everything. A small neuron with few inputs is charged by one large connection in a fraction of a millisecond: such a neuron is precise in time and reliably passes the signal on. A big tree will never be charged by one connection: the charge leaks away first. It needs dozens of signals arriving together, but in return it can add them up and compare them. Few inputs and large connections are for precise timing. Many inputs are for counting.
+
+\pencilfig{128}{%
+% charging: a small neuron reaches threshold from one large synapse at once; a big tree barely moves
+% from one input and needs many inputs arriving together
+\foreach \dx/\t in {0/{few inputs}, 4.3/{big tree}}{
+  \draw[pen] (\dx,0) -- (\dx+3.6,0);
+  \draw[pcGray, densely dashed, line width=0.5pt] (\dx,0.9) -- (\dx+3.6,0.9);
+  \node[font=\small\itshape, text=pcGray, anchor=south] at (\dx+1.8,1.75) {\t};}
+\node[lbl, anchor=east] at (-0.05,0.9) {threshold};
+% small neuron
+\draw[pcBlue, line width=2pt] (0.6,-0.15) -- (0.6,-0.6);
+\draw[penlite=pcBlue] (0,0) -- (0.6,0) -- plot[domain=0.6:0.8, samples=12] (\x,{1.3*(1-exp(-(\x-0.6)/0.18))}) -- (0.8,1.6) -- (0.84,0) -- (3.5,0);
+\node[lbl, text=pcRed, anchor=west] at (0.85,1.45) {a click at once};
+\node[lbl, text=pcBlue, anchor=north] at (0.6,-0.62) {one large input};
+% big tree
+\draw[pcBlue, line width=0.6pt] (4.8,-0.15) -- (4.8,-0.45);
+\foreach \s in {6.15,6.2,6.25,6.3,6.35,6.4,6.45,6.5}{\draw[pcBlue, line width=0.6pt] (\s,-0.15) -- (\s,-0.45);}
+\draw[penlite=pcBlue] (4.3,0) -- (4.8,0) -- plot[domain=4.8:6.15, samples=20] (\x,{0.16*((\x-4.8)/0.15)*exp(1-(\x-4.8)/0.15)}) -- plot[domain=6.15:6.62, samples=14] (\x,{1.25*(1-exp(-(\x-6.15)/0.4))}) -- (6.62,1.6) -- (6.66,0) -- (7.9,0);
+\node[lbl, anchor=south] at (4.95,0.2) {almost nothing};
+\node[lbl, text=pcBlue, anchor=north] at (6.33,-0.47) {many at once};
+}{A small neuron is charged by one large connection in a fraction of a millisecond and clicks at once. A big tree hardly changes from one input: it needs dozens of signals arriving together.}
+
+This gives us a third sorting of neurons: by substance, by device, and by number of inputs. Each sees the same machine from a new side.
+
+\fullversion{19}

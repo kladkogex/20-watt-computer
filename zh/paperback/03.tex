@@ -1,0 +1,76 @@
+\chapter{刹车}
+% 完整版：chapters/03_gaba.tex
+
+现在给机器加上数量第二多的神经元类型——\nt{GABA}。它们的信号不是把邻居推向咔嗒，而是把它推开。这就是刹车。它们数量不多，在皮层里占全部神经元的五分之一到四分之一，但没有它们，这台机器就开不动。
+
+有一个限制：“加号”神经元自己没法抑制邻居。如果需要负连接，就得通过一个中间人来搭：“加号”唤醒一个抑制性神经元，再由它去抑制目标。换一次符号，要多花一个神经元和一小段延迟。
+
+\section*{“除非”}
+
+刹车最有用的操作是禁止：“A 来了就触发，除非 B 也来了”。神经元从 A 得到推力，又从 B 唤醒的中间人那里得到刹车。有了禁止和“或”，就能搭出任何逻辑。
+
+\pencilfig{3}{\pencilart{3}}{“A，除非 B”：红色神经元挡住了蓝色神经元的路。}
+
+时间上的禁止，就是你眼睛里的运动检测器。两个相邻的传感器：一个兴奋输出神经元，另一个带着延迟抑制它。如果光点以合适的速度朝一个方向移动，抑制恰好和兴奋同时到达——把它抵消掉。如果朝另一个方向移动，抑制就迟到了，神经元来得及咔嗒一声。结果得到一个只看见单一方向运动的神经元。
+
+\pencilfig{103}{%
+% sensors on top; the left one excites the output, the right one inhibits it through a GABA go-between and a delay
+\draw[dotpen=pcAmber, wash=pcAmber] (0,1.6) circle (0.16); \draw[dotpen=pcAmber, wash=pcAmber] (1.6,1.6) circle (0.16);
+\node[lbl, anchor=south] at (0.8,1.8) {两个传感器};
+\draw[pen=pcBlue, wash=pcBlue] (0.4,0) circle (0.24);
+\draw[arr=pcBlue] (0,1.44) -- (0.3,0.25);
+\draw[pen=pcBlue] (1.6,1.44) -- (1.6,1.18);
+\draw[penlite, fill=white] (0.95,0.9) rectangle (2.25,1.18); \node[font=\tiny\itshape, text=pcGray] at (1.6,1.04) {延迟};
+\draw[pen=pcBlue] (1.6,0.9) -- (1.6,0.72);
+\draw[pen=pcRed, wash=pcRed] (1.6,0.55) circle (0.17);
+\draw[pcRed, line width=0.7pt, -{Bar[width=5pt]}] (1.45,0.45) -- (0.66,0.08);
+\draw[arr] (0.4,-0.24) -- (0.4,-0.6); \node[lbl, anchor=north] at (0.4,-0.6) {输出};
+% outcomes
+\begin{scope}[xshift=3.1cm]
+  \draw[dotpen=pcAmber, wash=pcAmber] (0,1.25) circle (0.1); \draw[arr=pcAmber] (0.18,1.25) -- (1.1,1.25);
+  \node[lbl, anchor=west] at (1.25,1.25) {从左到右：咔嗒};
+  \draw[dotpen=pcAmber, wash=pcAmber] (1.1,0.45) circle (0.1); \draw[arr=pcAmber] (0.92,0.45) -- (0,0.45);
+  \node[lbl, anchor=west] at (1.25,0.45) {从右到左：沉默};
+  \node[lbl, anchor=west, align=left] at (0,-0.35) {抑制恰好\\与兴奋同时到达};
+\end{scope}
+}{运动检测器：抑制带着延迟到达，只有光点从右向左移动时，它才会抵消响应。}
+
+
+\section*{减法还是除法}
+
+抑制不只会做减法。打开的抑制性通道并不是把电压往下拉，而是把它拉\emph{向静息值}——就好像在桶上又钻了一个洞。这样一来，任何进水让水位升高的幅度都变小了。抑制不是从信号里减去固定的一份，而是把它\emph{除}以一个数：这是音量调节器。如果抑制强度随周围的总体活动一起增长，每个神经元响应的就不是自己的信号有多强，而是它\emph{与邻居相比}有多强。因此，同一张网络在昏暗中和烈日下都能工作。不过，这样的“除法器”要想干净地作用于脉冲频率，还需要一个恒定的背景噪声，而活的大脑里一直有这种噪声。
+
+\pencilfig{104}{%
+\foreach \dx/\t in {0/减法,4.6/除法}{
+  \begin{scope}[xshift=\dx cm]
+  \draw[pen] (0,0) -- (3.6,0); \draw[pen] (0,0) -- (0,1.9);
+  \node[lbl, anchor=north] at (1.8,-0.05) {信号}; \node[lbl, anchor=south, rotate=90] at (-0.05,0.95) {响应};
+  \draw[pen=pcBlue] (0.4,0) -- (3.3,1.75);
+  \node[font=\small\itshape, text=pcGray, anchor=south] at (1.8,1.95) {\t};
+  \end{scope}}
+\draw[pen=pcRed, line width=0.9pt] (1.3,0) -- (3.4,1.27);
+\node[lbl, text=pcRed, anchor=west] at (2.25,0.35) {平移};
+\begin{scope}[xshift=4.6cm]
+\draw[pen=pcRed, line width=0.9pt] (0.4,0) -- (3.3,0.8);
+\node[lbl, text=pcRed, anchor=west] at (2.0,0.25) {斜率变小};
+\end{scope}
+\node[lbl, text=pcBlue, anchor=east] at (2.25,1.45) {无抑制};
+}{蓝色是没有抑制时神经元的响应，红色是有抑制时的响应。减法平移阈值；除法像旋钮一样调小音量。}
+
+还有第二个后果：多出来的洞让桶忘得更快。两个信号必须落进同一个窗口才能相加，而这个窗口变窄了。抑制让符合检测器更加严格。
+
+\section*{选择}
+
+现在来看此前最缺的东西：从许多选项中选出一个。两群神经元互相抑制。抑制弱的时候，两群都在工作，只是更安静。但如果抑制足够强，任何微小的差别都会像跷跷板一样被放大，直到一群完全沉默。赢者通吃。而且胜局能保持住：要让网络改变主意，新的理由必须明显强于旧的。机器不会被每一点风吹草动带着跑。
+
+刹车还能擦除记忆：抑制性神经元收到“复位”信号，就熄灭上一章那堆篝火。两个互相抑制的这种单元，相当于锁存器，也就是一切计算机存储器的基础。
+
+\section*{在边缘上生活}
+
+只有“加号”的网络可能陷入雪崩：每个脉冲都引出不止一个后续脉冲。刹车把网络稳在工作点上，就像温控器稳住烤箱的温度。有两个条件：抑制要足够强，也要足够快。如果抑制强却慢，调节器就会矫枉过正——就像淋浴时，热水还没流过来就一个劲拧龙头的人。温度忽高忽低来回摆。在大脑里，这样一个由“加号”和“减号”组成的回路会产生一种快节律——每秒几十次振荡。
+
+皮层看来正是活在边缘上：它自身的反馈强到足以在没有刹车时陷入雪崩。只有快速的刹车才把它稳住，也正因如此，它对微弱信号的反应如此灵敏。
+
+本章的结论出人意料：刹车几乎没有给机器增加新的计算。它增加的是\emph{控制}：选择、复位、音量调节、稳定性。兴奋承载数据，抑制决定哪些数据通过、何时通过、以多大音量通过。
+
+\fullversion{3}

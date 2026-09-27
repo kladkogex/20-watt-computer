@@ -1,0 +1,66 @@
+\chapter{Morse Code}
+% full version: chapters/04_code.tex
+
+Morse code has two signs, the dot and the dash, and the pauses between them. A neuron's alphabet is even poorer: it has one sign, a short click. So the whole message is written in the pauses. What language, then, do neurons speak?
+
+\section*{How Much Clicks Can Say}
+
+Let us start like a communications engineer: how much information fits into such a channel at all? If the receiver can tell the arrival time of a click to within a millisecond, one click can carry about eight bits. If the receiver only counts how many clicks arrived in a second, it will extract dozens of times less from the same stream. Almost all the capacity of the channel lies in \emph{timing}.
+
+\pencilfig{4}{\pencilart{4}}{Morse code above, a neuron below: one sign, the click; the whole message is written in the pauses.}
+
+But the channel is noisy. The neuron itself, oddly enough, is precise: feed it the same varying current many times, and it will click at the same moments to within a millisecond. The noise is in the connections: more than half of the clicks that reach the end of the wire are simply lost, because the substance is not released every time. In the living cortex the stream of clicks looks almost random. Is it noise, or a message we cannot read yet? A well-compressed message looks random to an outsider, so the question is open.
+
+\section*{Slow but Sure}
+
+The simplest code is to count clicks: the more often, the larger the number. Losses and jitter do not hurt this code. But it is slow. To know a rate to within ten percent you need a hundred clicks, and that takes seconds. Yet you recognize an animal in a picture flashed for an instant in about a hundred and fifty milliseconds, and on the way the signal passes about ten stages of processing. At each stage each neuron has time to click once at most.
+
+The way out is to take many neurons at once: not one listener counting clicks for a minute, but a hundred listeners for an instant. But there is a catch here too: the noise of neighboring neurons is a little alike, like rumors in a crowd. Averaging over a few dozen neighbors helps, and beyond that it almost stops helping.
+
+\pencilfig{122}{%
+% error of the group-average rate relative to one neuron, sqrt(c + (1-c)/N): c = 0.1 (neighbours' noise
+% is slightly alike; full edition, chapter 4) and c = 0 (independent noise). x = 0.8 log2 N, y = 2.2 * error
+\draw[pen] (0,0) -- (5.9,0); \draw[pen] (0,0) -- (0,2.45);
+\foreach \x/\n in {0/1, 2.66/10, 5.31/100}{\draw[pcGray, line width=0.5pt] (\x,0) -- (\x,-0.08); \node[lbl, anchor=north] at (\x,-0.08) {\n};}
+\node[lbl, anchor=north] at (2.95,-0.38) {how many neurons we average};
+\node[lbl, anchor=south, rotate=90] at (-0.1,1.2) {error};
+\draw[pcGray, densely dashed, line width=0.5pt] (0,0.70) -- (5.6,0.70);
+\draw[penlite=pcBlue] plot[smooth] coordinates {(0.00,2.20) (0.47,1.80) (0.80,1.56) (1.27,1.27) (1.60,1.10) (2.07,0.90) (2.40,0.78) (2.87,0.64) (3.20,0.55) (3.67,0.45) (4.00,0.39) (4.47,0.32) (4.80,0.28) (5.27,0.22) (5.60,0.19)};
+\draw[penlite=pcRed] plot[smooth] coordinates {(0.00,2.20) (0.47,1.84) (0.80,1.63) (1.27,1.39) (1.60,1.25) (2.07,1.10) (2.40,1.01) (2.87,0.92) (3.20,0.87) (3.67,0.82) (4.00,0.79) (4.47,0.76) (4.80,0.74) (5.27,0.73) (5.60,0.72)};
+\node[lbl, text=pcRed, anchor=west, align=left] at (5.7,0.74) {alike noise,\\as in cortex};
+\node[lbl, text=pcBlue, anchor=west] at (5.7,0.19) {independent noise};
+\node[lbl, anchor=west] at (0.9,2.15) {one neuron};
+\node[lbl, anchor=north west] at (0.05,0.66) {a third};
+}{The error of the rate averaged over a group of neurons. If the noise were independent, it would keep falling. The alike noise of neighbors stops it at about a third, and this limit is reached already at a few dozen neurons.}
+
+\section*{Fast: Who Comes First}
+
+The second way out is to write the number in time. A strong signal makes a neuron click early, a weak one late. A single click already carries a number. But what do we count time from? We can compare neurons with one another: who clicked first, who second. The order in which ten neurons click carries more than twenty bits. And a common volley serves as the start mark, like the long pause between words in Morse code.
+
+\pencilfig{121}{%
+% latency code: one click per neuron; the stronger the input, the earlier the click
+\foreach \y/\t/\l/\k in {1.5/1.1/{strong input}/1, 0.95/2.4/{medium}/2, 0.4/4.2/{weak}/3}{
+  \draw[pen] (0.4,\y) -- (5.1,\y);
+  \draw[pcBlue, line width=0.9pt] (\t,\y) -- (\t,\y+0.42);
+  \node[lbl, anchor=east] at (0.3,\y+0.1) {\l};
+  \draw[dotpen=pcAmber, wash=pcAmber] (5.6,\y+0.16) circle (0.17);
+  \node[font=\scriptsize, text=pcAmber!60!black] at (5.6,\y+0.16) {\k};}
+\draw[pcGray, densely dashed, line width=0.5pt] (0.55,0.25) -- (0.55,2.1);
+\node[lbl, anchor=south] at (0.55,2.1) {stimulus};
+\node[lbl, text=pcAmber!70!black, anchor=south] at (5.6,2.1) {order};
+\draw[arr] (0.7,0.05) -- (4.9,0.05); \node[lbl, anchor=north] at (2.8,0.02) {time};
+}{A strong input gives an early click, a weak one a late click. The order of the clicks tells which input is stronger, even when the starting moment is unknown.}
+
+\section*{The Listener Chooses the Code}
+
+One and the same sequence of clicks carries the rate, the timing, and the order. Which of these gets read is up to the receiver. A neuron with a ``wide hole'' in its bucket slowly accumulates water and hears only the rate. A neuron that forgets quickly hears only coincidences. And the brakes, as we saw, can switch a neuron from one mode to the other.
+
+Even the connections filter the signal. Some tire quickly and so report not the rate but its \emph{change}. Others, on the contrary, pass bursts of several clicks in a row better: the neuron gains a ``dash.'' Meanwhile the braking neurons put in the punctuation: they cut the stream into windows and turn it down when it gets too loud.
+
+\section*{A Thrifty Language}
+
+And finally: this language is expensive. Each click costs energy, and the whole brain consumes about twenty watts. Divide those watts among all the neurons, and you get on average about one click per second per neuron. Most neurons are silent most of the time. The brain's code has to be stingy.
+
+In Morse code the most common letter of English, E, is a single dot: frequent things are coded short. Neurons are similar: what is expected costs few clicks. A constant stimulus gradually stops evoking a response, sensors report changes, and dopamine reports only surprises. The brain spends its clicks on news.
+
+\fullversion{4}

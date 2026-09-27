@@ -1,0 +1,218 @@
+\chapter{Alternative Modern Theories of Dopamine-Based Learning}
+\chaptermark{Other Theories of \nt{DOPA}}
+\label{sec:dofaalt}
+
+\section{What actually travels on the wire}
+
+In Chapter~\ref{sec:dofa} the \nt{DOPA} system was a single wire carrying a single number, the reward-prediction error $\delta$~\eqref{eq:ctd}. This picture explains a great deal, but the more precisely dopamine is measured, the more is found that does not fit. Some neurons respond to unpleasant events as if to reward; the dopamine concentration rises while an animal runs toward a goal, even though nothing unexpected happens; different \nt{DOPA} neurons behave differently.
+
+For an engineer, all these findings are one question: \emph{what is the signal format on the broadcast bus?} One number or a vector? One signal on the wire, or several separated by frequency? Does it speak of the future, like $\delta$, or of the past? Below are six modern answers; for each one we separate what is measured from what is assumed.
+
+\section{Not one number but a distribution}
+
+The error~\eqref{eq:ctd} teaches the critic the \emph{mean} reward expectation. But a sure half-drop of juice and a whole drop with probability one half have the same mean. To tell them apart, one needs the entire reward distribution.
+
+Take the simplest task: after a cue, a reward of random size $r$ arrives. Let there be many \nt{DOPA} neurons, each of which, the $i$th, maintains its own estimate $V_i$, so that at the moment of reward its error is $\delta_i=r-V_i$. And let each weight a positive error by $\alpha_i^+$ and a negative one by $\alpha_i^-$. After each reward the estimate shifts by
+\begin{equation}
+\Delta V_i \;=\; \eta\,\bigl(\alpha_i^+\,[\delta_i]_+ \;-\; \alpha_i^-\,[-\delta_i]_+\bigr).
+\label{eq:asymmetric}
+\end{equation}
+The estimate stops changing when, on average, positive corrections balance negative ones:
+\begin{empheq}[box=\keybox]{equation}
+\alpha_i^+\,\bigl\langle[r-V_i]_+\bigr\rangle \;=\; \alpha_i^-\,\bigl\langle[V_i-r]_+\bigr\rangle ,
+\qquad
+\kappa_i \;=\; \frac{\alpha_i^+}{\alpha_i^++\alpha_i^-} .
+\label{eq:expectile}
+\end{empheq}
+For $\kappa_i=1/2$ this is the ordinary mean. For $\kappa_i>1/2$ the neuron is an ``optimist'': its estimate is shifted toward the upper end of the distribution; for $\kappa_i<1/2$ it is a ``pessimist.''
+
+Example: juice arrives with probability $1/2$, and the drop has size $1$. Then~\eqref{eq:expectile} gives $\kappa_i\cdot\tfrac12(1-V_i)=(1-\kappa_i)\cdot\tfrac12V_i$, that is, $V_i=\kappa_i$ (Fig.~\ref{fig:expectiles}). A set of neurons with different $\kappa_i$ records the reward distribution the same way a set of quantiles records a distribution in statistics.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=7cm,y=3cm]
+\draw[->,gray!70!black] (-0.08,0) -- (1.15,0) node[right,black] {\small reward};
+\draw[->,gray!70!black] (-0.08,0) -- (-0.08,0.75) node[left,black] {\small probability};
+\fill[blue!25] (-0.03,0) rectangle (0.03,0.5);
+\fill[blue!25] (0.97,0) rectangle (1.03,0.5);
+\node[below,font=\small] at (0,0) {$0$};
+\node[below,font=\small] at (1,0) {$1$};
+\node[left,font=\scriptsize] at (-0.08,0.5) {$1/2$};
+\foreach \k/\c/\lab/\h in {0.2/blue!60!black/{pessimist, $\kappa=0.2$}/0.62, 0.5/gray!50!black/{mean, $\kappa=0.5$}/0.42, 0.8/red!70!black/{optimist, $\kappa=0.8$}/0.22}{
+  \draw[very thick,\c] (\k,0) -- (\k,\h);
+  \node[above,font=\scriptsize,\c] at (\k,\h) {\lab};}
+\end{tikzpicture}
+\caption{The reward distribution recorded by a set of \nt{DOPA} neurons. The reward is $0$ or $1$ with probability $1/2$ (blue bars); a neuron with fraction $\kappa$ arrives at the estimate $V=\kappa$~\eqref{eq:expectile}.}
+\label{fig:expectiles}
+\end{figure}
+
+What is measured: different \nt{DOPA} neurons have different ``reversal points'' (the reward size at which the response switches from a burst to a dip), and neurons with a larger asymmetry between responses to positive and negative errors reverse at larger rewards, as~\eqref{eq:expectile} requires~\cite{Dabney2020}. The shape of the distribution can be reconstructed from the responses of a group of neurons. That this is the main function of the diversity rather than a side effect is a hypothesis.
+
+\begin{keyblock}
+\begin{proposition}[A distribution from asymmetry]
+\label{prop:expectile}
+If \nt{DOPA} neurons differ in the fraction $\kappa_i$ with which they weigh positive errors, their estimates converge to different points~\eqref{eq:expectile} of the reward distribution. The group of neurons conveys not the mean but the distribution, and with it the risk.
+\end{proposition}
+\end{keyblock}
+
+\section{Not only error but also salience}
+
+By the error formula~\eqref{eq:ctd}, an unpleasant event (a shock, a bitter taste) should cause a dip: things turned out worse than expected. Some \nt{DOPA} neurons do exactly that, but others respond to unpleasant events with a \emph{burst}, as if to a reward~\cite{Matsumoto2009}. These neurons report not the sign of the error but that something \emph{important} has happened: unexpected, strong, demanding attention~\cite{BrombergMartin2010}.
+
+An engineer can think of this as two signals. The first is the signed error $\delta$: in which direction to change the weights. The second is its magnitude $|\delta|$ or the novelty of the event: \emph{how much} to change them, that is, the learning rate; after an unexpected event, one should learn faster. In meaning it is close to the noradrenaline gain of Chapter~\ref{sec:neurontypes}.
+
+There is also a third option: a separate wire for a separate axis. \nt{DOPA} neurons that project to one of the action-selection regions respond not to reward but to the novelty and intensity of a stimulus, and they are needed for the animal to learn to avoid danger~\cite{Menegas2018}: the wire carries not ``better or worse'' but ``dangerous or not.''
+
+What is measured: different groups of \nt{DOPA} neurons respond differently to unpleasant and to novel events, and different outputs teach different things. How exactly the brain uses the salience signal (as a learning rate, as an attention signal, or as a separate error along a danger axis) is debated.
+
+\section{Not only teaching but also urging on}
+
+Dopamine also has an immediate effect: the more there is, the more readily and quickly the animal acts. How does this fit with learning?
+
+The engineering answer is \emph{frequency separation}. Fast bursts and dips lasting hundreds of milliseconds carry $\delta$ and teach. A slow level, changing over minutes, carries another quantity: the average reward per unit time, $\bar R$~\cite{Niv2007}. Suppose an action performed in time $\tau_a$ costs an effort $C/\tau_a$: the faster, the more expensive. But each second of delay costs $\bar R$, the reward one could have earned in it. The total cost $C/\tau_a+\bar R\,\tau_a$ is minimal at
+\begin{empheq}[box=\keybox]{equation}
+\tau_a^{*} \;=\; \sqrt{\frac{C}{\bar R}} .
+\label{eq:vigor}
+\end{empheq}
+The richer the environment, the more expensive time is and the faster it pays to act: if $\bar R$ doubles, the action time falls by a factor of $\sqrt2\approx1.4$. Note that $\bar R$ is the same expected reward that was subtracted in Chapter~\ref{sec:dofa}.
+
+Dopamine release at the target can change without any change in the spike rate: it is adjusted by local signals at the outputs themselves~\cite{Mohebi2019}. But slow components are present in the spikes too: in the experiments of the next section, a smooth rise on approaching reward is also seen in the firing rate of \nt{DOPA} neurons~\cite{Kim2020}. So the slow level combines two sources, the spike rate and local regulation of release, and which one dominates apparently depends on the output and on the task.
+
+\begin{keyblock}
+\begin{proposition}[Two signals on one wire]
+\label{prop:multiplex}
+The \nt{DOPA} system carries at least two quantities separated in time: a fast error $\delta$, which teaches, and a slow level, which sets the cost of time~\eqref{eq:vigor} and thereby the speed of actions. That the fast and slow components behave differently is measured; that the slow one equals precisely $\bar R$ is a hypothesis.
+\end{proposition}
+\end{keyblock}
+
+\section{The ramp on approach}
+
+When an animal runs down a corridor toward a distant reward, the dopamine concentration in the action-selection region rises smoothly over seconds as the goal approaches~\cite{Hamid2016}. According to Chapter~\ref{sec:dofa}, this should not happen: everything is going according to plan, and $\delta$ should be zero.
+
+The first explanation: this ramp is not $\delta$ but the expectation $V$ itself, the ``goal is near, worth the effort'' signal of the previous section~\cite{Hamid2016}. The second explanation keeps $\delta$~\cite{Kim2020}. If the expectation is correct, then with horizon $\tau_\gamma$, on the way to a reward $R$, it grows as $V=Re^{-(T-t)/\tau_\gamma}$, and by the error formula~\eqref{eq:ctd} $\dd V/\dd t-V/\tau_\gamma=0$. But suppose that from far away the expectation is too low, and the estimate is refined on approach. Then the expectation grows more steeply, say as $V=Re^{-(T-t)/\tau_v}$ with $\tau_v<\tau_\gamma$, and
+\begin{empheq}[box=\keybox]{equation}
+\delta(t) \;=\; \frac{\dd V}{\dd t}-\frac{V}{\tau_\gamma} \;=\; V\Bigl(\frac{1}{\tau_v}-\frac{1}{\tau_\gamma}\Bigr) \;>\; 0 .
+\label{eq:ramp}
+\end{empheq}
+The error is positive and grows together with $V$: exactly the smooth ramp (Fig.~\ref{fig:ramp}). With $\tau_\gamma=4\,\text{s}$ and $\tau_v=1\,\text{s}$ we get $\delta=0.75\,V$ per second. This version was tested in a virtual corridor by instantly teleporting the animal closer to the goal: dopamine responded with a burst, as a derivative should, rather than with a smooth level~\cite{Kim2020}.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=1.6cm,y=2.6cm]
+\draw[->,gray!70!black] (-4.2,0) -- (0.5,0) node[below left,black] {\small $t$};
+\draw[->,gray!70!black] (-4.2,0) -- (-4.2,1.2);
+\foreach \x/\l in {-4/{$T-4$},-2/{$T-2$},0/{$T$}}{\draw[gray!60!black] (\x,-0.03) -- (\x,0.03); \node[below,font=\scriptsize] at (\x,0) {\l\,s};}
+\draw[thick,densely dashed,gray!60!black] plot[domain=-4:0,samples=40] (\x,{exp(\x/4)});
+\draw[very thick,blue!60!black] plot[domain=-4:0,samples=60] (\x,{exp(\x)});
+\draw[very thick,red!70!black] plot[domain=-4:0,samples=60] (\x,{0.75*exp(\x)});
+\node[anchor=south east,font=\small,gray!50!black] at (-1.3,0.77) {$V$ with $\tau_v=\tau_\gamma$: $\delta=0$};
+\node[right,font=\small,blue!60!black] at (0.05,1.0) {$V$ with $\tau_v=1\,\text{s}$};
+\node[right,font=\small,red!70!black] at (0.05,0.72) {$\delta$ by~\eqref{eq:ramp}};
+\end{tikzpicture}
+\caption{The dopamine ramp on approaching reward as a prediction error, $\tau_\gamma=4\,\text{s}$. Dashed line: an expectation growing exactly as the horizon requires ($\delta=0$); blue: an expectation growing more steeply; red: the error~\eqref{eq:ramp}.}
+\label{fig:ramp}
+\end{figure}
+
+What is measured: the smooth ramp exists, both in dopamine concentration and in the firing rate of \nt{DOPA} neurons~\cite{Kim2020}, and instantaneous jumps of the environment cause jumps in dopamine. Which of the two explanations is correct, or whether both are correct at different outputs, is debated.
+
+\section{Looking back}
+
+All the theories above look \emph{forward}. One modern theory reverses the direction~\cite{Jeong2022}. Suppose the brain learns not to predict reward from a cue but, having received a reward, to \emph{look back}: which event preceded it more often than others? The measure of such a link is the difference of two probabilities:
+\begin{empheq}[box=\keybox]{equation}
+M \;=\; P(\text{cue before reward}) \;-\; P(\text{cue in a random window}) .
+\label{eq:retro}
+\end{empheq}
+If the cue often occurs without reward, the second term is large, and the link is weak. In this theory dopamine reports not a prediction error but how likely a given event is to be a \emph{cause} of reward.
+
+The look-back mechanism needs the same thing as the three-factor rule of Chapter~\ref{sec:dofa}: every event must leave a fading trace, so that at the moment of reward one can read what came before it. The difference lies not in the synapse but in what \nt{DOPA} transmits.
+
+In experiments where theory~\eqref{eq:retro} and the error~\eqref{eq:ctd} make different predictions, dopamine release in several cases followed the former~\cite{Jeong2022}. But in other experiments the dopamine response during learning gradually shifted from the moment of reward to the moment of the cue, as learning by the error~\eqref{eq:ctd} requires~\cite{Amo2022}. Which theory describes the brain is not yet known.
+
+\section{Error not only in reward}
+
+The last extension concerns \emph{what} the error is about. If the expected juice is replaced by another, equally valuable but with a different flavor, the value has not changed, and the error~\eqref{eq:ctd} is zero. Yet \nt{DOPA} neurons respond to such a substitution~\cite{Takahashi2017}. And artificially evoked dopamine bursts can teach an animal an association between two neutral stimuli, with no reward at all~\cite{Sharpe2017}. It seems that \nt{DOPA} reports a prediction error not only about reward but also about \emph{what} will happen.
+
+Formally, this is a simple generalization of~\eqref{eq:ctd}: instead of a single reward flow $r$ we take a set of features of what is happening, $\varphi_k$ (taste, place, sound), and for each its own expectation $M_k$ and its own error~\cite{Gardner2018}:
+\begin{empheq}[box=\keybox]{equation}
+\delta_k(t) \;=\; \varphi_k(t) \;+\; \frac{\dd M_k}{\dd t} \;-\; \frac{M_k}{\tau_\gamma} ,
+\qquad k=1,\dots,K .
+\label{eq:vectortd}
+\end{empheq}
+Reward is just one of the features, and the vector of errors teaches not only what is good but also what follows what: a model of the world.
+
+The diversity of \nt{DOPA} neurons agrees with this: in the same task, different neurons carry different quantities, some related to reward, others to movement, still others to where attention is directed~\cite{Engelhard2019}.
+
+\begin{keyblock}
+\begin{proposition}[A cable instead of a wire]
+\label{prop:bundle}
+The signal of the \nt{DOPA} system is not a single number. It is spread across neurons (the distribution~\eqref{eq:expectile}, different features~\eqref{eq:vectortd}, a separate danger axis) and across time (a fast error and a slow level~\eqref{eq:vigor}). The scalar error~\eqref{eq:ctd} is a first approximation to this signal, just as a summing unit with a threshold is a first approximation to a neuron.
+\end{proposition}
+\end{keyblock}
+
+\section{Summary}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{2.5cm}>{\raggedright}p{3.2cm}>{\raggedright}p{3.6cm}>{\raggedright\arraybackslash}p{4.2cm}}
+\toprule
+Theory & What travels on the wire & Key measurement & What is known \\
+\midrule
+prediction error (Ch.~\ref{sec:dofa}) & scalar $\delta$~\eqref{eq:ctd} & burst, transfer to the cue, dip & measured; a first approximation \\
+distribution & a set of $\delta_i$ with different asymmetry & different reversal points in different neurons & agrees with experiment; the role of the diversity is a hypothesis \\
+salience & $|\delta|$, novelty; a danger axis & bursts to unpleasant events in some neurons & measured; how it is used is debated \\
+cost of time & slow level $\bar R$ & dopamine speeds up actions; a slow component exists both in release at the outputs and in the spike rate & separation of fast and slow is measured; $\bar R$ is a hypothesis \\
+ramp on approach & $V$, or $\delta$ as the estimate is refined~\eqref{eq:ramp} & smooth ramp, jumps on teleportation in the corridor & the ramp is measured; the explanation is debated \\
+looking back & a measure of causal link~\eqref{eq:retro} & experiments where the two theories' predictions diverge & the results contradict one another \\
+vector of errors & $\delta_k$ per feature~\eqref{eq:vectortd} & response to a flavor switch; learning without reward & measured; the vector form is a hypothesis \\
+\bottomrule
+\end{tabular}
+\caption{What the \nt{DOPA} system transmits: the standard picture of Chapter~\ref{sec:dofa} and its modern extensions.}
+\label{tab:dofaalt}
+\end{table}
+
+The theories of Table~\ref{tab:dofaalt} do not exclude one another: almost all of them keep the prediction error as the foundation and extend its format. Only looking back seriously competes with it, and that dispute will be settled by experiment. For an engineer the conclusion is simple: the price of broadcasting from Proposition~\ref{prop:broadcastcost} falls if the wire is really many wires with different destinations.
+
+\section{Exercises}
+
+\begin{exercise}[\lvlA]
+\label{ex:07:1}
+\emph{Distribution points for a single drop.} Juice of size $1$ arrives with probability $p=0.2$; otherwise the reward is $0$. Using~\eqref{eq:expectile}, find $V_i$ for $\kappa_i=0.2$, $0.5$, $0.8$. What is the median of this reward, and how does the point~\eqref{eq:expectile} differ from a quantile?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:07:2}
+\emph{A distribution from two neurons.} The reward is $0$ or $x$, and the probability of $x$ is $p$. Two neurons with rule~\eqref{eq:asymmetric} report $V(1/2)=0.25$ and $V(0.8)=0.5$. Reconstruct $p$, $x$ and the standard deviation of the reward. What will a neuron with $\kappa=0.2$ report?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:07:3}
+\emph{Simulation: a distribution from asymmetry.} Simulate nine \nt{DOPA} neurons with $\kappa_i=0.1,\dots,0.9$ and rule~\eqref{eq:asymmetric}, $\alpha_i^+=2\kappa_i$, $\alpha_i^-=2(1-\kappa_i)$, for a reward uniform on $[0,1]$. How does the scatter of $V_i$ depend on $\eta$, and what $\eta$ is needed to distinguish this distribution from two equally likely drops of $0.25$ and $0.75$?
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:07:4}
+\emph{The cost of time.} (a)~Derive~\eqref{eq:vigor} and find the total cost at the optimum. (b)~The brain has misestimated $\bar R$ by a factor of $k$. Find the relative overpayment for $k=2$ and $k=4$. How precisely must the slow dopamine level report $\bar R$?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:07:5}
+\emph{A burst on teleportation.} The expectation grows by~\eqref{eq:ramp} with $\tau_v=1\,\text{s}$, $\tau_\gamma=4\,\text{s}$; the animal is instantly moved from point $T-2\,\text{s}$ to $T-1\,\text{s}$. Find the area of the $\delta$ burst as a fraction of $R$, and how many seconds of the ramp before teleportation it replaces. What will teleportation show if dopamine reports $V$ itself?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:07:6}
+\emph{Design: two signals on a wire.} The \nt{DOPA} wire carries a level rising at $s=1/60$ spikes per second per second, and events of $A=3$ spikes each. A synapse with trace $\tau_e=1\,\text{s}$ subtracts from the rate a copy of it smoothed with $\tau_f$. For which $\tau_f$ is at most $10\,\%$ of an event lost, while the level's contribution over the trace time is below $10\,\%$ of the event's?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:07:7}
+\emph{Designing an experiment: looking back versus error.} In a window the cue occurs with probability $0.1$, and after it a reward with probability $0.8$. Compare $\Delta P=P(\text{rew.}\mid\text{cue})-P(\text{rew.}\mid\text{none})$ and $M$ from~\eqref{eq:retro} if (a)~rewards without a cue are added, $0.08$ per window; (b)~the cue rate is doubled with no rewards.
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:07:8}
+\emph{The cable and the price of broadcasting.} In the model of Exercise~\ref{ex:06:8}, $N$ neurons are split into $K$ groups with their own wires, and a fraction $\rho$ of other groups' errors leaks into each wire. Show that the learning constant equals $N/K+2+\rho^2N(1-1/K)$. How many trials does it give for $K\to\infty$, $N=10^{10}$ and $\rho=0.01$?
+\end{exercise}

@@ -1,0 +1,199 @@
+\chapter{When to Explore and When to Decide: Adding \nt{NORA}}
+\chaptermark{Adding \nt{NORA}}
+\label{sec:nora}
+
+\section{What is missing}
+
+In Chapter~\ref{sec:dofa} the network learned thanks to noise: random deviations of activity were the search, and \nt{DOPA} reported whether they made things better. But one parameter was left unset there: \emph{how much} to search. If the noise is too strong, the network thrashes about and does not use what it already knows. If it is too weak, the network picks the same thing again and again and fails to notice that something nearby has become better. In reinforcement learning this is called the exploration--exploitation trade-off, and every algorithm has a knob for it. In Chapter~\ref{sec:neurontypes} we proposed that in the brain this knob is turned by \nt{NORA}.
+
+A human has a few tens of thousands of noradrenaline neurons (Table~\ref{tab:types}), almost all of them gathered in one small group, and their outputs spread through practically the whole brain, although different parts of this group, it has turned out, partly serve different regions~\cite{Poe2020}. This is a broadcast channel even narrower than \nt{DOPA}. It works in two modes~\cite{AstonJones2005}. In the \emph{tonic} mode the neurons fire steadily, at rates from a fraction of a spike to a few spikes per second, and this rate changes slowly with wakefulness. In the \emph{phasic} mode they respond with a short burst to an event that matters for the current task, at roughly the moment of decision. A convenient but imprecise test point is pupil diameter: it changes with the activity of these neurons, but also with the activity of other regions~\cite{Joshi2016} and of cholinergic outputs in the cortex~\cite{Reimer2016}. The pupil shows the overall level of arousal, not \nt{NORA} alone.
+
+\section{Gain}
+
+Here is what is measured: noradrenaline suppresses the background activity of neurons more strongly than their response to a stimulus, and the signal-to-background ratio rises~\cite{Foote1975NE}. That the slope of an individual neuron's transfer function is literally multiplied by a factor does not follow from the experiment. As in Chapter~\ref{sec:neurontypes}, we take a simple model that captures this effect: noradrenaline changes the slope of the recipient's transfer function~\cite{ServanSchreiber1990}. Weak, subthreshold inputs (the background) then give even less, and strong ones give even more. Let the neuron respond with the rate
+\begin{empheq}[box=\keybox]{equation}
+r \;=\; F\bigl(g\,(u-\theta)\bigr), \qquad F(z)=\frac{r_{\max}}{1+e^{-z}} ,
+\label{eq:gain}
+\end{empheq}
+where $u$ is the input current, $\theta$ is the threshold, and $g$ is the gain, which in the model is controlled by \nt{NORA}. At small $g$ the rate follows the input smoothly over a wide range: the neuron is an \emph{analog amplifier}. At large $g$ almost any input above threshold gives the full rate, and below threshold zero: the neuron is a \emph{comparator}, an almost digital element (Fig.~\ref{fig:gaincurves}). A single knob switches the same neuron between two modes that in electronics are served by different circuits.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=1.1cm,y=2.4cm]
+\draw[->,gray!70!black] (-3.3,0) -- (3.4,0) node[below left,black] {\small $u$};
+\draw[->,gray!70!black] (-3.3,0) -- (-3.3,1.2) node[left,black] {\small $r$};
+\draw[densely dashed,gray!60!black] (0,0) -- (0,1.1);
+\node[below,font=\small] at (0,0) {$\theta$};
+\draw[densely dotted,gray!60!black] (-3.3,1) -- (3.2,1) node[right,black,font=\small] {$r_{\max}$};
+\draw[very thick,blue!60!black] plot[domain=-3.2:3.2,samples=60] (\x,{1/(1+exp(-0.8*\x))});
+\draw[very thick,orange!85!black] plot[domain=-3.2:3.2,samples=60] (\x,{1/(1+exp(-2*\x))});
+\draw[very thick,red!70!black] plot[domain=-3.2:3.2,samples=120] (\x,{1/(1+exp(min(-8*\x,9)))});
+\node[blue!60!black,font=\small,anchor=west] at (0.5,0.12) {small $g$: amplifier};
+\node[red!70!black,font=\small,anchor=east] at (-0.3,0.85) {large $g$: comparator};
+\end{tikzpicture}
+\caption{The transfer function~\eqref{eq:gain} for three values of the gain $g$.}
+\label{fig:gaincurves}
+\end{figure}
+
+Does a large gain help against noise? Not always. Suppose two inputs differ by $\Delta u$, and we must say which is larger. If noise $\sigma_{\text{pre}}$ is added to the input \emph{before} the amplifier, both signal and noise are amplified, and their ratio does not change. But if noise $\sigma_{\text{post}}$ is added \emph{after} the amplifier (from unreliable synapses and random spikes of the network itself, as in Chapter~\ref{sec:code}), then the signal-to-noise ratio
+\begin{empheq}[box=\keybox]{equation}
+d' \;=\; \frac{g\,\Delta u}{\sqrt{g^2\sigma_{\text{pre}}^2+\sigma_{\text{post}}^2}}
+\label{eq:gainsnr}
+\end{empheq}
+grows with $g$ until $g\sigma_{\text{pre}}$ becomes comparable to $\sigma_{\text{post}}$~\cite{ServanSchreiber1990}.
+
+\begin{keyblock}
+\begin{proposition}[When gain helps]
+\label{prop:gainnoise}
+By raising the gain, \nt{NORA} improves the discrimination of inputs only against noise that arises \emph{after} the amplifier, in the network itself. Gain cannot remove noise that arrives together with the input.
+\end{proposition}
+\end{keyblock}
+
+\section{Gain in a two-way choice}
+
+Let us return to the choice of Chapter~\ref{sec:gaba}: two groups of \nt{GLUT} neurons with inputs $I_1$, $I_2$ inhibit each other with strength $\beta$. Now each group has a gain $g$: in the choice equations~\eqref{eq:wta}, the expression in brackets is multiplied by $g$. While both groups are active, the steady-state rates are found from $r_1=g(I_1-\beta r_2)$, $r_2=g(I_2-\beta r_1)$. Adding and subtracting these equations gives the sum $r_1+r_2=g(I_1+I_2)/(1+g\beta)$ and the difference $r_1-r_2=g(I_1-I_2)/(1-g\beta)$. Their ratio tells how sharply the network prefers one input to the other:
+\begin{empheq}[box=\keybox]{equation}
+\frac{r_1-r_2}{r_1+r_2} \;=\; \varepsilon\,\frac{1+g\beta}{1-g\beta}, \qquad \varepsilon=\frac{I_1-I_2}{I_1+I_2}, \quad g\beta<1 .
+\label{eq:wtagain}
+\end{empheq}
+A small input difference $\varepsilon$ is amplified by a factor of $(1+g\beta)/(1-g\beta)$, and this factor grows without bound as $g\beta$ approaches one. For $g\beta>1$ the state with both groups active is unstable, as in Proposition~\ref{prop:wta}: one group wins, the other falls silent (Fig.~\ref{fig:pitchfork}).
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=3.2cm,y=1.5cm]
+\draw[->,gray!70!black] (0,0) -- (2.15,0) node[below left,black] {\small $g\beta$};
+\draw[->,gray!70!black] (0,-1.25) -- (0,1.35) node[above,black] {\small $(r_1-r_2)/(r_1+r_2)$};
+\draw[gray!60!black] (1,-0.04) -- (1,0.04); \node[below right,font=\small] at (1,0) {$1$};
+\node[left,font=\scriptsize] at (0,1) {$1$}; \node[left,font=\scriptsize] at (0,-1) {$-1$};
+\draw[very thick,blue!60!black] plot[domain=0:0.905,samples=60] (\x,{0.05*(1+\x)/(1-\x)}) -- (1,1) -- (2.05,1);
+\draw[very thick,blue!60!black] (1.105,-1) -- (2.05,-1);
+\draw[thick,densely dashed,gray!60!black] (1,0) -- (2.05,0);
+\node[font=\small,align=center] at (0.45,-0.62) {deliberating:\\both groups\\active};
+\node[font=\small,align=center] at (1.55,0.45) {decided:\\one group active};
+\node[font=\small,blue!60!black,anchor=south west] at (1.05,-0.97) {weak input won earlier and holds};
+\end{tikzpicture}
+\caption{A two-way choice at different gains, with inputs differing by $\varepsilon=0.05$. For $g\beta>1$ both decisions are stable (solid lines; the weak input's win is stable for $g\beta>(1+\varepsilon)/(1-\varepsilon)\approx1.1$), and the network holds whichever it has already made; the symmetric state (dashed line) is unstable.}
+\label{fig:pitchfork}
+\end{figure}
+
+\begin{keyblock}
+\begin{proposition}[Gain switches the choice mode]
+\label{prop:gainwta}
+In a choice network with mutual inhibition $\beta$, the gain $g$ carries the network across the boundary $g\beta=1$. Below it the network ``deliberates'': both groups are active, and the input difference is amplified by~\eqref{eq:wtagain}. Above it the network ``has decided'': one group is active, and the decision holds. By changing $g$, \nt{NORA} can switch the network between these modes without touching a single weight.
+\end{proposition}
+\end{keyblock}
+
+\section{Gain as temperature}
+
+Now let us add to the choice noise that arises in the network itself, after the amplifier. Which group wins is decided by the sign of $g(u_A-u_B)+\eta$, where $u_A-u_B$ is the input difference, that is, the difference of the learned weights from Chapter~\ref{sec:dofa}, and $\eta$ is noise of scale $\sigma$. If the noise has a logistic distribution (for a Gaussian the curve is almost the same), the probability of choosing $A$ is
+\begin{empheq}[box=\keybox]{equation}
+P(A) \;=\; \frac{1}{1+e^{-g\,(u_A-u_B)/\sigma}} .
+\label{eq:softmax}
+\end{empheq}
+A programmer will recognize softmax choice with temperature $T=\sigma/g$. The gain is the inverse temperature. At small $g$ even a clearly better option is chosen only slightly more often than a worse one: the network explores a lot. At large $g$ the best known option is chosen almost always: the network exploits what it knows.
+
+Let us be precise about what $g$ in~\eqref{eq:wtagain} and~\eqref{eq:softmax} is: it is the \emph{effective} gain on the input difference of the current task at the moment of choice. The two modes of \nt{NORA} act on it in opposite ways. A phasic burst at the moment of decision raises it, and the network locks in its choice. High tonic activity, by contrast, goes together with exploration: in humans the baseline pupil is wider before a random choice~\cite{JepmaNieuwenhuis2011}, and in rats \nt{NORA} input to the anterior cingulate cortex switches choice into a random mode~\cite{Tervo2014stochastic}. So high tonic \nt{NORA} corresponds to a \emph{small} effective $g$, and a burst to a large one.
+
+\section{How much to explore}
+
+Which gain is best? We tested this on a model. The network chooses one of two actions by~\eqref{eq:softmax}; each brings reward with some probability, and the network estimates it from the rewards of the chosen action, as in Chapter~\ref{sec:dofa}. From time to time the world changes: both probabilities are drawn anew. The change can affect the chosen action or the one the network has not tried for a long time; about the latter the network can learn only by exploring. Figure~\ref{fig:invertedU} shows the fraction of the best possible reward that the network collects at different constant $g$.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=1.2cm,y=1cm]
+\draw[->,gray!70!black] (0,0) -- (7.6,0) node[below left,black] {\small $g$};
+\draw[->,gray!70!black] (0,0) -- (0,4.4) node[above,black,font=\small] {fraction of best reward};
+\foreach \x/\l in {0/0.5,1/1,2/2,3/4,4/8,5/16,6/32,7/64}{\draw[gray!60!black] (\x,-0.06) -- (\x,0.06); \node[below,font=\scriptsize] at (\x,0) {\l};}
+\foreach \v/\y in {0.8/0.8,0.9/2.4,1.0/4.0}{\draw[gray!60!black] (-0.06,\y) -- (0.06,\y); \node[left,font=\scriptsize] at (0,\y) {\v};}
+\draw[very thick,blue!60!black] plot[mark=*,mark size=1.3pt] coordinates {(0,0.368) (1,0.880) (2,1.728) (3,2.784) (4,3.456) (5,3.616) (6,3.488) (7,3.264)};
+\draw[very thick,red!70!black] plot[mark=*,mark size=1.3pt] coordinates {(0,0.368) (1,0.672) (2,1.184) (3,1.840) (4,2.176) (5,1.920) (6,1.456) (7,1.104)};
+\node[blue!60!black,font=\small,anchor=south] at (5,3.7) {calm world};
+\node[red!70!black,font=\small,anchor=north] at (5.1,1.25) {fast-changing world};
+\draw[->,thick,blue!60!black] (5,3.25) -- (5,3.55);
+\draw[->,thick,red!70!black] (4,1.8) -- (4,2.1);
+\node[font=\small\itshape,gray!35!black,anchor=west] at (0.15,2.3) {searches blindly};
+\node[font=\small\itshape,gray!35!black] at (6.45,2.55) {misses changes};
+\end{tikzpicture}
+\caption{Fraction of the best possible reward at a constant gain $g$ (logarithmic $g$ scale). Blue curve: the world changes on average once per thousand trials; red: once per twenty. Arrows mark the best $g$: in a fast-changing world it is half as large. Average over 60 runs of 4000 trials.}
+\label{fig:invertedU}
+\end{figure}
+
+At $g=0.5$ the network hardly uses its knowledge and collects about three quarters of what is possible; at very large $g$ it misses changes. The best value is $g=16$ when the world changes once per thousand trials (fraction $0.976$), and $g=8$ when it changes once per twenty ($0.886$).
+
+\begin{keyblock}
+\begin{proposition}[The inverted U]
+\label{prop:explore}
+The reward the network collects depends on the gain as an inverted U: too small a $g$ wastes trials on exploration, too large a $g$ misses changes. The faster the world changes, the smaller the best $g$.
+\end{proposition}
+\end{keyblock}
+
+The inverted U is also observed in experiments: animals perform a task best at moderate tonic activity of \nt{NORA} neurons with sharp phasic responses, while at high tonic activity they become distractible and switch between tasks~\cite{AstonJones2005}. This agrees with the distinction between the modes in the previous section: a phasic burst at the moment of decision gives a large effective $g$ exactly when a choice must be made, while high tonic activity without bursts amplifies everything indiscriminately, including irrelevant inputs, so the effective $g$ for the current task falls: this is exploration.
+
+\section{Who turns the knob}
+
+Since the best gain depends on how fast the world changes, it would be good to adjust it. But how can \nt{NORA} neurons know that the world has changed? A natural sign is \emph{surprise}: prediction errors have become larger than usual. It is important to distinguish two kinds of uncertainty. If the reward is simply random, the errors are always large, and that is expected. But if the errors suddenly grow relative to their usual size, something has changed. According to one hypothesis, it is this unexpected uncertainty that \nt{NORA} reports, while \nt{ACET} reports the expected one~\cite{YuDayan2005}.
+
+What should be done with this signal? One can lower the gain and explore more. One can raise the learning rate so as to forget outdated estimates faster: experiments show that after an abrupt change people learn faster, and their pupils dilate~\cite{Nassar2012}; recall that the pupil is an indicator not only of \nt{NORA} but also of \nt{ACET}~\cite{Reimer2016}. Or one can do both at once: according to yet another hypothesis, the phasic \nt{NORA} burst works as an \emph{interrupt}, a signal on which the network resets its current state and reconfigures for the new situation~\cite{BouretSara2005}, like a processor's global interrupt line.
+
+To be honest, here is what we did not find. In the model we tried both simple adjustment schemes: lowering $g$ or raising the learning rate when the smoothed error exceeds its long-term average. In a world that alternately stays put for long stretches and changes often, the best settings of both schemes gave $0.926$--$0.927$ of the best reward, almost the same as the best constant $g$ ($0.925$ at $g=8$) or a constant but sufficiently large learning rate ($0.928$), and poor settings gave less. The curves in Fig.~\ref{fig:invertedU} are flat near the top, and in such a world there is almost nothing to adjust. Adjustment should pay off where different regimes require very different settings. Exactly which control law \nt{NORA} implements has not yet been established.
+
+\section{Summary}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{3.0cm}>{\raggedright}p{4.4cm}>{\raggedright\arraybackslash}p{6.0cm}}
+\toprule
+What \nt{NORA} does & How & What is known \\
+\midrule
+changes the slope of neuronal responses & the gain $g$ in~\eqref{eq:gain} & the rise in signal-to-noise ratio is measured; the multiplicative model is a simplification \\
+switches the choice & carries the network across $g\beta=1$ & follows from the model~\eqref{eq:wtagain}; no direct measurements of the threshold \\
+sets how much to explore & $g$ is the inverse temperature~\eqref{eq:softmax}; tonic: small effective $g$ (exploration), burst: large (decision) & the inverted U and the two modes of operation are measured; the link to exploration is a well-founded hypothesis \\
+reports changes & unexpected uncertainty & pupil size and learning rate rise after changes: measured; that this is a \nt{NORA} signal is a hypothesis \\
+interrupts and resets & a phasic burst to an unexpected event & bursts to important events are measured; the ``interrupt'' is a hypothesis \\
+\bottomrule
+\end{tabular}
+\caption{What \nt{NORA} adds to a network of \nt{GLUT}, \nt{GABA} and \nt{DOPA}.}
+\label{tab:nora}
+\end{table}
+
+\nt{DOPA} tells the network \emph{where} to change the weights. \nt{NORA} changes no weights at all, but decides \emph{how} the network uses what it already knows (Table~\ref{tab:nora}): a single knob, the gain, turns a neuron from an amplifier into a comparator, a choice network from ``deliberating'' into ``decided,'' and choice from exploration into exploitation. How \nt{NORA} finds out how fast the world is changing is an open question.
+
+\section{Exercises}
+
+\begin{exercise}[\lvlA]
+\label{ex:08:1}
+\emph{One knob for the whole brain.} (a)~Using Table~\ref{tab:types}, estimate how many brain neurons there are per \nt{NORA} neuron. (b)~The noise before the amplifier is $\sigma_{\text{pre}}=0.5$, after it $\sigma_{\text{post}}=4$. At what $g$ does $d'$ from~\eqref{eq:gainsnr} reach $90\,\%$ of its limit?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:08:2}
+\emph{Choice with a gain.} $\tau\,\dd r_1/\dd t=-r_1+g[I_1-\beta r_2]_+$, $\tau\,\dd r_2/\dd t=-r_2+g[I_2-\beta r_1]_+$, $\tau=20\ms$. (a)~How fast does $r_1-r_2$ decay for $g\beta=0.5$ and $0.9$? (b)~For $\varepsilon=0.05$, find the $g\beta$ below which both groups are active and above which the weak input's win is stable.
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:08:3}
+\emph{Softmax from noise.} Each of $K$ groups receives its own Gumbel noise, $P(\eta_k<z)=\exp(-e^{-z/\sigma})$, and the largest $gu_k+\eta_k$ wins. Find $P(k)$. At what $g$ is the better of two options with $u_A-u_B=0.1$, $\sigma=1$, chosen $90\,\%$ of the time?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:08:4}
+\emph{Estimating the best gain.} In the model of Fig.~\ref{fig:invertedU}, reward probabilities after a change are uniform on $[0,1]$. The network tries the worse action once every $e^{g\Delta}$ trials; setting this equal to $1/h$ gives $g^*\approx\ln(1/h)/\bar\Delta$. Find $\bar\Delta=\langle|p_A-p_B|\rangle$ and $g^*$ for $h=0.001$, $0.01$, $0.05$.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:08:5}
+\emph{Simulation: gain and the rate of change.} Find $g^*(h)$ for $h$ from $0.001$ to $0.2$ with a copy of \texttt{models/\allowbreak nora\_explore.py} (it writes files to the current folder). Where is the estimate of Exercise~\ref{ex:08:4} correct, and why does $g^*$ stop decreasing when changes are fast?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:08:6}
+\emph{Design: an interrupt for a choice network.} The network of Exercise~\ref{ex:08:2} with $\beta=2$, $\tau=20\ms$, $g=1$ holds $r_1=0.9$, $r_2=0$, although the inputs are now $I_1=0.9$, $I_2=1.0$. \nt{NORA} lowers $g$ to $g_{\text{lo}}$ for a time $T_p$. Find the smallest $T_p$ analytically for $g_{\text{lo}}=0$ and by simulation for $g_{\text{lo}}=0.25$.
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:08:7}
+\emph{When adjustment pays off.} An oracle knows whether the epoch is calm or volatile and sets its own $g$ in each. (a)~By simulation, find its advantage over the best constant $g$ in the chapter's world (epochs of $1000$ trials, $h=0.001$ and $0.05$). (b)~Construct a world where the advantage is larger, and find what part of it surprise-driven adjustment captures.
+\end{exercise}

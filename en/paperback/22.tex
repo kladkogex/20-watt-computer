@@ -1,0 +1,53 @@
+\chapter{Neurons Play Tennis}
+% full version: chapters/22_dishbrain.tex
+
+The most famous experiment with living neurons on a chip is DishBrain, the ``brain in a dish.'' About a million neurons grown on a chip with twenty-six thousand electrodes played the simplest computer tennis: a ball flies across the screen, and a paddle moves up and down.
+
+\section*{How the Game Works}
+
+The ball enters the network through eight electrodes. Which of them clicks tells the height of the ball. How often it clicks tells how far away the ball is: four times a second when it is at the far wall, and more and more often, up to forty, as it approaches the paddle. The output is two regions of electrodes: clicks in one move the paddle up, in the other down. Every ten milliseconds the computer counts the clicks and moves the paddle. These ten milliseconds are the clock of the bench's computer, not of the culture: the network itself works asynchronously, like any network of neurons.
+
+\pencilfig{22}{\pencilart{22}}{The ball, the paddle, and a million neurons that move it.}
+
+\section*{The Teacher}
+
+No dopamine at all. After a successful hit the network gets a short and completely predictable signal: all eight electrodes at once for a tenth of a second. After a miss, four seconds of disorderly stimulation at random places and random moments, then a pause, and a new serve.
+
+\section*{What Came Out}
+
+Over a twenty-minute session the rallies of the living cultures grew longer, and the missed serves fewer. This worked best with full feedback. When plain silence followed hits and misses instead of the signals, there was improvement too, but weaker; without feedback there was none. Human neurons played a little better than mouse neurons. But learning stretched over several days did not prove reliable.
+
+\section*{Why the Network Learns}
+
+The authors explain the result this way: the network strives to make its sensations predictable. A miss brings chaos, a hit brings order, and the network changes so that there is more order. But there is also a more down-to-earth explanation that also fits the data: ``shake after a miss, leave alone after a hit.'' Each shake scrambles the connections a little at random. Settings at which the network often misses keep getting scrambled, while the successful ones are left untouched. The network lingers by itself where there are few misses: nobody taught it; it simply stops being shaken. In our simple model such a rule does raise the share of hits.
+
+\pencilfig{130}{%
+% scrambler: miss probability p over one setting of the network (valley in the middle); a miss kicks the setting
+% at random, a hit leaves it alone, so the time spent at a setting is proportional to 1/p (6x more in the valley here)
+\draw[pen] (0,1.2) -- (8.2,1.2);
+\draw[penlite=pcRed] plot[smooth] coordinates {(0.0,2.46) (0.8,2.46) (1.6,2.46) (2.0,2.44) (2.4,2.41) (2.8,2.32) (3.2,2.15) (3.6,1.90) (4.0,1.62) (4.4,1.44) (4.8,1.44) (5.2,1.62) (5.6,1.90) (6.0,2.15) (6.4,2.32) (6.8,2.41) (7.2,2.44) (7.6,2.46) (8.0,2.46)};
+\node[lbl, text=pcRed, anchor=south] at (7.55,2.55) {many misses};
+\node[lbl, text=pcRed, anchor=west] at (5.3,1.45) {few};
+% kicked balls on the slopes
+\draw[dotpen=pcBlue, wash=pcBlue] (1.3,2.68) circle (0.12);
+\draw[arr=pcGray, densely dashed] (1.35,2.82) to[bend left=50] (2.35,2.72);
+\draw[arr=pcGray, densely dashed] (1.22,2.82) to[bend right=50] (0.4,2.72);
+\draw[dotpen=pcBlue, wash=pcBlue] (6.3,2.45) circle (0.12);
+\draw[arr=pcGray, densely dashed] (6.25,2.59) to[bend right=50] (5.45,2.25);
+\node[lbl, anchor=south] at (1.3,3.05) {a shake after a miss};
+% the ball left alone in the valley
+\draw[dotpen=pcBlue, wash=pcBlue] (4.6,1.66) circle (0.12);
+\node[lbl, anchor=south] at (4.6,1.95) {left alone};
+% where the network spends its time (proportional to 1/p)
+\fill[pcGreen, opacity=0.22] (0,0) -- plot[smooth] coordinates {(0.0,0.18) (0.8,0.18) (1.6,0.18) (2.0,0.19) (2.4,0.19) (2.8,0.21) (3.2,0.24) (3.6,0.33) (4.0,0.55) (4.4,0.98) (4.8,0.98) (5.2,0.55) (5.6,0.33) (6.0,0.24) (6.4,0.21) (6.8,0.19) (7.2,0.19) (7.6,0.18) (8.0,0.18)} -- (8.0,0) -- cycle;
+\draw[penlite=pcGreen] plot[smooth] coordinates {(0.0,0.18) (0.8,0.18) (1.6,0.18) (2.0,0.19) (2.4,0.19) (2.8,0.21) (3.2,0.24) (3.6,0.33) (4.0,0.55) (4.4,0.98) (4.8,0.98) (5.2,0.55) (5.6,0.33) (6.0,0.24) (6.4,0.21) (6.8,0.19) (7.2,0.19) (7.6,0.18) (8.0,0.18)};
+\draw[pen] (0,0) -- (8.2,0);
+\node[lbl, text=pcGreen!60!black, anchor=west] at (5.3,0.6) {where the network spends time};
+\node[lbl, anchor=north] at (4.1,-0.03) {network settings};
+}{A miss shakes the network's settings at random; a hit leaves them alone. Where misses are many, the network does not linger. Where they are few, the shaking stops, and it stays there, though nobody led it there.}
+
+How can the two explanations be told apart? An experiment is needed that has not been done: after a miss, deliver not a chaotic but a \emph{predictable} signal of the same duration and strength. If the network learns even so, the point is not predictability but simply the difference between ``after a hit'' and ``after a miss.'' This experiment is still waiting for someone to run it.
+
+This is the end of our journey. The twenty-watt machine is assembled from simple parts, but how exactly it puts them together into thought we so far understand only in part. Perhaps you will write the next chapter.
+
+\fullversion{22}

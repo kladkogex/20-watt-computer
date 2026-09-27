@@ -1,0 +1,101 @@
+\section{Bench specification: how to reproduce it}
+\label{sec:dishspec}
+
+Below is everything needed to build such a bench again: hardware, loop, input encoding, output readout, feedback, and experimental protocol. Each parameter is marked with its source. ``Paper'' means the value is taken from the text of~\cite{Kagan2022}. ``Choice'' means the paper does not give it, and to reproduce the bench you will have to set it yourself; we propose a default value and say how to check it.
+
+\subsection*{Hardware and culture}
+
+\begin{center}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{4.0cm}>{\raggedright}p{6.9cm}>{\raggedright\arraybackslash}p{1.6cm}}
+\toprule
+Parameter & Value & Source \\
+\midrule
+chip & MaxOne array: $26\,000$ platinum electrodes on an $8$~mm$^2$ area & paper \\
+recording & up to $1024$ channels at once, $20\,000$ samples per second & paper \\
+stimulation & up to $32$ electrodes technically, $8$ independent ones in the experiment & paper \\
+cells & embryonic mouse cortex; human neurons from stem cells (two culture methods); HEK293T cells (not neurons) as a control & paper \\
+plating & about $10^6$ cells per chip & paper \\
+culture age at the experiment & mouse: from $\sim10$ days; human: $14$--$24$ days or $\sim80$ days depending on the culture method & paper \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection*{Loop and timing}
+
+The loop runs in $10\ms$ windows ($200$ samples): in each window the spikes on the motor-region electrodes are counted, the game is updated, and the next stimulation is delivered. The delay from a spike in the culture to the responding stimulus is about $5\ms$. During play each electrode's signal passes through a 2nd-order Bessel high-pass filter with a $100$~Hz cutoff; the signal's magnitude is smoothed by a 1st-order Bessel low-pass filter at $1$~Hz, and the spike threshold is proportional to this smoothed magnitude. The paper gives a threshold of six standard deviations of the background for separate activity measurements, not for play. To keep stimulation from being counted as a response of the culture, all signals are blanked when more than $15$ large spikes, above $75$~mV, arrive at once. All of this is from the paper.
+
+\subsection*{Ball encoding}
+
+\begin{center}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{3.4cm}>{\raggedright}p{7.5cm}>{\raggedright\arraybackslash}p{1.6cm}}
+\toprule
+Parameter & Value & Source \\
+\midrule
+sensory region & $8$ electrodes arranged so that neighboring electrodes mean neighboring ball positions & paper \\
+place code & electrode number $k=1,\dots,8$ gives the ball position relative to the paddle center & paper \\
+which coordinate & vertical ball position; for reproduction, relative to the paddle, $k=\lceil 8(y-p+\tfrac12)\rceil$ for $y-p\in[-\tfrac12,\tfrac12]$ & paper; formula is a choice \\
+rate code & stimulation rate from $4$ to $40$~pulses/s carries the distance to the paddle & paper \\
+scale direction & $4$~pulses/s when the ball is at the opposite wall, rising linearly to $40$~pulses/s at the paddle's wall: $f=4+36\,(1-x/L)$, $x$ is the distance to the paddle's wall, $L$ is the court width & paper \\
+pulse shape & short rectangular biphasic: positive phase first, then negative & paper \\
+amplitude & $75$~mV; chosen so as not to force inhibited cells to fire & paper \\
+phase duration & not given; use the stimulation system's standard setting and keep it fixed throughout the experiment & choice \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection*{Paddle readout}
+
+The paper has two motor regions: spikes in the first move the paddle up, in the second down; the regions' contributions are weighted to account for different cell densities and activity~\cite{Kagan2022}. The exact formula is not given. For reproduction we take rule~\eqref{eq:dishreadout}, $\Delta p=c\,(n_\uparrow-n_\downarrow)$ for each $10\ms$ window, with a weight that equalizes the regions by their mean resting activity (choice): $n_\uparrow$ and $n_\downarrow$ are divided by their region's mean count per window, measured before play. We choose the coefficient $c$ so that a difference of one mean count moves the paddle by $1\%$ of the court height per window (choice); a constant advantage of one region then carries the paddle across the whole court in $1$~s.
+
+The paper's text does not give the regions' layout on the chip in coordinates; there is only a diagram. For reproduction, three non-overlapping groups of electrodes suffice: eight sensory ones in the center and a group of recording electrodes on each side, one ``up'' and the other ``down'' (choice).
+
+\subsection*{The game}
+
+The court size, paddle length, and ball speed are not given in the paper; it says only that the ball flies at constant speed and bounces off the walls. For reproduction (choice): a $1\times1$ court, a paddle of length $0.2$ on the right wall (a hit when $|y-p|<0.1$, as in the model~\texttt{models/dishbrain\_model.py}), and a ball that crosses the court in $1$~s. A miss with no ball returned in the rally counts as an ``ace''; a rally of more than three consecutive hits counts as ``long'' (paper).
+
+\subsection*{Feedback}
+
+\begin{center}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{2.6cm}>{\raggedright}p{8.3cm}>{\raggedright\arraybackslash}p{1.6cm}}
+\toprule
+Event & What is delivered & Source \\
+\midrule
+hit & predictable stimulus: all $8$ sensory electrodes at once, $75$~mV, $100$~pulses/s, $100\ms$; the usual ball stimulation is interrupted for this time & paper \\
+miss & unpredictable stimulus: $150$~mV, $5$~pulses/s, $4$~s, at random times on electrodes chosen at random from the $8$; then $4$~s without stimulation, and the ball starts in a random direction & paper \\
+randomness law & not given; for reproduction, pulse times as a Poisson stream with mean rate $5$~pulses/s & choice \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection*{Protocol and controls}
+
+One session lasts $20$~min; the first $5$ and the last $15$~min are compared (paper). Three outcome measures: mean rally length, fraction of aces, and fraction of long rallies. Experimental conditions (paper):
+\begin{itemize}
+\item \emph{stimulus}: the full loop, as described above;
+\item \emph{silence}: in place of the hit or miss stimulus, the same time with no stimulation at all, then the ball starts in a random direction;
+\item \emph{no feedback}: after a miss the ball simply bounces and flies on, and ball-position stimulation continues;
+\item \emph{rest}: the game runs and the paddle moves according to activity, but there is no stimulation at all;
+\item \emph{controls}: a chip with medium only; HEK293T cells; an ``in silico culture,'' a simulation instead of cells.
+\end{itemize}
+Sample size in the main series: $9$ mouse cultures ($101$ sessions), $11$ human cultures ($138$), $6$ medium-only chips ($80$), $20$ cultures at rest ($42$), $3$ simulations ($38$), $399$ sessions in all. In the feedback series: $486$ sessions over $3$ days at $3$ sessions per day, conditions ``stimulus,'' ``silence,'' and ``no feedback'' ($n=27$, $17$, and $15$). Growth of the mean rally length from the first $5$ minutes to the last $15$ was obtained only in living cultures. In the feedback series, significant growth over time occurred only in the ``stimulus'' condition; at the end of the session the ``silence'' condition still outperformed ``no feedback,'' but with a smaller effect, and there was no robust learning from session to session over the three days~\cite{Kagan2022}.
+
+\subsection*{The bench cycle step by step}
+
+Every $10\ms$ the bench computer does the following.
+\begin{enumerate}
+\item Reads the spike counts $n_\uparrow$, $n_\downarrow$ in the two motor regions over the past window and normalizes them by the region's mean resting count.
+\item Moves the paddle by $\Delta p=c\,(n_\uparrow-n_\downarrow)$ and clips it to the edges of the court.
+\item Moves the ball one step; reflects it off the top, bottom, and left walls.
+\item If the ball has reached the right wall: if $|y-p|<0.1$, it is a hit, the rally count grows by one, and the hit stimulus is delivered ($100\ms$); otherwise it is a miss, the rally is recorded, the miss stimulus is delivered ($4$~s), followed by a $4$~s pause, and the ball starts again.
+\item Otherwise, chooses electrode $k$ from the ball's vertical position and rate $f$ from the distance to the paddle's wall, and delivers $75$~mV biphasic pulses at rate $f$ to electrode $k$ until the next window.
+\end{enumerate}
+This is enough to build a bench compatible with the published one and to test the chapter's main question: is the culture taught by predictability, or by a simple difference between the response to a hit and to a miss? For that, a fourth condition absent from the paper should be added to its three: after a miss, a \emph{predictable} stimulus of the same duration and energy as the unpredictable one. If the culture learns in this case too, the cause is the difference, not predictability.

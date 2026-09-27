@@ -1,0 +1,49 @@
+\chapter{A Computer Made of Living Cells}
+% full version: chapters/21_living.tex
+
+\pencilfig{21}{\pencilart{21}}{Living neurons on a chip: under them are thousands of electrodes, and each can both listen and speak.}
+
+Can a machine be built not from silicon but from living neurons? It can, and such machines are already being built. Neurons are grown right on a chip with thousands of electrodes, as a flat layer or as little clumps that resemble a tiny brain. Each electrode can both listen and deliver a signal. This is a test bench with an open circuit: everything can be measured, and everything can be tampered with. Only there are no radio stations in it: it is a data bus without control registers.
+
+\section*{What the Network Does on Its Own}
+
+Left to itself, a culture flares up as a whole from time to time: almost all the neurons click together and then fall quiet, at intervals from a second to minutes. This is the familiar oscillator: the network excites itself and tires until the connections restore their supply of substance.
+
+\pencilfig{129}{%
+% spike raster of 8 neurons in a culture left to itself: sparse single clicks and shared bursts
+\foreach \b in {0.9,3.1,4.0,6.6}{\fill[pcAmber, opacity=0.18] (\b-0.1,-0.15) rectangle (\b+0.32,2.95);}
+\foreach \y/\ss in {0/{0.96,1.0,1.13,2.43,3.0,3.12,3.24,4.02,4.09,4.15,6.66,6.69,6.81},
+  1/{0.46,0.88,1.0,1.05,3.09,3.2,3.94,4.04,4.37,6.65,6.71},
+  2/{0.73,0.84,0.94,1.41,3.08,3.12,3.21,4.05,4.06,4.17,6.59,6.63},
+  3/{0.89,0.93,1.06,3.1,3.19,3.28,3.89,3.94,4.13,4.2,4.31,6.63,6.65,6.78},
+  4/{0.87,0.96,3.09,3.15,3.23,3.73,3.96,4.06,4.19,5.98,6.66,6.68,6.75},
+  5/{0.44,0.92,0.97,3.05,3.22,3.27,4.01,4.07,4.17,5.76,6.57,6.73,6.75},
+  6/{0.92,1.0,1.73,2.85,3.18,3.19,4.0,4.07,6.53,6.66,6.73},
+  7/{0.87,0.92,3.13,3.13,3.27,3.99,4.06,4.17,6.44,6.61,6.72,7.13}}{
+  \foreach \s in \ss {\draw[pcBlue, line width=0.7pt] (\s,0.35*\y) -- (\s,0.35*\y+0.25);}}
+\draw[arr] (0,-0.3) -- (7.5,-0.3); \node[lbl, anchor=north] at (3.75,-0.32) {time};
+\node[lbl, anchor=east, align=right] at (-0.05,1.35) {eight\\neurons};
+\node[lbl, text=pcAmber!70!black, anchor=south] at (3.55,2.95) {shared bursts};
+}{A culture on a chip left to itself. Single clicks are rare, and from time to time almost the whole network flares up at once, then falls quiet until the connections restore their supply.}
+
+\section*{A Teacher Without Dopamine}
+
+How do you teach such a network if there is no dopamine? The first methods were electrical. For example: stimulate the network until it gives the desired response, and stop at once. The response gets fixed. In another experiment a culture controlled a simple virtual ``body'' and learned to steer it toward a goal. In all these experiments the teacher is a pattern of current chosen by an engineer.
+
+\section*{Dopamine by a Flash of Light}
+
+Once, researchers tried to make the teacher chemical. On one of the platforms with living clumps of neurons, dopamine was added to the nutrient fluid in a light-sensitive ``cage'' that keeps it from acting. When the network responded to a stimulus more strongly than before, it was ``rewarded'': a flash of ultraviolet light broke the cage, and the dopamine got out. Over two hundred forty repetitions the responses grew overall. But the authors themselves honestly write that one such experiment cannot tell whether dopamine was the cause.
+
+\section*{A Pole on a Cart}
+
+In a recent experiment clumps of neurons were taught to balance a pole on a cart, a classic problem for learning programs. Which training pulses to deliver was chosen by a program. The signals chosen by the program worked better than random ones, but after three quarters of an hour of rest what had been learned disappeared. And if the \nt{GLUT} connections were blocked, there was no learning at all: what is learned lives right there. The teacher, however, is still outside; only now it is not an engineer but a program.
+
+\section*{A Living Reservoir}
+
+There is another approach: the living network is not taught at all. It is used as a ``reservoir,'' a rich, tangled system whose responses a simple electronic readout learns to sort out. In this way a living clump helped tell voices apart. True, according to the authors, the connections in the clump itself also changed during the work.
+
+\section*{The Cost and the Question}
+
+A million neurons on a chip consume about a ten-thousandth of a watt, far less than the electronics around them. And the bench cannot decide by itself what counts as success: someone outside always plays that role. And as such systems grow, an ethical question arises that nobody has settled yet.
+
+\fullversion{21}

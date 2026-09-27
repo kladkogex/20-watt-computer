@@ -1,0 +1,214 @@
+\chapter{The Machine's Outputs: How the Brain Controls Muscles}
+\chaptermark{The Machine's Outputs}
+\label{sec:muscles}
+
+\section{The fast output}
+
+Everything the machine does quickly in the world, it does with muscles. A word, a glance, a step, a smile: these are muscle contractions. The second, slow output, the chemistry of the body, is covered in Chapter~\ref{sec:chemoutput}. In Fig.~\ref{fig:machine} the output was an arrow labeled ``muscles''; now let us look at what lies behind that arrow.
+
+The last link of the chain is the \nt{ACET} neurons, the very ones listed in Table~\ref{tab:types} as ``output to muscle.'' Each muscle fiber receives input from exactly one such neuron, and one neuron controls a group of fibers, from several hundred to a couple of thousand~\cite{Feinstein1955mu}. In muscles that need fine adjustment the units are smaller; in the large leg muscles they are larger. A neuron together with its fibers is called a \emph{motor unit}: it is the smallest piece of muscle the brain can switch on separately.
+
+The synapse of a neuron on a muscle is built quite differently from the cortical synapses of Chapter~\ref{sec:code}. There, most spikes were lost. Here, each spike releases several times more acetylcholine than is needed to make the fiber fire~\cite{WoodSlater2001}. This is a synapse with a \emph{safety factor}: one spike of the neuron means exactly one contraction of its fibers. Inside the machine, unreliable connections are affordable and errors can be corrected by redundancy; at the output, an error costs a movement, and reliability is bought directly in hardware.
+
+\section{Force: rate and number of units}
+
+One spike produces a single contraction, a twitch: the force rises over a few tens of milliseconds and then decays. A good approximation for it is~\cite{Fuglevand1993}
+\begin{equation}
+h(t) \;=\; F_1\,\frac{t}{T_c}\,e^{\,1-t/T_c},
+\label{eq:twitch}
+\end{equation}
+where $T_c$ is the rise time, of order $50\ms$, and $F_1$ is the force of one twitch. If spikes come more often, the twitches add up:
+\begin{empheq}[box=\keybox]{equation}
+F(t) \;=\; \sum_k h\bigl(t-t_k\bigr) .
+\label{eq:forcesum}
+\end{empheq}
+This is the same low-pass filter that turned spikes into concentration in Chapter~\ref{sec:serocomputer}, except that now the output is force rather than concentration. A muscle is a digital-to-analog converter from spikes to force (Fig.~\ref{fig:tetanus}). In our model, at five spikes per second the twitches barely overlap and the force jumps between $0.2F_1$ and $1.1F_1$; at fifteen it already stays between $1.8F_1$ and $2.2F_1$; at forty it becomes almost flat, about $5.4F_1$. A real muscle saturates at high spike rates, so the linear sum~\eqref{eq:forcesum} holds only up to a few tens of spikes per second.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=20cm,y=0.55cm]
+\draw[->,gray!70!black] (0,0) -- (0.66,0) node[right,font=\small,black] {$t$, s};
+\draw[->,gray!70!black] (0,0) -- (0,6.4) node[left,font=\small,black] {$F/F_1$};
+\foreach \t in {0,0.2,0.4,0.6}{\draw[gray!60!black] (\t,-0.1) -- (\t,0.1); \node[below,font=\scriptsize] at (\t,0) {\t};}
+\foreach \f in {1,3,5}{\draw[gray!60!black] (-0.004,\f) -- (0.004,\f); \node[left,font=\scriptsize] at (0,\f) {\f};}
+\draw[thick,blue!60!black] plot file {figures/muscle_twitch_5.dat};
+\draw[thick,green!45!black] plot file {figures/muscle_twitch_15.dat};
+\draw[thick,red!70!black] plot file {figures/muscle_twitch_40.dat};
+\node[font=\scriptsize,blue!60!black,anchor=west] at (0.605,0.9) {5 spikes/s};
+\node[font=\scriptsize,green!45!black,anchor=west] at (0.605,2.1) {15 spikes/s};
+\node[font=\scriptsize,red!70!black,anchor=west] at (0.605,5.4) {40 spikes/s};
+\end{tikzpicture}
+\caption{A muscle as a digital-to-analog converter: the force~\eqref{eq:forcesum} for regular spikes of a single motor unit, $T_c=50\ms$. Sparse spikes give separate twitches; frequent ones fuse into a smooth force, just as frequent spikes fuse into a smooth concentration in Fig.~\ref{fig:lowpass}.}
+\label{fig:tetanus}
+\end{figure}
+
+The brain has two force knobs: the spike rate of each unit and the number of units switched on. The second knob is very ingeniously designed. The units in a muscle differ: the weakest are a hundred times weaker than the strongest. As more and more force is needed, units are switched on \emph{in order of size}, from small to large~\cite{Henneman1957}. Nobody computes this order: small neurons are simply easier to excite by the same common input, so the recruitment order is set by the hardware itself.
+
+What does this buy? Let each next unit in the order be $q$ times stronger than the previous one, where $q$ is slightly larger than one. The force of all recruited units is the sum of a geometric series, and almost all of it comes from the last units. Then each newly recruited unit adds
+\begin{empheq}[box=\keybox]{equation}
+\frac{\Delta F}{F} \;\approx\; q-1 \;=\; \text{const} ,
+\label{eq:sizeprinciple}
+\end{empheq}
+that is, the force step is proportional to the force itself. For a weak effort the brain doles it out in small portions, for a strong one in large portions. This is a \emph{floating-point number}: the exponent is set by how many units are recruited, and the mantissa by their spike rate. It is the same logarithmic scale as in the sensors of Chapter~\ref{sec:sensors}: the input and the output of the machine measure the world in relative terms.
+
+Floating point has a downside. The scatter of the force also grows in proportion to the force itself: a strong movement is inevitably less precise than a weak one. According to one influential hypothesis, this signal-dependent noise explains why our movements are smooth: a smooth command gives the smallest scatter at the end point~\cite{HarrisWolpert1998}.
+
+\section{Pull, never push: two wires per joint}
+
+A muscle can only pull. It cannot push, just as a \nt{GLUT} neuron cannot output a negative signal. The solution is familiar from Chapter~\ref{sec:glutcomputer}: \emph{two wires}. Each joint is served by a pair of muscles pulling in opposite directions (Fig.~\ref{fig:antagonists}). If their forces are $F_1$ and $F_2$ and the lever arm is $\ell$, the torque and stiffness of the joint are
+\begin{empheq}[box=\keybox]{equation}
+M \;=\; \ell\,(F_1-F_2), \qquad K \;\approx\; \kappa_m\,(F_1+F_2),
+\label{eq:antagonists}
+\end{empheq}
+where $\kappa_m$ is the coefficient relating muscle force to muscle stiffness: a tensed muscle is springier than a relaxed one. The difference of the forces sets the torque, the sum sets the stiffness~\cite{Hogan1984}. With two wires the brain controls two independent quantities: which way to turn the joint and how firmly to hold it. When we need to hold a cup without spilling, we tense both muscles at once: the torque is the same, the stiffness is higher, and a random bump knocks the arm off less.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  nrn/.style={circle,draw,very thick,minimum size=0.95cm,inner sep=0pt,font=\scriptsize},
+  inh/.style={-{Bar[width=7pt]},thick,red!70!black}]
+% the joint: a bar on a pivot, two springs pulling down on either side
+\fill[gray!30] (4.6,-0.25) -- (5.4,-0.25) -- (5,0.15) -- cycle;
+\draw[line width=3pt,gray!50!black] (2.4,0.2) -- (7.6,0.2);
+\fill[black] (5,0.2) circle (0.08);
+\draw[decorate,decoration={coil,segment length=5pt,amplitude=4pt},very thick,blue!60!black] (3.0,0.2) -- (3.0,-1.6);
+\draw[decorate,decoration={coil,segment length=5pt,amplitude=4pt},very thick,orange!85!black] (7.0,0.2) -- (7.0,-1.6);
+\draw[very thick] (2.5,-1.6) -- (3.5,-1.6); \draw[very thick] (6.5,-1.6) -- (7.5,-1.6);
+\node[font=\small,blue!60!black] at (2.35,-0.75) {$F_1$};
+\node[font=\small,orange!85!black] at (7.65,-0.75) {$F_2$};
+\draw[->,thick] (5.9,0.75) arc (60:120:1.8) node[above,font=\scriptsize,pos=0.5] {$M=\ell(F_1-F_2)$};
+% motor neurons and reflex circuit
+\node[nrn,fill=green!12] (M1) at (1.6,-3.0) {\nt{ACET}};
+\node[nrn,fill=green!12] (M2) at (8.4,-3.0) {\nt{ACET}};
+\node[nrn,fill=red!10] (G) at (5.0,-3.0) {\nt{GLYC}};
+\node[nrn,fill=blue!6] (S) at (1.6,-5.0) {\nt{GLUT}};
+\draw[->,very thick] (M1) -- (3.0,-1.7);
+\draw[->,very thick] (M2) -- (7.0,-1.7);
+\draw[->,thick] (S) -- (M1);
+\draw[->,thick] (S) -- (G);
+\draw[inh] (G) -- (M2);
+\draw[->,thick,densely dashed,gray!60!black] (3.15,-1.2) to[bend left=25] node[pos=0.35,right,font=\scriptsize,black] {stretch} (S.north east);
+\draw[->,thick,blue!60!black] (-0.3,-3.0) node[left,font=\scriptsize,black,align=right] {command\\from brain} -- (M1);
+\draw[->,thick,blue!60!black] (10.3,-3.0) node[right,font=\scriptsize,black,align=left] {command\\from brain} -- (M2);
+\end{tikzpicture}
+\caption{Two muscles on one joint and the fastest feedback loop. \nt{ACET} neurons receive commands from the brain and pull the joint in opposite directions; the difference of the forces turns it, the sum makes it stiffer. The stretch sensor (\nt{GLUT}) of the left muscle excites that muscle's own \nt{ACET} neuron and, through a \nt{GLYC} intermediary, inhibits the neuron of the opposing muscle: the veto of Chapter~\ref{sec:gaba}.}
+\label{fig:antagonists}
+\end{figure}
+
+\section{Feedback with delay}
+
+Muscles do not work blind. Each one contains the stretch sensors mentioned in Table~\ref{tab:sensors}, and the shortest loop closes right in the spinal cord (Fig.~\ref{fig:antagonists}). When a muscle is unexpectedly stretched, the stretch sensor excites the muscle's own \nt{ACET} neuron, the muscle contracts and returns the joint. At the same time, an inhibitory intermediary neuron switches off the opposing muscle so that it does not interfere. This intermediary is \nt{GLYC}, the very type from Table~\ref{tab:types} that did not get a chapter of its own: its place is right here, in the fast loops of the spinal cord.
+
+Every loop has a delay $d$: the spinal loop about $25$--$30\ms$ for the arm, a loop through the cortex one and a half to three times longer, a loop through the eye $100$--$200\ms$. And delayed feedback, as we saw in Proposition~\ref{prop:ei}, makes a system oscillate. For the simplest controller, which corrects a deviation $x$ at rate $G$ using information $d$ seconds old, $\dd x/\dd t=-G\,x(t-d)$, the stability condition is~\cite{Hayes1950}
+\begin{empheq}[box=\keybox]{equation}
+G\,d \;<\; \frac{\pi}{2} ,
+\label{eq:delaystable}
+\end{empheq}
+and at the boundary the system oscillates at frequency $1/(4d)$. We checked this in a model: at $d=30\ms$ the deviation decays for $G=40$ per second, and for $G=55$ per second, just above the boundary of $52$, it grows into oscillation.
+
+Two consequences follow. First, the longer the loop, the more slowly it must correct. With a delay of a hundred and fifty milliseconds through the eye, the arm cannot be corrected faster than in about a tenth of a second, or it will tremble. Second, the stability boundary of the spinal loop, $1/(4\cdot30\ms)\approx8$ oscillations per second, is close to the frequency of the fine tremor present in every healthy person, eight to twelve oscillations per second. The stretch loop is one of the likely sources of this tremor~\cite{McAuleyMarsden2000}.
+
+How, then, does the brain move quickly and accurately if its feedback is late? According to a widely held hypothesis, it \emph{predicts}: it keeps an internal model of the body and computes the result of a command without waiting for the sensors~\cite{WolpertGhahramani2000}. The sensors are needed to correct the model, not every movement. An engineer would call this feedforward control with a state observer.
+
+\section{Rhythm generators for movement}
+
+Walking, breathing, chewing are rhythmic movements. Do they need a clock? No. The spinal cord and the brainstem contain small networks that generate a rhythm by themselves, even when nothing rhythmic comes into them~\cite{MarderBucher2001}. The simplest such network is built from parts we already have: two groups of \nt{GLUT} neurons that inhibit each other through \nt{GABA} or \nt{GLYC} intermediaries, as in Fig.~\ref{fig:wta}, and slowly fatigue, like the memory of Chapter~\ref{sec:glutcomputer}:
+\begin{empheq}[box=\keybox]{equation}
+\tau\,\frac{\dd r_i}{\dd t} = -r_i + \bigl[I - \beta\,r_j - a_i\bigr]_+ ,
+\qquad
+\tau_a\,\frac{\dd a_i}{\dd t} = -a_i + b\,r_i ,
+\label{eq:halfcentre}
+\end{empheq}
+where $a_i$ is the fatigue of group $i$ and $j$ is the other group. Mutual inhibition with $\beta>1$ picks a winner (Proposition~\ref{prop:wta}). The winner works and tires; when fatigue eats up its input, the loser, already rested, pulls ahead and starts to tire in turn. The groups work in alternation, and each drives its own muscle of the pair (Fig.~\ref{fig:halfcentre}).
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=3.2cm,y=2.4cm]
+\draw[->,gray!70!black] (0,0) -- (4.2,0) node[right,font=\small,black] {$t$, s};
+\draw[->,gray!70!black] (0,0) -- (0,1.2) node[left,font=\small,black] {$r$};
+\foreach \t in {0,1,2,3,4}{\draw[gray!60!black] (\t,-0.03) -- (\t,0.03); \node[below,font=\scriptsize] at (\t,0) {\t};}
+\draw[thick,blue!60!black] plot file {figures/halfcentre1.dat};
+\draw[thick,orange!85!black] plot file {figures/halfcentre2.dat};
+\node[font=\scriptsize,blue!60!black,anchor=west] at (1.6,1.28) {group 1: ``forward''};
+\node[font=\scriptsize,orange!85!black,anchor=west] at (2.7,1.28) {group 2: ``back''};
+\end{tikzpicture}
+\caption{A rhythm generator from model~\eqref{eq:halfcentre}: $I=1$, $\beta=2$, $b=2$, $\tau=20\ms$, $\tau_a=0.4\,\text{s}$. Two groups with mutual inhibition and fatigue work in alternation with a period of $0.84\,\text{s}$, although the input is a constant signal.}
+\label{fig:halfcentre}
+\end{figure}
+
+In our model, with a constant input the groups take turns with a period of $0.84\,\text{s}$, about twice the fatigue time $\tau_a$. A constant command from above, ``walk,'' turns into a rhythm on the spot. This is one more local rhythm, like the rhythm of the \nt{GLUT}--\nt{GABA} loop in Chapter~\ref{sec:gaba}: it arises only while the network is working, and it paces only the muscles it controls.
+
+\begin{keyblock}
+\begin{proposition}[The machine's output]
+\label{prop:muscles}
+The brain controls muscles as a hierarchy of controllers. At the top an action is selected (Chapter~\ref{sec:dofa}); below, local generators turn constant commands into rhythm, and fast spinal loops hold the joints. Force is set in floating point: the exponent by the number of units, recruited by size, the mantissa by the spike rate. Each joint is controlled by a pair of pulling muscles, the difference of whose forces sets the torque and the sum the stiffness. These mechanisms are measured; that the brain relies on an internal model of the body is a well-founded hypothesis.
+\end{proposition}
+\end{keyblock}
+
+\section{Summary}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{3.0cm}>{\raggedright}p{4.6cm}>{\raggedright\arraybackslash}p{5.2cm}}
+\toprule
+What the output does & How & What is known \\
+\midrule
+turns spikes into force & sum of twitches~\eqref{eq:forcesum}, a low-pass filter & measured; the linear sum is a simplification \\
+doses force & recruiting units by size, floating point~\eqref{eq:sizeprinciple} & recruitment order measured \\
+pushes while only able to pull & a pair of muscles: torque is the difference, stiffness the sum~\eqref{eq:antagonists} & measured \\
+holds a joint & stretch loop, veto of the opponent via \nt{GLYC} & measured \\
+does not tremble & $Gd<\pi/2$~\eqref{eq:delaystable} & follows from control theory; contribution to tremor is a likely cause \\
+moves quickly & prediction from an internal model & well-founded hypothesis \\
+walks and breathes rhythmically & rhythm generator~\eqref{eq:halfcentre} & generators measured; the simplest circuit is a model \\
+\bottomrule
+\end{tabular}
+\caption{How the machine controls muscles.}
+\label{tab:muscles}
+\end{table}
+
+The machine's output is built with the same tricks as everything else (Table~\ref{tab:muscles}): two wires instead of a sign, a low-pass filter instead of a DAC, a logarithmic scale instead of a linear one, mutual inhibition and fatigue instead of a clock generator. The input (Chapter~\ref{sec:sensors}) and the output measure the world in relative terms, and between them works the machine this book is about.
+
+\section{Exercises}
+
+\begin{exercise}[\lvlA]
+\label{ex:13:1}
+\emph{Floating point in numbers.} A muscle has $N=100$ motor units with forces $f_n=f_1q^{\,n-1}$; the strongest is $100$ times stronger than the weakest. (a)~Find $q$, the relative step~\eqref{eq:sizeprinciple}, and the dynamic range in decibels. (b)~What is the step at force $10f_1$ for a ``linear DAC'' of $100$ identical units with the same total force?
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:13:2}
+\emph{The price of the safety factor.} On each spike the synapse on a muscle fiber releases a Poisson number of quanta with mean $m$, and the fiber fires at $n_{\text{th}}=20$ quanta or more; the safety factor is $S=m/n_{\text{th}}$. How many failures per day does a unit firing at $20$ spikes/s produce at $S=2$ and at $S=4$?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:13:3}
+\emph{The muscle as a filter.} The twitch~\eqref{eq:twitch} with $T_c=50\ms$ is the impulse response of a linear system. (a)~Find its transfer function $H(s)$ and cutoff frequency. (b)~At what rate of regular spikes is the peak-to-peak force ripple $10\%$ of the mean force?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:13:4}
+\emph{No correction faster than the delay.} The controller is $\dd x/\dd t=-G\,x(t-d)$. (a)~Show that the deviation decays fastest without oscillation at $Gd=1/e$, at rate $1/d$. (b)~Find this $G$ and the decay time constant for the spinal loop, $d=30\ms$, and for the loop through the eye, $d=150\ms$.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:13:5}
+\emph{The period of the rhythm generator.} For $\tau\ll\tau_a$ the period $T$ of model~\eqref{eq:halfcentre} is given by $(\beta-1)(1-E^{2+b})/(\beta-E)=b\,(1-E^{1+b})/(1+b)$, where $E=e^{-T/(2\tau_a)}$. (a)~Find $T$ for $\beta=b=2$, $\tau_a=0.4$~s. (b)~Show that $T$ does not depend on the input $I$, and that a rhythm is possible only for $b>\beta-1$.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:13:6}
+\emph{Simulating the generator.} Import the function \texttt{halfcentre} from \texttt{models/\allowbreak muscle\_models.py} (do not run the file itself) and measure the period, discarding the first two cycles, for $b=0.8$, $1.05$, $1.2$, $1.5$, $2$, $4$ and for $I=0.5$, $1$, $2$. Can the command ``walk faster'' change the tempo through $I$?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:13:7}
+\emph{Stiffness versus reflex.} A joint is enclosed in a stretch loop: $\dd\theta/\dd t=-a\theta(t)-G\theta(t-d)$, $a=K/B$, $d=30\ms$. Reduce it to Exercise~\ref{ex:13:4} and find the smallest $a$ at which the deviation decays without oscillation with a time constant of $15\ms$, and the required $G$. How should $G$ change as muscle co-contraction increases?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:13:8}
+\emph{A tempo knob.} By Exercises~\ref{ex:13:5} and~\ref{ex:13:6}, the input $I$ of generator~\eqref{eq:halfcentre} changes only the amplitude, not the tempo. Propose a minimal change to the model, built from parts in the book, such that below some $I_{\min}$ there is no rhythm, and above it the period decreases with $I$, at least halving when $I$ triples. Find $I_{\min}$ for $\tau\ll\tau_a$ and check by simulation.
+\end{exercise}

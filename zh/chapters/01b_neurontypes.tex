@@ -1,0 +1,331 @@
+\chapter{神经元类型}
+\label{sec:neurontypes}
+
+\section{把神经元当作黑箱}
+
+假设有人给你一袋八百六十亿个神经元~\cite{Azevedo2009}，让你把它们分成几堆。你会怎么分？
+
+工程师拿到一袋陌生的芯片，不会按封装外形去分。他会问：这个器件有几个输入、几个输出，输出的是什么。我们也这样画神经元——画成电路图上的一个方框（图~\ref{fig:blackbox}）。
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=1cm,y=1cm]
+% the box
+\node[draw,very thick,minimum width=2.6cm,minimum height=2.6cm,fill=blue!6] (N) at (0,0) {};
+\node at (0,0.55) {\small 神经元};
+\node at (0,-0.15) {$\displaystyle u=\sum_i w_i x_i$};
+\node at (0,-0.8) {\small $y=\Theta(u-\theta)$};
+% inputs
+\foreach \k/\y/\lab in {1/1.05/{x_1},2/0.55/{x_2},3/0.05/{x_3}}{
+  \draw[->,thick,blue!60!black] (-4.2,\y) -- (-1.3,\y);
+  \node[left] at (-4.2,\y) {$\lab$};
+  \node[above,blue!60!black] at (-2.1,\y-0.06) {\scriptsize $w_{\k}$};}
+\node at (-4.45,-0.4) {$\vdots$};
+\node at (-2.1,-0.4) {$\vdots$};
+\draw[->,thick,blue!60!black] (-4.2,-1.05) -- (-1.3,-1.05);
+\node[left] at (-4.2,-1.05) {$x_n$};
+\node[above,blue!60!black] at (-2.1,-1.11) {\scriptsize $w_{n}$};
+\draw[decorate,decoration={brace,amplitude=5pt},gray!60!black] (-4.9,-1.2) -- (-4.9,1.2);
+\node[left,align=right,gray!40!black] at (-5.1,0) {\small $n\sim10^3$--$10^5$\\[-2pt]\small 个输入};
+% single output wire, then fan-out
+\draw[very thick,red!70!black] (1.3,0) -- (3.2,0);
+\foreach \x in {1.6,2.2,2.34,2.9}{\draw[thick,red!70!black] (\x,0) -- (\x,0.4);}
+\node[above right,font=\tiny\itshape,gray!30!black,inner sep=1pt] at (1.42,0.45) {咔嗒\dots\ 咔嗒咔嗒\dots};
+\node[below,red!70!black,align=center] at (2.25,-0.05) {\scriptsize 一个输出 $y$};
+\fill[red!70!black] (3.2,0) circle (0.06);
+\foreach \y in {1.3,0.65,0,-0.65,-1.3}{
+  \draw[->,thick,red!70!black] (3.2,0) -- (5.0,\y);}
+\draw[decorate,decoration={brace,amplitude=5pt},gray!60!black] (5.3,1.45) -- (5.3,-1.45);
+\node[right,align=left,gray!40!black] at (5.5,0) {\small $y$ 的副本\\[-2pt]\small 送往 $10^3$--$10^4$\\[-2pt]\small 个其他神经元};
+\end{tikzpicture}
+\caption{工程师眼中的神经元。许多输入 $x_i$，各有自己的权重 $w_i$；内部是加权和 $u$ 以及与阈值 $\theta$ 的比较（$\Theta$ 是阶跃函数：自变量为正时取 $1$，否则取 $0$）；一个输出 $y$，即一串脉冲，经分支复制给成千上万个接收者。}
+\label{fig:blackbox}
+\end{figure}
+
+方框的输出不是一个数，而是一串短促的电压脉冲：“咔嗒”，停顿，“咔嗒咔嗒”，长时间停顿。每个脉冲的高度都一样，所以全部信息都在于脉冲\emph{何时}出现。粗略地说，方框里是一个加法器加一个比较器：输入按权重相加，和一旦越过阈值，方框就发出一个脉冲。下一章我们会换成一个老老实实在连续时间中工作的模型。
+
+输出只有一个，但导线会分叉，每个分支传送的都是信号\emph{完全相同}的副本。电子学里把这叫作扇出（fan-out）。皮层神经元的扇出在几千量级；而芯片里的一个逻辑门通常只驱动几个其他门。
+
+那么输出导线把\emph{什么}送到接收者那里？脉冲跑到每个分支的末端，在那里变成化学信号：分支向细胞间的狭窄缝隙释放少许某种特定物质——\emph{神经递质}，它改变接收者的输入电流。这就是分类的依据：\emph{神经元的输出释放哪种神经递质}。
+
+\section{一个输出，一种信号}
+
+只有当每个神经元的输出只有一种类型时，这种分类才有意义。事实如此吗？实验表明，几乎如此。
+
+\begin{keyblock}
+\begin{proposition}[一个神经元，一种输出]
+\label{prop:dale}
+几乎每个神经元都只有一种主要神经递质，并在其输出的所有分支上释放它。因此，神经元的类型由它的主要神经递质决定~\cite{Strata1999}。
+\end{proposition}
+\end{keyblock}
+
+我们约定：用\emph{神经元主要递质名称的前四个字母}来标记神经元类型。例如，主要递质是谷氨酸（glutamate）的神经元就是 \nt{GLUT} 神经元。所有类型汇总在表~\ref{tab:types} 中。
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{1.0cm}>{\raggedright}p{2.05cm}>{\raggedright}p{1.75cm}>{\raggedright}p{1.6cm}>{\centering}p{0.7cm}>{\raggedright}p{1.55cm}>{\raggedright}p{1.8cm}>{\raggedright\arraybackslash}p{3.2cm}}
+\toprule
+类型 & 主要递质 & 总线 & 速度 & 符号 & 脑中神经元数 & 每个神经元的输出数 & 在计算中的作用 \\
+\midrule
+\nt{GLUT} & 谷氨酸 & 寻址 & 快和慢 & $+$ & $\sim8\cdot10^{10}$ & $\sim10^4$ & 主要的正权重 \\
+\nt{GABA} & $\gamma$-氨基丁酸 & 寻址 & 快和慢 & $-$ & $\sim3\cdot10^{9}$ & $10^3$--$10^4$ & 主要的负权重 \\
+\nt{GLYC} & 甘氨酸 & 寻址 & 快 & $-$ & $10^6$--$10^7$ & $10^2$--$10^3$ & 脊髓和脑干中的负权重；谷氨酸某种受体的第二把钥匙 \\
+\nt{ACET} & 乙酰胆碱 & 两者 & 快和慢 & $\pm$ & $\sim10^6$ & 肌肉：$10$--$10^3$；脑：$\sim10^5$ & 通往肌肉的输出；在脑中是学习速率（假说） \\
+\nt{DOPA} & 多巴胺 & 广播 & 慢 & $\pm$ & $\sim5\cdot10^{5}$ & $10^5$--$10^6$ & 奖励预测误差 $\delta$ \\
+\nt{SERO} & 血清素 & 广播 & 慢（有一种受体是快的） & $\pm$ & $\sim3\cdot10^{5}$ & $\sim10^5$ & 规划的时间跨度（假说） \\
+\nt{HIST} & 组胺 & 广播 & 慢 & $+$ & $\sim6\cdot10^{4}$ & 无估计 & 全局信号“保持清醒” \\
+\nt{NORA} & 去甲肾上腺素 & 广播 & 慢 & $\pm$ & $\sim5\cdot10^{4}$ & $\sim10^5$ & 增益（假说） \\
+\nt{ADRE} & 肾上腺素 & 广播 & 慢 & $\pm$ & $\sim10^4$ & 无估计 & 神经元很少；在脑中的作用不明 \\
+\nt{ASPA} & 天冬氨酸 & 寻址 & 快 & $+$ & 无估计 & 无估计 & 较弱的正权重；作用有争议 \\
+\bottomrule
+\end{tabular}
+\caption{神经元类型，按脑中神经元数目从多到少排列。\emph{总线}：寻址——递质释放到通往特定接收者的狭窄缝隙中；广播——从一小群源神经元送往大片脑区（\ref{sec:buses}~节）。\emph{速度}：快——经离子型受体，毫秒级；慢——经代谢型受体，数百毫秒乃至更长。\emph{符号}是通常的符号；最终由接收者决定（\ref{sec:receiver}~节），$\pm$ 表示两种符号都有。\emph{脑中神经元数}——整个人脑中这一类型神经元的数目，只给量级；神经元总数约为 $8.6\cdot10^{10}$~\cite{Azevedo2009}。\nt{GLUT} 神经元绝大多数（约 $7\cdot10^{10}$）是小脑中细小的输入神经元；\nt{GLUT} 和 \nt{GABA} 的数目由这一计数和皮层中 \nt{GABA} 神经元的比例得出~\cite{Hendry1987}。在少数类型中，只有 \nt{HIST}~\cite{Airaksinen1991} 和 \nt{DOPA} 神经元两群中的主要一群~\cite{Pakkenberg1991} 做过直接计数，所以 \nt{DOPA} 的数字是下限；\nt{SERO} 的数字是两次局部计数之和~\cite{Baker1990,Baker1991}。\nt{NORA}、\nt{GLYC}、\nt{ACET} 和 \nt{ADRE} 的数字是没有直接计数的粗略量级估计。\emph{每个神经元的输出数}——一个神经元有多少突触末梢，即输出导线分支上释放递质的位点（图~\ref{fig:blackbox}），只给量级。广播类型的末梢没有直接数过：\nt{DOPA} 的数字是由一根输出导线的分支覆盖其靶区的比例推算的~\cite{Matsuda2009}，其余类型的估计更粗。\nt{ACET} 分两种情况：控制肌肉的神经元，以及脑中的广播神经元。}
+\label{tab:types}
+\end{table}
+
+% the pie is a table-type float with a figure caption, so it can never float ahead of Table~\ref{tab:types}
+\begin{table}[tb]
+\makeatletter\def\@captype{figure}\makeatother
+\centering
+\definecolor{vizglut}{HTML}{2A78D6}
+\definecolor{vizgaba}{HTML}{E34948}
+\definecolor{vizrest}{HTML}{8A8986}
+\begin{tikzpicture}[>=Stealth]
+% pie: GLUT 96.4 %, GABA 3.6 % (13.0 degrees), the rest 0.006 % (a hairline at 0 degrees)
+\fill[vizglut] (0,0) -- (13:1.9) arc (13:360:1.9) -- cycle;
+\fill[vizgaba] (0,0) -- (0:1.9) arc (0:13:1.9) -- cycle;
+\draw[white,line width=1pt] (0,0) -- (13:1.9);
+\draw[vizrest,line width=1.2pt] (0,0) -- (0:1.9);
+\node[white,align=center,font=\small] at (190:0.95) {\nt{GLUT}\\$96.4\,\%$};
+\draw[gray!60!black] (6.5:1.75) -- (2.05,2.1);
+\node[anchor=west,font=\small] at (2.05,2.1) {\nt{GABA} $3.6\,\%$};
+% zoom box for the remaining types
+\draw[densely dashed,vizrest] (1.9,0) -- (3.1,1.65);
+\draw[densely dashed,vizrest] (1.9,0) -- (3.1,-2.2);
+\draw[vizrest,rounded corners=3pt] (3.1,-2.2) rectangle (10.1,1.65);
+\node[anchor=west,font=\scriptsize] at (3.2,1.4) {其余所有类型合计：$\approx0.006\,\%$；对数坐标};
+\foreach \code/\lg/\y/\val/\lx in {GLYC/6.477/1.0/{$10^6$--$10^7$}/4.05,ACET/6.0/0.6/{$\sim10^6$}/3.0,DOPA/5.699/0.2/{$\sim5\cdot10^5$}/2.699,SERO/5.477/-0.2/{$\sim3\cdot10^5$}/2.477,HIST/4.778/-0.6/{$\sim6\cdot10^4$}/1.778,NORA/4.699/-1.0/{$\sim5\cdot10^4$}/1.699,ADRE/4.0/-1.4/{$\sim10^4$}/1.0}{
+  \node[anchor=east,font=\scriptsize] at (4.35,\y) {\nt{\code}};
+  \fill[vizrest] (4.45,\y-0.13) rectangle ({4.45+\lg-3},\y+0.13);
+  \node[anchor=west,font=\scriptsize] at ({4.5+\lx},\y) {\val};}
+\draw[vizrest,thick] (7.45,1.0) -- (8.45,1.0);
+\draw[vizrest,thick] (7.45,0.92) -- (7.45,1.08);
+\draw[vizrest,thick] (8.45,0.92) -- (8.45,1.08);
+\draw[gray!60!black] (4.45,-1.72) -- (8.45,-1.72);
+\foreach \e in {3,4,5,6,7}{
+  \draw[gray!60!black] ({4.45+\e-3},-1.72) -- ({4.45+\e-3},-1.66);
+  \node[below,font=\scriptsize] at ({4.45+\e-3},-1.72) {$10^{\e}$};}
+\end{tikzpicture}
+\caption{按表~\ref{tab:types} 的估计，各类神经元在脑中所占的比例。圆几乎全被 \nt{GLUT} 占满；\nt{GABA} 是一个窄扇区，其余所有类型合起来只是边界上的一根细线。右侧把这根细线放大，按神经元数的对数坐标画出；\nt{GLYC} 的柱子画到 $10^6$--$10^7$ 区间的中点，横线段表示整个区间。\nt{ASPA} 没有估计值，图中未画出。}
+\label{fig:typepie}
+\end{table}
+
+这几堆的大小相差多悬殊，看图~\ref{fig:typepie} 就知道：每一千个神经元中，$964$ 个是 \nt{GLUT}，$36$ 个是 \nt{GABA}，其余所有类型加起来每十万个神经元中只有约六个。
+
+GABA 的缩写本来就是四个字母。那些几乎从不充当主要递质的物质——神经肽、气体、脂类、嘌呤——不单独编码；它们在附录~\ref{sec:othermediators} 中介绍。命题~\ref{prop:dale} 中的“几乎”二字很重要。许多神经元在释放主要递质的同时还释放辅助物质~\cite{Yao2023}。有些还释放第二种快速递质，甚至符号相反：一部分 \nt{DOPA} 神经元同时释放 GABA~\cite{Tritsch2012}。还有些神经元在同一输出的不同分支上释放不同的递质~\cite{Zhang2015}。这些都有测量依据，所以“一个神经元，一种递质”是有例外的规则，而不是定律。但作为第一级划分，它经得起检验：在小鼠脑细胞图谱中，神经元按其表达的基因被分成五千多个群，而大类的划分仍然首先取决于主要递质~\cite{Yao2023}。
+
+这条规则有一个推论，它立刻把大脑和人工神经网络区分开。在人工网络中，同一个神经元可以对一个接收者有正权重、对另一个有负权重：权重 $w_{ij}$ 只是矩阵里的数。在大脑中，作用的符号主要由递质决定，而一个神经元只有一种递质。所以，如果神经元 $j$ 兴奋某一个接收者，它也兴奋所有其他接收者。从神经元 $j$ 出发的整个权重矩阵\emph{列}都是同一符号：
+\begin{empheq}[box=\keybox]{equation}
+\operatorname{sign} w_{ij} \;=\; s_j \quad\text{对所有接收者 } i, \qquad s_j\in\{+1,-1\}.
+\label{eq:dalesign}
+\end{empheq}
+神经元分为兴奋性（$s_j=+1$）和抑制性（$s_j=-1$），这是神经元本身的属性，而不是连接的属性。如果网络需要从兴奋性神经元出发的负连接，就只能通过中介来实现：兴奋性神经元兴奋一个抑制性神经元，后者再抑制目标。这就是延迟一级的负权重。
+
+已知的神经递质有一百多种，但大脑的几乎全部工作都靠其中五六种，它们分成两个截然不同的类别。
+
+\section{两条总线：寻址总线与广播总线}
+\label{sec:buses}
+
+计算机网络中投递消息有两种方式。第一种是\emph{寻址}方式（unicast，单播）：数据包从一个发送者送到特定的接收者，速度快，别人看不到。第二种是\emph{广播}（broadcast）：发送者把同一条消息一次发给网络中的所有节点。神经元两种方式都用，而神经递质恰好按这一标准分成两类（图~\ref{fig:phone_radio}）。
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,scale=0.95]
+% ---- unicast: point-to-point wiring
+\node[above] at (2.0,3.3) {\small \textbf{寻址总线}：谷氨酸和 GABA};
+\foreach \i in {0,...,4}{
+  \fill[blue!60!black] (0.2+0.9*\i,2.5) circle (0.1);
+  \fill[blue!60!black] (0.2+0.9*\i,0.6) circle (0.1);}
+\foreach \a/\b in {0/0,0/1,1/1,1/3,2/2,3/2,3/4,4/4,2/0}{
+  \draw[->,blue!60!black] (0.2+0.9*\a,2.38) -- (0.2+0.9*\b,0.72);}
+\fill[red!70!black] (1.1,1.55) circle (0.09);
+\pic[scale=1.2] at (1.75,1.9) {letter};
+\draw[->,red!70!black,thick] (1.1,1.55) -- (0.28,0.7);
+\draw[->,red!70!black,thick] (1.1,1.55) -- (1.95,0.72);
+\node[align=center,below] at (2.0,0.2) {\small 数十亿个神经元，\\[-2pt]\small 各有各的收件人，\\[-2pt]\small 时间：毫秒};
+% ---- broadcast: one small source, global targets
+\begin{scope}[xshift=7.2cm]
+\node[above] at (1.8,3.3) {\small \textbf{广播总线}：多巴胺，\dots};
+\foreach \i in {0,...,8}{\fill[blue!60!black] (-0.2+0.5*\i,2.75) circle (0.08);}
+\fill[orange!85!black] (1.8,0.35) ellipse (0.35 and 0.18);
+\pic[scale=1.5] at (2.7,0.75) {mast};
+\foreach \x in {-0.2,0.3,0.8,1.3,1.8,2.3,2.8,3.3,3.8}{
+  \draw[->,orange!85!black] (1.8,0.5) .. controls (1.8,1.3) and (\x,1.6) .. (\x,2.62);}
+\node[align=center,below] at (1.8,0.1) {\small 数千至数十万个神经元，\\[-2pt]\small 同一条消息发给所有人，\\[-2pt]\small 时间：数百毫秒乃至更长};
+\end{scope}
+\end{tikzpicture}
+\caption{两种传输方式。左：寻址总线，像信封上写着地址的邮件；红色标出一个神经元及其两个接收者。右：广播总线，像电台：一小群源神经元，所有人收到同一条消息。}
+\label{fig:phone_radio}
+\end{figure}
+
+\emph{寻址总线}就是谷氨酸和 GABA。绝大多数神经元释放的都是它们。每个输出通向特定的细胞，递质只在接触处的狭窄缝隙内起作用，而且作用很快：一毫秒内打开接收者的离子通道，几毫秒内一切结束。这是\emph{数据}总线：大脑计算的内容就在这条总线上传送。
+
+\emph{广播总线}是多巴胺、血清素、去甲肾上腺素，部分也包括乙酰胆碱。释放它们的是极小的神经元群，但每个神经元的输出分支都铺得极广。递质往往不释放到狭窄缝隙里，而是释放到细胞间隙中，在那里扩散开，作用于附近所有细胞。作用很慢：它不直接打开通道，而是在接收者内部启动一串化学反应。这条总线传送的不是数据，而是大片网络共用的\emph{控制参数}，它们改变网络的工作模式：增益、学习速率、“刚才做得好”的信号。因此这类递质被称为\emph{调质}（modulator）。长期以来人们认为，每个这样的通道就是全脑一个数。现代测量修正了这一图景：通道不是一根导线，而是一小束并行线路。同一种递质的源神经元分成若干子系统，各有自己的接收者和自己的消息，而在局部释放多少递质，还要由局部信号来调节~\cite{Ren2018,Poe2020}。这类线路的数目是几条或几十条，而不是几十亿条，所以通道仍然是广播式的。
+
+如果本章你只想记住一幅图，那就是这一幅：大脑是一张以寻址方式传送数据的巨大网络，上方悬着几条传送控制信号的广播通道。程序员会认出熟悉的结构：计算，加上一小组控制变量，每个变量由一大片网络共用。
+
+\section{\nt{GLUT}：正权重}
+
+谷氨酸是大脑中主要的兴奋性递质。当一个神经元的输出释放谷氨酸时，接收者的通道打开，钠离子流入，接收者的膜电压升高，它发出自己的脉冲的机会增大。用图~\ref{fig:blackbox} 的语言说，这是一个\emph{正}权重的输入，$w_i>0$。
+
+谁释放谷氨酸？几乎所有远距离传送数据的神经元：皮层中四分之三到五分之四的神经元，以及连接不同脑区的大多数神经元。大脑的网络首先是一张谷氨酸连接的网络。
+
+一个工程细节。释放之后，缝隙中的谷氨酸浓度猛增数千倍，达到约一毫摩尔，然后以约一毫秒的时间常数下降~\cite{Clements1992}：谷氨酸从缝隙中扩散出去，专门的转运蛋白泵再把它回收进细胞。为什么要这样？道理和通信线路中每个符号之后把信号归零一样。如果不清除递质，下一个脉冲就会落在“占线”的线路上，间隔几毫秒的脉冲就会粘连在一起。
+
+\section{\nt{GABA}：负权重}
+
+设想一个所有权重都为正的网络。如果平均每个脉冲引发不止一个后续脉冲，活动就会指数增长，几步之后席卷整个网络。电子工程师会认出这是增益大于一的正反馈环：电路进入饱和。为避免这种情况，需要负权重。负权重的主要来源是 $\gamma$-氨基丁酸，缩写为 GABA。
+
+GABA 在接收者上打开允许氯离子通过的通道。氯的平衡电位位于静息电位附近或略低，因此打开的氯通道把膜电压钳在静息附近，不让它升到阈值。这是一个\emph{负}权重的输入，$w_i<0$。皮层中五分之一到四分之一的神经元是 GABA 能神经元~\cite{Hendry1987}。它们的输出很短，抑制的是最近的邻居。
+
+大脑中的抑制远不止做减法。它是负反馈，把整个网络维持在工作点上。一般认为，在正常工作的皮层中，到达神经元的兴奋性电流和抑制性电流几乎精确地相互抵消：这种工作状态由理论预言~\cite{vanVreeswijk1996}，也在活体皮层的电流测量中观察到~\cite{Haider2006}，神经元始终停在阈值附近。在不稳定点附近用强负反馈稳定下来的电路，对小信号反应既快又灵敏——这是一个古老的工程手法。
+
+\section{\nt{DOPA}：误差信号}
+
+第一条广播通道是多巴胺。人的多巴胺神经元约有五十万个，大约每十七万个神经元中有一个；这是在它们两群中的主要一群里数出来的~\cite{Pakkenberg1991}，所以是下限。它们的输出通向负责选择行动的脑区。
+
+这条通道传送什么？答案来自这样的实验：在动物获得奖励时记录多巴胺神经元的脉冲~\cite{Schultz1997}。不时出其不意地给动物一滴果汁，多巴胺神经元就以一个短的簇放电作出反应。接着在给果汁之前先点亮一盏灯，总是提前一秒。动物学会这一关联后，神经元改为对\emph{灯}发出簇放电，而对准时到来的果汁本身完全没有反应。如果灯亮了却不给果汁，那么在果汁本该到来的时刻，神经元\emph{安静下来}，放电频率降到平常水平以下。
+
+能解释这三种情况的规则是（图~\ref{fig:rpe}）：神经元报告的不是结果有多好，而是结果\emph{比预期好多少或差多少}。
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=3.4cm,y=1cm]
+\foreach \y/\lab in {2.8/{意外的果汁},1.4/{灯后的果汁},0/{灯亮但没有果汁}}{
+  \draw[gray!70!black] (0,\y) -- (3,\y);
+  \draw[densely dotted,gray!60!black] (0,\y+0.3) -- (3,\y+0.3);
+  \node[left,align=right,font=\small] at (-0.03,\y+0.35) {\lab};}
+% row 1: juice without a cue -> burst at the juice
+\draw[very thick,orange!85!black] plot[domain=0:3,samples=120] (\x,{2.8+0.3+0.75*exp(-((\x-2.08)/0.07)^2)});
+\pic[scale=0.8] at (2,2.58) {juice};
+% row 2: cue then juice -> burst at the cue, nothing at the juice
+\draw[very thick,orange!85!black] plot[domain=0:3,samples=120] (\x,{1.4+0.3+0.75*exp(-((\x-1.08)/0.07)^2)});
+\pic[scale=0.85] at (1,1.15) {lamp}; \pic[scale=0.85] at (2,1.15) {juice};
+% row 3: cue, juice omitted -> burst at the cue, dip when the juice was due
+\draw[very thick,orange!85!black] plot[domain=0:3,samples=120] (\x,{0.3+0.75*exp(-((\x-1.08)/0.07)^2)-0.28*exp(-((\x-2.1)/0.12)^2)});
+\pic[scale=0.85] at (1,-0.25) {lamp}; \pic[scale=0.85] at (2,-0.25) {nojuice};
+\node[right,font=\scriptsize] at (2.36,0.1) {下陷};
+\node[right,font=\scriptsize] at (2.13,3.75) {惊喜！};
+\node[left,font=\scriptsize] at (0.97,2.25) {对灯的爆发};
+\node[above,font=\scriptsize] at (2,1.75) {没有反应};
+\draw[->,gray!70!black] (0,-0.75) -- (3.05,-0.75) node[right,black,font=\small] {$t$};
+\draw[gray!60!black] (1,-0.8) -- (1,-0.7) node[below=2pt,font=\scriptsize] {灯，$1\,\text{s}$};
+\draw[gray!60!black] (2,-0.8) -- (2,-0.7) node[below=2pt,font=\scriptsize] {果汁，$2\,\text{s}$};
+\end{tikzpicture}
+\caption{三个实验中 \nt{DOPA} 神经元的放电频率（示意图，据~\cite{Schultz1997}）。虚线是平稳的背景频率。灯是提示信号，液滴是果汁，打叉的液滴是许诺了却没给的果汁。响应就是预测误差~\eqref{eq:rpe}。}
+\label{fig:rpe}
+\end{figure}
+
+熟悉强化学习的程序员~\cite{SuttonBarto2018}会立刻认出这个量。学习选择行动的智能体保存一个估计 $V(s)$：处于状态 $s$ 时预期能得到多少奖励。每走一步，它就把预期和实际所得进行比较：
+\begin{empheq}[box=\keybox]{equation}
+\delta_t \;=\; r_t \;+\; \gamma\,V(s_{t+1}) \;-\; V(s_t) ,
+\label{eq:rpe}
+\end{empheq}
+并修正估计：$V(s_t)\leftarrow V(s_t)+\alpha\,\delta_t$。这里 $r_t$ 是得到的奖励，$\gamma<1$ 是折扣因子（未来的奖励比眼前的奖励便宜多少），$\alpha$ 是学习速率。量 $\delta_t$ 称为\emph{时间差分误差}。
+
+它的行为和多巴胺神经元完全一致。意外的果汁：$V$ 还是零，$r>0$，$\delta>0$。学会之后的果汁：奖励已由灯预告，果汁之前的 $V(s_t)$ 已等于 $r$，于是 $\delta=0$。果汁没来：$V(s_t)=r$，而 $r_t=0$，$\delta<0$。爆发之所以移到灯上，是因为恰恰在灯亮的那一刻，预期突然跃升：$\gamma V(s_{t+1})-V(s_t)>0$。这里的步 $t,t+1,\dots$ 只是算法上的约定：生物体里并没有这样的节拍，同一个量在连续时间中的形式将在第\ref{sec:dofa}章得到。
+
+所以，多巴胺就是把标量误差信号 $\delta$ 广播给所有需要据此学习的对象。一级近似下，它是全脑一根导线，每一时刻传一个数；这根导线实际上在多大程度上是一束线，将在第\ref{sec:dofaalt}章讨论。
+
+\section{其余的广播通道}
+
+对其余调质，只有一些可用的假说，把它们的作用翻译成同一种全局参数的语言~\cite{Doya2002}。请把它们当作假说看待。
+
+\emph{\nt{NORA}，去甲肾上腺素：增益。}去甲肾上腺素神经元比多巴胺神经元还少，粗略估计有几万个，而它们的输出几乎遍布全脑。每当发生意外或重要的事情，它们就骤然激活。去甲肾上腺素改变接收神经元传递特性的陡度：弱输入变得更弱，强输入变得更强。测量的结果是：接收者的背景脉冲比它对输入的响应被抑制得更厉害，信噪比上升~\cite{Foote1975NE}。在简单模型中用一个数来描述：如果神经元对输入电流 $u$ 的响应频率为 $f=F\bigl(g\cdot u\bigr)$，那么去甲肾上腺素增大系数 $g$~\cite{AstonJones2005}（详见第\ref{sec:nora}章）。$g$ 大时网络工作得“反差鲜明”，决策更快；$g$ 小时则“模糊”，更多地尝试各种可能，就像处于探索模式的强化学习智能体。
+
+\emph{\nt{ACET}，乙酰胆碱：学习速率。}乙酰胆碱控制网络在多大程度上听取当前输入，又在多大程度上依赖自身存储的数据。乙酰胆碱水平高时，来自感官的输入被加强，内部“回忆”连接被削弱，同时权重也更容易改变~\cite{Hasselmo2006}。粗略地说，它是一个“写入/读取”开关，也连带决定学习速率 $\alpha$。
+
+\emph{\nt{SERO}，血清素：规划的时间跨度。}血清素传送什么，人们了解得最少。一种假说把它与~\eqref{eq:rpe} 中的折扣因子 $\gamma$ 联系起来：血清素水平高，对应于愿意等待大的奖励，而不是马上抓住小的奖励。血清素神经元放电平稳而缓慢，清醒时每秒几个脉冲，在睡眠的某一阶段几乎完全沉默~\cite{JacobsAzmitia1992}。
+
+六种递质汇总在表~\ref{tab:transmitters} 中。
+
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{>{\raggedright}p{2.4cm}>{\raggedright}p{3.0cm}>{\raggedright}p{2.0cm}>{\raggedright\arraybackslash}p{5.2cm}}
+\toprule
+神经元类型 & 神经元比例 & 总线 & 在计算中的作用 \\
+\midrule
+\nt{GLUT}（谷氨酸） & 大多数 & 寻址 & 正权重，$w>0$ \\
+\nt{GABA}（GABA） & 皮层中 20--25\% & 寻址 & 负权重，$w<0$；稳定 \\
+\nt{DOPA}（多巴胺） & $\sim 6\cdot10^{-6}$ & 广播 & 预测误差 $\delta$ \\
+\nt{NORA}（去甲肾上腺素） & $\sim 6\cdot10^{-7}$ & 广播 & 增益 $g$（假说） \\
+\nt{ACET}（乙酰胆碱） & 很小 & 两者 & 学习速率 $\alpha$；“写入/读取”（假说） \\
+\nt{SERO}（血清素） & $\sim 3\cdot10^{-6}$ & 广播 & 折扣 $\gamma$（假说） \\
+\bottomrule
+\end{tabular}
+\caption{用计算语言描述的大脑主要神经递质。右列是大幅简化：对谷氨酸、GABA 和多巴胺是可靠的，对其余递质只是假说。}
+\label{tab:transmitters}
+\end{table}
+
+\section{符号由接收者决定}
+\label{sec:receiver}
+
+前面说“谷氨酸是正权重，GABA 是负权重”，我稍微骗了你们一下。没有哪种分子本身带着符号。分子只是一把钥匙。它被捕获之后会发生什么，由\emph{锁}决定，也就是接收细胞上的受体。
+
+最好的例子是多巴胺。它的受体有两个家族~\cite{Beaulieu2011}。在一类受体上，它使细胞更容易兴奋；在另一类上，则使细胞更难兴奋。在负责选择行动的脑区，一些神经元带第一类受体，另一些带第二类，于是同一个多巴胺信号同时加强一群神经元、削弱另一群。这就像同一个广播数据包，被网络中不同节点作出不同的解读。
+
+\begin{keyblock}
+\begin{proposition}[消息的含义由接收者决定]
+\label{prop:receptor}
+神经递质作用的符号和速度不是由递质本身决定的，而是由与之结合的受体决定的。受体分两类。\emph{离子型}受体本身就是离子通道，在不到一毫秒内打开：这是对电流的直接控制，就像晶体管的栅极。\emph{代谢型}受体在细胞内启动一串化学反应，作用需要数百毫秒乃至更长：这更像是写入一个设置寄存器，改变细胞此后的工作方式。寻址总线主要通过前者传话，广播总线主要通过后者。
+\end{proposition}
+\end{keyblock}
+
+那为什么还能说“谷氨酸起兴奋作用”？因为实际遇到的谷氨酸受体几乎都是兴奋性的，而 GABA 受体几乎都是抑制性的。这不是自然定律，而是一条非常可靠的惯例，规则~\eqref{eq:dalesign} 正是建立在它的基础上。
+
+\section{要点}
+
+绝大多数神经元构成寻址数据总线，每个神经元的权重符号相同；极少数神经元构成广播通道，向大片脑区传送少数几个共用的控制信号。每十万个神经元中大约只有两个属于后者，而其余整个网络如何学习、在何种模式下工作，却取决于它们。对工程师来说这并不奇怪：任何计算机中，控制寄存器都比存储单元少得不可比拟，可是没有它们，机器就无法运转。
+
+下一章我们来检验：一个只由 \nt{GLUT} 神经元（数量最多的类型）组成、不依赖任何全局节拍的网络，能计算什么。
+
+\section{习题}
+
+\begin{exercise}[\lvlA]
+\label{ex:01:1}
+\emph{几堆与几根线。}根据表~\ref{tab:types}（取区间在对数坐标上的中点；\nt{ACET} 取 $10^5$ 个输出）：(a)~如果一个神经元是一个人，\nt{GLUT} 神经元相当于几个地球人口？全部广播神经元相当于多大的城市？(b)~\nt{DOPA}、\nt{SERO}、\nt{NORA}、\nt{ACET} 在末梢中所占的比例是它们在神经元中所占比例的多少倍？
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:01:2}
+\emph{归零。}缝隙中的谷氨酸按 $c_0e^{-t/\tau_c}$ 下降，$c_0=1\mM$，$\tau_c=1\ms$；接收者能察觉高于 $10\,\mu$M 的浓度。(a)~一次释放后线路“占线”多长时间？(b)~转运泵被部分阻断，$\tau_c=10\ms$。释放频率最高到多少，线路仍来得及空出来？
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:01:3}
+\emph{爆发移到哪里。}在图~\ref{fig:rpe} 的实验中，灯亮之后依次经过状态 $s_0\to\dots\to s_{K-1}$，步长为 $\Delta$，$T=K\Delta$；奖励 $r$ 在最后一次转移时到来，灯亮的时刻不可预测。求学会后的 $V(s_k)$ 以及对灯的响应 $\delta$。令 $\gamma=e^{-\Delta/\tau_\gamma}$，求 $T=1$~s、$\Delta=0.1$~s、$\gamma=0.95$ 时的 $\tau_\gamma$。
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:01:4}
+\emph{建模：由误差学习。}对习题~\ref{ex:01:3} 的状态链进行模拟，$K=10$，$\gamma=0.95$，$r=1$，规则为 $V(s_t)\leftarrow V(s_t)+\alpha\delta_t$。当 $\alpha=0.05$、$0.1$、$0.2$、$0.5$ 时，对灯的响应在第几次试验 $n^*$ 首次超过对果汁的响应？$n^*$ 如何依赖于 $\alpha$？
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:01:5}
+\emph{设计：分发一个数。}要把数 $\delta$ 送到全部 $10^{10}$ 个神经元；每个接收者（包括中继神经元）都必须从上一层得到 $10$ 个末梢，每一级增加 $1\ms$。当每个神经元有 $10^4$ 个输出（\nt{GLUT}）和 $10^{5.5}$ 个输出（\nt{DOPA}）时，最经济的中继树需要多少神经元、多少级？
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:01:6}
+\emph{平衡为何灵敏。}网络中 $80\,\%$ 是 \nt{GLUT}，$20\,\%$ 是 \nt{GABA}，全连接，权重为 $J_E/N$ 和 $-J_I/N$；$\tau\dot r=-r+Wr+h$。当 $J_E=10$ 时，$W$ 唯一的非零特征值为 $0.5$。求抑制电流与兴奋电流之比，以及抑制只要减弱百分之几网络就会进入雪崩。
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:01:7}
+\emph{研究：\nt{SERO} 就是 $\gamma$ 吗？}由习题~\ref{ex:01:3}，\nt{DOPA} 神经元对灯的响应等于 $re^{-T/\tau_\gamma}$。延迟 $T=1,\dots,5$~s，每个延迟呈现 $n$ 次，$\ln\delta$ 的测量散布为 $0.5$。要区分 $\tau_\gamma=2$~s 和 $2.4$~s（显著性水平 $0.05$，检验功效 $0.8$），需要多大的 $n$？除了 $\gamma$，还有什么机制会给出同样的随 $T$ 衰减？
+\end{exercise}

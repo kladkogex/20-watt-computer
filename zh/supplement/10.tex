@@ -1,0 +1,29 @@
+\section{第~\ref{sec:synthesis}~章　整台机器}
+
+作为汇总的这一章不引入新的实验：表中每一行都依托于详细讨论该命题的那一章，以及同样的文献；\nt{GLUT}总线和经由\nt{GABA}的数据流控制已经确立，而各广播通道的角色及其协同工作主要还是假说。
+
+{\footnotesize
+\setlength{\tabcolsep}{3pt}\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{>{\raggedright}p{0.5cm}>{\raggedright}p{4.0cm}>{\raggedright}p{5.6cm}>{\raggedright}p{2.3cm}>{\raggedright\arraybackslash}p{1.7cm}}
+\toprule
+序号 & 命题 & 实验及测量内容 & 文献 & 状态 \\
+\midrule\endfirsthead
+\toprule
+序号 & 命题 & 实验及测量内容 & 文献 & 状态 \\
+\midrule\endhead
+1 & $8.6\cdot10^{10}$个神经元只对应四类控制信号~\eqref{eq:machine} & 在脑匀浆中计数细胞核（各向同性分离法）：成年男性有$(86.1\pm8.1)\cdot10^9$个神经元 & \cite{Azevedo2009} & 已测量 \\
+2 & 命题~\ref{prop:architecture}的前两层：数据沿\nt{GLUT}寻址总线传送，连接的符号由发送端决定，数据流由\nt{GABA}神经元引导和归一化（第~\ref{sec:neurontypes}、\ref{sec:gaba}~章） & 每个神经元一种主要递质（测量综述）；前馈抑制缩窄锥体神经元整合输入的时间窗；除以总活动的归一化在许多脑区都已测到 & \cite{Strata1999,Pouille2001,Carandini2012} & 已测量 \\
+3 & 元件不可靠：突触丢失大部分脉冲（表~\ref{tab:computer}，第~\ref{sec:code}~章） & 海马切片，最小刺激：一半以上的脉冲在CA1不引起反应；排除了阈值失败和轴突传导失败，原因是递质释放的随机性 & \cite{AllenStevens1994} & 已测量 \\
+4 & 大脑以$\sim20$瓦工作，平均每个神经元每秒约一个脉冲（第~\ref{sec:code}~章）；工程师尚未造出这样的机器 & 由实测能耗得出估计~\eqref{eq:energy}：每个脉冲连同突触工作约耗$10^9$个ATP分子（啮齿类皮层）；对皮层的细致估计给出更低的频率。技术现状依据综述 & \cite{Attwell2001,Lennie2003,MehonicKenyon2022} & 理论 \\
+5 & 大多数突触的学习是局部资格迹与一个公共数$\delta$的乘积（式~\eqref{eq:machine}第二个方程，第~\ref{sec:dofa}~章） & 猴的\nt{DOPA}神经元对奖励预测误差作出反应；在纹状体切片中，只有当多巴胺在谷氨酸输入之后$0.3$--$2$\,s到达时，树突棘才会增大——资格迹已被测到 & \cite{Schultz1997,Yagishita2014} & 已测量 \\
+6 & 只有动作学习回路才有通往每个输出的单独误差导线（第~\ref{sec:motorlearning}~章） & 小脑：攀缘纤维信号与某一输入同时出现会削弱该输入；在猴身上，浦肯野细胞的复合脉冲携带动作误差的方向并引起校正 & \cite{Ito2001,Herzfeld2018} & 已测量 \\
+7 & 每条广播通道都是由几条线路组成的线束（命题~\ref{prop:bundle}） & 对\nt{DOPA}：同一任务中不同神经元分别携带奖励、运动和刺激特征；快速误差与慢速多巴胺水平各不相同。对\nt{SERO}、\nt{NORA}、\nt{ACET}，这种分解研究得较少 & \cite{Engelhard2019,Hamid2016,Mohebi2019} & 已测量 \\
+8 & \nt{SERO}：水平调节器，按照假说还设定时间范围$\tau_\gamma$（第~\ref{sec:serocomputer}~章） & 自抑制：自身5-HT$_{1A}$受体的激动剂抑制中缝核血清素神经元——已测量。时间范围由理论提出；最有力的实验是在小鼠中光遗传激活这些神经元，延长了对延迟奖励的等待 & \cite{Sprouse1987,Doya2002,Miyazaki2014} & 假说 \\
+9 & \nt{NORA}：增益$g$在探索与决断之间选择（第~\ref{sec:nora}~章） & 信噪比提高：在清醒猴的听觉皮层中，去甲肾上腺素对背景活动的抑制强于对同类叫声反应的抑制——已测量；乘性增益是模型；在探索与决断之间的选择作用是理论 & \cite{Foote1975NE,ServanSchreiber1990,AstonJones2005} & 假说 \\
+10 & \nt{ACET}：切换写入和读取（第~\ref{sec:acet}~章） & 三种作用（削弱内部连接、增强输入、促进可塑性）已测量；模式切换得到人类东莨菪碱实验的间接支持 & \cite{HasselmoBower1992,Gil1997,Atri2004} & 假说 \\
+11 & 公式~\eqref{eq:machine}描述整台机器 & 这是第~\ref{sec:glutcomputer}--\ref{sec:acet}~章各模型的汇总，每一部分都依托于各自的章节；作为整体未经实验检验 & 本章推导 & 假说 \\
+12 & 旋钮在没有统一控制的情况下协同工作：误差、意外、写入、复原（图~\ref{fig:timeline}） & 没有实验：示意图是定性的。单个环节有依据：\nt{NORA}与\nt{ACET}分工的理论，以及人类瞳孔与学习速度的关联 & \cite{YuDayan2005,Nassar2012} & 假说 \\
+13 & 按一个公共信号学习时，影响结果的神经元越多，学得越慢（命题~\ref{prop:broadcastcost}） & 线性网络学习曲线的计算：按输出扰动学习比梯度下降慢，慢的倍数等于输出的个数 & \cite{Werfel2005} & 理论 \\
+14 & 皮层如何调整多层回路尚不清楚；候选机制有簇放电、神经元分支中的计算、预测式自监督学习 & 簇放电作为误差载体——模型；只有$5$--$8$层的网络才能复现皮层神经元细致模型的响应——模型；人类皮层神经元分支中产生异或的钙脉冲——在切片中已测量；自监督学习——证据综述 & \cite{Payeur2021,Beniaguev2021,Gidon2020,Keller2018} & 假说 \\
+\bottomrule
+\end{longtable}}

@@ -1,0 +1,46 @@
+\chapter{Substances That Do Not Define a Neuron Type}
+\label{sec:othermediators}
+
+In chapter~\ref{sec:neurontypes} we sorted neurons by their primary transmitter and obtained ten types (table~\ref{tab:types}). Now it is time to add complications. A neuron releases more than its primary transmitter, and besides the primary transmitters other substances also work in the brain. They change how the network transmits and stores signals.
+
+Besides the address and broadcast buses (section~\ref{sec:buses}) there is a third one: a \emph{back channel}. Several substances are released not by the sender but by the \emph{receiver}; they travel back across the cleft to the sender's output and change how much transmitter the sender will release next time. In communication networks this resembles an acknowledgment of receipt that the sender uses to tune its transmission. This is precisely the channel neurons use when they change the weights of their connections: through it the sender's output learns about the receiver's activity, that is, about the second factor of the learning rules of chapter~\ref{sec:dofa}.
+
+The full list of known transmitters is long: more than a hundred substances, most of them short protein chains, the neuropeptides. But all of them fall into a few classes, and within each class the substances behave similarly. The substances that are never a primary transmitter are collected in table~\ref{tab:othermediators}, with the same three questions an engineer would ask: which bus carries the signal, does it act quickly, and what is its usual sign. They do not define the neuron type: they are released together with the primary transmitter, or released by cells other than neurons, or they travel in the reverse direction.
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.12}
+\begin{tabular}{>{\raggedright}p{2.25cm}>{\raggedright}p{2.8cm}>{\raggedright}p{1.8cm}>{\raggedright}p{1.5cm}>{\centering}p{0.8cm}>{\raggedright\arraybackslash}p{4.3cm}}
+\toprule
+Class & Substance & Bus & Speed & Sign & Role in computation \\
+\midrule
+Amino acids & D-serine & local & slow & AND & second key for the glutamate receptor: an ``AND'' condition \\
+\midrule
+Monoamines & trace amines & broadcast & slow & $\pm$ & fine-tuning of the monoamine channels \\
+\midrule
+\multirow{2}{2.25cm}{Purines}
+ & ATP & address & fast and slow & $+$ & co-transmitter; signal between neurons and glia \\
+ & adenosine & volume & slow & $-$ & accumulates with activity: a load counter~\cite{Dunwiddie2001} \\
+\midrule
+\multirow{8}{2.25cm}{Neuropeptides (more than a hundred)}
+ & enkephalins, endorphins, dynorphin & volume & slow & $-$ & suppression of transmission \\
+ & substance P & volume & slow & $+$ & slow amplification \\
+ & neuropeptide Y & volume & slow & $-$ & slow inhibition \\
+ & somatostatin & volume & slow & $-$ & slow inhibition, co-released with GABA \\
+ & vasoactive intestinal peptide (VIP) & volume & slow & $+$ & disinhibition: inhibition of inhibitory neurons \\
+ & cholecystokinin & volume & slow & $\pm$ & co-released with GABA in some inhibitory neurons \\
+ & orexin & broadcast & slow & $+$ & stabilizer of the waking state \\
+ & oxytocin, vasopressin & broadcast & slow & $\pm$ & global behavioral settings \\
+\midrule
+\multirow{2}{2.25cm}{Gases}
+ & nitric oxide NO & back, volume & slow & $\pm$ & passes through membranes; back signal during weight changes~\cite{Garthwaite2008} \\
+ & CO, H$_2$S & volume & slow & $\pm$ & role little studied \\
+\midrule
+Lipids & endocannabinoids (anandamide, 2-AG) & back & slow & $-$ & the receiver reduces the sender's release: weight feedback~\cite{WilsonNicoll2001} \\
+\bottomrule
+\end{tabular}
+\caption{Substances that do not define a neuron type. \emph{Bus}, \emph{speed}, and \emph{sign} are as in table~\ref{tab:types}; in addition, a volume bus means the transmitter spreads through the extracellular space around the release site, a back bus means it travels from the receiver back to the sender, and a local bus means it acts near the release site. ``AND'' is an enabling signal: by itself it produces no current, but without it another input does not fire, like the second input of an AND gate. Neuropeptides are almost always released together with the primary transmitter, and mostly at high spike rates~\cite{vandenPol2012}.}
+\label{tab:othermediators}
+\end{table}

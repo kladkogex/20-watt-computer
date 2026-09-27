@@ -1,0 +1,352 @@
+\chapter{摩尔斯电码：关于 \nt{GLUT} 和 \nt{GABA} 神经元所说的语言，我们知道什么}
+\chaptermark{摩尔斯电码}
+\label{sec:code}
+
+\section{只有一个符号的字母表}
+
+摩尔斯电码有两个符号——点和划，符号之间还有三种长度的停顿。而神经元的字母表更贫乏，正如我们在第\ref{sec:neurontypes}章中看到的：只有一个符号。脉冲持续约一毫秒，同一个神经元的所有脉冲高度和形状都相同。因此全部消息都在停顿里，也就是在时刻序列 $t_1,t_2,t_3,\dots$ 之中。这是一种没有划的电码，意义只由点的节奏承载（图~\ref{fig:morse}）。
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=0.08cm,y=1cm]
+% Morse letter: dot, dash, dot
+\node[left,font=\small] at (-6,2.55) {摩尔斯：};
+\fill[black] (0,2.45) rectangle (6,2.65);
+\fill[black] (14,2.45) rectangle (32,2.65);
+\fill[black] (40,2.45) rectangle (46,2.65);
+\node[right,font=\small,gray!40!black] at (52,2.55) {点、划、点——意义在于时长和停顿};
+% stimulus onset
+\node[left,font=\small] at (-6,0.4) {神经元：};
+\draw[->,thick,green!45!black] (0,-0.55) -- (0,-0.05);
+\node[below,font=\scriptsize,green!45!black] at (0,-0.55) {刺激};
+\draw[gray!70!black] (0,0) -- (152,0) node[right,black] {\small $t$};
+% spikes: single ones blue, the burst red
+\foreach \s in {14,26,41,88,112,131}{\draw[very thick,blue!60!black] (\s,0) -- (\s,0.8);}
+\foreach \s in {60,63,66,69}{\draw[very thick,red!70!black] (\s,0) -- (\s,0.8);}
+% latency
+\draw[<->,thick] (0,1.1) -- node[above,font=\scriptsize] {$t_1$：首个脉冲的时间} (14,1.1);
+% burst
+\draw[decorate,decoration={brace,amplitude=4pt},red!70!black] (58,0.95) -- (71,0.95) node[midway,above=4pt,font=\scriptsize] {簇放电——“划”};
+% counting windows
+\foreach \a/\b/\n in {0/50/3,50/100/5,100/150/2}{
+  \draw[decorate,decoration={brace,amplitude=4pt,mirror},gray!50!black] (\a+1,-0.2) -- (\b-1,-0.2) node[midway,below=4pt,font=\small] {$n=\n$};}
+\node[font=\scriptsize,gray!40!black] at (75,-1.05) {频率编码：每个窗口内的脉冲数 $n$};
+\foreach \x in {0,50,100,150}{\draw[gray!60!black] (\x,-0.06) -- (\x,0.06);}
+\end{tikzpicture}
+\caption{摩尔斯电码与神经元的电码。同一串脉冲可以有不同的读法：数出每 $50\ms$ 窗口内的脉冲数（\ref{sec:rate}~节），测量延迟 $t_1$~\eqref{eq:latency}，或者注意到簇放电——“划”~\eqref{eq:burst}。}
+\label{fig:morse}
+\end{figure}
+
+停顿可以有多长？下限由不应期决定：一个脉冲之后，神经元约一毫秒内不能再次发放，所以每秒不会超过几百个脉冲。上限则没有：神经元可以沉默好几分钟。皮层 \nt{GLUT} 神经元的频率从每秒零点几个到几十个脉冲不等，大多数神经元大部分时间工作在下限附近。
+
+在第\ref{sec:glutcomputer}章和第\ref{sec:gaba}章中，我们顺带采用过这样或那样用脉冲记录数的方式。现在直接发问：\nt{GLUT} 和 \nt{GABA} 神经元彼此用什么语言交谈？完整的答案还没有，这种语言尚未破译。但关于它，有一些事情是确知的，而且几乎所有已知的内容，都可以像通信工程师那样推理出来：信道容量、噪声、接收机、传输代价。
+
+\section{能传多少}
+
+先看上限。设接收者分辨脉冲时刻的精度为 $\Delta t$：小于 $\Delta t$ 的偏移它分辨不出。把时间切成长度为 $\Delta t$ 的格子，格子比不应期短，所以每个格子里要么有一个脉冲，要么没有（图~\ref{fig:cells}）。平均频率为 $r$ 时，脉冲落在某个格子里的概率为 $p=r\Delta t$。当各格子相互独立时，脉冲流携带的信息最多，这时每个格子贡献的熵为 $-p\log_2p-(1-p)\log_2(1-p)$，当 $p\ll1$ 时约等于 $p\log_2(e/p)$ 比特。除以 $\Delta t$，就得到极限传输速率及其摊到每个脉冲上的份额~\cite{MacKay1952}：
+\begin{empheq}[box=\keybox]{equation}
+R_{\max} \;\approx\; r\,\log_2\frac{e}{r\,\Delta t}\ \ \text{bit/s},
+\qquad
+\frac{R_{\max}}{r} \;\approx\; \log_2\frac{e}{r\,\Delta t}\ \ \text{bit/脉冲}.
+\label{eq:spikeentropy}
+\end{empheq}
+当 $r=10$ 个脉冲每秒、$\Delta t=1\ms$ 时，约为每个脉冲八比特、每秒八十比特。
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=0.5cm,y=1cm]
+% time cut into cells of width Delta t; a cell holds one impulse or none
+\foreach \k in {0,...,23}{\draw[gray!55] (\k,0) rectangle (\k+1,0.7);}
+\foreach \k in {2,7,8,15,21}{
+  \fill[red!10] (\k,0) rectangle (\k+1,0.7);
+  \draw[very thick,red!70!black] (\k+0.5,0.05) -- (\k+0.5,0.65);}
+\foreach \k in {0,...,23}{
+  \pgfmathtruncatemacro{\bit}{(\k==2)||(\k==7)||(\k==8)||(\k==15)||(\k==21)}
+  \ifnum\bit=1 \def\bitcol{red!70!black}\else \def\bitcol{gray!60!black}\fi
+  \node[font=\scriptsize,text=\bitcol] at (\k+0.5,-0.25) {\bit};}
+\draw[<->,gray!60!black] (0,0.95) -- (1,0.95) node[midway,above,font=\scriptsize,black] {$\Delta t$};
+\node[font=\small,anchor=east] at (-0.3,0.35) {脉冲};
+\node[font=\small,anchor=east] at (-0.3,-0.25) {比特};
+\draw[decorate,decoration={brace,amplitude=5pt,mirror},gray!60!black] (0,-0.55) -- (24,-0.55)
+  node[midway,below=6pt,font=\scriptsize,black,align=center] {只会计数的接收者：“$n=5$”；\\ 能看见格子的接收者：$24$ 格中具体是哪 $5$ 格——这是 $\log_2\binom{24}{5}\approx15$ 比特};
+\end{tikzpicture}
+\caption{容量~\eqref{eq:spikeentropy} 从何而来。时间被切成长度为 $\Delta t$ 的格子，每个格子里要么有脉冲（$1$），要么没有（$0$）：脉冲流就是一个二进制串。脉冲落入一个格子的概率为 $p=r\Delta t$。格子越细，串越长，比特越多；脉冲计数器几乎丢掉了“1 \emph{在哪里}”所记录的全部信息。}
+\label{fig:cells}
+\end{figure}
+
+每个脉冲的比特数只以对数方式依赖于时间精度：精度为 $10\ms$ 时，每个脉冲仍有约五比特。但如果接收者只数每秒的脉冲数，那么在 $r=10$ 时，它在整整一秒内得到的还不到两比特（\ref{sec:rate}~节）。
+
+\begin{keyblock}
+\begin{proposition}[脉冲信道的容量]
+\label{prop:capacity}
+平均频率为 $r$、以时间精度 $\Delta t$ 读取的脉冲流，携带的信息不超过~\eqref{eq:spikeentropy}。这个容量几乎全部在于脉冲的\emph{时间}：只会计数的接收者从同一脉冲流中提取的信息，比能以毫秒精度分辨脉冲时刻的接收者少几十倍。
+\end{proposition}
+\end{keyblock}
+
+这是上限，不是测量值。在已知刺激的感觉神经元上测得的是每个脉冲一到几比特；最好的情况下可达按其精度计算的上限的一半~\cite{Rieke1997}。可见，至少在神经系统的入口处，脉冲的时间是被利用了的，而不是白白浪费。
+
+\section{有噪声的信道}
+
+容量~\eqref{eq:spikeentropy} 是在无噪声的条件下算出的。关于噪声产生在哪里，有三个确知的事实。
+
+\emph{脉冲发生器本身是精确的。}把皮层神经元连同一小块组织从脑中取出，反复给它注入同一个随时间快速变化的电流，脉冲以约一毫秒的精度重复出现~\cite{Mainen1995}。如果电流恒定，脉冲时刻每次都会漂移开来：产生精确时间的是输入的快速跳变，而不是神经元本身。
+
+\emph{突触不可靠。}到达 \nt{GLUT} 突触的脉冲只以一定概率 $p$ 释放一份递质。在海马突触上，一半以上的脉冲根本到不了接收者，原因正是释放的随机性，而不是传导故障~\cite{AllenStevens1994}。对通信工程师来说，这是删除信道；两个神经元之间有多个突触，能部分挽回局面。
+
+\emph{在活体皮层中，脉冲流看起来是随机的。}脉冲间隔的散布与随机泊松流大致相同；重复同一刺激时，窗口内脉冲数的变化使其方差接近均值~\cite{Softky1993}。
+
+精确的元件怎么会产生随机的脉冲流？神经元接收数千个输入，每个都不可靠，而兴奋和抑制像第\ref{sec:gaba}章那样相互平衡。膜电压在阈值附近抖动，脉冲时刻由这些抖动决定。这是噪声，还是我们不会读的消息——在很大程度上仍是悬而未决的问题。一部分“噪声”已经被证明是消息：在视皮层中，相当大一部分散布跟随动物自身的运动~\cite{Stringer2019}。这里的困难是原则性的：压缩得好的消息，在不知道编码的人看来与随机流无法区分。
+
+\section{频率：慢，但可靠}
+\label{sec:rate}
+
+最简单的编码是\emph{频率编码}：数记录在神经元在窗口 $T$ 内发出多少个脉冲之中。删除和时刻抖动都伤不到这种编码。但它有代价。如果脉冲流是泊松流，窗口内的脉冲数 $n$ 的均值为 $rT$，散布为 $\sqrt{rT}$：
+\begin{empheq}[box=\keybox]{equation}
+\frac{\sigma_n}{\bar n} \;=\; \frac{1}{\sqrt{r\,T}} .
+\label{eq:rateerror}
+\end{empheq}
+要以百分之十的精度测出频率，需要一百个脉冲，每秒二十个脉冲时就是五秒。相邻电平相隔两个散布左右才可分辨，所以在时间 $T$ 内、频率不超过 $r$ 时，大约只能分辨 $\sqrt{rT}$ 个电平：$r=10$、$T=1\,\text{s}$ 时是三到四个电平，不到两比特。
+大脑不会工作得这么慢。人在一瞥之间就能认出图片上的动物，大脑中的响应大约在 $150\ms$ 后出现~\cite{Thorpe1996}。粗略估计，在这段时间里信号要经过十来级相继的处理，每级 $10$--$20\ms$。按皮层通常的频率，每个神经元在一级处理中只来得及发出零个或一个脉冲，它的频率在这样的窗口里是无定义的。出路有两条：用很多神经元，或者看时间。
+
+\emph{很多神经元。}设 $N$ 个神经元携带同一个数，接收者把它们的脉冲加起来。如果它们的噪声相互独立，\eqref{eq:rateerror} 中的 $rT$ 就换成 $NrT$：一百个神经元在 $r=20$ 时，$15\ms$ 内给出三十个脉冲，精度约百分之二十。空间代替了时间。然而皮层中相邻神经元的噪声并不独立：一对相邻神经元脉冲数的相关系数通常约为 $0.1$~\cite{Zohary1994}。若相关系数为 $c$，$N$ 个神经元平均值的方差为
+\begin{empheq}[box=\keybox]{equation}
+\sigma^2_N \;=\; \sigma^2_1\,\frac{1+(N-1)\,c}{N}
+\;\xrightarrow[N\to\infty]{}\; c\,\sigma^2_1 .
+\label{eq:correlated}
+\end{empheq}
+
+\begin{keyblock}
+\begin{proposition}[平均的极限]
+\label{prop:pooling}
+在噪声相关时，对一群神经元求平均，误差最多只能减小到 $1/\sqrt{c}$ 分之一。$c=0.1$ 时是三分之一，而这个收益在几十个神经元时就已达到；再多加神经元也没有用。
+\end{proposition}
+\end{keyblock}
+
+并非所有相关都同样有害。限制精度的只是共同噪声中\emph{与信号本身相似}的那一部分，即像被测量的变化那样推动整个神经元群的那部分噪声~\cite{MorenoBote2014}。大脑中这样的噪声实际上有多少，仍在研究之中。
+
+利用很多神经元还有另一种方式：把数记录在\emph{哪一个}神经元发放上，就像声源方向检测器那样（图~\ref{fig:itd}）。这是\emph{位置}编码，是已知最可靠的编码：在感觉神经元中，导线的编号告诉我们皮肤的哪一点被触碰、声音的音高是多少，这已被反复证实。它在神经元数目上代价高昂，但速度快：一条消息只需一个延迟。
+
+\section{时间：快，但从何时算起}
+
+第二条出路是把数写进脉冲的时间。取神经元~\eqref{eq:glutneuron}，从时刻 $t=0$ 起给它一个恒定输入，这个输入本可把电压抬到 $U$。电压按 $V=U\bigl(1-e^{-t/\tau}\bigr)$ 上升，在时刻
+\begin{empheq}[box=\keybox]{equation}
+t_1 \;=\; \tau\,\ln\frac{U}{U-\theta}, \qquad U>\theta
+\label{eq:latency}
+\end{empheq}
+达到阈值 $\theta$。强输入，脉冲早；弱输入，脉冲晚；阈下输入，没有脉冲。$\tau=10\ms$ 时，输入 $U=4\theta$ 在 $2.9\ms$ 后给出第一个脉冲，$U=2\theta$ 在 $6.9\ms$ 后，$U=1.2\theta$ 在 $17.9\ms$ 后。仅仅一个脉冲就携带了一个数。
+
+但 $t_1$ 从什么时刻算起？没有公共的计时基准，接收者不知道刺激何时开始。有三种答案。
+
+\emph{相对延迟。}两个神经元看到同一个刺激，它们的延迟差 $t_1^A-t_1^B$ 只取决于各自的输入，与开始时刻无关。比较时刻的是带延迟的符合检测器（图~\ref{fig:itd}）。如果 $N$ 个神经元各发出一个脉冲，它们到达的\emph{顺序}本身就携带多达 $\log_2N!$ 比特：十个神经元约二十二比特，而“发放与否”的答案最多给出十比特。在视网膜中已经证明，根据其输出神经元首个脉冲的相对延迟，可以快速而可靠地重建图像~\cite{Gollisch2008}。
+
+\emph{齐发作为词首。}刺激的突变使大量神经元几乎同时发放。这样的齐发本身就是起点标记，就像摩尔斯电码中词与词之间的长停顿，接收者从它开始计算延迟。
+
+\emph{局部节律。}在第\ref{sec:gaba}章中，\nt{GLUT}--\nt{GABA} 环路产生了周期为 $12$--$50\ms$ 的局部节律。这不是时钟，但在它的一个周期内，输入强的神经元比输入弱的神经元先发放，于是~\eqref{eq:latency} 变成\emph{相位}编码：数记录在脉冲落在周期的哪一段。这种编码已被观察到：负责空间中特定位置的神经元，随着动物穿过“自己的”位置，在慢速局部节律的周期中发放得越来越早~\cite{OKeefe1993}。大脑在多大范围内使用相位，目前还不清楚。
+
+\section{编码由接收者选择}
+
+一串脉冲中既有频率，也有时间，还有顺序。读出其中哪一种，由接收者决定，而且只由一个参数决定——它的时间常数 $\tau$。
+
+对方程~\eqref{eq:glutneuron} 做时间平均。如果神经元收到频率为 $r_j$ 的独立脉冲流，则平均电压及其相对抖动为
+\begin{empheq}[box=\keybox]{equation}
+\bar V \;=\; \tau\sum_j w_j\,r_j ,
+\qquad
+\frac{\sigma_V}{\bar V} \;\approx\; \frac{1}{\sqrt{2\,r_{\text{in}}\,\tau}} ,
+\label{eq:reader}
+\end{empheq}
+其中第二个等式是对相等权重写的，$r_{\text{in}}$ 是全部输入的总频率。$\tau$ 大时，电压几乎不抖动，复现频率的加权和：接收者是\emph{积分器}，它读出频率而忘掉时间。$\tau$ 小时，电压在脉冲之间来得及回落，只有当几个脉冲在窗口~\eqref{eq:window} 内到达时才能达到阈值：接收者是\emph{符合检测器}，它读出时间（图~\ref{fig:reader}）。一千个输入、每个每秒五个脉冲，$\tau=10\ms$ 时抖动约百分之十，几乎是纯粹的积分。如果像第\ref{sec:gaba}章那样，抑制把 $\tau$ 缩短到 $2\ms$，抖动就增大到百分之二十以上，神经元开始注意到符合。
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=0.115cm,y=1cm]
+% common input: the same spike train for both receivers
+\foreach \s in {6,21,22,38,52,55.5,59,62.5,66,69.5,73,76.5,80,83.5,87,90.5,94,97.5}{\draw[thick,gray!40!black] (\s,5.25) -- (\s,5.65);}
+\draw[gray!70!black] (0,5.25) -- (105,5.25);
+\node[left,font=\small] at (-1,5.45) {输入};
+\node[above,font=\scriptsize,gray!40!black] at (13.5,5.65) {稀疏};
+\node[above,font=\scriptsize,gray!40!black] at (21.5,6.0) {一对};
+\node[above,font=\scriptsize,gray!40!black] at (75,5.65) {密集};
+% axes and thresholds
+\foreach \y/\th in {2.7/2.5,0/1.5}{
+  \draw[gray!70!black] (0,\y) -- (106,\y) node[right,black] {\small $t$};
+  \draw[densely dashed,gray!60!black] (0,\y+0.6*\th) -- (104,\y+0.6*\th) node[right,black,font=\small] {$\theta$};
+}
+\node[anchor=south west,font=\small] at (0,4.3) {$\tau=10\ms$：积分器};
+\node[anchor=south east,font=\small] at (104,1.0) {$\tau=2\ms$：符合检测器};
+% integrator: tau=10 ms, theta=2.5w
+\begin{scope}[yshift=2.7cm]
+\foreach \a/\b/\v in {0/6/0.000,6/21/1.000,21/22/1.223,22/38/2.107,38/52/1.425,52/55.5/1.351,55.5/59/1.952,59/62.5/2.376,62.5/66/0.000,66/69.5/1.000,69.5/73/1.705,73/76.5/2.201,76.5/80/0.000,80/83.5/1.000,83.5/87/1.705,87/90.5/2.201,90.5/94/0.000,94/97.5/1.000,97.5/104/1.705}{\draw[very thick,blue!60!black] plot[domain=\a:\b,samples=14] (\x,{0.6*\v*exp(-(\x-\a)/10)});}
+\foreach \s/\p/\q in {6/0.000/1.000,21/0.223/1.223,22/1.107/2.107,38/0.425/1.425,52/0.351/1.351,55.5/0.952/1.952,59/1.376/2.376,62.5/1.674/2.500,62.5/2.500/0.000,66/0.000/1.000,69.5/0.705/1.705,73/1.201/2.201,76.5/1.551/2.500,76.5/2.500/0.000,80/0.000/1.000,83.5/0.705/1.705,87/1.201/2.201,90.5/1.551/2.500,90.5/2.500/0.000,94/0.000/1.000,97.5/0.705/1.705}{\draw[very thick,blue!60!black] (\s,0.6*\p) -- (\s,0.6*\q);}
+\foreach \s in {62.5,76.5,90.5}{\draw[->,thick,red!70!black] (\s,1.58) -- (\s,1.95);}
+\end{scope}
+% coincidence: tau=2 ms, theta=1.5w
+\begin{scope}[yshift=0cm]
+\foreach \a/\b/\v in {0/6/0.000,6/21/1.000,21/22/1.001,22/38/0.000,38/52/1.000,52/55.5/1.001,55.5/59/1.174,59/62.5/1.204,62.5/66/1.209,66/69.5/1.210,69.5/73/1.210,73/76.5/1.210,76.5/80/1.210,80/83.5/1.210,83.5/87/1.210,87/90.5/1.210,90.5/94/1.210,94/97.5/1.210,97.5/104/1.210}{\draw[very thick,blue!60!black] plot[domain=\a:\b,samples=14] (\x,{0.6*\v*exp(-(\x-\a)/2)});}
+\foreach \s/\p/\q in {6/0.000/1.000,21/0.001/1.001,22/0.607/1.500,22/1.500/0.000,38/0.000/1.000,52/0.001/1.001,55.5/0.174/1.174,59/0.204/1.204,62.5/0.209/1.209,66/0.210/1.210,69.5/0.210/1.210,73/0.210/1.210,76.5/0.210/1.210,80/0.210/1.210,83.5/0.210/1.210,87/0.210/1.210,90.5/0.210/1.210,94/0.210/1.210,97.5/0.210/1.210}{\draw[very thick,blue!60!black] (\s,0.6*\p) -- (\s,0.6*\q);}
+\foreach \s in {22}{\draw[->,thick,red!70!black] (\s,0.98) -- (\s,1.35);}
+\end{scope}
+\foreach \x in {0,50,100}{\draw[gray!60!black] (\x,-0.06) -- (\x,0.06) node[below,font=\scriptsize] {\x\,ms};}
+\end{tikzpicture}
+\caption{同一个输入，两种不同的接收者。每个脉冲把电压抬高 $w$，之后电压像神经元模型~\eqref{eq:glutneuron} 那样回落；红色箭头是接收者的脉冲。慢接收者（$\tau=10\ms$，$\theta=2.5w$）在脉冲\emph{多}的地方发放，注意不到那一对。快接收者（$\tau=2\ms$，$\theta=1.5w$）只对窗口~\eqref{eq:window} 内的一对脉冲发放，而放过密集却不符合的脉冲流。}
+\label{fig:reader}
+\end{figure}
+
+测量表明，在活跃的皮层中，膜电导比静息时增大数倍~\cite{Destexhe2003}。因此那里的 $\tau$ 较短，工作状态下的皮层神经元更接近符合检测器，而不是积分器。
+
+\begin{keyblock}
+\begin{proposition}[编码由接收者决定]
+\label{prop:reader}
+同一串脉冲，对慢接收者携带的是频率，对快接收者携带的是时间，对被释放了递质的组织容积携带的是在数秒内平滑过的浓度水平（第\ref{sec:serocomputer}章）。使用哪种编码，不由发送者决定，而由接收者的时间常数决定，而这个时间常数又由抑制来调节。
+\end{proposition}
+\end{keyblock}
+\section{点与划：作为滤波器的突触}
+
+到目前为止，突触在我们这里只是带权重的导线。实际上，它的响应取决于先前的脉冲，这给神经元的语言带来了第二个符号。
+
+\emph{压抑：突触传送变化。}每次释放都会消耗随时可释放的递质储备的一个份额 $U$~\cite{Tsodyks1997}，储备以数百毫秒量级的时间常数 $\tau_{\text{rec}}$ 恢复。频率为 $r$ 时，每个脉冲的响应幅度大致稳定在 $A(r)=A_0/(1+U r\tau_{\text{rec}})$，其中 $A_0$ 是充分休息的突触的响应。接收者在单位时间内得到的电流为
+\begin{empheq}[box=\keybox]{equation}
+r\,A(r) \;=\; \frac{A_0\,r}{1+U r\,\tau_{\text{rec}}}
+\;\xrightarrow[r\to\infty]{}\; \frac{A_0}{U\tau_{\text{rec}}} .
+\label{eq:depression}
+\end{empheq}
+当 $U=0.5$、$\tau_{\text{rec}}=0.8\,\text{s}$ 时，从每秒 $1/(U\tau_{\text{rec}})=2.5$ 个脉冲起就开始饱和。如果频率从五升到二十，稳态电流只增加三分之一。但新频率下的最初几个脉冲到来时，储备仍是原来的水平，电流瞬间跃升到四倍，然后在 $\tau_{\text{rec}}/(1+Ur\tau_{\text{rec}})\approx90\ms$ 内回落（图~\ref{fig:depression}）。
+
+这样的突触传送的不是频率，而是频率的\emph{变化}，本质上是相对变化 $\Delta r/r$~\cite{Abbott1997depression}。对电子工程师来说，这是直接装在导线里的高通滤波器。
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=12.5cm,y=1cm]
+% input rate
+\draw[->,gray!70!black] (0,2.6) -- (0.9,2.6) node[right,black] {\small $t$};
+\draw[->,gray!70!black] (0,2.6) -- (0,4.3) node[above,black] {\small $r$};
+\draw[very thick,blue!60!black] (0,2.9) -- (0.2,2.9) -- (0.2,3.8) -- (0.8,3.8);
+\node[left,font=\scriptsize] at (0,2.9) {$5$};
+\node[left,font=\scriptsize] at (0,3.8) {$20$};
+\node[right,font=\small,blue!60!black] at (0.4,4.1) {突触输入端的频率};
+% output current
+\draw[->,gray!70!black] (0,0) -- (0.9,0) node[right,black] {\small $t$};
+\draw[->,gray!70!black] (0,0) -- (0,2.45) node[left,black] {\small $rA$};
+\draw[densely dashed,gray!60!black] (0,0.667) -- (0.8,0.667);
+\draw[very thick,red!70!black] (0,0.5) -- (0.2,0.5) -- (0.2,2.0)
+   plot[domain=0.2:0.8,samples=60] (\x,{0.667+(2.0-0.667)*exp(-(\x-0.2)/0.089)});
+\node[left,font=\scriptsize] at (0,0.5) {$1.7$};
+\node[left,font=\scriptsize] at (0,2.0) {$6.7$};
+\node[right,font=\scriptsize] at (0.8,0.667) {$2.2$};
+\node[right,font=\small,red!70!black] at (0.28,1.6) {送往接收者的电流：跃升后在 $\approx90\ms$ 内回落};
+\draw[gray!60!black] (0.2,-0.08) -- (0.2,0.08); \node[below,font=\scriptsize] at (0.2,0) {$0.2\,\text{s}$};
+\draw[gray!60!black] (0.8,-0.08) -- (0.8,0.08); \node[below,font=\scriptsize] at (0.8,0) {$0.8\,\text{s}$};
+\end{tikzpicture}
+\caption{按公式~\eqref{eq:depression} 工作的压抑型突触，$U=0.5$，$\tau_{\text{rec}}=0.8\,\text{s}$；电流以每秒 $A_0$ 为单位，虚线是稳态电流：它只从 $1.7$ 升到 $2.2$，而在跃变瞬间达到 $6.7$。突触告诉接收者的是频率变了，而不是频率是多少。}
+\label{fig:depression}
+\end{figure}
+
+\emph{易化：簇放电就是划。}另一些突触的释放概率很小，但每个脉冲之后会在几十毫秒内升高。单个脉冲经过这样的突触多半会丢失。而\emph{簇放电}——间隔几毫秒的一串连续脉冲——几乎一定能通过。即使没有易化，簇放电中 $k$ 个脉冲全部丢失的概率也只有
+\begin{empheq}[box=\keybox]{equation}
+P_{\text{loss}} \;=\; (1-p)^k ,
+\label{eq:burst}
+\end{empheq}
+$p=0.2$ 时，单个脉冲为 $0.8$，四个脉冲的簇放电为 $0.41$；易化使它更小。于是神经元有了第二个符号：单个脉冲是点，簇放电是划。压抑型突触最善于传送停顿后的第一个脉冲；易化型突触放行簇放电而压制单个的点。簇放电传送得更可靠，这是测量过的；大脑确实把它当作一个独立的符号来用，则是一个可信的假说~\cite{Lisman1997}。
+
+\section{\nt{GABA} 神经元怎样说话}
+
+皮层中数量最多的 \nt{GABA} 神经元是快速型的~\cite{Tremblay2016}。它们的脉冲比 \nt{GLUT} 神经元的短，能以每秒几百次的频率长时间均匀发放，几乎不疲劳。它们的突触更可靠：与每个接收者的连接由许多释放位点组成，脉冲几乎从不丢失。它们的输出落在接收者产生脉冲的位置附近，所以它们控制的不是接收者如何对输入求和，而是接收者是否发放、何时发放。
+
+它们自己从许多邻近的 \nt{GLUT} 神经元得到兴奋，报告周围的总活动——这正是第\ref{sec:gaba}章的除法所需要的。最后，快速 \nt{GABA} 神经元彼此相连，容易一起发放；上面谈到的局部节律正是由它们设定的~\cite{Cardin2009}。
+
+用摩尔斯电码的语言说，\nt{GABA} 神经元负责的不是字母，而是\emph{停顿}。它们把连续的 \nt{GLUT} 脉冲流切成接收者可以发放的窗口，收窄符合窗口，并在脉冲流太响时把整体音量压低。
+
+\begin{keyblock}
+\begin{proposition}[角色分工]
+\label{prop:punctuation}
+\nt{GLUT} 神经元携带消息的内容：\emph{什么}和\emph{多少}。快速 \nt{GABA} 神经元携带消息的标记：\emph{何时}可以说话、说得\emph{多响}；另有一类神经元通过抑制抑制性神经元，决定闸门\emph{为谁}打开。这种分工的各个部分已有测量；作为一般规则，它是一个工作假说。
+\end{proposition}
+\end{keyblock}
+
+还有其他较慢的 \nt{GABA} 神经元，它们的输出落在接收者的个别输入上。它们像第\ref{sec:gaba}章的否决~\eqref{eq:veto} 那样工作：关闭一路 \nt{GLUT} 脉冲流，而不影响其余各路。
+
+把 \nt{GABA} 神经元分为快速和慢速，是一幅旧图景，而且并不完整。现在皮层中至少区分出三大类~\cite{Tremblay2016}，而第三类的构造出人意料：它抑制的不是 \nt{GLUT} 神经元，而是其他 \nt{GABA} 神经元，首先是那些关闭输入的神经元~\cite{Pfeffer2013}。抑制的抑制，就是双重否定。这样的神经元不向接收者发送任何兴奋性脉冲，就能\emph{打开}闸门。开启它的是来自皮层其他区域的信号和广播通道，所以它像整片网络的使能输入：它活跃时，否决被解除，脉冲流得以通过~\cite{Pi2013}。在附录~\ref{sec:othermediators} 中，这一手法称为去抑制。
+\section{节俭的语言}
+
+关于神经元的语言，最后一件确知的事是：它很昂贵。一个脉冲连同它引起的突触活动，大约要消耗 $10^9$ 个 ATP 分子（对啮齿类皮层的估计~\cite{Attwell2001}），而一个分子提供约 $10^{-19}$ 焦耳。因此一个脉冲的代价约为 $E_{\text{spk}}\sim10^{-10}$ 焦耳。整个大脑消耗约 $20$ 瓦，如果一半用于传送信号，$P\sim10$ 瓦，那么单个神经元的平均频率为
+\begin{empheq}[box=\keybox]{equation}
+\bar r \;\approx\; \frac{P}{N\,E_{\text{spk}}}
+\;\sim\; \frac{10\ \text{W}}{8.6\cdot10^{10}\cdot10^{-10}\ \text{J}}
+\;\approx\; 1\ \text{个脉冲每秒}.
+\label{eq:energy}
+\end{empheq}
+对皮层更细致的估计给出的数值还要小~\cite{Lennie2003}。大脑的编码必须是\emph{稀疏}的：只有一小部分神经元能快速工作。
+
+从~\eqref{eq:spikeentropy} 可以看出，这并不那么糟。精度为 $1\ms$ 时，以每秒 $100$ 次工作的神经元，每个脉冲最多携带五比特，而每秒发放一次的神经元，每个脉冲可携带多达十一比特。如果要为脉冲付费，那么少说话更划算。皮层确实用精度换能量：食物不足时，神经元保持脉冲频率不变，但在突触电流上花得更少，它们的响应随之变得不那么精确~\cite{Padamsey2022}。
+
+在摩尔斯电码中，常用字母很短：英文文本中最常见的字母 E 只是一个点。据目前所知，神经元的编码以另一种形式遵循同样的规则：预料之中的事只花很少的脉冲~\cite{Barlow1961}。神经元在恒定刺激下逐渐降低频率，第\ref{sec:glutcomputer}章的传感器响应的是变化而不是电平，第\ref{sec:neurontypes}章的 \nt{DOPA} 神经元只报告奖励预测误差。
+
+\begin{keyblock}
+\begin{proposition}[节约]
+\label{prop:economy}
+能量把神经元的平均频率限制在每秒约一个脉冲的量级。因此 \nt{GLUT} 神经元的语言是稀疏的，把脉冲花在新闻上：花在变化了的或未被预测的事情上。能量上限是测量过的；大脑的编码被调整到每焦耳比特数最多，则是一个论据充分的假说。
+\end{proposition}
+\end{keyblock}
+
+\section{小结}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{2.6cm}>{\raggedright}p{2.3cm}>{\raggedright}p{3.0cm}>{\raggedright}p{2.0cm}>{\raggedright\arraybackslash}p{3.6cm}}
+\toprule
+记录方式 & 携带什么 & 谁来读 & 每条消息的时间 & 已知情况 \\
+\midrule
+发放神经元的编号（位置编码） & 哪个值 & 任何接收者；符合检测器 & 一个延迟 & 在感觉神经元和声源定向中已证实 \\
+单个神经元的频率 & 量值 & $\tau$ 大的积分器；组织容积（第\ref{sec:serocomputer}章） & 数百毫秒到数秒 & 已证实；对 $10$--$20\ms$ 的一级处理而言太慢 \\
+神经元群的频率 & 量值 & 有数千个输入的神经元 & $10$--$50\ms$ & 已证实；收益受相关性限制~\eqref{eq:correlated} \\
+首个脉冲的时间、顺序 & 量值、顺序 & 带延迟的符合检测器 & 一个延迟 & 在神经系统入口处已证实；在皮层中尚有争论 \\
+局部节律中的相位 & 量值、位置 & 有共同节律的神经元 & 一个周期 $12$--$50\ms$ 或更慢 & 在个别脑区观察到；普遍作用是假说 \\
+簇放电（“划”） & “重要”：可靠投递 & 易化型突触 & $\sim10\ms$ & 可靠性已测量；作为独立符号是假说 \\
+频率的变化 & 新闻 & 压抑型突触 & $\sim0.1\,\text{s}$ & 已证实 \\
+快速 \nt{GABA} 神经元的脉冲 & 何时、多响 & 所有邻近的 \nt{GLUT} 神经元 & $1$--$30\ms$ & 节律和除法已测量；作为规则的“标点”是假说 \\
+\bottomrule
+\end{tabular}
+\caption{\nt{GLUT} 和 \nt{GABA} 神经元用脉冲记录消息的方式。右列把测量到的与推测的区分开来。}
+\label{tab:code}
+\end{table}
+
+表~\ref{tab:code} 汇集了我们已知的东西；从中也能看出我们不知道的东西。我们不知道皮层在多大程度上利用脉冲的精确时间，而不仅仅是神经元群的频率。我们不知道神经元是否有“词”——许多神经元脉冲的稳定组合，作为一个整体被读出。我们也不知道大脑不同部位的语言是否相同。摩尔斯电码一个晚上就能学会，因为它的码表是已知的。神经元语言的码表还有待编写，而编写它的，多半会是通信工程师。
+
+\section{习题}
+
+\begin{exercise}[\lvlA]
+\label{ex:04:1}
+\emph{容量的数值。}$\Delta t=1\ms$。(a)~按~\eqref{eq:energy} 中的脉冲代价，频率为每秒 $1$ 个脉冲的神经元每焦耳给出多少比特？(b)~$r=10$ 时，只数每秒脉冲数的接收者提取的信息比上限~\eqref{eq:spikeentropy} 少多少倍？
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:04:2}
+\emph{最优频率。}神经元消耗功率 $P_0+rE_{\text{spk}}$，其中 $P_0$ 是 $20$~W 中的另一半除以全部神经元数，$E_{\text{spk}}=10^{-10}$~J。按~\eqref{eq:spikeentropy}、取 $\Delta t=1\ms$，频率 $r$ 为多少时每焦耳比特数 $R_{\max}(r)/(P_0+rE_{\text{spk}})$ 最大？
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:04:3}
+\emph{什么样的相关有害。}$N=1000$ 个神经元，方差 $\sigma^2=1$，两两相关系数 $c=0.1$。分别对相同斜率 $f'=\mathbf 1$ 和满足 $\mathbf 1^{\mathsf T}f'=0$ 的斜率 $\pm1$，计算费希尔信息 $\mathcal I=f'^{\mathsf T}\Sigma^{-1}f'$（$\Sigma$ 为协方差矩阵）。两者相差多少倍？
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:04:4}
+\emph{建模：符合检测器。}神经元~\eqref{eq:glutneuron} 接收 $1000$ 个泊松输入，每个每秒 $5$ 个脉冲，$w=1$；阈值 $\theta$ 取为使自由电压每秒越过它一次。用模型求出：$\tau=10$ 和 $2\ms$ 时，多少个同时到达的输入 $m$ 能以 $1/2$ 的概率点燃神经元？
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:04:5}
+\emph{设计：相对变化检测器。}选择突触~\eqref{eq:depression} 的参数：每秒 $40$ 个脉冲时的稳态电流比每秒 $10$ 个时高出不超过 $10\,\%$，而频率跃升到 $40$ 后，电流以不超过 $50\ms$ 的时间常数达到新水平。最小的 $\tau_{\text{rec}}$ 是多少？对应的 $U$ 呢？
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:04:6}
+\emph{首个脉冲时间与簇放电。}(a)~由~\eqref{eq:latency} 求出使首个脉冲恰好在一个时间常数后到来的输入。它取决于什么？(b)~释放概率 $p=0.2$ 时，簇放电中要有多少个脉冲，才能使全部丢失的概率低于 $5\,\%$？
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:04:7}
+\emph{研究：排列中有多少比特。}神经元是相互独立的格子~\eqref{eq:spikeentropy}，$r=10$，$\Delta t=1\ms$。(a)~把 $20$ 个格子组成的“词”的熵分解为脉冲数的熵与剩余部分。(b)~模拟用 $N=30$ 和 $10^4$ 条记录的词频来估计熵。估计值偏低多少？
+\end{exercise}

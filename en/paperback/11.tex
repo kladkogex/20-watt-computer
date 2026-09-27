@@ -1,0 +1,46 @@
+\chapter{How the World Gets In}
+% full version: chapters/11_sensors.tex
+
+Every sense organ is a transducer, like a microphone or a photocell. Light, sound, or a molecule acts on a special protein in a sensor cell, the protein opens a ``tap,'' current flows, and at the end of the chain come clicks that go out into the network. Almost all sensors release glutamate, so the machine's inputs plug straight into its telephone network.
+
+\section*{At the Limit of Physics}
+
+The brain's sensors work at the very limit of what is possible. A light sensor in the dark responds to a single particle of light. A sound sensor notices a displacement of less than a nanometer, smaller than a few atoms. In dim light the precision is limited no longer by the eye but by light itself: the particles arrive at random, and to tell a shade apart you have to collect more of them. That is why we see more slowly at dusk: the eye collects light longer, like a camera with a long exposure.
+
+\section*{Automatic Exposure}
+
+Illumination varies a billionfold from a starry night to sunlit snow, and loudness even more. Yet the rate of clicks varies from zero to a few hundred per second. Squeezing one into the other directly is impossible. The solution is the same as in a camera: automatic exposure. The sensor constantly adjusts its sensitivity to the average level around it and reports not the brightness but the brightness \emph{compared with the background}. Anything constant stops evoking a response over time, while every change evokes one. From the very start, the machine's inputs talk about changes.
+
+\pencilfig{125}{%
+% light rises in two tenfold steps, then drops a hundredfold; sensor rate = baseline + gain * (log light - adapted level),
+% the adapted level follows log light with a 0.7 s time constant; rate clipped at zero
+\draw[penlite=pcAmber] (0,1.75) -- (1.4,1.75) -- (1.4,2.1) -- (4.2,2.1) -- (4.2,2.45) -- (6.3,2.45) -- (6.3,1.75) -- (8.4,1.75);
+\node[lbl, text=pcAmber!70!black, anchor=east] at (-0.05,2.0) {light};
+\node[lbl, anchor=south] at (2.8,2.12) {10 times brighter}; \node[lbl, anchor=south] at (5.25,2.47) {10 times more};
+\node[lbl, anchor=south] at (7.35,1.77) {dark again};
+\draw[pen] (0,0) -- (8.4,0);
+\draw[pcGray, densely dashed, line width=0.5pt] (0,0.32) -- (8.4,0.32);
+\draw[penlite=pcBlue] plot coordinates {(0.00,0.32) (1.26,0.32) (1.40,1.02) (1.54,0.85) (1.68,0.72) (1.82,0.62) (1.96,0.54) (2.10,0.49) (2.24,0.45) (2.38,0.41) (2.52,0.39) (2.66,0.37) (2.80,0.36) (3.08,0.34) (3.50,0.33) (4.06,0.32) (4.20,1.03) (4.34,0.85) (4.48,0.72) (4.62,0.62) (4.76,0.54) (4.90,0.49) (5.04,0.45) (5.18,0.41) (5.32,0.39) (5.46,0.37) (5.60,0.36) (5.88,0.34) (6.16,0.33) (6.30,0.00) (7.00,0.00) (7.14,0.07) (7.28,0.13) (7.42,0.18) (7.56,0.22) (7.70,0.24) (7.84,0.26) (7.98,0.28) (8.12,0.29) (8.40,0.30)};
+\node[lbl, text=pcBlue, anchor=east] at (-0.05,0.32) {response};
+\node[lbl, anchor=north] at (6.65,-0.02) {silent};
+}{The light gets brighter in steps, each tenfold. The sensor answers each change with a burst and quickly returns to its former level. When it gets dark again, it falls silent for a while.}
+
+Engineers have copied this trick in event cameras. Such a camera does not take frames on a clock: each of its pixels reports ``brighter'' or ``darker'' on its own when something changes. It is the same pair of ``yes'' and ``no'' wires from the second chapter, only in silicon.
+
+\section*{The Eye Compresses the Picture}
+
+The eye has about a hundred million light sensors, and about a million wires carry the image to the brain. Before the picture leaves the eye, it is compressed about a hundredfold. Flat areas cost almost nothing; edges and changes are sent. By an estimate made on animal eyes and scaled to humans, the eye sends the brain about ten million bits per second, like an old network cable.
+
+\section*{The Ear Is a Piano}
+
+The ear splits sound into frequencies, the way an engineer would set up a bank of filters. An elastic partition in the ear responds to different frequencies at different places, and the sensors on each patch listen to their own ``key.'' The number of the sensor that fires is the pitch.
+
+\pencilfig{11}{\pencilart{11}}{The ear is built like a piano in reverse: each key listens for its own note.}
+
+What is more, the ear is not passive. Some of its cells themselves rock the partition in time with the sound and amplify quiet sounds thousands of times, while hardly amplifying loud ones. This is an amplifier right at the edge of self-oscillation: that is where it is most sensitive. And at low frequencies the neurons also click in time with the wave, preserving the exact timing of the sound; that is how the brain finds the direction of the source. The higher the frequency, the worse the neurons keep up with it, and only the place code remains.
+
+\section*{The Other Senses}
+
+In almost every sense you can recognize a trick from the earlier chapters. Temperature is carried by two wires, separate ones for warmth and for cold. Touch uses sensors that respond to contact and fall silent at once, and sensors that keep responding as long as the pressure lasts. And smell works like a barcode: humans have about four hundred types of smell sensors, and an odor is the set of types that fired. The number of such sets is astronomical.
+
+\fullversion{11}

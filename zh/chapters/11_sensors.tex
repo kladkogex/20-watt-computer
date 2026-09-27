@@ -1,0 +1,177 @@
+\chapter{机器的输入：眼睛、耳朵和其他传感器如何接入}
+\chaptermark{机器的输入}
+\label{sec:sensors}
+
+\section{传感器即换能器}
+
+在图~\ref{fig:machine}中，数据从左侧的“传感器”模块进入机器。现在打开这个模块。对工程师来说，每个感觉器官都是一个\emph{换能器}：前端是模拟输入级，末端是模数转换器，只不过输出的数字不是数值，而是脉冲。
+
+所有感觉器官的方案都相同（图~\ref{fig:transducer}）。物理量——光、压力、振动、分子——作用于感觉细胞膜上的受体蛋白。这个蛋白像一道闸门：它直接或经过一小串反应打开离子通道。于是产生\emph{感受器电流}，随之在膜上形成模拟电压。接着电压经过增益调节，进入脉冲编码器——也就是我们熟悉的积分神经元~\eqref{eq:glutneuron}，它把电平变成脉冲的频率和时刻。输出几乎总是一样的：眼睛、耳朵、嗅觉和皮肤的感觉神经元都释放谷氨酸，因此各路输入直接接到\nt{GLUT}总线上。
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  blk/.style={draw,very thick,rounded corners=2pt,align=center,font=\footnotesize,minimum height=1.0cm,text width=1.9cm,fill=blue!5}]
+\node[align=center,font=\small] (P) at (0.1,0) {光、声、\\压力、\\分子};
+\node[blk] (R) at (3.0,0) {受体\\闸门};
+\node[blk] (G) at (6.5,0) {增益\\调节};
+\node[blk] (E) at (10.0,0) {脉冲\\编码器};
+\node[align=center,font=\small] (B) at (13.4,0) {\nt{GLUT}\\总线};
+\draw[->,very thick] (P) -- (R);
+\foreach \ic/\xx in {sun/-1.1,speaker/-0.3,press/0.5,molecule/1.3}{\pic[scale=0.85] at (\xx,1.05) {\ic};}
+\draw[->,very thick] (R) -- node[above,font=\scriptsize] {电流} (G);
+\draw[->,very thick] (G) -- node[above,font=\scriptsize] {电平} (E);
+\draw[->,very thick,red!70!black] (E) -- node[above,font=\scriptsize,black] {脉冲} (B);
+\draw[decorate,decoration={brace,amplitude=5pt,mirror},gray!60!black] (1.8,-0.8) -- (7.7,-0.8) node[midway,below=5pt,font=\scriptsize,black] {模拟部分};
+\draw[decorate,decoration={brace,amplitude=5pt,mirror},gray!60!black] (8.8,-0.8) -- (11.2,-0.8) node[midway,below=5pt,font=\scriptsize,black] {脉冲};
+\end{tikzpicture}
+\caption{任何感觉器官都是一条变换链。受体蛋白打开通道并产生电流；增益调节使电流适应环境；编码器~\eqref{eq:glutneuron}把电平变成脉冲，送上\nt{GLUT}总线。在眼睛和耳朵里，最前面的几级根本不发放脉冲：信号一直保持模拟形式，直到需要远距离传送时为止。}
+\label{fig:transducer}
+\end{figure}
+
+有一个细节电子工程师很熟悉。在眼睛和耳朵里，最前端的细胞根本不发放脉冲：它们向邻近细胞传递平滑变化的电压，就像电路板上的模拟级。只有在需要把信号送往远处的地方才出现脉冲。模拟信号传过几毫米就会衰减并混入噪声，而脉冲，正如我们在第~\ref{sec:neurontypes}~章中所见，到达导线末端时高度不变。数字化发生在长线开始的地方。
+
+\section{在物理极限上}
+
+大脑的传感器工作在物理灵敏度的极限附近。暗处的光传感器能响应\emph{单个光子}：吸收一个光粒子会产生约一皮安的电流，在自身噪声的背景上清晰可辨~\cite{Baylor1979}。声音传感器能察觉其敏感纤毛束小于一纳米的位移~\cite{Hudspeth1989}。
+
+光线很弱时，限制精度的不是传感器，而是光本身：光子随机到达，构成泊松流。若在积累时间$T$内平均有$N=\Phi T$个光子落入传感器，其数目的涨落为$\sqrt N$。增量$\Delta N$要能被察觉，就必须比这个涨落大几倍，因此可分辨的亮度相对变化为
+\begin{empheq}[box=\keybox]{equation}
+\frac{\Delta I}{I} \;\approx\; \frac{k}{\sqrt{\Phi\,T}} .
+\label{eq:photonnoise}
+\end{empheq}
+这与脉冲计数的公式~\eqref{eq:rateerror}相同：光子的散粒噪声与脉冲的散粒噪声服从同一规律。在暗处，眼睛提高精度只有一个办法——更长时间地积累光子，而积累时间确实会增加到零点几秒。所以在黄昏时我们看得更慢。
+
+\section{动态范围：增益调节}
+
+传感器最难的工程问题是范围。照度从星夜到阳光下的雪地大约变化十个数量级，声强从听阈到痛阈变化十二个数量级。而脉冲频率只在每秒零到几百次之间变化，不到三个数量级。这样的输入无法线性地装进这样的输出。
+
+解决办法与任何接收机相同：\emph{自动增益控制}。眼睛感觉细胞的响应可以很好地用下式描述：
+\begin{empheq}[box=\keybox]{equation}
+r \;=\; r_{\max}\,\frac{I}{I+\sigma} ,
+\label{eq:nakarushton}
+\end{empheq}
+其中$\sigma$是响应达到一半时的亮度~\cite{NakaRushton1966}。式~\eqref{eq:nakarushton}本身只覆盖两三个数量级。但$\sigma$不是常数：在明亮背景下长时间工作时，它随平均亮度一起增大。响应曲线沿亮度的对数轴移动，每次都把自己的陡峭段放到当前输入所在的位置（图~\ref{fig:adaptation}）。这与第~\ref{sec:gaba}~章的分流抑制一样，是除以总活动~\cite{Carandini2012}，只不过这里的分母是最近几秒的平均亮度。
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=1.25cm,y=2.8cm]
+\draw[->,gray!70!black] (-2,0) -- (6.4,0) node[below left,font=\small,black] {$\log_{10} I$};
+\draw[->,gray!70!black] (-2,0) -- (-2,1.15) node[left,font=\small,black] {$r/r_{\max}$};
+\foreach \u in {-2,0,2,4,6}{\draw[gray!60!black] (\u,-0.02) -- (\u,0.02); \node[below,font=\scriptsize] at (\u,0) {$\u$};}
+\draw[densely dashed,gray!60!black] (-2,0.5) -- (6.2,0.5);
+\foreach \s/\c/\lab in {0/blue!60!black/{暗背景},2/green!45!black/{中等},4/red!70!black/{明亮}}{
+  \pgfmathsetmacro{\lo}{max(-2,\s-3)}
+  \draw[very thick,\c] (-2,0) -- (\lo,0) plot[domain=\lo:6.2,samples=80] (\x,{1/(1+10^(\s-\x))});
+  \node[font=\scriptsize,\c,anchor=west] at (\s+0.15,0.42) {\lab};}
+\foreach \s/\ic in {0/moon,2/cloud,4/sun}{\pic at (\s+0.6,0.64) {\ic};}
+\end{tikzpicture}
+\caption{按式~\eqref{eq:nakarushton}进行的光传感器增益调节。每条曲线覆盖两三个数量级的亮度；换到更亮的背景时$\sigma$增大，曲线沿对数轴移动。这些移动的曲线合起来覆盖整个范围。}
+\label{fig:adaptation}
+\end{figure}
+
+增益调节有代价，这在第~\ref{sec:code}~章已经见过：传感器报告的不是亮度，而是\emph{相对于背景}的亮度。恒定的输入逐渐不再引起响应，而每一次变化都会引起响应。机器的输入从一开始就报告变化而不是电平，这与命题~\ref{prop:economy}一样是在节省脉冲~\cite{Barlow1961}。第~\ref{sec:glutcomputer}~章的开传感器和关传感器也由此而来~\cite{Schiller1992}：一类报告变亮了，另一类报告变暗了。
+
+工程师在\emph{事件相机}中复现了这一手法。这种相机不按时钟拍摄帧：每个像素各自独立，不需要统一节拍，当亮度的对数变化了给定比例时，就输出一个“变亮”或“变暗”事件~\cite{Lichtsteiner2008}。这正是第~\ref{sec:glutcomputer}~章的开—关双线编码在硅片上的实现，它让相机获得了普通传感器阵列无法企及的动态范围和速度~\cite{Gallego2022}。
+
+\section{眼睛：压缩到一根线缆}
+
+眼睛里约有$10^8$个光传感器~\cite{Curcio1990}，而把图像送往大脑的输出神经元只有约一百万个。信号离开眼睛之前被压缩了大约一百倍。主要的压缩手法我们都熟悉。每个输出神经元响应的是一个小光斑内的亮度与其周围亮度之差——这是通过抑制减去邻居，与第~\ref{sec:gaba}~章相同。图像中均匀的区域几乎不占带宽，边缘和变化则被传送出去。不同的输出神经元各有专长：一些报告变亮，另一些报告变暗，还有一些报告朝某个方向的运动（图~\ref{fig:direction}）；在小鼠身上已经数出三十多种这样的输出通道~\cite{Baden2016}。
+
+这样得到的线缆带宽有多大？在豚鼠身上，根据输出神经元的记录，测得$\sim10^5$个这类神经元的信息率约为每秒$875$千比特；换算到人的一百万个输出神经元，约为每秒$10^7$比特~\cite{Koch2006}——相当于一根老式的十兆网线。每个神经元的平均频率为每秒几个脉冲，于是每个脉冲携带几比特，与第~\ref{sec:code}~章得到的结果一致。
+
+\section{耳朵：滤波器组}
+
+耳朵要解决另一个问题：把声音按频率分解。工程师会装一组带通滤波器，而耳朵正是用机械方式做到了这一点。声振动沿一块弹性隔膜传播，隔膜的性质沿长度平滑变化，每一段只对自己的频率共振。位于该段的传感器只响应自己的频带（图~\ref{fig:filterbank}）。频率沿位置大致按对数排列：每个倍频程分到的传感器数量相近。被触发的传感器的序号就是频率，这是第~\ref{sec:code}~章的位置编码。
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=1.35cm,y=2.2cm]
+\draw[->,gray!70!black] (-0.3,0) -- (7.6,0) node[above left,font=\small,black] {频率，Hz};
+\draw[->,gray!70!black] (-0.3,0) -- (-0.3,1.15) node[left,font=\small,black] {响应};
+\foreach \k/\f in {0/125,1/250,2/500,3/1000,4/2000,5/4000,6/8000}{
+  \draw[gray!60!black] (\k,-0.02) -- (\k,0.02); \node[below,font=\scriptsize] at (\k,0) {\f};
+  \draw[thick,blue!60!black] plot[domain={max(\k-1.2,-0.3)}:{\k+0.7},samples=60] (\x,{1/(1+((\x-\k)/(\x<\k?0.45:0.2))^4)});}
+% a piano keyboard: seven white keys per octave, like the octaves on the axis
+\foreach \i in {0,...,48}{\draw[gray!50!black,fill=white,line width=0.3pt] ({\i/7},-0.44) rectangle ({(\i+1)/7},-0.26);}
+\foreach \o in {0,...,6}{\foreach \j in {0,1,3,4,5}{\fill[black] ({\o+(\j+1)/7-0.035},-0.35) rectangle ({\o+(\j+1)/7+0.035},-0.26);}}
+\end{tikzpicture}
+\caption{耳朵作为带通滤波器组的示意图。每条曲线是某一段上的传感器对不同频率声音的响应；中心频率相隔一个倍频程，就像对数刻度上的琴键。真实滤波器的高频侧陡峭，低频侧平缓。下方是键盘：与耳朵一样，每个倍频程在上面占据相同的位置。}
+\label{fig:filterbank}
+\end{figure}
+
+耳朵的谐振器不是被动的。一部分传感器会随着声音的节拍主动推动隔膜振动，把微弱振动的振幅放大数千倍（$66$--$76$\,dB），而随着响度增大，增益下降~\cite{Ruggero1997,Robles2001}。在工程师看来，这是一个工作在自激边缘的正反馈放大器——与第~\ref{sec:gaba}~章的网络一样，生活在临界边缘：系统在边界附近对小信号特别敏感。响度压缩也由同一个放大器完成：轻声放大得多，响声放大得少。
+
+耳朵还有第二种编码。在低频下，神经元的脉冲与声音同相：神经元在每个波的特定位置发放，尽管并非每个波都发放。在豚鼠身上，相位锁定在约$600$\,Hz开始减弱，直到约$3.5$\,kHz仍可察觉~\cite{PalmerRussell1986}。这样，脉冲时刻保存了声音的精确时间，进而保存了声音到达两耳的时间差，第~\ref{sec:glutcomputer}~章的网络正是据此找出方向~\cite{Grothe2010}。在高频下，脉冲跟不上声波，只剩下位置编码。一只耳朵同时使用第~\ref{sec:code}~章的两种编码：神经元跟得上的地方用时间，跟不上的地方用位置。
+
+\section{其他传感器}
+
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{>{\raggedright}p{1.9cm}>{\raggedright}p{2.6cm}>{\raggedright}p{4.0cm}>{\raggedright\arraybackslash}p{4.6cm}}
+\toprule
+感觉 & 测量什么 & 输入如何构成 & 本书中的手法 \\
+\midrule
+视觉 & 光 & $\sim10^8$个传感器，压缩$\sim100$倍，$\sim10^7$\,bit/s & 增益调节、减去邻居、双线、运动方向 \\
+听觉 & 气压 & 机械滤波器组、主动放大器 & 位置编码和时间编码、延迟 \\
+触觉 & 压力、振动 & 快适应和慢适应传感器 & “高通滤波器—低通滤波器”对 \\
+温度觉 & 热 & 冷、热各有传感器 & 双线编码 \\
+嗅觉 & 分子 & $\sim400$种受体，每个传感器只有一种 & 组合编码：气味是被触发类型的集合 \\
+味觉 & 食物中的物质 & 五种味质：甜、苦、咸、酸、鲜 & 标记线路；部分细胞释放ATP或血清素，而不是谷氨酸 \\
+本体感觉 & 肌肉牵拉 & 长度和牵拉速度传感器 & 为运动调节器提供反馈 \\
+\bottomrule
+\end{tabular}
+\caption{传感器如何接入。第三列中的结构都已测量；右列把它们与前几章的手法联系起来。}
+\label{tab:sensors}
+\end{table}
+
+其余感觉汇总在表~\ref{tab:sensors}中，几乎每一行都能认出前几章的某个手法。触觉使用一对滤波器：一些压力传感器在接触时响应并立即沉默，另一些只要压力存在就保持响应。温度由两根导线传送，冷和热各一根。最不寻常的输入是嗅觉。人类的嗅觉受体约有四百种，每个嗅觉神经元只带一种~\cite{Mombaerts2004}。一种气味激活的不是一种受体，而是一组，消息就是\emph{哪些}类型被触发了。对工程师来说，这是一个长约四百的二进制向量，可能取值的数目是天文数字。
+
+\begin{keyblock}
+\begin{proposition}[机器的输入]
+\label{prop:sensors}
+每种感觉都是一个换能器：它工作在物理灵敏度的极限附近，用自动增益控制压缩巨大的动态范围，并通过\nt{GLUT}总线首先传送\emph{变化}。为此，传感器使用与机器本身相同的手法：双线编码、位置编码、时间编码和除以背景。传感器的结构已经测量；它们的编码被调节到使每个脉冲携带最多信息，这是一个有充分依据的假说。
+\end{proposition}
+\end{keyblock}
+
+输入和其他一切一样，是异步工作的。每个传感器在有东西要报告时才发出脉冲，而不同感觉到达的延迟各不相同：声音在几毫秒后到达，光在几十毫秒后到达。没有统一节拍，机器如何把它们合成一幅世界图景——这是第~\ref{sec:synthesis}~章中时间协调问题的一部分。
+
+\section{习题}
+
+\begin{exercise}[\lvlA]
+\label{ex:11:1}
+\emph{光子要积累多久。}黄昏时每秒有$100$个光子落入传感器；增量比涨落~\eqref{eq:photonnoise}大$3$倍时才可察觉。(a)~单个传感器察觉$10\,\%$的亮度变化需要多长时间？(b)~要在$0.2\,\text{s}$内完成，需要把多少个传感器相加？沿一个方向的分辨率下降多少倍？
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:11:2}
+\emph{一个脉冲有多少比特。}(a)~眼睛通过$10^6$个输出神经元以每秒$3$--$5$个脉冲的频率传送$\sim10^7$\,bit/s。在$\Delta t=1\ms$时，它用了容量~\eqref{eq:spikeentropy}的多大比例？(b)~一种气味激活$\approx400$种受体中的$20$种。这样的集合携带多少比特？两种随机气味平均有几种共同类型？
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:11:3}
+\emph{一条曲线~\eqref{eq:nakarushton}能做什么。}(a)~在什么亮度范围内响应从$r_{\max}$的$10\,\%$增加到$90\,\%$？这是几个数量级？(b)~要覆盖十个数量级的亮度，移动的曲线需要多少个位置？十二个数量级的响度呢？
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:11:4}
+\emph{耳朵中时间编码的极限。}声音到达两耳的时间差最大为$0.22\,\text{m}/343\,\text{m/s}$。(a)~脉冲与纯音同相：在多高的频率以下，据此确定的方向是唯一的？(b)~脉冲抖动$0.5\ms$，需要分辨$20$\,\textmu s。在$50\ms$内需要平均多少个每秒$100$个脉冲的神经元？
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:11:5}
+\emph{接到眼睛线缆上的事件相机。}一台$10^6$像素、输出$10^7$\,bit/s的相机，在像素的$\ln I$变化$\ln1.2$时发送一个事件（地址和符号）。长$500$像素、亮度跳变为$4$倍的边缘最快能以多大速度移动？每像素$8$\,bit的普通相机通过同样的输出每秒能传几帧？
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:11:6}
+\emph{建模：增益调节。}传感器~\eqref{eq:nakarushton}以$\tau=1\,\text{s}$调节$\sigma$，或按对数，$\tau\,\dd\ln\sigma/\dd t=\ln I-\ln\sigma$，或按线性，$\tau\,\dd\sigma/\dd t=I-\sigma$；背景按$1\to100\to1$跳变。在每种规律下，向上和向下跳变后，对$+10\,\%$探测的响应要过几秒才恢复到适应后水平的一半？
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:11:7}
+\emph{曲线适配于怎样的世界。}当输出噪声小而恒定时，若$r(I)=r_{\max}\Phi_I(I)$，关于亮度的信息最多，其中$\Phi_I$是亮度的分布函数。(a)~曲线~\eqref{eq:nakarushton}对哪种分布最优？其$\log_{10}I$的离散程度多大？(b)~输出为泊松噪声时，哪条曲线最优？
+\end{exercise}

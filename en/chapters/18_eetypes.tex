@@ -1,0 +1,123 @@
+\chapter{Neuron Types by Electrical Function}
+\chaptermark{Neurons as Devices}
+\label{sec:eetypes}
+
+In Chapter~\ref{sec:neurontypes} we sorted neurons by the transmitter their output releases. An electronics engineer would sort them differently: by what the neuron does to its signal, that is, by what device it acts as. We have known the book's main device since Chapter~\ref{sec:glutcomputer}: the leaky integrating neuron~\eqref{eq:glutneuron}, an RC circuit with a comparator. But the brain has others too. Table~\ref{tab:eetypes} collects them in four groups, and almost every one has already appeared in the book.
+
+\begin{center}
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{>{\raggedright}p{3.1cm}>{\raggedright}p{3.3cm}>{\raggedright}p{4.7cm}>{\raggedright\arraybackslash}p{2.4cm}}
+\caption{Neurons as devices: the name, the electronic analog, what the device does, and where it appears in the book.}\label{tab:eetypes}\\
+\toprule
+Neuron & Device & What it does & Where in the book \\
+\midrule
+\endfirsthead
+\toprule
+Neuron & Device & What it does & Where in the book \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+\multicolumn{4}{l}{\emph{Filters and integrators}} \\
+leaky integrating neuron & RC integrator with a comparator & sums inputs within a window $\tau$ and fires at threshold & Ch.~\ref{sec:glutcomputer}, \eqref{eq:glutneuron} \\
+coincidence detector & AND with a time window & fires only if the inputs arrive almost together; very small $\tau$ & Ch.~\ref{sec:glutcomputer}, \ref{sec:code}, \eqref{eq:window} \\
+phasic neuron & high-pass filter, edge detector & responds to a change of input and falls silent & Ch.~\ref{sec:sensors} \\
+adapting neuron & high-pass filter with automatic gain control & rate falls under constant input & Ch.~\ref{sec:sensors}, \eqref{eq:nakarushton} \\
+resonator & tank circuit, band-pass filter & responds best to input at its own frequency & Section~\ref{sec:resonator} \\
+leak-free integrator & op-amp integrator & turns velocity into position and holds it & Section~\ref{sec:perfectint} \\
+\midrule
+\multicolumn{4}{l}{\emph{Converters}} \\
+tonic neuron & voltage-to-frequency converter & rate follows the input linearly and hardly tires & Ch.~\ref{sec:code} \\
+graded neuron (no spikes) & analog amplifier, buffer & passes a smooth voltage over a short distance & Ch.~\ref{sec:sensors} \\
+rectifying neuron & half-wave rectifier & the rate is never negative, $[u]_+$ & Ch.~\ref{sec:glutcomputer}, \ref{sec:gaba} \\
+ON--OFF pair & pair of rectifiers, two-wire code & one responds to ``more,'' the other to ``less'' & Ch.~\ref{sec:glutcomputer}, \eqref{eq:dualrail} \\
+neuron with shunting inhibition & analog divider, gain control & divides its input rather than subtracting from it & Ch.~\ref{sec:gaba}, \eqref{eq:shunt} \\
+\midrule
+\multicolumn{4}{l}{\emph{Oscillators and time}} \\
+pacemaker & relaxation oscillator, multivibrator & emits spikes at a constant rate on its own & Ch.~\ref{sec:serocomputer}, \ref{sec:dofa} \\
+pacemaker with an input & voltage-controlled oscillator & its own rhythm, which the input speeds up or slows down & Ch.~\ref{sec:chemoutput} \\
+bursting neuron & gated burst generator & emits bursts of rapid spikes, the ``dashes'' & Ch.~\ref{sec:code}, \eqref{eq:burst} \\
+phase-locked neuron & phase detector, phase-locked loop & fires at a particular phase of the input wave & Ch.~\ref{sec:sensors}, \ref{sec:chemoutput} \\
+axon with delay & delay line & delays the signal by a set time & Ch.~\ref{sec:glutcomputer}, Fig.~\ref{fig:itd} \\
+\midrule
+\multicolumn{4}{l}{\emph{Memory and switching}} \\
+bistable neuron & Schmitt trigger, latch & a brief input puts it into a lasting state & Section~\ref{sec:bistable} \\
+neuron with dendritic branches & multiplexer, small multilayer network & a branch passes its input only if an enabling input is present & Ch.~\ref{sec:synthesis} \\
+\end{longtable}
+\end{center}
+
+One caveat matters more than the whole table: these are not different cells but different \emph{modes}. The same neuron can be an integrator under slow input and a coincidence detector when inhibition has shortened its $\tau$ (Chapter~\ref{sec:code}); a pacemaker in wakefulness and a silent receiver in sleep. Which device results is decided by the ion channels of the membrane and by the broadcast channels that tune them.
+
+\section{Four devices not yet seen in the book}
+
+\subsection{The resonator}
+\label{sec:resonator}
+
+Some neurons have a slow current that opposes any change in voltage: when the voltage rises, the current pulls it down; when it falls, the current pulls it up, but with a lag. To an electronics engineer such a current behaves like an inductance, and together with the membrane capacitance it forms a tank circuit. The neuron responds most strongly to input at a particular frequency, usually from a few to one or two dozen hertz, and more weakly to slower and faster input~\cite{HutcheonYarom2000}. This is a band-pass filter in a single cell: from a noisy input it picks out a rhythm at its own frequency, for example the local rhythm of Chapter~\ref{sec:gaba}.
+
+\subsection{The leak-free integrator}
+\label{sec:perfectint}
+
+A leaky integrator remembers its input only for a time $\tau$, tens of milliseconds. But to stay still, the eye must remember its position for seconds: the command ``turn'' arrives as a brief velocity, while the eye must be held in the new position. The network solves this with the same feedback as the memory of Chapter~\ref{sec:glutcomputer}. If a group of neurons with time constant $\tau$ excites itself with weight $w$, then $\tau\,\dd r/\dd t=-r+w\,r+I$, and the group's time constant is
+\begin{empheq}[box=\keybox]{equation}
+\tau_{\text{eff}} \;=\; \frac{\tau}{1-w} .
+\label{eq:perfectint}
+\end{empheq}
+With $\tau=0.1\,\text{s}$ and $w=0.995$ this gives $20\,\text{s}$: a nearly ideal integrator built from neurons each of which forgets on its own within a tenth of a second~\cite{Seung1996}. The price is fine tuning: with $w$ slightly above one the integrator runs into saturation; slightly below, it forgets quickly. Such an integrator therefore needs constant retuning by learning, like the learning described in Chapter~\ref{sec:motorlearning}.
+
+\subsection{The bistable neuron}
+\label{sec:bistable}
+
+In Chapters~\ref{sec:glutcomputer} and~\ref{sec:gaba} a flip-flop was assembled from a group of neurons. But a flip-flop can also exist in a single cell. Some neurons have a current that, once switched on, sustains the excitation by itself: a brief input puts the neuron into lasting activity, a \emph{plateau}, and inhibition returns it to rest. This is a Schmitt trigger: the neuron has two stable states with hysteresis between them. The \nt{ACET} neurons that control muscles behave this way, for example, and this property is switched on by a broadcast channel: the plateau appears when serotonin reaches the neuron~\cite{Hounsgaard1988}. The same cell is a latch with \nt{SERO} and an ordinary integrator without it.
+
+\subsection{Integrators and resonators}
+
+Theory divides excitable cells into two classes~\cite{Izhikevich2007}. \emph{Integrators} resemble a voltage-controlled oscillator that starts from zero: just above threshold the neuron fires arbitrarily slowly, and its rate rises smoothly with the input. Such a neuron sums everything that arrives and conveys the size of the input well by its rate. \emph{Resonators} resemble an oscillator with a minimum frequency: they cannot fire slowly; at threshold input they immediately emit spikes at a finite rate, and they prefer input at their own frequency. The former are the natural devices of the rate code of Chapter~\ref{sec:code}, the latter of the timing code.
+
+\begin{keyblock}
+\begin{proposition}[One neuron, many devices]
+\label{prop:eetypes}
+By electrical function, neurons act as leaky and leak-free integrators, coincidence detectors, high-pass and band-pass filters, voltage-to-frequency converters, rectifiers, dividers, oscillators, delay lines, and flip-flops. Which device a given cell becomes is set by its ion channels and by the broadcast channels that tune them. The modes themselves are measured; the extent to which the brain uses such reconfiguration for computation is mostly a hypothesis.
+\end{proposition}
+\end{keyblock}
+
+To an engineer this resembles a programmable logic array: the hardware is the same, and the configuration sets the device. Only here the configuration is changed not at programming time but on the fly, by the slow broadcast channels discussed in Chapters~\ref{sec:serocomputer}--\ref{sec:acet}.
+
+\section{Exercises}
+
+\begin{exercise}[\lvlA]
+\label{ex:18:1}
+\emph{Tolerance of a leak-free integrator.} Neurons with $\tau=0.1$~s hold eye position by~\eqref{eq:perfectint} for $T=1$~s with an error of at most $5\%$ either way. (a)~Find the allowed range of $w$. (b)~$w$ is the sum of the weights of $K$ synapses, each with an independent $10\%$ error. For what $K$ does the spread of the sum fit the tolerance?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:18:2}
+\emph{The resonator as a tank circuit.} Describe the slow current of Section~\ref{sec:resonator} by a variable $W$: $C\,\dd V/\dd t=-g_LV-g_wW+I$, $\tau_w\,\dd W/\dd t=V-W$. Show that this is an $RC$ circuit with a parallel branch $R_w=1/g_w$, $L_w=\tau_w/g_w$, and for $C/g_L=10\ms$, $\tau_w=100\ms$, $\alpha=g_w/g_L=4$ find the resonance frequency and the gain of $|Z|$ there over $|Z(0)|$.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:18:3}
+\emph{How an integrator starts firing.} (a)~A neuron $\tau\,\dd V/\dd t=-V+\mu$, $\tau=10\ms$, with threshold $\theta$ and reset to zero. For what $\mu/\theta-1$ is the rate $1$~Hz? (b)~What rate does the model $\tau\,\dd v/\dd t=v^2+\mu$ give (a spike is $v$ escaping to $+\infty$, reset to $-\infty$) at $\mu=0.01$?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:18:4}
+\emph{Simulation: integrator and resonator.} The model of Exercise~\ref{ex:18:2} with $g_L=1$, $\tau_m=10\ms$, $\tau_w=100\ms$, threshold $1$, and reset $V\to0$ ($W$ unchanged) receives $\mu=1.5\sin2\pi ft$, $f=1$--$40$~Hz. In what frequency band does the neuron spike at $\alpha=0$ and at $\alpha=4$? Compare with the condition $1.5\,|Z(f)|>1$.
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:18:5}
+\emph{A single-cell latch.} A neuron with a plateau current: $\tau\,\dd r/\dd t=-r+F(wr+I)$, $F(x)=\min(1,\max(0,x))$, $\tau=10\ms$, $w=1.5$, background $I=-0.2$. (a)~What is the shortest pulse $I=0.3$ that moves the neuron from $r=0$ to the plateau? (b)~What is the smallest amplitude $B$ of a long pulse $I=-0.2-B$ that returns it to rest?
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:18:6}
+\emph{Self-tuning of the integrator.} During gaze fixation the input is $I=0$, a slip sensor gives the drift velocity $e=\dd r/\dd t$, and $\dd w/\dd t=-\eta\,e\,r$. With $w=0.95$, $\tau=0.1$~s, $\langle r^2\rangle=1$, find the $\eta$ at which $|1-w|$ enters the tolerance of Exercise~\ref{ex:18:1} within $60$~s of fixations. What breaks if learning also runs during eye turns?
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:18:7}
+\emph{Why reconfigure a device?} A broadcast channel switches $\alpha$ in the model of Exercise~\ref{ex:18:2} between $0$ and $4$. By what factor does the resonator beat the integrator in signal-to-noise ratio for a weak sine in white current noise at $11$~Hz and at $1$~Hz? Devise a task in which it is the mode switching itself that pays off.
+\end{exercise}

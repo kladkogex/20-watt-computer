@@ -1,0 +1,46 @@
+\chapter{What the Machine Does at Night}
+% full version: chapters/20_sleep.tex
+
+Sleep is not the machine switching off but a change of mode. You can see it in the radio stations. In deep sleep almost all of them are turned down: acetylcholine, noradrenaline, serotonin. In dreaming sleep acetylcholine returns to its daytime level, noradrenaline and serotonin are almost silent, and the output to the muscles is switched off by the brakes; that is why we do not actually run when we run in a dream. All of this is measured.
+
+\section*{When It Is Time to Sleep}
+
+Imagine a capacitor that charges all day while you are awake and discharges at night. The charge is the ``sleep pressure.'' You fall asleep when the charge reaches an upper threshold and wake up when it drops to a lower one. And the thresholds themselves drift smoothly up and down with the daily rhythm we met earlier. Such a simple circuit arrives by itself at sixteen hours of waking and eight hours of sleep. It also explains why after a sleepless night we sleep not twice as long but more deeply: a full capacitor discharges faster. A candidate for the ``charge'' is a substance that builds up in the brain as it works; that it is exactly this substance is still a hypothesis.
+
+\pencilfig{120}{%
+% figures/sleep_{S,H,L}.dat from models/sleep_models.py, t in hours
+\begin{scope}[x=0.1cm, y=2.6cm]
+\foreach \a/\b in {0/4.3,21.2/29.3,45.4/53.4,69.5/72}{\fill[pcBlue, opacity=0.1] (\a,0) rectangle (\b,1);}
+\draw[pen] (0,0) -- (72,0);
+\draw[penlite=pcRed, densely dashed] plot file {figures/sleep_H.dat};
+\draw[penlite=pcGreen, densely dashed] plot file {figures/sleep_L.dat};
+\draw[pcBlue, line width=1.0pt] plot file {figures/sleep_S.dat};
+\foreach \t/\l in {0/0,24/1 day,48/2 days,72/3 days}{\draw[pcGray, line width=0.5pt] (\t,0) -- (\t,-0.04); \node[lbl, anchor=base] at (\t,-0.16) {\l};}
+\node[lbl, text=pcBlue] at (25.25,0.93) {sleep}; \node[lbl, text=pcBlue] at (49.4,0.93) {sleep};
+\end{scope}
+\node[lbl, text=pcRed, anchor=west] at (7.3,2.0) {fall asleep};
+\node[lbl, text=pcGreen!70!black, anchor=west] at (7.3,0.62) {wake up};
+\node[lbl, text=pcBlue, anchor=west] at (7.3,1.35) {sleep pressure};
+}{Sleep pressure builds up by day and melts away at night; we fall asleep at the upper threshold and wake up at the lower one, and both thresholds swing with the time of day.}
+
+\section*{A Slow Swing}
+
+In deep sleep whole regions of the brain switch on and off in sync, less than once a second. This is a familiar circuit by now: a group that excites itself and tires is an oscillator. By day acetylcholine suppresses the fatigue of neurons, and the same group works steadily; at night there is little of it, and the network starts to swing.
+
+\pencilfig{20}{\pencilart{20}}{At night the network swings slowly: at one moment almost all the neurons work, at the next almost all are silent.}
+
+\section*{Fast Forward}
+
+The most interesting thing happens within these swings. Sequences of neuron firings that happened during the day are ``replayed'' anew, and several times faster: about twenty times faster in the memory region, a few times faster in the cortex. If the alignment of these replays with the slow swings is strengthened artificially, memory improves; this is a causal experiment. What is it for? A plausible hypothesis: the slow long-term memory learns from replays mixed in with old material, so that the new does not overwrite the old. Engineers know this trouble: a neural network trained on a new task forgets the old one unless the old examples are repeated.
+
+\section*{Pruning the Connections}
+
+Another measured fact: after sleep the contacts between neurons become smaller on average, by a few to a few dozen percent, in proportion to their size. As if all the volumes were turned down a little with one motion: the ratios are kept, what was learned stays, and room is freed for tomorrow's learning. That this is the main task of sleep is a hypothesis.
+
+\section*{Dreams and Cleaning}
+
+Dreaming sleep resembles a bench test: the machine runs at full power, but the inputs are replaced by internal signals and the output is disconnected. What this is for, we do not know. The idea that during sleep the brain is ``flushed'' of waste is still disputed: there are experiments both for and against.
+
+Most surprising of all: sleep can be local. After long waking, separate patches of the cortex of a waking person ``fall asleep'' for an instant, going silent in the middle of their work.
+
+\fullversion{20}

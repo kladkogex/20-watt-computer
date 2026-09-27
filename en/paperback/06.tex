@@ -1,0 +1,50 @@
+\chapter{How the Machine Learns}
+% full version: chapters/06_dofa.tex
+
+In all the circuits so far, the strength of the connections was chosen by an engineer. A living brain has no engineer. The connections must tune themselves, on the fly, and in such a way that the machine does something useful. That is learning.
+
+The main constraint is very strict. Each connection changes itself, and it can know only what happens nearby: whether the sender is working, whether the receiver is working, and which substances reach it. Nobody can send a connection a personal correction. This rules out the main method for training artificial neural networks, where the error runs backward through the network and each connection gets its own correction.
+
+\section*{Together Means Connected}
+
+The simplest rule: if the sender and the receiver work together, the connection between them grows stronger. It is local and needs no shared timing. Such a rule, with a little forgetting added, finds the most important thing in a stream of signals: whatever varies the most. There is also a version that looks at the timing of the clicks: the connection grows stronger if the sender clicked \emph{before} the receiver, that is, could have been the cause, and weaker if it clicked after.
+
+But these rules have one limit: they learn what is \emph{frequent}, not what is \emph{useful}. A connection that sees only its neighbors does not know whether an action brought juice or pain.
+
+\section*{The Third Signal}
+
+It is brought by dopamine, the ``better than expected'' radio station. Let a connection change only when three things coincide: the sender worked, the receiver worked, and dopamine arrived.
+
+\pencilfig{6}{\pencilart{6}}{The connection grows stronger when both neurons worked together and a third signal arrived: ``it went better than expected.''}
+
+But here is a difficulty: the reward comes not at once but a second or two later. By then the sender and the receiver have long gone quiet. The connection needs a memory that it took part. And it has one: working together leaves a tag on the connection, like a sticker that peels off by itself in a second or two. If dopamine arrives while the sticker holds, the connection changes. If it does not, the tag disappears without a trace. This solves the addressing problem: there is one dopamine for everyone, but only the connections carrying a sticker change.
+
+\pencilfig{106}{%
+\foreach \y/\d/\t in {0/0.9/{on time: stronger},-1.3/3.3/{too late: nothing}}{
+  \draw[pen] (0,\y) -- (4.6,\y);
+  \foreach \s in {0.25,0.33}{\draw[pcBlue, line width=0.8pt] (\s,\y) -- (\s,\y+0.3);}
+  \fill[pcAmber, opacity=0.25] (0.35,\y) -- plot[domain=0.35:4.5, samples=30] (\x,{\y+0.8*exp(-(\x-0.35)/0.8)}) -- (4.5,\y) -- cycle;
+  \draw[penlite=pcAmber] plot[domain=0.35:4.5, samples=30] (\x,{\y+0.8*exp(-(\x-0.35)/0.8)});
+  \draw[pcAmber!80!black, line width=0.9pt] (\d-0.1,\y+0.95) -- (\d+0.07,\y+0.62) -- (\d-0.07,\y+0.6) -- (\d+0.1,\y+0.22);
+  \draw[arr=pcAmber!80!black] (\d+0.09,\y+0.27) -- (\d+0.11,\y+0.12);
+  \node[lbl, anchor=west] at (4.7,\y+0.3) {\t};}
+\node[lbl, text=pcBlue, anchor=south west] at (0.1,0.85) {worked together};
+\node[lbl, text=pcAmber!80!black, anchor=south] at (2.3,0.35) {the tag fades};
+\foreach \x/\l in {0.35/0,1.95/1,3.55/2}{\draw[pcGray, line width=0.5pt] (\x,-1.3) -- (\x,-1.38); \node[lbl, anchor=north] at (\x,-1.38) {\l~s};}
+}{Working together leaves a tag on the connection that fades in a second or two. Dopamine changes only the tagged connections.}
+
+\section*{Noise as Search}
+
+Why does this rule lead to something better and not just anywhere? Imagine you are blindfolded and looking for the top of a hill. You take a random step, and someone shouts ``higher!'' or ``lower!'' If ``higher,'' you keep the step. Step by step you climb without once looking at a map. The brain does the same: neurons jitter a little at random, dopamine reports whether things got better, and the connections that took part shift in the profitable direction. The noise that got in the way of sending messages becomes a search here.
+
+Now it is clear why dopamine reports not the reward but the \emph{surprise}. If it simply shouted ``juice!'' after every success, it would also reinforce everything the network was doing, both right and wrong. In our model such a network does run its connections up thousands of times over, and sometimes gets stuck forever on the worse choice. Subtracting the expectation makes learning fair.
+
+\section*{The Price of One Wire}
+
+Broadcast learning has a price. One signal goes to everyone, and it mixes in the noise of all the neurons that affect the result. The bigger the network, the longer it takes each connection to pick out its own share. So dopamine apparently trains only relatively small circuits that choose actions, while the huge cortex learns mostly by local rules.
+
+\section*{Who Computes the Surprise}
+
+One question remains: how do the dopamine neurons compute ``better than expected''? A critic is needed: a group of neurons that constantly estimates how much good still lies ahead. The surprise is the reward received plus how much the expectation jumped. The lamp lights up: the expectation jumps, a burst. The promised juice arrives: there is a reward, but the expectation is used up at the same instant, no surprise. The juice does not arrive: the expectation collapses for nothing, a dip. All three cases from the first chapter come out by themselves. That dopamine behaves exactly like this is measured. How exactly the brain computes this surprise is still a hypothesis.
+
+\fullversion{6}

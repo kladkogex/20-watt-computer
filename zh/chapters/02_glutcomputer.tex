@@ -1,0 +1,292 @@
+\chapter{\nt{GLUT} 神经元计算什么}
+\label{sec:glutcomputer}
+
+\section{游戏规则}
+
+在第\ref{sec:neurontypes}章中我们看到，大脑中绝大多数神经元是 \nt{GLUT}：它们只兴奋，权重只取正值。取任意多个这样的神经元，然后问：如果只允许使用活体中真实存在的东西，这样的网络能计算什么？
+
+活体中没有让所有元件同时翻转的时钟发生器。每个神经元各自在连续时间中工作：脉冲随时到来、随时离开，延迟各不相同。有\emph{输入}——对光、声或压力起反应的感觉神经元，也有\emph{输出}——控制肌肉的神经元。两者之间是网络，没有谁告诉它什么时候开始计算、什么时候结束。对电子工程师来说，这是一个\emph{异步}电路，元件的延迟事先并不精确知道。
+
+神经元模型取在连续时间中老老实实工作的模型里最简单的一种。静息时神经元膜电压 $V$ 为零。来自神经元 $j$ 的每个脉冲使它跳升 $w_j\ge0$，之后电压以时间常数 $\tau$ 自行回落到零：
+\begin{empheq}[box=\keybox]{equation}
+\tau\,\frac{\dd V}{\dd t} \;=\; -V \;+\; \tau\sum_j w_j \sum_k \delta\bigl(t-t_j^{(k)}-d_j\bigr), \qquad w_j\ge 0 .
+\label{eq:glutneuron}
+\end{empheq}
+其中 $t_j^{(k)}$ 是神经元 $j$ 发放脉冲的时刻，$d_j$ 是从它出发的路径延迟，$\delta$ 是狄拉克 $\delta$ 函数，表示瞬时跳变。当 $V$ 达到阈值 $\theta$ 时，神经元发出一个脉冲，$V$ 复位为零，此后约一毫秒内神经元不能再次发放。典型数值：不同神经元的 $\tau$ 从零点几毫秒到二十毫秒，延迟从零点几毫秒到几十毫秒。这就是\emph{泄漏积分发放神经元}：带阈值的 RC 电路。这是有意的简化：皮层神经元的输入分支本身会产生局部脉冲~\cite{Smith2013}，一个神经元的行为更像一个小型多层网络（第\ref{sec:synthesis}章）。对本章的问题而言，一个 RC 电路就够了。
+
+它与逻辑门的主要区别在于泄漏：神经元对一个脉冲的记忆不是永久的，只持续大约 $\tau$，只有在这个窗口内到达的输入才会相加。
+
+\section{或与与}
+
+从逻辑门开始。如果一个脉冲就能把电压抬到阈值以上，$w\ge\theta$，那么神经元对任一输入的每个脉冲都会发放。这就是\emph{或}门。
+
+与门更有意思。设 $w<\theta<2w$：一个脉冲不够，需要两个。但这时“两个都来了吗”这个问题，在没说明\emph{在多长时间内}之前是没有意义的。设第一个脉冲在时刻 $0$ 到达，第二个在 $\Delta$ 之后到达。第二个到达时，第一个还剩 $we^{-\Delta/\tau}$，若 $we^{-\Delta/\tau}+w\ge\theta$，神经元就发放。由此得到符合窗口：
+\begin{empheq}[box=\keybox]{equation}
+\Delta \;\le\; \Delta_{\max} \;=\; \tau\,\ln\frac{w}{\theta-w} .
+\label{eq:window}
+\end{empheq}
+这不是逻辑与，而是\emph{符合检测器}：时间上的与（图~\ref{fig:coincidence}）。当 $\theta=1.5w$ 时，窗口等于 $\tau\ln2\approx0.7\tau$。对 $\tau=10\ms$ 的皮层神经元，这约为七毫秒。在听觉系统的神经元中，$\tau$ 小于一毫秒，窗口缩小到零点几毫秒。
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=0.9cm,y=1.6cm]
+\foreach \dx/\lab/\c [count=\i] in {0.5/{符合}/red!70!black, 2.6/{不符合}/blue!60!black}{
+ \begin{scope}[xshift={(\i-1)*7.2cm}]
+  \draw[->,gray!70!black] (0,0) -- (6.3,0) node[below left,black] {\small $t$};
+  \draw[->,gray!70!black] (0,0) -- (0,1.75) node[left,black] {\small $V$};
+  \draw[densely dashed,gray!60!black] (0,1.5) -- (6.0,1.5) node[right,black] {\small $\theta$};
+  \draw[very thick,\c] (0,0) -- (1,0) -- (1,1)
+      plot[domain=1:1+\dx,samples=30] (\x,{exp(-(\x-1)/1.5)});
+  \pgfmathsetmacro{\v}{exp(-\dx/1.5)+1}
+  \draw[very thick,\c] (1+\dx,{exp(-\dx/1.5)}) -- (1+\dx,{min(\v,1.5)});
+  \ifdim\v pt<1.5pt
+    \draw[very thick,\c] plot[domain=1+\dx:6,samples=40] (\x,{\v*exp(-(\x-1-\dx)/1.5)});
+  \else
+    \draw[very thick,\c] (1+\dx,1.5) -- (1+\dx,0) -- (6,0);
+    \draw[->,thick,\c] (1+\dx,1.55) -- (1+\dx,1.72) node[above,font=\scriptsize] {脉冲};
+  \fi
+  \draw[->,thick] (1,-0.35) -- (1,-0.08); \draw[->,thick] (1+\dx,-0.35) -- (1+\dx,-0.08);
+  \draw[decorate,decoration={brace,amplitude=3pt,mirror}] (1,-0.42) -- (1+\dx,-0.42) node[midway,below=3pt] {\scriptsize $\Delta$};
+  \node[\c] at (3.5,-0.95) {\small \lab};
+ \end{scope}}
+\end{tikzpicture}
+\caption{符合检测器，阈值 $\theta=1.5w$。左：第二个脉冲在 $\Delta<\Delta_{\max}$ 后到达，和达到阈值，神经元发放。右：$\Delta>\Delta_{\max}$，第一个脉冲几乎什么也没剩下，神经元保持沉默。}
+\label{fig:coincidence}
+\end{figure}
+
+得到与门的另一种办法是利用持续时间，而不是精确时刻。灯亮着的时候，感觉神经元频繁而均匀地发放脉冲；如果一个这样的输入不足以越过阈值，两个就足够，那么只要两个输入都活跃，神经元就一直工作。这样网络按\emph{电平}计算，脉冲到达的精确时间无关紧要。下面的大部分内容正是这样。
+
+\section{做不到的事}
+
+现在试着做一个非门：输入沉默时工作的神经元。做不到：没有输入脉冲，\eqref{eq:glutneuron} 中就没有任何跳变，电压停在零，低于阈值。由许多神经元组成的网络呢？也不行，而且可以对所有网络一次性证明。
+
+用频率来讨论最方便。设 $r_i$ 是神经元 $i$ 的脉冲频率，$I_i$ 是来自输入的驱动，$f_i$ 是它的传递特性：频率如何依赖于总驱动。积分神经元的这一特性是不减的：驱动越大，脉冲越密。达到平衡的网络中，频率满足方程
+\begin{equation}
+r_i \;=\; f_i\Bigl(\sum_j w_{ij}\,r_j + I_i\Bigr), \qquad w_{ij}\ge 0 .
+\label{eq:ratenet}
+\end{equation}
+
+\begin{keyblock}
+\begin{proposition}[单调性]
+\label{prop:monotone}
+设网络~\eqref{eq:ratenet} 只由 \nt{GLUT} 神经元组成，并从完全沉默开始。若加强输入，则没有一个神经元的稳态频率会减小。这样的网络所计算的一切，都是输入的\emph{单调}函数。
+\end{proposition}
+\end{keyblock}
+
+证明。从沉默 $r^{(0)}=0$ 开始，不断把频率代入~\eqref{eq:ratenet} 的右端：$r^{(k+1)}=F\bigl(r^{(k)}\bigr)$。右端 $F$ 对每个自变量都不减，因为权重非负，$f_i$ 不减。由于 $r^{(1)}\ge0=r^{(0)}$，由归纳法 $r^{(k+1)}\ge r^{(k)}$：频率只增不减，收敛到~\eqref{eq:ratenet} 的最小解。若把输入 $I$ 换成更大的 $I'$，则每一步都有 $r^{(k)}(I)\le r^{(k)}(I')$，极限也是如此。真实网络不是一步一步而是连续地趋于平衡，但结论同样成立：在正连接下，两次运行之间开始时成立的不等式始终保持。
+
+对单个脉冲而言，这一结论并不严格成立：多出的一个输入脉冲可能使神经元提前一点发放，而由于一毫秒的不应期，它的下一个脉冲会丢失。但这个效应弱而不可靠，不能拿来计算。对频率而言，单调性是严格的。
+
+后果与任何没有反相器的电路相同。没有非门。没有异或：加上第二个输入不能熄灭输出。最麻烦的是：\emph{活动不能被活动终止}，只能撤掉维持它的东西。
+
+\section{两根导线：接通与断开}
+
+出路由生物体自己给出。许多感觉器官用两组神经元传递刺激：在视觉中，一些细胞对光变强起反应，另一些对光变弱起反应~\cite{Schiller1992}。我们称之为\emph{接通}神经元和\emph{断开}神经元。网络得到的不是一根导线 $x$，而是一对 $(x,\bar x)$；网络自己算不出的“不存在”，由传感器直接告诉它。
+
+有了一对导线，非门就是免费的：把两根导线对调即可。与门和或门各用两个神经元实现：
+\begin{empheq}[box=\keybox]{equation}
+\begin{aligned}
+x\wedge y \;&\to\; \bigl(\;x\wedge y,\;\; \bar x\vee\bar y\;\bigr),\\
+x\vee y \;&\to\; \bigl(\;x\vee y,\;\; \bar x\wedge\bar y\;\bigr).
+\end{aligned}
+\label{eq:dualrail}
+\end{empheq}
+右边所有运算都是单调的，所以没有违反命题~\ref{prop:monotone}。
+
+对异步电路来说，双线编码还有第二个优点，而且更重要。一对导线有三种状态：“是”“否”，以及两根都沉默时的\emph{“尚无答案”}。接收者判断计算已经完成，靠的不是时钟，而是信号本身：每一对中恰好有一根导线开始工作。两次刺激之间传感器沉默，网络回到静默，为下一次做好准备。异步电子学正是用这一手法构造在元件延迟任意时都能正确工作的电路~\cite{Sparso2001}。
+
+\begin{keyblock}
+\begin{proposition}[异步计算]
+\label{prop:dualrail}
+如果每个输入都以“接通—断开”一对导线的形式到来，那么由 \nt{GLUT} 神经元组成的网络可以计算输入的任意逻辑函数。答案同样以成对导线的形式给出，答案是否就绪，看每一对中是否有一根导线开始工作即可。这不需要统一的节拍。代价是神经元数目大约翻倍。
+\end{proposition}
+\end{keyblock}
+
+例子是异或：“两个刺激中恰好有一个发生了变化”。答案的正导线是 $(x\wedge\bar y)\vee(\bar x\wedge y)$，反导线是 $(x\wedge y)\vee(\bar x\wedge\bar y)$。一共六个神经元，没有一个需要抑制（图~\ref{fig:dualxor}）。
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=1cm,y=1cm,
+  nrn/.style={circle,draw,very thick,fill=blue!6,minimum size=0.75cm,inner sep=0pt,font=\small},
+  inp/.style={font=\small}]
+\node[inp] (X)  at (0,3.3) {$x$};
+\node[inp] (Xb) at (0,2.2) {$\bar x$};
+\node[inp] (Y)  at (0,1.1) {$y$};
+\node[inp] (Yb) at (0,0)   {$\bar y$};
+\node[nrn] (A1) at (3.2,3.3) {$2$};
+\node[nrn] (A2) at (3.2,2.2) {$2$};
+\node[nrn] (A3) at (3.2,1.1) {$2$};
+\node[nrn] (A4) at (3.2,0)   {$2$};
+\node[nrn] (O)  at (7.2,2.75) {$1$};
+\node[nrn] (Ob) at (7.2,0.55) {$1$};
+\foreach \s/\t in {X/A1,Yb/A1,Xb/A2,Y/A2,X/A3,Y/A3,Xb/A4,Yb/A4}{\draw[->,thick,blue!60!black] (\s) -- (\t);}
+\draw[->,thick,blue!60!black] (A1) -- node[pos=0.45,above,sloped,font=\scriptsize,black] {$x\wedge\bar y$} (O);
+\draw[->,thick,blue!60!black] (A2) -- node[pos=0.45,below,sloped,font=\scriptsize,black] {$\bar x\wedge y$} (O);
+\draw[->,thick,blue!60!black] (A3) -- node[pos=0.45,above,sloped,font=\scriptsize,black] {$x\wedge y$} (Ob);
+\draw[->,thick,blue!60!black] (A4) -- node[pos=0.45,below,sloped,font=\scriptsize,black] {$\bar x\wedge\bar y$} (Ob);
+\draw[->,very thick,red!70!black] (O) -- (8.6,2.75) node[right,black] {$x\oplus y$：“是”};
+\draw[->,very thick,red!70!black] (Ob) -- (8.6,0.55) node[right,black] {$\overline{x\oplus y}$：“否”};
+\node[below,font=\small,gray!40!black] at (3.2,-0.55) {与：阈值 $2$};
+\node[below,font=\small,gray!40!black] at (7.2,-0.55) {或：阈值 $1$};
+\node[below,font=\small,gray!40!black] at (0,-0.55) {成对导线};
+\end{tikzpicture}
+\caption{用双线编码、仅由 \nt{GLUT} 神经元实现的异或。圆圈中的数是以单个输入权重为单位的阈值。四个与神经元识别输入的四种组合，两个或神经元把它们汇集成一对答案导线。}
+\label{fig:dualxor}
+\end{figure}
+
+\section{用延迟代替时钟}
+
+涉及时间的计算，只需要导线中的延迟和符合检测器。最好的例子是大脑如何判断声音从哪里来。
+
+来自侧面声源的声音先到达近侧的耳朵，后到达远侧的耳朵。时间差取决于方向：声源在正前方时为零，在正侧方时，对人来说为 $0.22\,\text{m}/343\,\text{m/s}\approx0.6\ms$。大脑能分辨约十\emph{微秒}的差别~\cite{KlumppEady1956,Grothe2010}，尽管神经元本身发放的精度不超过零点几毫秒。这是怎么做到的？
+
+让来自左耳的导线沿一排符合检测器从左向右走，来自右耳的导线从右向左走（图~\ref{fig:itd}）。信号在导线上以速度 $v$ 传播。对于位于长度为 $L$ 的一排中、距左端 $x$ 处的检测器，左侧信号需要走 $x/v$，右侧信号需要走 $(L-x)/v$。如果声音到达右耳晚了 $\delta t$，两个信号就会在满足下式的位置同时相遇：
+\begin{empheq}[box=\keybox]{equation}
+\frac{x}{v} \;=\; \frac{L-x}{v} + \delta t
+\quad\Longrightarrow\quad
+x \;=\; \frac{L}{2} + \frac{v\,\delta t}{2} .
+\label{eq:itd}
+\end{empheq}
+只有两个信号在窗口~\eqref{eq:window} 内到达的那个检测器才会发放。发放检测器的编号就是声源的方向。时间差变成了\emph{位置}。
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  nrn/.style={circle,draw,very thick,fill=blue!6,minimum size=0.7cm,inner sep=0pt}]
+\foreach \k in {0,...,6}{\node[nrn] (D\k) at (1.4*\k,0) {\scriptsize $2$};}
+\node[nrn,fill=red!15] at (D4) {\scriptsize $2$};
+\draw[->,thick,blue!60!black] (-1.4,0.9) node[left,black] {\small 左耳} -- (9.2,0.9);
+\draw[->,thick,orange!85!black] (9.8,-0.9) node[right,black] {\small 右耳} -- (-0.8,-0.9);
+\foreach \k in {0,...,6}{
+  \draw[->,blue!60!black] (1.4*\k,0.9) -- (D\k.north);
+  \draw[->,orange!85!black] (1.4*\k,-0.9) -- (D\k.south);}
+\draw[->,thick,red!70!black] (D4.north east) ++(0.1,0.05) -- ++(0.5,0.45) node[above right,font=\small,black] {发放};
+\node[font=\small,gray!40!black] at (4.2,-1.5) {延迟增大 $\longrightarrow$ \hspace{2.2cm} $\longleftarrow$ 延迟增大};
+\pic[scale=1.4] at (-2.3,1.75) {speaker};
+\node[font=\scriptsize,align=center] at (-2.3,2.35) {声源在左};
+\end{tikzpicture}
+\caption{判断声音的方向。来自两耳的信号相向而行；每个圆圈是阈值为 $2$ 的符合检测器。如果声音到达右耳较晚，信号就按公式~\eqref{eq:itd} 在中点右侧相遇。网络的输出是发放神经元的编号。这里声源在左：声音先到达左耳。}
+\label{fig:itd}
+\end{figure}
+
+这里既没有时钟，也没有抑制，甚至没有双线编码：网络不回答“是”或“否”，而是在许多神经元中指出一个。这种由延迟线和符合检测器组成的电路，看来确实在鸟类听觉脑干中工作~\cite{Carr1990}。微秒级的精度不是来自每个神经元的精度，而是来自检测器数量多、每个都盯着自己的延迟。在哺乳动物中没有找到这样一排延迟：那里同样的任务看来由符合检测器完成，它们由 \nt{GLYC} 神经元发出的、时间上精确安排的抑制来调谐~\cite{Brand2002,Grothe2010}。抑制如何收窄符合窗口，我们将在第\ref{sec:gaba}章以 \nt{GABA} 为例讨论；甘氨酸的抑制方式与之相同，也是打开接收者的氯通道。
+
+\section{存储}
+
+计算机需要存储。在这样的网络中，存储就是自我维持的活动。取一群彼此强连接的 \nt{GLUT} 神经元，用一个频率 $r$ 来描述它（图~\ref{fig:recurrentgroup}a）。平衡时 $r=f(wr+I)$，其中 $w$ 是这群神经元对自身的反馈强度，$I$ 是外来驱动。用图解法求解这个方程：让曲线 $f(wr+I)$ 与直线 $r$ 相交（图~\ref{fig:bistable}）。
+
+\begin{figure}[t]
+\centering
+% (b): tau dr/dt = -r + f(w r + I), f as in fig:bistable, w=1, I=0.6; Euler dt=0.001 tau.
+\begin{tikzpicture}[>=Stealth,
+  nrn/.style={circle,draw,thick,fill=blue!6,minimum size=0.5cm,inner sep=0pt}]
+\begin{scope}
+\node[font=\small] at (-0.5,1.55) {(a)};
+\foreach \k in {1,...,6}{\node[nrn] (n\k) at ({1.4+1.0*cos(60*\k)},{1.0*sin(60*\k)}) {};}
+\foreach \a/\b in {1/2,2/3,3/4,4/5,5/6,6/1,1/4,2/5,3/6}{\draw[<->,blue!60!black] (n\a) -- (n\b);}
+\foreach \k in {2,3,4}{\draw[->,thick,green!45!black] ($(n\k)+(-0.95,0)$) -- (n\k);}
+\node[font=\small,green!45!black] at (-0.35,-0.45) {$I$};
+\node[font=\Large] at (3.1,0) {$\approx$};
+\node[nrn,minimum size=0.85cm,font=\small] (R) at (4.35,-0.1) {$r$};
+\draw[->,thick,blue!60!black] (R) edge[loop above,looseness=6] node[above,font=\small] {$w$} (R);
+\draw[->,thick,green!45!black] (3.55,-0.95) node[left,font=\small] {$I$} -- (R);
+\end{scope}
+\begin{scope}[xshift=6.3cm,y=2.6cm,x=1.05cm]
+\node[font=\small] at (-0.6,1.25) {(b)};
+\draw[->,gray!70!black] (0,0) -- (7.3,0) node[below left,font=\small,black] {$t/\tau$};
+\draw[->,gray!70!black] (0,0) -- (0,1.12) node[left,font=\small,black] {$r$};
+\foreach \t in {0,2,4,6}{\draw[gray!60!black] (\t,-0.02) -- (\t,0.02); \node[below,font=\scriptsize] at (\t,0) {\t};}
+\draw[densely dotted,gray!60!black] (0,0.5) -- (7,0.5) node[right,font=\scriptsize,black,align=left] {写入\\阈值};
+\fill[green!45!black,opacity=0.25] (1,-0.2) rectangle (2,-0.13);
+\fill[gray!60!black,opacity=0.35] (1,-0.29) rectangle (1.5,-0.22);
+\draw[very thick,blue!60!black] plot coordinates {(0.0,0.002) (0.1,0.002) (0.2,0.002) (0.3,0.002) (0.4,0.002) (0.5,0.002) (0.6,0.002) (0.7,0.002) (0.8,0.002) (0.9,0.002) (1.0,0.002) (1.1,0.083) (1.2,0.165) (1.3,0.242) (1.4,0.313) (1.5,0.378) (1.6,0.437) (1.7,0.491) (1.8,0.539) (1.9,0.583) (2.0,0.623) (2.1,0.643) (2.2,0.665) (2.3,0.688) (2.4,0.71) (2.5,0.732) (2.6,0.753) (2.7,0.773) (2.8,0.792) (2.9,0.81) (3.0,0.826) (3.2,0.855) (3.4,0.88) (3.6,0.9) (3.8,0.917) (4.0,0.931) (4.4,0.953) (4.8,0.967) (5.2,0.977) (5.6,0.984) (6.0,0.988) (6.5,0.992) (7.0,0.994)};
+\draw[very thick,gray!60!black,densely dashed] plot coordinates {(0.0,0.002) (0.1,0.002) (0.2,0.002) (0.3,0.002) (0.4,0.002) (0.5,0.002) (0.6,0.002) (0.7,0.002) (0.8,0.002) (0.9,0.002) (1.0,0.002) (1.1,0.083) (1.2,0.165) (1.3,0.242) (1.4,0.313) (1.5,0.378) (1.6,0.358) (1.7,0.336) (1.8,0.313) (1.9,0.291) (2.0,0.269) (2.2,0.228) (2.4,0.191) (2.6,0.159) (2.8,0.133) (3.0,0.11) (3.2,0.091) (3.4,0.076) (3.6,0.063) (3.8,0.052) (4.0,0.043) (4.4,0.03) (4.8,0.021) (5.2,0.015) (5.6,0.011) (6.0,0.008) (6.5,0.006) (7.0,0.004)};
+\node[font=\scriptsize,blue!60!black,anchor=west] at (3.3,0.8) {驱动 $1\tau$：已写入};
+\node[font=\scriptsize,gray!50!black,anchor=west] at (2.3,0.3) {驱动 $0.5\tau$：熄灭};
+\end{scope}
+\end{tikzpicture}
+\caption{与自身强连接的神经元群。(a)~许多相互兴奋的 \nt{GLUT} 神经元，表现得就像一个频率为 $r$、以强度 $w$ 自我兴奋的神经元；外部送来驱动 $I$。(b)~$w=1$、曲线 $f$ 与图~\ref{fig:bistable} 相同时，神经元群的频率随时间的变化。驱动 $I=0.6$ 施加的时段用坐标轴下方的色条标出。如果它持续 $1\tau$，神经元群来得及越过不稳定点 $r=0.5$，燃起来，驱动结束后仍保持活跃。如果只持续 $0.5\tau$，它够不到这一点，又熄灭下去：要写入一个比特，驱动必须持续约 $0.7\tau$ 以上。}
+\label{fig:recurrentgroup}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=5cm,y=3.2cm]
+\draw[->,gray!70!black] (0,0) -- (1.1,0) node[below left,black] {\small $r$};
+\draw[->,gray!70!black] (0,0) -- (0,1.1);
+\draw[thick,gray!60!black] (0,0) -- (1.05,1.05) node[right,black] {\small $r$};
+\draw[very thick,blue!60!black] plot[domain=0:1.05,samples=80] (\x,{1/(1+exp(-(\x-0.5)/0.08))});
+\draw[very thick,red!70!black,densely dashed] plot[domain=0:1.05,samples=80] (\x,{1/(1+exp(-(\x+0.3-0.5)/0.08))});
+\fill[blue!60!black] (0.002,0.002) circle (0.018);
+\draw[blue!60!black,fill=white,thick] (0.5,0.5) circle (0.018);
+\fill[blue!60!black] (0.998,0.998) circle (0.018);
+\node[below right,font=\small] at (0.02,0.0) {关};
+\node[right,font=\small] at (0.52,0.46) {不稳定};
+\node[below,font=\small] at (0.99,0.96) {开};
+\node[anchor=east,font=\small,red!70!black] at (0.19,0.62) {$f(wr+I)$};
+\node[anchor=west,font=\small,blue!60!black] at (0.45,0.1) {$f(wr)$};
+\end{tikzpicture}
+\caption{由强反馈 \nt{GLUT} 神经元群构成的存储单元。实线是没有外部驱动的情形：与直线 $r$ 有两个稳定交点（“关”和“开”），中间还有一个不稳定交点。短暂的驱动 $I$（虚线）只留下上面那个交点。}
+\label{fig:bistable}
+\end{figure}
+
+如果反馈足够强，就有三个交点：下面的是静默，上面的是神经元群全力发放，中间的不稳定。这就得到了一个有两个稳定状态的元件——触发器。往里写入 1 很容易：短暂的驱动抬高曲线，下面的交点消失，神经元群燃起来，并在驱动结束后继续保持活跃（图~\ref{fig:recurrentgroup}b）。驱动太短，来不及把神经元群推到不稳定点，它就又熄灭下去。这种在刺激消失后还能持续数秒的自我维持活动，确实在大脑中观察到，被认为是短时记忆的基础~\cite{Wang2001}。但这并不是记住几秒钟的唯一方式。记录也可以存放在突触本身的慢变量中：一串脉冲之后的易化（就像第\ref{sec:code}章中的“划”突触）能维持约一秒，网络在短暂的爆发之间几乎可以保持沉默——这不是触发器，而是一个充了电的电容器~\cite{Mongillo2008}。在记忆保持期间确实观察到这种“安静”的间歇~\cite{Stokes2015}，而且不靠持续脉冲的存储更省能量。皮层在什么情况下用哪种方式，尚有争论。
+
+那么怎么擦除？按命题~\ref{prop:monotone}，用活动是做不到的；只能\emph{撤掉}某样东西。第一种办法是撤掉支撑：如果这群神经元只有在另一群神经元的驱动下才保持活跃，记忆就随驱动一起熄灭。第二种是疲劳。真实突触在长时间工作时递质储备会耗竭~\cite{Tsodyks1997}，神经元中还会累积降低兴奋性的慢电流。反馈变弱，上面的交点消失，神经元群在几秒后自行熄灭。这样得到的存储由信号开启，却只能由时间关闭。
+
+\section{序列}
+
+可以不要时钟，而用\emph{由事件启动的定时器}。把若干 \nt{GLUT} 神经元群连成一条链：第一群兴奋第二群，第二群兴奋第三群，依此类推。外部信号点燃第一群，活动波沿链传播，每一环比前一环晚一两个延迟，而且只发放一次：脉冲刚过后神经元处于不应期，而波已经向前传去。
+
+这样的链度量从事件开始经过的时间：第 $k$ 环发放了，就说明从启动算起已经过去了 $k$ 个延迟。把它的输出接到肌肉上，就得到一串自行展开的动作。鸣禽唱歌时，某个脑区中的单个 \nt{GLUT} 神经元严格依次发放，各自对应歌曲中的一个时刻——非常像这样的链~\cite{Hahnloser2002}。
+
+与时钟不同，这条链在未被启动时保持沉默，只运行一次，而且只为连在它上面的对象计时。网络仍然没有共同的节拍。
+
+\section{还缺什么}
+
+仅由 \nt{GLUT} 神经元、不用抑制，就能做出很多东西。但还缺三样，而且三样都源于命题~\ref{prop:monotone}。
+
+\emph{选择。}网络必须选定一个方向、一个动作。如果两个刺激几乎相等，图~\ref{fig:itd} 的网络中两个输出都会发放，却没有办法压下弱的、保留强的。
+
+\emph{复位。}不能用信号擦除存储。
+
+\emph{稳定。}在连接并非由工程师规划的网络中，正反馈环不可避免，其中的活动可能雪崩式增长（第\ref{sec:neurontypes}章）。唯一的刹车就是同样的疲劳，既慢又粗糙。
+
+这三种毛病用同一剂药就能治好：用脉冲熄灭脉冲的神经元。这就是 \nt{GABA}，需要它不是为了计算，而是为了选择、复位，以及让计算处于控制之下。
+
+\section{习题}
+
+\begin{exercise}[\lvlA]
+\label{ex:02:1}
+\emph{听觉检测器阵列。}来自两耳的信号沿图~\ref{fig:itd} 的导线以 $5$~m/s 的速度传播，最大到达时间差为 $0.64\ms$。检测器是~\eqref{eq:glutneuron} 型神经元，$\tau=0.5\ms$，$\theta=1.5w$，排列得使相邻检测器能区分 $10\,\mu$s。一排有多少个检测器？一个声音会使其中多少个发放？
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:02:2}
+\emph{输入不等使窗口偏移。}符合检测器~\eqref{eq:glutneuron}，$\tau=0.5\ms$，$\theta=1.5$，从权重分别为 $1$ 和 $0.8$ 的两个输入各收到一个脉冲。求符合窗口及其中心。如果来自一只耳朵的输入比另一只弱 $20\,\%$，图~\ref{fig:itd} 的阵列会产生多少微秒的误差？
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:02:3}
+\emph{哪些网络不振荡。}网络 $\tau\dot r_i=-r_i+f_i\bigl(\textstyle\sum_jw_{ij}r_j+I_i\bigr)$，$f_i$ 不减，$i\ne j$ 时 $w_{ij}\ge0$，是单调的，稳定且不振荡。证明：每个环中抑制连接数为偶数的网络，可通过替换 $r_i\to\pm r_i$ 化为这种网络。两群神经元的相互抑制会振荡吗？\nt{GLUT}--\nt{GABA} 环呢？
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:02:4}
+\emph{设计：双线加法器。}每个比特用一对导线 $(x,\bar x)$ 传送。用 \nt{GLUT} 神经元搭建三个比特的全加器，输出和 $(S,\bar S)$ 与进位 $(C,\bar C)$ 两对导线，给出权重和阈值。限定八个神经元以内。若像图~\ref{fig:dualxor} 那样用与、或元件搭建，需要多少个？
+\end{exercise}
+
+\begin{exercise}[\lvlB]
+\label{ex:02:5}
+\emph{建模：写入要多久。}图~\ref{fig:recurrentgroup} 的神经元群：$\tau\dot r=-r+f(r+I)$，$f(u)=1/\bigl(1+e^{-(u-0.5)/0.08}\bigr)$，写入前处于下方状态；驱动 $I$ 施加时长 $T$。数值求出 $I=0.6$ 时能写入比特的最小 $T$，以及阈值 $I_c$：低于它时无论 $T$ 多大都写不进比特。
+\end{exercise}
+
+\begin{exercise}[\lvlA]
+\label{ex:02:6}
+\emph{链作为定时器。}链的每一环是 $100$ 个 \nt{GLUT} 神经元，延迟 $2\ms$，独立散布 $0.2\ms$。(a)~量出 $1$~s 需要多少神经元？相对误差多大？它如何依赖于时间间隔？(b)~真实定时器的误差在任何间隔下都是 $5\,\%$。什么样的散布来源会造成这种情况？
+\end{exercise}
+
+\begin{exercise}[\lvlC]
+\label{ex:02:7}
+\emph{研究：触发器还是电容器。}$100$ 个神经元把一个比特保持 $10$~s。触发器：每个神经元每秒发放 $20$ 个脉冲。电容器：易化量 $u$ 以 $\tau_F=1$~s 衰减，$u\ge u_{\max}/2$ 时比特可读，刷新是每个神经元发一串三个脉冲。电容器省多少倍？神经元群被压制 $200\ms$ 后，比特会怎样？
+\end{exercise}
