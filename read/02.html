@@ -1,0 +1,815 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<script>try{var t=localStorage.getItem("20w-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);}catch(e){}if(window.self!==window.top)document.documentElement.classList.add("embedded");</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Глава 2. Что вычисляют GLUT-нейроны · Компьютер на 20 ваттах</title>
+<meta name="description" content="В главе 1 мы увидели, что подавляющее большинство нейронов мозга — GLUT : они только возбуждают, их веса только положительны. Возьмём сколько угодно таких нейронов и спросим: что …">
+<link rel="canonical" href="https://kladkogex.github.io/20-watt-computer/read/02.html">
+<meta property="og:type" content="book">
+<meta property="og:title" content="Глава 2. Что вычисляют GLUT-нейроны · Компьютер на 20 ваттах">
+<meta property="og:description" content="В главе 1 мы увидели, что подавляющее большинство нейронов мозга — GLUT : они только возбуждают, их веса только положительны. Возьмём сколько угодно таких нейронов и спросим: что …">
+<meta property="og:url" content="https://kladkogex.github.io/20-watt-computer/read/02.html">
+<meta property="og:locale" content="ru_RU">
+<meta property="og:image" content="https://kladkogex.github.io/20-watt-computer/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Your brain runs on 20 watts. Here is its datasheet. The 20-Watt Computer, a free textbook for engineers.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://kladkogex.github.io/20-watt-computer/og-card.png">
+<meta name="twitter:title" content="Глава 2. Что вычисляют GLUT-нейроны · The 20-Watt Computer">
+<meta name="twitter:description" content="В главе 1 мы увидели, что подавляющее большинство нейронов мозга — GLUT : они только возбуждают, их веса только положительны. Возьмём сколько угодно таких нейронов и спросим: что …">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Chapter", "name": "Что вычисляют GLUT-нейроны", "url": "https://kladkogex.github.io/20-watt-computer/read/02.html", "position": 2, "inLanguage": "ru", "isAccessibleForFree": true, "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/", "author": {"@type": "Person", "name": "Константин Кладько", "alternateName": "Konstantin Kladko"}, "isPartOf": {"@type": "Book", "name": "Компьютер на 20 ваттах. Как вычисляет мозг: количественный подход для инженеров", "alternateName": "The 20-Watt Computer: How the Brain Computes. A Quantitative Approach for Engineers", "author": {"@type": "Person", "name": "Константин Кладько", "alternateName": "Konstantin Kladko"}, "url": "https://kladkogex.github.io/20-watt-computer/", "inLanguage": "ru", "isAccessibleForFree": true, "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/"}}</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap">
+<link rel="stylesheet" href="book.css">
+</head>
+<body>
+<header class="bar">
+  <a class="home" href="../#toc"><span class="w">20</span> <span data-ru="Компьютер на 20 ваттах" data-en="The 20-Watt Computer">Компьютер на 20 ваттах</span></a>
+  <label class="jump"><span class="sr" data-ru="Перейти к главе" data-en="Go to chapter">Перейти к главе</span>
+    <select id="jump"></select></label>
+  <div class="langs" role="group" aria-label="Language">
+    <button class="chip" id="lang-ru" type="button">RU</button>
+    <button class="chip" id="lang-en" type="button">EN</button>
+    <button class="chip theme" id="theme" type="button" aria-label="Light or dark theme" title="Light / dark">☾</button>
+  </div>
+</header>
+
+<main class="page">
+  <div class="pagehead">
+    <p class="kicker" data-ru="Глава 2" data-en="Chapter 2">Глава 2</p>
+    <h1><span class="t-full">Что вычисляют <span class="nt">GLUT</span>-нейроны</span><span class="t-short">Машина без дирижёра</span></h1>
+    <div class="mode" role="group" aria-label="Version" data-has-short="true">
+      <button type="button" class="seg" data-mode="short"><b data-ru="Коротко" data-en="Short">Коротко</b><span data-ru="без формул, с рисунками" data-en="no formulas, with drawings">без формул, с рисунками</span></button>
+      <button type="button" class="seg" data-mode="full"><b data-ru="Полностью" data-en="Full">Полностью</b><span data-ru="формулы, модели, задачи" data-en="formulas, models, exercises">формулы, модели, задачи</span></button>
+    </div>
+    <p class="lang-note" data-ru="" data-en="The online reader is in Russian for now; the book in other languages is in the PDF downloads in the menu.">.</p>
+  </div>
+
+  <article class="text full" id="text-full">
+
+ <a id="x5-150002"></a>
+ <h3 class="sectionHead"><span class="titlemark">2.1 </span> <a id="x5-160002.1"></a>Правила игры</h3>
+<p class="noindent">В главе <a href="01.html#x4-40001">1</a> мы увидели, что подавляющее большинство нейронов мозга — <span class="nt">GLUT</span>: они только
+возбуждают, их веса только положительны. Возьмём сколько угодно таких нейронов и спросим:
+что может вычислить такая сеть, если разрешать себе только то, что бывает в живом
+организме?
+</p><p class="indent"> А в живом организме нет тактового генератора, который переключал бы все элементы
+одновременно. Каждый нейрон работает сам по себе, в непрерывном времени: импульсы приходят
+и уходят когда придётся, с разными задержками. Есть <span class="lati-1095">входы </span>— чувствительные нейроны,
+которые срабатывают от света, звука или давления, — и <span class="lati-1095">выходы </span>— нейроны, которые управляют
+мышцами. Между ними — сеть, и никто не говорит ей, когда начинать и когда заканчивать
+вычисление. Для электронщика это <span class="lati-1095">асинхронная </span>схема с элементами, задержки которых заранее
+точно не известны.
+</p><p class="indent"> Модель нейрона возьмём самую простую из тех, что честно работают в непрерывном времени.
+Напряжение <math display="inline"><mi>V</mi> </math>
+на мембране нейрона в покое равно нулю. Каждый пришедший импульс от нейрона
+<math display="inline"><mi>j</mi></math> скачком
+поднимает его на <math display="inline"><msub><mrow><mi>w</mi></mrow><mrow><mi>j</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">≥</mo> <mn>0</mn></math>,
+после чего напряжение само стекает обратно к нулю с постоянной времени
+<math display="inline"><mi>τ</mi></math>:
+</p><div class="keyformula"><table class="equation"><tr><td>
+<math display="block" class="equation">
+ <mstyle id="x5-16001r1" class="label"></mstyle><mi>τ</mi><mspace width="0.17em" class="thinspace"/><mfrac><mrow><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>V</mi> </mrow> 
+ <mrow><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>t</mi></mrow></mfrac> <mspace width="0.28em" class="thickpace"/> <mo class="MathClass-rel" stretchy="false">=</mo> <mspace width="0.28em" class="thickpace"/> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>V</mi> <mspace width="0.28em" class="thickpace"/> <mo class="MathClass-bin" stretchy="false">+</mo> <mspace width="0.28em" class="thickpace"/><mi>τ</mi><munder class="msub"><mrow><mo>∑</mo>
+ </mrow><mrow><mi>j</mi></mrow></munder 
+><msub><mrow><mi>w</mi></mrow><mrow><mi>j</mi></mrow></msub 
+><munder class="msub"><mrow><mo> ∑</mo>
+ </mrow><mrow><mi>k</mi></mrow></munder 
+><mi>δ</mi><mrow><mo class="MathClass-open" fence="true" mathsize="1.19em">(</mo><mrow><mi>t</mi> <mo class="MathClass-bin" stretchy="false">−</mo> <msubsup><mrow><mi>t</mi></mrow><mrow><mi>j</mi></mrow><mrow><mo class="MathClass-open" stretchy="false">(</mo><mi>k</mi><mo class="MathClass-close" stretchy="false">)</mo></mrow></msubsup 
+> <mo class="MathClass-bin" stretchy="false">−</mo> <msub><mrow><mi>d</mi></mrow><mrow>
+<mi>j</mi></mrow></msub 
+></mrow><mo class="MathClass-close" fence="true" mathsize="1.19em">)</mo></mrow><mo class="MathClass-punc" stretchy="false">,</mo><mspace width="2em" class="qquad"/><msub><mrow><mi>w</mi></mrow><mrow><mi>j</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">≥</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo>
+</math></td><td class="eq-no">(2.1)</td></tr></table>
+</div><p class="noindent"> Здесь <math display="inline"><msubsup><mrow><mi>t</mi></mrow><mrow><mi>j</mi></mrow><mrow><mo class="MathClass-open" stretchy="false">(</mo><mi>k</mi><mo class="MathClass-close" stretchy="false">)</mo></mrow></msubsup 
+></math> — моменты
+импульсов нейрона <math display="inline"><mi>j</mi></math>,
+<math display="inline"><msub><mrow><mi>d</mi></mrow><mrow><mi>j</mi></mrow></msub 
+></math> — задержка на
+пути от него, <math display="inline"><mi>δ</mi></math>
+— дельта-функция, которая и означает мгновенный скачок. Когда
+<math display="inline"><mi>V</mi> </math> достигает
+порога <math display="inline"><mi>𝜃</mi></math>, нейрон
+выдаёт импульс, <math display="inline"><mi>V</mi> </math>
+сбрасывается в ноль, и примерно миллисекунду нейрон не может сработать снова. Типичные
+числа: <math display="inline"><mi>τ</mi></math>
+— от долей миллисекунды до двадцати миллисекунд у разных нейронов, задержки
+— от долей миллисекунды до десятков миллисекунд. Это <span class="lati-1095">интегрирующий нейрон с</span>
+<span class="lati-1095">утечкой</span>: RC-цепь с порогом. Это сознательное упрощение: у нейронов коры ветви
+входов сами выдают местные импульсы <span class="cite">[<a href="refs.html#XSmith2013">150</a>]</span>, и один нейрон ведёт себя скорее как
+небольшая многослойная сеть (глава <a href="10.html#x13-9500010">10</a>). Для вопросов этой главы хватает и одной
+RC-цепи.
+</p><p class="indent"> Главное отличие от логического вентиля — утечка: нейрон помнит импульс не вечно, а примерно
+<math display="inline"><mi>τ</mi></math>, и
+складывается только то, что пришло в пределах этого окна.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">2.2 </span> <a id="x5-170002.2"></a>ИЛИ и И</h3>
+<p class="noindent">Начнём с вентилей. Если один импульс поднимает напряжение выше порога,
+<math display="inline"><mi>w</mi> <mo class="MathClass-rel" stretchy="false">≥</mo> <mi>𝜃</mi></math>,
+нейрон срабатывает на каждый импульс любого входа. Это <span class="lati-1095">ИЛИ</span>.
+</p><p class="indent"> С И интереснее. Пусть <math display="inline"><mi>w</mi> <mo class="MathClass-rel" stretchy="false">&#x003C;</mo> <mi>𝜃</mi> <mo class="MathClass-rel" stretchy="false">&#x003C;</mo> <mn>2</mn><mi>w</mi></math>:
+одного импульса мало, нужны два. Но теперь вопрос «пришли ли оба» не имеет смысла,
+пока не сказано, <span class="lati-1095">в пределах какого времени</span>. Пусть первый импульс пришёл в момент
+<math display="inline"><mn>0</mn></math>, а второй — через время
+<math display="inline"><mi mathvariant="normal">Δ</mi></math>. К приходу второго от
+первого осталось <math display="inline"><mi>w</mi><msup><mrow><mi>e</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">−</mo><mi mathvariant="normal">Δ</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mi>τ</mi></mrow></msup 
+></math>, и
+нейрон сработает, если <math display="inline"><mi>w</mi><msup><mrow><mi>e</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">−</mo><mi mathvariant="normal">Δ</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mi>τ</mi></mrow></msup 
+> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>w</mi> <mo class="MathClass-rel" stretchy="false">≥</mo> <mi>𝜃</mi></math>.
+Отсюда окно совпадения:
+</p><div class="keyformula"><table class="equation"><tr><td>
+<math display="block" class="equation">
+ <mstyle id="x5-17001r2" class="label"></mstyle><mi mathvariant="normal">Δ</mi><mspace width="0.28em" class="thickpace"/> <mo class="MathClass-rel" stretchy="false">≤</mo><mspace width="0.28em" class="thickpace"/><msub><mrow><mi mathvariant="normal">Δ</mi></mrow><mrow><mi class="qopname">max</mi><mo> ⁡ </mo></mrow></msub 
+><mspace width="0.28em" class="thickpace"/> <mo class="MathClass-rel" stretchy="false">=</mo> <mspace width="0.28em" class="thickpace"/><mi>τ</mi><mspace width="0.17em" class="thinspace"/><mi class="loglike">ln</mi><mo>⁡</mo> <mfrac><mrow><mi>w</mi></mrow> 
+<mrow><mi>𝜃</mi> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>w</mi></mrow></mfrac><mo class="MathClass-punc" stretchy="false">.</mo>
+</math></td><td class="eq-no">(2.2)</td></tr></table>
+</div><p class="noindent"> Это не логическое И, а <span class="lati-1095">детектор совпадений</span>: И во времени (рис. <a href="#x5-170021">2.1</a>). При
+<math display="inline"><mi>𝜃</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn><mi>w</mi></math> окно равно
+<math display="inline"><mi>τ</mi><mi class="loglike">ln</mi><mo>⁡</mo><mn>2</mn> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>7</mn><mi>τ</mi></math>. У нейрона
+коры с <math display="inline"><mi>τ</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>
+это около семи миллисекунд. У нейронов слуховой системы, где
+<math display="inline"><mi>τ</mi></math>
+меньше миллисекунды, окно сжимается до долей миллисекунды.
+</p>
+ <figure class="figure"> 
+<a id="x5-170021"></a>
+<p class="noindent"><img src="img/full5x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<figcaption class="caption"><span class="id">Рис. 2.1: </span><span class="content">Детектор совпадений, порог <math display="inline"><mi>𝜃</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn><mi>w</mi></math>.
+Слева второй импульс пришёл через <math display="inline"><mi mathvariant="normal">Δ</mi> <mo class="MathClass-rel" stretchy="false">&#x003C;</mo><msub><mrow> <mi mathvariant="normal">Δ</mi></mrow><mrow><mi class="qopname">max</mi><mo> ⁡ </mo></mrow></msub 
+></math>,
+сумма достигла порога, нейрон сработал. Справа <math display="inline"><mi mathvariant="normal">Δ</mi> <mo class="MathClass-rel" stretchy="false">&#x003E;</mo><msub><mrow> <mi mathvariant="normal">Δ</mi></mrow><mrow><mi class="qopname">max</mi><mo> ⁡ </mo></mrow></msub 
+></math>:
+от первого импульса почти ничего не осталось, и нейрон промолчал.</span></figcaption>
+ </figure>
+<p class="indent"> Другой способ получить И — через длительность, а не через точное время. Пока горит свет,
+чувствительный нейрон выдаёт импульсы часто и ровно; если порогу мало одного такого входа, а
+двух хватает, нейрон работает, пока активны оба. Так сеть вычисляет по <span class="lati-1095">уровням</span>, и
+точное время прихода импульсов неважно. Большая часть того, что ниже, будет именно
+так.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">2.3 </span> <a id="x5-180002.3"></a>Чего сделать нельзя</h3>
+<p class="noindent">Теперь попробуем сделать НЕ: нейрон, который работает, когда вход молчит. Не получится:
+без входных импульсов в (<a href="#x5-16001r1">2.1</a>) нет ни одного скачка, и напряжение стоит на нуле,
+ниже порога. А сеть из многих нейронов? Тоже нет, и это доказывается сразу для всех
+сетей.
+</p><p class="indent"> Удобнее всего говорить о частотах. Пусть
+<math display="inline"><msub><mrow><mi>r</mi></mrow><mrow><mi>i</mi></mrow></msub 
+></math> — частота
+импульсов нейрона <math display="inline"><mi>i</mi></math>,
+<math display="inline"><msub><mrow><mi>I</mi></mrow><mrow><mi>i</mi></mrow></msub 
+></math> — приток от
+входов, а <math display="inline"><msub><mrow><mi>f</mi></mrow><mrow><mi>i</mi></mrow></msub 
+></math>
+— его передаточная характеристика: как частота зависит от суммарного притока. У
+интегрирующего нейрона эта характеристика неубывающая: больше приток — чаще импульсы.
+Частоты в сети, пришедшей в равновесие, удовлетворяют уравнениям </p><table class="equation"><tr><td>
+<math display="block" class="equation">
+ <mstyle id="x5-18001r3" class="label"></mstyle><msub><mrow><mi>r</mi></mrow><mrow><mi>i</mi></mrow></msub 
+><mspace width="0.28em" class="thickpace"/> <mo class="MathClass-rel" stretchy="false">=</mo> <mspace width="0.28em" class="thickpace"/><msub><mrow><mi>f</mi></mrow><mrow><mi>i</mi></mrow></msub 
+><mrow><mo class="MathClass-open" fence="true" mathsize="1.61em">(</mo><mrow><munder class="msub"><mrow><mo>∑</mo>
+ </mrow><mrow><mi>j</mi></mrow></munder 
+><msub><mrow><mi>w</mi></mrow><mrow><mi>i</mi><mi>j</mi></mrow></msub 
+><mspace width="0.17em" class="thinspace"/><msub><mrow><mi>r</mi></mrow><mrow><mi>j</mi></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">+</mo> <msub><mrow><mi>I</mi></mrow><mrow><mi>i</mi></mrow></msub 
+></mrow><mo class="MathClass-close" fence="true" mathsize="1.61em">)</mo></mrow><mo class="MathClass-punc" stretchy="false">,</mo><mspace width="2em" class="qquad"/><msub><mrow><mi>w</mi></mrow><mrow><mi>i</mi><mi>j</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">≥</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo>
+</math></td><td class="eq-no">(2.3)</td></tr></table>
+
+ <div class="tcolorbox keyblock" id="tcolobox-3"> 
+<div class="tcolorbox-content"><div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x5-18002r1"></a>
+<span class="labx-1095">Утверждение 2.1 </span>(Монотонность)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Пусть сеть</span><span class="lati-1095"> </span>(<a href="#x5-18001r3">2.3</a>) <span class="lati-1095">состоит только из </span><span class="nt"><span class="lati-1095">GLUT</span></span><span class="lati-1095">-нейронов и начинает с полной тишины.</span>
+<span class="lati-1095">Если усилить входы, то установившаяся частота ни одного нейрона не уменьшится.</span>
+<span class="lati-1095">Всё, что вычисляет такая сеть, — </span>монотонные <span class="lati-1095">функции входов.</span>
+</p>
+</div>
+ 
+</div> 
+</div>
+<p class="indent"> Доказательство. Начнём с тишины, <math display="inline"><msup><mrow><mi>r</mi></mrow><mrow><mo class="MathClass-open" stretchy="false">(</mo><mn>0</mn><mo class="MathClass-close" stretchy="false">)</mo></mrow></msup 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn></math>,
+и будем подставлять частоты в правую часть (<a href="#x5-18001r3">2.3</a>):
+<math display="inline"><msup><mrow><mi>r</mi></mrow><mrow><mo class="MathClass-open" stretchy="false">(</mo><mi>k</mi><mo class="MathClass-bin" stretchy="false">+</mo><mn>1</mn><mo class="MathClass-close" stretchy="false">)</mo></mrow></msup 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mi>F</mi><mrow><mo class="MathClass-open" fence="true" mathsize="1.19em">(</mo><mrow><msup><mrow><mi>r</mi></mrow><mrow><mo class="MathClass-open" stretchy="false">(</mo><mi>k</mi><mo class="MathClass-close" stretchy="false">)</mo></mrow></msup 
+></mrow><mo class="MathClass-close" fence="true" mathsize="1.19em">)</mo></mrow></math>. Правая
+часть <math display="inline"><mi>F</mi></math>
+не убывает ни по одному аргументу, потому что веса неотрицательны, а
+<math display="inline"><msub><mrow><mi>f</mi></mrow><mrow><mi>i</mi></mrow></msub 
+></math> не убывают.
+Поскольку <math display="inline"><msup><mrow><mi>r</mi></mrow><mrow><mo class="MathClass-open" stretchy="false">(</mo><mn>1</mn><mo class="MathClass-close" stretchy="false">)</mo></mrow></msup 
+> <mo class="MathClass-rel" stretchy="false">≥</mo> <mn>0</mn> <mo class="MathClass-rel" stretchy="false">=</mo> <msup><mrow><mi>r</mi></mrow><mrow><mo class="MathClass-open" stretchy="false">(</mo><mn>0</mn><mo class="MathClass-close" stretchy="false">)</mo></mrow></msup 
+></math>, по
+индукции <math display="inline"><msup><mrow><mi>r</mi></mrow><mrow><mo class="MathClass-open" stretchy="false">(</mo><mi>k</mi><mo class="MathClass-bin" stretchy="false">+</mo><mn>1</mn><mo class="MathClass-close" stretchy="false">)</mo></mrow></msup 
+> <mo class="MathClass-rel" stretchy="false">≥</mo> <msup><mrow><mi>r</mi></mrow><mrow><mo class="MathClass-open" stretchy="false">(</mo><mi>k</mi><mo class="MathClass-close" stretchy="false">)</mo></mrow></msup 
+></math>:
+частоты только растут и приходят к наименьшему решению (<a href="#x5-18001r3">2.3</a>). Если входы
+<math display="inline"><mi>I</mi></math> заменить на
+большие <math display="inline"><msup><mrow><mi>I</mi></mrow><mrow><mi>′</mi></mrow></msup 
+></math>, то на
+каждом шаге <math display="inline"><msup><mrow><mi>r</mi></mrow><mrow><mo class="MathClass-open" stretchy="false">(</mo><mi>k</mi><mo class="MathClass-close" stretchy="false">)</mo></mrow></msup 
+><mo class="MathClass-open" stretchy="false">(</mo><mi>I</mi><mo class="MathClass-close" stretchy="false">)</mo> <mo class="MathClass-rel" stretchy="false">≤</mo> <msup><mrow><mi>r</mi></mrow><mrow><mo class="MathClass-open" stretchy="false">(</mo><mi>k</mi><mo class="MathClass-close" stretchy="false">)</mo></mrow></msup 
+><mo class="MathClass-open" stretchy="false">(</mo><msup><mrow><mi>I</mi></mrow><mrow><mi>′</mi></mrow></msup 
+><mo class="MathClass-close" stretchy="false">)</mo></math>,
+и в пределе тоже. Настоящая сеть приходит в равновесие не шагами, а непрерывно, но для неё
+верно то же самое: при положительных связях неравенство между двумя прогонами,
+выполненное вначале, сохраняется всё время.
+</p><p class="indent"> Для отдельных импульсов утверждение верно не буквально: лишний входной импульс может
+заставить нейрон сработать чуть раньше, и из-за миллисекунды невосприимчивости пропадёт его
+следующий импульс. Но эффект слабый и ненадёжный, вычислять на нём нельзя. Для частот
+монотонность строгая.
+</p><p class="indent"> Следствия те же, что у любой схемы без инверторов. Нет НЕ. Нет исключающего ИЛИ:
+добавление второго входа не может погасить выход. И самое неприятное: <span class="lati-1095">активность нельзя</span>
+<span class="lati-1095">остановить активностью</span>, можно только убрать то, что её поддерживает.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">2.4 </span> <a id="x5-190002.4"></a>Два провода: включение и выключение</h3>
+<p class="noindent">Выход из тупика подсказывает сам организм. Во многих органах чувств раздражитель
+передаётся двумя наборами нейронов: в зрении одни клетки отвечают на усиление света, другие
+— на ослабление <span class="cite">[<a href="refs.html#XSchiller1992">56</a>]</span>. Назовём их <span class="lati-1095">включающими </span>и <span class="lati-1095">выключающими</span>. Вместо одного провода
+<math display="inline"><mi>x</mi></math> сеть получает
+пару <math display="inline"><mo class="MathClass-open" stretchy="false">(</mo><mi>x</mi><mo class="MathClass-punc" stretchy="false">,</mo><mover accent="true"><mrow><mi>x</mi></mrow><mo accent="true">¯</mo></mover><mo class="MathClass-close" stretchy="false">)</mo></math>,
+и отсутствие, которое она не умеет вычислить, ей сообщает сам датчик.
+</p><p class="indent"> С парой проводов НЕ бесплатно: достаточно поменять провода местами. И и ИЛИ делаются
+каждое двумя нейронами:
+</p><div class="keyformula"><table class="equation"><tr><td>
+<math display="block" class="equation">
+<mstyle id="x5-19001r4" class="label"></mstyle><mtable class="aligned" displaystyle="true"><mtr><mtd columnalign="right"><mi>x</mi> <mo class="MathClass-bin" stretchy="false">∧</mo> <mi>y</mi><mspace width="0.28em" class="thickpace"/></mtd><mtd columnalign="left"> <mo class="MathClass-rel" stretchy="false">→</mo><mspace width="0.28em" class="thickpace"/><mrow><mo class="MathClass-open" fence="true" mathsize="1.19em">(</mo><mrow><mspace width="0.28em" class="thickpace"/><mi>x</mi> <mo class="MathClass-bin" stretchy="false">∧</mo> <mi>y</mi><mo class="MathClass-punc" stretchy="false">,</mo><mspace width="0.28em" class="thickpace"/><mspace width="0.28em" class="thickpace"/><mover accent="true"><mrow><mi>x</mi></mrow><mo accent="true">¯</mo></mover> <mo class="MathClass-bin" stretchy="false">∨</mo><mi>ȳ</mi><mspace width="0.28em" class="thickpace"/></mrow><mo class="MathClass-close" fence="true" mathsize="1.19em">)</mo></mrow><mo class="MathClass-punc" stretchy="false">,</mo></mtd><mtd columnalign="right"></mtd>
+</mtr><mtr><mtd columnalign="right"><mi>x</mi> <mo class="MathClass-bin" stretchy="false">∨</mo> <mi>y</mi><mspace width="0.28em" class="thickpace"/></mtd><mtd columnalign="left"> <mo class="MathClass-rel" stretchy="false">→</mo><mspace width="0.28em" class="thickpace"/><mrow><mo class="MathClass-open" fence="true" mathsize="1.19em">(</mo><mrow><mspace width="0.28em" class="thickpace"/><mi>x</mi> <mo class="MathClass-bin" stretchy="false">∨</mo> <mi>y</mi><mo class="MathClass-punc" stretchy="false">,</mo><mspace width="0.28em" class="thickpace"/><mspace width="0.28em" class="thickpace"/><mover accent="true"><mrow><mi>x</mi></mrow><mo accent="true">¯</mo></mover> <mo class="MathClass-bin" stretchy="false">∧</mo><mi>ȳ</mi><mspace width="0.28em" class="thickpace"/></mrow><mo class="MathClass-close" fence="true" mathsize="1.19em">)</mo></mrow><mo class="MathClass-punc" stretchy="false">.</mo></mtd>
+ </mtr> </mtable>
+</math></td><td class="eq-no">(2.4)</td></tr></table>
+</div><p class="noindent"> Справа все операции монотонны, так что утверждение <a href="#x5-18002r1">2.1</a> не нарушено.
+</p><p class="indent"> Для асинхронной схемы у двухпроводного кода есть второе достоинство, даже более важное.
+Пара проводов бывает в трёх состояниях: «да», «нет» и, когда оба молчат, <span class="lati-1095">«ответа пока нет»</span>.
+Получатель узнаёт, что вычисление закончено, не по часам, а по самому сигналу: в
+каждой паре заработал ровно один провод. Между раздражителями датчики молчат, и
+сеть возвращается в тишину, готовая к следующему разу. В асинхронной электронике
+на этом приёме строят схемы, которые работают правильно при любых задержках
+элементов <span class="cite">[<a href="refs.html#XSparso2001">9</a>]</span>.
+</p>
+ <div class="tcolorbox keyblock" id="tcolobox-4"> 
+<div class="tcolorbox-content"><div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x5-19002r2"></a>
+<span class="labx-1095">Утверждение 2.2 </span>(Асинхронное вычисление)<span class="labx-1095">.</span> </span> <span class="lati-1095">Если каждый вход приходит парой</span>
+<span class="lati-1095">проводов «включение—выключение», то сеть из </span><span class="nt"><span class="lati-1095">GLUT</span></span><span class="lati-1095">-нейронов может вычислить</span>
+<span class="lati-1095">любую логическую функцию входов. Ответ тоже приходит парами проводов, а его</span>
+<span class="lati-1095">готовность видна по тому, что в каждой паре заработал один провод. Часы для этого</span>
+<span class="lati-1095">не нужны. Цена — примерно вдвое больше нейронов.</span>
+</p>
+</div>
+ 
+</div> 
+</div>
+<p class="indent"> Пример — исключающее ИЛИ: «изменился ровно один из двух раздражителей». Прямой провод
+ответа — <math display="inline"><mo class="MathClass-open" stretchy="false">(</mo><mi>x</mi> <mo class="MathClass-bin" stretchy="false">∧</mo><mi>ȳ</mi><mo class="MathClass-close" stretchy="false">)</mo> <mo class="MathClass-bin" stretchy="false">∨</mo> <mo class="MathClass-open" stretchy="false">(</mo><mover accent="true"><mrow><mi>x</mi></mrow><mo accent="true">¯</mo></mover> <mo class="MathClass-bin" stretchy="false">∧</mo> <mi>y</mi><mo class="MathClass-close" stretchy="false">)</mo></math>,
+обратный — <math display="inline"><mo class="MathClass-open" stretchy="false">(</mo><mi>x</mi> <mo class="MathClass-bin" stretchy="false">∧</mo> <mi>y</mi><mo class="MathClass-close" stretchy="false">)</mo> <mo class="MathClass-bin" stretchy="false">∨</mo> <mo class="MathClass-open" stretchy="false">(</mo><mover accent="true"><mrow><mi>x</mi></mrow><mo accent="true">¯</mo></mover> <mo class="MathClass-bin" stretchy="false">∧</mo><mi>ȳ</mi><mo class="MathClass-close" stretchy="false">)</mo></math>.
+Это шесть нейронов, и ни один из них не нуждается в торможении (рис. <a href="#x5-190032">2.2</a>).
+</p>
+ <figure class="figure"> 
+<a id="x5-190032"></a>
+<p class="noindent"><img src="img/full6x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<figcaption class="caption"><span class="id">Рис. 2.2: </span><span class="content">Исключающее ИЛИ на двухпроводном коде, только из <span class="nt">GLUT</span>-нейронов. Число в
+кружке — порог в единицах веса одного входа. Четыре нейрона И узнают четыре сочетания
+входов, два нейрона ИЛИ собирают их в пару проводов ответа.</span></figcaption>
+ </figure>
+ <h3 class="sectionHead"><span class="titlemark">2.5 </span> <a id="x5-200002.5"></a>Задержки вместо часов</h3>
+<p class="noindent">Для вычислений со временем достаточно задержек в проводах и детекторов совпадений. Лучший
+пример — то, как мозг определяет, откуда пришёл звук.
+</p><p class="indent"> Звук от источника, расположенного сбоку, приходит в ближнее ухо раньше, чем в
+дальнее. Разница зависит от направления: от нуля, когда источник прямо впереди, до
+<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn><mn>2</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>м</mtext></mstyle><mo class="MathClass-bin" stretchy="false">∕</mo><mn>3</mn><mn>4</mn><mn>3</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>м/с</mtext></mstyle> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>6</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math> у
+человека, когда он точно сбоку. Мозг различает разницу около десяти <span class="lati-1095">микросекунд</span> <span class="cite">[<a href="refs.html#XKlumppEady1956">242</a>, <a href="refs.html#XGrothe2010">57</a>]</span>,
+хотя сами нейроны срабатывают с точностью не лучше долей миллисекунды. Как?
+</p><p class="indent"> Проведём от левого уха провод вдоль ряда детекторов совпадений слева направо, а
+от правого — справа налево (рис. <a href="#x5-200023">2.3</a>). Сигнал бежит по проводу со скоростью
+<math display="inline"><mi>v</mi></math>. До детектора, стоящего
+на расстоянии <math display="inline"><mi>x</mi></math> от левого
+края ряда длины <math display="inline"><mi>L</mi></math>, левый
+сигнал идёт время <math display="inline"><mi>x</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mi>v</mi></math>, правый
+— <math display="inline"><mo class="MathClass-open" stretchy="false">(</mo><mi>L</mi> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>x</mi><mo class="MathClass-close" stretchy="false">)</mo><mo class="MathClass-bin" stretchy="false">∕</mo><mi>v</mi></math>. Если в правое ухо
+звук пришёл позже на <math display="inline"><mi>δ</mi><mi>t</mi></math>,
+два сигнала встретятся одновременно в той точке, где
+</p><div class="keyformula"><table class="equation"><tr><td>
+<math display="block" class="equation">
+ <mstyle id="x5-20001r5" class="label"></mstyle><mfrac><mrow><mi>x</mi></mrow>
+<mrow><mi>v</mi></mrow></mfrac><mspace width="0.28em" class="thickpace"/> <mo class="MathClass-rel" stretchy="false">=</mo> <mspace width="0.28em" class="thickpace"/><mfrac><mrow><mi>L</mi> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>x</mi></mrow> 
+ <mrow><mi>v</mi></mrow></mfrac> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>δ</mi><mi>t</mi><mspace width="1em" class="quad"/><mo class="MathClass-rel" stretchy="false">⟹</mo><mspace width="1em" class="quad"/><mi>x</mi><mspace width="0.28em" class="thickpace"/> <mo class="MathClass-rel" stretchy="false">=</mo> <mspace width="0.28em" class="thickpace"/><mfrac><mrow><mi>L</mi></mrow> 
+<mrow><mn>2</mn></mrow></mfrac> <mo class="MathClass-bin" stretchy="false">+</mo> <mfrac><mrow><mi>v</mi><mspace width="0.17em" class="thinspace"/><mi>δ</mi><mi>t</mi></mrow> 
+ <mrow><mn>2</mn></mrow></mfrac> <mo class="MathClass-punc" stretchy="false">.</mo>
+</math></td><td class="eq-no">(2.5)</td></tr></table>
+</div><p class="noindent"> Сработает только тот детектор, к которому оба сигнала пришли в пределах окна (<a href="#x5-17001r2">2.2</a>). Номер
+сработавшего детектора и есть направление на источник. Разница во времени превратилась в
+<span class="lati-1095">место</span>.
+</p>
+ <figure class="figure"> 
+<a id="x5-200023"></a>
+<p class="noindent"><img src="img/full7x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<figcaption class="caption"><span class="id">Рис. 2.3: </span><span class="content">Определение направления на звук. Сигналы от двух ушей бегут
+навстречу друг другу; каждый кружок — детектор совпадений с порогом
+<math display="inline"><mn>2</mn></math>.
+Если звук пришёл в правое ухо позже, сигналы встречаются правее середины, по
+формуле (<a href="#x5-20001r5">2.5</a>). Выход сети — номер сработавшего нейрона. Здесь источник слева: в левое
+ухо звук пришёл раньше.</span></figcaption>
+ </figure>
+<p class="indent"> Здесь нет ни часов, ни торможения, ни даже двухпроводного кода: сеть не отвечает «да» или
+«нет», а указывает на один нейрон из многих. Такая схема из линий задержки и детекторов
+совпадений, по-видимому, действительно работает в слуховом стволе птиц <span class="cite">[<a href="refs.html#XCarr1990">10</a>]</span>. Микросекундная
+точность получается не из точности каждого нейрона, а из того, что детекторов много и каждый
+смотрит на свою задержку. У млекопитающих ряда таких задержек не нашли: там ту же задачу,
+по-видимому, решают детекторы совпадений, настроенные точно рассчитанным во времени
+торможением от <span class="nt">GLYC</span>-нейронов <span class="cite">[<a href="refs.html#XBrand2002">243</a>, <a href="refs.html#XGrothe2010">57</a>]</span>. Как торможение сужает окно совпадения, мы
+разберём в главе <a href="03.html#x6-250003">3</a> на примере <span class="nt">GABA</span>; глицин тормозит так же, открывая у получателя хлорные
+каналы.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">2.6 </span> <a id="x5-210002.6"></a>Память</h3>
+<p class="noindent">Компьютеру нужна память. В такой сети память — это активность, которая поддерживает сама себя.
+Возьмём группу <span class="nt">GLUT</span>-нейронов, сильно связанных друг с другом, и опишем её одной частотой
+<math display="inline"><mi>r</mi></math> (рис. <a href="#x5-210014">2.4</a>а). В
+равновесии <math display="inline"><mi>r</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mi>f</mi><mo class="MathClass-open" stretchy="false">(</mo><mi>w</mi><mi>r</mi> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>I</mi><mo class="MathClass-close" stretchy="false">)</mo></math>, где
+<math display="inline"><mi>w</mi></math> — сила обратной связи
+группы на саму себя, а <math display="inline"><mi>I</mi></math>
+— приток извне. Решим это уравнение графически, пересекая кривую
+<math display="inline"><mi>f</mi><mo class="MathClass-open" stretchy="false">(</mo><mi>w</mi><mi>r</mi> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>I</mi><mo class="MathClass-close" stretchy="false">)</mo></math> с прямой
+<math display="inline"><mi>r</mi></math>
+(рис. <a href="#x5-210025">2.5</a>).
+</p>
+ <figure class="figure"> 
+<a id="x5-210014"></a>
+<p class="noindent"><img src="img/full8x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<figcaption class="caption"><span class="id">Рис. 2.4: </span><span class="content">Группа, сильно связанная сама с собой. (а) Много <span class="nt">GLUT</span>-нейронов,
+возбуждающих друг друга, ведут себя как один нейрон с частотой
+<math display="inline"><mi>r</mi></math>,
+который возбуждает сам себя с силой <math display="inline"><mi>w</mi></math>;
+извне приходит приток <math display="inline"><mi>I</mi></math>.
+(б) Частота группы во времени при <math display="inline"><mi>w</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn></math>
+и той же кривой <math display="inline"><mi>f</mi></math>,
+что на рис. <a href="#x5-210025">2.5</a>. Приток <math display="inline"><mi>I</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>6</mn></math>
+подаётся на время, отмеченное полоской под осью. Если он держится
+<math display="inline"><mn>1</mn><mi>τ</mi></math>,
+группа успевает перейти неустойчивую точку <math display="inline"><mi>r</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn></math>,
+разгорается и остаётся гореть, когда приток кончился. Если только
+<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn><mi>τ</mi></math>,
+она не дотягивает до этой точки и гаснет обратно: чтобы
+записать бит, приток должен длиться дольше примерно
+<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>7</mn><mi>τ</mi></math>.</span></figcaption>
+ </figure>
+ <figure class="figure"> 
+<a id="x5-210025"></a>
+<p class="noindent"><img src="img/full9x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<figcaption class="caption"><span class="id">Рис. 2.5: </span><span class="content">Память из группы <span class="nt">GLUT</span>-нейронов с сильной обратной связью.
+Сплошная кривая — без внешнего притока: два устойчивых пересечения с прямой
+<math display="inline"><mi>r</mi></math>,
+«выключено» и «включено», и неустойчивое между ними. Короткий приток
+<math display="inline"><mi>I</mi></math>
+(штриховая кривая) оставляет только верхнее.</span></figcaption>
+ </figure>
+<p class="indent"> Если обратная связь сильная, пересечений три: нижнее — тишина, верхнее — группа горит на
+полную, среднее неустойчиво. Получился элемент с двумя устойчивыми состояниями, триггер.
+Записать в него единицу легко: короткий приток поднимает кривую, нижнее пересечение
+исчезает, и группа разгорается — и остаётся гореть, когда приток кончился (рис. <a href="#x5-210014">2.4</a>б). Слишком
+короткий приток не успевает довести группу до неустойчивой точки, и она гаснет обратно.
+Такая самоподдерживающаяся активность, которая держится секунды после того, как
+раздражитель исчез, действительно наблюдается в мозге и считается основой кратковременной
+памяти <span class="cite">[<a href="refs.html#XWang2001">11</a>]</span>. Но это не единственный способ помнить секунды. Запись можно хранить и
+в медленной переменной самих синапсов: после пачки импульсов облегчение, как у
+синапса-«тире» главы <a href="04.html#x7-350004">4</a>, держится около секунды, и сеть между короткими вспышками
+может почти молчать — не триггер, а заряженный конденсатор <span class="cite">[<a href="refs.html#XMongillo2008">148</a>]</span>. Такие «тихие»
+промежутки при удержании в памяти наблюдаются <span class="cite">[<a href="refs.html#XStokes2015">149</a>]</span>, и хранение без постоянных
+импульсов дешевле по энергии. Какой из двух способов кора использует в каком случае,
+обсуждается.
+</p><p class="indent"> А как стереть? По утверждению <a href="#x5-18002r1">2.1</a> активностью — никак; остаётся что-то <span class="lati-1095">убрать</span>. Первый
+способ — убрать поддержку: если группа горит только вместе с притоком от другой группы,
+память гаснет вместе с ним. Второй — усталость. У настоящих синапсов при долгой работе
+запас медиатора истощается <span class="cite">[<a href="refs.html#XTsodyks1997">27</a>]</span>, а у нейронов нарастают медленные токи, снижающие
+возбудимость. Обратная связь слабеет, верхнее пересечение исчезает, и группа гаснет сама через
+секунды. Получается память, которая включается сигналом, а выключается только
+временем.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">2.7 </span> <a id="x5-220002.7"></a>Последовательности</h3>
+<p class="noindent">Вместо часов можно иметь <span class="lati-1095">таймер, запускаемый событием</span>. Соединим группы <span class="nt">GLUT</span>-нейронов в
+цепочку: первая возбуждает вторую, вторая — третью, и так далее. Внешний сигнал зажигает
+первую группу, и волна активности пробегает по цепочке, каждое звено через одну-две задержки
+после предыдущего и только один раз: сразу после импульса нейроны невосприимчивы, а волна
+уже ушла дальше.
+</p><p class="indent"> Такая цепочка отмеряет время от события: сработало звено номер
+<math display="inline"><mi>k</mi></math> — значит, с момента
+запуска прошло <math display="inline"><mi>k</mi></math>
+задержек. Её выходы можно подать на мышцы и получить последовательность движений,
+которая разворачивается сама. У певчих птиц во время пения отдельные <span class="nt">GLUT</span>-нейроны одного
+из отделов мозга срабатывают строго по очереди, каждый в свой момент песни, — очень похоже
+на такую цепочку <span class="cite">[<a href="refs.html#XHahnloser2002">12</a>]</span>.
+</p><p class="indent"> В отличие от часов, цепочка молчит, пока её не запустили, отрабатывает один раз и
+отмеряет время только для тех, кто к ней подключён. Общего такта у сети по-прежнему
+нет.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">2.8 </span> <a id="x5-230002.8"></a>Чего не хватает</h3>
+<p class="noindent">Из одних <span class="nt">GLUT</span>-нейронов, без торможения, получается многое. Но трёх вещей не хватает, и все
+три из-за утверждения <a href="#x5-18002r1">2.1</a>.
+</p><p class="indent"> <span class="lati-1095">Выбор. </span>Сеть должна выбирать одно направление, одно действие. Если два раздражителя
+почти равны, в сети рис. <a href="#x5-200023">2.3</a> сработают оба выхода, и подавить слабый в пользу сильного
+нечем.
+</p><p class="indent"> <span class="lati-1095">Сброс. </span>Стереть память сигналом нельзя.
+</p><p class="indent"> <span class="lati-1095">Устойчивость. </span>В сети, где связи возникают не по плану инженера, петли положительной
+обратной связи неизбежны, и активность в них может нарастать лавиной (глава <a href="01.html#x4-40001">1</a>).
+Единственный тормоз — та же усталость, медленная и грубая.
+</p><p class="indent"> Все три беды лечатся одним лекарством — нейроном, который гасит импульс импульсом. Это
+<span class="nt">GABA</span>, и нужен он не для того, чтобы вычислять, а для того, чтобы выбирать, сбрасывать и
+держать вычисление под контролем.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">2.9 </span> <a id="x5-240002.9"></a>Задачи</h3>
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x5-24001r1"></a>
+<span class="labx-1095">Задача 2.1 </span>(<math display="inline"><mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Ряд детекторов для звука. </span>Сигналы от ушей бегут по проводам рис. <a href="#x5-200023">2.3</a> со скоростью
+<math display="inline"><mn>5</mn></math> м/с,
+наибольшая разница прихода <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>6</mn><mn>4</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>.
+Детекторы — нейроны (<a href="#x5-16001r1">2.1</a>) с <math display="inline"><mi>τ</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>,
+<math display="inline"><mi>𝜃</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn><mi>w</mi></math>
+— стоят так, что соседние различают <math display="inline"><mn>1</mn><mn>0</mn></math> мкс.
+Сколько детекторов в ряду и сколько из них сработает на один звук?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">Ряд длиной <math display="inline"><mn>3</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn></math> мм
+с шагом <math display="inline"><mn>2</mn><mn>5</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мкм</mtext></mstyle></math>:
+<math display="inline"> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>1</mn><mn>2</mn><mn>9</mn></math> детекторов. Срабатывает
+полоса шириной <math display="inline"><mi>v</mi><mspace width="0.17em" class="thinspace"/><mi>τ</mi><mi class="loglike">ln</mi><mo>⁡</mo><mn>2</mn> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>7</mn></math> мм
+— <math display="inline"> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>6</mn><mn>9</mn></math>
+детекторов, больше половины ряда; направление — центр полосы.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x5-24002r2"></a>
+<span class="labx-1095">Задача 2.2 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Неравные входы смещают окно. </span>Детектор совпадений (<a href="#x5-16001r1">2.1</a>) с <math display="inline"><mi>τ</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>,
+<math display="inline"><mi>𝜃</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn></math>
+получает по импульсу от двух входов с весами <math display="inline"><mn>1</mn></math>
+и <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>8</mn></math>.
+Найдите окно совпадения и его центр. На сколько микросекунд ошибётся ряд рис. <a href="#x5-200023">2.3</a>, если
+вход от одного уха на <math display="inline"><mn>2</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mi>%</mi></math>
+слабее, чем от другого?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">Окно <math display="inline"> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>τ</mi><mi class="loglike">ln</mi><mo>⁡</mo> <mfrac><mrow><msub><mrow><mi>w</mi></mrow><mrow><mn>2</mn></mrow></msub 
+></mrow> 
+<mrow><mi>𝜃</mi><mo class="MathClass-bin" stretchy="false">−</mo><msub><mrow><mi>w</mi></mrow><mrow><mn>1</mn></mrow></msub 
+></mrow></mfrac> <mo class="MathClass-rel" stretchy="false">≤</mo> <mi>δ</mi> <mo class="MathClass-rel" stretchy="false">≤</mo> <mi>τ</mi><mo><mi class="loglike">ln</mi><mo>⁡</mo></mo> <mfrac><mrow><msub><mrow><mi>w</mi></mrow><mrow><mn>1</mn></mrow></msub 
+></mrow> 
+<mrow><mi>𝜃</mi><mo class="MathClass-bin" stretchy="false">−</mo><msub><mrow><mi>w</mi></mrow><mrow><mn>2</mn></mrow></msub 
+></mrow></mfrac></math>,
+т.е. <math display="inline"><mo class="MathClass-open" stretchy="false">[</mo><mo class="MathClass-bin" stretchy="false">−</mo><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn><mn>3</mn><mn>5</mn><mo class="MathClass-punc" stretchy="false">,</mo><mspace width="0.17em" class="thinspace"/><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn><mn>7</mn><mn>8</mn><mo class="MathClass-close" stretchy="false">]</mo><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>; центр
+<math display="inline"><mi>c</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mfrac><mrow><mi>τ</mi></mrow> 
+<mrow><mn>2</mn></mrow></mfrac> <mi class="loglike">ln</mi><mo>⁡</mo> <mfrac><mrow><msub><mrow><mi>w</mi></mrow><mrow><mn>1</mn></mrow></msub 
+><mo class="MathClass-open" stretchy="false">(</mo><mi>𝜃</mi><mo class="MathClass-bin" stretchy="false">−</mo><msub><mrow><mi>w</mi></mrow><mrow><mn>1</mn></mrow></msub 
+><mo class="MathClass-close" stretchy="false">)</mo></mrow> 
+<mrow><msub><mrow><mi>w</mi></mrow><mrow><mn>2</mn></mrow></msub 
+><mo class="MathClass-open" stretchy="false">(</mo><mi>𝜃</mi><mo class="MathClass-bin" stretchy="false">−</mo><msub><mrow><mi>w</mi></mrow><mrow><mn>2</mn></mrow></msub 
+><mo class="MathClass-close" stretchy="false">)</mo></mrow></mfrac> <mo class="MathClass-rel" stretchy="false">=</mo> <mo class="MathClass-bin" stretchy="false">−</mo><mn>2</mn><mn>8</mn></math> мкс. Направление
+смещается на <math display="inline"><mn>2</mn><mn>8</mn></math> мкс
+в сторону сильного уха — почти три шага разрешения.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x5-24003r3"></a>
+<span class="labx-1095">Задача 2.3 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Какие сети не колеблются. </span>Сеть <math display="inline"><mi>τ</mi><msub><mrow><mi>ṙ</mi></mrow><mrow><mi>i</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mo class="MathClass-bin" stretchy="false">−</mo><msub><mrow><mi>r</mi></mrow><mrow><mi>i</mi></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">+</mo> <msub><mrow><mi>f</mi></mrow><mrow><mi>i</mi></mrow></msub 
+><mrow><mo class="MathClass-open" fence="true" mathsize="1.19em">(</mo><mrow><msub><mrow><mi class="MathClass-op">∑</mi><mo> ⁡</mo>
+ </mrow><mrow><mi>j</mi></mrow></msub 
+><msub><mrow><mi>w</mi></mrow><mrow><mi>i</mi><mi>j</mi></mrow></msub 
+><msub><mrow><mi>r</mi></mrow><mrow><mi>j</mi></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">+</mo> <msub><mrow><mi>I</mi></mrow><mrow><mi>i</mi></mrow></msub 
+></mrow><mo class="MathClass-close" fence="true" mathsize="1.19em">)</mo></mrow></math>
+с неубывающими <math display="inline"><msub><mrow><mi>f</mi></mrow><mrow><mi>i</mi></mrow></msub 
+></math>
+и <math display="inline"><msub><mrow><mi>w</mi></mrow><mrow><mi>i</mi><mi>j</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">≥</mo> <mn>0</mn></math>
+при <math display="inline"><mi>i</mi><mo class="MathClass-rel" stretchy="false">≠</mo><mi>j</mi></math>
+монотонна и устойчиво не колеблется. Докажите: заменой <math display="inline"><msub><mrow><mi>r</mi></mrow><mrow><mi>i</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">→</mo><mo class="MathClass-bin" stretchy="false">±</mo><msub><mrow><mi>r</mi></mrow><mrow><mi>i</mi></mrow></msub 
+></math>
+к ней сводится сеть с чётным числом тормозящих связей в каждом цикле. Может ли
+колебаться взаимное торможение двух групп? Петля <span class="nt">GLUT</span>–<span class="nt">GABA</span>?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">Нужны <math display="inline"><msub><mrow><mi>s</mi></mrow><mrow><mi>i</mi></mrow></msub 
+></math>
+с <math display="inline"><msub><mrow><mi>s</mi></mrow><mrow><mi>i</mi></mrow></msub 
+><msub><mrow><mi>w</mi></mrow><mrow><mi>i</mi><mi>j</mi></mrow></msub 
+><msub><mrow><mi>s</mi></mrow><mrow><mi>j</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">≥</mo> <mn>0</mn></math>; они
+существуют тогда и только тогда, когда циклы чётны. Взаимное торможение сводится
+(устойчивых колебаний нет), петля <span class="nt">GLUT</span>–<span class="nt">GABA</span> — нет (может колебаться).
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x5-24004r4"></a>
+<span class="labx-1095">Задача 2.4 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Проектирование: двухпроводный сумматор. </span>Каждый бит передаётся парой проводов <math display="inline"><mo class="MathClass-open" stretchy="false">(</mo><mi>x</mi><mo class="MathClass-punc" stretchy="false">,</mo><mover accent="true"><mrow><mi>x</mi></mrow><mo accent="true">¯</mo></mover><mo class="MathClass-close" stretchy="false">)</mo></math>.
+Постройте полный сумматор трёх битов, выдающий пары <math display="inline"><mo class="MathClass-open" stretchy="false">(</mo><mi>S</mi><mo class="MathClass-punc" stretchy="false">,</mo><mover accent="true"><mrow><mi>S</mi></mrow><mo accent="true">¯</mo></mover><mo class="MathClass-close" stretchy="false">)</mo></math>
+суммы и <math display="inline"><mo class="MathClass-open" stretchy="false">(</mo><mi>C</mi><mo class="MathClass-punc" stretchy="false">,</mo><mover accent="true"><mrow><mi>C</mi></mrow><mo accent="true">¯</mo></mover><mo class="MathClass-close" stretchy="false">)</mo></math>
+переноса, из <span class="nt">GLUT</span>-нейронов, указав веса и пороги. Уложитесь в восемь нейронов. Сколько
+потребовала бы схема из элементов И и ИЛИ, как на рис. <a href="#x5-190032">2.2</a>?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">Шесть нейронов <math display="inline"><msub><mrow><mi>g</mi></mrow><mrow><mi>k</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mo class="MathClass-open" stretchy="false">[</mo><mi>x</mi> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>y</mi> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>z</mi> <mo class="MathClass-rel" stretchy="false">≥</mo> <mi>k</mi><mo class="MathClass-close" stretchy="false">]</mo></math>
+и <math display="inline"><msub><mrow><mi>ḡ</mi></mrow><mrow><mi>k</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mo class="MathClass-open" stretchy="false">[</mo><mover accent="true"><mrow><mi>x</mi></mrow><mo accent="true">¯</mo></mover> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>ȳ</mi> <mo class="MathClass-bin" stretchy="false">+</mo> <mover accent="true"><mrow><mi>z</mi></mrow><mo accent="true">¯</mo></mover> <mo class="MathClass-rel" stretchy="false">≥</mo> <mn>4</mn> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>k</mi><mo class="MathClass-close" stretchy="false">]</mo></math>,
+<math display="inline"><mi>k</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mo class="MathClass-punc" stretchy="false">,</mo><mn>2</mn><mo class="MathClass-punc" stretchy="false">,</mo><mn>3</mn></math>;
+<math display="inline"><mi>C</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <msub><mrow><mi>g</mi></mrow><mrow><mn>2</mn></mrow></msub 
+></math>,
+<math display="inline"><mover accent="true"><mrow><mi>C</mi></mrow><mo accent="true">¯</mo></mover> <mo class="MathClass-rel" stretchy="false">=</mo><msub><mrow> <mi>ḡ</mi></mrow><mrow><mn>2</mn></mrow></msub 
+></math>,
+<math display="inline"><mi>S</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mo class="MathClass-open" stretchy="false">[</mo><msub><mrow><mi>g</mi></mrow><mrow><mn>1</mn></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">+</mo><msub><mrow> <mi>ḡ</mi></mrow><mrow><mn>2</mn></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">+</mo> <msub><mrow><mi>g</mi></mrow><mrow><mn>3</mn></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">≥</mo> <mn>2</mn><mo class="MathClass-close" stretchy="false">]</mo></math>,
+<math display="inline"><mover accent="true"><mrow><mi>S</mi></mrow><mo accent="true">¯</mo></mover> <mo class="MathClass-rel" stretchy="false">=</mo> <mo class="MathClass-open" stretchy="false">[</mo><msub><mrow><mi>ḡ</mi></mrow><mrow><mn>1</mn></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">+</mo> <msub><mrow><mi>g</mi></mrow><mrow><mn>2</mn></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">+</mo><msub><mrow> <mi>ḡ</mi></mrow><mrow><mn>3</mn></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">≥</mo> <mn>2</mn><mo class="MathClass-close" stretchy="false">]</mo></math>: восемь нейронов.
+Из И и ИЛИ — <math display="inline"><mn>1</mn><mn>2</mn></math>.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x5-24005r5"></a>
+<span class="labx-1095">Задача 2.5 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Моделирование: сколько длится запись. </span>Группа рис. <a href="#x5-210014">2.4</a>: <math display="inline"><mi>τ</mi><mi>ṙ</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mo class="MathClass-bin" stretchy="false">−</mo><mi>r</mi> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>f</mi><mo class="MathClass-open" stretchy="false">(</mo><mi>r</mi> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>I</mi><mo class="MathClass-close" stretchy="false">)</mo></math>,
+<math display="inline"><mi>f</mi><mo class="MathClass-open" stretchy="false">(</mo><mi>u</mi><mo class="MathClass-close" stretchy="false">)</mo> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mo class="MathClass-bin" stretchy="false">∕</mo><mrow><mo class="MathClass-open" fence="true" mathsize="1.19em">(</mo><mrow><mn>1</mn> <mo class="MathClass-bin" stretchy="false">+</mo> <msup><mrow><mi>e</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">−</mo><mo class="MathClass-open" stretchy="false">(</mo><mi>u</mi><mo class="MathClass-bin" stretchy="false">−</mo><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn><mo class="MathClass-close" stretchy="false">)</mo><mo class="MathClass-bin" stretchy="false">∕</mo><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>0</mn><mn>8</mn></mrow></msup 
+></mrow><mo class="MathClass-close" fence="true" mathsize="1.19em">)</mo></mrow></math>,
+до записи — в нижнем состоянии; приток <math display="inline"><mi>I</mi></math>
+подаётся на время <math display="inline"><mi>T</mi></math>.
+Найдите численно наименьшее <math display="inline"><mi>T</mi></math>,
+записывающее бит при <math display="inline"><mi>I</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>6</mn></math>,
+и порог <math display="inline"><msub><mrow><mi>I</mi></mrow><mrow><mi>c</mi></mrow></msub 
+></math>,
+ниже которого бит не записывается ни при каком <math display="inline"><mi>T</mi></math>.
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent"><math display="inline"><msub><mrow><mi>T</mi></mrow><mrow><mi class="qopname">min</mi><mo> ⁡ </mo></mrow></msub 
+><mo class="MathClass-open" stretchy="false">(</mo><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>6</mn><mo class="MathClass-close" stretchy="false">)</mo> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>7</mn><mn>1</mn><mn>8</mn><mspace width="0.17em" class="thinspace"/><mi>τ</mi></math>;
+<math display="inline"><msub><mrow><mi>I</mi></mrow><mrow><mi>c</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn><mn>2</mn><mn>5</mn></math>, у порога
+<math display="inline"><msub><mrow><mi>T</mi></mrow><mrow><mi class="qopname">min</mi><mo> ⁡ </mo></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">∝</mo> <msup><mrow><mo class="MathClass-open" stretchy="false">(</mo><mi>I</mi> <mo class="MathClass-bin" stretchy="false">−</mo> <msub><mrow><mi>I</mi></mrow><mrow><mi>c</mi></mrow></msub 
+><mo class="MathClass-close" stretchy="false">)</mo></mrow><mrow><mo class="MathClass-bin" stretchy="false">−</mo><mn>1</mn><mo class="MathClass-bin" stretchy="false">∕</mo><mn>2</mn></mrow></msup 
+></math>.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x5-24006r6"></a>
+<span class="labx-1095">Задача 2.6 </span>(<math display="inline"><mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Цепочка как таймер. </span>Звено цепочки — <math display="inline"><mn>1</mn><mn>0</mn><mn>0</mn></math>
+<span class="nt">GLUT</span>-нейронов, задержка <math display="inline"><mn>2</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>
+с независимым разбросом <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>.
+(а) Сколько нейронов нужно, чтобы отмерить <math display="inline"><mn>1</mn></math> с,
+и какова относительная ошибка? Как она зависит от интервала? (б) У настоящего таймера
+ошибка — <math display="inline"><mn>5</mn><mspace width="0.17em" class="thinspace"/><mi>%</mi></math>
+при любом интервале. Какой источник разброса это даёт?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">(а) <math display="inline"><mn>5</mn><mn>0</mn><mn>0</mn></math> звеньев,
+<math display="inline"><mn>5</mn> <mo class="MathClass-bin" stretchy="false">⋅</mo> <mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>4</mn></mrow></msup 
+></math> нейронов;
+разброс <math display="inline"><mn>4</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>
+(<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>4</mn><mn>5</mn><mspace width="0.17em" class="thinspace"/><mi>%</mi></math>), относительная
+ошибка <math display="inline"> <mo class="MathClass-rel" stretchy="false">∝</mo> <msup><mrow><mi>T</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">−</mo><mn>1</mn><mo class="MathClass-bin" stretchy="false">∕</mo><mn>2</mn></mrow></msup 
+></math>.
+(б) Общий для всех звеньев случайный множитель задержки с разбросом
+<math display="inline"><mn>5</mn><mspace width="0.17em" class="thinspace"/><mi>%</mi></math>.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x5-24007r7"></a>
+<span class="labx-1095">Задача 2.7 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo><mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Исследование: триггер или конденсатор. </span><math display="inline"><mn>1</mn><mn>0</mn><mn>0</mn></math>
+нейронов держат бит <math display="inline"><mn>1</mn><mn>0</mn></math> с.
+Триггер: каждый даёт <math display="inline"><mn>2</mn><mn>0</mn></math>
+импульсов в секунду. Конденсатор: облегчение <math display="inline"><mi>u</mi></math>
+спадает с <math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>F</mi> </mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn></math> с,
+бит читается при <math display="inline"><mi>u</mi> <mo class="MathClass-rel" stretchy="false">≥</mo> <msub><mrow><mi>u</mi></mrow><mrow><mi class="qopname">max</mi><mo> ⁡ </mo></mrow></msub 
+><mo class="MathClass-bin" stretchy="false">∕</mo><mn>2</mn></math>,
+освежение — пачка из трёх импульсов у каждого нейрона. Во сколько раз конденсатор
+экономнее и что станет с битом после глушения группы на <math display="inline"><mn>2</mn><mn>0</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">Освежать раз в <math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>F</mi> </mrow></msub 
+> <mi class="loglike">ln</mi><mo>⁡</mo><mn>2</mn> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>6</mn><mn>9</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>с</mtext></mstyle></math>:
+<math display="inline"><mn>4</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>3</mn></math> импульса в секунду
+на нейрон против <math display="inline"><mn>2</mn><mn>0</mn></math>,
+в <math display="inline"><mn>4</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>6</mn></math> раза
+экономнее (<math display="inline"><mn>4</mn> <mo class="MathClass-bin" stretchy="false">⋅</mo> <mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mo class="MathClass-bin" stretchy="false">−</mo><mn>7</mn></mrow></msup 
+></math>
+против <math display="inline"><mn>2</mn> <mo class="MathClass-bin" stretchy="false">⋅</mo> <mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mo class="MathClass-bin" stretchy="false">−</mo><mn>6</mn></mrow></msup 
+></math> Дж
+при <math display="inline"><mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mo class="MathClass-bin" stretchy="false">−</mo><mn>1</mn><mn>0</mn></mrow></msup 
+></math> Дж на
+импульс). Триггер теряет бит; конденсатор сохраняет его, если глушение началось не позже чем через
+<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>4</mn><mn>9</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>с</mtext></mstyle></math> после освежения
+(вероятность <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>7</mn><mn>1</mn></math>).
+</p></div></details>
+
+<p class="indent"> <a id="tailfullch2.html"></a> </p> 
+
+  </article>
+  <article class="text short" id="text-short" hidden>
+
+ <a id="s-x5-90002"></a>
+<p class="noindent">В вашем компьютере есть дирижёр — тактовый генератор.
+Миллиарды раз в секунду он даёт отмашку, и все элементы
+схемы переключаются одновременно, в ногу. В мозге
+никакого дирижёра нет. Каждый нейрон работает сам
+по себе: сигналы приходят к нему когда придётся и
+уходят от него когда придётся. Давайте посмотрим, что
+можно вычислить в такой машине, если взять только
+<span class="nt">GLUT</span>-нейроны — одни «плюсы».
+</p>
+ <h3 class="likesectionHead"> <a id="s-x5-10000"></a>Дырявое ведро</h3>
+<p class="noindent">Нейрон удобно представить ведром с дыркой. Каждый
+пришедший импульс — это ковш воды. Вода понемногу
+вытекает через дырку. Если ковши приходят часто, вода
+успевает подняться до края — и ведро переворачивается:
+нейрон щёлкает, ведро опустело, всё сначала. Если ковши
+приходят редко, вода успевает вытечь, и ничего не
+происходит.
+</p>
+<div class="center">
+<p class="noindent"><img src="img/short2x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<div class="minipage"><p class="noindent"><span class="lati-1000">Нейрон — дырявое ведро: капли входов наполняют</span>
+<span class="lati-1000">его, вода утекает; дошла до черты — щелчок.</span> </p></div></div>
+<p class="indent"> Дырка — главное отличие нейрона от логического
+вентиля. Нейрон помнит пришедший импульс не вечно, а
+какие-то миллисекунды. Всё, что пришло в пределах этого
+окна, складывается; то, что было раньше, забыто.
+</p>
+ <h3 class="likesectionHead"> <a id="s-x5-11000"></a>«Или» и «и»</h3>
+<p class="noindent">Если одного ковша хватает, чтобы перевернуть ведро,
+нейрон срабатывает на любой вход. Это «или». Если нужны
+два ковша, начинается интересное: «пришли ли оба?» без
+дирижёра не имеет смысла, пока не сказано — <span class="lati-1095">в пределах</span>
+<span class="lati-1095">какого времени</span>. Нейрон сработает, только если два импульса
+пришли почти одновременно, пока первый ковш не вытек.
+Это «и во времени», детектор совпадений. У одних нейронов
+окно — несколько миллисекунд, у нейронов слуха — доли
+миллисекунды.
+</p>
+ <h3 class="likesectionHead"> <a id="s-x5-12000"></a>Чего одни «плюсы» не умеют</h3>
+<p class="noindent">Попробуйте построить «не» — нейрон, который работает,
+когда вход молчит. Не выйдет: тишина не наливает воду
+в ведро. И это верно не только для одного нейрона,
+но и для любой сети из одних «плюсов»: если входы
+усилить, ни один нейрон в такой сети не станет работать
+меньше. Отсюда самое неприятное свойство: <span class="lati-1095">активность</span>
+<span class="lati-1095">нельзя погасить активностью</span>. Разгоревшийся пожар
+можно остановить только одним способом — перестать
+подбрасывать дрова.
+</p><p class="indent"> Природа нашла обходной путь. Во многих органах чувств
+один и тот же раздражитель передают две группы нейронов.
+В глазу одни клетки сообщают «стало светлее», другие —
+«стало темнее». Если вместо одного провода у вас пара
+проводов «да» и «нет», то «не» получается даром: просто
+поменяйте провода местами. С такими парами из одних
+«плюсов» можно собрать любую логическую схему — и
+даже понять, что вычисление закончено: в каждой паре
+загорелся ровно один провод. Инженеры строят так
+асинхронные схемы, которые правильно работают при
+любых задержках.
+</p>
+ <h3 class="likesectionHead"> <a id="s-x5-13000"></a>Время из задержек</h3>
+<p class="noindent">Без дирижёра нет общих часов, но время можно вычислять
+и так. Звук от источника сбоку приходит в ближнее ухо
+раньше, чем в дальнее, — на доли миллисекунды. Проложим
+от левого уха провод слева направо вдоль ряда детекторов
+совпадений, а от правого — справа налево. Два сигнала
+побегут навстречу друг другу и встретятся в той точке, куда
+оба добегут одновременно. Сработает детектор именно в
+этом месте. Разница во времени превратилась в <span class="lati-1095">номер</span>
+сработавшего нейрона — то есть в направление на звук.
+Точность получается в десяток микросекунд, хотя каждый
+отдельный нейрон куда менее точен: выручает то, что
+детекторов много.
+</p>
+<div class="center">
+<p class="noindent"><img src="img/short3x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<div class="minipage"><p class="noindent"><span class="lati-1000">Звук слева раньше приходит в левое ухо, его сигнал</span>
+<span class="lati-1000">успевает пробежать дальше, и встреча выходит</span>
+<span class="lati-1000">справа от середины. Номер сработавшего нейрона —</span>
+<span class="lati-1000">направление на звук.</span> </p></div></div>
+ <h3 class="likesectionHead"> <a id="s-x5-14000"></a>Память — это костёр</h3>
+<p class="noindent">Возьмём группу нейронов, которые сильно возбуждают друг
+друга. Если её разжечь коротким сигналом, она будет
+поддерживать сама себя, как костёр, в который огонь
+подбрасывает сам себя. Сигнал кончился, а группа всё горит
+— она помнит, что сигнал был. Это ячейка памяти. А
+если сигнал был слишком коротким, костёр не успевает
+разгореться и гаснет.
+</p><p class="indent"> Но вот беда: как стереть такую память? Активностью —
+никак. Остаётся ждать, пока нейроны устанут и костёр
+прогорит.
+</p>
+ <h3 class="likesectionHead"> <a id="s-x5-15000"></a>Таймер, запущенный событием</h3>
+<p class="noindent">Соединим группы в цепочку: первая поджигает вторую,
+вторая третью. Толкнём первую — и по цепочке побежит
+волна, как по костяшкам домино. Номер упавшей костяшки
+говорит, сколько прошло времени с толчка. Это не часы,
+которые тикают всегда, а таймер, который включается
+событием и отрабатывает один раз. У певчих птиц во время
+песни нейроны одного отдела срабатывают строго по очереди
+— очень похоже на такую цепочку.
+</p><p class="indent"> Итак, из одних «плюсов» получается многое. Не хватает
+трёх вещей: выбрать одно из многого, стереть память по
+команде и удержать сеть от пожара. Все три дают «минусы»
+— о них следующая глава.
+</p><p class="noindent"><span class="lati-1000">Формулы, модели, задачи и источники — в полной версии,</span>
+<span class="lati-1000">глава</span><span class="lati-1000"> 2.</span>
+</p>
+<p class="indent"> <a id="s-tailshortch2.html"></a> </p> 
+
+  </article>
+
+  <aside class="starline"><span data-ru="Книга бесплатная и открытая. Если глава была полезной, поставьте книге звезду на GitHub: так её найдут другие." data-en="The book is free and open. If this chapter was useful, star the book on GitHub so others can find it.">Книга бесплатная и открытая.</span> <a href="https://github.com/kladkogex/20-watt-computer" target="_blank" rel="noopener" data-ru="★ Звезда на GitHub" data-en="★ Star on GitHub">★ Звезда на GitHub</a></aside>
+  <nav class="pager">
+    <a class="prev" href="01.html"><span data-ru="← Назад" data-en="← Previous">← Назад</span><b>Типы нейронов</b></a>
+    <a class="next" href="03.html"><span data-ru="Дальше →" data-en="Next →">Дальше →</span><b>GLUT и GABA вместе</b></a>
+  </nav>
+  <footer>
+    <span data-ru='Константин Кладько · текст — <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.ru">CC BY-NC-SA 4.0</a>' data-en='Konstantin Kladko · text: <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>'>Константин Кладько</span>
+    <span><a href="../pdf/20-watt-computer-ru.pdf">PDF</a> · <a href="../breadboard/" data-ru="Макетная плата" data-en="Breadboard">Макетная плата</a> · <a href="https://github.com/kladkogex/20-watt-computer">GitHub</a></span>
+  </footer>
+</main>
+
+<script>
+(function(){
+  const NAV = [{"slug": "00", "title": "Как читать эту книгу", "kicker": "Введение"}, {"slug": "01", "title": "Типы нейронов", "kicker": "Глава 1"}, {"slug": "02", "title": "Что вычисляют GLUT-нейроны", "kicker": "Глава 2"}, {"slug": "03", "title": "GLUT и GABA вместе", "kicker": "Глава 3"}, {"slug": "04", "title": "Азбука Морзе: что мы знаем о языке, на котором говорят GLUT- и GABA-нейроны", "kicker": "Глава 4"}, {"slug": "05", "title": "Что вычисляют SERO-нейроны", "kicker": "Глава 5"}, {"slug": "06", "title": "Нейронные сети, которые умеют учиться: добавляем DOPA", "kicker": "Глава 6"}, {"slug": "07", "title": "Альтернативные современные теории обучения на основе дофамина", "kicker": "Глава 7"}, {"slug": "08", "title": "Когда искать, а когда решать: добавляем NORA", "kicker": "Глава 8"}, {"slug": "09", "title": "Когда писать, а когда читать: добавляем ACET", "kicker": "Глава 9"}, {"slug": "10", "title": "Вся машина", "kicker": "Глава 10"}, {"slug": "11", "title": "Входы машины: как к ней подключены глаза, уши и другие датчики", "kicker": "Глава 11"}, {"slug": "12", "title": "Распознавание изображений и видео", "kicker": "Глава 12"}, {"slug": "13", "title": "Выходы машины: как мозг управляет мышцами", "kicker": "Глава 13"}, {"slug": "14", "title": "Боль: сигнал тревоги", "kicker": "Глава 14"}, {"slug": "15", "title": "Как машина учится двигаться", "kicker": "Глава 15"}, {"slug": "16", "title": "Второй выход: как мозг управляет химией тела", "kicker": "Глава 16"}, {"slug": "17", "title": "Отладка машины", "kicker": "Глава 17"}, {"slug": "18", "title": "Типы нейронов по электрической функции", "kicker": "Глава 18"}, {"slug": "19", "title": "Нейроны по числу дендритов", "kicker": "Глава 19"}, {"slug": "20", "title": "Что делают нейроны во сне", "kicker": "Глава 20"}, {"slug": "21", "title": "Машина из живых нейронов", "kicker": "Глава 21"}, {"slug": "22", "title": "DishBrain", "kicker": "Глава 22"}, {"slug": "a", "title": "Вещества, которые не задают тип нейрона", "kicker": "Приложение A"}, {"slug": "b", "title": "Обозначения", "kicker": "Приложение B"}, {"slug": "c", "title": "Ответы", "kicker": "Приложение C"}, {"slug": "d", "title": "Экспериментальное приложение", "kicker": "Приложение D"}, {"slug": "refs", "title": "Литература", "kicker": ""}];
+  const SLUG = "02";
+  const store = {get(k){try{return localStorage.getItem(k)}catch(e){return null}}, set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+
+  // chapter selector
+  const sel = document.getElementById("jump");
+  NAV.forEach(p => { const o = document.createElement("option"); o.value = p.slug;
+    o.textContent = (p.kicker ? p.kicker + ". " : "") + p.title; if (p.slug === SLUG) o.selected = true; sel.appendChild(o); });
+  sel.addEventListener("change", () => { location.href = sel.value + ".html" + (location.hash === "#short" ? "#short" : ""); });
+
+  // Коротко / Полностью
+  const modeBox = document.querySelector(".mode");
+  const hasShort = modeBox.dataset.hasShort === "true";
+  const full = document.getElementById("text-full"), short = document.getElementById("text-short");
+  function setMode(m, remember){
+    if (!hasShort) m = "full";
+    document.body.dataset.mode = m;
+    full.hidden = m !== "full"; short.hidden = m !== "short";
+    modeBox.querySelectorAll(".seg").forEach(b => b.setAttribute("aria-pressed", b.dataset.mode === m));
+    if (remember) store.set("20w-mode", m);
+  }
+  if (!hasShort) modeBox.hidden = true;
+  modeBox.addEventListener("click", e => { const b = e.target.closest(".seg"); if (b) { setMode(b.dataset.mode, true); history.replaceState(null, "", "#" + b.dataset.mode); } });
+  document.addEventListener("click", e => { const a = e.target.closest("a[data-mode]"); if (a) { e.preventDefault(); setMode(a.dataset.mode, true); window.scrollTo(0, 0); } });
+  // a link into the text (#x...) that lives in the other version switches to it
+  function follow(){
+    const h = decodeURIComponent(location.hash.slice(1));
+    if (h === "short" || h === "full") { setMode(h, true); return; }
+    if (!h) return;
+    const t = document.getElementById(h);
+    if (t) { setMode(short.contains(t) ? "short" : "full", false); t.scrollIntoView(); }
+  }
+  setMode(store.get("20w-mode") || "full", false);
+  follow();
+  window.addEventListener("hashchange", follow);
+  // links that leave the book open in the whole window when the page sits inside the reader
+  if (document.documentElement.classList.contains("embedded"))
+    document.querySelectorAll('a[href^="../"], a[href^="http"]').forEach(a => { a.target = a.href.startsWith(location.origin) ? "_top" : "_blank"; });
+
+  // interface language (the text itself is Russian)
+  function setLang(l){
+    document.querySelectorAll("[data-ru]").forEach(el => { el.innerHTML = el.dataset[l]; });
+    document.getElementById("lang-ru").setAttribute("aria-pressed", l === "ru");
+    document.getElementById("lang-en").setAttribute("aria-pressed", l === "en");
+    store.set("20w-lang", l);
+  }
+  document.getElementById("lang-ru").onclick = () => setLang("ru");
+  document.getElementById("lang-en").onclick = () => setLang("en");
+  setLang(store.get("20w-lang") === "en" ? "en" : "ru");
+  window.addEventListener("storage", e => {
+    if (e.key === "20w-lang" && (e.newValue === "ru" || e.newValue === "en")) setLang(e.newValue);
+    if (e.key === "20w-theme" && (e.newValue === "light" || e.newValue === "dark")) document.documentElement.setAttribute("data-theme", e.newValue);
+  });
+})();
+</script>
+<script>
+(function(){var b=document.getElementById("theme");if(!b)return;var r=document.documentElement;function cur(){var t=r.getAttribute("data-theme");if(t)return t;return window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";}function show(){b.textContent=cur()==="dark"?"☀":"☾";b.setAttribute("aria-pressed",cur()==="dark");}b.onclick=function(){var t=cur()==="dark"?"light":"dark";r.setAttribute("data-theme",t);try{localStorage.setItem("20w-theme",t);}catch(e){}show();};if(window.matchMedia)matchMedia("(prefers-color-scheme: dark)").addEventListener("change",show);show();})();
+</script>
+</body>
+</html>

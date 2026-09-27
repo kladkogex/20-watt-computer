@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<script>try{var t=localStorage.getItem("20w-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);}catch(e){}if(window.self!==window.top)document.documentElement.classList.add("embedded");</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Введение. Как читать эту книгу · Компьютер на 20 ваттах</title>
+<meta name="description" content="Книгу не обязательно читать подряд. Главы 1–4 — общая основа: типы нейронов, что вычисляют GLUT и GABA и на каком языке они говорят. Дальше книга ветвится. Карта на рис. 1 …">
+<link rel="canonical" href="https://kladkogex.github.io/20-watt-computer/read/00.html">
+<meta property="og:type" content="book">
+<meta property="og:title" content="Введение. Как читать эту книгу · Компьютер на 20 ваттах">
+<meta property="og:description" content="Книгу не обязательно читать подряд. Главы 1–4 — общая основа: типы нейронов, что вычисляют GLUT и GABA и на каком языке они говорят. Дальше книга ветвится. Карта на рис. 1 …">
+<meta property="og:url" content="https://kladkogex.github.io/20-watt-computer/read/00.html">
+<meta property="og:locale" content="ru_RU">
+<meta property="og:image" content="https://kladkogex.github.io/20-watt-computer/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Your brain runs on 20 watts. Here is its datasheet. The 20-Watt Computer, a free textbook for engineers.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://kladkogex.github.io/20-watt-computer/og-card.png">
+<meta name="twitter:title" content="Введение. Как читать эту книгу · The 20-Watt Computer">
+<meta name="twitter:description" content="Книгу не обязательно читать подряд. Главы 1–4 — общая основа: типы нейронов, что вычисляют GLUT и GABA и на каком языке они говорят. Дальше книга ветвится. Карта на рис. 1 …">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Chapter", "name": "Как читать эту книгу", "url": "https://kladkogex.github.io/20-watt-computer/read/00.html", "inLanguage": "ru", "isAccessibleForFree": true, "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/", "author": {"@type": "Person", "name": "Константин Кладько", "alternateName": "Konstantin Kladko"}, "isPartOf": {"@type": "Book", "name": "Компьютер на 20 ваттах. Как вычисляет мозг: количественный подход для инженеров", "alternateName": "The 20-Watt Computer: How the Brain Computes. A Quantitative Approach for Engineers", "author": {"@type": "Person", "name": "Константин Кладько", "alternateName": "Konstantin Kladko"}, "url": "https://kladkogex.github.io/20-watt-computer/", "inLanguage": "ru", "isAccessibleForFree": true, "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/"}}</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap">
+<link rel="stylesheet" href="book.css">
+</head>
+<body>
+<header class="bar">
+  <a class="home" href="../#toc"><span class="w">20</span> <span data-ru="Компьютер на 20 ваттах" data-en="The 20-Watt Computer">Компьютер на 20 ваттах</span></a>
+  <label class="jump"><span class="sr" data-ru="Перейти к главе" data-en="Go to chapter">Перейти к главе</span>
+    <select id="jump"></select></label>
+  <div class="langs" role="group" aria-label="Language">
+    <button class="chip" id="lang-ru" type="button">RU</button>
+    <button class="chip" id="lang-en" type="button">EN</button>
+    <button class="chip theme" id="theme" type="button" aria-label="Light or dark theme" title="Light / dark">☾</button>
+  </div>
+</header>
+
+<main class="page">
+  <div class="pagehead">
+    <p class="kicker" data-ru="Введение" data-en="Introduction">Введение</p>
+    <h1><span class="t-full">Как читать эту книгу</span><span class="t-short">Прежде чем начать</span></h1>
+    <div class="mode" role="group" aria-label="Version" data-has-short="true">
+      <button type="button" class="seg" data-mode="short"><b data-ru="Коротко" data-en="Short">Коротко</b><span data-ru="без формул, с рисунками" data-en="no formulas, with drawings">без формул, с рисунками</span></button>
+      <button type="button" class="seg" data-mode="full"><b data-ru="Полностью" data-en="Full">Полностью</b><span data-ru="формулы, модели, задачи" data-en="formulas, models, exercises">формулы, модели, задачи</span></button>
+    </div>
+    <p class="lang-note" data-ru="" data-en="The online reader is in Russian for now; the book in other languages is in the PDF downloads in the menu.">.</p>
+  </div>
+
+  <article class="text full" id="text-full">
+
+ <a id="x3-2000"></a>
+<a id="Q1-3-3"></a>
+<p class="noindent">Книгу не обязательно читать подряд. Главы 1–4 — общая основа: типы нейронов, что
+вычисляют <span class="nt">GLUT</span> и <span class="nt">GABA</span> и на каком языке они говорят. Дальше книга ветвится.
+Карта на рис. <a href="#x3-20011">1</a> показывает, какие главы на какие опираются: стрелка от главы
+<math display="inline"><mi>A</mi></math> к главе
+<math display="inline"><mi>B</mi></math> значит, что в
+<math display="inline"><mi>B</mi></math> используются понятия
+и формулы из <math display="inline"><mi>A</mi></math>.
+На карте только главные зависимости; мелкие ссылки назад тексту не мешают.
+</p>
+ <figure class="figure"> 
+<a id="x3-20011"></a>
+<p class="noindent"><img src="img/full0x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<figcaption class="caption"><span class="id">Рис. 1: </span><span class="content">Карта глав. Стрелка ведёт от главы к той, что на неё опирается. Прочие ссылки
+между главами — указатели, а не зависимости.</span></figcaption>
+ </figure>
+ <h3 class="likesectionHead"> <a id="x3-3000"></a>Пути через книгу</h3>
+<div class="center">
+
+<div class="tabular">
+ <table id="TBL-2" class="tabular"><colgroup id="TBL-2-1g"><col id="TBL-2-1" /><col id="TBL-2-2" /><col id="TBL-2-3" /></colgroup><tr style="vertical-align:baseline;" id="TBL-2-1-"><td style="text-align:left;" id="TBL-2-1-1" class="td11"> <p class="noindent"><span class="larm-0900">Путь</span> </p></td><td style="text-align:left;" id="TBL-2-1-2" class="td11"> <p class="noindent"><span class="larm-0900">Для</span>
+ <span class="larm-0900">кого</span> </p></td><td style="text-align:left;" id="TBL-2-1-3" class="td11"> <p class="noindent"><span class="larm-0900">Главы</span>
+ <span class="larm-0900">по</span>
+ <span class="larm-0900">порядку</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-2-2-"><td style="text-align:left;" id="TBL-2-2-1" class="td11"> <p class="noindent"><span class="larm-0900">курс</span>
+ <span class="larm-0900">на</span>
+ <span class="larm-0900">одну</span>
+ <span class="larm-0900">четверть</span> </p></td><td style="text-align:left;" id="TBL-2-2-2" class="td11"> <p class="noindent"><span class="larm-0900">преподаватель,</span>
+ <span class="larm-0900">10</span>
+ <span class="larm-0900">недель</span> </p></td><td style="text-align:left;" id="TBL-2-2-3" class="td11"> <p class="noindent"><span class="larm-0900">неделя</span>
+ <span class="larm-0900">1:</span>
+ <span class="larm-0900">гл.</span><span class="larm-0900"> 1–2;</span>
+ <span class="larm-0900">2:</span>
+ <span class="larm-0900">гл.</span><span class="larm-0900"> 3;</span>
+ <span class="larm-0900">3:</span>
+ <span class="larm-0900">гл.</span><span class="larm-0900"> 4;</span>
+ <span class="larm-0900">4:</span>
+ <span class="larm-0900">гл.</span><span class="larm-0900"> 5–6;</span>
+ <span class="larm-0900">5:</span>
+ <span class="larm-0900">гл.</span><span class="larm-0900"> 7–8;</span>
+ <span class="larm-0900">6:</span>
+ <span class="larm-0900">гл.</span><span class="larm-0900"> 9;</span>
+ <span class="larm-0900">7:</span>
+ <span class="larm-0900">гл.</span><span class="larm-0900"> 10;</span>
+ <span class="larm-0900">8:</span>
+ <span class="larm-0900">гл.</span><span class="larm-0900"> 11–12;</span>
+ <span class="larm-0900">9:</span>
+ <span class="larm-0900">гл.</span><span class="larm-0900"> 13</span>
+ <span class="larm-0900">и</span><span class="larm-0900"> 15;</span>
+ <span class="larm-0900">10:</span>
+ <span class="larm-0900">гл.</span><span class="larm-0900"> 17</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-2-3-"><td style="text-align:left;" id="TBL-2-3-1" class="td11"> <p class="noindent"><span class="larm-0900">ИИ</span>
+ <span class="larm-0900">и</span>
+ <span class="larm-0900">машинное</span>
+ <span class="larm-0900">обучение</span> </p></td><td style="text-align:left;" id="TBL-2-3-2" class="td11"> <p class="noindent"><span class="larm-0900">тот,</span>
+ <span class="larm-0900">кто</span>
+ <span class="larm-0900">знает</span>
+ <span class="larm-0900">нейросети</span>
+ <span class="larm-0900">и</span>
+ <span class="larm-0900">хочет</span>
+ <span class="larm-0900">понять,</span>
+ <span class="larm-0900">как</span>
+ <span class="larm-0900">учится</span>
+ <span class="larm-0900">мозг</span> </p></td><td style="text-align:left;" id="TBL-2-3-3" class="td11"> <p class="noindent"><span class="larm-0900">1–4,</span>
+ <span class="larm-0900">5</span>
+ <span class="larm-0900">(бегло),</span>
+ <span class="larm-0900">6,</span>
+ <span class="larm-0900">7,</span>
+ <span class="larm-0900">8,</span>
+ <span class="larm-0900">9,</span>
+ <span class="larm-0900">11</span>
+ <span class="larm-0900">(бегло),</span>
+ <span class="larm-0900">12,</span>
+ <span class="larm-0900">13</span>
+ <span class="larm-0900">(бегло),</span>
+ <span class="larm-0900">15</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-2-4-"><td style="text-align:left;" id="TBL-2-4-1" class="td11"> <p class="noindent"><span class="larm-0900">электроника</span>
+ <span class="larm-0900">и</span>
+ <span class="larm-0900">железо</span> </p></td><td style="text-align:left;" id="TBL-2-4-2" class="td11"> <p class="noindent"><span class="larm-0900">схемотехник,</span>
+ <span class="larm-0900">разработчик</span>
+ <span class="larm-0900">нейроморфных</span>
+ <span class="larm-0900">чипов</span> </p></td><td style="text-align:left;" id="TBL-2-4-3" class="td11"> <p class="noindent"><span class="larm-0900">1–4,</span>
+ <span class="larm-0900">5,</span>
+ <span class="larm-0900">11,</span>
+ <span class="larm-0900">13,</span>
+ <span class="larm-0900">16,</span>
+ <span class="larm-0900">18,</span>
+ <span class="larm-0900">19,</span>
+ <span class="larm-0900">17</span>
+ <span class="larm-0900">(главы</span>
+ <span class="larm-0900">9</span>
+ <span class="larm-0900">и</span>
+ <span class="larm-0900">15</span>
+ <span class="larm-0900">бегло)</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-2-5-"><td style="text-align:left;" id="TBL-2-5-1" class="td11"> <p class="noindent"><span class="larm-0900">нейроинтерфейсы</span>
+ <span class="larm-0900">и</span>
+ <span class="larm-0900">живые</span>
+ <span class="larm-0900">вычислители</span> </p></td><td style="text-align:left;" id="TBL-2-5-2" class="td11"> <p class="noindent"><span class="larm-0900">тот,</span>
+ <span class="larm-0900">кто</span>
+ <span class="larm-0900">строит</span>
+ <span class="larm-0900">интерфейсы</span>
+ <span class="larm-0900">мозг—компьютер</span>
+ <span class="larm-0900">и</span>
+ <span class="larm-0900">чипы</span>
+ <span class="larm-0900">с</span>
+ <span class="larm-0900">живыми</span>
+ <span class="larm-0900">нейронами</span> </p></td><td style="text-align:left;" id="TBL-2-5-3" class="td11"> <p class="noindent"><span class="larm-0900">1,</span>
+ <span class="larm-0900">2,</span>
+ <span class="larm-0900">4,</span>
+ <span class="larm-0900">11,</span>
+ <span class="larm-0900">13,</span>
+ <span class="larm-0900">17</span>
+ <span class="larm-0900">(главы</span>
+ <span class="larm-0900">9</span>
+ <span class="larm-0900">и</span>
+ <span class="larm-0900">15</span>
+ <span class="larm-0900">бегло),</span>
+ <span class="larm-0900">21,</span>
+ <span class="larm-0900">22</span>
+ <span class="larm-0900">(главу</span>
+ <span class="larm-0900">12</span>
+ <span class="larm-0900">бегло)</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-2-6-"><td style="text-align:left;" id="TBL-2-6-1" class="td11"> <p class="noindent"><span class="larm-0900">быстрый</span>
+ <span class="larm-0900">обзор</span> </p></td><td style="text-align:left;" id="TBL-2-6-2" class="td11"> <p class="noindent"><span class="larm-0900">инженер,</span>
+ <span class="larm-0900">у</span>
+ <span class="larm-0900">которого</span>
+ <span class="larm-0900">есть</span>
+ <span class="larm-0900">выходные</span> </p></td><td style="text-align:left;" id="TBL-2-6-3" class="td11"> <p class="noindent"><span class="larm-0900">1,</span>
+ <span class="larm-0900">2,</span>
+ <span class="larm-0900">3,</span>
+ <span class="larm-0900">6,</span>
+ <span class="larm-0900">10;</span>
+ <span class="larm-0900">ссылки</span>
+ <span class="larm-0900">главы</span><span class="larm-0900"> 6</span>
+ <span class="larm-0900">на</span>
+ <span class="larm-0900">главы</span><span class="larm-0900"> 4–5</span>
+ <span class="larm-0900">понятны</span>
+ <span class="larm-0900">из</span>
+ <span class="larm-0900">контекста</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-2-7-"><td style="text-align:left;" id="TBL-2-7-1" class="td11"> </td></tr></table> </div></div>
+<p class="noindent">«Бегло» значит: достаточно прочитать начало главы, её утверждения в жёлтых рамках и
+итоговую таблицу.
+</p><p class="indent"> В конце каждой главы есть задачи: оценки, выводы, моделирование и проектирование;
+краткие ответы собраны в приложении <a href="c.html#x28-222000C">22.8</a>. Все обозначения — в приложении <a href="b.html#x27-221000B">22.8</a>, а опыты, на
+которых держатся главные утверждения каждой главы, — в приложении <a href="d.html#x29-223000D">22.8</a>. Числа
+в книге получены из небольших программ в папке <span class="latt-1095">models/</span>; их можно запустить и
+изменить.
+</p>
+<p class="indent"> <a id="tailfullli2.html"></a> </p> 
+
+  </article>
+  <article class="text short" id="text-short" hidden>
+
+ <a id="s-x3-2000"></a>
+<p class="noindent">Эта книга — о машине, которая весит полтора килограмма,
+потребляет двадцать ватт, как тусклая лампочка, и при этом
+узнаёт лица, учит языки и ловит летящий мяч. О вашем
+мозге. Мы будем смотреть на него так, как инженер
+смотрит на незнакомую плату: что за детали, как они
+соединены, какие сигналы бегут по проводам и что эта схема
+вычисляет.
+</p><p class="indent"> Вам не понадобятся ни формулы, ни знание биологии.
+Понадобится любопытство и готовность представить себе
+провод, лампочку, выключатель. Всё остальное мы соберём
+по дороге.
+</p><p class="indent"> У книги есть вторая, полная версия — с уравнениями,
+моделями, задачами и ссылками на опыты. Главы в двух
+версиях идут в одном и том же порядке и называются по
+номерам одинаково. Если какая-то глава вас зацепила,
+откройте её полную версию: там вы найдёте, откуда взялось
+каждое утверждение и как его проверить самому. На сайте
+книги каждую главу можно переключать между «Коротко»
+и «Полностью» одной кнопкой.
+</p><p class="indent"> Одно предупреждение. Про мозг известно далеко не всё,
+и я буду честно говорить, где кончается измеренное и
+начинается догадка. Это не недостаток книги, а самое
+интересное в ней: многие главы кончаются вопросами, на
+которые пока никто не знает ответа.
+</p>
+<p class="indent"> <a id="s-tailshortli2.html"></a> </p> 
+
+  </article>
+
+  <aside class="starline"><span data-ru="Книга бесплатная и открытая. Если глава была полезной, поставьте книге звезду на GitHub: так её найдут другие." data-en="The book is free and open. If this chapter was useful, star the book on GitHub so others can find it.">Книга бесплатная и открытая.</span> <a href="https://github.com/kladkogex/20-watt-computer" target="_blank" rel="noopener" data-ru="★ Звезда на GitHub" data-en="★ Star on GitHub">★ Звезда на GitHub</a></aside>
+  <nav class="pager">
+    <a class="prev" href="../#toc"><span data-ru="← Назад" data-en="← Previous">← Назад</span><b></b></a>
+    <a class="next" href="01.html"><span data-ru="Дальше →" data-en="Next →">Дальше →</span><b>Типы нейронов</b></a>
+  </nav>
+  <footer>
+    <span data-ru='Константин Кладько · текст — <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.ru">CC BY-NC-SA 4.0</a>' data-en='Konstantin Kladko · text: <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>'>Константин Кладько</span>
+    <span><a href="../pdf/20-watt-computer-ru.pdf">PDF</a> · <a href="../breadboard/" data-ru="Макетная плата" data-en="Breadboard">Макетная плата</a> · <a href="https://github.com/kladkogex/20-watt-computer">GitHub</a></span>
+  </footer>
+</main>
+
+<script>
+(function(){
+  const NAV = [{"slug": "00", "title": "Как читать эту книгу", "kicker": "Введение"}, {"slug": "01", "title": "Типы нейронов", "kicker": "Глава 1"}, {"slug": "02", "title": "Что вычисляют GLUT-нейроны", "kicker": "Глава 2"}, {"slug": "03", "title": "GLUT и GABA вместе", "kicker": "Глава 3"}, {"slug": "04", "title": "Азбука Морзе: что мы знаем о языке, на котором говорят GLUT- и GABA-нейроны", "kicker": "Глава 4"}, {"slug": "05", "title": "Что вычисляют SERO-нейроны", "kicker": "Глава 5"}, {"slug": "06", "title": "Нейронные сети, которые умеют учиться: добавляем DOPA", "kicker": "Глава 6"}, {"slug": "07", "title": "Альтернативные современные теории обучения на основе дофамина", "kicker": "Глава 7"}, {"slug": "08", "title": "Когда искать, а когда решать: добавляем NORA", "kicker": "Глава 8"}, {"slug": "09", "title": "Когда писать, а когда читать: добавляем ACET", "kicker": "Глава 9"}, {"slug": "10", "title": "Вся машина", "kicker": "Глава 10"}, {"slug": "11", "title": "Входы машины: как к ней подключены глаза, уши и другие датчики", "kicker": "Глава 11"}, {"slug": "12", "title": "Распознавание изображений и видео", "kicker": "Глава 12"}, {"slug": "13", "title": "Выходы машины: как мозг управляет мышцами", "kicker": "Глава 13"}, {"slug": "14", "title": "Боль: сигнал тревоги", "kicker": "Глава 14"}, {"slug": "15", "title": "Как машина учится двигаться", "kicker": "Глава 15"}, {"slug": "16", "title": "Второй выход: как мозг управляет химией тела", "kicker": "Глава 16"}, {"slug": "17", "title": "Отладка машины", "kicker": "Глава 17"}, {"slug": "18", "title": "Типы нейронов по электрической функции", "kicker": "Глава 18"}, {"slug": "19", "title": "Нейроны по числу дендритов", "kicker": "Глава 19"}, {"slug": "20", "title": "Что делают нейроны во сне", "kicker": "Глава 20"}, {"slug": "21", "title": "Машина из живых нейронов", "kicker": "Глава 21"}, {"slug": "22", "title": "DishBrain", "kicker": "Глава 22"}, {"slug": "a", "title": "Вещества, которые не задают тип нейрона", "kicker": "Приложение A"}, {"slug": "b", "title": "Обозначения", "kicker": "Приложение B"}, {"slug": "c", "title": "Ответы", "kicker": "Приложение C"}, {"slug": "d", "title": "Экспериментальное приложение", "kicker": "Приложение D"}, {"slug": "refs", "title": "Литература", "kicker": ""}];
+  const SLUG = "00";
+  const store = {get(k){try{return localStorage.getItem(k)}catch(e){return null}}, set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+
+  // chapter selector
+  const sel = document.getElementById("jump");
+  NAV.forEach(p => { const o = document.createElement("option"); o.value = p.slug;
+    o.textContent = (p.kicker ? p.kicker + ". " : "") + p.title; if (p.slug === SLUG) o.selected = true; sel.appendChild(o); });
+  sel.addEventListener("change", () => { location.href = sel.value + ".html" + (location.hash === "#short" ? "#short" : ""); });
+
+  // Коротко / Полностью
+  const modeBox = document.querySelector(".mode");
+  const hasShort = modeBox.dataset.hasShort === "true";
+  const full = document.getElementById("text-full"), short = document.getElementById("text-short");
+  function setMode(m, remember){
+    if (!hasShort) m = "full";
+    document.body.dataset.mode = m;
+    full.hidden = m !== "full"; short.hidden = m !== "short";
+    modeBox.querySelectorAll(".seg").forEach(b => b.setAttribute("aria-pressed", b.dataset.mode === m));
+    if (remember) store.set("20w-mode", m);
+  }
+  if (!hasShort) modeBox.hidden = true;
+  modeBox.addEventListener("click", e => { const b = e.target.closest(".seg"); if (b) { setMode(b.dataset.mode, true); history.replaceState(null, "", "#" + b.dataset.mode); } });
+  document.addEventListener("click", e => { const a = e.target.closest("a[data-mode]"); if (a) { e.preventDefault(); setMode(a.dataset.mode, true); window.scrollTo(0, 0); } });
+  // a link into the text (#x...) that lives in the other version switches to it
+  function follow(){
+    const h = decodeURIComponent(location.hash.slice(1));
+    if (h === "short" || h === "full") { setMode(h, true); return; }
+    if (!h) return;
+    const t = document.getElementById(h);
+    if (t) { setMode(short.contains(t) ? "short" : "full", false); t.scrollIntoView(); }
+  }
+  setMode(store.get("20w-mode") || "full", false);
+  follow();
+  window.addEventListener("hashchange", follow);
+  // links that leave the book open in the whole window when the page sits inside the reader
+  if (document.documentElement.classList.contains("embedded"))
+    document.querySelectorAll('a[href^="../"], a[href^="http"]').forEach(a => { a.target = a.href.startsWith(location.origin) ? "_top" : "_blank"; });
+
+  // interface language (the text itself is Russian)
+  function setLang(l){
+    document.querySelectorAll("[data-ru]").forEach(el => { el.innerHTML = el.dataset[l]; });
+    document.getElementById("lang-ru").setAttribute("aria-pressed", l === "ru");
+    document.getElementById("lang-en").setAttribute("aria-pressed", l === "en");
+    store.set("20w-lang", l);
+  }
+  document.getElementById("lang-ru").onclick = () => setLang("ru");
+  document.getElementById("lang-en").onclick = () => setLang("en");
+  setLang(store.get("20w-lang") === "en" ? "en" : "ru");
+  window.addEventListener("storage", e => {
+    if (e.key === "20w-lang" && (e.newValue === "ru" || e.newValue === "en")) setLang(e.newValue);
+    if (e.key === "20w-theme" && (e.newValue === "light" || e.newValue === "dark")) document.documentElement.setAttribute("data-theme", e.newValue);
+  });
+})();
+</script>
+<script>
+(function(){var b=document.getElementById("theme");if(!b)return;var r=document.documentElement;function cur(){var t=r.getAttribute("data-theme");if(t)return t;return window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";}function show(){b.textContent=cur()==="dark"?"☀":"☾";b.setAttribute("aria-pressed",cur()==="dark");}b.onclick=function(){var t=cur()==="dark"?"light":"dark";r.setAttribute("data-theme",t);try{localStorage.setItem("20w-theme",t);}catch(e){}show();};if(window.matchMedia)matchMedia("(prefers-color-scheme: dark)").addEventListener("change",show);show();})();
+</script>
+</body>
+</html>

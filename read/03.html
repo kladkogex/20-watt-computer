@@ -1,0 +1,973 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<script>try{var t=localStorage.getItem("20w-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);}catch(e){}if(window.self!==window.top)document.documentElement.classList.add("embedded");</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Глава 3. GLUT и GABA вместе · Компьютер на 20 ваттах</title>
+<meta name="description" content="Сеть из одних GLUT -нейронов не умеет выбирать, сбрасывать память и удерживать активность от лавины, и всё из-за монотонности (утверждение 2.1 ). Добавим в неё второй по …">
+<link rel="canonical" href="https://kladkogex.github.io/20-watt-computer/read/03.html">
+<meta property="og:type" content="book">
+<meta property="og:title" content="Глава 3. GLUT и GABA вместе · Компьютер на 20 ваттах">
+<meta property="og:description" content="Сеть из одних GLUT -нейронов не умеет выбирать, сбрасывать память и удерживать активность от лавины, и всё из-за монотонности (утверждение 2.1 ). Добавим в неё второй по …">
+<meta property="og:url" content="https://kladkogex.github.io/20-watt-computer/read/03.html">
+<meta property="og:locale" content="ru_RU">
+<meta property="og:image" content="https://kladkogex.github.io/20-watt-computer/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Your brain runs on 20 watts. Here is its datasheet. The 20-Watt Computer, a free textbook for engineers.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://kladkogex.github.io/20-watt-computer/og-card.png">
+<meta name="twitter:title" content="Глава 3. GLUT и GABA вместе · The 20-Watt Computer">
+<meta name="twitter:description" content="Сеть из одних GLUT -нейронов не умеет выбирать, сбрасывать память и удерживать активность от лавины, и всё из-за монотонности (утверждение 2.1 ). Добавим в неё второй по …">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Chapter", "name": "GLUT и GABA вместе", "url": "https://kladkogex.github.io/20-watt-computer/read/03.html", "position": 3, "inLanguage": "ru", "isAccessibleForFree": true, "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/", "author": {"@type": "Person", "name": "Константин Кладько", "alternateName": "Konstantin Kladko"}, "isPartOf": {"@type": "Book", "name": "Компьютер на 20 ваттах. Как вычисляет мозг: количественный подход для инженеров", "alternateName": "The 20-Watt Computer: How the Brain Computes. A Quantitative Approach for Engineers", "author": {"@type": "Person", "name": "Константин Кладько", "alternateName": "Konstantin Kladko"}, "url": "https://kladkogex.github.io/20-watt-computer/", "inLanguage": "ru", "isAccessibleForFree": true, "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/"}}</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap">
+<link rel="stylesheet" href="book.css">
+</head>
+<body>
+<header class="bar">
+  <a class="home" href="../#toc"><span class="w">20</span> <span data-ru="Компьютер на 20 ваттах" data-en="The 20-Watt Computer">Компьютер на 20 ваттах</span></a>
+  <label class="jump"><span class="sr" data-ru="Перейти к главе" data-en="Go to chapter">Перейти к главе</span>
+    <select id="jump"></select></label>
+  <div class="langs" role="group" aria-label="Language">
+    <button class="chip" id="lang-ru" type="button">RU</button>
+    <button class="chip" id="lang-en" type="button">EN</button>
+    <button class="chip theme" id="theme" type="button" aria-label="Light or dark theme" title="Light / dark">☾</button>
+  </div>
+</header>
+
+<main class="page">
+  <div class="pagehead">
+    <p class="kicker" data-ru="Глава 3" data-en="Chapter 3">Глава 3</p>
+    <h1><span class="t-full"><span class="nt">GLUT</span> и <span class="nt">GABA</span> вместе</span><span class="t-short">Тормоза</span></h1>
+    <div class="mode" role="group" aria-label="Version" data-has-short="true">
+      <button type="button" class="seg" data-mode="short"><b data-ru="Коротко" data-en="Short">Коротко</b><span data-ru="без формул, с рисунками" data-en="no formulas, with drawings">без формул, с рисунками</span></button>
+      <button type="button" class="seg" data-mode="full"><b data-ru="Полностью" data-en="Full">Полностью</b><span data-ru="формулы, модели, задачи" data-en="formulas, models, exercises">формулы, модели, задачи</span></button>
+    </div>
+    <p class="lang-note" data-ru="" data-en="The online reader is in Russian for now; the book in other languages is in the PDF downloads in the menu.">.</p>
+  </div>
+
+  <article class="text full" id="text-full">
+
+ <a id="x6-250003"></a>
+ <h3 class="sectionHead"><span class="titlemark">3.1 </span> <a id="x6-260003.1"></a>Правила игры</h3>
+<p class="noindent">Сеть из одних <span class="nt">GLUT</span>-нейронов не умеет выбирать, сбрасывать память и удерживать активность
+от лавины, и всё из-за монотонности (утверждение <a href="02.html#x5-18002r1">2.1</a>). Добавим в неё второй по численности
+тип нейронов — <span class="nt">GABA</span>. Правила прежние: только то, что бывает в живом организме, и никаких
+часов.
+</p><p class="indent"> Модель нейрона та же, что (<a href="02.html#x5-16001r1">2.1</a>), но импульс от <span class="nt">GABA</span>-нейрона не поднимает напряжение
+получателя, а опускает. Веса теперь бывают двух знаков, и знак задаёт отправитель,
+правило (<a href="01.html#x4-6004r1">1.1</a>).
+</p><p class="indent"> Несколько параметров схемы. <span class="nt">GABA</span>-нейронов в коре от пятой части до четверти <span class="cite">[<a href="refs.html#XHendry1987">231</a>]</span>.
+Выходы у них короткие: они тормозят соседей, а не далёкие области. Торможение приходит через
+миллисекунду и длится несколько миллисекунд. Без входа <span class="nt">GABA</span>-нейрон молчит: чтобы
+затормозить кого-то, он сам должен получить возбуждение, обычно от <span class="nt">GLUT</span>-нейронов той же
+сети.
+</p><p class="indent"> Поэтому отрицательную связь от <span class="nt">GLUT</span>-нейрона
+<math display="inline"><mi>A</mi></math> к нейрону
+<math display="inline"><mi>B</mi></math> приходится делать через
+посредника: <math display="inline"><mi>A</mi></math> возбуждает
+<span class="nt">GABA</span>-нейрон, а тот тормозит <math display="inline"><mi>B</mi></math>.
+Смена знака стоит одного нейрона и одной задержки, около миллисекунды.
+</p><p class="indent"> Для торможения важно не только, <span class="lati-1095">от кого </span>идёт связь, но и <span class="lati-1095">куда </span>она садится: место посадки
+во многом определяет, что связь делает <span class="cite">[<a href="refs.html#XMarkram2004">58</a>]</span>. <span class="nt">GLUT</span>-выходы садятся в основном на
+входные ветви получателя, его <span class="lati-1095">дендриты</span>, и несут данные: каждый такой вход — одно
+слагаемое суммы. Выход на тело нейрона действует на сумму целиком: так многие
+быстрые <span class="nt">GABA</span>-нейроны делят ответ получателя и задают, когда ему сработать. Выход
+на то место, где рождается импульс получателя, — последнее слово, запрет на весь
+выход сразу. А выход на окончание чужого провода меняет вероятность выброса
+<math display="inline"><mi>p</mi></math> одной
+входной линии, не трогая остальных <span class="cite">[<a href="refs.html#XRudomin1999">192</a>]</span>; так, в частности, работают ворота боли в главе <a href="14.html#x17-12900014">14</a>. За
+пределами мозга выходы садятся на мышечные волокна (глава <a href="13.html#x16-12100013">13</a>) и на органы (глава <a href="16.html#x19-14500016">16</a>), а
+некоторые не садятся никуда и выбрасывают медиатор в объём ткани или в кровь (главы <a href="05.html#x8-470005">5</a>
+и <a href="16.html#x19-14500016">16</a>).
+</p>
+ <h3 class="sectionHead"><span class="titlemark">3.2 </span> <a id="x6-270003.2"></a>НЕ и запрет</h3>
+<p class="noindent">Можно ли теперь сделать НЕ? Почти. Нейрон, который работает при молчащем входе,
+должен откуда-то брать возбуждение. В живом мозге оно есть: на каждый нейрон
+постоянно приходит фоновая активность от тысяч других. Пусть фон держит нейрон
+<math display="inline"><mi>Y</mi> </math> в работе, а
+вход <math display="inline"><mi>x</mi></math>
+через <span class="nt">GABA</span>-посредника его тормозит. Это НЕ.
+</p><p class="indent"> Полезнее, однако, <span class="lati-1095">запрет</span>: «<math display="inline"><mi>a</mi></math>,
+но не при <math display="inline"><mi>b</mi></math>»:
+</p><div class="keyformula"><table class="equation"><tr><td>
+<math display="block" class="equation">
+ <mstyle id="x6-27001r1" class="label"></mstyle><mi>y</mi><mspace width="0.28em" class="thickpace"/> <mo class="MathClass-rel" stretchy="false">=</mo> <mspace width="0.28em" class="thickpace"/><mi>a</mi> <mo class="MathClass-bin" stretchy="false">∧</mo><mover accent="true"><mrow><mi>b</mi></mrow><mo accent="true">¯</mo></mover><mo class="MathClass-punc" stretchy="false">.</mo>
+</math></td><td class="eq-no">(3.1)</td></tr></table>
+</div><p class="noindent"> Нейрон <math display="inline"><mi>Y</mi> </math> получает
+возбуждение от <math display="inline"><mi>a</mi></math>
+и торможение от <span class="nt">GABA</span>-нейрона, которого возбуждает
+<math display="inline"><mi>b</mi></math>. Фон здесь не нужен:
+возбуждение даёт сам <math display="inline"><mi>a</mi></math>.
+Из запретов и ИЛИ собирается всё. Например, исключающее ИЛИ:
+<math display="inline"><mi>x</mi> <mo class="MathClass-bin" stretchy="false">⊕</mo> <mi>y</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mo class="MathClass-open" stretchy="false">(</mo><mi>x</mi> <mo class="MathClass-bin" stretchy="false">∧</mo><mi>ȳ</mi><mo class="MathClass-close" stretchy="false">)</mo> <mo class="MathClass-bin" stretchy="false">∨</mo> <mo class="MathClass-open" stretchy="false">(</mo><mover accent="true"><mrow><mi>x</mi></mrow><mo accent="true">¯</mo></mover> <mo class="MathClass-bin" stretchy="false">∧</mo> <mi>y</mi><mo class="MathClass-close" stretchy="false">)</mo></math> — два
+нейрона-запрета, два <span class="nt">GABA</span>-посредника и один нейрон ИЛИ.
+</p>
+ <div class="tcolorbox keyblock" id="tcolobox-5"> 
+<div class="tcolorbox-content"><div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x6-27002r1"></a>
+<span class="labx-1095">Утверждение 3.1 </span>(Полнота <span class="nt">GLUT</span>+<span class="nt">GABA</span>)<span class="labx-1095">.</span> </span> <span class="lati-1095">Сеть из </span><span class="nt"><span class="lati-1095">GLUT</span></span><span class="lati-1095">- и </span><span class="nt"><span class="lati-1095">GABA</span></span><span class="lati-1095">-нейронов</span>
+<span class="lati-1095">может вычислить любую логическую функцию входов, и каждый бит передаётся</span>
+<span class="lati-1095">одним проводом. Датчики «включения—выключения» из главы</span><span class="lati-1095"> </span><a href="02.html#x5-150002"><span class="lati-1095">2</span></a> <span class="lati-1095">для этого больше не</span>
+<span class="lati-1095">нужны. Если функция должна давать единицу при всех молчащих входах, нужен</span>
+<span class="lati-1095">источник фоновой активности.</span>
+</p>
+</div>
+ 
+</div> 
+</div>
+<p class="indent"> Доказательство: запрет (<a href="#x6-27001r1">3.1</a>) вместе с ИЛИ функционально полон, если есть постоянная единица, потому
+что НЕ <math display="inline"><mi>x</mi></math> — это запрет
+«единица, но не при <math display="inline"><mi>x</mi></math>».
+А функции, которые при всех молчащих входах дают ноль, собираются из запретов и ИЛИ и без
+единицы.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">3.3 </span> <a id="x6-280003.3"></a>Направление движения</h3>
+<p class="noindent">Запрет во времени, как и И во времени в главе <a href="02.html#x5-150002">2</a>, даёт детектор направления движения.
+</p><p class="indent"> Пусть два соседних датчика, <math display="inline"><mi>A</mi></math>
+и <math display="inline"><mi>B</mi></math>, стоят на расстоянии
+<math display="inline"><mi mathvariant="normal">Δ</mi><mi>x</mi></math> друг от друга. Выходной
+нейрон <math display="inline"><mi>Y</mi> </math> получает возбуждение
+от <math display="inline"><mi>B</mi></math> и торможение от
+<math display="inline"><mi>A</mi></math> через <span class="nt">GABA</span>-посредника, с
+задержкой <math display="inline"><mi>d</mi></math> (рис. <a href="#x6-280021">3.1</a>). Пятно
+света, бегущее со скоростью <math display="inline"><mi>v</mi></math>
+от <math display="inline"><mi>A</mi></math> к
+<math display="inline"><mi>B</mi></math>, проходит
+<math display="inline"><mi>A</mi></math> в момент
+<math display="inline"><mn>0</mn></math>, и торможение
+приходит к <math display="inline"><mi>Y</mi> </math>
+в момент <math display="inline"><mi>d</mi></math>;
+<math display="inline"><mi>B</mi></math> оно проходит в
+момент <math display="inline"><mi mathvariant="normal">Δ</mi><mi>x</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mi>v</mi></math>, и тогда
+же приходит возбуждение. Если эти моменты совпадают с точностью до окна (<a href="02.html#x5-17001r2">2.2</a>), торможение гасит
+возбуждение, и <math display="inline"><mi>Y</mi> </math>
+молчит. Это происходит при скорости около
+</p><div class="keyformula"><table class="equation"><tr><td>
+<math display="block" class="equation">
+ <mstyle id="x6-28001r2" class="label"></mstyle><msup><mrow><mi>v</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">∗</mo></mrow></msup 
+><mspace width="0.28em" class="thickpace"/> <mo class="MathClass-rel" stretchy="false">=</mo> <mspace width="0.28em" class="thickpace"/><mfrac><mrow><mi mathvariant="normal">Δ</mi><mi>x</mi></mrow> 
+ <mrow><mi>d</mi></mrow></mfrac> <mo class="MathClass-punc" stretchy="false">.</mo>
+</math></td><td class="eq-no">(3.2)</td></tr></table>
+</div><p class="noindent"> При движении от <math display="inline"><mi>B</mi></math>
+к <math display="inline"><mi>A</mi></math> возбуждение
+от <math display="inline"><mi>B</mi></math> приходит
+в момент <math display="inline"><mn>0</mn></math>, а
+торможение от <math display="inline"><mi>A</mi></math> —
+только в момент <math display="inline"><mi mathvariant="normal">Δ</mi><mi>x</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mi>v</mi> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>d</mi></math>,
+когда <math display="inline"><mi>Y</mi> </math>
+уже сработал.
+</p>
+ <figure class="figure"> 
+<a id="x6-280021"></a>
+<p class="noindent"><img src="img/full10x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<figcaption class="caption"><span class="id">Рис. 3.1: </span><span class="content">Детектор направления движения. <math display="inline"><mi>B</mi></math>
+возбуждает <math display="inline"><mi>Y</mi> </math>,
+<math display="inline"><mi>A</mi></math>
+тормозит его через <span class="nt">GABA</span>-посредника с задержкой <math display="inline"><mi>d</mi></math>.
+При движении от <math display="inline"><mi>A</mi></math>
+к <math display="inline"><mi>B</mi></math>
+со скоростью около <math display="inline"><mi mathvariant="normal">Δ</mi><mi>x</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mi>d</mi></math>
+торможение гасит возбуждение; при обратном движении оно опаздывает. Жёлтое пятно с
+чёрточками — свет, бегущий над датчиками.</span></figcaption>
+ </figure>
+<p class="indent"> В сетчатке избирательность к направлению движения, по-видимому, создаётся именно
+так: асимметричным торможением со стороны, откуда движение не должно вызывать
+ответ <span class="cite">[<a href="refs.html#XBarlow1965">13</a>]</span>.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">3.4 </span> <a id="x6-290003.4"></a>Вычитание или деление</h3>
+<p class="noindent">До сих пор торможение у нас вычитало. На самом деле оно устроено тоньше.
+</p><p class="indent"> Синапс открывает канал, то есть включает проводимость. У возбуждающего
+синапса равновесный потенциал лежит далеко выше порога, примерно на
+<math display="inline"><mn>7</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мВ</mtext></mstyle></math>
+выше покоя: открытый канал тянет напряжение вверх. У тормозящего <span class="nt">GABA</span>-синапса
+канал пропускает хлор, равновесный потенциал которого лежит около покоя,
+и открытый канал тянет напряжение не вниз, а <span class="lati-1095">к покою</span>. Если отсчитывать
+напряжение от покоя, установившееся напряжение мембраны с проводимостью утечки
+<math display="inline"><msub><mrow><mi>g</mi></mrow><mrow><mi>L</mi></mrow></msub 
+></math>,
+возбуждающей <math display="inline"><msub><mrow><mi>g</mi></mrow><mrow><mi>E</mi></mrow></msub 
+></math>
+и тормозящей <math display="inline"><msub><mrow><mi>g</mi></mrow><mrow><mi>I</mi></mrow></msub 
+></math>
+равно
+</p><div class="keyformula"><table class="equation"><tr><td>
+<math display="block" class="equation">
+ <mstyle id="x6-29001r3" class="label"></mstyle><msub><mrow><mi>V</mi> </mrow><mrow><mi>∞</mi></mrow></msub 
+><mspace width="0.28em" class="thickpace"/> <mo class="MathClass-rel" stretchy="false">=</mo> <mspace width="0.28em" class="thickpace"/> <mfrac><mrow><msub><mrow><mi>g</mi></mrow><mrow><mi>E</mi></mrow></msub 
+><mspace width="0.17em" class="thinspace"/><msub><mrow><mi>E</mi></mrow><mrow><mi>E</mi></mrow></msub 
+></mrow> 
+<mrow><msub><mrow><mi>g</mi></mrow><mrow><mi>L</mi></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">+</mo> <msub><mrow><mi>g</mi></mrow><mrow><mi>E</mi></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">+</mo> <msub><mrow><mi>g</mi></mrow><mrow><mi>I</mi></mrow></msub 
+></mrow></mfrac><mo class="MathClass-punc" stretchy="false">,</mo>
+</math></td><td class="eq-no">(3.3)</td></tr></table>
+</div><p class="noindent"> где <math display="inline"><msub><mrow><mi>E</mi></mrow><mrow><mi>E</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>7</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мВ</mtext></mstyle></math> —
+равновесный потенциал возбуждающего синапса. Это закон Ома для делителя напряжения:
+<math display="inline"><msub><mrow><mi>g</mi></mrow><mrow><mi>E</mi></mrow></msub 
+></math> тянет
+к <math display="inline"><msub><mrow><mi>E</mi></mrow><mrow><mi>E</mi></mrow></msub 
+></math>, а
+<math display="inline"><msub><mrow><mi>g</mi></mrow><mrow><mi>L</mi></mrow></msub 
+></math> и
+<math display="inline"><msub><mrow><mi>g</mi></mrow><mrow><mi>I</mi></mrow></msub 
+></math> — к
+нулю.
+</p><p class="indent"> <math display="inline"><msub><mrow><mi>g</mi></mrow><mrow><mi>I</mi></mrow></msub 
+></math>
+стоит не в числителе со знаком минус, а в знаменателе: торможение не <span class="lati-1095">вычитает </span>из
+возбуждения, а <span class="lati-1095">делит </span>его (рис. <a href="#x6-290022">3.2</a>). Такое торможение называют шунтирующим: открытые
+хлорные каналы закорачивают мембрану. Для сети это регулировка усиления. Если
+<math display="inline"><msub><mrow><mi>g</mi></mrow><mrow><mi>I</mi></mrow></msub 
+></math>
+пропорциональна суммарной активности соседей, каждый нейрон отвечает не на абсолютную
+силу своего входа, а на её долю в общей активности. Такое деление на общую активность
+встречается во многих отделах мозга и считается одной из его стандартных операций <span class="cite">[<a href="refs.html#XCarandini2012">14</a>]</span>: одна и
+та же сеть работает и при слабом, и при сильном входе.
+</p><p class="indent"> Оговорка: формула (<a href="#x6-29001r3">3.3</a>) — про нейрон, который не выдаёт импульсов. У срабатывающего
+нейрона напряжение всё время держится около порога, ток через тормозящую проводимость
+почти постоянен, и на <span class="lati-1095">частоту </span>импульсов шунт действует в основном вычитанием <span class="cite">[<a href="refs.html#XHoltKoch1997">73</a>]</span>. Частота
+делится, если нейрону одновременно добавить уравновешенные возбуждающую и тормозящую
+фоновые проводимости, как в дрожащем, уравновешенном режиме живой коры <span class="cite">[<a href="refs.html#XChance2002">74</a>]</span>. Так
+что деление мозг получает не от одного шунта, а от торможения вместе с фоновым
+шумом <span class="cite">[<a href="refs.html#XCarandini2012">14</a>]</span>.
+</p>
+ <figure class="figure"> 
+<a id="x6-290022"></a>
+<p class="noindent"><img src="img/full11x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<figcaption class="caption"><span class="id">Рис. 3.2: </span><span class="content">Шунтирующее торможение делит напряжение, а не
+вычитает из него. Синяя кривая — установившееся напряжение (<a href="#x6-29001r3">3.3</a>)
+без торможения, красная — с тормозящей проводимостью
+<math display="inline"><msub><mrow><mi>g</mi></mrow><mrow><mi>I</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>2</mn><msub><mrow><mi>g</mi></mrow><mrow><mi>L</mi></mrow></msub 
+></math>.
+Красная — та же синяя, растянутая по горизонтали втрое: вход как будто поделили на
+<math display="inline"><mn>1</mn> <mo class="MathClass-bin" stretchy="false">+</mo> <msub><mrow><mi>g</mi></mrow><mrow><mi>I</mi></mrow></msub 
+><mo class="MathClass-bin" stretchy="false">∕</mo><msub><mrow><mi>g</mi></mrow><mrow><mi>L</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>3</mn></math>.
+Штриховая — торможение, вычитающее постоянные <math display="inline"><mn>2</mn><mn>5</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мВ</mtext></mstyle></math>:
+кривая опускается целиком, наклон не меняется.</span></figcaption>
+ </figure>
+<p class="indent"> Есть и второе следствие. Постоянная времени мембраны
+<math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mstyle class="text"><mtext>эфф</mtext></mstyle></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mi>C</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mo class="MathClass-open" stretchy="false">(</mo><msub><mrow><mi>g</mi></mrow><mrow><mi>L</mi></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">+</mo> <msub><mrow><mi>g</mi></mrow><mrow><mi>E</mi></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">+</mo> <msub><mrow><mi>g</mi></mrow><mrow><mi>I</mi></mrow></msub 
+><mo class="MathClass-close" stretchy="false">)</mo></math>,
+и торможение её укорачивает. А окно совпадения (<a href="02.html#x5-17001r2">2.2</a>) пропорционально
+<math display="inline"><mi>τ</mi></math>, так
+что торможение, пришедшее вместе с возбуждением, <span class="lati-1095">сужает окно</span>. Схема, в которой вход
+возбуждает нейрон напрямую и одновременно, с задержкой в миллисекунду, тормозит его через
+<span class="nt">GABA</span>-посредника, — одна из самых распространённых в мозге: нейрон успевает ответить только
+на то, что пришло в первую миллисекунду-другую <span class="cite">[<a href="refs.html#XPouille2001">15</a>]</span>.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">3.5 </span> <a id="x6-300003.5"></a>Выбор</h3>
+<p class="noindent">Теперь главное, чего не хватало <span class="nt">GLUT</span>-сети: выбор одного из нескольких. Возьмём две группы <span class="nt">GLUT</span>-нейронов
+с входами <math display="inline"><msub><mrow><mi>I</mi></mrow><mrow><mn>1</mn></mrow></msub 
+></math>
+и <math display="inline"><msub><mrow><mi>I</mi></mrow><mrow><mn>2</mn></mrow></msub 
+></math>.
+Каждая через своих <span class="nt">GABA</span>-посредников тормозит другую с силой
+<math display="inline"><mi>β</mi></math> (рис. <a href="#x6-300023">3.3</a>).
+Для частот <math display="inline"><msub><mrow><mi>r</mi></mrow><mrow><mn>1</mn></mrow></msub 
+><mo class="MathClass-punc" stretchy="false">,</mo><msub><mrow><mi>r</mi></mrow><mrow><mn>2</mn></mrow></msub 
+></math>
+получаем </p><table class="equation"><tr><td>
+<math display="block" class="equation">
+ <mstyle id="x6-30001r4" class="label"></mstyle><mi>τ</mi><mspace width="0.17em" class="thinspace"/><mfrac><mrow><mstyle mathvariant="normal"><mi>d</mi></mstyle><msub><mrow><mi>r</mi></mrow><mrow><mn>1</mn></mrow></msub 
+></mrow> 
+ <mrow><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>t</mi></mrow></mfrac> <mo class="MathClass-rel" stretchy="false">=</mo> <mo class="MathClass-bin" stretchy="false">−</mo><msub><mrow><mi>r</mi></mrow><mrow><mn>1</mn></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">+</mo><msub><mrow><mrow><mo class="MathClass-open" fence="true" mathsize="1.19em">[</mo><mrow><msub><mrow><mi>I</mi></mrow><mrow><mn>1</mn></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>β</mi><msub><mrow><mi>r</mi></mrow><mrow><mn>2</mn></mrow></msub 
+></mrow><mo class="MathClass-close" fence="true" mathsize="1.19em">]</mo></mrow></mrow><mrow><mo class="MathClass-bin" stretchy="false">+</mo></mrow></msub 
+><mo class="MathClass-punc" stretchy="false">,</mo><mspace width="2em" class="qquad"/><mi>τ</mi><mspace width="0.17em" class="thinspace"/><mfrac><mrow><mstyle mathvariant="normal"><mi>d</mi></mstyle><msub><mrow><mi>r</mi></mrow><mrow><mn>2</mn></mrow></msub 
+></mrow> 
+ <mrow><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>t</mi></mrow></mfrac> <mo class="MathClass-rel" stretchy="false">=</mo> <mo class="MathClass-bin" stretchy="false">−</mo><msub><mrow><mi>r</mi></mrow><mrow><mn>2</mn></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">+</mo><msub><mrow><mrow><mo class="MathClass-open" fence="true" mathsize="1.19em">[</mo><mrow><msub><mrow><mi>I</mi></mrow><mrow><mn>2</mn></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>β</mi><msub><mrow><mi>r</mi></mrow><mrow><mn>1</mn></mrow></msub 
+></mrow><mo class="MathClass-close" fence="true" mathsize="1.19em">]</mo></mrow></mrow><mrow><mo class="MathClass-bin" stretchy="false">+</mo></mrow></msub 
+><mo class="MathClass-punc" stretchy="false">,</mo>
+</math></td><td class="eq-no">(3.4)</td></tr></table>
+<p class="noindent">где <math display="inline"><msub><mrow><mo class="MathClass-open" stretchy="false">[</mo><mi>u</mi><mo class="MathClass-close" stretchy="false">]</mo></mrow><mrow><mo class="MathClass-bin" stretchy="false">+</mo></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo><mi class="qopname"> max</mi><mo> ⁡ </mo><mo class="MathClass-open" stretchy="false">(</mo><mi>u</mi><mo class="MathClass-punc" stretchy="false">,</mo><mn>0</mn><mo class="MathClass-close" stretchy="false">)</mo></math>:
+частота не бывает отрицательной.
+</p>
+ <figure class="figure"> 
+<a id="x6-300023"></a>
+<p class="noindent"><img src="img/full12x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<figcaption class="caption"><span class="id">Рис. 3.3: </span><span class="content">Выбор из двух. Две группы <span class="nt">GLUT</span>-нейронов (синие) тормозят друг друга через
+<span class="nt">GABA</span>-посредников (красные).</span></figcaption>
+ </figure>
+<p class="indent"> Пока работают оба нейрона, система (<a href="#x6-30001r4">3.4</a>) линейна, и её поведение задают два собственных числа:
+<math display="inline"> <mo class="MathClass-bin" stretchy="false">−</mo> <mo class="MathClass-open" stretchy="false">(</mo><mn>1</mn> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>β</mi><mo class="MathClass-close" stretchy="false">)</mo><mo class="MathClass-bin" stretchy="false">∕</mo><mi>τ</mi></math> для одинаковых отклонений обеих
+частот и <math display="inline"> <mo class="MathClass-bin" stretchy="false">−</mo> <mo class="MathClass-open" stretchy="false">(</mo><mn>1</mn> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>β</mi><mo class="MathClass-close" stretchy="false">)</mo><mo class="MathClass-bin" stretchy="false">∕</mo><mi>τ</mi></math> для противоположных.
+При слабом торможении, <math display="inline"><mi>β</mi> <mo class="MathClass-rel" stretchy="false">&#x003C;</mo> <mn>1</mn></math>,
+оба числа отрицательны: оба нейрона работают, торможение лишь приглушает слабого. При сильном
+торможении, <math display="inline"><mi>β</mi> <mo class="MathClass-rel" stretchy="false">&#x003E;</mo> <mn>1</mn></math>,
+второе число становится положительным: любая разница между
+<math display="inline"><msub><mrow><mi>r</mi></mrow><mrow><mn>1</mn></mrow></msub 
+></math> и
+<math display="inline"><msub><mrow><mi>r</mi></mrow><mrow><mn>2</mn></mrow></msub 
+></math>
+нарастает, пока один нейрон не замолчит совсем.
+</p>
+ <div class="tcolorbox keyblock" id="tcolobox-6"> 
+<div class="tcolorbox-content"><div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x6-30003r2"></a>
+<span class="labx-1095">Утверждение 3.2 </span>(Победитель забирает всё)<span class="labx-1095">.</span> </span> <span class="lati-1095">Если взаимное торможение сильнее</span>
+<span class="lati-1095">единицы, </span><math display="inline"><mi>β</mi> <mo class="MathClass-rel" stretchy="false">&#x003E;</mo> <mn>1</mn></math><span class="lati-1095">,</span>
+<span class="lati-1095">состояние, в котором работают обе группы, неустойчиво. Сеть приходит в</span>
+<span class="lati-1095">состояние, где работает одна группа, а другая молчит. Победитель с частотой</span>
+<math display="inline"><msub><mrow><mi>r</mi></mrow><mrow><mn>1</mn></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <msub><mrow><mi>I</mi></mrow><mrow><mn>1</mn></mrow></msub 
+></math>
+<span class="lati-1095">удерживает победу, пока </span><math display="inline"><msub><mrow><mi>I</mi></mrow><mrow><mn>2</mn></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">&#x003C;</mo> <mi>β</mi><msub><mrow><mi>I</mi></mrow><mrow><mn>1</mn></mrow></msub 
+></math><span class="lati-1095">.</span>
+</p>
+</div>
+ 
+</div> 
+</div>
+<p class="indent"> Мы проверили это на модели. При <math display="inline"><mi>β</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn></math>
+и входах <math display="inline"><mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>0</mn></math> и
+<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>9</mn></math> обе группы работают,
+с частотами <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>7</mn><mn>3</mn></math>
+и <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn><mn>3</mn></math>. При
+<math display="inline"><mi>β</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>2</mn></math>
+и тех же входах вторая группа молчит совсем. У такого выбора есть память: если
+потом поменять входы местами, прежний победитель остаётся победителем, потому что
+<math display="inline"><mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>0</mn> <mo class="MathClass-rel" stretchy="false">&#x003C;</mo> <mn>2</mn> <mo class="MathClass-bin" stretchy="false">⋅</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>9</mn></math>.
+</p><p class="indent"> С сотней групп всё так же: каждая тормозит остальных, выживает одна.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">3.6 </span> <a id="x6-310003.6"></a>Сброс памяти</h3>
+<p class="noindent">Память из главы <a href="02.html#x5-150002">2</a> выключалась только усталостью. Добавим к ней <span class="nt">GABA</span>-нейрон, который
+возбуждается сигналом «сброс» и тормозит группу. Торможение опускает кривую
+<math display="inline"><mi>f</mi><mo class="MathClass-open" stretchy="false">(</mo><mi>w</mi><mi>r</mi> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>I</mi><mo class="MathClass-close" stretchy="false">)</mo></math> на
+рис. <a href="02.html#x5-210025">2.5</a>, верхнее пересечение исчезает, и группа гаснет — и остаётся в нижнем состоянии, когда
+сброс кончился. Теперь память записывается одним сигналом и стирается другим, как у триггера
+со входами установки и сброса.
+</p><p class="indent"> Ещё красивее соединить две такие группы взаимным торможением, как на рис. <a href="#x6-300023">3.3</a>, и дать
+каждой обратную связь на саму себя. Сигнал на вход одной из групп переводит ячейку в её
+состояние, и ячейка помнит последнее решение. Это прямой аналог защёлки из двух перекрёстно
+соединённых элементов ИЛИ-НЕ.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">3.7 </span> <a id="x6-320003.7"></a>Устойчивость и ритм</h3>
+<p class="noindent">Остаётся третья беда <span class="nt">GLUT</span>-сети — лавина. Возьмём группу <span class="nt">GLUT</span>-нейронов с обратной связью на
+себя <math display="inline"><msub><mrow><mi>w</mi></mrow><mrow><mi>E</mi><mi>E</mi></mrow></msub 
+></math>
+и группу <span class="nt">GABA</span>-нейронов, которых первая возбуждает с силой
+<math display="inline"><msub><mrow><mi>w</mi></mrow><mrow><mi>I</mi><mi>E</mi></mrow></msub 
+></math> и которые тормозят
+первую с силой <math display="inline"><msub><mrow><mi>w</mi></mrow><mrow><mi>E</mi><mi>I</mi></mrow></msub 
+></math>.
+Для частот <math display="inline"><mi>E</mi></math>
+и <math display="inline"><mi>I</mi></math>
+получаем </p><table class="equation"><tr><td>
+<math display="block" class="equation">
+ <mstyle id="x6-32001r5" class="label"></mstyle><msub><mrow><mi>τ</mi></mrow><mrow><mi>E</mi></mrow></msub 
+><mfrac><mrow><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>E</mi></mrow> 
+ <mrow><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>t</mi></mrow></mfrac> <mo class="MathClass-rel" stretchy="false">=</mo> <mo class="MathClass-bin" stretchy="false">−</mo><mi>E</mi> <mo class="MathClass-bin" stretchy="false">+</mo> <msub><mrow><mi>w</mi></mrow><mrow><mi>E</mi><mi>E</mi></mrow></msub 
+><mi>E</mi> <mo class="MathClass-bin" stretchy="false">−</mo> <msub><mrow><mi>w</mi></mrow><mrow><mi>E</mi><mi>I</mi></mrow></msub 
+><mi>I</mi> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>h</mi><mo class="MathClass-punc" stretchy="false">,</mo><mspace width="2em" class="qquad"/><msub><mrow><mi>τ</mi></mrow><mrow><mi>I</mi></mrow></msub 
+><mfrac><mrow><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>I</mi></mrow> 
+<mrow><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>t</mi></mrow></mfrac> <mo class="MathClass-rel" stretchy="false">=</mo> <mo class="MathClass-bin" stretchy="false">−</mo><mi>I</mi> <mo class="MathClass-bin" stretchy="false">+</mo> <msub><mrow><mi>w</mi></mrow><mrow><mi>I</mi><mi>E</mi></mrow></msub 
+><mi>E</mi><mo class="MathClass-punc" stretchy="false">,</mo>
+</math></td><td class="eq-no">(3.5)</td></tr></table>
+<p class="noindent">где <math display="inline"><mi>h</mi></math> — внешний вход <span class="cite">[<a href="refs.html#XWilsonCowan1972">66</a>]</span>.
+Без торможения при <math display="inline"><msub><mrow><mi>w</mi></mrow><mrow><mi>E</mi><mi>E</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">&#x003E;</mo> <mn>1</mn></math>
+активность растёт без предела: каждый импульс порождает больше одного следующего. С
+торможением установившаяся частота </p><table class="equation"><tr><td>
+<math display="block" class="equation">
+ <mstyle id="x6-32002r6" class="label"></mstyle><msup><mrow><mi>E</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">∗</mo></mrow></msup 
+><mspace width="0.28em" class="thickpace"/> <mo class="MathClass-rel" stretchy="false">=</mo> <mspace width="0.28em" class="thickpace"/> <mfrac><mrow><mi>h</mi></mrow> 
+<mrow><mn>1</mn> <mo class="MathClass-bin" stretchy="false">−</mo> <msub><mrow><mi>w</mi></mrow><mrow><mi>E</mi><mi>E</mi></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">+</mo> <msub><mrow><mi>w</mi></mrow><mrow><mi>E</mi><mi>I</mi></mrow></msub 
+><msub><mrow><mi>w</mi></mrow><mrow><mi>I</mi><mi>E</mi></mrow></msub 
+></mrow></mfrac>
+</math></td><td class="eq-no">(3.6)</td></tr></table>
+<p class="noindent">конечна, если знаменатель положителен. Но этого мало: равновесие должно ещё и притягивать.
+Из линейного анализа (<a href="#x6-32001r5">3.5</a>) получаются два условия.
+</p>
+ <div class="tcolorbox keyblock" id="tcolobox-7"> 
+<div class="tcolorbox-content"><div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x6-32003r3"></a>
+<span class="labx-1095">Утверждение 3.3 </span>(Условия устойчивости)<span class="labx-1095">.</span> </span> <span class="lati-1095">Равновесие</span><span class="lati-1095"> </span>(<a href="#x6-32002r6">3.6</a>) <span class="lati-1095">устойчиво, если торможение</span>
+ </p><ol class="enumerate1">
+<li class="enumerate" id="x6-32004x3">
+ <p class="noindent">достаточно сильное<span class="lati-1095">: </span><math display="inline"><msub><mrow><mi>w</mi></mrow><mrow><mi>E</mi><mi>I</mi></mrow></msub 
+><mspace width="0.17em" class="thinspace"/><msub><mrow><mi>w</mi></mrow><mrow><mi>I</mi><mi>E</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">&#x003E;</mo> <msub><mrow><mi>w</mi></mrow><mrow><mi>E</mi><mi>E</mi></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">−</mo> <mn>1</mn></math><span class="lati-1095">;</span>
+ </p></li>
+<li class="enumerate" id="x6-32005x3">
+ <p class="noindent">достаточно быстрое<span class="lati-1095">: </span><math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>I</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">&#x003C;</mo> <msub><mrow><mi>τ</mi></mrow><mrow><mi>E</mi></mrow></msub 
+><mo class="MathClass-bin" stretchy="false">∕</mo><mo class="MathClass-open" stretchy="false">(</mo><msub><mrow><mi>w</mi></mrow><mrow><mi>E</mi><mi>E</mi></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">−</mo> <mn>1</mn><mo class="MathClass-close" stretchy="false">)</mo></math><span class="lati-1095">.</span></p></li></ol>
+<p class="noindent"><span class="lati-1095">Если нарушено (i), активность нарастает лавиной. Если выполнено (i), но нарушено (ii),</span>
+<span class="lati-1095">торможение запаздывает, и активность начинает колебаться.</span>
+</p>
+</div>
+ 
+</div> 
+</div>
+<p class="indent"> Условие (i) — это определитель матрицы системы (<a href="#x6-32001r5">3.5</a>), условие (ii) — её след. Смысл
+второго понятен любому, кто настраивал регулятор: запоздавшая обратная связь не гасит
+отклонение, а раскачивает его.
+</p>
+ <figure class="figure"> 
+<a id="x6-320064"></a>
+<p class="noindent"><img src="img/full13x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<figcaption class="caption"><span class="id">Рис. 3.4: </span><span class="content">Частота <span class="nt">GLUT</span>-группы с обратной связью <math display="inline"><msub><mrow><mi>w</mi></mrow><mrow><mi>E</mi><mi>E</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn></math>,
+<math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>E</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>,
+после включения входа. Без торможения (штрих) активность растёт без предела. С
+торможением силы <math display="inline"><msub><mrow><mi>w</mi></mrow><mrow><mi>E</mi><mi>I</mi></mrow></msub 
+><msub><mrow><mi>w</mi></mrow><mrow><mi>I</mi><mi>E</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>2</mn></math>
+и <math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>I</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>2</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>
+(синяя кривая) она выходит на уровень <math display="inline"><msup><mrow><mi>E</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">∗</mo></mrow></msup 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mi>h</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mo class="MathClass-open" stretchy="false">(</mo><mn>1</mn> <mo class="MathClass-bin" stretchy="false">−</mo> <mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn> <mo class="MathClass-bin" stretchy="false">+</mo> <mn>2</mn><mo class="MathClass-close" stretchy="false">)</mo> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>6</mn><mn>7</mn><mi>h</mi></math>.
+С тем же торможением, но медленным, <math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>I</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>3</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>
+(красная кривая), активность колеблется.</span></figcaption>
+ </figure>
+<p class="indent"> Считается, что кора работает именно в таком режиме: её собственная обратная связь
+достаточно сильна, чтобы без торможения уйти в лавину, и держит её в рабочей точке только
+быстрое торможение <span class="cite">[<a href="refs.html#XTsodyks1997isn">16</a>]</span>.
+</p><p class="indent"> У этого режима есть парадоксальная подпись, по которой его можно узнать снаружи <span class="cite">[<a href="refs.html#XTsodyks1997isn">16</a>]</span>. Добавим в (<a href="#x6-32001r5">3.5</a>)
+внешний вход <math display="inline"><msub><mrow><mi>h</mi></mrow><mrow><mi>I</mi></mrow></msub 
+></math>
+прямо <span class="nt">GABA</span>-группе. Установившиеся частоты станут </p><table class="equation"><tr><td>
+<math display="block" class="equation">
+ <mstyle id="x6-32007r7" class="label"></mstyle><msup><mrow><mi>E</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">∗</mo></mrow></msup 
+><mspace width="0.28em" class="thickpace"/> <mo class="MathClass-rel" stretchy="false">=</mo> <mspace width="0.28em" class="thickpace"/><mfrac><mrow><mi>h</mi> <mo class="MathClass-bin" stretchy="false">−</mo> <msub><mrow><mi>w</mi></mrow><mrow><mi>E</mi><mi>I</mi></mrow></msub 
+><mspace width="0.17em" class="thinspace"/><msub><mrow><mi>h</mi></mrow><mrow><mi>I</mi></mrow></msub 
+></mrow> 
+ <mrow><mi>D</mi></mrow></mfrac> <mo class="MathClass-punc" stretchy="false">,</mo><mspace width="2em" class="qquad"/><msup><mrow><mi>I</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">∗</mo></mrow></msup 
+><mspace width="0.28em" class="thickpace"/> <mo class="MathClass-rel" stretchy="false">=</mo> <mspace width="0.28em" class="thickpace"/><mfrac><mrow><msub><mrow><mi>w</mi></mrow><mrow><mi>I</mi><mi>E</mi></mrow></msub 
+><mspace width="0.17em" class="thinspace"/><mi>h</mi> <mo class="MathClass-bin" stretchy="false">+</mo> <mo class="MathClass-open" stretchy="false">(</mo><mn>1</mn> <mo class="MathClass-bin" stretchy="false">−</mo> <msub><mrow><mi>w</mi></mrow><mrow><mi>E</mi><mi>E</mi></mrow></msub 
+><mo class="MathClass-close" stretchy="false">)</mo><mspace width="0.17em" class="thinspace"/><msub><mrow><mi>h</mi></mrow><mrow><mi>I</mi></mrow></msub 
+></mrow> 
+ <mrow><mi>D</mi></mrow></mfrac> <mo class="MathClass-punc" stretchy="false">,</mo><mspace width="2em" class="qquad"/><mi>D</mi><mspace width="0.28em" class="thickpace"/> <mo class="MathClass-rel" stretchy="false">=</mo> <mspace width="0.28em" class="thickpace"/><mn>1</mn> <mo class="MathClass-bin" stretchy="false">−</mo> <msub><mrow><mi>w</mi></mrow><mrow><mi>E</mi><mi>E</mi></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">+</mo> <msub><mrow><mi>w</mi></mrow><mrow><mi>E</mi><mi>I</mi></mrow></msub 
+><msub><mrow><mi>w</mi></mrow><mrow><mi>I</mi><mi>E</mi></mrow></msub 
+><mo class="MathClass-punc" stretchy="false">.</mo>
+</math></td><td class="eq-no">(3.7)</td></tr></table>
+<p class="noindent">Если <math display="inline"><msub><mrow><mi>w</mi></mrow><mrow><mi>E</mi><mi>E</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">&#x003E;</mo> <mn>1</mn></math>,
+коэффициент при <math display="inline"><msub><mrow><mi>h</mi></mrow><mrow><mi>I</mi></mrow></msub 
+></math>
+во второй формуле отрицателен: подтолкнёшь <span class="nt">GABA</span>-нейроны — и их частота
+<span class="lati-1095">упадёт</span>. Причина в петле. Лишнее торможение приглушает <span class="nt">GLUT</span>-группу, та меньше
+возбуждает <span class="nt">GABA</span>-нейроны, и они теряют больше, чем получили. При числах рис. <a href="#x6-320064">3.4</a>
+(<math display="inline"><msub><mrow><mi>w</mi></mrow><mrow><mi>E</mi><mi>E</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn></math>,
+<math display="inline"><msub><mrow><mi>w</mi></mrow><mrow><mi>E</mi><mi>I</mi></mrow></msub 
+><msub><mrow><mi>w</mi></mrow><mrow><mi>I</mi><mi>E</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>2</mn></math>,
+<math display="inline"><mi>D</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn></math>) каждая единица
+добавленного входа снижает <math display="inline"><msup><mrow><mi>I</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">∗</mo></mrow></msup 
+></math>
+на треть единицы. Эту подпись и нашли в коре: когда ответ нейронов зрительной коры
+подавляется раздражителем вокруг, тормозящий ток, который они получают, не растёт, а падает
+вместе с возбуждающим <span class="cite">[<a href="refs.html#XOzeki2009">75</a>]</span>. Позже ту же подпись нашли в разных областях и слоях
+коры <span class="cite">[<a href="refs.html#XSanzeni2020">126</a>]</span>.
+</p><p class="indent"> Колебания при нарушении условия (ii) в мозге тоже встречаются. Петля «<span class="nt">GLUT</span> возбуждает <span class="nt">GABA</span>,
+<span class="nt">GABA</span> тормозит <span class="nt">GLUT</span>» с задержкой в несколько миллисекунд порождает ритм с периодом порядка
+<math display="inline"><mn>1</mn><mn>2</mn></math>–<math display="inline"><mn>5</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>
+(частота <math display="inline"><mn>2</mn><mn>0</mn></math>–<math display="inline"><mn>8</mn><mn>0</mn></math>Гц),
+и такие быстрые ритмы в коре хорошо известны <span class="cite">[<a href="refs.html#XCardin2009">69</a>, <a href="refs.html#XBuzsaki2012">17</a>]</span>. Это не часы компьютера: ритм местный
+и возникает только тогда, когда сеть активна. Но в течение нескольких циклов он делит время на
+окна, в которых нейроны могут сработать.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">3.8 </span> <a id="x6-330003.8"></a>Итог</h3>
+ <div class="table">
+<p class="indent"> <a id="x6-330011"></a></p><figure class="float">
+<div class="tabular">
+ <table id="TBL-5" class="tabular"><colgroup id="TBL-5-1g"><col id="TBL-5-1" /><col id="TBL-5-2" /><col id="TBL-5-3" /></colgroup><tr style="vertical-align:baseline;" id="TBL-5-1-"><td style="text-align:left;" id="TBL-5-1-1" class="td11"> </td><td style="text-align:left;" id="TBL-5-1-2" class="td11"> <p class="noindent"><span class="larm-1000">только</span>
+ <span class="nt"><span class="larm-1000">GLUT</span></span> </p></td><td style="text-align:left;" id="TBL-5-1-3" class="td11"> <p class="noindent"><span class="nt"><span class="larm-1000">GLUT</span></span>
+ <span class="larm-1000">+</span>
+ <span class="nt"><span class="larm-1000">GABA</span></span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-5-2-"><td style="text-align:left;" id="TBL-5-2-1" class="td11"> <p class="noindent"><span class="larm-1000">НЕ</span> </p></td><td style="text-align:left;" id="TBL-5-2-2" class="td11"> <p class="noindent"><span class="larm-1000">только</span>
+ <span class="larm-1000">через</span>
+ <span class="larm-1000">датчики</span>
+ <span class="larm-1000">«включения—выключения»</span> </p></td><td style="text-align:left;" id="TBL-5-2-3" class="td11"> <p class="noindent"><span class="larm-1000">запрет</span>
+ <math display="inline"><mi>a</mi> <mo class="MathClass-bin" stretchy="false">∧</mo><mover accent="true"><mrow><mi>b</mi></mrow><mo accent="true">¯</mo></mover></math><span class="larm-1000">;</span>
+ <span class="larm-1000">НЕ</span>
+ <span class="larm-1000">при</span>
+ <span class="larm-1000">фоновой</span>
+ <span class="larm-1000">активности</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-5-3-"><td style="text-align:left;" id="TBL-5-3-1" class="td11"> <p class="noindent"><span class="larm-1000">провода</span>
+ <span class="larm-1000">на</span>
+ <span class="larm-1000">бит</span> </p></td><td style="text-align:left;" id="TBL-5-3-2" class="td11"> <p class="noindent"><span class="larm-1000">два</span> </p></td><td style="text-align:left;" id="TBL-5-3-3" class="td11"> <p class="noindent"><span class="larm-1000">один</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-5-4-"><td style="text-align:left;" id="TBL-5-4-1" class="td11"> <p class="noindent"><span class="larm-1000">направление</span>
+ <span class="larm-1000">движения</span> </p></td><td style="text-align:left;" id="TBL-5-4-2" class="td11"> <p class="noindent"><span class="larm-1000">нет</span> </p></td><td style="text-align:left;" id="TBL-5-4-3" class="td11"> <p class="noindent"><span class="larm-1000">запрет</span>
+ <span class="larm-1000">с</span>
+ <span class="larm-1000">задержкой</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-5-5-"><td style="text-align:left;" id="TBL-5-5-1" class="td11"> <p class="noindent"><span class="larm-1000">регулировка</span>
+ <span class="larm-1000">усиления</span> </p></td><td style="text-align:left;" id="TBL-5-5-2" class="td11"> <p class="noindent"><span class="larm-1000">нет</span> </p></td><td style="text-align:left;" id="TBL-5-5-3" class="td11"> <p class="noindent"><span class="larm-1000">деление:</span>
+ <span class="larm-1000">шунт</span>
+ <span class="larm-1000">вместе</span>
+ <span class="larm-1000">с</span>
+ <span class="larm-1000">фоновым</span>
+ <span class="larm-1000">шумом</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-5-6-"><td style="text-align:left;" id="TBL-5-6-1" class="td11"> <p class="noindent"><span class="larm-1000">окно</span>
+ <span class="larm-1000">совпадения</span> </p></td><td style="text-align:left;" id="TBL-5-6-2" class="td11"> <p class="noindent"><math display="inline"> <mo class="MathClass-rel" stretchy="false">∼</mo> <mi>τ</mi></math> </p></td><td style="text-align:left;" id="TBL-5-6-3" class="td11"> <p class="noindent"><span class="larm-1000">сужается</span>
+ <span class="larm-1000">торможением</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-5-7-"><td style="text-align:left;" id="TBL-5-7-1" class="td11"> <p class="noindent"><span class="larm-1000">выбор</span>
+ <span class="larm-1000">одного</span>
+ <span class="larm-1000">из</span>
+ <span class="larm-1000">многих</span> </p></td><td style="text-align:left;" id="TBL-5-7-2" class="td11"> <p class="noindent"><span class="larm-1000">нет</span> </p></td><td style="text-align:left;" id="TBL-5-7-3" class="td11"> <p class="noindent"><span class="larm-1000">взаимное</span>
+ <span class="larm-1000">торможение,</span>
+ <math display="inline"><mi>β</mi> <mo class="MathClass-rel" stretchy="false">&#x003E;</mo> <mn>1</mn></math> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-5-8-"><td style="text-align:left;" id="TBL-5-8-1" class="td11"> <p class="noindent"><span class="larm-1000">сброс</span>
+ <span class="larm-1000">памяти</span> </p></td><td style="text-align:left;" id="TBL-5-8-2" class="td11"> <p class="noindent"><span class="larm-1000">только</span>
+ <span class="larm-1000">усталостью</span> </p></td><td style="text-align:left;" id="TBL-5-8-3" class="td11"> <p class="noindent"><span class="larm-1000">сигналом</span>
+ <span class="larm-1000">через</span>
+ <span class="nt"><span class="larm-1000">GABA</span></span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-5-9-"><td style="text-align:left;" id="TBL-5-9-1" class="td11"> <p class="noindent"><span class="larm-1000">устойчивость</span> </p></td><td style="text-align:left;" id="TBL-5-9-2" class="td11"> <p class="noindent"><span class="larm-1000">только</span>
+ <span class="larm-1000">усталостью</span> </p></td><td style="text-align:left;" id="TBL-5-9-3" class="td11"> <p class="noindent"><span class="larm-1000">быстрая</span>
+ <span class="larm-1000">отрицательная</span>
+ <span class="larm-1000">обратная</span>
+ <span class="larm-1000">связь</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-5-10-"><td style="text-align:left;" id="TBL-5-10-1" class="td11"> <p class="noindent"><span class="larm-1000">ритм</span> </p></td><td style="text-align:left;" id="TBL-5-10-2" class="td11"> <p class="noindent"><span class="larm-1000">не</span>
+ <span class="larm-1000">нужен</span> </p></td><td style="text-align:left;" id="TBL-5-10-3" class="td11"> <p class="noindent"><span class="larm-1000">возникает</span>
+ <span class="larm-1000">при</span>
+ <span class="larm-1000">медленном</span>
+ <span class="larm-1000">торможении</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-5-11-"><td style="text-align:left;" id="TBL-5-11-1" class="td11"> </td></tr></table> </div>
+<figcaption class="caption"><span class="id">Таблица 3.1: </span><span class="content">Что добавляет <span class="nt">GABA</span> к сети из <span class="nt">GLUT</span>-нейронов.</span></figcaption>
+ </figure>
+ </div>
+<p class="indent"> <span class="nt">GABA</span> почти не добавляет сети новых <span class="lati-1095">вычислений </span>— всё это можно было вычислить и с
+двухпроводными датчиками, — а добавляет <span class="lati-1095">управление </span>(таблица <a href="#x6-330011">3.1</a>): выбор, сброс, регулировку
+усиления и устойчивость. Возбуждение в мозге несёт данные, а торможение решает, каким
+данным пройти, когда и насколько громко. Для каждого четвёртого-пятого нейрона коры это
+очень разумное разделение труда.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">3.9 </span> <a id="x6-340003.9"></a>Задачи</h3>
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x6-34001r1"></a>
+<span class="labx-1095">Задача 3.1 </span>(<math display="inline"><mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Шунт в числах. </span><math display="inline"><msub><mrow><mi>E</mi></mrow><mrow><mi>E</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>7</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мВ</mtext></mstyle></math>.
+По (<a href="#x6-29001r3">3.3</a>) найдите <math display="inline"><msub><mrow><mi>V</mi> </mrow><mrow><mi>∞</mi></mrow></msub 
+></math>
+при <math display="inline"><msub><mrow><mi>g</mi></mrow><mrow><mi>E</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <msub><mrow><mi>g</mi></mrow><mrow><mi>L</mi></mrow></msub 
+></math>
+и <math display="inline"><mn>4</mn><msub><mrow><mi>g</mi></mrow><mrow><mi>L</mi></mrow></msub 
+></math>,
+без торможения и с шунтом <math display="inline"><msub><mrow><mi>g</mi></mrow><mrow><mi>I</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>2</mn><msub><mrow><mi>g</mi></mrow><mrow><mi>L</mi></mrow></msub 
+></math>.
+Какое <math display="inline"><msub><mrow><mi>V</mi> </mrow><mrow><mi>∞</mi></mrow></msub 
+></math>
+при <math display="inline"><msub><mrow><mi>g</mi></mrow><mrow><mi>E</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>4</mn><msub><mrow><mi>g</mi></mrow><mrow><mi>L</mi></mrow></msub 
+></math>
+дало бы вычитание, снимающее при <math display="inline"><msub><mrow><mi>g</mi></mrow><mrow><mi>E</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <msub><mrow><mi>g</mi></mrow><mrow><mi>L</mi></mrow></msub 
+></math>
+столько же, сколько шунт? Во сколько раз шунт сужает окно совпадения?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent"><math display="inline"><mn>3</mn><mn>5</mn> <mo class="MathClass-rel" stretchy="false">→</mo> <mn>1</mn><mn>7</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мВ</mtext></mstyle></math>
+при <math display="inline"><msub><mrow><mi>g</mi></mrow><mrow><mi>E</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <msub><mrow><mi>g</mi></mrow><mrow><mi>L</mi></mrow></msub 
+></math>;
+<math display="inline"><mn>5</mn><mn>6</mn> <mo class="MathClass-rel" stretchy="false">→</mo> <mn>4</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мВ</mtext></mstyle></math> при
+<math display="inline"><msub><mrow><mi>g</mi></mrow><mrow><mi>E</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>4</mn><msub><mrow><mi>g</mi></mrow><mrow><mi>L</mi></mrow></msub 
+></math>, вычитание
+дало бы <math display="inline"><mn>3</mn><mn>8</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мВ</mtext></mstyle></math>:
+шунт делит <math display="inline"><msub><mrow><mi>g</mi></mrow><mrow><mi>E</mi></mrow></msub 
+></math>
+на <math display="inline"><mn>3</mn></math>. Окно
+сужается вдвое (<math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mstyle class="text"><mtext>эфф</mtext></mstyle></mrow></msub 
+></math>
+падает в <math display="inline"><mn>2</mn></math>
+раза).
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x6-34002r2"></a>
+<span class="labx-1095">Задача 3.2 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Вывод условий устойчивости. </span>Найдите след и определитель матрицы линейной системы (<a href="#x6-32001r5">3.5</a>)
+и выведите из них оба условия утверждения <a href="#x6-32003r3">3.3</a>. На границе условия (ii) равновесие теряет
+устойчивость колебательно. Найдите период этих колебаний при числах рис. <a href="#x6-320064">3.4</a>.
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent"><math display="inline"><mi class="qopname"> tr</mi><mo> ⁡ </mo> <mo class="MathClass-rel" stretchy="false">=</mo> <mfrac><mrow><msub><mrow><mi>w</mi></mrow><mrow><mi>E</mi><mi>E</mi></mrow></msub 
+><mo class="MathClass-bin" stretchy="false">−</mo><mn>1</mn></mrow> 
+ <mrow><msub><mrow><mi>τ</mi></mrow><mrow><mi>E</mi></mrow></msub 
+></mrow></mfrac> <mo class="MathClass-bin" stretchy="false">−</mo> <mfrac><mrow><mn>1</mn></mrow> 
+<mrow><msub><mrow><mi>τ</mi></mrow><mrow><mi>I</mi></mrow></msub 
+></mrow></mfrac></math>,
+<math display="inline"><mi class="qopname"> det</mi><mo> ⁡ </mo> <mo class="MathClass-rel" stretchy="false">=</mo> <mfrac><mrow><mn>1</mn><mo class="MathClass-bin" stretchy="false">−</mo><msub><mrow><mi>w</mi></mrow><mrow><mi>E</mi><mi>E</mi></mrow></msub 
+><mo class="MathClass-bin" stretchy="false">+</mo><msub><mrow><mi>w</mi></mrow><mrow><mi>E</mi><mi>I</mi></mrow></msub 
+><msub><mrow><mi>w</mi></mrow><mrow><mi>I</mi><mi>E</mi></mrow></msub 
+></mrow> 
+ <mrow><msub><mrow><mi>τ</mi></mrow><mrow><mi>E</mi></mrow></msub 
+><msub><mrow><mi>τ</mi></mrow><mrow><mi>I</mi></mrow></msub 
+></mrow></mfrac> </math>; на
+границе <math display="inline"><mi>ω</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <msqrt><mrow><mi class="qopname">det</mi><mo> ⁡ </mo></mrow></msqrt></math>,
+<math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>I</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>2</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>, период
+<math display="inline"><mn>7</mn><mn>3</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x6-34003r3"></a>
+<span class="labx-1095">Задача 3.3 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Ритм из задержки. </span>Заменим медленное торможение модели (<a href="#x6-32001r5">3.5</a>) быстрым с задержкой
+<math display="inline"><mi>d</mi></math>:
+<math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>E</mi></mrow></msub 
+><mi>Ė</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mo class="MathClass-bin" stretchy="false">−</mo><mi>E</mi><mo class="MathClass-open" stretchy="false">(</mo><mi>t</mi><mo class="MathClass-close" stretchy="false">)</mo> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>G</mi><mi>E</mi><mo class="MathClass-open" stretchy="false">(</mo><mi>t</mi> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>d</mi><mo class="MathClass-close" stretchy="false">)</mo> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>h</mi></math>.
+При <math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>E</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>
+найдите наименьшую задержку <math display="inline"><msub><mrow><mi>d</mi></mrow><mrow><mi>c</mi></mrow></msub 
+></math>,
+дающую колебания, и их период для <math display="inline"><mi>G</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>2</mn></math>
+и <math display="inline"><mi>G</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>5</mn></math>.
+Попадают ли они в быстрые ритмы коры, <math display="inline"><mn>1</mn><mn>2</mn></math>–<math display="inline"><mn>5</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>,
+в отличие от задачи <a href="#x6-34002r2">3.2</a>?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent"><math display="inline"><msub><mrow><mi>d</mi></mrow><mrow><mi>c</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <msub><mrow><mi>τ</mi></mrow><mrow><mi>E</mi></mrow></msub 
+> <mi class="loglike">arccos</mi><mo>⁡</mo><mo class="MathClass-open" stretchy="false">(</mo><mo class="MathClass-bin" stretchy="false">−</mo><mn>1</mn><mo class="MathClass-bin" stretchy="false">∕</mo><mi>G</mi><mo class="MathClass-close" stretchy="false">)</mo><mo class="MathClass-bin" stretchy="false">∕</mo><msqrt><mrow><msup><mrow><mi>G</mi></mrow><mrow><mn>2</mn> </mrow> </msup 
+> <mo class="MathClass-bin" stretchy="false">−</mo> <mn>1</mn></mrow></msqrt></math>,
+период <math display="inline"><mn>2</mn><mi>π</mi><msub><mrow><mi>τ</mi></mrow><mrow><mi>E</mi></mrow></msub 
+><mo class="MathClass-bin" stretchy="false">∕</mo><msqrt><mrow><msup><mrow><mi>G</mi></mrow><mrow><mn>2</mn> </mrow> </msup 
+> <mo class="MathClass-bin" stretchy="false">−</mo> <mn>1</mn></mrow></msqrt> <mo class="MathClass-rel" stretchy="false">∈</mo> <mo class="MathClass-open" stretchy="false">(</mo><mn>2</mn><msub><mrow><mi>d</mi></mrow><mrow><mi>c</mi></mrow></msub 
+><mo class="MathClass-punc" stretchy="false">,</mo><mn>4</mn><msub><mrow><mi>d</mi></mrow><mrow><mi>c</mi></mrow></msub 
+><mo class="MathClass-close" stretchy="false">)</mo></math>.
+<math display="inline"><mi>G</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>2</mn></math>:
+<math display="inline"><msub><mrow><mi>d</mi></mrow><mrow><mi>c</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mn>2</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>, период
+<math display="inline"><mn>3</mn><mn>6</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>;
+<math display="inline"><mi>G</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>5</mn></math>:
+<math display="inline"><msub><mrow><mi>d</mi></mrow><mrow><mi>c</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>3</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>6</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>,
+период <math display="inline"><mn>1</mn><mn>2</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>8</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>
+— ровно полоса быстрых ритмов.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x6-34004r4"></a>
+<span class="labx-1095">Задача 3.4 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Моделирование: выбор с памятью. </span>Проинтегрируйте (<a href="#x6-30001r4">3.4</a>) при <math display="inline"><mi>β</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>2</mn></math>,
+<math display="inline"><mi>τ</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn></math>.
+(а) При <math display="inline"><msub><mrow><mi>I</mi></mrow><mrow><mn>1</mn></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn></math>
+медленно поднимайте <math display="inline"><msub><mrow><mi>I</mi></mrow><mrow><mn>2</mn></mrow></msub 
+></math>
+от <math display="inline"><mn>0</mn></math>
+до <math display="inline"><mn>3</mn></math>
+и опускайте обратно: при каких <math display="inline"><msub><mrow><mi>I</mi></mrow><mrow><mn>2</mn></mrow></msub 
+></math>
+сеть переключается? (б) На сколько растёт время решения из тишины, когда разница
+входов <math display="inline"><mi>𝜀</mi></math>
+уменьшается вдесятеро?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">(а) При <math display="inline"><msub><mrow><mi>I</mi></mrow><mrow><mn>2</mn></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mi>β</mi><msub><mrow><mi>I</mi></mrow><mrow><mn>1</mn></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>2</mn></math>
+вверх и <math display="inline"><msub><mrow><mi>I</mi></mrow><mrow><mn>2</mn></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <msub><mrow><mi>I</mi></mrow><mrow><mn>1</mn></mrow></msub 
+><mo class="MathClass-bin" stretchy="false">∕</mo><mi>β</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn></math> вниз,
+петля шириной <math display="inline"><mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn></math>.
+(б) На <math display="inline"><mi>τ</mi><mi class="loglike">ln</mi><mo>⁡</mo><mn>1</mn><mn>0</mn><mo class="MathClass-bin" stretchy="false">∕</mo><mo class="MathClass-open" stretchy="false">(</mo><mi>β</mi> <mo class="MathClass-bin" stretchy="false">−</mo> <mn>1</mn><mo class="MathClass-close" stretchy="false">)</mo> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>2</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>3</mn><mi>τ</mi></math> на каждый
+десятичный порядок <math display="inline"><mi>𝜀</mi></math>.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x6-34005r5"></a>
+<span class="labx-1095">Задача 3.5 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Проектирование: детектор на полосу скоростей. </span>Детектор рис. <a href="#x6-280021">3.1</a> должен молчать при
+движении от <math display="inline"><mi>A</mi></math>
+к <math display="inline"><mi>B</mi></math>
+с временем пробега <math display="inline"><mn>5</mn></math>–<math display="inline"><mn>2</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>.
+<span class="nt">GABA</span>-посредник с задержкой <math display="inline"><msub><mrow><mi>d</mi></mrow><mrow><mi>k</mi></mrow></msub 
+></math>
+запрещает <math display="inline"><mi>Y</mi> </math>
+на отрезке <math display="inline"><mo class="MathClass-open" stretchy="false">[</mo><msub><mrow><mi>d</mi></mrow><mrow><mi>k</mi></mrow></msub 
+><mo class="MathClass-punc" stretchy="false">,</mo><mspace width="0.17em" class="thinspace"/><msub><mrow><mi>d</mi></mrow><mrow><mi>k</mi></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">+</mo> <mn>5</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle><mo class="MathClass-close" stretchy="false">]</mo></math>
+после импульса <math display="inline"><mi>A</mi></math>;
+возбуждение от <math display="inline"><mi>B</mi></math>
+приходит сразу. Сколько нужно посредников и с какими задержками?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">Три посредника, <math display="inline"><msub><mrow><mi>d</mi></mrow><mrow><mi>k</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>5</mn></math>,
+<math display="inline"><mn>1</mn><mn>0</mn></math>,
+<math display="inline"><mn>1</mn><mn>5</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>: запреты должны
+покрыть <math display="inline"><mn>1</mn><mn>5</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>,
+по <math display="inline"><mn>5</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math> на
+каждый.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x6-34006r6"></a>
+<span class="labx-1095">Задача 3.6 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Запреты и фон. </span>Сколько нейронов требует чётность <math display="inline"><mi>x</mi> <mo class="MathClass-bin" stretchy="false">⊕</mo> <mi>y</mi> <mo class="MathClass-bin" stretchy="false">⊕</mo> <mi>z</mi></math>
+в общей схеме «<span class="nt">GABA</span>-посредник на вход, запрет на каждый набор с <math display="inline"><mi>f</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn></math>,
+общее ИЛИ»? Постройте её из двух нейронов, <span class="nt">GABA</span> и <span class="nt">GLUT</span>, получающих входы напрямую,
+указав веса и пороги.
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent"><math display="inline"><mi>n</mi> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>M</mi> <mo class="MathClass-bin" stretchy="false">+</mo> <mn>1</mn> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>3</mn> <mo class="MathClass-bin" stretchy="false">+</mo> <mn>4</mn> <mo class="MathClass-bin" stretchy="false">+</mo> <mn>1</mn> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>8</mn></math> нейронов.
+Два: <span class="nt">GABA</span> <math display="inline"> <mo class="MathClass-rel" stretchy="false">=</mo> <mo class="MathClass-open" stretchy="false">[</mo><mi>x</mi> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>y</mi> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>z</mi> <mo class="MathClass-rel" stretchy="false">≥</mo> <mn>2</mn><mo class="MathClass-close" stretchy="false">]</mo></math>,
+выход <math display="inline"> <mo class="MathClass-rel" stretchy="false">=</mo> <mo class="MathClass-open" stretchy="false">[</mo><mi>x</mi> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>y</mi> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>z</mi> <mo class="MathClass-bin" stretchy="false">−</mo> <mn>2</mn><mspace width="0.17em" class="thinspace"/><span class="nt"><mi>G</mi><mi>A</mi><mi>B</mi><mi>A</mi></span> <mo class="MathClass-rel" stretchy="false">≥</mo> <mn>1</mn><mo class="MathClass-close" stretchy="false">]</mo></math>.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x6-34007r7"></a>
+<span class="labx-1095">Задача 3.7 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo><mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Проектирование: выбор из ста. </span>Каждая из <math display="inline"><mn>1</mn><mn>0</mn><mn>0</mn></math>
+групп <span class="nt">GLUT</span> должна одинаково тормозить все остальные, но не себя. Линейные <span class="nt">GABA</span>-посредники
+возбуждаются группами и тормозят их; группы могут возбуждать друг друга, но не себя.
+Каково наименьшее число посредников? А если прямых возбуждающих связей нет совсем?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent"><math display="inline"><mfenced separators="" open="(" close=")"><mfrac linethickness="0.0pt"><mrow><mn>8</mn></mrow>
+<mrow><mn>4</mn></mrow></mfrac></mfenced> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>7</mn><mn>0</mn> <mo class="MathClass-rel" stretchy="false">&#x003C;</mo> <mn>1</mn><mn>0</mn><mn>0</mn> <mo class="MathClass-rel" stretchy="false">≤</mo><mfenced separators="" open="(" close=")"><mfrac linethickness="0.0pt"><mrow> <mn>9</mn></mrow> 
+<mrow><mn>4</mn></mrow></mfrac></mfenced> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mn>2</mn><mn>6</mn></math>:
+<math display="inline"><mn>9</mn></math>
+посредников (теорема Шпернера). Без прямых связей —
+<math display="inline"><mn>1</mn><mn>0</mn><mn>0</mn></math>: ранг
+<math display="inline"><mi>β</mi><mo class="MathClass-open" stretchy="false">(</mo><mi>J</mi> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>I</mi><mo class="MathClass-close" stretchy="false">)</mo></math> равен
+<math display="inline"><mi>n</mi></math>.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x6-34008r8"></a>
+<span class="labx-1095">Задача 3.8 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo><mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Исследование: когда торможение парадоксально. </span>В модели рис. <a href="#x6-320064">3.4</a> (<math display="inline"><msub><mrow><mi>w</mi></mrow><mrow><mi>E</mi><mi>I</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>2</mn></math>,
+<math display="inline"><msub><mrow><mi>w</mi></mrow><mrow><mi>I</mi><mi>E</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn></math>)
+<span class="nt">GLUT</span>-группа получила передаточную функцию <math display="inline"><mi>f</mi><mo class="MathClass-open" stretchy="false">(</mo><mi>u</mi><mo class="MathClass-close" stretchy="false">)</mo> <mo class="MathClass-rel" stretchy="false">=</mo> <msubsup><mrow><mo class="MathClass-open" stretchy="false">[</mo><mi>u</mi><mo class="MathClass-close" stretchy="false">]</mo></mrow><mrow><mo class="MathClass-bin" stretchy="false">+</mo></mrow><mrow><mn>2</mn></mrow></msubsup 
+></math>,
+<span class="nt">GABA</span>-группа осталась линейной. Выше какого входа <math display="inline"><msub><mrow><mi>h</mi></mrow><mrow><mi>c</mi></mrow></msub 
+></math>
+добавка на <span class="nt">GABA</span>-группу снижает её же частоту? Проверьте моделированием.
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent"><math display="inline"><msub><mrow><mi>h</mi></mrow><mrow><mi>c</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mfrac><mrow><mn>1</mn></mrow> 
+<mrow><mn>2</mn><msub><mrow><mi>w</mi></mrow><mrow><mi>E</mi><mi>E</mi></mrow></msub 
+></mrow></mfrac> <mo class="MathClass-bin" stretchy="false">+</mo> <mfrac><mrow><msub><mrow><mi>w</mi></mrow><mrow><mi>E</mi><mi>I</mi></mrow></msub 
+><msub><mrow><mi>w</mi></mrow><mrow><mi>I</mi><mi>E</mi></mrow></msub 
+><mo class="MathClass-bin" stretchy="false">−</mo><msub><mrow><mi>w</mi></mrow><mrow><mi>E</mi><mi>E</mi></mrow></msub 
+></mrow> 
+ <mrow><mn>4</mn><msubsup><mrow><mi>w</mi></mrow><mrow><mi>E</mi><mi>E</mi></mrow><mrow><mn>2</mn></mrow></msubsup 
+></mrow></mfrac> <mo class="MathClass-rel" stretchy="false">=</mo> <mfrac><mrow><mn>7</mn></mrow> 
+<mrow><mn>1</mn><mn>8</mn></mrow></mfrac> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>3</mn><mn>9</mn></math>; моделирование
+даёт смену знака между <math display="inline"><mi>h</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>3</mn><mn>8</mn></math>
+и <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>4</mn><mn>0</mn></math>.
+</p></div></details>
+
+<p class="indent"> <a id="tailfullch3.html"></a> </p> 
+
+  </article>
+  <article class="text short" id="text-short" hidden>
+
+ <a id="s-x6-160003"></a>
+<p class="noindent">Добавим в машину второй по численности тип нейронов —
+<span class="nt">GABA</span>. Их сигнал не подталкивает соседа к щелчку, а
+отталкивает. Это тормоза. Их немного, в коре от пятой
+части до четверти всех нейронов, но без них машина не
+ездит.
+</p><p class="indent"> Есть одно ограничение: «плюсовой» нейрон не может сам
+затормозить соседа. Если нужна отрицательная связь, её
+приходится строить через посредника: «плюс» будит
+тормозной нейрон, а тот уже тормозит цель. Смена знака
+стоит одного нейрона и одной небольшой задержки.
+</p>
+ <h3 class="likesectionHead"> <a id="s-x6-17000"></a>«Но не если»</h3>
+<p class="noindent">Самая полезная операция с тормозами — запрет: «сработай
+от A, но не если пришло B». Нейрон получает толчок от A и
+тормоз от посредника, которого будит B. Из запретов и
+«или» можно собрать любую логику.
+</p>
+<div class="center">
+<p class="noindent"><img src="img/short4x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<div class="minipage"><p class="noindent"><span class="lati-1000">«А, но не если Б»: красный нейрон перекрывает</span>
+<span class="lati-1000">дорогу синему.</span> </p></div></div>
+<p class="indent"> Запрет во времени даёт детектор движения, который есть
+у вас в глазу. Два соседних датчика: один возбуждает
+выходной нейрон, другой тормозит его с задержкой.
+Если пятно света бежит в одну сторону с подходящей
+скоростью, торможение приходит ровно тогда, когда и
+возбуждение, — и гасит его. Если в другую сторону —
+торможение опаздывает, и нейрон успевает щёлкнуть.
+Получается нейрон, который видит движение только в одну
+сторону.
+</p>
+<div class="center">
+<p class="noindent"><img src="img/short5x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<div class="minipage"><p class="noindent"><span class="lati-1000">Детектор движения: торможение приходит с</span>
+<span class="lati-1000">задержкой, и гасит ответ, только если пятно</span>
+<span class="lati-1000">бежит справа налево.</span> </p></div></div>
+ <h3 class="likesectionHead"> <a id="s-x6-18000"></a>Вычитание или деление</h3>
+<p class="noindent">Торможение умеет не только вычитать. Открытый тормозной
+канал не тянет напряжение вниз, он тянет его <span class="lati-1095">к покою </span>— как
+будто в ведро проделали ещё одну дырку. От этого любой
+приток воды поднимает её меньше. Торможение не отнимает
+от сигнала постоянную порцию, а <span class="lati-1095">делит </span>его: это регулятор
+громкости. Если сила торможения растёт вместе с общей
+активностью вокруг, каждый нейрон реагирует не на то,
+насколько силён его сигнал, а на то, насколько он силён <span class="lati-1095">по</span>
+<span class="lati-1095">сравнению с соседями</span>. Поэтому одна и та же сеть работает и
+в полумраке, и на ярком солнце. Правда, на частоту
+импульсов такой «делитель» действует чисто только вместе
+с постоянным фоновым шумом, который в живом мозге есть
+всегда.
+</p>
+<div class="center">
+<p class="noindent"><img src="img/short6x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<div class="minipage"><p class="noindent"><span class="lati-1000">Синим — ответ нейрона без торможения, красным</span>
+<span class="lati-1000">— с ним. Вычитание сдвигает порог; деление</span>
+<span class="lati-1000">убавляет громкость, как ручка регулятора.</span> </p></div></div>
+<p class="indent"> Есть и второе следствие: лишняя дырка заставляет ведро
+быстрее забывать. Окно, в которое два сигнала должны
+попасть, чтобы сложиться, сужается. Торможение делает
+детекторы совпадений строже.
+</p>
+ <h3 class="likesectionHead"> <a id="s-x6-19000"></a>Выбор</h3>
+<p class="noindent">Теперь главное, чего не хватало: выбор одного из многих. Две
+группы нейронов тормозят друг друга. Пока торможение
+слабое, работают обе, просто тише. Но если оно достаточно
+сильное, любая маленькая разница нарастает, как на
+качелях, пока одна группа не замолчит совсем. Победитель
+забирает всё. И победа держится: чтобы сеть передумала,
+новый довод должен быть заметно сильнее старого. Машина
+не дёргается от каждого шороха.
+</p><p class="indent"> Тормоза стирают и память: тормозной нейрон по сигналу
+«сброс» гасит костёр из прошлой главы. Две такие ячейки,
+тормозящие друг друга, — аналог защёлки, основы любой
+компьютерной памяти.
+</p>
+ <h3 class="likesectionHead"> <a id="s-x6-20000"></a>Жизнь на грани</h3>
+<p class="noindent">Сеть из одних «плюсов» может уйти в лавину: каждый
+импульс рождает больше одного следующего. Тормоза
+держат её в рабочей точке, как регулятор держит
+температуру в духовке. Есть два условия: торможение
+должно быть достаточно сильным и достаточно быстрым.
+Если оно сильное, но медленное, регулятор начинает
+перебарщивать — как человек, который крутит кран в душе,
+не дождавшись, пока дойдёт горячая вода. Температура
+качается туда-сюда. В мозге такая петля из «плюсов» и
+«минусов» порождает быстрый ритм — несколько десятков
+колебаний в секунду.
+</p><p class="indent"> Кора, по-видимому, живёт именно на грани: её
+собственная обратная связь достаточно сильна, чтобы без
+тормозов уйти в лавину. Удерживают её только быстрые
+тормоза, и поэтому она так чутко отвечает на слабые
+сигналы.
+</p><p class="indent"> Вывод главы неожиданный: тормоза почти не добавляют
+машине новых вычислений. Они добавляют <span class="lati-1095">управление</span>:
+выбор, сброс, регулировку громкости, устойчивость.
+Возбуждение несёт данные, торможение решает, каким
+данным пройти, когда и насколько громко.
+</p><p class="noindent"><span class="lati-1000">Формулы, модели, задачи и источники — в полной версии,</span>
+<span class="lati-1000">глава</span><span class="lati-1000"> 3.</span>
+</p>
+<p class="indent"> <a id="s-tailshortch3.html"></a> </p> 
+
+  </article>
+
+  <aside class="starline"><span data-ru="Книга бесплатная и открытая. Если глава была полезной, поставьте книге звезду на GitHub: так её найдут другие." data-en="The book is free and open. If this chapter was useful, star the book on GitHub so others can find it.">Книга бесплатная и открытая.</span> <a href="https://github.com/kladkogex/20-watt-computer" target="_blank" rel="noopener" data-ru="★ Звезда на GitHub" data-en="★ Star on GitHub">★ Звезда на GitHub</a></aside>
+  <nav class="pager">
+    <a class="prev" href="02.html"><span data-ru="← Назад" data-en="← Previous">← Назад</span><b>Что вычисляют GLUT-нейроны</b></a>
+    <a class="next" href="04.html"><span data-ru="Дальше →" data-en="Next →">Дальше →</span><b>Азбука Морзе: что мы знаем о языке, на котором говорят GLUT- и GABA-нейроны</b></a>
+  </nav>
+  <footer>
+    <span data-ru='Константин Кладько · текст — <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.ru">CC BY-NC-SA 4.0</a>' data-en='Konstantin Kladko · text: <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>'>Константин Кладько</span>
+    <span><a href="../pdf/20-watt-computer-ru.pdf">PDF</a> · <a href="../breadboard/" data-ru="Макетная плата" data-en="Breadboard">Макетная плата</a> · <a href="https://github.com/kladkogex/20-watt-computer">GitHub</a></span>
+  </footer>
+</main>
+
+<script>
+(function(){
+  const NAV = [{"slug": "00", "title": "Как читать эту книгу", "kicker": "Введение"}, {"slug": "01", "title": "Типы нейронов", "kicker": "Глава 1"}, {"slug": "02", "title": "Что вычисляют GLUT-нейроны", "kicker": "Глава 2"}, {"slug": "03", "title": "GLUT и GABA вместе", "kicker": "Глава 3"}, {"slug": "04", "title": "Азбука Морзе: что мы знаем о языке, на котором говорят GLUT- и GABA-нейроны", "kicker": "Глава 4"}, {"slug": "05", "title": "Что вычисляют SERO-нейроны", "kicker": "Глава 5"}, {"slug": "06", "title": "Нейронные сети, которые умеют учиться: добавляем DOPA", "kicker": "Глава 6"}, {"slug": "07", "title": "Альтернативные современные теории обучения на основе дофамина", "kicker": "Глава 7"}, {"slug": "08", "title": "Когда искать, а когда решать: добавляем NORA", "kicker": "Глава 8"}, {"slug": "09", "title": "Когда писать, а когда читать: добавляем ACET", "kicker": "Глава 9"}, {"slug": "10", "title": "Вся машина", "kicker": "Глава 10"}, {"slug": "11", "title": "Входы машины: как к ней подключены глаза, уши и другие датчики", "kicker": "Глава 11"}, {"slug": "12", "title": "Распознавание изображений и видео", "kicker": "Глава 12"}, {"slug": "13", "title": "Выходы машины: как мозг управляет мышцами", "kicker": "Глава 13"}, {"slug": "14", "title": "Боль: сигнал тревоги", "kicker": "Глава 14"}, {"slug": "15", "title": "Как машина учится двигаться", "kicker": "Глава 15"}, {"slug": "16", "title": "Второй выход: как мозг управляет химией тела", "kicker": "Глава 16"}, {"slug": "17", "title": "Отладка машины", "kicker": "Глава 17"}, {"slug": "18", "title": "Типы нейронов по электрической функции", "kicker": "Глава 18"}, {"slug": "19", "title": "Нейроны по числу дендритов", "kicker": "Глава 19"}, {"slug": "20", "title": "Что делают нейроны во сне", "kicker": "Глава 20"}, {"slug": "21", "title": "Машина из живых нейронов", "kicker": "Глава 21"}, {"slug": "22", "title": "DishBrain", "kicker": "Глава 22"}, {"slug": "a", "title": "Вещества, которые не задают тип нейрона", "kicker": "Приложение A"}, {"slug": "b", "title": "Обозначения", "kicker": "Приложение B"}, {"slug": "c", "title": "Ответы", "kicker": "Приложение C"}, {"slug": "d", "title": "Экспериментальное приложение", "kicker": "Приложение D"}, {"slug": "refs", "title": "Литература", "kicker": ""}];
+  const SLUG = "03";
+  const store = {get(k){try{return localStorage.getItem(k)}catch(e){return null}}, set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+
+  // chapter selector
+  const sel = document.getElementById("jump");
+  NAV.forEach(p => { const o = document.createElement("option"); o.value = p.slug;
+    o.textContent = (p.kicker ? p.kicker + ". " : "") + p.title; if (p.slug === SLUG) o.selected = true; sel.appendChild(o); });
+  sel.addEventListener("change", () => { location.href = sel.value + ".html" + (location.hash === "#short" ? "#short" : ""); });
+
+  // Коротко / Полностью
+  const modeBox = document.querySelector(".mode");
+  const hasShort = modeBox.dataset.hasShort === "true";
+  const full = document.getElementById("text-full"), short = document.getElementById("text-short");
+  function setMode(m, remember){
+    if (!hasShort) m = "full";
+    document.body.dataset.mode = m;
+    full.hidden = m !== "full"; short.hidden = m !== "short";
+    modeBox.querySelectorAll(".seg").forEach(b => b.setAttribute("aria-pressed", b.dataset.mode === m));
+    if (remember) store.set("20w-mode", m);
+  }
+  if (!hasShort) modeBox.hidden = true;
+  modeBox.addEventListener("click", e => { const b = e.target.closest(".seg"); if (b) { setMode(b.dataset.mode, true); history.replaceState(null, "", "#" + b.dataset.mode); } });
+  document.addEventListener("click", e => { const a = e.target.closest("a[data-mode]"); if (a) { e.preventDefault(); setMode(a.dataset.mode, true); window.scrollTo(0, 0); } });
+  // a link into the text (#x...) that lives in the other version switches to it
+  function follow(){
+    const h = decodeURIComponent(location.hash.slice(1));
+    if (h === "short" || h === "full") { setMode(h, true); return; }
+    if (!h) return;
+    const t = document.getElementById(h);
+    if (t) { setMode(short.contains(t) ? "short" : "full", false); t.scrollIntoView(); }
+  }
+  setMode(store.get("20w-mode") || "full", false);
+  follow();
+  window.addEventListener("hashchange", follow);
+  // links that leave the book open in the whole window when the page sits inside the reader
+  if (document.documentElement.classList.contains("embedded"))
+    document.querySelectorAll('a[href^="../"], a[href^="http"]').forEach(a => { a.target = a.href.startsWith(location.origin) ? "_top" : "_blank"; });
+
+  // interface language (the text itself is Russian)
+  function setLang(l){
+    document.querySelectorAll("[data-ru]").forEach(el => { el.innerHTML = el.dataset[l]; });
+    document.getElementById("lang-ru").setAttribute("aria-pressed", l === "ru");
+    document.getElementById("lang-en").setAttribute("aria-pressed", l === "en");
+    store.set("20w-lang", l);
+  }
+  document.getElementById("lang-ru").onclick = () => setLang("ru");
+  document.getElementById("lang-en").onclick = () => setLang("en");
+  setLang(store.get("20w-lang") === "en" ? "en" : "ru");
+  window.addEventListener("storage", e => {
+    if (e.key === "20w-lang" && (e.newValue === "ru" || e.newValue === "en")) setLang(e.newValue);
+    if (e.key === "20w-theme" && (e.newValue === "light" || e.newValue === "dark")) document.documentElement.setAttribute("data-theme", e.newValue);
+  });
+})();
+</script>
+<script>
+(function(){var b=document.getElementById("theme");if(!b)return;var r=document.documentElement;function cur(){var t=r.getAttribute("data-theme");if(t)return t;return window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";}function show(){b.textContent=cur()==="dark"?"☀":"☾";b.setAttribute("aria-pressed",cur()==="dark");}b.onclick=function(){var t=cur()==="dark"?"light":"dark";r.setAttribute("data-theme",t);try{localStorage.setItem("20w-theme",t);}catch(e){}show();};if(window.matchMedia)matchMedia("(prefers-color-scheme: dark)").addEventListener("change",show);show();})();
+</script>
+</body>
+</html>

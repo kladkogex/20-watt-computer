@@ -1,0 +1,693 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<script>try{var t=localStorage.getItem("20w-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);}catch(e){}if(window.self!==window.top)document.documentElement.classList.add("embedded");</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Глава 16. Второй выход: как мозг управляет химией тела · Компьютер на 20 ваттах</title>
+<meta name="description" content="В главе 13 мы видели быстрый выход машины — мышцы. Но у неё есть и второй, медленный. Мозг держит в нужных пределах температуру тела, частоту сердца, количество воды и сахара, …">
+<link rel="canonical" href="https://kladkogex.github.io/20-watt-computer/read/16.html">
+<meta property="og:type" content="book">
+<meta property="og:title" content="Глава 16. Второй выход: как мозг управляет химией тела · Компьютер на 20 ваттах">
+<meta property="og:description" content="В главе 13 мы видели быстрый выход машины — мышцы. Но у неё есть и второй, медленный. Мозг держит в нужных пределах температуру тела, частоту сердца, количество воды и сахара, …">
+<meta property="og:url" content="https://kladkogex.github.io/20-watt-computer/read/16.html">
+<meta property="og:locale" content="ru_RU">
+<meta property="og:image" content="https://kladkogex.github.io/20-watt-computer/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Your brain runs on 20 watts. Here is its datasheet. The 20-Watt Computer, a free textbook for engineers.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://kladkogex.github.io/20-watt-computer/og-card.png">
+<meta name="twitter:title" content="Глава 16. Второй выход: как мозг управляет химией тела · The 20-Watt Computer">
+<meta name="twitter:description" content="В главе 13 мы видели быстрый выход машины — мышцы. Но у неё есть и второй, медленный. Мозг держит в нужных пределах температуру тела, частоту сердца, количество воды и сахара, …">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Chapter", "name": "Второй выход: как мозг управляет химией тела", "url": "https://kladkogex.github.io/20-watt-computer/read/16.html", "position": 16, "inLanguage": "ru", "isAccessibleForFree": true, "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/", "author": {"@type": "Person", "name": "Константин Кладько", "alternateName": "Konstantin Kladko"}, "isPartOf": {"@type": "Book", "name": "Компьютер на 20 ваттах. Как вычисляет мозг: количественный подход для инженеров", "alternateName": "The 20-Watt Computer: How the Brain Computes. A Quantitative Approach for Engineers", "author": {"@type": "Person", "name": "Константин Кладько", "alternateName": "Konstantin Kladko"}, "url": "https://kladkogex.github.io/20-watt-computer/", "inLanguage": "ru", "isAccessibleForFree": true, "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/"}}</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap">
+<link rel="stylesheet" href="book.css">
+</head>
+<body>
+<header class="bar">
+  <a class="home" href="../#toc"><span class="w">20</span> <span data-ru="Компьютер на 20 ваттах" data-en="The 20-Watt Computer">Компьютер на 20 ваттах</span></a>
+  <label class="jump"><span class="sr" data-ru="Перейти к главе" data-en="Go to chapter">Перейти к главе</span>
+    <select id="jump"></select></label>
+  <div class="langs" role="group" aria-label="Language">
+    <button class="chip" id="lang-ru" type="button">RU</button>
+    <button class="chip" id="lang-en" type="button">EN</button>
+    <button class="chip theme" id="theme" type="button" aria-label="Light or dark theme" title="Light / dark">☾</button>
+  </div>
+</header>
+
+<main class="page">
+  <div class="pagehead">
+    <p class="kicker" data-ru="Глава 16" data-en="Chapter 16">Глава 16</p>
+    <h1><span class="t-full">Второй выход: как мозг управляет химией тела</span><span class="t-short">Второй выход</span></h1>
+    <div class="mode" role="group" aria-label="Version" data-has-short="true">
+      <button type="button" class="seg" data-mode="short"><b data-ru="Коротко" data-en="Short">Коротко</b><span data-ru="без формул, с рисунками" data-en="no formulas, with drawings">без формул, с рисунками</span></button>
+      <button type="button" class="seg" data-mode="full"><b data-ru="Полностью" data-en="Full">Полностью</b><span data-ru="формулы, модели, задачи" data-en="formulas, models, exercises">формулы, модели, задачи</span></button>
+    </div>
+    <p class="lang-note" data-ru="" data-en="The online reader is in Russian for now; the book in other languages is in the PDF downloads in the menu.">.</p>
+  </div>
+
+  <article class="text full" id="text-full">
+
+ <a id="x19-14500016"></a>
+ <h3 class="sectionHead"><span class="titlemark">16.1 </span> <a id="x19-14600016.1"></a>Быстрый и медленный выходы</h3>
+<p class="noindent">В главе <a href="13.html#x16-12100013">13</a> мы видели быстрый выход машины — мышцы. Но у неё есть и второй, медленный.
+Мозг держит в нужных пределах температуру тела, частоту сердца, количество воды и сахара,
+готовит тело к бегу или ко сну. Для этого он не двигает суставы, а выпускает химические
+сигналы. Путей два. Первый — нервы, идущие прямо к внутренним органам: к сердцу, сосудам,
+кишечнику, железам. Второй — кровь: некоторые нейроны и железы выбрасывают вещество не в
+щель к соседу, а прямо в кровоток.
+</p><p class="indent"> Кровь — самая широковещательная шина из всех, что встречались в книге.
+Широковещательные каналы глав <a href="05.html#x8-470005">5</a>–<a href="09.html#x12-860009">9</a> рассылали сигнал на большие области мозга; кровь
+рассылает его каждой клетке тела. Кровь обходит тело за время порядка минуты, так что
+сообщение доходит до всех за десятки секунд и держится минуты и часы, пока вещество не
+разрушится. Адреса у такой рассылки нет вовсе. Как и в утверждении <a href="01.html#x4-12001r2">1.2</a>, смысл сообщения
+выбирает получатель: откликаются только клетки, у которых есть рецептор к этому
+веществу.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">16.2 </span> <a id="x19-14700016.2"></a>Газ и тормоз: два провода к органам</h3>
+<p class="noindent">Лучший пример — сердце. В сердце есть собственный ритмоводитель, как у <span class="nt">SERO</span>-нейрона
+главы <a href="05.html#x8-470005">5</a>: он сам задаёт ритм, и если отключить все нервы, сердце бьётся примерно сто раз в
+минуту. Мозг ритм не порождает, а только подстраивает, причём двумя проводами
+противоположного знака (рис. <a href="#x19-1470021">16.1</a>). По одному идёт <span class="nt">NORA</span>: это <span class="lati-1095">газ</span>, он ускоряет ритм. По
+другому — <span class="nt">ACET</span>: это <span class="lati-1095">тормоз</span>, он замедляет. Грубо,
+</p><div class="keyformula"><table class="equation"><tr><td>
+<math display="block" class="equation">
+ <mstyle id="x19-147001r1" class="label"></mstyle><mi>f</mi><mspace width="0.28em" class="thickpace"/> <mo class="MathClass-rel" stretchy="false">≈</mo><mspace width="0.28em" class="thickpace"/><msub><mrow><mi>f</mi></mrow><mrow><mn>0</mn></mrow></msub 
+><mspace width="0.28em" class="thickpace"/> <mo class="MathClass-bin" stretchy="false">+</mo> <mspace width="0.28em" class="thickpace"/><msub><mrow><mi>a</mi></mrow><mrow><mi>S</mi></mrow></msub 
+><mspace width="0.17em" class="thinspace"/><mi>S</mi><mspace width="0.28em" class="thickpace"/> <mo class="MathClass-bin" stretchy="false">−</mo><mspace width="0.28em" class="thickpace"/><msub><mrow><mi>a</mi></mrow><mrow><mi>P</mi> </mrow></msub 
+><mspace width="0.17em" class="thinspace"/><mi>P</mi><mo class="MathClass-punc" stretchy="false">,</mo>
+</math></td><td class="eq-no">(16.1)</td></tr></table>
+</div><p class="noindent"> где <math display="inline"><msub><mrow><mi>f</mi></mrow><mrow><mn>0</mn></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>1</mn><mn>0</mn><mn>0</mn></math>
+ударов в минуту — собственный ритм ритмоводителя,
+<math display="inline"><mi>S</mi></math> и
+<math display="inline"><mi>P</mi></math> —
+активность газа и тормоза. В покое тормоз нажат, и сердце бьётся обычно порядка
+шестидесяти–семидесяти раз в минуту; при нагрузке тормоз отпускают и нажимают
+газ.
+</p>
+ <figure class="figure"> 
+<a id="x19-1470021"></a>
+<p class="noindent"><img src="img/full47x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<figcaption class="caption"><span class="id">Рис. 16.1: </span><span class="content">Два провода противоположного знака к ритмоводителю сердца: газ <span class="nt">NORA</span>
+медленный, тормоз <span class="nt">ACET</span> быстрый. Внизу — тот же газ по широковещательной шине:
+<span class="nt">ADRE</span>-клетки выбрасывают адреналин в кровь, и сигнал получают все органы с
+подходящим рецептором (штриховые стрелки).</span></figcaption>
+ </figure>
+<p class="indent"> Это двухпроводный код главы <a href="02.html#x5-150002">2</a> и пара мышц главы <a href="13.html#x16-12100013">13</a>, только теперь провода
+управляют не суставом, а темпом ритмоводителя. И у проводов разная скорость. Оба
+работают как фильтры нижних частот, но тормоз пропускает перемены в несколько раз
+быстрее газа <span class="cite">[<a href="refs.html#XBerger1989">135</a>]</span>: у <span class="nt">ACET</span> путь короткий: связанный с рецептором белок сам открывает
+калиевый канал, без второго посредника внутри клетки <span class="cite">[<a href="refs.html#XLogothetis1987gbg">333</a>]</span>, а <span class="nt">NORA</span> действует через
+цепочку реакций внутри клетки. Инженер узнает здесь приём с двумя приводами разной
+скорости: быстрый делает точную мгновенную подстройку, медленный — крупные долгие
+перемены.
+</p><p class="indent"> Здесь же находит роль <span class="nt">ADRE</span>, про который в таблице <a href="01.html#x4-60021">1.1</a> было написано, что его роль в мозге
+неясна. Вне мозга она ясна. Часть клеток газового пути не посылает провод к органу, а
+выбрасывает адреналин прямо в кровь. Это тот же газ, но по широковещательной шине: за
+десятки секунд он доходит до сердца, сосудов, печени и мышц сразу и держится минуты.
+Адресный газ <span class="nt">NORA</span> подстраивает один орган; широковещательный газ <span class="nt">ADRE</span> переводит в
+режим бега всё тело.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">16.3 </span> <a id="x19-14800016.3"></a>Каскад с обратной связью</h3>
+<p class="noindent">Многие гормоны выпускаются не одной железой, а каскадом. Небольшая группа нейронов в
+основании мозга выбрасывает в кровь первый сигнал; он заставляет железу-посредника
+выпустить второй; тот — конечную железу выпустить гормон, который и действует на тело. А
+конечный гормон возвращается к первым ступеням и тормозит их. Получается усилитель из трёх
+каскадов, охваченный отрицательной обратной связью, — регулятор уровня, как у <span class="nt">SERO</span>-системы
+в формуле (<a href="05.html#x8-50002r2">5.2</a>).
+</p><p class="indent"> Опишем каждую ступень RC-цепью с постоянной времени
+<math display="inline"><mi>τ</mi></math> и усилением
+<math display="inline"><mi>g</mi></math>, а обратную связь
+— коэффициентом <math display="inline"><mi>k</mi></math>:
+</p><table class="equation"><tr><td>
+<math display="block" class="equation">
+ <mstyle id="x19-148001r2" class="label"></mstyle><mi>τ</mi><mspace width="0.17em" class="thinspace"/><mfrac><mrow><mstyle mathvariant="normal"><mi>d</mi></mstyle><msub><mrow><mi>x</mi></mrow><mrow><mn>1</mn></mrow></msub 
+></mrow> 
+ <mrow><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>t</mi></mrow></mfrac> <mo class="MathClass-rel" stretchy="false">=</mo> <mo class="MathClass-bin" stretchy="false">−</mo><msub><mrow><mi>x</mi></mrow><mrow><mn>1</mn></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>g</mi><msub><mrow><mrow><mo class="MathClass-open" fence="true" mathsize="1.19em">[</mo><mrow><mi>u</mi> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>k</mi><mspace width="0.17em" class="thinspace"/><msub><mrow><mi>x</mi></mrow><mrow><mn>3</mn></mrow></msub 
+></mrow><mo class="MathClass-close" fence="true" mathsize="1.19em">]</mo></mrow></mrow><mrow><mo class="MathClass-bin" stretchy="false">+</mo></mrow></msub 
+><mo class="MathClass-punc" stretchy="false">,</mo><mspace width="2em" class="qquad"/><mi>τ</mi><mspace width="0.17em" class="thinspace"/><mfrac><mrow><mstyle mathvariant="normal"><mi>d</mi></mstyle><msub><mrow><mi>x</mi></mrow><mrow><mn>2</mn></mrow></msub 
+></mrow> 
+ <mrow><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>t</mi></mrow></mfrac> <mo class="MathClass-rel" stretchy="false">=</mo> <mo class="MathClass-bin" stretchy="false">−</mo><msub><mrow><mi>x</mi></mrow><mrow><mn>2</mn></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>g</mi><mspace width="0.17em" class="thinspace"/><msub><mrow><mi>x</mi></mrow><mrow><mn>1</mn></mrow></msub 
+><mo class="MathClass-punc" stretchy="false">,</mo><mspace width="2em" class="qquad"/><mi>τ</mi><mspace width="0.17em" class="thinspace"/><mfrac><mrow><mstyle mathvariant="normal"><mi>d</mi></mstyle><msub><mrow><mi>x</mi></mrow><mrow><mn>3</mn></mrow></msub 
+></mrow> 
+ <mrow><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>t</mi></mrow></mfrac> <mo class="MathClass-rel" stretchy="false">=</mo> <mo class="MathClass-bin" stretchy="false">−</mo><msub><mrow><mi>x</mi></mrow><mrow><mn>3</mn></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>g</mi><mspace width="0.17em" class="thinspace"/><msub><mrow><mi>x</mi></mrow><mrow><mn>2</mn></mrow></msub 
+><mo class="MathClass-punc" stretchy="false">,</mo>
+</math></td><td class="eq-no">(16.2)</td></tr></table>
+<p class="noindent">где <math display="inline"><mi>u</mi></math> — команда мозга,
+<math display="inline"><msub><mrow><mi>x</mi></mrow><mrow><mn>3</mn></mrow></msub 
+></math> — уровень конечного
+гормона. Усиление петли <math display="inline"><mi>K</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <msup><mrow><mi>g</mi></mrow><mrow><mn>3</mn></mrow></msup 
+><mi>k</mi></math>.
+В равновесии <math display="inline"><msub><mrow><mi>x</mi></mrow><mrow><mn>3</mn></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <msup><mrow><mi>g</mi></mrow><mrow><mn>3</mn></mrow></msup 
+><mi>u</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mo class="MathClass-open" stretchy="false">(</mo><mn>1</mn> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>K</mi><mo class="MathClass-close" stretchy="false">)</mo></math>,
+и, как у любого регулятора с обратной связью, большая петля делает уровень
+нечувствительным к разбросу усилений ступеней. Но каждая ступень сдвигает фазу: на частоте
+<math display="inline"><mi>ω</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <msqrt><mrow><mn>3</mn></mrow></msqrt><mo class="MathClass-bin" stretchy="false">∕</mo><mi>τ</mi></math> три
+одинаковые ступени вместе дают сдвиг в полоборота и ослабление в восемь раз. Отсюда
+классический результат теории регулирования:
+</p><div class="keyformula"><table class="equation"><tr><td>
+<math display="block" class="equation">
+ <mstyle id="x19-148002r3" class="label"></mstyle><mi>K</mi><mspace width="0.28em" class="thickpace"/> <mo class="MathClass-rel" stretchy="false">&#x003C;</mo> <mspace width="0.28em" class="thickpace"/><mn>8</mn><mo class="MathClass-punc" stretchy="false">,</mo>
+</math></td><td class="eq-no">(16.3)</td></tr></table>
+</div><p class="noindent"> иначе регулятор начинает колебаться, с периодом около
+<math display="inline"><mn>2</mn><mi>π</mi><mi>τ</mi><mo class="MathClass-bin" stretchy="false">∕</mo><msqrt><mrow><mn>3</mn></mrow></msqrt> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>3</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>6</mn><mspace width="0.17em" class="thinspace"/><mi>τ</mi></math>.
+</p>
+ <div class="tcolorbox keyblock" id="tcolobox-35"> 
+<div class="tcolorbox-content"><div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x19-148003r1"></a>
+<span class="labx-1095">Утверждение 16.1 </span>(Точность против устойчивости)<span class="labx-1095">.</span> </span> <span class="lati-1095">У трёхступенчатого</span>
+<span class="lati-1095">каскада с пропорциональной обратной связью ошибка уровня равна</span>
+<math display="inline"><mn>1</mn><mo class="MathClass-bin" stretchy="false">∕</mo><mo class="MathClass-open" stretchy="false">(</mo><mn>1</mn> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>K</mi><mo class="MathClass-close" stretchy="false">)</mo></math><span class="lati-1095">,</span>
+<span class="lati-1095">а устойчив он только при </span><math display="inline"><mi>K</mi> <mo class="MathClass-rel" stretchy="false">&#x003C;</mo> <mn>8</mn></math><span class="lati-1095">.</span>
+<span class="lati-1095">Поэтому точнее, чем примерно на десять процентов, такой регулятор уровень не</span>
+<span class="lati-1095">держит; попытка поднять усиление превращает его в генератор колебаний.</span>
+</p>
+</div>
+ 
+</div> 
+</div>
+<p class="indent"> Мы проверили это на модели (<a href="#x19-148001r2">16.2</a>) (рис. <a href="#x19-1480042">16.2</a>). При
+<math display="inline"><mi>K</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>4</mn></math>
+уровень после включения немного колеблется и устанавливается. При
+<math display="inline"><mi>K</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>7</mn></math> он тоже устанавливается,
+но медленно. При <math display="inline"><mi>K</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mn>2</mn></math>
+колебания не затухают и не растут без предела: ступень не может выдать
+отрицательный сигнал, и каскад выходит на ровные пульсации между
+<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>8</mn><mn>3</mn></math> и
+<math display="inline"><mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn><mn>4</mn></math> от среднего уровня с периодом
+<math display="inline"><mn>3</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>7</mn></math>–<math display="inline"><mn>3</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>9</mn><mspace width="0.17em" class="thinspace"/><mi>τ</mi></math>.
+</p>
+ <figure class="figure"> 
+<a id="x19-1480042"></a>
+<p class="noindent"><img src="img/full48x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<figcaption class="caption"><span class="id">Рис. 16.2: </span><span class="content">Каскад из трёх ступеней с обратной связью
+по (<a href="#x19-148001r2">16.2</a>), уровень конечного гормона в долях равновесного
+<math display="inline"><msubsup><mrow><mi>x</mi></mrow><mrow><mn>3</mn></mrow><mrow><mo class="MathClass-bin" stretchy="false">∗</mo></mrow></msubsup 
+></math>.
+При усилении петли ниже восьми уровень устанавливается; выше — каскад сам порождает
+ровные пульсации.</span></figcaption>
+ </figure>
+<p class="indent"> Настоящие гормоны каскадов действительно выходят пульсами: уровень гормона стресса,
+например, колеблется с периодом около часа. По одной из гипотез, эти пульсации порождает
+сама обратная связь между ступенями с запаздыванием, и отдельный генератор ритма для них не
+нужен <span class="cite">[<a href="refs.html#XWalker2010">136</a>]</span>. Это та же причина колебаний, что и у петли <span class="nt">GLUT</span>–<span class="nt">GABA</span> в утверждении <a href="03.html#x6-32003r3">3.3</a> и у
+петли растяжения мышцы в условии (<a href="13.html#x16-125001r5">13.5</a>): отрицательная обратная связь, которая
+запаздывает.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">16.4 </span> <a id="x19-14900016.4"></a>Импульсный код гормонов</h3>
+<p class="noindent">Пульсы бывают не только побочным эффектом, но и кодом. Нейроны, управляющие
+размножением, выпускают свой сигнал в кровь короткими порциями примерно раз в час. Если
+железе-получателю подать тот же сигнал не порциями, а непрерывно, она не работает в
+полную силу, как при пульсах, а замолкает; если снова подавать порциями раз в час,
+работа восстанавливается <span class="cite">[<a href="refs.html#XBelchetz1978">137</a>]</span>. Значит, получатель читает не уровень, а <span class="lati-1095">частоту</span>
+порций.
+</p><p class="indent"> Для инженера здесь нет загадки. Рецептор, который при долгом действии вещества устаёт и
+перестаёт отвечать, — фильтр верхних частот, как истощающийся синапс (<a href="04.html#x7-42001r6">4.6</a>) из главы <a href="04.html#x7-350004">4</a>.
+Непрерывный сигнал он глушит, а перемены пропускает. Такому получателю можно сообщить
+что-то только импульсами, и информация переходит из уровня в частоту и форму
+порций. Разные частоты порций к тому же по-разному действуют на разные клетки
+одной и той же железы, так что по одной химической линии можно передать больше
+одной величины — как по одному проводу <span class="nt">DOPA</span> в главе <a href="07.html#x10-670007">7</a> шли быстрая и медленная
+составляющие.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">16.5 </span> <a id="x19-15000016.5"></a>Суточный ритм: медленный генератор режимов</h3>
+<p class="noindent">Самый медленный ритм тела — суточный. Его порождает отрицательная обратная связь с
+запаздыванием внутри клеток: гены производят белки, которые с задержкой в несколько часов
+подавляют собственное производство <span class="cite">[<a href="refs.html#XTakahashiJS2017">139</a>]</span>. Опять запаздывающая отрицательная обратная связь
+— четвёртый раз в этой книге, — и опять ритм, на этот раз с периодом около суток. Главный
+генератор — небольшая группа из десятков тысяч нейронов в основании мозга, ритм которых
+синхронизирует остальные клетки тела.
+</p><p class="indent"> Собственный период этого генератора у человека не ровно сутки, а в среднем
+<math display="inline"><mn>2</mn><mn>4</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn><mn>8</mn></math>
+часа <span class="cite">[<a href="refs.html#XCzeisler1999">138</a>]</span>. Каждый день его подводит свет, приходящий от датчиков глаза (глава <a href="11.html#x14-10400011">11</a>). Для
+электронщика это <span class="lati-1095">фазовая автоподстройка частоты</span>: генератор со своей частотой
+<math display="inline"><msub><mrow><mi>ω</mi></mrow><mrow><mn>0</mn></mrow></msub 
+></math> подстраивается к внешнему
+сигналу с частотой <math display="inline"><mi>ω</mi></math>,
+и разность фаз <math display="inline"><mi>φ</mi></math>
+подчиняется уравнению
+</p><div class="keyformula"><table class="equation"><tr><td>
+<math display="block" class="equation">
+ <mstyle id="x19-150001r4" class="label"></mstyle><mfrac><mrow><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>φ</mi></mrow>
+<mrow><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>t</mi></mrow></mfrac> <mspace width="0.28em" class="thickpace"/> <mo class="MathClass-rel" stretchy="false">=</mo> <mspace width="0.28em" class="thickpace"/><mo class="MathClass-open" stretchy="false">(</mo><mi>ω</mi> <mo class="MathClass-bin" stretchy="false">−</mo> <msub><mrow><mi>ω</mi></mrow><mrow><mn>0</mn></mrow></msub 
+><mo class="MathClass-close" stretchy="false">)</mo><mspace width="0.28em" class="thickpace"/> <mo class="MathClass-bin" stretchy="false">−</mo><mspace width="0.28em" class="thickpace"/><msub><mrow><mi>K</mi></mrow><mrow><mi>φ</mi></mrow></msub 
+><mspace width="0.17em" class="thinspace"/> <mi class="loglike">sin</mi><mo>⁡</mo><mi>φ</mi><mo class="MathClass-punc" stretchy="false">.</mo>
+</math></td><td class="eq-no">(16.4)</td></tr></table>
+</div><p class="noindent"> Подстройка удерживается, если <math display="inline"><mo class="MathClass-rel" stretchy="false">|</mo><mi>ω</mi> <mo class="MathClass-bin" stretchy="false">−</mo> <msub><mrow><mi>ω</mi></mrow><mrow><mn>0</mn></mrow></msub 
+><mo class="MathClass-rel" stretchy="false">|</mo> <mo class="MathClass-rel" stretchy="false">&#x003C;</mo> <msub><mrow><mi>K</mi></mrow><mrow><mi>φ</mi></mrow></msub 
+></math>.
+Генератору с периодом <math display="inline"><mn>2</mn><mn>4</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn><mn>8</mn></math>
+часа нужно каждый день сдвигаться примерно на одиннадцать минут; утреннего света для
+такого сдвига обычно хватает. В полярную ночь или в пещере без света подстройки нет, и ритм
+уходит на собственный период.
+</p><p class="indent"> Суточный генератор — не тактовый генератор компьютера. Он не отсчитывает шаги
+вычислений и не синхронизирует импульсы нейронов. Он переключает <span class="lati-1095">режимы</span>: сон и
+бодрствование, уровни гормонов, температуру тела, готовность к еде. Это медленный
+широковещательный регистр того же рода, что и регистры глав <a href="05.html#x8-470005">5</a>–<a href="09.html#x12-860009">9</a>, только его значение
+меняется по расписанию, подведённому к солнцу.
+</p>
+ <div class="tcolorbox keyblock" id="tcolobox-36"> 
+<div class="tcolorbox-content"><div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x19-150002r2"></a>
+<span class="labx-1095">Утверждение 16.2 </span>(Химический выход)<span class="labx-1095">.</span> </span> <span class="lati-1095">Медленный выход машины построен из тех</span>
+<span class="lati-1095">же деталей, что и быстрый. Органы получают два провода противоположного знака</span>
+<span class="lati-1095">и разной скорости — газ </span><span class="nt"><span class="lati-1095">NORA</span></span> <span class="lati-1095">и тормоз </span><span class="nt"><span class="lati-1095">ACET</span></span><span class="lati-1095">, — а весь организм сразу —</span>
+<span class="lati-1095">широковещательные сигналы по крови, в том числе адреналин </span><span class="nt"><span class="lati-1095">ADRE</span></span><span class="lati-1095">. Уровни гормонов</span>
+<span class="lati-1095">держат каскады с отрицательной обратной связью, точность которых ограничена</span>
+<span class="lati-1095">устойчивостью; часть гормонов кодируется частотой порций; суточный ритм —</span>
+<span class="lati-1095">медленный генератор с фазовой подстройкой по свету. Устройство путей и опыты с</span>
+<span class="lati-1095">порциями и с периодом измерены; объяснение пульсаций каскада самой обратной связью</span>
+<span class="lati-1095">— гипотеза.</span>
+</p>
+</div>
+ 
+</div> 
+</div>
+ <h3 class="sectionHead"><span class="titlemark">16.6 </span> <a id="x19-15100016.6"></a>Итог</h3>
+ <div class="table">
+<p class="indent"> <a id="x19-1510011"></a></p><figure class="float">
+<div class="tabular">
+ <table id="TBL-19" class="tabular"><colgroup id="TBL-19-1g"><col id="TBL-19-1" /><col id="TBL-19-2" /><col id="TBL-19-3" /></colgroup><tr style="vertical-align:baseline;" id="TBL-19-1-"><td style="text-align:left;" id="TBL-19-1-1" class="td11"> <p class="noindent"><span class="larm-0900">Что</span>
+ <span class="larm-0900">делает</span>
+ <span class="larm-0900">химический</span>
+ <span class="larm-0900">выход</span> </p></td><td style="text-align:left;" id="TBL-19-1-2" class="td11"> <p class="noindent"><span class="larm-0900">Как</span> </p></td><td style="text-align:left;" id="TBL-19-1-3" class="td11"> <p class="noindent"><span class="larm-0900">Что</span>
+ <span class="larm-0900">известно</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-19-2-"><td style="text-align:left;" id="TBL-19-2-1" class="td11"> <p class="noindent"><span class="larm-0900">подстраивает</span>
+ <span class="larm-0900">органы</span> </p></td><td style="text-align:left;" id="TBL-19-2-2" class="td11"> <p class="noindent"><span class="larm-0900">газ</span>
+ <span class="nt"><span class="larm-0900">NORA</span></span>
+ <span class="larm-0900">и</span>
+ <span class="larm-0900">тормоз</span>
+ <span class="nt"><span class="larm-0900">ACET</span></span><span class="larm-0900"> </span><span class="larm-0900">(</span><a href="#x19-147001r1"><span class="larm-0900">16.1</span></a><span class="larm-0900">)</span> </p></td><td style="text-align:left;" id="TBL-19-2-3" class="td11"> <p class="noindent"><span class="larm-0900">измерено;</span>
+ <span class="larm-0900">тормоз</span>
+ <span class="larm-0900">быстрее</span>
+ <span class="larm-0900">газа</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-19-3-"><td style="text-align:left;" id="TBL-19-3-1" class="td11"> <p class="noindent"><span class="larm-0900">переводит</span>
+ <span class="larm-0900">всё</span>
+ <span class="larm-0900">тело</span>
+ <span class="larm-0900">в</span>
+ <span class="larm-0900">режим</span>
+ <span class="larm-0900">бега</span> </p></td><td style="text-align:left;" id="TBL-19-3-2" class="td11"> <p class="noindent"><span class="larm-0900">адреналин</span>
+ <span class="nt"><span class="larm-0900">ADRE</span></span>
+ <span class="larm-0900">в</span>
+ <span class="larm-0900">кровь</span> </p></td><td style="text-align:left;" id="TBL-19-3-3" class="td11"> <p class="noindent"><span class="larm-0900">измерено</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-19-4-"><td style="text-align:left;" id="TBL-19-4-1" class="td11"> <p class="noindent"><span class="larm-0900">держит</span>
+ <span class="larm-0900">уровни</span>
+ <span class="larm-0900">гормонов</span> </p></td><td style="text-align:left;" id="TBL-19-4-2" class="td11"> <p class="noindent"><span class="larm-0900">каскад</span>
+ <span class="larm-0900">с</span>
+ <span class="larm-0900">обратной</span>
+ <span class="larm-0900">связью,</span>
+ <math display="inline"><mi>K</mi> <mo class="MathClass-rel" stretchy="false">&#x003C;</mo> <mn>8</mn></math><span class="larm-0900"> </span><span class="larm-0900">(</span><a href="#x19-148002r3"><span class="larm-0900">16.3</span></a><span class="larm-0900">)</span> </p> </td><td style="text-align:left;" id="TBL-19-4-3" class="td11"> <p class="noindent"><span class="larm-0900">каскады</span>
+ <span class="larm-0900">и</span>
+ <span class="larm-0900">обратная</span>
+ <span class="larm-0900">связь</span>
+ <span class="larm-0900">измерены;</span>
+ <span class="larm-0900">пульсации</span>
+ <span class="larm-0900">от</span>
+ <span class="larm-0900">самой</span>
+ <span class="larm-0900">петли</span>
+ <span class="larm-0900">—</span>
+ <span class="larm-0900">гипотеза</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-19-5-"><td style="text-align:left;" id="TBL-19-5-1" class="td11"> <p class="noindent"><span class="larm-0900">передаёт</span>
+ <span class="larm-0900">частотой</span>
+ <span class="larm-0900">порций</span> </p></td><td style="text-align:left;" id="TBL-19-5-2" class="td11"> <p class="noindent"><span class="larm-0900">уставший</span>
+ <span class="larm-0900">рецептор</span>
+ <span class="larm-0900">как</span>
+ <span class="larm-0900">фильтр</span>
+ <span class="larm-0900">верхних</span>
+ <span class="larm-0900">частот</span> </p></td><td style="text-align:left;" id="TBL-19-5-3" class="td11"> <p class="noindent"><span class="larm-0900">зависимость</span>
+ <span class="larm-0900">от</span>
+ <span class="larm-0900">порций</span>
+ <span class="larm-0900">измерена</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-19-6-"><td style="text-align:left;" id="TBL-19-6-1" class="td11"> <p class="noindent"><span class="larm-0900">переключает</span>
+ <span class="larm-0900">режимы</span>
+ <span class="larm-0900">за</span>
+ <span class="larm-0900">сутки</span> </p></td><td style="text-align:left;" id="TBL-19-6-2" class="td11"> <p class="noindent"><span class="larm-0900">генератор</span>
+ <span class="larm-0900">с</span>
+ <span class="larm-0900">фазовой</span>
+ <span class="larm-0900">подстройкой</span>
+ <span class="larm-0900">по</span>
+ <span class="larm-0900">свету</span><span class="larm-0900"> </span><span class="larm-0900">(</span><a href="#x19-150001r4"><span class="larm-0900">16.4</span></a><span class="larm-0900">)</span> </p></td><td style="text-align:left;" id="TBL-19-6-3" class="td11"> <p class="noindent"><span class="larm-0900">период</span>
+ <span class="larm-0900">и</span>
+ <span class="larm-0900">подстройка</span>
+ <span class="larm-0900">светом</span>
+ <span class="larm-0900">измерены</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-19-7-"><td style="text-align:left;" id="TBL-19-7-1" class="td11"> </td></tr></table> </div>
+<figcaption class="caption"><span class="id">Таблица 16.1: </span><span class="content">Как машина управляет химией тела.</span></figcaption>
+ </figure>
+ </div>
+<p class="indent"> У машины два выхода (таблица <a href="#x19-1510011">16.1</a>). Быстрый — мышцы: миллисекунды, адресно, в каждый
+сустав. Медленный — химия тела: секунды, минуты и сутки, по двум проводам к органам и по
+крови ко всем сразу. Детали у обоих выходов одни и те же — два провода противоположного
+знака, ритмоводители, обратная связь и её запаздывание, — и те же, из которых собрана машина
+внутри.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">16.7 </span> <a id="x19-15200016.7"></a>Задачи</h3>
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x19-152001r1"></a>
+<span class="labx-1095">Задача 16.1 </span>(<math display="inline"><mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Кровь как фильтр. </span>Гормон выводится из крови с периодом полураспада <math display="inline"><msub><mrow><mi>t</mi></mrow><mrow><mn>1</mn><mo class="MathClass-bin" stretchy="false">∕</mo><mn>2</mn></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mn>0</mn></math> мин
+и выпускается короткими порциями каждые <math display="inline"><mi>T</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>6</mn><mn>0</mn></math> мин.
+Во сколько раз максимум концентрации больше минимума и во сколько раз ослаблена
+основная гармоника порций? При каком <math display="inline"><msub><mrow><mi>t</mi></mrow><mrow><mn>1</mn><mo class="MathClass-bin" stretchy="false">∕</mo><mn>2</mn></mrow></msub 
+></math>
+максимум превышает минимум лишь вдвое?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">Кровь — RC-цепь с <math display="inline"><mi>τ</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <msub><mrow><mi>t</mi></mrow><mrow><mn>1</mn><mo class="MathClass-bin" stretchy="false">∕</mo><mn>2</mn></mrow></msub 
+><mo class="MathClass-bin" stretchy="false">∕</mo><mi class="loglike">ln</mi><mo>⁡</mo><mn>2</mn> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mn>4</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>4</mn></math> мин;
+максимум к минимуму <math display="inline"><msup><mrow><mn>2</mn></mrow><mrow><mi>T</mi><mo class="MathClass-bin" stretchy="false">∕</mo><msub><mrow><mi>t</mi></mrow><mrow><mn>1</mn><mo class="MathClass-bin" stretchy="false">∕</mo><mn>2</mn></mrow></msub 
+>
+ </mrow></msup 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>6</mn><mn>4</mn></math>; основная
+гармоника ослаблена до <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn><mn>5</mn></math>;
+отношение <math display="inline"><mn>2</mn></math>
+при <math display="inline"><msub><mrow><mi>t</mi></mrow><mrow><mn>1</mn><mo class="MathClass-bin" stretchy="false">∕</mo><mn>2</mn></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mi>T</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>6</mn><mn>0</mn></math> мин.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x19-152002r2"></a>
+<span class="labx-1095">Задача 16.2 </span>(<math display="inline"><mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Суточная автоподстройка. </span>Собственный период генератора (<a href="#x19-150001r4">16.4</a>) равен <math display="inline"><mn>2</mn><mn>4</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn><mn>8</mn></math> ч,
+свет сдвигает фазу не больше чем на час в сутки: <math display="inline"><msub><mrow><mi>K</mi></mrow><mrow><mi>φ</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>2</mn><mi>π</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mn>2</mn><mn>4</mn></math> рад/сут.
+Найдите установившуюся разность фаз <math display="inline"><msup><mrow><mi>φ</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">∗</mo></mrow></msup 
+></math>
+в минутах и время релаксации. За сколько суток рассогласование после скачка внешнего
+сигнала на <math display="inline"> <mo class="MathClass-bin" stretchy="false">±</mo> <mn>6</mn></math> ч
+станет меньше часа?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent"><math display="inline"><msup><mrow><mi>φ</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">∗</mo></mrow></msup 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mi class="loglike">arcsin</mi><mo>⁡</mo><mrow><mo class="MathClass-open" fence="true" mathsize="1.19em">(</mo><mrow><mo class="MathClass-open" stretchy="false">(</mo><mi>ω</mi> <mo class="MathClass-bin" stretchy="false">−</mo> <msub><mrow><mi>ω</mi></mrow><mrow><mn>0</mn></mrow></msub 
+><mo class="MathClass-close" stretchy="false">)</mo><mo class="MathClass-bin" stretchy="false">∕</mo><msub><mrow><mi>K</mi></mrow><mrow><mi>φ</mi></mrow></msub 
+></mrow><mo class="MathClass-close" fence="true" mathsize="1.19em">)</mo></mrow> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>4</mn><mn>1</mn></math> мин
+(<math display="inline"><mi>ω</mi> <mo class="MathClass-bin" stretchy="false">−</mo> <msub><mrow><mi>ω</mi></mrow><mrow><mn>0</mn></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>0</mn><mn>4</mn><mn>7</mn></math> рад/сут), время
+релаксации <math display="inline"><mn>1</mn><mo class="MathClass-bin" stretchy="false">∕</mo><mo class="MathClass-open" stretchy="false">(</mo><msub><mrow><mi>K</mi></mrow><mrow><mi>φ</mi></mrow></msub 
+> <mi class="loglike">cos</mi><mo>⁡</mo><msup><mrow><mi>φ</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">∗</mo></mrow></msup 
+><mo class="MathClass-close" stretchy="false">)</mo> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>3</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>9</mn></math> сут;
+после сдвига на <math display="inline"> <mo class="MathClass-bin" stretchy="false">+</mo> <mn>6</mn></math>
+и <math display="inline"> <mo class="MathClass-bin" stretchy="false">−</mo> <mn>6</mn></math> ч
+<math display="inline"><mn>7</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>7</mn></math> и
+<math display="inline"><mn>7</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>9</mn></math> сут.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x19-152003r3"></a>
+<span class="labx-1095">Задача 16.3 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Точность против устойчивости. </span>Линеаризованный каскад (<a href="#x19-148001r2">16.2</a>) удлинили до <math display="inline"><mi>n</mi></math>
+одинаковых ступеней. Найдите критическое усиление <math display="inline"><msub><mrow><mi>K</mi></mrow><mrow><mi>c</mi></mrow></msub 
+><mo class="MathClass-open" stretchy="false">(</mo><mi>n</mi><mo class="MathClass-close" stretchy="false">)</mo></math>
+и наименьшую достижимую ошибку <math display="inline"><mn>1</mn><mo class="MathClass-bin" stretchy="false">∕</mo><mo class="MathClass-open" stretchy="false">(</mo><mn>1</mn> <mo class="MathClass-bin" stretchy="false">+</mo> <msub><mrow><mi>K</mi></mrow><mrow><mi>c</mi></mrow></msub 
+><mo class="MathClass-close" stretchy="false">)</mo></math>
+при <math display="inline"><mi>n</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>3</mn></math>
+и <math display="inline"><mi>n</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>6</mn></math>.
+К чему стремится эта ошибка при <math display="inline"><mi>n</mi> <mo class="MathClass-rel" stretchy="false">→</mo><mi>∞</mi></math>?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent"><math display="inline"><msub><mrow><mi>K</mi></mrow><mrow><mi>c</mi></mrow></msub 
+><mo class="MathClass-open" stretchy="false">(</mo><mi>n</mi><mo class="MathClass-close" stretchy="false">)</mo> <mo class="MathClass-rel" stretchy="false">=</mo><msup><mrow> <mi class="loglike">sec</mi><mo>⁡</mo></mrow><mrow><mi>n</mi></mrow></msup 
+><mo class="MathClass-open" stretchy="false">(</mo><mi>π</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mi>n</mi><mo class="MathClass-close" stretchy="false">)</mo></math>:
+<math display="inline"><mn>8</mn></math> и
+<math display="inline"><mn>2</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>3</mn><mn>7</mn></math>, ошибка
+<math display="inline"><mn>1</mn><mn>1</mn><mi>%</mi></math> и
+<math display="inline"><mn>3</mn><mn>0</mn><mi>%</mi></math>; при
+<math display="inline"><mi>n</mi> <mo class="MathClass-rel" stretchy="false">→</mo><mi>∞</mi></math>
+<math display="inline"><msub><mrow><mi>K</mi></mrow><mrow><mi>c</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">→</mo> <mn>1</mn></math>, ошибка
+<math display="inline"> <mo class="MathClass-rel" stretchy="false">→</mo> <mn>5</mn><mn>0</mn><mi>%</mi></math>.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x19-152004r4"></a>
+<span class="labx-1095">Задача 16.4 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Газ и тормоз. </span>В (<a href="#x19-147001r1">16.1</a>) вклады газа и тормоза — выходы RC-цепей с <math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>S</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>2</mn></math> с
+и <math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>P</mi> </mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>4</mn></math> с,
+команды не больше <math display="inline"><mn>8</mn><mn>0</mn></math>
+и <math display="inline"><mn>6</mn><mn>0</mn></math>
+ударов в минуту. Ритм <math display="inline"><msub><mrow><mi>f</mi></mrow><mrow><mn>0</mn></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mn>0</mn><mn>0</mn></math>;
+в покое тормоз <math display="inline"><mn>3</mn><mn>5</mn></math>,
+газ <math display="inline"><mn>0</mn></math>,
+<math display="inline"><mi>f</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>6</mn><mn>5</mn></math>.
+За какое время можно выйти на <math display="inline"><mi>f</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mn>2</mn><mn>0</mn></math>?
+А если тормоз не отпускать и работать только газом?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">Крайние команды (газ <math display="inline"><mn>8</mn><mn>0</mn></math>,
+тормоз <math display="inline"><mn>0</mn></math>)
+дают <math display="inline"><mi>f</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mn>2</mn><mn>0</mn></math> через
+<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>7</mn><mn>6</mn></math> с; «только
+газ» — <math display="inline"><mn>2</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>3</mn><mn>3</mn></math> с,
+втрое дольше.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x19-152005r5"></a>
+<span class="labx-1095">Задача 16.5 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Моделирование: каскад с задержкой. </span>В обратную связь функции <span class="latt-1095">cascade </span>из <span class="latt-1095">models/chem_models.py</span>
+(скопируйте её, файл не запускайте) добавьте задержку <math display="inline"><mi>d</mi></math>:
+первая ступень видит <math display="inline"><msub><mrow><mi>x</mi></mrow><mrow><mn>3</mn></mrow></msub 
+><mo class="MathClass-open" stretchy="false">(</mo><mi>t</mi> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>d</mi><mo class="MathClass-close" stretchy="false">)</mo></math>.
+Найдите <math display="inline"><msub><mrow><mi>K</mi></mrow><mrow><mi>c</mi></mrow></msub 
+></math>
+и период на границе при <math display="inline"><mi>d</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mi>τ</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn></math>,
+<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn></math>,
+<math display="inline"><mn>1</mn></math>,
+<math display="inline"><mn>2</mn></math>
+и проверьте моделированием при <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>9</mn><msub><mrow><mi>K</mi></mrow><mrow><mi>c</mi></mrow></msub 
+></math>
+и <math display="inline"><mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn><msub><mrow><mi>K</mi></mrow><mrow><mi>c</mi></mrow></msub 
+></math>.
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent"><math display="inline"><mn>3</mn><mi class="loglike">arctan</mi><mo>⁡</mo><mo class="MathClass-open" stretchy="false">(</mo><mi>ω</mi><mi>τ</mi><mo class="MathClass-close" stretchy="false">)</mo> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>ω</mi><mi>d</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mi>π</mi></math>,
+<math display="inline"><msub><mrow><mi>K</mi></mrow><mrow><mi>c</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <msup><mrow><mo class="MathClass-open" stretchy="false">(</mo><mn>1</mn> <mo class="MathClass-bin" stretchy="false">+</mo> <msup><mrow><mi>ω</mi></mrow><mrow><mn>2</mn></mrow></msup 
+><msup><mrow><mi>τ</mi></mrow><mrow><mn>2</mn></mrow></msup 
+><mo class="MathClass-close" stretchy="false">)</mo></mrow><mrow><mn>3</mn><mo class="MathClass-bin" stretchy="false">∕</mo><mn>2</mn></mrow></msup 
+></math>:
+<math display="inline"><msub><mrow><mi>K</mi></mrow><mrow><mi>c</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>8</mn></math>,
+<math display="inline"><mn>3</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn><mn>4</mn></math>,
+<math display="inline"><mn>2</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn><mn>0</mn></math>,
+<math display="inline"><mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>7</mn><mn>6</mn></math> и период
+<math display="inline"><mn>3</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>6</mn><mn>3</mn></math>,
+<math display="inline"><mn>5</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>4</mn><mn>6</mn></math>,
+<math display="inline"><mn>6</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>8</mn><mn>6</mn></math>,
+<math display="inline"><mn>9</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn><mn>7</mn><mspace width="0.17em" class="thinspace"/><mi>τ</mi></math>; при
+<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>9</mn><msub><mrow><mi>K</mi></mrow><mrow><mi>c</mi></mrow></msub 
+></math> колебания
+затухают, при <math display="inline"><mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn><msub><mrow><mi>K</mi></mrow><mrow><mi>c</mi></mrow></msub 
+></math>
+устанавливаются.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x19-152006r6"></a>
+<span class="labx-1095">Задача 16.6 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Получатель, который читает порции. </span>Рецептор устаёт: <math display="inline"><mi>y</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <msub><mrow><mo class="MathClass-open" stretchy="false">[</mo><mi>c</mi> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>a</mi><mo class="MathClass-close" stretchy="false">]</mo></mrow><mrow><mo class="MathClass-bin" stretchy="false">+</mo></mrow></msub 
+></math>,
+<math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>a</mi></mrow></msub 
+><mspace width="0.17em" class="thinspace"/><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>a</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>t</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mi>c</mi> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>a</mi></math>,
+<math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>a</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>3</mn><mn>0</mn></math> мин.
+Гормон приходит порциями по <math display="inline"><mn>6</mn></math> мин
+с периодом <math display="inline"><mi>T</mi></math>
+при той же средней дозе <math display="inline"><mover accent="true"><mrow><mi>c</mi></mrow><mo accent="true">¯</mo></mover></math>.
+Найдите средний отклик при <math display="inline"><mi>T</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mn>5</mn></math>,
+<math display="inline"><mn>6</mn><mn>0</mn></math>,
+<math display="inline"><mn>1</mn><mn>2</mn><mn>0</mn></math> мин
+и <math display="inline"><mi>T</mi> <mo class="MathClass-rel" stretchy="false">→</mo><mi>∞</mi></math>.
+Каков он при постоянной концентрации <math display="inline"><mover accent="true"><mrow><mi>c</mi></mrow><mo accent="true">¯</mo></mover></math>?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent"><math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>6</mn><mn>0</mn><mover accent="true"><mrow><mi>c</mi></mrow><mo accent="true">¯</mo></mover></math>,
+<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>8</mn><mn>7</mn><mover accent="true"><mrow><mi>c</mi></mrow><mo accent="true">¯</mo></mover></math>,
+<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>9</mn><mn>0</mn><mover accent="true"><mrow><mi>c</mi></mrow><mo accent="true">¯</mo></mover></math>, предел
+<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>9</mn><mn>1</mn><mover accent="true"><mrow><mi>c</mi></mrow><mo accent="true">¯</mo></mover></math>; при
+постоянной концентрации отклик нулевой: такой получатель читает только порции.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x19-152007r7"></a>
+<span class="labx-1095">Задача 16.7 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo><mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Генератор или обратная связь? </span>Предложите опыт, который отличит пульсации, порождённые
+запаздывающей обратной связью каскада (<a href="#x19-148001r2">16.2</a>), от отдельного ритмоводителя. Можно ли
+различить гипотезы по сдвигу периода, если <math display="inline"><mi>K</mi></math>
+удаётся изменить лишь в полтора раза, а период измеряется с точностью <math display="inline"><mn>5</mn><mi>%</mi></math>?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">Открытая задача. При обратной связи ритм есть только при
+<math display="inline"><mi>K</mi> <mo class="MathClass-rel" stretchy="false">&#x003E;</mo> <mn>8</mn></math>, период пропорционален
+<math display="inline"><mi>τ</mi></math> ступеней и почти
+не зависит от <math display="inline"><mi>K</mi></math>
+(<math display="inline"><mn>3</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>6</mn><mn>4</mn><mspace width="0.17em" class="thinspace"/><mi>τ</mi></math> при
+<math display="inline"><mi>K</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>8</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn></math>,
+<math display="inline"><mn>4</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn><mn>3</mn><mspace width="0.17em" class="thinspace"/><mi>τ</mi></math> при
+<math display="inline"><mi>K</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>4</mn><mn>0</mn></math>): изменение
+<math display="inline"><mi>K</mi></math> в полтора раза сдвигает период на
+<math display="inline"><mn>2</mn></math>–<math display="inline"><mn>4</mn><mi>%</mi></math>,
+меньше погрешности. Решает размыкание петли (постоянный конечный гормон на входе первой
+ступени убивает такой ритм) или ответ на короткую добавку гормона в разные фазы
+цикла.
+</p></div></details>
+
+<p class="indent"> <a id="tailfullch16.html"></a> </p> 
+
+  </article>
+  <article class="text short" id="text-short" hidden>
+
+ <a id="s-x19-8600016"></a>
+<p class="noindent">У машины два выхода. Быстрый — мышцы. Медленный —
+химия тела: мозг управляет сердцем, сосудами, железами и
+через кровь рассылает сообщения всему телу сразу. Кровь —
+самая широковещательная шина из всех: одно сообщение
+доходит до каждой клетки примерно за минуту, а смысл ему,
+как всегда, придаёт «замок» получателя.
+</p>
+ <h3 class="likesectionHead"> <a id="s-x19-87000"></a>Газ и тормоз</h3>
+<p class="noindent">Сердце бьётся само, у него свой метроном. Мозг лишь
+подкручивает темп двумя проводами противоположного
+знака. <span class="nt">NORA</span> — педаль газа: разгоняет, но медленно. <span class="nt">ACET</span>
+— тормоз: замедляет быстро, потому что ему не нужна
+длинная цепочка химических реакций. И тут наконец
+находится работа для типа <span class="nt">ADRE</span>: адреналин, выброшенный
+в кровь, — та же педаль газа, только нажатая сразу для
+всего тела.
+</p>
+<div class="center">
+<p class="noindent"><img src="img/short30x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<div class="minipage"><p class="noindent"><span class="lati-1000">Сердце ведут два провода противоположного знака:</span>
+<span class="lati-1000">газ и тормоз.</span> </p></div></div>
+ <h3 class="likesectionHead"> <a id="s-x19-88000"></a>Каскад с обратной связью</h3>
+<p class="noindent">Многие гормоны управляются каскадом: мозг приказывает
+первой железе, та — второй, вторая выделяет гормон, а
+гормон сообщает мозгу, что его уже достаточно. Это
+термостат из трёх ступеней. Инженер знает, чем опасна
+такая схема: если петлю сделать слишком «чувствительной»,
+она начнёт раскачиваться — уровень будет не держаться, а
+колебаться. Поэтому точность такого регулятора ограничена:
+сделать его одновременно устойчивым и очень точным
+нельзя.
+</p>
+<div class="center">
+<p class="noindent"><img src="img/short31x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<div class="minipage"><p class="noindent"><span class="lati-1000">Модель гормонального каскада из трёх ступеней.</span>
+<span class="lati-1000">Слабая обратная связь успокаивает уровень, но</span>
+<span class="lati-1000">оставляет его заметно ниже цели. Сильная</span>
+<span class="lati-1000">подводит ближе, зато уровень уже не держится, а</span>
+<span class="lati-1000">качается.</span> </p></div></div>
+ <h3 class="likesectionHead"> <a id="s-x19-89000"></a>Импульсы, а не уровень</h3>
+<p class="noindent">Некоторые гормоны работают только импульсами. Если
+подавать их постоянно, железа-получатель «устаёт» и
+отключается; если короткими импульсами раз в час —
+работает. Получатель читает не уровень, а ритм, — как
+синапс из главы про азбуку Морзе, который слышит только
+перемены.
+</p>
+ <h3 class="likesectionHead"> <a id="s-x19-90000"></a>Сутки</h3>
+<p class="noindent">И наконец, в теле есть медленный генератор с периодом
+около суток. Его естественный период чуть отличается от
+двадцати четырёх часов, и каждое утро свет подстраивает
+его, как радиоприёмник подстраивается под станцию. Не
+путайте его с тактовым генератором компьютера: он не
+отмеряет шаги вычисления. Он переключает режимы
+работы всей машины — день и ночь, бодрствование и
+сон.
+</p><p class="noindent"><span class="lati-1000">Формулы, модели, задачи и источники — в полной версии,</span>
+<span class="lati-1000">глава</span><span class="lati-1000"> 16.</span>
+</p>
+<p class="indent"> <a id="s-tailshortch16.html"></a> </p> 
+
+  </article>
+
+  <aside class="starline"><span data-ru="Книга бесплатная и открытая. Если глава была полезной, поставьте книге звезду на GitHub: так её найдут другие." data-en="The book is free and open. If this chapter was useful, star the book on GitHub so others can find it.">Книга бесплатная и открытая.</span> <a href="https://github.com/kladkogex/20-watt-computer" target="_blank" rel="noopener" data-ru="★ Звезда на GitHub" data-en="★ Star on GitHub">★ Звезда на GitHub</a></aside>
+  <nav class="pager">
+    <a class="prev" href="15.html"><span data-ru="← Назад" data-en="← Previous">← Назад</span><b>Как машина учится двигаться</b></a>
+    <a class="next" href="17.html"><span data-ru="Дальше →" data-en="Next →">Дальше →</span><b>Отладка машины</b></a>
+  </nav>
+  <footer>
+    <span data-ru='Константин Кладько · текст — <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.ru">CC BY-NC-SA 4.0</a>' data-en='Konstantin Kladko · text: <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>'>Константин Кладько</span>
+    <span><a href="../pdf/20-watt-computer-ru.pdf">PDF</a> · <a href="../breadboard/" data-ru="Макетная плата" data-en="Breadboard">Макетная плата</a> · <a href="https://github.com/kladkogex/20-watt-computer">GitHub</a></span>
+  </footer>
+</main>
+
+<script>
+(function(){
+  const NAV = [{"slug": "00", "title": "Как читать эту книгу", "kicker": "Введение"}, {"slug": "01", "title": "Типы нейронов", "kicker": "Глава 1"}, {"slug": "02", "title": "Что вычисляют GLUT-нейроны", "kicker": "Глава 2"}, {"slug": "03", "title": "GLUT и GABA вместе", "kicker": "Глава 3"}, {"slug": "04", "title": "Азбука Морзе: что мы знаем о языке, на котором говорят GLUT- и GABA-нейроны", "kicker": "Глава 4"}, {"slug": "05", "title": "Что вычисляют SERO-нейроны", "kicker": "Глава 5"}, {"slug": "06", "title": "Нейронные сети, которые умеют учиться: добавляем DOPA", "kicker": "Глава 6"}, {"slug": "07", "title": "Альтернативные современные теории обучения на основе дофамина", "kicker": "Глава 7"}, {"slug": "08", "title": "Когда искать, а когда решать: добавляем NORA", "kicker": "Глава 8"}, {"slug": "09", "title": "Когда писать, а когда читать: добавляем ACET", "kicker": "Глава 9"}, {"slug": "10", "title": "Вся машина", "kicker": "Глава 10"}, {"slug": "11", "title": "Входы машины: как к ней подключены глаза, уши и другие датчики", "kicker": "Глава 11"}, {"slug": "12", "title": "Распознавание изображений и видео", "kicker": "Глава 12"}, {"slug": "13", "title": "Выходы машины: как мозг управляет мышцами", "kicker": "Глава 13"}, {"slug": "14", "title": "Боль: сигнал тревоги", "kicker": "Глава 14"}, {"slug": "15", "title": "Как машина учится двигаться", "kicker": "Глава 15"}, {"slug": "16", "title": "Второй выход: как мозг управляет химией тела", "kicker": "Глава 16"}, {"slug": "17", "title": "Отладка машины", "kicker": "Глава 17"}, {"slug": "18", "title": "Типы нейронов по электрической функции", "kicker": "Глава 18"}, {"slug": "19", "title": "Нейроны по числу дендритов", "kicker": "Глава 19"}, {"slug": "20", "title": "Что делают нейроны во сне", "kicker": "Глава 20"}, {"slug": "21", "title": "Машина из живых нейронов", "kicker": "Глава 21"}, {"slug": "22", "title": "DishBrain", "kicker": "Глава 22"}, {"slug": "a", "title": "Вещества, которые не задают тип нейрона", "kicker": "Приложение A"}, {"slug": "b", "title": "Обозначения", "kicker": "Приложение B"}, {"slug": "c", "title": "Ответы", "kicker": "Приложение C"}, {"slug": "d", "title": "Экспериментальное приложение", "kicker": "Приложение D"}, {"slug": "refs", "title": "Литература", "kicker": ""}];
+  const SLUG = "16";
+  const store = {get(k){try{return localStorage.getItem(k)}catch(e){return null}}, set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+
+  // chapter selector
+  const sel = document.getElementById("jump");
+  NAV.forEach(p => { const o = document.createElement("option"); o.value = p.slug;
+    o.textContent = (p.kicker ? p.kicker + ". " : "") + p.title; if (p.slug === SLUG) o.selected = true; sel.appendChild(o); });
+  sel.addEventListener("change", () => { location.href = sel.value + ".html" + (location.hash === "#short" ? "#short" : ""); });
+
+  // Коротко / Полностью
+  const modeBox = document.querySelector(".mode");
+  const hasShort = modeBox.dataset.hasShort === "true";
+  const full = document.getElementById("text-full"), short = document.getElementById("text-short");
+  function setMode(m, remember){
+    if (!hasShort) m = "full";
+    document.body.dataset.mode = m;
+    full.hidden = m !== "full"; short.hidden = m !== "short";
+    modeBox.querySelectorAll(".seg").forEach(b => b.setAttribute("aria-pressed", b.dataset.mode === m));
+    if (remember) store.set("20w-mode", m);
+  }
+  if (!hasShort) modeBox.hidden = true;
+  modeBox.addEventListener("click", e => { const b = e.target.closest(".seg"); if (b) { setMode(b.dataset.mode, true); history.replaceState(null, "", "#" + b.dataset.mode); } });
+  document.addEventListener("click", e => { const a = e.target.closest("a[data-mode]"); if (a) { e.preventDefault(); setMode(a.dataset.mode, true); window.scrollTo(0, 0); } });
+  // a link into the text (#x...) that lives in the other version switches to it
+  function follow(){
+    const h = decodeURIComponent(location.hash.slice(1));
+    if (h === "short" || h === "full") { setMode(h, true); return; }
+    if (!h) return;
+    const t = document.getElementById(h);
+    if (t) { setMode(short.contains(t) ? "short" : "full", false); t.scrollIntoView(); }
+  }
+  setMode(store.get("20w-mode") || "full", false);
+  follow();
+  window.addEventListener("hashchange", follow);
+  // links that leave the book open in the whole window when the page sits inside the reader
+  if (document.documentElement.classList.contains("embedded"))
+    document.querySelectorAll('a[href^="../"], a[href^="http"]').forEach(a => { a.target = a.href.startsWith(location.origin) ? "_top" : "_blank"; });
+
+  // interface language (the text itself is Russian)
+  function setLang(l){
+    document.querySelectorAll("[data-ru]").forEach(el => { el.innerHTML = el.dataset[l]; });
+    document.getElementById("lang-ru").setAttribute("aria-pressed", l === "ru");
+    document.getElementById("lang-en").setAttribute("aria-pressed", l === "en");
+    store.set("20w-lang", l);
+  }
+  document.getElementById("lang-ru").onclick = () => setLang("ru");
+  document.getElementById("lang-en").onclick = () => setLang("en");
+  setLang(store.get("20w-lang") === "en" ? "en" : "ru");
+  window.addEventListener("storage", e => {
+    if (e.key === "20w-lang" && (e.newValue === "ru" || e.newValue === "en")) setLang(e.newValue);
+    if (e.key === "20w-theme" && (e.newValue === "light" || e.newValue === "dark")) document.documentElement.setAttribute("data-theme", e.newValue);
+  });
+})();
+</script>
+<script>
+(function(){var b=document.getElementById("theme");if(!b)return;var r=document.documentElement;function cur(){var t=r.getAttribute("data-theme");if(t)return t;return window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";}function show(){b.textContent=cur()==="dark"?"☀":"☾";b.setAttribute("aria-pressed",cur()==="dark");}b.onclick=function(){var t=cur()==="dark"?"light":"dark";r.setAttribute("data-theme",t);try{localStorage.setItem("20w-theme",t);}catch(e){}show();};if(window.matchMedia)matchMedia("(prefers-color-scheme: dark)").addEventListener("change",show);show();})();
+</script>
+</body>
+</html>

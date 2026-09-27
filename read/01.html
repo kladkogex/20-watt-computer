@@ -1,0 +1,982 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<script>try{var t=localStorage.getItem("20w-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);}catch(e){}if(window.self!==window.top)document.documentElement.classList.add("embedded");</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Глава 1. Типы нейронов · Компьютер на 20 ваттах</title>
+<meta name="description" content="Допустим, вам дали мешок с восемьюдесятью шестью миллиардами нейронов [ 1 ] и попросили разложить их по кучкам. Как бы вы это сделали? Инженер, которому дали мешок незнакомых …">
+<link rel="canonical" href="https://kladkogex.github.io/20-watt-computer/read/01.html">
+<meta property="og:type" content="book">
+<meta property="og:title" content="Глава 1. Типы нейронов · Компьютер на 20 ваттах">
+<meta property="og:description" content="Допустим, вам дали мешок с восемьюдесятью шестью миллиардами нейронов [ 1 ] и попросили разложить их по кучкам. Как бы вы это сделали? Инженер, которому дали мешок незнакомых …">
+<meta property="og:url" content="https://kladkogex.github.io/20-watt-computer/read/01.html">
+<meta property="og:locale" content="ru_RU">
+<meta property="og:image" content="https://kladkogex.github.io/20-watt-computer/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Your brain runs on 20 watts. Here is its datasheet. The 20-Watt Computer, a free textbook for engineers.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://kladkogex.github.io/20-watt-computer/og-card.png">
+<meta name="twitter:title" content="Глава 1. Типы нейронов · The 20-Watt Computer">
+<meta name="twitter:description" content="Допустим, вам дали мешок с восемьюдесятью шестью миллиардами нейронов [ 1 ] и попросили разложить их по кучкам. Как бы вы это сделали? Инженер, которому дали мешок незнакомых …">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Chapter", "name": "Типы нейронов", "url": "https://kladkogex.github.io/20-watt-computer/read/01.html", "position": 1, "inLanguage": "ru", "isAccessibleForFree": true, "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/", "author": {"@type": "Person", "name": "Константин Кладько", "alternateName": "Konstantin Kladko"}, "isPartOf": {"@type": "Book", "name": "Компьютер на 20 ваттах. Как вычисляет мозг: количественный подход для инженеров", "alternateName": "The 20-Watt Computer: How the Brain Computes. A Quantitative Approach for Engineers", "author": {"@type": "Person", "name": "Константин Кладько", "alternateName": "Konstantin Kladko"}, "url": "https://kladkogex.github.io/20-watt-computer/", "inLanguage": "ru", "isAccessibleForFree": true, "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/"}}</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap">
+<link rel="stylesheet" href="book.css">
+</head>
+<body>
+<header class="bar">
+  <a class="home" href="../#toc"><span class="w">20</span> <span data-ru="Компьютер на 20 ваттах" data-en="The 20-Watt Computer">Компьютер на 20 ваттах</span></a>
+  <label class="jump"><span class="sr" data-ru="Перейти к главе" data-en="Go to chapter">Перейти к главе</span>
+    <select id="jump"></select></label>
+  <div class="langs" role="group" aria-label="Language">
+    <button class="chip" id="lang-ru" type="button">RU</button>
+    <button class="chip" id="lang-en" type="button">EN</button>
+    <button class="chip theme" id="theme" type="button" aria-label="Light or dark theme" title="Light / dark">☾</button>
+  </div>
+</header>
+
+<main class="page">
+  <div class="pagehead">
+    <p class="kicker" data-ru="Глава 1" data-en="Chapter 1">Глава 1</p>
+    <h1><span class="t-full">Типы нейронов</span><span class="t-short">Мешок с деталями</span></h1>
+    <div class="mode" role="group" aria-label="Version" data-has-short="true">
+      <button type="button" class="seg" data-mode="short"><b data-ru="Коротко" data-en="Short">Коротко</b><span data-ru="без формул, с рисунками" data-en="no formulas, with drawings">без формул, с рисунками</span></button>
+      <button type="button" class="seg" data-mode="full"><b data-ru="Полностью" data-en="Full">Полностью</b><span data-ru="формулы, модели, задачи" data-en="formulas, models, exercises">формулы, модели, задачи</span></button>
+    </div>
+    <p class="lang-note" data-ru="" data-en="The online reader is in Russian for now; the book in other languages is in the PDF downloads in the menu.">.</p>
+  </div>
+
+  <article class="text full" id="text-full">
+
+ <a id="x4-40001"></a>
+ <h3 class="sectionHead"><span class="titlemark">1.1 </span> <a id="x4-50001.1"></a>Нейрон как чёрный ящик</h3>
+<p class="noindent">Допустим, вам дали мешок с восемьюдесятью шестью миллиардами нейронов <span class="cite">[<a href="refs.html#XAzevedo2009">1</a>]</span> и попросили
+разложить их по кучкам. Как бы вы это сделали?
+</p><p class="indent"> Инженер, которому дали мешок незнакомых микросхем, не стал бы сортировать их по форме
+корпуса. Он спросил бы: сколько у детали входов, сколько выходов и что она выдаёт на выход.
+Нарисуем нейрон так же — как блок на схеме (рис. <a href="#x4-50011">1.1</a>).
+</p>
+ <figure class="figure"> 
+<a id="x4-50011"></a>
+<p class="noindent"><img src="img/full1x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<figcaption class="caption"><span class="id">Рис. 1.1: </span><span class="content">Нейрон глазами инженера. Много входов <math display="inline"><msub><mrow><mi>x</mi></mrow><mrow><mi>i</mi></mrow></msub 
+></math>,
+каждый со своим весом <math display="inline"><msub><mrow><mi>w</mi></mrow><mrow><mi>i</mi></mrow></msub 
+></math>;
+внутри — взвешенная сумма <math display="inline"><mi>u</mi></math>
+и сравнение с порогом <math display="inline"><mi>𝜃</mi></math>
+(<math display="inline"><mi mathvariant="normal">Θ</mi></math>
+— ступенька: <math display="inline"><mn>1</mn></math>,
+если аргумент положителен, и <math display="inline"><mn>0</mn></math>
+иначе); один выход <math display="inline"><mi>y</mi></math>
+— последовательность импульсов, размноженная ветвлением на тысячи получателей.</span></figcaption>
+ </figure>
+<p class="indent"> На выходе блока — не число, а последовательность коротких импульсов напряжения: «щёлк»,
+пауза, «щёлк-щёлк», длинная пауза. Каждый импульс одинаковой высоты, так что вся
+информация — в том, <span class="lati-1095">когда </span>они происходят. Внутри блока, в первом грубом приближении, стоит
+сумматор и компаратор: входы складываются с весами, и если сумма перевалила за порог, блок
+выдаёт импульс. В следующей главе мы заменим его моделью, которая честно работает в
+непрерывном времени.
+</p><p class="indent"> Выход один, но провод ветвится, и каждая ветка несёт <span class="lati-1095">ту же самую </span>копию сигнала. В
+электронике это называется разветвлением по выходу, fan-out. У нейрона коры он порядка
+нескольких тысяч; логический вентиль в микросхеме обычно нагружен на единицы других
+вентилей.
+</p><p class="indent"> <span class="lati-1095">Что </span>же передаётся по выходному проводу к получателю? Импульс добегает до конца каждой
+ветки и там превращается в химический сигнал: ветка выбрасывает в узкую щель между
+клетками щепотку определённого вещества, <span class="lati-1095">нейромедиатора</span>, которое меняет входной
+ток получателя. Вот и признак для сортировки: <span class="lati-1095">какой медиатор выбрасывает выход</span>
+<span class="lati-1095">нейрона</span>.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">1.2 </span> <a id="x4-60001.2"></a>Один выход — один тип сигнала</h3>
+<p class="noindent">Сортировка имеет смысл, только если у каждого нейрона тип выхода один. Так ли это? Опыт
+говорит, что почти так.
+</p>
+ <div class="tcolorbox keyblock" id="tcolobox-1"> 
+<div class="tcolorbox-content"><div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x4-6001r1"></a>
+<span class="labx-1095">Утверждение 1.1 </span>(Один нейрон — один тип выхода)<span class="labx-1095">.</span> </span> <span class="lati-1095">У почти каждого нейрона один</span>
+<span class="lati-1095">главный медиатор, и выбрасывает он его во всех ветках своего выхода. Поэтому тип</span>
+<span class="lati-1095">нейрона задаётся его главным медиатором</span><span class="lati-1095"> </span><span class="cite"><span class="lati-1095">[</span><a href="refs.html#XStrata1999"><span class="lati-1095">5</span></a><span class="lati-1095">]</span></span><span class="lati-1095">.</span>
+</p>
+</div>
+ 
+</div> 
+</div>
+<p class="indent"> Договоримся обозначать тип нейрона <span class="lati-1095">первыми четырьмя буквами английского названия его</span>
+<span class="lati-1095">главного медиатора</span>. Так, нейрон, главный медиатор которого глутамат, — это <span class="nt">GLUT</span>-нейрон. Все
+типы собраны в таблице <a href="#x4-60021">1.1</a>.
+</p>
+ <div class="table">
+<p class="indent"> <a id="x4-60021"></a></p><figure class="float">
+<div class="tabular">
+ <table id="TBL-3" class="tabular"><colgroup id="TBL-3-1g"><col id="TBL-3-1" /><col id="TBL-3-2" /><col id="TBL-3-3" /><col id="TBL-3-4" /><col id="TBL-3-5" /><col id="TBL-3-6" /><col id="TBL-3-7" /><col id="TBL-3-8" /></colgroup><tr style="vertical-align:baseline;" id="TBL-3-1-"><td style="text-align:left;" id="TBL-3-1-1" class="td11"> <p class="noindent"><span class="larm-0900">Тип</span> </p></td><td style="text-align:left;" id="TBL-3-1-2" class="td11"> <p class="noindent"><span class="larm-0900">Главный</span>
+ <span class="larm-0900">медиатор</span> </p></td><td style="text-align:left;" id="TBL-3-1-3" class="td11"> <p class="noindent"><span class="larm-0900">Шина</span> </p></td><td style="text-align:left;" id="TBL-3-1-4" class="td11"> <p class="noindent"><span class="larm-0900">Скорость</span> </p></td><td style="text-align:left;" id="TBL-3-1-5" class="td11"> <p class="noindent"><span class="larm-0900">Знак</span> </p></td><td style="text-align:left;" id="TBL-3-1-6" class="td11"> <p class="noindent"><span class="larm-0900">Нейронов</span>
+ <span class="larm-0900">в</span>
+ <span class="larm-0900">мозге</span> </p></td><td style="text-align:left;" id="TBL-3-1-7" class="td11"> <p class="noindent"><span class="larm-0900">Выходов</span>
+ <span class="larm-0900">у</span>
+ <span class="larm-0900">нейрона</span> </p></td><td style="text-align:left;" id="TBL-3-1-8" class="td11"> <p class="noindent"><span class="larm-0900">Роль</span>
+ <span class="larm-0900">в</span>
+ <span class="larm-0900">вычислении</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-3-2-"><td style="text-align:left;" id="TBL-3-2-1" class="td11"> <p class="noindent"><span class="nt"><span class="larm-0900">GLUT</span></span> </p></td><td style="text-align:left;" id="TBL-3-2-2" class="td11"> <p class="noindent"><span class="larm-0900">глутамат</span> </p></td><td style="text-align:left;" id="TBL-3-2-3" class="td11"> <p class="noindent"><span class="larm-0900">адресная</span> </p></td><td style="text-align:left;" id="TBL-3-2-4" class="td11"> <p class="noindent"><span class="larm-0900">быстро</span>
+ <span class="larm-0900">и</span>
+ <span class="larm-0900">медленно</span> </p></td><td style="text-align:left;" id="TBL-3-2-5" class="td11"> <p class="noindent"><math display="inline"><mo class="MathClass-bin" stretchy="false">+</mo></math> </p></td><td style="text-align:left;" id="TBL-3-2-6" class="td11"> <p class="noindent"><math display="inline"> <mo class="MathClass-rel" stretchy="false">∼</mo><mn>8</mn> <mo class="MathClass-bin" stretchy="false">⋅</mo><mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>1</mn><mn>0</mn></mrow></msup 
+></math> </p></td><td style="text-align:left;" id="TBL-3-2-7" class="td11"> <p class="noindent"><math display="inline"> <mo class="MathClass-rel" stretchy="false">∼</mo><mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>4</mn></mrow></msup 
+></math> </p></td><td style="text-align:left;" id="TBL-3-2-8" class="td11"> <p class="noindent"><span class="larm-0900">главный</span>
+ <span class="larm-0900">положительный</span>
+ <span class="larm-0900">вес</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-3-3-"><td style="text-align:left;" id="TBL-3-3-1" class="td11"> <p class="noindent"><span class="nt"><span class="larm-0900">GABA</span></span> </p></td><td style="text-align:left;" id="TBL-3-3-2" class="td11"> <p class="noindent"><span class="larm-0900">GABA</span> </p></td><td style="text-align:left;" id="TBL-3-3-3" class="td11"> <p class="noindent"><span class="larm-0900">адресная</span> </p></td><td style="text-align:left;" id="TBL-3-3-4" class="td11"> <p class="noindent"><span class="larm-0900">быстро</span>
+ <span class="larm-0900">и</span>
+ <span class="larm-0900">медленно</span> </p></td><td style="text-align:left;" id="TBL-3-3-5" class="td11"> <p class="noindent"><math display="inline"><mo class="MathClass-bin" stretchy="false">−</mo></math></p></td><td style="text-align:left;" id="TBL-3-3-6" class="td11"> <p class="noindent"><math display="inline"> <mo class="MathClass-rel" stretchy="false">∼</mo><mn>3</mn> <mo class="MathClass-bin" stretchy="false">⋅</mo><mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>9</mn></mrow></msup 
+></math> </p></td><td style="text-align:left;" id="TBL-3-3-7" class="td11"> <p class="noindent"><math display="inline"><mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>3</mn></mrow></msup 
+></math><span class="larm-0900">–</span><math display="inline"><mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>4</mn></mrow></msup 
+></math> </p> </td><td style="text-align:left;" id="TBL-3-3-8" class="td11"> <p class="noindent"><span class="larm-0900">главный</span>
+ <span class="larm-0900">отрицательный</span>
+ <span class="larm-0900">вес</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-3-4-"><td style="text-align:left;" id="TBL-3-4-1" class="td11"> <p class="noindent"><span class="nt"><span class="larm-0900">GLYC</span></span> </p></td><td style="text-align:left;" id="TBL-3-4-2" class="td11"> <p class="noindent"><span class="larm-0900">глицин</span> </p></td><td style="text-align:left;" id="TBL-3-4-3" class="td11"> <p class="noindent"><span class="larm-0900">адресная</span> </p></td><td style="text-align:left;" id="TBL-3-4-4" class="td11"> <p class="noindent"><span class="larm-0900">быстро</span> </p></td><td style="text-align:left;" id="TBL-3-4-5" class="td11"> <p class="noindent"><math display="inline"><mo class="MathClass-bin" stretchy="false">−</mo></math></p></td><td style="text-align:left;" id="TBL-3-4-6" class="td11"> <p class="noindent"><math display="inline"><mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>6</mn></mrow></msup 
+></math><span class="larm-0900">–</span><math display="inline"><mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>7</mn></mrow></msup 
+></math> </p> </td><td style="text-align:left;" id="TBL-3-4-7" class="td11"> <p class="noindent"><math display="inline"><mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>2</mn> </mrow> </msup 
+> </math><span class="larm-0900">–</span><math display="inline"><mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>3</mn></mrow></msup 
+></math> </p> </td><td style="text-align:left;" id="TBL-3-4-8" class="td11"> <p class="noindent"><span class="larm-0900">отрицательный</span>
+ <span class="larm-0900">вес</span>
+ <span class="larm-0900">в</span>
+ <span class="larm-0900">спинном</span>
+ <span class="larm-0900">мозге</span>
+ <span class="larm-0900">и</span>
+ <span class="larm-0900">стволе;</span>
+ <span class="larm-0900">второй</span>
+ <span class="larm-0900">ключ</span>
+ <span class="larm-0900">для</span>
+ <span class="larm-0900">одного</span>
+ <span class="larm-0900">из</span>
+ <span class="larm-0900">рецепторов</span>
+ <span class="larm-0900">глутамата</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-3-5-"><td style="text-align:left;" id="TBL-3-5-1" class="td11"> <p class="noindent"><span class="nt"><span class="larm-0900">ACET</span></span> </p></td><td style="text-align:left;" id="TBL-3-5-2" class="td11"> <p class="noindent"><span class="larm-0900">ацетилхолин</span> </p></td><td style="text-align:left;" id="TBL-3-5-3" class="td11"> <p class="noindent"><span class="larm-0900">обе</span> </p></td><td style="text-align:left;" id="TBL-3-5-4" class="td11"> <p class="noindent"><span class="larm-0900">быстро</span>
+ <span class="larm-0900">и</span>
+ <span class="larm-0900">медленно</span> </p></td><td style="text-align:left;" id="TBL-3-5-5" class="td11"> <p class="noindent"><math display="inline"><mo class="MathClass-bin" stretchy="false">±</mo></math></p></td><td style="text-align:left;" id="TBL-3-5-6" class="td11"> <p class="noindent"><math display="inline"> <mo class="MathClass-rel" stretchy="false">∼</mo><mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>6</mn></mrow></msup 
+></math> </p></td><td style="text-align:left;" id="TBL-3-5-7" class="td11"> <p class="noindent"><span class="larm-0900">мышца:</span>
+ <math display="inline"><mn>1</mn><mn>0</mn></math><span class="larm-0900">–</span><math display="inline"><mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>3</mn></mrow></msup 
+></math><span class="larm-0900">;</span>
+ <span class="larm-0900">мозг:</span>
+ <math display="inline"> <mo class="MathClass-rel" stretchy="false">∼</mo><mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>5</mn></mrow></msup 
+></math> </p></td><td style="text-align:left;" id="TBL-3-5-8" class="td11"> <p class="noindent"><span class="larm-0900">выход</span>
+ <span class="larm-0900">на</span>
+ <span class="larm-0900">мышцу;</span>
+ <span class="larm-0900">в</span>
+ <span class="larm-0900">мозге</span>
+ <span class="larm-0900">—</span>
+ <span class="larm-0900">скорость</span>
+ <span class="larm-0900">обучения</span>
+ <span class="larm-0900">(гипотеза)</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-3-6-"><td style="text-align:left;" id="TBL-3-6-1" class="td11"> <p class="noindent"><span class="nt"><span class="larm-0900">DOPA</span></span> </p></td><td style="text-align:left;" id="TBL-3-6-2" class="td11"> <p class="noindent"><span class="larm-0900">дофамин</span> </p></td><td style="text-align:left;" id="TBL-3-6-3" class="td11"> <p class="noindent"><span class="larm-0900">широковещ.</span> </p></td><td style="text-align:left;" id="TBL-3-6-4" class="td11"> <p class="noindent"><span class="larm-0900">медленно</span> </p></td><td style="text-align:left;" id="TBL-3-6-5" class="td11"> <p class="noindent"><math display="inline"><mo class="MathClass-bin" stretchy="false">±</mo></math></p></td><td style="text-align:left;" id="TBL-3-6-6" class="td11"> <p class="noindent"><math display="inline"> <mo class="MathClass-rel" stretchy="false">∼</mo><mn>5</mn> <mo class="MathClass-bin" stretchy="false">⋅</mo><mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>5</mn></mrow></msup 
+></math> </p></td><td style="text-align:left;" id="TBL-3-6-7" class="td11"> <p class="noindent"><math display="inline"><mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>5</mn></mrow></msup 
+></math><span class="larm-0900">–</span><math display="inline"><mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>6</mn></mrow></msup 
+></math> </p> </td><td style="text-align:left;" id="TBL-3-6-8" class="td11"> <p class="noindent"><span class="larm-0900">ошибка</span>
+ <span class="larm-0900">предсказания</span>
+ <span class="larm-0900">награды</span>
+ <math display="inline"><mi>δ</mi></math> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-3-7-"><td style="text-align:left;" id="TBL-3-7-1" class="td11"> <p class="noindent"><span class="nt"><span class="larm-0900">SERO</span></span> </p></td><td style="text-align:left;" id="TBL-3-7-2" class="td11"> <p class="noindent"><span class="larm-0900">серотонин</span> </p></td><td style="text-align:left;" id="TBL-3-7-3" class="td11"> <p class="noindent"><span class="larm-0900">широковещ.</span> </p></td><td style="text-align:left;" id="TBL-3-7-4" class="td11"> <p class="noindent"><span class="larm-0900">медленно</span>
+ <span class="larm-0900">(один</span>
+ <span class="larm-0900">тип</span>
+ <span class="larm-0900">рецептора</span>
+ <span class="larm-0900">быстрый)</span> </p></td><td style="text-align:left;" id="TBL-3-7-5" class="td11"> <p class="noindent"><math display="inline"><mo class="MathClass-bin" stretchy="false">±</mo></math></p></td><td style="text-align:left;" id="TBL-3-7-6" class="td11"> <p class="noindent"><math display="inline"> <mo class="MathClass-rel" stretchy="false">∼</mo><mn>3</mn> <mo class="MathClass-bin" stretchy="false">⋅</mo><mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>5</mn></mrow></msup 
+></math> </p></td><td style="text-align:left;" id="TBL-3-7-7" class="td11"> <p class="noindent"><math display="inline"> <mo class="MathClass-rel" stretchy="false">∼</mo><mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>5</mn></mrow></msup 
+></math> </p></td><td style="text-align:left;" id="TBL-3-7-8" class="td11"> <p class="noindent"><span class="larm-0900">горизонт</span>
+ <span class="larm-0900">планирования</span>
+ <span class="larm-0900">(гипотеза)</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-3-8-"><td style="text-align:left;" id="TBL-3-8-1" class="td11"> <p class="noindent"><span class="nt"><span class="larm-0900">HIST</span></span> </p></td><td style="text-align:left;" id="TBL-3-8-2" class="td11"> <p class="noindent"><span class="larm-0900">гистамин</span> </p></td><td style="text-align:left;" id="TBL-3-8-3" class="td11"> <p class="noindent"><span class="larm-0900">широковещ.</span> </p></td><td style="text-align:left;" id="TBL-3-8-4" class="td11"> <p class="noindent"><span class="larm-0900">медленно</span> </p></td><td style="text-align:left;" id="TBL-3-8-5" class="td11"> <p class="noindent"><math display="inline"><mo class="MathClass-bin" stretchy="false">+</mo></math> </p></td><td style="text-align:left;" id="TBL-3-8-6" class="td11"> <p class="noindent"><math display="inline"> <mo class="MathClass-rel" stretchy="false">∼</mo><mn>6</mn> <mo class="MathClass-bin" stretchy="false">⋅</mo><mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>4</mn></mrow></msup 
+></math> </p></td><td style="text-align:left;" id="TBL-3-8-7" class="td11"> <p class="noindent"><span class="larm-0900">нет</span>
+ <span class="larm-0900">оценки</span> </p></td><td style="text-align:left;" id="TBL-3-8-8" class="td11"> <p class="noindent"><span class="larm-0900">глобальный</span>
+ <span class="larm-0900">сигнал</span>
+ <span class="larm-0900">«бодрствуй»</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-3-9-"><td style="text-align:left;" id="TBL-3-9-1" class="td11"> <p class="noindent"><span class="nt"><span class="larm-0900">NORA</span></span> </p></td><td style="text-align:left;" id="TBL-3-9-2" class="td11"> <p class="noindent"><span class="larm-0900">норадреналин</span> </p></td><td style="text-align:left;" id="TBL-3-9-3" class="td11"> <p class="noindent"><span class="larm-0900">широковещ.</span> </p></td><td style="text-align:left;" id="TBL-3-9-4" class="td11"> <p class="noindent"><span class="larm-0900">медленно</span> </p></td><td style="text-align:left;" id="TBL-3-9-5" class="td11"> <p class="noindent"><math display="inline"><mo class="MathClass-bin" stretchy="false">±</mo></math></p></td><td style="text-align:left;" id="TBL-3-9-6" class="td11"> <p class="noindent"><math display="inline"> <mo class="MathClass-rel" stretchy="false">∼</mo><mn>5</mn> <mo class="MathClass-bin" stretchy="false">⋅</mo><mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>4</mn></mrow></msup 
+></math> </p></td><td style="text-align:left;" id="TBL-3-9-7" class="td11"> <p class="noindent"><math display="inline"> <mo class="MathClass-rel" stretchy="false">∼</mo><mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>5</mn></mrow></msup 
+></math> </p></td><td style="text-align:left;" id="TBL-3-9-8" class="td11"> <p class="noindent"><span class="larm-0900">коэффициент</span>
+ <span class="larm-0900">усиления</span>
+ <span class="larm-0900">(гипотеза)</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-3-10-"><td style="text-align:left;" id="TBL-3-10-1" class="td11"> <p class="noindent"><span class="nt"><span class="larm-0900">ADRE</span></span> </p></td><td style="text-align:left;" id="TBL-3-10-2" class="td11"> <p class="noindent"><span class="larm-0900">адреналин</span> </p></td><td style="text-align:left;" id="TBL-3-10-3" class="td11"> <p class="noindent"><span class="larm-0900">широковещ.</span> </p></td><td style="text-align:left;" id="TBL-3-10-4" class="td11"> <p class="noindent"><span class="larm-0900">медленно</span> </p></td><td style="text-align:left;" id="TBL-3-10-5" class="td11"> <p class="noindent"><math display="inline"><mo class="MathClass-bin" stretchy="false">±</mo></math></p></td><td style="text-align:left;" id="TBL-3-10-6" class="td11"> <p class="noindent"><math display="inline"> <mo class="MathClass-rel" stretchy="false">∼</mo><mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>4</mn></mrow></msup 
+></math> </p></td><td style="text-align:left;" id="TBL-3-10-7" class="td11"> <p class="noindent"><span class="larm-0900">нет</span>
+ <span class="larm-0900">оценки</span> </p></td><td style="text-align:left;" id="TBL-3-10-8" class="td11"> <p class="noindent"><span class="larm-0900">немного</span>
+ <span class="larm-0900">нейронов;</span>
+ <span class="larm-0900">роль</span>
+ <span class="larm-0900">в</span>
+ <span class="larm-0900">мозге</span>
+ <span class="larm-0900">неясна</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-3-11-"><td style="text-align:left;" id="TBL-3-11-1" class="td11"> <p class="noindent"><span class="nt"><span class="larm-0900">ASPA</span></span> </p></td><td style="text-align:left;" id="TBL-3-11-2" class="td11"> <p class="noindent"><span class="larm-0900">аспартат</span> </p></td><td style="text-align:left;" id="TBL-3-11-3" class="td11"> <p class="noindent"><span class="larm-0900">адресная</span> </p></td><td style="text-align:left;" id="TBL-3-11-4" class="td11"> <p class="noindent"><span class="larm-0900">быстро</span> </p></td><td style="text-align:left;" id="TBL-3-11-5" class="td11"> <p class="noindent"><math display="inline"><mo class="MathClass-bin" stretchy="false">+</mo></math> </p></td><td style="text-align:left;" id="TBL-3-11-6" class="td11"> <p class="noindent"><span class="larm-0900">нет</span>
+ <span class="larm-0900">оценки</span> </p></td><td style="text-align:left;" id="TBL-3-11-7" class="td11"> <p class="noindent"><span class="larm-0900">нет</span>
+ <span class="larm-0900">оценки</span> </p></td><td style="text-align:left;" id="TBL-3-11-8" class="td11"> <p class="noindent"><span class="larm-0900">слабый</span>
+ <span class="larm-0900">положительный</span>
+ <span class="larm-0900">вес;</span>
+ <span class="larm-0900">роль</span>
+ <span class="larm-0900">спорна</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-3-12-"><td style="text-align:left;" id="TBL-3-12-1" class="td11"> </td></tr></table> </div>
+<figcaption class="caption"><span class="id">Таблица 1.1: </span><span class="content">Типы нейронов, по убыванию числа нейронов в мозге. <span class="lati-1095">Шина</span>:
+адресная — медиатор выбрасывается в узкую щель к определённому получателю;
+широковещательная — от малой группы нейронов-источников на большие
+области (раздел <a href="#x4-70001.3">1.3</a>). <span class="lati-1095">Скорость</span>: быстро — через ионотропные рецепторы,
+миллисекунды; медленно — через метаботропные, сотни миллисекунд и
+дольше. <span class="lati-1095">Знак </span>— обычный; окончательно его задаёт получатель (раздел <a href="#x4-120001.8">1.8</a>), и
+<math display="inline"><mo class="MathClass-bin" stretchy="false">±</mo></math>
+означает, что встречаются оба знака. <span class="lati-1095">Нейронов в мозге </span>— сколько нейронов
+этого типа во всём мозге человека, по порядку величины; всего нейронов около
+<math display="inline"><mn>8</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>6</mn> <mo class="MathClass-bin" stretchy="false">⋅</mo> <mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>1</mn><mn>0</mn></mrow></msup 
+></math> <span class="cite">[<a href="refs.html#XAzevedo2009">1</a>]</span>.
+Почти все <span class="nt">GLUT</span>-нейроны — около <math display="inline"><mn>7</mn> <mo class="MathClass-bin" stretchy="false">⋅</mo> <mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>1</mn><mn>0</mn></mrow></msup 
+></math>
+— это мелкие входные нейроны мозжечка; числа <span class="nt">GLUT</span> и <span class="nt">GABA</span> получены из этого
+подсчёта и доли <span class="nt">GABA</span>-нейронов в коре <span class="cite">[<a href="refs.html#XHendry1987">231</a>]</span>. Из малочисленных типов прямо подсчитаны
+только <span class="nt">HIST</span> <span class="cite">[<a href="refs.html#XAiraksinen1991">238</a>]</span> и главная из двух групп <span class="nt">DOPA</span>-нейронов <span class="cite">[<a href="refs.html#XPakkenberg1991">235</a>]</span>, так что для <span class="nt">DOPA</span>
+это нижняя граница; для <span class="nt">SERO</span> — сумма двух частичных подсчётов <span class="cite">[<a href="refs.html#XBaker1990">236</a>, <a href="refs.html#XBaker1991">237</a>]</span>. Числа
+для <span class="nt">NORA</span>, <span class="nt">GLYC</span>, <span class="nt">ACET</span> и <span class="nt">ADRE</span> — грубые оценки по порядку величины, без прямого
+подсчёта. <span class="lati-1095">Выходов у нейрона </span>— сколько у одного нейрона синаптических окончаний, то есть
+мест выброса медиатора на ветвях выходного провода (рис. <a href="#x4-50011">1.1</a>), по порядку величины.
+Для широковещательных типов окончания прямо не считали: у <span class="nt">DOPA</span> число выведено
+из того, какую долю своей мишени покрывает ветвление одного выходного провода <span class="cite">[<a href="refs.html#XMatsuda2009">234</a>]</span>,
+у остальных оценки ещё грубее. У <span class="nt">ACET</span> два случая: нейрон, управляющий мышцей, и
+широковещательный нейрон в мозге.</span></figcaption>
+ </figure>
+ </div>
+ <div class="table">
+<p class="indent"> <a id="x4-60032"></a></p><figure class="float">
+<img src="img/full2x.svg" loading="lazy" alt="[Picture]" />
+<figcaption class="caption"><span class="id">Рис. 1.2: </span><span class="content">Доли типов нейронов в мозге по оценкам таблицы <a href="#x4-60021">1.1</a>. Круг почти
+целиком занят <span class="nt">GLUT</span>; <span class="nt">GABA</span> — узкий сектор, а все остальные типы вместе —
+волосок на границе. Справа этот волосок в увеличении, по логарифмической
+шкале числа нейронов; для <span class="nt">GLYC</span> столбик доходит до середины диапазона
+<math display="inline"><mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>6</mn></mrow></msup 
+></math>–<math display="inline"><mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>7</mn></mrow></msup 
+></math>,
+отрезок показывает весь диапазон. У <span class="nt">ASPA</span> оценки нет, и на рисунке его нет.</span></figcaption>
+ </figure>
+ </div>
+<p class="indent"> Насколько неравны эти кучки, видно на рис. <a href="#x4-60032">1.2</a>: из каждой тысячи нейронов
+<math display="inline"><mn>9</mn><mn>6</mn><mn>4</mn></math> —
+<span class="nt">GLUT</span>, <math display="inline"><mn>3</mn><mn>6</mn></math>
+— <span class="nt">GABA</span>, а на все остальные типы вместе приходится около шести нейронов на сто
+тысяч.
+</p><p class="indent"> У GABA название и так состоит из четырёх букв. Вещества, которые почти никогда
+не бывают главным медиатором, — нейропептиды, газы, липиды, пурины, — своего
+кода не получают; о них — в приложении <a href="a.html#x26-220000A">22.8</a>. Слово «почти» в утверждении <a href="#x4-6001r1">1.1</a>
+важно. Многие нейроны выбрасывают вместе с главным медиатором вспомогательные
+вещества <span class="cite">[<a href="refs.html#XYao2023">125</a>]</span>. Некоторые выбрасывают и второй быстрый медиатор, даже противоположного
+знака: часть <span class="nt">DOPA</span>-нейронов выбрасывает ещё и GABA <span class="cite">[<a href="refs.html#XTritsch2012">146</a>]</span>. А у некоторых нейронов
+разные медиаторы выходят из разных веток одного и того же выхода <span class="cite">[<a href="refs.html#XZhang2015">147</a>]</span>. Всё это
+измерено, так что «один нейрон — один медиатор» — правило с исключениями, а не
+закон. Но как первое деление оно выдерживает проверку: в клеточном атласе мозга
+мыши, где нейроны разложены по работающим в них генам на пять с лишним тысяч
+групп, нейроны по-прежнему делятся на крупные классы прежде всего по главному
+медиатору <span class="cite">[<a href="refs.html#XYao2023">125</a>]</span>.
+</p><p class="indent"> У этого правила есть следствие, которое сразу отличает мозг от искусственной
+нейронной сети. В искусственной сети один и тот же нейрон может иметь
+положительный вес к одному получателю и отрицательный к другому: веса
+<math display="inline"><msub><mrow><mi>w</mi></mrow><mrow><mi>i</mi><mi>j</mi></mrow></msub 
+></math> — просто числа
+в матрице. В мозге знак действия в основном определяется медиатором, а медиатор у нейрона один. Значит,
+если нейрон <math display="inline"><mi>j</mi></math>
+возбуждает одного получателя, он возбуждает и всех остальных. Весь <span class="lati-1095">столбец </span>матрицы весов, выходящий
+из нейрона <math display="inline"><mi>j</mi></math>,
+одного знака:
+</p><div class="keyformula"><table class="equation"><tr><td>
+<math display="block" class="equation">
+ <mstyle id="x4-6004r1" class="label"></mstyle><mi class="qopname">sign</mi><mo> ⁡ </mo><msub><mrow><mi>w</mi></mrow><mrow><mi>i</mi><mi>j</mi></mrow></msub 
+><mspace width="0.28em" class="thickpace"/> <mo class="MathClass-rel" stretchy="false">=</mo> <mspace width="0.28em" class="thickpace"/><msub><mrow><mi>s</mi></mrow><mrow><mi>j</mi></mrow></msub 
+><mspace width="1em" class="quad"/><mstyle class="text"><mtext>для всех получателей </mtext></mstyle><mi>i</mi><mo class="MathClass-punc" stretchy="false">,</mo><mspace width="2em" class="qquad"/><msub><mrow><mi>s</mi></mrow><mrow><mi>j</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">∈</mo><mo class="MathClass-open" stretchy="false">{</mo><mo class="MathClass-bin" stretchy="false">+</mo><mn>1</mn><mo class="MathClass-punc" stretchy="false">,</mo><mo class="MathClass-bin" stretchy="false">−</mo><mn>1</mn><mo class="MathClass-close" stretchy="false">}</mo><mo class="MathClass-punc" stretchy="false">.</mo>
+</math></td><td class="eq-no">(1.1)</td></tr></table>
+</div><p class="noindent"> Нейроны делятся на возбуждающие (<math display="inline"><msub><mrow><mi>s</mi></mrow><mrow><mi>j</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mo class="MathClass-bin" stretchy="false">+</mo><mn>1</mn></math>)
+и тормозящие (<math display="inline"><msub><mrow><mi>s</mi></mrow><mrow><mi>j</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mo class="MathClass-bin" stretchy="false">−</mo><mn>1</mn></math>),
+и это свойство самого нейрона, а не связи. Если сети нужна отрицательная связь от
+возбуждающего нейрона, её приходится делать через посредника: возбуждающий нейрон
+возбуждает тормозящий, а тот тормозит цель: отрицательный вес с задержкой на одно
+звено.
+</p><p class="indent"> Медиаторов известно больше сотни, но почти вся работа мозга держится на полудюжине, и
+они делятся на два совершенно разных класса.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">1.3 </span> <a id="x4-70001.3"></a>Две шины: адресная и широковещательная</h3>
+<p class="noindent">В компьютерных сетях есть два способа доставить сообщение. Первый — <span class="lati-1095">адресный</span>, unicast: пакет
+идёт от одного отправителя к определённому получателю, быстро, и больше его никто не видит.
+Второй — <span class="lati-1095">широковещательный</span>, broadcast: отправитель передаёт одно сообщение сразу всем
+узлам сети. Нейроны пользуются обоими способами, и медиаторы делятся ровно по этому
+признаку (рис. <a href="#x4-70013">1.3</a>).
+</p>
+ <figure class="figure"> 
+<a id="x4-70013"></a>
+<p class="noindent"><img src="img/full3x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<figcaption class="caption"><span class="id">Рис. 1.3: </span><span class="content">Два способа передачи. Слева — адресная шина, похожая на почту с
+адресом на конверте; красным выделен один нейрон и два его получателя. Справа —
+широковещательная, как радиостанция: небольшая группа нейронов-источников, и одно и
+то же сообщение получают все.</span></figcaption>
+ </figure>
+<p class="indent"> <span class="lati-1095">Адресная шина </span>— это глутамат и GABA. Их выбрасывает подавляющее большинство
+нейронов. Каждый выход ведёт к определённым клеткам, медиатор действует только в узкой
+щели контакта, и действует быстро: за миллисекунду открываются ионные каналы получателя,
+за несколько миллисекунд всё кончается. Это шина <span class="lati-1095">данных</span>: по ней передаётся то, что мозг
+вычисляет.
+</p><p class="indent"> <span class="lati-1095">Широковещательная шина </span>— дофамин, серотонин, норадреналин и отчасти ацетилхолин. Их
+выбрасывают крошечные группы нейронов, но выход каждого из них ветвится невероятно
+широко. Медиатор часто выбрасывается не в узкую щель, а в межклеточное пространство, где он
+расплывается и действует на всех, кто рядом. Действует медленно: не открывает каналы
+напрямую, а запускает внутри получателя цепочку химических реакций. По ней идут не данные,
+а <span class="lati-1095">управляющие параметры</span>, общие для больших участков сети, которые меняют режим
+её работы: коэффициент усиления, скорость обучения, сигнал «это было хорошо».
+Поэтому такие медиаторы называют <span class="lati-1095">модуляторами</span>. Долго считалось, что каждый такой
+канал — одно число на весь мозг. Современные измерения уточнили картину: канал —
+не один провод, а небольшой жгут параллельных линий. Нейроны-источники одного
+медиатора делятся на подсистемы, у которых свои получатели и своё сообщение, а
+сколько медиатора выбросить на месте, подстраивают ещё и местные сигналы <span class="cite">[<a href="refs.html#XRen2018">161</a>, <a href="refs.html#XPoe2020">155</a>]</span>.
+Число таких линий — единицы или десятки, а не миллиарды, так что канал остаётся
+широковещательным.
+</p><p class="indent"> Если вам нужна одна картинка из этой главы — вот она. Мозг — огромная сеть с адресной
+передачей данных, над которой висит несколько широковещательных каналов с управляющими
+сигналами. Программист узнает знакомое устройство: вычисление плюс небольшой
+набор управляющих переменных, каждая из которых общая для большого участка
+сети.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">1.4 </span> <a id="x4-80001.4"></a><span class="nt">GLUT</span>: положительный вес</h3>
+<p class="noindent">Глутамат — главный возбуждающий медиатор мозга. Когда выход нейрона выбрасывает
+глутамат, у получателя открываются каналы, через которые внутрь входит натрий,
+напряжение на мембране получателя растёт, и его шанс выдать собственный
+импульс увеличивается. На языке рис. <a href="#x4-50011">1.1</a> это вход с <span class="lati-1095">положительным </span>весом,
+<math display="inline"><msub><mrow><mi>w</mi></mrow><mrow><mi>i</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">&#x003E;</mo> <mn>0</mn></math>.
+</p><p class="indent"> Кто выдаёт глутамат? Почти все, кто передаёт данные на большие расстояния: от трёх
+четвертей до четырёх пятых нейронов коры и большинство нейронов, связывающих разные
+области мозга. Сеть мозга — это в первую очередь сеть глутаматных связей.
+</p><p class="indent"> Одна инженерная деталь. После выброса концентрация глутамата в щели взлетает в тысячи
+раз, примерно до миллимоля, и спадает с постоянной времени около миллисекунды <span class="cite">[<a href="refs.html#XClements1992">53</a>]</span>: глутамат
+расплывается из щели, а специальные белки-насосы откачивают его обратно в клетки. Зачем?
+Затем же, зачем в линии связи после каждого символа сигнал возвращают к нулю. Если
+медиатор не убрать, следующий импульс придёт на «занятую» линию, и импульсы с интервалом
+в несколько миллисекунд сольются.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">1.5 </span> <a id="x4-90001.5"></a><span class="nt">GABA</span>: отрицательный вес</h3>
+<p class="noindent">Представьте сеть, в которой все веса положительны. Если в среднем каждый импульс порождает
+больше одного следующего импульса, активность растёт экспоненциально и через несколько
+шагов охватывает всю сеть. Электронщик узнает петлю положительной обратной связи с
+усилением больше единицы: схема уходит в насыщение. Чтобы этого не случилось, нужны
+отрицательные веса. Главный их источник — гамма-аминомасляная кислота, сокращённо
+GABA.
+</p><p class="indent"> GABA открывает у получателя каналы, пропускающие ионы хлора. Равновесный потенциал хлора
+лежит около потенциала покоя или немного ниже, поэтому открытые хлорные каналы удерживают
+мембрану около покоя и не дают поднять напряжение до порога. Это вход с <span class="lati-1095">отрицательным</span>
+весом, <math display="inline"><msub><mrow><mi>w</mi></mrow><mrow><mi>i</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">&#x003C;</mo> <mn>0</mn></math>.
+GABA-нейроны — от пятой части до четверти нейронов коры <span class="cite">[<a href="refs.html#XHendry1987">231</a>]</span>. Их выходы короткие, и
+тормозят они своих ближайших соседей.
+</p><p class="indent"> Торможение в мозге делает гораздо больше, чем просто вычитание. Оно работает как
+отрицательная обратная связь, которая держит всю сеть в рабочей точке. Считается, что в
+нормально работающей коре возбуждающий и тормозящий токи, приходящие на нейрон, почти
+точно уравновешивают друг друга: такой режим предсказан теорией <span class="cite">[<a href="refs.html#XvanVreeswijk1996">6</a>]</span> и виден в измерениях
+токов в живой коре <span class="cite">[<a href="refs.html#XHaider2006">72</a>]</span>, и нейрон всё время сидит около порога. Схема, стабилизированная
+сильной отрицательной обратной связью около неустойчивой точки, быстро и чутко реагирует на
+малые сигналы — старый инженерный приём.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">1.6 </span> <a id="x4-100001.6"></a><span class="nt">DOPA</span>: сигнал ошибки</h3>
+<p class="noindent">Первый широковещательный канал — дофамин. Дофаминовых нейронов у человека порядка
+полумиллиона, примерно один на сто семьдесят тысяч; столько подсчитано в главной из двух их
+групп <span class="cite">[<a href="refs.html#XPakkenberg1991">235</a>]</span>, так что это нижняя граница. Их выходы расходятся к тем областям, которые
+выбирают действия.
+</p><p class="indent"> Что передаёт этот канал? Ответ дают опыты, в которых регистрируют импульсы
+дофаминовых нейронов у животного, получающего награду <span class="cite">[<a href="refs.html#XSchultz1997">2</a>]</span>. Животному время от времени
+неожиданно дают каплю сока, и дофаминовые нейроны отвечают на неё короткой пачкой
+импульсов. Потом перед соком начинают зажигать лампочку, всегда за секунду до сока. Когда
+животное выучивает эту связь, нейроны начинают отвечать пачкой на <span class="lati-1095">лампочку</span>, а на сам сок,
+пришедший точно в срок, не отвечают совсем. А если после лампочки сок не дают, то в
+момент, когда он должен был прийти, нейроны <span class="lati-1095">замолкают</span>, и их частота падает ниже
+обычной.
+</p><p class="indent"> Правило, которое объясняет все три случая (рис. <a href="#x4-100014">1.4</a>): нейроны сообщают не о том, насколько
+хорошо, а о том, насколько <span class="lati-1095">лучше или хуже, чем ожидалось</span>.
+</p>
+ <figure class="figure"> 
+<a id="x4-100014"></a>
+<p class="noindent"><img src="img/full4x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<figcaption class="caption"><span class="id">Рис. 1.4: </span><span class="content">Частота импульсов <span class="nt">DOPA</span>-нейронов в трёх опытах (схематично, по <span class="cite">[<a href="refs.html#XSchultz1997">2</a>]</span>). Пунктир
+— ровная фоновая частота. Лампочка — сигнал, капля — сок, перечёркнутая капля — сок,
+который обещали, но не дали. Отклик — ошибка предсказания (<a href="#x4-10002r2">1.2</a>).</span></figcaption>
+ </figure>
+<p class="indent"> Программист, знакомый с обучением с подкреплением <span class="cite">[<a href="refs.html#XSuttonBarto2018">3</a>]</span>, узнает эту
+величину сразу. Агент, который учится выбирать действия, хранит оценку
+<math display="inline"><mi>V</mi> <mo class="MathClass-open" stretchy="false">(</mo><mi>s</mi><mo class="MathClass-close" stretchy="false">)</mo></math> — сколько награды он
+ожидает, находясь в состоянии <math display="inline"><mi>s</mi></math>.
+После каждого шага он сравнивает ожидание с тем, что получил:
+</p><div class="keyformula"><table class="equation"><tr><td>
+<math display="block" class="equation">
+ <mstyle id="x4-10002r2" class="label"></mstyle><msub><mrow><mi>δ</mi></mrow><mrow><mi>t</mi></mrow></msub 
+><mspace width="0.28em" class="thickpace"/> <mo class="MathClass-rel" stretchy="false">=</mo> <mspace width="0.28em" class="thickpace"/><msub><mrow><mi>r</mi></mrow><mrow><mi>t</mi></mrow></msub 
+><mspace width="0.28em" class="thickpace"/> <mo class="MathClass-bin" stretchy="false">+</mo> <mspace width="0.28em" class="thickpace"/><mi>γ</mi><mspace width="0.17em" class="thinspace"/><mi>V</mi> <mo class="MathClass-open" stretchy="false">(</mo><msub><mrow><mi>s</mi></mrow><mrow><mi>t</mi><mo class="MathClass-bin" stretchy="false">+</mo><mn>1</mn></mrow></msub 
+><mo class="MathClass-close" stretchy="false">)</mo><mspace width="0.28em" class="thickpace"/> <mo class="MathClass-bin" stretchy="false">−</mo><mspace width="0.28em" class="thickpace"/><mi>V</mi> <mo class="MathClass-open" stretchy="false">(</mo><msub><mrow><mi>s</mi></mrow><mrow><mi>t</mi></mrow></msub 
+><mo class="MathClass-close" stretchy="false">)</mo><mo class="MathClass-punc" stretchy="false">,</mo>
+</math></td><td class="eq-no">(1.2)</td></tr></table>
+</div><p class="noindent"> и поправляет оценку: <math display="inline"><mi>V</mi> <mo class="MathClass-open" stretchy="false">(</mo><msub><mrow><mi>s</mi></mrow><mrow><mi>t</mi></mrow></msub 
+><mo class="MathClass-close" stretchy="false">)</mo> <mo class="MathClass-rel" stretchy="false">←</mo> <mi>V</mi> <mo class="MathClass-open" stretchy="false">(</mo><msub><mrow><mi>s</mi></mrow><mrow><mi>t</mi></mrow></msub 
+><mo class="MathClass-close" stretchy="false">)</mo> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>α</mi><mspace width="0.17em" class="thinspace"/><msub><mrow><mi>δ</mi></mrow><mrow><mi>t</mi></mrow></msub 
+></math>.
+Здесь <math display="inline"><msub><mrow><mi>r</mi></mrow><mrow><mi>t</mi></mrow></msub 
+></math> — полученная
+награда, <math display="inline"><mi>γ</mi> <mo class="MathClass-rel" stretchy="false">&#x003C;</mo> <mn>1</mn></math>
+— коэффициент дисконтирования (насколько будущая награда дешевле немедленной),
+<math display="inline"><mi>α</mi></math> — скорость
+обучения. Величина <math display="inline"><msub><mrow><mi>δ</mi></mrow><mrow><mi>t</mi></mrow></msub 
+></math>
+называется <span class="lati-1095">ошибкой временных разностей</span>.
+</p><p class="indent"> Она ведёт себя в точности как дофаминовые нейроны. Неожиданный сок:
+<math display="inline"><mi>V</mi> </math> ещё
+ноль, <math display="inline"><mi>r</mi> <mo class="MathClass-rel" stretchy="false">&#x003E;</mo> <mn>0</mn></math>,
+<math display="inline"><mi>δ</mi> <mo class="MathClass-rel" stretchy="false">&#x003E;</mo> <mn>0</mn></math>. Выученный сок: награду
+предсказала лампочка, <math display="inline"><mi>V</mi> <mo class="MathClass-open" stretchy="false">(</mo><msub><mrow><mi>s</mi></mrow><mrow><mi>t</mi></mrow></msub 
+><mo class="MathClass-close" stretchy="false">)</mo></math>
+перед соком уже равна <math display="inline"><mi>r</mi></math>,
+и <math display="inline"><mi>δ</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn></math>. Сок не
+пришёл: <math display="inline"><mi>V</mi> <mo class="MathClass-open" stretchy="false">(</mo><msub><mrow><mi>s</mi></mrow><mrow><mi>t</mi></mrow></msub 
+><mo class="MathClass-close" stretchy="false">)</mo> <mo class="MathClass-rel" stretchy="false">=</mo> <mi>r</mi></math>, а
+<math display="inline"><msub><mrow><mi>r</mi></mrow><mrow><mi>t</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn></math>,
+<math display="inline"><mi>δ</mi> <mo class="MathClass-rel" stretchy="false">&#x003C;</mo> <mn>0</mn></math>. А всплеск
+переезжает на лампочку, потому что именно в момент лампочки ожидание скачком выросло:
+<math display="inline"><mi>γ</mi><mi>V</mi> <mo class="MathClass-open" stretchy="false">(</mo><msub><mrow><mi>s</mi></mrow><mrow><mi>t</mi><mo class="MathClass-bin" stretchy="false">+</mo><mn>1</mn></mrow></msub 
+><mo class="MathClass-close" stretchy="false">)</mo> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>V</mi> <mo class="MathClass-open" stretchy="false">(</mo><msub><mrow><mi>s</mi></mrow><mrow><mi>t</mi></mrow></msub 
+><mo class="MathClass-close" stretchy="false">)</mo> <mo class="MathClass-rel" stretchy="false">&#x003E;</mo> <mn>0</mn></math>. Шаги
+<math display="inline"><mi>t</mi><mo class="MathClass-punc" stretchy="false">,</mo><mi>t</mi> <mo class="MathClass-bin" stretchy="false">+</mo> <mn>1</mn><mo class="MathClass-punc" stretchy="false">,</mo><mi>…</mi><mspace width="0.17em" class="thinspace"/></math> здесь
+— условность алгоритма: в организме часов нет, и ту же величину в непрерывном времени мы
+получим в главе <a href="06.html#x9-560006">6</a>.
+</p><p class="indent"> Значит, дофамин — это широковещательная рассылка скалярного сигнала ошибки
+<math display="inline"><mi>δ</mi></math> всем,
+кто должен по нему учиться. В первом приближении — один провод на весь мозг и одно число в
+каждый момент времени; насколько этот провод на самом деле жгут, разбирается в
+главе <a href="07.html#x10-670007">7</a>.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">1.7 </span> <a id="x4-110001.7"></a>Остальные широковещательные каналы</h3>
+<p class="noindent">Для остальных модуляторов есть лишь рабочие гипотезы, которые переводят их роли на тот же
+язык глобальных параметров <span class="cite">[<a href="refs.html#XDoya2002">4</a>]</span>. Держите их именно как гипотезы.
+</p><p class="indent"> <span class="nt"><span class="lati-1095">NORA</span></span><span class="lati-1095">, норадреналин: коэффициент усиления. </span>Норадреналиновых нейронов ещё меньше, чем
+дофаминовых, по грубой оценке несколько десятков тысяч, а их выходы расходятся практически
+по всему мозгу. Они резко активируются, когда происходит что-то неожиданное или важное.
+Норадреналин меняет крутизну передаточной характеристики нейронов-получателей: слабые
+входы становятся слабее, сильные — сильнее. Измеряется это так: фоновые импульсы
+получателя подавляются сильнее, чем ответ на вход, и отношение сигнала к шуму
+растёт <span class="cite">[<a href="refs.html#XFoote1975NE">276</a>]</span>. В простой модели это описывают одним числом: если нейрон отвечает частотой
+<math display="inline"><mi>f</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mi>F</mi><mrow><mo class="MathClass-open" fence="true" mathsize="1.19em">(</mo><mrow><mi>g</mi> <mo class="MathClass-bin" stretchy="false">⋅</mo> <mi>u</mi></mrow><mo class="MathClass-close" fence="true" mathsize="1.19em">)</mo></mrow></math> на входной ток
+<math display="inline"><mi>u</mi></math>, то норадреналин увеличивает
+коэффициент <math display="inline"><mi>g</mi></math> <span class="cite">[<a href="refs.html#XAstonJones2005">7</a>]</span> (подробнее
+— в главе <a href="08.html#x11-770008">8</a>). Сеть с большим <math display="inline"><mi>g</mi></math>
+работает «контрастнее» и быстрее принимает решения; с маленьким — «размыто» и больше
+перебирает варианты, как агент обучения с подкреплением в режиме поиска.
+</p><p class="indent"> <span class="nt"><span class="lati-1095">ACET</span></span><span class="lati-1095">, ацетилхолин: скорость обучения. </span>Ацетилхолин управляет тем, насколько
+сеть слушает текущий вход, а насколько — собственные сохранённые данные. При
+высоком уровне ацетилхолина входы с органов чувств усиливаются, а внутренние,
+«вспоминающие» связи ослабляются, и одновременно облегчается изменение весов <span class="cite">[<a href="refs.html#XHasselmo2006">54</a>]</span>.
+Грубо говоря, это переключатель «запись/чтение» и вместе с ним — скорость обучения
+<math display="inline"><mi>α</mi></math>.
+</p><p class="indent"> <span class="nt"><span class="lati-1095">SERO</span></span><span class="lati-1095">, серотонин: горизонт планирования. </span>Что передаёт серотонин, понятно
+хуже всего. Одна из гипотез связывает его с коэффициентом дисконтирования
+<math display="inline"><mi>γ</mi></math>
+из (<a href="#x4-10002r2">1.2</a>): высокий уровень серотонина соответствует готовности подождать большую награду, а
+не хватать маленькую сейчас. Серотониновые нейроны работают ровно и медленно,
+несколько импульсов в секунду в бодрствовании, и почти замолкают в одной из фаз
+сна <span class="cite">[<a href="refs.html#XJacobsAzmitia1992">55</a>]</span>.
+</p><p class="indent"> Все шесть медиаторов собраны в таблице <a href="#x4-110012">1.2</a>.
+</p>
+ <div class="table">
+<p class="indent"> <a id="x4-110012"></a></p><figure class="float">
+<div class="tabular">
+ <table id="TBL-4" class="tabular"><colgroup id="TBL-4-1g"><col id="TBL-4-1" /><col id="TBL-4-2" /><col id="TBL-4-3" /><col id="TBL-4-4" /></colgroup><tr style="vertical-align:baseline;" id="TBL-4-1-"><td style="text-align:left;" id="TBL-4-1-1" class="td11"> <p class="noindent"><span class="larm-1000">Тип</span>
+ <span class="larm-1000">нейрона</span> </p></td><td style="text-align:left;" id="TBL-4-1-2" class="td11"> <p class="noindent"><span class="larm-1000">Доля</span>
+ <span class="larm-1000">нейронов</span> </p></td><td style="text-align:left;" id="TBL-4-1-3" class="td11"> <p class="noindent"><span class="larm-1000">Шина</span> </p></td><td style="text-align:left;" id="TBL-4-1-4" class="td11"> <p class="noindent"><span class="larm-1000">Роль</span>
+ <span class="larm-1000">в</span>
+ <span class="larm-1000">вычислении</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-4-2-"><td style="text-align:left;" id="TBL-4-2-1" class="td11"> <p class="noindent"><span class="nt"><span class="larm-1000">GLUT</span></span>
+ <span class="larm-1000">(глутамат)</span> </p></td><td style="text-align:left;" id="TBL-4-2-2" class="td11"> <p class="noindent"><span class="larm-1000">большинство</span> </p></td><td style="text-align:left;" id="TBL-4-2-3" class="td11"> <p class="noindent"><span class="larm-1000">адресная</span> </p></td><td style="text-align:left;" id="TBL-4-2-4" class="td11"> <p class="noindent"><span class="larm-1000">положительный</span>
+ <span class="larm-1000">вес,</span>
+ <math display="inline"><mi>w</mi> <mo class="MathClass-rel" stretchy="false">&#x003E;</mo> <mn>0</mn></math> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-4-3-"><td style="text-align:left;" id="TBL-4-3-1" class="td11"> <p class="noindent"><span class="nt"><span class="larm-1000">GABA</span></span>
+ <span class="larm-1000">(GABA)</span> </p></td><td style="text-align:left;" id="TBL-4-3-2" class="td11"> <p class="noindent"><span class="larm-1000">20–25%</span>
+ <span class="larm-1000">в</span>
+ <span class="larm-1000">коре</span> </p></td><td style="text-align:left;" id="TBL-4-3-3" class="td11"> <p class="noindent"><span class="larm-1000">адресная</span> </p></td><td style="text-align:left;" id="TBL-4-3-4" class="td11"> <p class="noindent"><span class="larm-1000">отрицательный</span>
+ <span class="larm-1000">вес,</span>
+ <math display="inline"><mi>w</mi> <mo class="MathClass-rel" stretchy="false">&#x003C;</mo> <mn>0</mn></math><span class="larm-1000">;</span>
+ <span class="larm-1000">стабилизация</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-4-4-"><td style="text-align:left;" id="TBL-4-4-1" class="td11"> <p class="noindent"><span class="nt"><span class="larm-1000">DOPA</span></span>
+ <span class="larm-1000">(дофамин)</span> </p></td><td style="text-align:left;" id="TBL-4-4-2" class="td11"> <p class="noindent"><math display="inline"> <mo class="MathClass-rel" stretchy="false">∼</mo> <mn>6</mn> <mo class="MathClass-bin" stretchy="false">⋅</mo> <mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mo class="MathClass-bin" stretchy="false">−</mo><mn>6</mn></mrow></msup 
+></math> </p></td><td style="text-align:left;" id="TBL-4-4-3" class="td11"> <p class="noindent"><span class="larm-1000">широковещ.</span> </p></td><td style="text-align:left;" id="TBL-4-4-4" class="td11"> <p class="noindent"><span class="larm-1000">ошибка</span>
+ <span class="larm-1000">предсказания</span>
+ <math display="inline"><mi>δ</mi></math> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-4-5-"><td style="text-align:left;" id="TBL-4-5-1" class="td11"> <p class="noindent"><span class="nt"><span class="larm-1000">NORA</span></span>
+ <span class="larm-1000">(норадреналин)</span> </p></td><td style="text-align:left;" id="TBL-4-5-2" class="td11"> <p class="noindent"><math display="inline"> <mo class="MathClass-rel" stretchy="false">∼</mo> <mn>6</mn> <mo class="MathClass-bin" stretchy="false">⋅</mo> <mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mo class="MathClass-bin" stretchy="false">−</mo><mn>7</mn></mrow></msup 
+></math> </p></td><td style="text-align:left;" id="TBL-4-5-3" class="td11"> <p class="noindent"><span class="larm-1000">широковещ.</span> </p></td><td style="text-align:left;" id="TBL-4-5-4" class="td11"> <p class="noindent"><span class="larm-1000">коэффициент</span>
+ <span class="larm-1000">усиления</span>
+ <math display="inline"><mi>g</mi></math>
+ <span class="larm-1000">(гипотеза)</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-4-6-"><td style="text-align:left;" id="TBL-4-6-1" class="td11"> <p class="noindent"><span class="nt"><span class="larm-1000">ACET</span></span>
+ <span class="larm-1000">(ацетилхолин)</span> </p></td><td style="text-align:left;" id="TBL-4-6-2" class="td11"> <p class="noindent"><span class="larm-1000">малая</span> </p></td><td style="text-align:left;" id="TBL-4-6-3" class="td11"> <p class="noindent"><span class="larm-1000">обе</span> </p></td><td style="text-align:left;" id="TBL-4-6-4" class="td11"> <p class="noindent"><span class="larm-1000">скорость</span>
+ <span class="larm-1000">обучения</span>
+ <math display="inline"><mi>α</mi></math><span class="larm-1000">;</span>
+ <span class="larm-1000">«запись/чтение»</span>
+ <span class="larm-1000">(гипотеза)</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-4-7-"><td style="text-align:left;" id="TBL-4-7-1" class="td11"> <p class="noindent"><span class="nt"><span class="larm-1000">SERO</span></span>
+ <span class="larm-1000">(серотонин)</span> </p></td><td style="text-align:left;" id="TBL-4-7-2" class="td11"> <p class="noindent"><math display="inline"> <mo class="MathClass-rel" stretchy="false">∼</mo> <mn>3</mn> <mo class="MathClass-bin" stretchy="false">⋅</mo> <mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mo class="MathClass-bin" stretchy="false">−</mo><mn>6</mn></mrow></msup 
+></math> </p></td><td style="text-align:left;" id="TBL-4-7-3" class="td11"> <p class="noindent"><span class="larm-1000">широковещ.</span> </p></td><td style="text-align:left;" id="TBL-4-7-4" class="td11"> <p class="noindent"><span class="larm-1000">дисконтирование</span>
+ <math display="inline"><mi>γ</mi></math>
+ <span class="larm-1000">(гипотеза)</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-4-8-"><td style="text-align:left;" id="TBL-4-8-1" class="td11"> </td></tr></table> </div>
+<figcaption class="caption"><span class="id">Таблица 1.2: </span><span class="content">Главные медиаторы мозга на языке вычислений. Правый столбец — сильное
+упрощение: надёжен для глутамата, GABA и дофамина, для остальных это гипотезы.</span></figcaption>
+ </figure>
+ </div>
+ <h3 class="sectionHead"><span class="titlemark">1.8 </span> <a id="x4-120001.8"></a>Знак задаёт получатель</h3>
+<p class="noindent">Я немного вас обманул, говоря: глутамат — положительный вес, GABA — отрицательный. Ни
+одна молекула не несёт в себе знака. Молекула — это просто ключ. Что произойдёт, когда её
+поймают, решает <span class="lati-1095">замок </span>— рецептор на клетке-получателе.
+</p><p class="indent"> Лучший пример — дофамин. У него есть рецепторы двух семейств <span class="cite">[<a href="refs.html#XBeaulieu2011">8</a>]</span>. На одних он
+облегчает возбуждение клетки, на других — затрудняет. В области, которая выбирает
+действия, одни нейроны несут рецепторы первого типа, другие — второго, и один и тот
+же дофаминовый сигнал одновременно усиливает одну группу и ослабляет другую.
+Это как один широковещательный пакет, который разные узлы сети интерпретируют
+по-разному.
+</p>
+ <div class="tcolorbox keyblock" id="tcolobox-2"> 
+<div class="tcolorbox-content"><div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x4-12001r2"></a>
+<span class="labx-1095">Утверждение 1.2 </span>(Смысл сообщения задаёт получатель)<span class="labx-1095">.</span> </span> <span class="lati-1095">Знак и скорость действия</span>
+<span class="lati-1095">медиатора определяются не самим медиатором, а рецептором, с которым он</span>
+<span class="lati-1095">связывается. Рецепторы бывают двух родов. </span>Ионотропные <span class="lati-1095">сами являются ионными</span>
+<span class="lati-1095">каналами и открываются за доли миллисекунды: это прямое управление током, как</span>
+<span class="lati-1095">затвор транзистора. </span>Метаботропные <span class="lati-1095">запускают внутри клетки цепочку химических</span>
+<span class="lati-1095">реакций и действуют за сотни миллисекунд и дольше: это скорее запись в регистр</span>
+<span class="lati-1095">настроек, которая меняет последующую работу клетки. Адресная шина говорит в</span>
+<span class="lati-1095">основном через первые, широковещательная — в основном через вторые.</span>
+</p>
+</div>
+ 
+</div> 
+</div>
+<p class="indent"> Почему тогда вообще можно сказать «глутамат возбуждает»? Потому что почти все
+рецепторы глутамата, которые встречаются на практике, возбуждающие, а почти все рецепторы
+GABA — тормозные. Это не закон природы, а очень надёжное соглашение, и правило (<a href="#x4-6004r1">1.1</a>) на
+нём и держится.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">1.9 </span> <a id="x4-130001.9"></a>Что унести с собой</h3>
+<p class="noindent">Подавляющее большинство нейронов — адресная шина данных с весами одного знака на нейрон;
+ничтожное меньшинство — широковещательные каналы, передающие на большие участки мозга
+несколько общих управляющих сигналов. Около двух нейронов из каждых ста тысяч — и от них
+зависит, как учится и в каком режиме работает вся остальная сеть. Для инженера это не
+удивительно: в любом компьютере регистров управления несравнимо меньше, чем ячеек памяти,
+и всё же без них машина не работает.
+</p><p class="indent"> В следующей главе мы проверим, что может вычислить сеть из одних <span class="nt">GLUT</span>-нейронов, самого
+многочисленного типа, без всяких часов.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">1.10 </span> <a id="x4-140001.10"></a>Задачи</h3>
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x4-14001r1"></a>
+<span class="labx-1095">Задача 1.1 </span>(<math display="inline"><mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Кучки и провода. </span>По таблице <a href="#x4-60021">1.1</a> (середина диапазона по логарифмической шкале; <span class="nt">ACET</span> —
+<math display="inline"><mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>5</mn></mrow></msup 
+></math>
+выходов): (а) если нейрон — человек, сколько населений Земли составят <span class="nt">GLUT</span>-нейроны
+и город какого размера — все широковещательные? (б) Во сколько раз доля окончаний
+<span class="nt">DOPA</span>, <span class="nt">SERO</span>, <span class="nt">NORA</span>, <span class="nt">ACET</span> больше доли их нейронов?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">(а) <math display="inline"><mn>8</mn> <mo class="MathClass-bin" stretchy="false">⋅</mo> <mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>1</mn><mn>0</mn></mrow></msup 
+></math> <span class="nt">GLUT</span> —
+<math display="inline"><mn>1</mn><mn>0</mn></math> населений Земли;
+широковещательных <math display="inline"> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>9</mn> <mo class="MathClass-bin" stretchy="false">⋅</mo> <mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>6</mn></mrow></msup 
+></math> — город
+размером с Вену. (б) <math display="inline"> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>8</mn> <mo class="MathClass-bin" stretchy="false">⋅</mo> <mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>1</mn><mn>4</mn></mrow></msup 
+></math> окончаний,
+из них широковещательных <math display="inline"> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>3</mn> <mo class="MathClass-bin" stretchy="false">⋅</mo> <mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>1</mn><mn>1</mn></mrow></msup 
+></math>,
+доля <math display="inline"> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>4</mn> <mo class="MathClass-bin" stretchy="false">⋅</mo> <mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mo class="MathClass-bin" stretchy="false">−</mo><mn>4</mn></mrow></msup 
+></math> — в
+<math display="inline"> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>1</mn><mn>6</mn></math> раз больше доли
+этих нейронов (<math display="inline"><mn>2</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn> <mo class="MathClass-bin" stretchy="false">⋅</mo> <mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mo class="MathClass-bin" stretchy="false">−</mo><mn>5</mn></mrow></msup 
+></math>).
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x4-14002r2"></a>
+<span class="labx-1095">Задача 1.2 </span>(<math display="inline"><mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Возврат к нулю. </span>Глутамат в щели спадает как <math display="inline"><msub><mrow><mi>c</mi></mrow><mrow><mn>0</mn></mrow></msub 
+><msup><mrow><mi>e</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">−</mo><mi>t</mi><mo class="MathClass-bin" stretchy="false">∕</mo><msub><mrow><mi>τ</mi></mrow><mrow><mi>c</mi></mrow></msub 
+></mrow></msup 
+></math>,
+<math display="inline"><msub><mrow><mi>c</mi></mrow><mrow><mn>0</mn></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мМ</mtext></mstyle></math>,
+<math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>c</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>;
+получатель замечает концентрацию выше <math display="inline"><mn>1</mn><mn>0</mn></math> мкМ.
+(а) Сколько времени линия «занята» после одного выброса? (б) Насосы частично заблокированы,
+<math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>c</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>.
+До какой частоты выбросов линия ещё успевает освободиться?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">(а) <math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>c</mi></mrow></msub 
+> <mi class="loglike">ln</mi><mo>⁡</mo><mo class="MathClass-open" stretchy="false">(</mo><msub><mrow><mi>c</mi></mrow><mrow><mn>0</mn></mrow></msub 
+><mo class="MathClass-bin" stretchy="false">∕</mo><msub><mrow><mi>c</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">∗</mo></mrow></msub 
+><mo class="MathClass-close" stretchy="false">)</mo> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>4</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>6</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>. (б) Линия
+свободна при <math display="inline"><mi>T</mi> <mo class="MathClass-rel" stretchy="false">≥</mo> <msub><mrow><mi>τ</mi></mrow><mrow><mi>c</mi></mrow></msub 
+> <mi class="loglike">ln</mi><mo>⁡</mo><mn>1</mn><mn>0</mn><mn>1</mn></math>:
+до <math display="inline"> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>2</mn><mn>2</mn></math> выбросов в
+секунду вместо <math display="inline"> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>2</mn><mn>2</mn><mn>0</mn></math>.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x4-14003r3"></a>
+<span class="labx-1095">Задача 1.3 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Куда переезжает всплеск. </span>В опыте рис. <a href="#x4-100014">1.4</a> после лампочки идут состояния <math display="inline"><msub><mrow><mi>s</mi></mrow><mrow><mn>0</mn></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">→</mo><mo class="MathClass-rel" stretchy="false">⋯</mo> <mo class="MathClass-rel" stretchy="false">→</mo> <msub><mrow><mi>s</mi></mrow><mrow><mi>K</mi><mo class="MathClass-bin" stretchy="false">−</mo><mn>1</mn></mrow></msub 
+></math>
+с шагом <math display="inline"><mi mathvariant="normal">Δ</mi></math>,
+<math display="inline"><mi>T</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mi>K</mi><mi mathvariant="normal">Δ</mi></math>;
+награда <math display="inline"><mi>r</mi></math>
+приходит на последнем переходе, момент лампочки непредсказуем. Найдите выученные
+<math display="inline"><mi>V</mi> <mo class="MathClass-open" stretchy="false">(</mo><msub><mrow><mi>s</mi></mrow><mrow><mi>k</mi></mrow></msub 
+><mo class="MathClass-close" stretchy="false">)</mo></math>
+и ответ <math display="inline"><mi>δ</mi></math>
+на лампочку. Положив <math display="inline"><mi>γ</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <msup><mrow><mi>e</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">−</mo><mi mathvariant="normal">Δ</mi><mo class="MathClass-bin" stretchy="false">∕</mo><msub><mrow><mi>τ</mi></mrow><mrow><mi>γ</mi></mrow></msub 
+></mrow></msup 
+></math>,
+найдите <math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>γ</mi></mrow></msub 
+></math>
+при <math display="inline"><mi>T</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn></math> с,
+<math display="inline"><mi mathvariant="normal">Δ</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn></math> с,
+<math display="inline"><mi>γ</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>9</mn><mn>5</mn></math>.
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent"><math display="inline"><mi>V</mi> <mo class="MathClass-open" stretchy="false">(</mo><msub><mrow><mi>s</mi></mrow><mrow><mi>k</mi></mrow></msub 
+><mo class="MathClass-close" stretchy="false">)</mo> <mo class="MathClass-rel" stretchy="false">=</mo> <msup><mrow><mi>γ</mi></mrow><mrow><mi>K</mi><mo class="MathClass-bin" stretchy="false">−</mo><mn>1</mn><mo class="MathClass-bin" stretchy="false">−</mo><mi>k</mi></mrow></msup 
+><mi>r</mi></math>;
+<math display="inline"><msub><mrow><mi>δ</mi></mrow><mrow><mstyle class="text"><mtext>лампа</mtext></mstyle></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <msup><mrow><mi>γ</mi></mrow><mrow><mi>K</mi></mrow></msup 
+><mi>r</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mi>r</mi><msup><mrow><mi>e</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">−</mo><mi>T</mi><mo class="MathClass-bin" stretchy="false">∕</mo><msub><mrow><mi>τ</mi></mrow><mrow><mi>γ</mi></mrow></msub 
+></mrow></msup 
+> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>6</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mi>r</mi></math> при
+любом <math display="inline"><mi mathvariant="normal">Δ</mi></math>,
+<math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>γ</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>9</mn><mn>5</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>с</mtext></mstyle></math>.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x4-14004r4"></a>
+<span class="labx-1095">Задача 1.4 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Моделирование: обучение по ошибке. </span>Промоделируйте цепочку задачи <a href="#x4-14003r3">1.3</a> при <math display="inline"><mi>K</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mn>0</mn></math>,
+<math display="inline"><mi>γ</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>9</mn><mn>5</mn></math>,
+<math display="inline"><mi>r</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn></math>
+с правилом <math display="inline"><mi>V</mi> <mo class="MathClass-open" stretchy="false">(</mo><msub><mrow><mi>s</mi></mrow><mrow><mi>t</mi></mrow></msub 
+><mo class="MathClass-close" stretchy="false">)</mo> <mo class="MathClass-rel" stretchy="false">←</mo> <mi>V</mi> <mo class="MathClass-open" stretchy="false">(</mo><msub><mrow><mi>s</mi></mrow><mrow><mi>t</mi></mrow></msub 
+><mo class="MathClass-close" stretchy="false">)</mo> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>α</mi><msub><mrow><mi>δ</mi></mrow><mrow><mi>t</mi></mrow></msub 
+></math>.
+В каком испытании <math display="inline"><msup><mrow><mi>n</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">∗</mo></mrow></msup 
+></math>
+ответ на лампочку впервые обгоняет ответ на сок при <math display="inline"><mi>α</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>0</mn><mn>5</mn></math>,
+<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn></math>,
+<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn></math>,
+<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn></math>?
+Как <math display="inline"><msup><mrow><mi>n</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">∗</mo></mrow></msup 
+></math>
+зависит от <math display="inline"><mi>α</mi></math>?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent"><math display="inline"><msup><mrow><mi>n</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">∗</mo></mrow></msup 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>9</mn><mn>3</mn></math>,
+<math display="inline"><mn>4</mn><mn>7</mn></math>,
+<math display="inline"><mn>2</mn><mn>5</mn></math>,
+<math display="inline"><mn>1</mn><mn>2</mn></math>:
+<math display="inline"><msup><mrow><mi>n</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">∗</mo></mrow></msup 
+><mo class="MathClass-rel" stretchy="false">≈</mo> <mn>5</mn><mo class="MathClass-bin" stretchy="false">∕</mo><mi>α</mi></math> при
+малых <math display="inline"><mi>α</mi></math>.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x4-14005r5"></a>
+<span class="labx-1095">Задача 1.5 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Проектирование: рассылка одного числа. </span>Число <math display="inline"><mi>δ</mi></math>
+надо доставить всем <math display="inline"><mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>1</mn><mn>0</mn></mrow></msup 
+></math>
+нейронам; каждый получатель, включая ретрансляторы, должен получить <math display="inline"><mn>1</mn><mn>0</mn></math>
+окончаний от предыдущего слоя, звено добавляет <math display="inline"><mn>1</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>.
+Сколько нейронов и звеньев в самом экономном дереве ретрансляторов при <math display="inline"><mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>4</mn></mrow></msup 
+></math>
+выходах на нейрон (<span class="nt">GLUT</span>) и при <math display="inline"><mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>5</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn></mrow></msup 
+></math>
+(<span class="nt">DOPA</span>)?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent"><span class="nt">GLUT</span>: <math display="inline"><mn>1</mn> <mo class="MathClass-rel" stretchy="false">→</mo> <mn>1</mn><mn>0</mn> <mo class="MathClass-rel" stretchy="false">→</mo> <mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>4</mn></mrow></msup 
+> <mo class="MathClass-rel" stretchy="false">→</mo> <mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>7</mn></mrow></msup 
+></math>
+— <math display="inline"> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>7</mn></mrow></msup 
+></math>
+нейронов, <math display="inline"><mn>4</mn></math>
+звена, <math display="inline"><mn>4</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>.
+<span class="nt">DOPA</span>: <math display="inline"><mn>1</mn> <mo class="MathClass-rel" stretchy="false">→</mo> <mn>1</mn><mn>0</mn> <mo class="MathClass-rel" stretchy="false">→</mo> <mn>3</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn> <mo class="MathClass-bin" stretchy="false">⋅</mo> <mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>5</mn></mrow></msup 
+></math> —
+<math display="inline"> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>3</mn> <mo class="MathClass-bin" stretchy="false">⋅</mo> <mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>5</mn></mrow></msup 
+></math> нейронов,
+<math display="inline"><mn>3</mn></math> звена,
+в <math display="inline"><mn>3</mn><mn>0</mn></math> раз
+меньше; тот же порядок, что число <span class="nt">DOPA</span>-нейронов.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x4-14006r6"></a>
+<span class="labx-1095">Задача 1.6 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Почему равновесие чуткое. </span>В сети <math display="inline"><mn>8</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mi>%</mi></math>
+<span class="nt">GLUT</span> и <math display="inline"><mn>2</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mi>%</mi></math>
+<span class="nt">GABA</span>, каждый связан с каждым весами <math display="inline"><msub><mrow><mi>J</mi></mrow><mrow><mi>E</mi></mrow></msub 
+><mo class="MathClass-bin" stretchy="false">∕</mo><mi>N</mi></math>
+и <math display="inline"> <mo class="MathClass-bin" stretchy="false">−</mo> <msub><mrow><mi>J</mi></mrow><mrow><mi>I</mi></mrow></msub 
+><mo class="MathClass-bin" stretchy="false">∕</mo><mi>N</mi></math>;
+<math display="inline"><mi>τ</mi><mi>ṙ</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mo class="MathClass-bin" stretchy="false">−</mo><mi>r</mi> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>W</mi><mi>r</mi> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>h</mi></math>.
+При <math display="inline"><msub><mrow><mi>J</mi></mrow><mrow><mi>E</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mn>0</mn></math>
+единственное ненулевое собственное число <math display="inline"><mi>W</mi></math>
+равно <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn></math>.
+Найдите отношение тормозящего тока к возбуждающему и на сколько процентов достаточно
+ослабить торможение, чтобы сеть ушла в лавину.
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent"><math display="inline"><mi>λ</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <msub><mrow><mi>f</mi></mrow><mrow><mi>E</mi></mrow></msub 
+><msub><mrow><mi>J</mi></mrow><mrow><mi>E</mi></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">−</mo> <msub><mrow><mi>f</mi></mrow><mrow><mi>I</mi></mrow></msub 
+><msub><mrow><mi>J</mi></mrow><mrow><mi>I</mi></mrow></msub 
+></math>, откуда
+<math display="inline"><msub><mrow><mi>J</mi></mrow><mrow><mi>I</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>3</mn><mn>7</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn></math>; отношение
+токов <math display="inline"><msub><mrow><mi>f</mi></mrow><mrow><mi>I</mi></mrow></msub 
+><msub><mrow><mi>J</mi></mrow><mrow><mi>I</mi></mrow></msub 
+><mo class="MathClass-bin" stretchy="false">∕</mo><msub><mrow><mi>f</mi></mrow><mrow><mi>E</mi></mrow></msub 
+><msub><mrow><mi>J</mi></mrow><mrow><mi>E</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>9</mn><mn>4</mn></math>; лавина
+(<math display="inline"><mi>λ</mi> <mo class="MathClass-rel" stretchy="false">≥</mo> <mn>1</mn></math>) при ослаблении
+торможения всего на <math display="inline"><mn>6</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>7</mn><mspace width="0.17em" class="thinspace"/><mi>%</mi></math>.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x4-14007r7"></a>
+<span class="labx-1095">Задача 1.7 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo><mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Исследование: </span><span class="nt"><span class="lati-1095">SERO</span></span> <span class="lati-1095">— это </span><math display="inline"><mi>γ</mi></math><span class="lati-1095">?</span>
+По задаче <a href="#x4-14003r3">1.3</a> ответ <span class="nt">DOPA</span>-нейронов на лампочку равен <math display="inline"><mi>r</mi><msup><mrow><mi>e</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">−</mo><mi>T</mi><mo class="MathClass-bin" stretchy="false">∕</mo><msub><mrow><mi>τ</mi></mrow><mrow><mi>γ</mi></mrow></msub 
+></mrow></msup 
+></math>.
+Задержки <math display="inline"><mi>T</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mo class="MathClass-punc" stretchy="false">,</mo><mi>…</mi><mo class="MathClass-punc" stretchy="false">,</mo><mn>5</mn></math> с
+по <math display="inline"><mi>n</mi></math>
+предъявлений, <math display="inline"> <mi class="loglike">ln</mi><mo>⁡</mo><mi>δ</mi></math>
+измеряется с разбросом <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn></math>.
+Сколько нужно <math display="inline"><mi>n</mi></math>,
+чтобы отличить <math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>γ</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>2</mn></math> с
+от <math display="inline"><mn>2</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>4</mn></math> с
+(уровень <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>0</mn><mn>5</mn></math>,
+мощность <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>8</mn></math>)?
+Какой механизм, кроме <math display="inline"><mi>γ</mi></math>,
+дал бы тот же спад с <math display="inline"><mi>T</mi></math>?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent"><math display="inline"><mi>n</mi> <mo class="MathClass-rel" stretchy="false">≥</mo> <mn>5</mn><mn>7</mn></math>
+предъявлений на каждую задержку в каждом состоянии. Тот же спад
+дала бы, например, неточность внутренней оценки времени, растущая с
+<math display="inline"><mi>T</mi></math>.
+</p></div></details>
+
+<p class="indent"> <a id="tailfullch1.html"></a> </p> 
+
+  </article>
+  <article class="text short" id="text-short" hidden>
+
+ <a id="s-x4-30001"></a>
+<div class="center">
+<p class="noindent"><img src="img/short0x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<div class="minipage"><p class="noindent"><span class="lati-1000">Мешок с деталями: почти все синие, немного</span>
+<span class="lati-1000">красных и горстка остальных.</span> </p></div></div>
+<p class="noindent">Представьте, что вам дали мешок, в котором лежат
+восемьдесят шесть миллиардов одинаковых на вид деталей,
+и попросили разобраться, как из них собран компьютер. С
+чего бы вы начали? Инженер не стал бы разглядывать
+форму деталей. Он спросил бы: сколько у детали входов,
+сколько выходов и что она выдаёт на выход.
+</p><p class="indent"> Нейрон — так называется такая деталь — устроен
+удивительно просто. Входов у него тысячи: к нему подходят
+провода от других нейронов. Выход один. Но этот выход
+ветвится, как дерево, и одна и та же копия сигнала уходит к
+тысячам получателей. Представьте человека, который
+слушает тысячу собеседников сразу, а отвечает одной
+фразой, но так, что её слышат ещё тысяча человек.
+</p><p class="indent"> Что это за сигнал? Короткий щелчок. Нейрон время от
+времени выдаёт импульс — всплеск напряжения длиной
+около тысячной доли секунды. Все щелчки одного нейрона
+одинаковы, как удары одного барабана. Поэтому всё,
+что нейрон может сказать, записано не в громкости
+щелчка, а в том, <span class="lati-1095">когда </span>он щёлкает: чаще, реже, сразу или с
+задержкой.
+</p><p class="indent"> Внутри нейрон делает самое простое вычисление, какое
+можно придумать: складывает приходящие сигналы и, если
+сумма перевалила за порог, щёлкает сам. Одни входы
+толкают сумму вверх, другие — вниз.
+</p>
+ <h3 class="likesectionHead"> <a id="s-x4-4000"></a>Как рассортировать мешок</h3>
+<p class="noindent">Кончик выходного провода, дотянувшись до соседа, не
+касается его. Между ними остаётся узкая щель, и сигнал
+через неё передаёт химия: провод выбрасывает щепотку
+особого вещества — медиатора, — а сосед его ловит.
+И вот удача: почти каждый нейрон на всех кончиках
+своего провода выбрасывает одно и то же вещество.
+Значит, нейроны можно сортировать по тому, <span class="lati-1095">что </span>они
+выбрасывают.
+</p><p class="indent"> Мы будем называть тип нейрона первыми четырьмя
+латинскими буквами английского названия его вещества.
+Нейрон, выбрасывающий глутамат, — <span class="nt">GLUT</span>. Выбрасывающий
+гамма-аминомасляную кислоту — <span class="nt">GABA</span>. Дальше пойдут
+<span class="nt">DOPA</span> (дофамин), <span class="nt">SERO</span> (серотонин), <span class="nt">NORA</span> (норадреналин),
+<span class="nt">ACET</span> (ацетилхолин) и ещё несколько.
+</p><p class="indent"> Когда мешок рассортирован, картина получается очень
+неравной. Из каждой тысячи нейронов около девятисот
+шестидесяти — это <span class="nt">GLUT</span>. Их сигнал подталкивает
+получателя к щелчку: это «плюс». Ещё около тридцати
+шести — <span class="nt">GABA</span>, их сигнал отталкивает от порога: это
+«минус». В коре их больше, от пятой части до четверти. А
+все остальные типы вместе — несколько нейронов на сто
+тысяч. Капля в море.
+</p>
+ <h3 class="likesectionHead"> <a id="s-x4-5000"></a>Телефон и радио</h3>
+<p class="noindent">Но эта капля устроена совсем иначе. Провод <span class="nt">GLUT</span>-
+или <span class="nt">GABA</span>-нейрона ведёт к определённым соседям, как
+телефонная линия: сигнал получают только те, кому звонят.
+А крошечные группы <span class="nt">DOPA</span>, <span class="nt">SERO</span>, <span class="nt">NORA</span> и <span class="nt">ACET</span>
+работают как радиостанции. Их провода расходятся по
+огромным областям мозга, вещество часто выливается не в
+щель, а в пространство вокруг, и одно и то же сообщение
+слышат сразу миллионы клеток.
+</p><p class="indent"> По телефонным линиям идут данные: вот линия на
+картинке, вот звук определённой высоты. По радио идут
+общие настройки: насколько всё громко, стоит ли учиться,
+пора ли спать. В любом компьютере так же: ячеек памяти
+миллиарды, а управляющих регистров — горстка. Без них
+машина всё равно не работает.
+</p>
+ <h3 class="likesectionHead"> <a id="s-x4-6000"></a>Смысл выбирает получатель</h3>
+<p class="noindent">Есть одна тонкость. Само вещество не знает, «плюс» оно или
+«минус». Молекула — это ключ. Что произойдёт, когда
+ключ вставят, решает замок — особый белок на стороне
+получателя. Один и тот же дофамин одних получателей
+подбадривает, а других приглушает, смотря какой замок у
+них стоит. Это как одна и та же радиопередача, которую
+разные слушатели понимают по-разному.
+</p>
+ <h3 class="likesectionHead"> <a id="s-x4-7000"></a>Сигнал «лучше, чем ожидалось»</h3>
+<p class="noindent">Самый знаменитый радиоканал — дофамин. Что он
+передаёт? Вот опыт. Животному неожиданно дают каплю
+сока, и дофаминовые нейроны отвечают вспышкой щелчков.
+Потом перед соком каждый раз зажигают лампочку.
+Животное выучивает, что лампочка обещает сок, и теперь
+вспышка случается на лампочку, а на сам сок — нет. А если
+после лампочки сок не дают, дофаминовые нейроны в
+момент ожидания <span class="lati-1095">замолкают</span>.
+</p>
+<div class="center">
+<p class="noindent"><img src="img/short1x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<div class="minipage"><p class="noindent"><span class="lati-1000">Вспышка на неожиданный сок; на лампочку,</span>
+<span class="lati-1000">которая его обещает; и провал в тот миг, когда</span>
+<span class="lati-1000">обещанный сок не пришёл.</span> </p></div></div>
+<p class="indent"> Правило, которое объясняет все три случая: дофамин
+сообщает не «хорошо», а «лучше, чем я ожидал».
+Неожиданный сок — приятный сюрприз. Обещанный
+— никакого сюрприза. Обещанный, но не данный —
+неприятный. Ровно такую величину используют программы,
+которые учатся на своих ошибках. К ней мы ещё вернёмся.
+</p>
+ <h3 class="likesectionHead"> <a id="s-x4-8000"></a>Что унести с собой</h3>
+<p class="noindent">Мозг — это огромная сеть одинаковых на вид деталей.
+Почти все они — «плюсы» и «минусы» телефонной сети
+данных. И совсем немногие — радиостанции, которые
+настраивают всю сеть сразу. В следующей главе мы
+проверим, что можно построить из одних только «плюсов».
+</p><p class="noindent"><span class="lati-1000">Формулы, модели, задачи и источники — в полной версии,</span>
+<span class="lati-1000">глава</span><span class="lati-1000"> 1.</span>
+</p>
+<p class="indent"> <a id="s-tailshortch1.html"></a> </p> 
+
+  </article>
+
+  <aside class="starline"><span data-ru="Книга бесплатная и открытая. Если глава была полезной, поставьте книге звезду на GitHub: так её найдут другие." data-en="The book is free and open. If this chapter was useful, star the book on GitHub so others can find it.">Книга бесплатная и открытая.</span> <a href="https://github.com/kladkogex/20-watt-computer" target="_blank" rel="noopener" data-ru="★ Звезда на GitHub" data-en="★ Star on GitHub">★ Звезда на GitHub</a></aside>
+  <nav class="pager">
+    <a class="prev" href="00.html"><span data-ru="← Назад" data-en="← Previous">← Назад</span><b>Как читать эту книгу</b></a>
+    <a class="next" href="02.html"><span data-ru="Дальше →" data-en="Next →">Дальше →</span><b>Что вычисляют GLUT-нейроны</b></a>
+  </nav>
+  <footer>
+    <span data-ru='Константин Кладько · текст — <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.ru">CC BY-NC-SA 4.0</a>' data-en='Konstantin Kladko · text: <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>'>Константин Кладько</span>
+    <span><a href="../pdf/20-watt-computer-ru.pdf">PDF</a> · <a href="../breadboard/" data-ru="Макетная плата" data-en="Breadboard">Макетная плата</a> · <a href="https://github.com/kladkogex/20-watt-computer">GitHub</a></span>
+  </footer>
+</main>
+
+<script>
+(function(){
+  const NAV = [{"slug": "00", "title": "Как читать эту книгу", "kicker": "Введение"}, {"slug": "01", "title": "Типы нейронов", "kicker": "Глава 1"}, {"slug": "02", "title": "Что вычисляют GLUT-нейроны", "kicker": "Глава 2"}, {"slug": "03", "title": "GLUT и GABA вместе", "kicker": "Глава 3"}, {"slug": "04", "title": "Азбука Морзе: что мы знаем о языке, на котором говорят GLUT- и GABA-нейроны", "kicker": "Глава 4"}, {"slug": "05", "title": "Что вычисляют SERO-нейроны", "kicker": "Глава 5"}, {"slug": "06", "title": "Нейронные сети, которые умеют учиться: добавляем DOPA", "kicker": "Глава 6"}, {"slug": "07", "title": "Альтернативные современные теории обучения на основе дофамина", "kicker": "Глава 7"}, {"slug": "08", "title": "Когда искать, а когда решать: добавляем NORA", "kicker": "Глава 8"}, {"slug": "09", "title": "Когда писать, а когда читать: добавляем ACET", "kicker": "Глава 9"}, {"slug": "10", "title": "Вся машина", "kicker": "Глава 10"}, {"slug": "11", "title": "Входы машины: как к ней подключены глаза, уши и другие датчики", "kicker": "Глава 11"}, {"slug": "12", "title": "Распознавание изображений и видео", "kicker": "Глава 12"}, {"slug": "13", "title": "Выходы машины: как мозг управляет мышцами", "kicker": "Глава 13"}, {"slug": "14", "title": "Боль: сигнал тревоги", "kicker": "Глава 14"}, {"slug": "15", "title": "Как машина учится двигаться", "kicker": "Глава 15"}, {"slug": "16", "title": "Второй выход: как мозг управляет химией тела", "kicker": "Глава 16"}, {"slug": "17", "title": "Отладка машины", "kicker": "Глава 17"}, {"slug": "18", "title": "Типы нейронов по электрической функции", "kicker": "Глава 18"}, {"slug": "19", "title": "Нейроны по числу дендритов", "kicker": "Глава 19"}, {"slug": "20", "title": "Что делают нейроны во сне", "kicker": "Глава 20"}, {"slug": "21", "title": "Машина из живых нейронов", "kicker": "Глава 21"}, {"slug": "22", "title": "DishBrain", "kicker": "Глава 22"}, {"slug": "a", "title": "Вещества, которые не задают тип нейрона", "kicker": "Приложение A"}, {"slug": "b", "title": "Обозначения", "kicker": "Приложение B"}, {"slug": "c", "title": "Ответы", "kicker": "Приложение C"}, {"slug": "d", "title": "Экспериментальное приложение", "kicker": "Приложение D"}, {"slug": "refs", "title": "Литература", "kicker": ""}];
+  const SLUG = "01";
+  const store = {get(k){try{return localStorage.getItem(k)}catch(e){return null}}, set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+
+  // chapter selector
+  const sel = document.getElementById("jump");
+  NAV.forEach(p => { const o = document.createElement("option"); o.value = p.slug;
+    o.textContent = (p.kicker ? p.kicker + ". " : "") + p.title; if (p.slug === SLUG) o.selected = true; sel.appendChild(o); });
+  sel.addEventListener("change", () => { location.href = sel.value + ".html" + (location.hash === "#short" ? "#short" : ""); });
+
+  // Коротко / Полностью
+  const modeBox = document.querySelector(".mode");
+  const hasShort = modeBox.dataset.hasShort === "true";
+  const full = document.getElementById("text-full"), short = document.getElementById("text-short");
+  function setMode(m, remember){
+    if (!hasShort) m = "full";
+    document.body.dataset.mode = m;
+    full.hidden = m !== "full"; short.hidden = m !== "short";
+    modeBox.querySelectorAll(".seg").forEach(b => b.setAttribute("aria-pressed", b.dataset.mode === m));
+    if (remember) store.set("20w-mode", m);
+  }
+  if (!hasShort) modeBox.hidden = true;
+  modeBox.addEventListener("click", e => { const b = e.target.closest(".seg"); if (b) { setMode(b.dataset.mode, true); history.replaceState(null, "", "#" + b.dataset.mode); } });
+  document.addEventListener("click", e => { const a = e.target.closest("a[data-mode]"); if (a) { e.preventDefault(); setMode(a.dataset.mode, true); window.scrollTo(0, 0); } });
+  // a link into the text (#x...) that lives in the other version switches to it
+  function follow(){
+    const h = decodeURIComponent(location.hash.slice(1));
+    if (h === "short" || h === "full") { setMode(h, true); return; }
+    if (!h) return;
+    const t = document.getElementById(h);
+    if (t) { setMode(short.contains(t) ? "short" : "full", false); t.scrollIntoView(); }
+  }
+  setMode(store.get("20w-mode") || "full", false);
+  follow();
+  window.addEventListener("hashchange", follow);
+  // links that leave the book open in the whole window when the page sits inside the reader
+  if (document.documentElement.classList.contains("embedded"))
+    document.querySelectorAll('a[href^="../"], a[href^="http"]').forEach(a => { a.target = a.href.startsWith(location.origin) ? "_top" : "_blank"; });
+
+  // interface language (the text itself is Russian)
+  function setLang(l){
+    document.querySelectorAll("[data-ru]").forEach(el => { el.innerHTML = el.dataset[l]; });
+    document.getElementById("lang-ru").setAttribute("aria-pressed", l === "ru");
+    document.getElementById("lang-en").setAttribute("aria-pressed", l === "en");
+    store.set("20w-lang", l);
+  }
+  document.getElementById("lang-ru").onclick = () => setLang("ru");
+  document.getElementById("lang-en").onclick = () => setLang("en");
+  setLang(store.get("20w-lang") === "en" ? "en" : "ru");
+  window.addEventListener("storage", e => {
+    if (e.key === "20w-lang" && (e.newValue === "ru" || e.newValue === "en")) setLang(e.newValue);
+    if (e.key === "20w-theme" && (e.newValue === "light" || e.newValue === "dark")) document.documentElement.setAttribute("data-theme", e.newValue);
+  });
+})();
+</script>
+<script>
+(function(){var b=document.getElementById("theme");if(!b)return;var r=document.documentElement;function cur(){var t=r.getAttribute("data-theme");if(t)return t;return window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";}function show(){b.textContent=cur()==="dark"?"☀":"☾";b.setAttribute("aria-pressed",cur()==="dark");}b.onclick=function(){var t=cur()==="dark"?"light":"dark";r.setAttribute("data-theme",t);try{localStorage.setItem("20w-theme",t);}catch(e){}show();};if(window.matchMedia)matchMedia("(prefers-color-scheme: dark)").addEventListener("change",show);show();})();
+</script>
+</body>
+</html>

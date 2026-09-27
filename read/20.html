@@ -1,0 +1,767 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<script>try{var t=localStorage.getItem("20w-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);}catch(e){}if(window.self!==window.top)document.documentElement.classList.add("embedded");</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Глава 20. Что делают нейроны во сне · Компьютер на 20 ваттах</title>
+<meta name="description" content="Инженер, увидев выключенный компьютер, скажет: он ничего не делает. Со спящим мозгом так не выходит. Нейроны во сне не молчат: в глубоком сне кора выдаёт импульсы, в быстром сне — …">
+<link rel="canonical" href="https://kladkogex.github.io/20-watt-computer/read/20.html">
+<meta property="og:type" content="book">
+<meta property="og:title" content="Глава 20. Что делают нейроны во сне · Компьютер на 20 ваттах">
+<meta property="og:description" content="Инженер, увидев выключенный компьютер, скажет: он ничего не делает. Со спящим мозгом так не выходит. Нейроны во сне не молчат: в глубоком сне кора выдаёт импульсы, в быстром сне — …">
+<meta property="og:url" content="https://kladkogex.github.io/20-watt-computer/read/20.html">
+<meta property="og:locale" content="ru_RU">
+<meta property="og:image" content="https://kladkogex.github.io/20-watt-computer/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Your brain runs on 20 watts. Here is its datasheet. The 20-Watt Computer, a free textbook for engineers.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://kladkogex.github.io/20-watt-computer/og-card.png">
+<meta name="twitter:title" content="Глава 20. Что делают нейроны во сне · The 20-Watt Computer">
+<meta name="twitter:description" content="Инженер, увидев выключенный компьютер, скажет: он ничего не делает. Со спящим мозгом так не выходит. Нейроны во сне не молчат: в глубоком сне кора выдаёт импульсы, в быстром сне — …">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Chapter", "name": "Что делают нейроны во сне", "url": "https://kladkogex.github.io/20-watt-computer/read/20.html", "position": 20, "inLanguage": "ru", "isAccessibleForFree": true, "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/", "author": {"@type": "Person", "name": "Константин Кладько", "alternateName": "Konstantin Kladko"}, "isPartOf": {"@type": "Book", "name": "Компьютер на 20 ваттах. Как вычисляет мозг: количественный подход для инженеров", "alternateName": "The 20-Watt Computer: How the Brain Computes. A Quantitative Approach for Engineers", "author": {"@type": "Person", "name": "Константин Кладько", "alternateName": "Konstantin Kladko"}, "url": "https://kladkogex.github.io/20-watt-computer/", "inLanguage": "ru", "isAccessibleForFree": true, "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/"}}</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap">
+<link rel="stylesheet" href="book.css">
+</head>
+<body>
+<header class="bar">
+  <a class="home" href="../#toc"><span class="w">20</span> <span data-ru="Компьютер на 20 ваттах" data-en="The 20-Watt Computer">Компьютер на 20 ваттах</span></a>
+  <label class="jump"><span class="sr" data-ru="Перейти к главе" data-en="Go to chapter">Перейти к главе</span>
+    <select id="jump"></select></label>
+  <div class="langs" role="group" aria-label="Language">
+    <button class="chip" id="lang-ru" type="button">RU</button>
+    <button class="chip" id="lang-en" type="button">EN</button>
+    <button class="chip theme" id="theme" type="button" aria-label="Light or dark theme" title="Light / dark">☾</button>
+  </div>
+</header>
+
+<main class="page">
+  <div class="pagehead">
+    <p class="kicker" data-ru="Глава 20" data-en="Chapter 20">Глава 20</p>
+    <h1><span class="t-full">Что делают нейроны во сне</span><span class="t-short">Что машина делает ночью</span></h1>
+    <div class="mode" role="group" aria-label="Version" data-has-short="true">
+      <button type="button" class="seg" data-mode="short"><b data-ru="Коротко" data-en="Short">Коротко</b><span data-ru="без формул, с рисунками" data-en="no formulas, with drawings">без формул, с рисунками</span></button>
+      <button type="button" class="seg" data-mode="full"><b data-ru="Полностью" data-en="Full">Полностью</b><span data-ru="формулы, модели, задачи" data-en="formulas, models, exercises">формулы, модели, задачи</span></button>
+    </div>
+    <p class="lang-note" data-ru="" data-en="The online reader is in Russian for now; the book in other languages is in the PDF downloads in the menu.">.</p>
+  </div>
+
+  <article class="text full" id="text-full">
+
+ <a id="x23-18000020"></a>
+ <h3 class="sectionHead"><span class="titlemark">20.1 </span> <a id="x23-18100020.1"></a>Сон — не выключение, а другой режим</h3>
+<p class="noindent">Инженер, увидев выключенный компьютер, скажет: он ничего не делает. Со спящим мозгом так
+не выходит. Нейроны во сне не молчат: в глубоком сне кора выдаёт импульсы, в быстром сне —
+почти столько же, сколько днём. Меняется не то, <span class="lati-1095">работают </span>ли нейроны, а то, <span class="lati-1095">как </span>они работают.
+Сон — это набор режимов машины, и переключают их те же широковещательные каналы, что и
+днём.
+</p><p class="indent"> Для каждого режима можно выписать «состояние регистров» (таблица <a href="#x23-1810011">20.1</a>). Днём <span class="nt">ACET</span>,
+<span class="nt">NORA</span> и <span class="nt">SERO</span> работают, датчики подключены, мышцы слушаются. В медленном,
+глубоком сне все три канала затихают, а вход от органов чувств ослаблен <span class="cite">[<a href="refs.html#XHasselmo1999">78</a>]</span>: выброс
+ацетилхолина в коре падает, а <span class="nt">NORA</span>- и <span class="nt">SERO</span>-нейроны выдают импульсы реже, чем
+днём <span class="cite">[<a href="refs.html#XMarrosu1995">281</a>, <a href="refs.html#XAstonJonesBloom1981">200</a>, <a href="refs.html#XMcGintyHarper1976">349</a>]</span>. В быстром сне картина странная: <span class="nt">ACET</span> снова поднимается до дневного
+уровня <span class="cite">[<a href="refs.html#XMarrosu1995">281</a>]</span>, а <span class="nt">NORA</span> и <span class="nt">SERO</span> замолкают почти полностью <span class="cite">[<a href="refs.html#XAstonJonesBloom1981">200</a>, <a href="refs.html#XMcGintyHarper1976">349</a>, <a href="refs.html#XJacobsAzmitia1992">55</a>]</span>. Мышцы тела в
+быстром сне выключены: <span class="nt">ACET</span>-нейроны, управляющие ими, сильно тормозятся через
+<span class="nt">GABA</span> и <span class="nt">GLYC</span> <span class="cite">[<a href="refs.html#XBrooksPeever2012">201</a>]</span> — тем же запретом из главы <a href="03.html#x6-250003">3</a>, только наложенным на весь выход
+сразу.
+</p>
+ <div class="table">
+<p class="indent"> <a id="x23-1810011"></a></p><figure class="float">
+<div class="tabular">
+ <table id="TBL-23" class="tabular"><colgroup id="TBL-23-1g"><col id="TBL-23-1" /><col id="TBL-23-2" /><col id="TBL-23-3" /><col id="TBL-23-4" /></colgroup><tr style="vertical-align:baseline;" id="TBL-23-1-"><td style="text-align:left;" id="TBL-23-1-1" class="td11"> </td><td style="text-align:left;" id="TBL-23-1-2" class="td11"> <p class="noindent"><span class="larm-0900">бодрствование</span> </p></td><td style="text-align:left;" id="TBL-23-1-3" class="td11"> <p class="noindent"><span class="larm-0900">медленный</span>
+ <span class="larm-0900">сон</span> </p></td><td style="text-align:left;" id="TBL-23-1-4" class="td11"> <p class="noindent"><span class="larm-0900">быстрый</span>
+ <span class="larm-0900">сон</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-23-2-"><td style="text-align:left;" id="TBL-23-2-1" class="td11"> <p class="noindent"><span class="nt"><span class="larm-0900">ACET</span></span>
+ <span class="larm-0900">(запись,</span>
+ <span class="larm-0900">гл.</span><span class="larm-0900"> </span><a href="09.html#x12-860009"><span class="larm-0900">9</span></a><span class="larm-0900">)</span> </p></td><td style="text-align:left;" id="TBL-23-2-2" class="td11"> <p class="noindent"><span class="larm-0900">высокий</span> </p></td><td style="text-align:left;" id="TBL-23-2-3" class="td11"> <p class="noindent"><span class="larm-0900">низкий</span> </p></td><td style="text-align:left;" id="TBL-23-2-4" class="td11"> <p class="noindent"><span class="larm-0900">высокий</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-23-3-"><td style="text-align:left;" id="TBL-23-3-1" class="td11"> <p class="noindent"><span class="nt"><span class="larm-0900">NORA</span></span>
+ <span class="larm-0900">(усиление,</span>
+ <span class="larm-0900">гл.</span><span class="larm-0900"> </span><a href="08.html#x11-770008"><span class="larm-0900">8</span></a><span class="larm-0900">)</span> </p></td><td style="text-align:left;" id="TBL-23-3-2" class="td11"> <p class="noindent"><span class="larm-0900">средний,</span>
+ <span class="larm-0900">вспышки</span> </p></td><td style="text-align:left;" id="TBL-23-3-3" class="td11"> <p class="noindent"><span class="larm-0900">низкий</span> </p></td><td style="text-align:left;" id="TBL-23-3-4" class="td11"> <p class="noindent"><span class="larm-0900">почти</span>
+ <span class="larm-0900">молчит</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-23-4-"><td style="text-align:left;" id="TBL-23-4-1" class="td11"> <p class="noindent"><span class="nt"><span class="larm-0900">SERO</span></span>
+ <span class="larm-0900">(гл.</span><span class="larm-0900"> </span><a href="05.html#x8-470005"><span class="larm-0900">5</span></a><span class="larm-0900">)</span> </p></td><td style="text-align:left;" id="TBL-23-4-2" class="td11"> <p class="noindent"><span class="larm-0900">средний</span> </p></td><td style="text-align:left;" id="TBL-23-4-3" class="td11"> <p class="noindent"><span class="larm-0900">низкий</span> </p></td><td style="text-align:left;" id="TBL-23-4-4" class="td11"> <p class="noindent"><span class="larm-0900">почти</span>
+ <span class="larm-0900">молчит</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-23-5-"><td style="text-align:left;" id="TBL-23-5-1" class="td11"> <p class="noindent"><span class="larm-0900">вход</span>
+ <span class="larm-0900">от</span>
+ <span class="larm-0900">датчиков</span> </p></td><td style="text-align:left;" id="TBL-23-5-2" class="td11"> <p class="noindent"><span class="larm-0900">подключён</span> </p></td><td style="text-align:left;" id="TBL-23-5-3" class="td11"> <p class="noindent"><span class="larm-0900">ослаблен</span> </p></td><td style="text-align:left;" id="TBL-23-5-4" class="td11"> <p class="noindent"><span class="larm-0900">ослаблен</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-23-6-"><td style="text-align:left;" id="TBL-23-6-1" class="td11"> <p class="noindent"><span class="larm-0900">выход</span>
+ <span class="larm-0900">на</span>
+ <span class="larm-0900">мышцы</span> </p></td><td style="text-align:left;" id="TBL-23-6-2" class="td11"> <p class="noindent"><span class="larm-0900">подключён</span> </p></td><td style="text-align:left;" id="TBL-23-6-3" class="td11"> <p class="noindent"><span class="larm-0900">ослаблен</span> </p></td><td style="text-align:left;" id="TBL-23-6-4" class="td11"> <p class="noindent"><span class="larm-0900">выключен</span>
+ <span class="larm-0900">торможением</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-23-7-"><td style="text-align:left;" id="TBL-23-7-1" class="td11"> <p class="noindent"><span class="larm-0900">активность</span>
+ <span class="larm-0900">коры</span> </p></td><td style="text-align:left;" id="TBL-23-7-2" class="td11"> <p class="noindent"><span class="larm-0900">ровная</span> </p></td><td style="text-align:left;" id="TBL-23-7-3" class="td11"> <p class="noindent"><span class="larm-0900">медленные</span>
+ <span class="larm-0900">качели:</span>
+ <span class="larm-0900">работа</span>
+ <span class="larm-0900">—</span>
+ <span class="larm-0900">тишина</span> </p></td><td style="text-align:left;" id="TBL-23-7-4" class="td11"> <p class="noindent"><span class="larm-0900">ровная,</span>
+ <span class="larm-0900">как</span>
+ <span class="larm-0900">днём</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-23-8-"><td style="text-align:left;" id="TBL-23-8-1" class="td11"> </td></tr></table> </div>
+<figcaption class="caption"><span class="id">Таблица 20.1: </span><span class="content">Состояние регистров машины в трёх режимах. Все строки измерены; уровни
+<span class="nt">ACET</span>, <span class="nt">NORA</span> и <span class="nt">SERO</span> — прямыми записями по стадиям сна <span class="cite">[<a href="refs.html#XMarrosu1995">281</a>, <a href="refs.html#XAstonJonesBloom1981">200</a>, <a href="refs.html#XMcGintyHarper1976">349</a>]</span>.</span></figcaption>
+ </figure>
+ </div>
+ <h3 class="sectionHead"><span class="titlemark">20.2 </span> <a id="x23-18200020.2"></a>Когда спать: реле с гистерезисом</h3>
+<p class="noindent">Что решает, когда машине переключаться в сон? Хорошо работает простая схема из двух частей <span class="cite">[<a href="refs.html#XBorbely1982">202</a>]</span>. Первая
+часть — <span class="lati-1095">давление сна </span><math display="inline"><mi>S</mi></math>,
+которое копится, пока мы бодрствуем, и сбрасывается, пока спим. Это конденсатор, который
+заряжается днём и разряжается ночью:
+</p><div class="keyformula"><table class="equation"><tr><td>
+<math display="block" class="equation">
+ <mstyle id="x23-182001r1" class="label"></mstyle><mfrac><mrow><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>S</mi></mrow>
+<mrow><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>t</mi></mrow></mfrac> <mspace width="0.28em" class="thickpace"/> <mo class="MathClass-rel" stretchy="false">=</mo> <mspace width="0.28em" class="thickpace"/><mfrac><mrow><mn>1</mn> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>S</mi></mrow> 
+ <mrow><msub><mrow><mi>τ</mi></mrow><mrow><mi>r</mi></mrow></msub 
+></mrow></mfrac> <mspace width="0.33em" class="nbsp" /><mspace width="0.33em" class="nbsp" /><mstyle class="text"><mtext>(бодрствование)</mtext></mstyle><mo class="MathClass-punc" stretchy="false">,</mo><mspace width="2em" class="qquad"/><mfrac><mrow><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>S</mi></mrow> 
+<mrow><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>t</mi></mrow></mfrac> <mspace width="0.28em" class="thickpace"/> <mo class="MathClass-rel" stretchy="false">=</mo> <mspace width="0.28em" class="thickpace"/> <mo class="MathClass-bin" stretchy="false">−</mo> <mfrac><mrow><mi>S</mi></mrow> 
+<mrow><msub><mrow><mi>τ</mi></mrow><mrow><mi>d</mi></mrow></msub 
+></mrow></mfrac><mspace width="0.33em" class="nbsp" /><mspace width="0.33em" class="nbsp" /><mstyle class="text"><mtext>(сон)</mtext></mstyle><mo class="MathClass-punc" stretchy="false">.</mo>
+</math></td><td class="eq-no">(20.1)</td></tr></table>
+</div><p class="noindent"> Вторая часть — два порога: машина засыпает, когда
+<math display="inline"><mi>S</mi></math> доходит до верхнего
+порога <math display="inline"><mi>H</mi><mo class="MathClass-open" stretchy="false">(</mo><mi>t</mi><mo class="MathClass-close" stretchy="false">)</mo></math>, и просыпается,
+когда <math display="inline"><mi>S</mi></math> опускается
+до нижнего <math display="inline"><mi>L</mi><mo class="MathClass-open" stretchy="false">(</mo><mi>t</mi><mo class="MathClass-close" stretchy="false">)</mo></math>.
+Оба порога плавно качаются в такт суточному ритму из главы <a href="16.html#x19-14500016">16</a>. Получилось реле с
+гистерезисом — триггер Шмитта из раздела <a href="18.html#x21-16700018.1.3">18.1.3</a>, — а вместе с конденсатором оно даёт
+релаксационный генератор, подстраиваемый по фазе суточным ритмом (<a href="16.html#x19-150001r4">16.4</a>).
+</p>
+ <figure class="figure"> 
+<a id="x23-1820021"></a>
+<p class="noindent"><img src="img/full50x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<figcaption class="caption"><span class="id">Рис. 20.1: </span><span class="content">Давление сна <math display="inline"><mi>S</mi></math> (<a href="#x23-182001r1">20.1</a>)
+при <math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>r</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mn>8</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn></math> ч,
+<math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>d</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>4</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn></math> ч.
+Днём <math display="inline"><mi>S</mi></math>
+заряжается до верхнего порога <math display="inline"><mi>H</mi></math>,
+ночью (закрашено) разряжается до нижнего <math display="inline"><mi>L</mi></math>;
+оба порога качаются вместе с суточным ритмом. Машина сама приходит к режиму около
+<math display="inline"><mn>1</mn><mn>6</mn></math>
+часов бодрствования и <math display="inline"><mn>8</mn></math>
+часов сна.</span></figcaption>
+ </figure>
+<p class="indent"> В нашей модели с обычными значениями
+<math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>r</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mn>8</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn></math> ч и
+<math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>d</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>4</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn></math> ч машина сама
+выходит на <math display="inline"><mn>1</mn><mn>6</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn></math> часа
+бодрствования и <math display="inline"><mn>8</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>0</mn></math> часа
+сна (рис. <a href="#x23-1820021">20.1</a>). Модель объясняет и то, что кажется странным: после сорока часов без сна давление доходит до
+<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>9</mn><mn>0</mn></math>, но восстановительный
+сон в модели длится лишь <math display="inline"><mn>8</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>8</mn></math>
+часа, а не на сутки дольше обычного. Разряд экспоненциальный, и высокий заряд уходит быстро;
+«долг» возвращается не длительностью, а глубиной сна.
+</p><p class="indent"> Что физически играет роль <math display="inline"><mi>S</mi></math>?
+Сильный кандидат — аденозин, «счётчик нагрузки» из приложения <a href="a.html#x26-220000A">22.8</a>: его концентрация
+растёт за время бодрствования и падает во сне <span class="cite">[<a href="refs.html#XPorkkaHeiskanen1997">203</a>, <a href="refs.html#XDunwiddie2001">89</a>]</span>. Что давление сна — это именно
+аденозин и ничего больше, — гипотеза.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">20.3 </span> <a id="x23-18300020.3"></a>Медленный сон: вся сеть как релаксационный генератор</h3>
+<p class="noindent">В глубоком сне нейроны коры работают по очереди всей группой: реже раза в
+секунду они вместе включаются на несколько сотен миллисекунд (<span class="lati-1095">состояние</span>
+<span class="lati-1095">работы</span>) и вместе замолкают (<span class="lati-1095">состояние тишины</span>): частота этих качелей ниже
+<math display="inline"><mn>1</mn></math> Гц, под наркозом чаще всего
+<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>3</mn></math>–<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>4</mn></math> Гц <span class="cite">[<a href="refs.html#XSteriade1993">204</a>]</span>.
+Эти медленные качели мы можем собрать из деталей, которые уже есть. Возьмём группу
+<span class="nt">GLUT</span>-нейронов с сильной обратной связью на себя — память из главы <a href="02.html#x5-150002">2</a>, у которой два
+устойчивых состояния, — и добавим медленную усталость, как в генераторе ритма
+главы <a href="13.html#x16-12100013">13</a>:
+</p><div class="keyformula"><table class="equation"><tr><td>
+<math display="block" class="equation">
+ <mstyle id="x23-183001r2" class="label"></mstyle><mi>τ</mi><mspace width="0.17em" class="thinspace"/><mfrac><mrow><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>r</mi></mrow> 
+<mrow><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>t</mi></mrow></mfrac> <mo class="MathClass-rel" stretchy="false">=</mo> <mo class="MathClass-bin" stretchy="false">−</mo><mi>r</mi> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>F</mi><mrow><mo class="MathClass-open" fence="true" mathsize="1.19em">(</mo><mrow><mi>w</mi><mspace width="0.17em" class="thinspace"/><mi>r</mi> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>I</mi> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>a</mi></mrow><mo class="MathClass-close" fence="true" mathsize="1.19em">)</mo></mrow><mo class="MathClass-punc" stretchy="false">,</mo><mspace width="2em" class="qquad"/><msub><mrow><mi>τ</mi></mrow><mrow><mi>a</mi></mrow></msub 
+><mspace width="0.17em" class="thinspace"/><mfrac><mrow><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>a</mi></mrow> 
+<mrow><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>t</mi></mrow></mfrac> <mo class="MathClass-rel" stretchy="false">=</mo> <mo class="MathClass-bin" stretchy="false">−</mo><mi>a</mi> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>b</mi><mspace width="0.17em" class="thinspace"/><mi>r</mi><mo class="MathClass-punc" stretchy="false">.</mo>
+</math></td><td class="eq-no">(20.2)</td></tr></table>
+</div><p class="noindent"> Группа включается, работает и устаёт; усталость
+<math display="inline"><mi>a</mi></math>
+съедает верхнее состояние, и группа падает в тишину; в тишине усталость проходит, нижнее
+состояние исчезает, и группа снова включается. Получается тот же релаксационный генератор,
+что и давление сна, только примерно в восемьдесят тысяч раз быстрее.
+</p>
+ <figure class="figure"> 
+<a id="x23-1830022"></a>
+<p class="noindent"><img src="img/full51x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<figcaption class="caption"><span class="id">Рис. 20.2: </span><span class="content">Одна и та же группа (<a href="#x23-183001r2">20.2</a>) в двух режимах:
+<math display="inline"><mi>w</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>5</mn></math>,
+<math display="inline"><mi>I</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>2</mn></math>,
+<math display="inline"><mi>𝜃</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>2</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn></math>,
+<math display="inline"><mi>τ</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>,
+<math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>a</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>3</mn></math> с.
+С сильной усталостью (<math display="inline"><mi>b</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>5</mn></math>,
+как в медленном сне) группа качается между работой и тишиной с периодом
+<math display="inline"><mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn></math> с
+(значение модели; в коре период больше секунды, под наркозом — около
+<math display="inline"><mn>3</mn></math> с).
+Ослабим усталость (<math display="inline"><mi>b</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn></math>)
+— так действует ацетилхолин — и та же группа работает ровно.</span></figcaption>
+ </figure>
+<p class="indent"> А что переводит сеть из качелей в ровную дневную работу? Ацетилхолин подавляет в
+нейронах медленные токи, создающие усталость <span class="cite">[<a href="refs.html#XMcCormick1992">205</a>]</span>. В нашей модели при сильной усталости,
+<math display="inline"><mi>b</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>5</mn></math>, группа качается
+с периодом <math display="inline"><mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn></math> с
+— быстрее измеренных качелей, но того же порядка — и работает около
+<math display="inline"><mn>3</mn><mn>5</mn><mi>%</mi></math>
+времени, если усреднять по целому числу периодов; при слабой,
+<math display="inline"><mi>b</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn></math>, та же
+группа работает ровно (рис. <a href="#x23-1830022">20.2</a>). Один регистр — уровень <span class="nt">ACET</span> — переключает генератор в
+усилитель. Поверх медленных качелей в сне идут и более быстрые вспышки ритма
+<math display="inline"><mn>7</mn></math>–<math display="inline"><mn>1</mn><mn>5</mn></math>
+колебаний в секунду; их порождает петля <span class="nt">GLUT</span>–<span class="nt">GABA</span> между корой и промежуточным
+релейным узлом <span class="cite">[<a href="refs.html#XSteriadeMcCormickSejnowski1993">206</a>]</span>, родственница ритма из главы <a href="03.html#x6-250003">3</a>.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">20.4 </span> <a id="x23-18400020.4"></a>Повторы: перемотка дня</h3>
+<p class="noindent">В главе <a href="09.html#x12-860009">9</a> мы видели, что в медленном сне нейроны, работавшие днём вместе, снова срабатывают
+вместе и в том же порядке. Добавим одну инженерную деталь: повторы идут <span class="lati-1095">с перемоткой</span>.
+Последовательность, занимавшая днём секунды, проигрывается во сне за десятые доли
+секунды <span class="cite">[<a href="refs.html#XNadasdy1999">207</a>]</span>: в гиппокампе примерно в двадцать раз быстрее <span class="cite">[<a href="refs.html#XLeeWilson2002">364</a>]</span>, в коре — в шесть-семь
+раз <span class="cite">[<a href="refs.html#XEuston2007">365</a>]</span>. И проигрывается не когда придётся: короткие вспышки повторов в одной области
+подстраиваются под качели работы и тишины и под быстрые вспышки ритма в коре. Если
+искусственно усилить эту согласованность, память улучшается <span class="cite">[<a href="refs.html#XMaingret2016">208</a>]</span> — это уже причинная связь,
+а не совпадение.
+</p><p class="indent"> Зачем машине перематывать день? Инженеру знакома трудность, которую называют
+<span class="lati-1095">катастрофическим забыванием</span>: сеть, которая учит новое подряд, одно за другим, портит старое.
+Спасает <span class="lati-1095">перемешивание</span>: учить новое вперемешку со старым, небольшими порциями, много раз.
+Гипотеза о двух системах обучения <span class="cite">[<a href="refs.html#XMcClelland1995">209</a>]</span> состоит в том, что быстрая память записывает день
+целиком, а во сне понемногу, вперемешку и многократно проигрывает его медленной коре. Это та
+же пара «быстрый буфер — медленное хранилище», что в главе <a href="09.html#x12-860009">9</a>, и та же пара быстрого и
+медленного учеников, что в главе <a href="15.html#x18-13800015">15</a>. Повторы и их согласованность измерены; что
+их назначение — перемешанное обучение медленной памяти, — хорошо обоснованная
+гипотеза.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">20.5 </span> <a id="x23-18500020.5"></a>Перенормировка весов</h3>
+<p class="noindent">Днём правила Хебба из главы <a href="06.html#x9-560006">6</a> в основном усиливают связи. Если только усиливать, веса
+растут, и вместе с ними растут расходы энергии и падает чувствительность: нейрон, у которого
+все входы сильные, перестаёт различать их. По гипотезе <span class="lati-1095">синаптического гомеостаза</span> <span class="cite">[<a href="refs.html#XTononiCirelli2014">210</a>]</span>, сон
+нужен в том числе для того, чтобы вернуть веса к рабочему уровню: все связи ослабляются в
+одно и то же число раз, так что их <span class="lati-1095">отношения </span>— выученное — сохраняются. Для
+инженера это нормировка, как в правиле (<a href="06.html#x9-59002r4">6.4</a>), только сделанная не на ходу, а в отдельное
+время.
+</p><p class="indent"> Прямые измерения этому не противоречат: у мышей площадь контакта на синапсах коры после сна
+примерно на <math display="inline"><mn>1</mn><mn>8</mn><mi>%</mi></math>
+меньше, чем после бодрствования, уменьшение пропорционально размеру, а самые крупные и
+устойчивые контакты почти не меняются <span class="cite">[<a href="refs.html#XdeVivo2017">211</a>]</span>. Масштабирование весов измерено; что это
+главная задача сна, — гипотеза.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">20.6 </span> <a id="x23-18600020.6"></a>Быстрый сон: машина, отключённая от входов и выходов</h3>
+<p class="noindent">В быстром сне кора работает почти как днём, но вход от органов чувств ослаблен, а выход на
+мышцы выключен торможением. Для инженера это знакомый режим: <span class="lati-1095">испытание на стенде</span>.
+Схема работает на полную мощность, но её входы замкнуты на внутренний генератор, а выходы
+отсоединены от исполнительных механизмов, чтобы ничего не сломать. Сновидения по
+одной из гипотез — именно такая внутренняя прогонка модели мира, собранной за
+день; что именно сеть при этом делает и учится ли, неизвестно. Измерено здесь только
+то, что записано в таблице <a href="#x23-1810011">20.1</a>: какой канал включён, какой молчит, и что выход
+заблокирован.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">20.7 </span> <a id="x23-18700020.7"></a>Обслуживание и местный сон</h3>
+<p class="noindent">Долго считалось, что во сне межклеточные щели расширяются и мозг быстрее промывается от
+продуктов обмена веществ <span class="cite">[<a href="refs.html#XXie2013">212</a>]</span>. Недавние опыты, измерявшие промывку другим способом,
+получили обратное: во сне она медленнее <span class="cite">[<a href="refs.html#XMiao2024">213</a>]</span>. Вопрос сейчас открыт, и мы его оставим
+открытым.
+</p><p class="indent"> Надёжнее другой факт: сон — свойство местных сетей, а не всей машины сразу.
+Если животное долго не давать спать, то отдельные участки его коры, пока животное
+бодрствует и двигается, ненадолго проваливаются в тишину, как в медленном сне, и в эти
+моменты животное чаще ошибается <span class="cite">[<a href="refs.html#XVyazovskiy2011">214</a>]</span>. Каждая сеть устаёт сама и сама переключается;
+общий режим получается тогда, когда широковещательные каналы переводят все сети
+сразу.
+</p>
+ <div class="tcolorbox keyblock" id="tcolobox-40"> 
+<div class="tcolorbox-content"><div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x23-187001r1"></a>
+<span class="labx-1095">Утверждение 20.1 </span>(Сон как набор режимов)<span class="labx-1095">.</span> </span> <span class="lati-1095">Во сне нейроны не выключаются:</span>
+<span class="lati-1095">широковещательные каналы переводят машину в другие режимы. Когда спать, решает</span>
+<span class="lati-1095">реле с гистерезисом</span><span class="lati-1095"> </span>(<a href="#x23-182001r1">20.1</a>)<span class="lati-1095">, подстроенное суточным ритмом. В медленном сне сеть</span>
+<span class="lati-1095">становится релаксационным генератором</span><span class="lati-1095"> </span>(<a href="#x23-183001r2">20.2</a>) <span class="lati-1095">и проигрывает день с перемоткой;</span>
+<span class="lati-1095">в быстром — работает, отключённая от входов и выходов. Режимы, повторы</span>
+<span class="lati-1095">и масштабирование весов измерены; их назначение — перемешанное обучение и</span>
+<span class="lati-1095">перенормировка — хорошо обоснованные гипотезы.</span>
+</p>
+</div>
+ 
+</div> 
+</div>
+ <h3 class="sectionHead"><span class="titlemark">20.8 </span> <a id="x23-18800020.8"></a>Итог</h3>
+ <div class="table">
+<p class="indent"> <a id="x23-1880012"></a></p><figure class="float">
+<div class="tabular">
+ <table id="TBL-24" class="tabular"><colgroup id="TBL-24-1g"><col id="TBL-24-1" /><col id="TBL-24-2" /><col id="TBL-24-3" /></colgroup><tr style="vertical-align:baseline;" id="TBL-24-1-"><td style="text-align:left;" id="TBL-24-1-1" class="td11"> <p class="noindent"><span class="larm-0900">Что</span>
+ <span class="larm-0900">происходит</span> </p></td><td style="text-align:left;" id="TBL-24-1-2" class="td11"> <p class="noindent"><span class="larm-0900">Как</span> </p></td><td style="text-align:left;" id="TBL-24-1-3" class="td11"> <p class="noindent"><span class="larm-0900">Что</span>
+ <span class="larm-0900">известно</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-24-2-"><td style="text-align:left;" id="TBL-24-2-1" class="td11"> <p class="noindent"><span class="larm-0900">смена</span>
+ <span class="larm-0900">режимов</span> </p></td><td style="text-align:left;" id="TBL-24-2-2" class="td11"> <p class="noindent"><span class="larm-0900">регистры</span>
+ <span class="nt"><span class="larm-0900">ACET</span></span><span class="larm-0900">,</span>
+ <span class="nt"><span class="larm-0900">NORA</span></span><span class="larm-0900">,</span>
+ <span class="nt"><span class="larm-0900">SERO</span></span>
+ <span class="larm-0900">(табл.</span><span class="larm-0900"> </span><a href="#x23-1810011"><span class="larm-0900">20.1</span></a><span class="larm-0900">)</span> </p></td><td style="text-align:left;" id="TBL-24-2-3" class="td11"> <p class="noindent"><span class="larm-0900">измерено</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-24-3-"><td style="text-align:left;" id="TBL-24-3-1" class="td11"> <p class="noindent"><span class="larm-0900">когда</span>
+ <span class="larm-0900">спать</span> </p></td><td style="text-align:left;" id="TBL-24-3-2" class="td11"> <p class="noindent"><span class="larm-0900">конденсатор</span>
+ <math display="inline"><mi>S</mi></math>
+ <span class="larm-0900">и</span>
+ <span class="larm-0900">реле</span>
+ <span class="larm-0900">с</span>
+ <span class="larm-0900">гистерезисом</span><span class="larm-0900"> </span><span class="larm-0900">(</span><a href="#x23-182001r1"><span class="larm-0900">20.1</span></a><span class="larm-0900">)</span> </p></td><td style="text-align:left;" id="TBL-24-3-3" class="td11"> <p class="noindent"><span class="larm-0900">модель</span>
+ <span class="larm-0900">хорошо</span>
+ <span class="larm-0900">описывает</span>
+ <span class="larm-0900">опыты;</span>
+ <span class="larm-0900">аденозин</span>
+ <span class="larm-0900">как</span>
+ <math display="inline"><mi>S</mi></math>
+ <span class="larm-0900">—</span>
+ <span class="larm-0900">гипотеза</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-24-4-"><td style="text-align:left;" id="TBL-24-4-1" class="td11"> <p class="noindent"><span class="larm-0900">медленные</span>
+ <span class="larm-0900">качели</span> </p></td><td style="text-align:left;" id="TBL-24-4-2" class="td11"> <p class="noindent"><span class="larm-0900">группа</span>
+ <span class="larm-0900">с</span>
+ <span class="larm-0900">обратной</span>
+ <span class="larm-0900">связью</span>
+ <span class="larm-0900">и</span>
+ <span class="larm-0900">усталостью</span><span class="larm-0900"> </span><span class="larm-0900">(</span><a href="#x23-183001r2"><span class="larm-0900">20.2</span></a><span class="larm-0900">)</span> </p></td><td style="text-align:left;" id="TBL-24-4-3" class="td11"> <p class="noindent"><span class="larm-0900">качели</span>
+ <span class="larm-0900">измерены;</span>
+ <span class="larm-0900">модель</span>
+ <span class="larm-0900">—</span>
+ <span class="larm-0900">простейшая</span>
+ <span class="larm-0900">схема</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-24-5-"><td style="text-align:left;" id="TBL-24-5-1" class="td11"> <p class="noindent"><span class="larm-0900">перемотка</span>
+ <span class="larm-0900">дня</span> </p></td><td style="text-align:left;" id="TBL-24-5-2" class="td11"> <p class="noindent"><span class="larm-0900">повторы</span>
+ <span class="larm-0900">в</span>
+ <math display="inline"><mn>6</mn></math><span class="larm-0900">–</span><math display="inline"><mn>2</mn><mn>0</mn></math>
+ <span class="larm-0900">раз</span>
+ <span class="larm-0900">быстрее,</span>
+ <span class="larm-0900">согласованные</span>
+ <span class="larm-0900">с</span>
+ <span class="larm-0900">качелями</span> </p></td><td style="text-align:left;" id="TBL-24-5-3" class="td11"> <p class="noindent"><span class="larm-0900">измерено;</span>
+ <span class="larm-0900">усиление</span>
+ <span class="larm-0900">согласованности</span>
+ <span class="larm-0900">улучшает</span>
+ <span class="larm-0900">память</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-24-6-"><td style="text-align:left;" id="TBL-24-6-1" class="td11"> <p class="noindent"><span class="larm-0900">зачем</span>
+ <span class="larm-0900">повторы</span> </p></td><td style="text-align:left;" id="TBL-24-6-2" class="td11"> <p class="noindent"><span class="larm-0900">перемешанное</span>
+ <span class="larm-0900">обучение</span>
+ <span class="larm-0900">медленной</span>
+ <span class="larm-0900">памяти</span> </p></td><td style="text-align:left;" id="TBL-24-6-3" class="td11"> <p class="noindent"><span class="larm-0900">хорошо</span>
+ <span class="larm-0900">обоснованная</span>
+ <span class="larm-0900">гипотеза</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-24-7-"><td style="text-align:left;" id="TBL-24-7-1" class="td11"> <p class="noindent"><span class="larm-0900">перенормировка</span>
+ <span class="larm-0900">весов</span> </p></td><td style="text-align:left;" id="TBL-24-7-2" class="td11"> <p class="noindent"><span class="larm-0900">масштабирование</span>
+ <span class="larm-0900">связей</span>
+ <span class="larm-0900">во</span>
+ <span class="larm-0900">сне</span> </p></td><td style="text-align:left;" id="TBL-24-7-3" class="td11"> <p class="noindent"><span class="larm-0900">уменьшение</span>
+ <span class="larm-0900">контактов</span>
+ <span class="larm-0900">измерено;</span>
+ <span class="larm-0900">главная</span>
+ <span class="larm-0900">роль</span>
+ <span class="larm-0900">сна</span>
+ <span class="larm-0900">—</span>
+ <span class="larm-0900">гипотеза</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-24-8-"><td style="text-align:left;" id="TBL-24-8-1" class="td11"> <p class="noindent"><span class="larm-0900">быстрый</span>
+ <span class="larm-0900">сон</span> </p></td><td style="text-align:left;" id="TBL-24-8-2" class="td11"> <p class="noindent"><span class="larm-0900">работа</span>
+ <span class="larm-0900">с</span>
+ <span class="larm-0900">отключёнными</span>
+ <span class="larm-0900">входами</span>
+ <span class="larm-0900">и</span>
+ <span class="larm-0900">выходом</span> </p></td><td style="text-align:left;" id="TBL-24-8-3" class="td11"> <p class="noindent"><span class="larm-0900">режим</span>
+ <span class="larm-0900">измерен;</span>
+ <span class="larm-0900">назначение</span>
+ <span class="larm-0900">неизвестно</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-24-9-"><td style="text-align:left;" id="TBL-24-9-1" class="td11"> <p class="noindent"><span class="larm-0900">промывка</span> </p></td><td style="text-align:left;" id="TBL-24-9-2" class="td11"> <p class="noindent"><span class="larm-0900">расширение</span>
+ <span class="larm-0900">межклеточных</span>
+ <span class="larm-0900">щелей</span> </p></td><td style="text-align:left;" id="TBL-24-9-3" class="td11"> <p class="noindent"><span class="larm-0900">противоречивые</span>
+ <span class="larm-0900">результаты</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-24-10-"><td style="text-align:left;" id="TBL-24-10-1" class="td11"> <p class="noindent"><span class="larm-0900">местный</span>
+ <span class="larm-0900">сон</span> </p></td><td style="text-align:left;" id="TBL-24-10-2" class="td11"> <p class="noindent"><span class="larm-0900">отдельные</span>
+ <span class="larm-0900">участки</span>
+ <span class="larm-0900">проваливаются</span>
+ <span class="larm-0900">в</span>
+ <span class="larm-0900">тишину</span> </p></td><td style="text-align:left;" id="TBL-24-10-3" class="td11"> <p class="noindent"><span class="larm-0900">измерено</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-24-11-"><td style="text-align:left;" id="TBL-24-11-1" class="td11"> </td></tr></table> </div>
+<figcaption class="caption"><span class="id">Таблица 20.2: </span><span class="content">Что делают нейроны во сне.</span></figcaption>
+ </figure>
+ </div>
+<p class="indent"> Таблица <a href="#x23-1880012">20.2</a> сводит главу. Сон оказался не паузой в работе машины, а её обслуживанием на
+ходу: переключение режимов теми же широковещательными каналами, генератор из тех же
+деталей, что ритм шагов, перемотка дня для медленной памяти и перенормировка весов. Днём
+машина пишет, ночью переписывает и приводит в порядок записанное.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">20.9 </span> <a id="x23-18900020.9"></a>Задачи</h3>
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x23-189001r1"></a>
+<span class="labx-1095">Задача 20.1 </span>(<math display="inline"><mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Реле без суточного ритма. </span>Пусть пороги постоянны: <math display="inline"><mi>H</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>6</mn><mn>7</mn></math>,
+<math display="inline"><mi>L</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn><mn>7</mn></math>
+(средние значения порогов модели рис. <a href="#x23-1820021">20.1</a>). Выведите из (<a href="#x23-182001r1">20.1</a>) длительности бодрствования
+и сна и период генератора при <math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>r</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mn>8</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn></math> ч,
+<math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>d</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>4</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn></math> ч.
+Почему модель с качающимися порогами всё же выходит на <math display="inline"><mn>1</mn><mn>6</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn> <mo class="MathClass-bin" stretchy="false">+</mo> <mn>8</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>0</mn> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>2</mn><mn>4</mn></math> ч?
+К какому прибору главы <a href="16.html#x19-14500016">16</a> относится этот эффект?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent"><math display="inline"><msub><mrow><mi>t</mi></mrow><mrow><mstyle class="text"><mtext>б</mtext></mstyle></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <msub><mrow><mi>τ</mi></mrow><mrow><mi>r</mi></mrow></msub 
+> <mi class="loglike">ln</mi><mo>⁡</mo> <mfrac><mrow><mn>1</mn><mo class="MathClass-bin" stretchy="false">−</mo><mi>L</mi></mrow> 
+<mrow><mn>1</mn><mo class="MathClass-bin" stretchy="false">−</mo><mi>H</mi></mrow></mfrac> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mn>6</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>8</mn></math> ч,
+<math display="inline"><msub><mrow><mi>t</mi></mrow><mrow><mstyle class="text"><mtext>с</mtext></mstyle></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <msub><mrow><mi>τ</mi></mrow><mrow><mi>d</mi></mrow></msub 
+> <mi class="loglike">ln</mi><mo>⁡</mo> <mfrac><mrow><mi>H</mi></mrow> 
+<mrow><mi>L</mi></mrow></mfrac> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>5</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>8</mn></math> ч, период
+<math display="inline"><mn>2</mn><mn>2</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn></math> ч; к
+<math display="inline"><mn>2</mn><mn>4</mn></math> ч
+генератор подтягивает суточное качание порогов — фазовая автоподстройка (<a href="fullch16.html#x19-150001r4">16.4</a>).
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x23-189002r2"></a>
+<span class="labx-1095">Задача 20.2 </span>(<math display="inline"><mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Долг сна. </span>Сон, начатый при давлении <math display="inline"><msub><mrow><mi>S</mi></mrow><mrow><mn>0</mn></mrow></msub 
+></math>,
+длится <math display="inline"><msub><mrow><mi>t</mi></mrow><mrow><mi>s</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <msub><mrow><mi>τ</mi></mrow><mrow><mi>d</mi></mrow></msub 
+> <mi class="loglike">ln</mi><mo>⁡</mo><mo class="MathClass-open" stretchy="false">(</mo><msub><mrow><mi>S</mi></mrow><mrow><mn>0</mn></mrow></msub 
+><mo class="MathClass-bin" stretchy="false">∕</mo><mi>L</mi><mo class="MathClass-close" stretchy="false">)</mo></math>,
+<math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>d</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>4</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn></math> ч,
+<math display="inline"><mi>L</mi></math>
+— нижний порог при пробуждении. (а) После <math display="inline"><mn>4</mn><mn>0</mn></math> ч
+без сна <math display="inline"><msub><mrow><mi>S</mi></mrow><mrow><mn>0</mn></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>9</mn><mn>0</mn></math>,
+а сон длился <math display="inline"><mn>8</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>8</mn></math> ч.
+Каков был <math display="inline"><mi>L</mi></math>?
+Сколько длился бы сон при обычном <math display="inline"><mi>L</mi> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>0</mn><mn>9</mn><mn>2</mn></math>?
+(б) За ночь площадь синаптических контактов уменьшается на <math display="inline"><mn>1</mn><mn>8</mn><mi>%</mi></math>.
+На сколько должны вырасти веса за день?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">(а) <math display="inline"><mi>L</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn><mn>1</mn><mn>1</mn></math>;
+при <math display="inline"><mi>L</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>0</mn><mn>9</mn><mn>2</mn></math> сон
+длился бы <math display="inline"><mn>9</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>6</mn></math> ч.
+(б) На <math display="inline"><mn>2</mn><mn>2</mn><mi>%</mi></math>
+(<math display="inline"><mn>1</mn><mo class="MathClass-bin" stretchy="false">∕</mo><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>8</mn><mn>2</mn> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn><mn>2</mn></math>), а не
+на <math display="inline"><mn>1</mn><mn>8</mn><mi>%</mi></math>.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x23-189003r3"></a>
+<span class="labx-1095">Задача 20.3 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Проектирование порогов. </span>Подберите постоянные пороги <math display="inline"><mi>H</mi></math>
+и <math display="inline"><mi>L</mi></math>,
+при которых реле (<a href="#x23-182001r1">20.1</a>) с <math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>r</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mn>8</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn></math> ч
+и <math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>d</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>4</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn></math> ч
+даёт ровно <math display="inline"><mn>1</mn><mn>6</mn></math> ч
+бодрствования и <math display="inline"><mn>8</mn></math> ч
+сна. Чем такая машина хуже машины с качающимися порогами, если однажды ночью её
+разбудили через <math display="inline"><mn>4</mn></math> часа?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent"><math display="inline"><mi>H</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mfrac><mrow><mi>p</mi><mo class="MathClass-bin" stretchy="false">−</mo><mn>1</mn></mrow> 
+<mrow><mi>p</mi><mo class="MathClass-bin" stretchy="false">−</mo><mn>1</mn><mo class="MathClass-bin" stretchy="false">∕</mo><mi>q</mi></mrow></mfrac> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>6</mn><mn>2</mn><mn>3</mn></math>,
+<math display="inline"><mi>L</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mi>H</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mi>q</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>0</mn><mn>9</mn><mn>3</mn></math>, где
+<math display="inline"><mi>p</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <msup><mrow><mi>e</mi></mrow><mrow><mn>1</mn><mn>6</mn><mo class="MathClass-bin" stretchy="false">∕</mo><msub><mrow><mi>τ</mi></mrow><mrow><mi>r</mi></mrow></msub 
+></mrow></msup 
+></math>,
+<math display="inline"><mi>q</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <msup><mrow><mi>e</mi></mrow><mrow><mn>8</mn><mo class="MathClass-bin" stretchy="false">∕</mo><msub><mrow><mi>τ</mi></mrow><mrow><mi>d</mi></mrow></msub 
+></mrow></msup 
+></math>. После побудки через
+<math display="inline"><mn>4</mn></math> ч фаза сдвигается
+навсегда (засыпание на <math display="inline"><mn>7</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn></math> ч
+раньше); с качающимися порогами она возвращается за двое–трое суток.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x23-189004r4"></a>
+<span class="labx-1095">Задача 20.4 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Период медленных качелей. </span>В модели (<a href="#x23-183001r2">20.2</a>) <math display="inline"><mi>F</mi><mo class="MathClass-open" stretchy="false">(</mo><mi>x</mi><mo class="MathClass-close" stretchy="false">)</mo> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mo class="MathClass-bin" stretchy="false">∕</mo><mrow><mo class="MathClass-open" fence="true" mathsize="1.19em">(</mo><mrow><mn>1</mn> <mo class="MathClass-bin" stretchy="false">+</mo> <msup><mrow><mi>e</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">−</mo><mo class="MathClass-open" stretchy="false">(</mo><mi>x</mi><mo class="MathClass-bin" stretchy="false">−</mo><mi>𝜃</mi><mo class="MathClass-close" stretchy="false">)</mo><mo class="MathClass-bin" stretchy="false">∕</mo><mi>k</mi></mrow></msup 
+></mrow><mo class="MathClass-close" fence="true" mathsize="1.19em">)</mo></mrow></math>,
+<math display="inline"><mi>w</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>5</mn></math>,
+<math display="inline"><mi>I</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>2</mn></math>,
+<math display="inline"><mi>𝜃</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>2</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn></math>,
+<math display="inline"><mi>k</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn><mn>5</mn></math>,
+<math display="inline"><mi>b</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>5</mn></math>,
+<math display="inline"><mi>τ</mi> <mo class="MathClass-rel" stretchy="false">≪</mo> <msub><mrow><mi>τ</mi></mrow><mrow><mi>a</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>3</mn></math> с.
+(а) Найдите точки поворота <math display="inline"><msub><mrow><mi>a</mi></mrow><mrow><mstyle class="text"><mtext>в</mtext></mstyle></mrow></msub 
+></math>
+и <math display="inline"><msub><mrow><mi>a</mi></mrow><mrow><mstyle class="text"><mtext>н</mtext></mstyle></mrow></msub 
+></math>
+кривой <math display="inline"><mi>r</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mi>F</mi><mo class="MathClass-open" stretchy="false">(</mo><mi>w</mi><mi>r</mi> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>I</mi> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>a</mi><mo class="MathClass-close" stretchy="false">)</mo></math>,
+где исчезают работа и тишина. (б) Приняв <math display="inline"><mi>r</mi> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>1</mn></math>
+в работе и <math display="inline"><mi>r</mi> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>0</mn></math>
+в тишине, найдите период и долю работы.
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">(а) <math display="inline"><msub><mrow><mi>r</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">±</mo></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mfrac><mrow><mn>1</mn></mrow> 
+<mrow><mn>2</mn></mrow></mfrac><mrow><mo class="MathClass-open" fence="true" mathsize="1.19em">(</mo><mrow><mn>1</mn> <mo class="MathClass-bin" stretchy="false">±</mo><msqrt><mrow><mn>1</mn> <mo class="MathClass-bin" stretchy="false">−</mo> <mn>4</mn><mi>k</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mi>w</mi></mrow></msqrt></mrow><mo class="MathClass-close" fence="true" mathsize="1.19em">)</mo></mrow> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>9</mn><mn>4</mn><mn>7</mn><mo class="MathClass-punc" stretchy="false">,</mo><mspace width="0.33em" class="nbsp" /><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>0</mn><mn>5</mn><mn>3</mn></math>;
+<math display="inline"><msub><mrow><mi>a</mi></mrow><mrow><mstyle class="text"><mtext>в</mtext></mstyle></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>3</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn><mn>1</mn></math>,
+<math display="inline"><msub><mrow><mi>a</mi></mrow><mrow><mstyle class="text"><mtext>н</mtext></mstyle></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>4</mn><mn>9</mn></math>. (б) Работа
+<math display="inline"> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>3</mn><mn>3</mn></math> с, тишина
+<math display="inline"> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn><mn>9</mn></math> с, период
+<math display="inline"> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>9</mn><mn>3</mn></math> с, доля
+работы <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>3</mn><mn>6</mn></math>.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x23-189005r5"></a>
+<span class="labx-1095">Задача 20.5 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Когда качели выключаются. </span>В модели задачи <a href="#x23-189004r4">20.4</a> неподвижная точка лежит на пересечении
+кривой <math display="inline"><mi>a</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mi>w</mi><mi>r</mi> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>I</mi> <mo class="MathClass-bin" stretchy="false">−</mo> <msup><mrow><mi>F</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">−</mo><mn>1</mn></mrow></msup 
+><mo class="MathClass-open" stretchy="false">(</mo><mi>r</mi><mo class="MathClass-close" stretchy="false">)</mo></math>
+с прямой <math display="inline"><mi>a</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mi>b</mi><mi>r</mi></math>.
+Колебания идут, пока пересечение на средней ветви, между точками поворота. При каких
+<math display="inline"><mi>b</mi></math>
+это так? Как, меняя <math display="inline"><mi>b</mi></math>,
+<span class="nt">ACET</span> переключает генератор в усилитель?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent"><math display="inline"><msub><mrow><mi>a</mi></mrow><mrow><mstyle class="text"><mtext>в</mtext></mstyle></mrow></msub 
+><mo class="MathClass-bin" stretchy="false">∕</mo><msub><mrow><mi>r</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">+</mo></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">&#x003C;</mo> <mi>b</mi> <mo class="MathClass-rel" stretchy="false">&#x003C;</mo> <msub><mrow><mi>a</mi></mrow><mrow><mstyle class="text"><mtext>н</mtext></mstyle></mrow></msub 
+><mo class="MathClass-bin" stretchy="false">∕</mo><msub><mrow><mi>r</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">−</mo></mrow></msub 
+></math>:
+<math display="inline"><mn>3</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>7</mn><mn>1</mn> <mo class="MathClass-rel" stretchy="false">&#x003C;</mo> <mi>b</mi> <mo class="MathClass-rel" stretchy="false">&#x003C;</mo> <mn>9</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn><mn>0</mn></math>. <span class="nt">ACET</span>
+уменьшает <math display="inline"><mi>b</mi></math>
+ниже <math display="inline"><mn>3</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>7</mn><mn>1</mn></math>:
+пересечение уходит на верхнюю ветвь, и устойчиво состояние работы
+(<math display="inline"><mi>r</mi> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>1</mn></math>).
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x23-189006r6"></a>
+<span class="labx-1095">Задача 20.6 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Моделирование: долг или фаза. </span>В <span class="latt-1095">sleep_models.py </span>возьмите первое пробуждение после
+<math display="inline"><mn>4</mn><mn>8</mn></math> ч
+и держите машину бодрствующей <math display="inline"><mi>D</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>2</mn><mn>4</mn></math>,
+<math display="inline"><mn>3</mn><mn>2</mn></math>,
+<math display="inline"><mn>4</mn><mn>0</mn></math>,
+<math display="inline"><mn>4</mn><mn>8</mn></math>,
+<math display="inline"><mn>6</mn><mn>4</mn></math> ч
+(<span class="latt-1095">stay_awake</span>, <span class="latt-1095">days=8</span>). Сколько длится восстановительный сон при каждом <math display="inline"><mi>D</mi></math>?
+Что определяет его длительность?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent"><math display="inline"><mn>4</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>9</mn></math>,
+<math display="inline"><mn>6</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>8</mn></math>,
+<math display="inline"><mn>8</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>8</mn></math>,
+<math display="inline"><mn>5</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn></math>,
+<math display="inline"><mn>8</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>9</mn></math> ч при
+<math display="inline"><mi>D</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>2</mn><mn>4</mn></math>,
+<math display="inline"><mn>3</mn><mn>2</mn></math>,
+<math display="inline"><mn>4</mn><mn>0</mn></math>,
+<math display="inline"><mn>4</mn><mn>8</mn></math>,
+<math display="inline"><mn>6</mn><mn>4</mn></math>:
+длительность задаёт суточная фаза засыпания, а не долг.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x23-189007r7"></a>
+<span class="labx-1095">Задача 20.7 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Моделирование: забывание и перемешивание. </span>Линейный нейрон <math display="inline"><mi>y</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mstyle mathvariant="bold"><mi>w</mi></mstyle> <mo class="MathClass-bin" stretchy="false">⋅</mo><mstyle mathvariant="bold"><mi>x</mi></mstyle></math>,
+<math display="inline"><mi>n</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>4</mn><mn>0</mn></math>,
+учится по правилу <math display="inline"><mstyle mathvariant="bold"><mi>w</mi></mstyle> <mo class="MathClass-rel" stretchy="false">←</mo><mstyle mathvariant="bold"><mi>w</mi></mstyle> <mo class="MathClass-bin" stretchy="false">−</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn><mspace width="0.17em" class="thinspace"/><mo class="MathClass-open" stretchy="false">(</mo><mi>y</mi> <mo class="MathClass-bin" stretchy="false">−</mo> <msup><mrow><mi>y</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">∗</mo></mrow></msup 
+><mo class="MathClass-close" stretchy="false">)</mo><mspace width="0.17em" class="thinspace"/><mstyle mathvariant="bold"><mi>x</mi></mstyle></math>.
+Задачи A и B — по <math display="inline"><mn>1</mn><mn>0</mn></math>
+образов, <math display="inline"><msub><mrow><mi>x</mi></mrow><mrow><mi>j</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">∼</mo><mi mathvariant="script">N</mi><mo class="MathClass-open" stretchy="false">(</mo><mn>0</mn><mo class="MathClass-punc" stretchy="false">,</mo><mn>1</mn><mo class="MathClass-bin" stretchy="false">∕</mo><mi>n</mi><mo class="MathClass-close" stretchy="false">)</mo></math>,
+<math display="inline"><msup><mrow><mi>y</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">∗</mo></mrow></msup 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mo class="MathClass-bin" stretchy="false">±</mo><mn>1</mn></math>.
+Какова среднеквадратичная ошибка на A после <math display="inline"><mn>2</mn><mn>0</mn><mn>0</mn></math>
+эпох A и затем <math display="inline"><mn>2</mn><mn>0</mn><mn>0</mn></math>
+эпох B? А после <math display="inline"><mn>2</mn><mn>0</mn><mn>0</mn></math>
+эпох A и B вперемешку?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">После B ошибка на A в среднем <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn><mn>1</mn></math>
+(от <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn><mn>9</mn></math> до
+<math display="inline"><mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>0</mn><mn>8</mn></math> по
+<math display="inline"><mn>2</mn><mn>0</mn></math> наборам; у нулевого
+ответа — <math display="inline"><mn>1</mn></math>). Вперемешку
+обе ошибки меньше <math display="inline"><mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mo class="MathClass-bin" stretchy="false">−</mo><mn>4</mn></mrow></msup 
+></math>.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x23-189008r8"></a>
+<span class="labx-1095">Задача 20.8 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo><mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Исследование: перемешивание или перенормировка? </span>Нейрон задачи <a href="#x23-189007r7">20.7</a> с порогом; две
+ночные процедуры: (i) все веса умножаются на <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>8</mn><mn>2</mn></math>;
+(ii) старые образы повторяются вперемешку с новыми. Что каждая делает с отношениями
+весов и с ответами нейрона? Как гипотезы различить по размерам синапсов после сна?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">Открытая задача. Равномерное масштабирование сохраняет отношения весов, но сохраняет
+ответы порогового нейрона лишь при масштабировании порога в то же число раз; перемешанные
+повторы меняют отношения. Неизменность крупных контактов противоречит чисто
+равномерному масштабированию.
+</p></div></details>
+
+<p class="indent"> <a id="tailfullch20.html"></a> </p> 
+
+  </article>
+  <article class="text short" id="text-short" hidden>
+
+ <a id="s-x23-10200020"></a>
+<p class="noindent">Сон — не выключение машины, а смена режима. Это видно
+по радиостанциям. В глубоком сне приглушены почти
+все: ацетилхолин, норадреналин, серотонин. Во сне со
+сновидениями ацетилхолин возвращается к дневному
+уровню, норадреналин и серотонин почти молчат, а
+выход на мышцы отключён тормозами — поэтому во сне
+мы не бегаем за тем, от чего убегаем во сне. Всё это
+измерено.
+</p>
+ <h3 class="likesectionHead"> <a id="s-x23-103000"></a>Когда пора спать</h3>
+<p class="noindent">Представьте конденсатор, который заряжается весь день,
+пока вы бодрствуете, и разряжается ночью. Заряд — это
+«давление сна». Засыпаете вы, когда заряд достигает
+верхнего порога, просыпаетесь, когда он опускается до
+нижнего. А сами пороги плавно ходят вверх и вниз вместе с
+суточным ритмом из главы 16. Такая простая схема сама
+приходит к шестнадцати часам бодрствования и восьми
+часам сна. И объясняет, почему после бессонной ночи мы
+спим не вдвое дольше, а глубже: полный конденсатор
+разряжается быстрее. Кандидат на роль «заряда» —
+вещество, которое накапливается в мозге при работе; что это
+именно оно, пока гипотеза.
+</p>
+<div class="center">
+<p class="noindent"><img src="img/short36x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<div class="minipage"><p class="noindent"><span class="lati-1000">Давление сна копится днём и тает ночью;</span>
+<span class="lati-1000">засыпаем у верхнего порога, просыпаемся у</span>
+<span class="lati-1000">нижнего, а оба порога качаются вместе с сутками.</span></p></div></div>
+ <h3 class="likesectionHead"> <a id="s-x23-104000"></a>Медленные качели</h3>
+<p class="noindent">В глубоком сне целые области мозга синхронно то включаются,
+то выключаются — реже раза в секунду. Это уже знакомая
+схема: группа, которая возбуждает сама себя и устаёт, —
+генератор. Днём ацетилхолин подавляет усталость нейронов,
+и та же группа работает ровно; ночью его мало, и сеть
+начинает качаться.
+</p>
+<div class="center">
+<p class="noindent"><img src="img/short37x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<div class="minipage"><p class="noindent"><span class="lati-1000">Ночью сеть качается медленно: то почти все</span>
+<span class="lati-1000">нейроны работают, то почти все молчат.</span> </p></div></div>
+ <h3 class="likesectionHead"> <a id="s-x23-105000"></a>Перемотка вперёд</h3>
+<p class="noindent">В этих качелях происходит самое интересное. Цепочки
+срабатываний нейронов, случившиеся днём, «проигрываются»
+заново — и в разы быстрее: в отделе памяти примерно в
+двадцать раз, в коре в несколько раз. Если искусственно
+усилить согласованность этих проигрываний с медленными
+качелями, память улучшается — это причинный опыт.
+Зачем это нужно? Правдоподобная гипотеза: медленная
+долговременная память учится на повторах вперемешку со
+старым, чтобы новое не затёрло прежнее. Инженеры знают
+эту беду: нейросеть, обученная на новой задаче, забывает
+старую, если не повторять старые примеры.
+</p>
+ <h3 class="likesectionHead"> <a id="s-x23-106000"></a>Подрезка связей</h3>
+<p class="noindent">Ещё одна измеренная вещь: после сна контакты между
+нейронами в среднем становятся меньше — на единицы-десятки
+процентов, в пропорции к своему размеру. Как если бы все
+громкости немного убавили одним движением: соотношения
+сохранились, выученное осталось, а место для завтрашнего
+обучения освободилось. Что это главная задача сна —
+гипотеза.
+</p>
+ <h3 class="likesectionHead"> <a id="s-x23-107000"></a>Сновидения и уборка</h3>
+<p class="noindent">Сон со сновидениями похож на стендовое испытание:
+машина работает на полную мощность, но входы заменены
+внутренними сигналами, а выход отключён. Зачем это
+нужно, мы не знаем. Идея, что во сне мозг «промывается» от
+отходов, пока спорна: есть опыты и за, и против.
+</p><p class="indent"> Самое удивительное: сон бывает местным. После долгого
+бодрствования отдельные участки коры бодрствующего
+человека на мгновение «засыпают», замолкая посреди
+работы.
+</p><p class="noindent"><span class="lati-1000">Формулы, модели, задачи и источники — в полной версии,</span>
+<span class="lati-1000">глава</span><span class="lati-1000"> 20.</span>
+</p>
+<p class="indent"> <a id="s-tailshortch20.html"></a> </p> 
+
+  </article>
+
+  <aside class="starline"><span data-ru="Книга бесплатная и открытая. Если глава была полезной, поставьте книге звезду на GitHub: так её найдут другие." data-en="The book is free and open. If this chapter was useful, star the book on GitHub so others can find it.">Книга бесплатная и открытая.</span> <a href="https://github.com/kladkogex/20-watt-computer" target="_blank" rel="noopener" data-ru="★ Звезда на GitHub" data-en="★ Star on GitHub">★ Звезда на GitHub</a></aside>
+  <nav class="pager">
+    <a class="prev" href="19.html"><span data-ru="← Назад" data-en="← Previous">← Назад</span><b>Нейроны по числу дендритов</b></a>
+    <a class="next" href="21.html"><span data-ru="Дальше →" data-en="Next →">Дальше →</span><b>Машина из живых нейронов</b></a>
+  </nav>
+  <footer>
+    <span data-ru='Константин Кладько · текст — <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.ru">CC BY-NC-SA 4.0</a>' data-en='Konstantin Kladko · text: <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>'>Константин Кладько</span>
+    <span><a href="../pdf/20-watt-computer-ru.pdf">PDF</a> · <a href="../breadboard/" data-ru="Макетная плата" data-en="Breadboard">Макетная плата</a> · <a href="https://github.com/kladkogex/20-watt-computer">GitHub</a></span>
+  </footer>
+</main>
+
+<script>
+(function(){
+  const NAV = [{"slug": "00", "title": "Как читать эту книгу", "kicker": "Введение"}, {"slug": "01", "title": "Типы нейронов", "kicker": "Глава 1"}, {"slug": "02", "title": "Что вычисляют GLUT-нейроны", "kicker": "Глава 2"}, {"slug": "03", "title": "GLUT и GABA вместе", "kicker": "Глава 3"}, {"slug": "04", "title": "Азбука Морзе: что мы знаем о языке, на котором говорят GLUT- и GABA-нейроны", "kicker": "Глава 4"}, {"slug": "05", "title": "Что вычисляют SERO-нейроны", "kicker": "Глава 5"}, {"slug": "06", "title": "Нейронные сети, которые умеют учиться: добавляем DOPA", "kicker": "Глава 6"}, {"slug": "07", "title": "Альтернативные современные теории обучения на основе дофамина", "kicker": "Глава 7"}, {"slug": "08", "title": "Когда искать, а когда решать: добавляем NORA", "kicker": "Глава 8"}, {"slug": "09", "title": "Когда писать, а когда читать: добавляем ACET", "kicker": "Глава 9"}, {"slug": "10", "title": "Вся машина", "kicker": "Глава 10"}, {"slug": "11", "title": "Входы машины: как к ней подключены глаза, уши и другие датчики", "kicker": "Глава 11"}, {"slug": "12", "title": "Распознавание изображений и видео", "kicker": "Глава 12"}, {"slug": "13", "title": "Выходы машины: как мозг управляет мышцами", "kicker": "Глава 13"}, {"slug": "14", "title": "Боль: сигнал тревоги", "kicker": "Глава 14"}, {"slug": "15", "title": "Как машина учится двигаться", "kicker": "Глава 15"}, {"slug": "16", "title": "Второй выход: как мозг управляет химией тела", "kicker": "Глава 16"}, {"slug": "17", "title": "Отладка машины", "kicker": "Глава 17"}, {"slug": "18", "title": "Типы нейронов по электрической функции", "kicker": "Глава 18"}, {"slug": "19", "title": "Нейроны по числу дендритов", "kicker": "Глава 19"}, {"slug": "20", "title": "Что делают нейроны во сне", "kicker": "Глава 20"}, {"slug": "21", "title": "Машина из живых нейронов", "kicker": "Глава 21"}, {"slug": "22", "title": "DishBrain", "kicker": "Глава 22"}, {"slug": "a", "title": "Вещества, которые не задают тип нейрона", "kicker": "Приложение A"}, {"slug": "b", "title": "Обозначения", "kicker": "Приложение B"}, {"slug": "c", "title": "Ответы", "kicker": "Приложение C"}, {"slug": "d", "title": "Экспериментальное приложение", "kicker": "Приложение D"}, {"slug": "refs", "title": "Литература", "kicker": ""}];
+  const SLUG = "20";
+  const store = {get(k){try{return localStorage.getItem(k)}catch(e){return null}}, set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+
+  // chapter selector
+  const sel = document.getElementById("jump");
+  NAV.forEach(p => { const o = document.createElement("option"); o.value = p.slug;
+    o.textContent = (p.kicker ? p.kicker + ". " : "") + p.title; if (p.slug === SLUG) o.selected = true; sel.appendChild(o); });
+  sel.addEventListener("change", () => { location.href = sel.value + ".html" + (location.hash === "#short" ? "#short" : ""); });
+
+  // Коротко / Полностью
+  const modeBox = document.querySelector(".mode");
+  const hasShort = modeBox.dataset.hasShort === "true";
+  const full = document.getElementById("text-full"), short = document.getElementById("text-short");
+  function setMode(m, remember){
+    if (!hasShort) m = "full";
+    document.body.dataset.mode = m;
+    full.hidden = m !== "full"; short.hidden = m !== "short";
+    modeBox.querySelectorAll(".seg").forEach(b => b.setAttribute("aria-pressed", b.dataset.mode === m));
+    if (remember) store.set("20w-mode", m);
+  }
+  if (!hasShort) modeBox.hidden = true;
+  modeBox.addEventListener("click", e => { const b = e.target.closest(".seg"); if (b) { setMode(b.dataset.mode, true); history.replaceState(null, "", "#" + b.dataset.mode); } });
+  document.addEventListener("click", e => { const a = e.target.closest("a[data-mode]"); if (a) { e.preventDefault(); setMode(a.dataset.mode, true); window.scrollTo(0, 0); } });
+  // a link into the text (#x...) that lives in the other version switches to it
+  function follow(){
+    const h = decodeURIComponent(location.hash.slice(1));
+    if (h === "short" || h === "full") { setMode(h, true); return; }
+    if (!h) return;
+    const t = document.getElementById(h);
+    if (t) { setMode(short.contains(t) ? "short" : "full", false); t.scrollIntoView(); }
+  }
+  setMode(store.get("20w-mode") || "full", false);
+  follow();
+  window.addEventListener("hashchange", follow);
+  // links that leave the book open in the whole window when the page sits inside the reader
+  if (document.documentElement.classList.contains("embedded"))
+    document.querySelectorAll('a[href^="../"], a[href^="http"]').forEach(a => { a.target = a.href.startsWith(location.origin) ? "_top" : "_blank"; });
+
+  // interface language (the text itself is Russian)
+  function setLang(l){
+    document.querySelectorAll("[data-ru]").forEach(el => { el.innerHTML = el.dataset[l]; });
+    document.getElementById("lang-ru").setAttribute("aria-pressed", l === "ru");
+    document.getElementById("lang-en").setAttribute("aria-pressed", l === "en");
+    store.set("20w-lang", l);
+  }
+  document.getElementById("lang-ru").onclick = () => setLang("ru");
+  document.getElementById("lang-en").onclick = () => setLang("en");
+  setLang(store.get("20w-lang") === "en" ? "en" : "ru");
+  window.addEventListener("storage", e => {
+    if (e.key === "20w-lang" && (e.newValue === "ru" || e.newValue === "en")) setLang(e.newValue);
+    if (e.key === "20w-theme" && (e.newValue === "light" || e.newValue === "dark")) document.documentElement.setAttribute("data-theme", e.newValue);
+  });
+})();
+</script>
+<script>
+(function(){var b=document.getElementById("theme");if(!b)return;var r=document.documentElement;function cur(){var t=r.getAttribute("data-theme");if(t)return t;return window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";}function show(){b.textContent=cur()==="dark"?"☀":"☾";b.setAttribute("aria-pressed",cur()==="dark");}b.onclick=function(){var t=cur()==="dark"?"light":"dark";r.setAttribute("data-theme",t);try{localStorage.setItem("20w-theme",t);}catch(e){}show();};if(window.matchMedia)matchMedia("(prefers-color-scheme: dark)").addEventListener("change",show);show();})();
+</script>
+</body>
+</html>

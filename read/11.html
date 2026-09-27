@@ -1,0 +1,670 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<script>try{var t=localStorage.getItem("20w-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);}catch(e){}if(window.self!==window.top)document.documentElement.classList.add("embedded");</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Глава 11. Входы машины: как к ней подключены глаза, уши и другие датчики · Компьютер на 20 ваттах</title>
+<meta name="description" content="На рис. 10.1 данные входили в машину слева, из блока «датчики». Теперь откроем этот блок. Для инженера каждый орган чувств — это преобразователь с аналоговым входным каскадом и …">
+<link rel="canonical" href="https://kladkogex.github.io/20-watt-computer/read/11.html">
+<meta property="og:type" content="book">
+<meta property="og:title" content="Глава 11. Входы машины: как к ней подключены глаза, уши и другие датчики · Компьютер на 20 ваттах">
+<meta property="og:description" content="На рис. 10.1 данные входили в машину слева, из блока «датчики». Теперь откроем этот блок. Для инженера каждый орган чувств — это преобразователь с аналоговым входным каскадом и …">
+<meta property="og:url" content="https://kladkogex.github.io/20-watt-computer/read/11.html">
+<meta property="og:locale" content="ru_RU">
+<meta property="og:image" content="https://kladkogex.github.io/20-watt-computer/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Your brain runs on 20 watts. Here is its datasheet. The 20-Watt Computer, a free textbook for engineers.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://kladkogex.github.io/20-watt-computer/og-card.png">
+<meta name="twitter:title" content="Глава 11. Входы машины: как к ней подключены глаза, уши и другие датчики · The 20-Watt Computer">
+<meta name="twitter:description" content="На рис. 10.1 данные входили в машину слева, из блока «датчики». Теперь откроем этот блок. Для инженера каждый орган чувств — это преобразователь с аналоговым входным каскадом и …">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Chapter", "name": "Входы машины: как к ней подключены глаза, уши и другие датчики", "url": "https://kladkogex.github.io/20-watt-computer/read/11.html", "position": 11, "inLanguage": "ru", "isAccessibleForFree": true, "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/", "author": {"@type": "Person", "name": "Константин Кладько", "alternateName": "Konstantin Kladko"}, "isPartOf": {"@type": "Book", "name": "Компьютер на 20 ваттах. Как вычисляет мозг: количественный подход для инженеров", "alternateName": "The 20-Watt Computer: How the Brain Computes. A Quantitative Approach for Engineers", "author": {"@type": "Person", "name": "Константин Кладько", "alternateName": "Konstantin Kladko"}, "url": "https://kladkogex.github.io/20-watt-computer/", "inLanguage": "ru", "isAccessibleForFree": true, "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/"}}</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap">
+<link rel="stylesheet" href="book.css">
+</head>
+<body>
+<header class="bar">
+  <a class="home" href="../#toc"><span class="w">20</span> <span data-ru="Компьютер на 20 ваттах" data-en="The 20-Watt Computer">Компьютер на 20 ваттах</span></a>
+  <label class="jump"><span class="sr" data-ru="Перейти к главе" data-en="Go to chapter">Перейти к главе</span>
+    <select id="jump"></select></label>
+  <div class="langs" role="group" aria-label="Language">
+    <button class="chip" id="lang-ru" type="button">RU</button>
+    <button class="chip" id="lang-en" type="button">EN</button>
+    <button class="chip theme" id="theme" type="button" aria-label="Light or dark theme" title="Light / dark">☾</button>
+  </div>
+</header>
+
+<main class="page">
+  <div class="pagehead">
+    <p class="kicker" data-ru="Глава 11" data-en="Chapter 11">Глава 11</p>
+    <h1><span class="t-full">Входы машины: как к ней подключены глаза, уши и другие датчики</span><span class="t-short">Как мир попадает внутрь</span></h1>
+    <div class="mode" role="group" aria-label="Version" data-has-short="true">
+      <button type="button" class="seg" data-mode="short"><b data-ru="Коротко" data-en="Short">Коротко</b><span data-ru="без формул, с рисунками" data-en="no formulas, with drawings">без формул, с рисунками</span></button>
+      <button type="button" class="seg" data-mode="full"><b data-ru="Полностью" data-en="Full">Полностью</b><span data-ru="формулы, модели, задачи" data-en="formulas, models, exercises">формулы, модели, задачи</span></button>
+    </div>
+    <p class="lang-note" data-ru="" data-en="The online reader is in Russian for now; the book in other languages is in the PDF downloads in the menu.">.</p>
+  </div>
+
+  <article class="text full" id="text-full">
+
+ <a id="x14-10400011"></a>
+ <h3 class="sectionHead"><span class="titlemark">11.1 </span> <a id="x14-10500011.1"></a>Датчик как преобразователь</h3>
+<p class="noindent">На рис. <a href="10.html#x13-960011">10.1</a> данные входили в машину слева, из блока «датчики». Теперь откроем этот блок.
+Для инженера каждый орган чувств — это <span class="lati-1095">преобразователь </span>с аналоговым входным каскадом и
+аналого-цифровым преобразователем в конце, только цифры на выходе — не числа, а
+импульсы.
+</p><p class="indent"> Схема у всех органов чувств одна и та же (рис. <a href="#x14-1050011">11.1</a>). Физическая величина — свет, давление,
+колебание, молекула — действует на белок-рецептор в мембране чувствительной клетки. Этот
+белок работает как затвор: он сам или через короткую цепочку реакций открывает ионный канал.
+Возникает <span class="lati-1095">рецепторный ток</span>, а с ним — аналоговое напряжение на мембране. Дальше
+напряжение проходит регулировку усиления и попадает в кодер импульсов — уже
+знакомый интегрирующий нейрон (<a href="02.html#x5-16001r1">2.1</a>), который превращает уровень в частоту и моменты
+импульсов. Выход почти всегда один и тот же: чувствительные нейроны глаза, уха,
+обоняния и кожи выбрасывают глутамат, так что входы подключаются прямо к шине
+<span class="nt">GLUT</span>.
+</p>
+ <figure class="figure"> 
+<a id="x14-1050011"></a>
+<p class="noindent"><img src="img/full35x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<figcaption class="caption"><span class="id">Рис. 11.1: </span><span class="content">Любой орган чувств как цепь преобразований. Белок-рецептор открывает канал и
+даёт ток; регулировка усиления приспосабливает его к обстановке; кодер (<a href="02.html#x5-16001r1">2.1</a>) превращает
+уровень в импульсы, которые уходят на шину <span class="nt">GLUT</span>. В глазу и ухе первые каскады вообще
+не выдают импульсов: сигнал остаётся аналоговым, пока не приходится передавать его
+далеко.</span></figcaption>
+ </figure>
+<p class="indent"> Одна деталь хорошо знакома электронщику. В глазу и в ухе самые первые клетки импульсов
+не выдают вовсе: они передают соседям плавное напряжение, как аналоговый каскад на плате.
+Импульсы появляются только там, где сигнал надо везти далеко. Аналоговый сигнал на
+расстоянии миллиметров затухает и зашумляется, а импульс, как мы видели в главе <a href="01.html#x4-40001">1</a>,
+доходит до конца провода той же высоты. Оцифровывают там, где начинается длинная
+линия.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">11.2 </span> <a id="x14-10600011.2"></a>На пределе физики</h3>
+<p class="noindent">Датчики мозга работают у физических пределов чувствительности. Датчик света в темноте
+отвечает на <span class="lati-1095">один фотон</span>: поглощение одной частицы света даёт ток около пикоампера, заметный
+на фоне собственного шума <span class="cite">[<a href="refs.html#XBaylor1979">91</a>]</span>. Датчик звука замечает смещение своего чувствительного пучка
+меньше чем на нанометр <span class="cite">[<a href="refs.html#XHudspeth1989">92</a>]</span>.
+</p><p class="indent"> Когда света мало, точность ограничивает не датчик, а сам свет: фотоны
+приходят случайно, пуассоновским потоком. Если за время накопления
+<math display="inline"><mi>T</mi></math> в датчик попадает
+в среднем <math display="inline"><mi>N</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mi mathvariant="normal">Φ</mi><mi>T</mi></math> фотонов,
+их число дрожит на <math display="inline"><msqrt><mrow><mi>N</mi></mrow></msqrt></math>.
+Чтобы прибавка <math display="inline"><mi mathvariant="normal">Δ</mi><mi>N</mi></math>
+была заметна, она должна быть в несколько раз больше этого дрожания, и различимая доля
+изменения яркости равна
+</p><div class="keyformula"><table class="equation"><tr><td>
+<math display="block" class="equation">
+ <mstyle id="x14-106001r1" class="label"></mstyle><mfrac><mrow><mi mathvariant="normal">Δ</mi><mi>I</mi></mrow>
+ <mrow><mi>I</mi></mrow></mfrac> <mspace width="0.28em" class="thickpace"/> <mo class="MathClass-rel" stretchy="false">≈</mo><mspace width="0.28em" class="thickpace"/> <mfrac><mrow><mi>k</mi></mrow> 
+<mrow><msqrt><mrow><mi mathvariant="normal">Φ</mi> <mspace width="0.17em" class="thinspace"/><mi>T</mi></mrow></msqrt></mrow></mfrac><mo class="MathClass-punc" stretchy="false">.</mo>
+</math></td><td class="eq-no">(11.1)</td></tr></table>
+</div><p class="noindent"> Это та же формула, что и для числа импульсов (<a href="04.html#x7-39001r2">4.2</a>): дробовой шум фотонов и дробовой шум
+импульсов подчиняются одному закону. В темноте глаз может улучшить точность только одним
+способом — дольше копить фотоны, и время накопления действительно растёт до десятых долей
+секунды. Поэтому в сумерках мы видим медленнее.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">11.3 </span> <a id="x14-10700011.3"></a>Динамический диапазон: регулировка усиления</h3>
+<p class="noindent">Самая трудная инженерная задача у датчиков — диапазон. Освещённость от звёздной ночи до
+солнечного снега меняется примерно на десять порядков, интенсивность звука от порога
+слышимости до болевого — на двенадцать. А частота импульсов меняется от нуля до нескольких
+сотен в секунду, меньше чем на три порядка. Линейно такой вход в такой выход не
+уложить.
+</p><p class="indent"> Решение то же, что у любого приёмника: <span class="lati-1095">автоматическая регулировка усиления</span>. Ответы
+чувствительных клеток глаза хорошо описываются формулой
+</p><div class="keyformula"><table class="equation"><tr><td>
+<math display="block" class="equation">
+ <mstyle id="x14-107001r2" class="label"></mstyle><mi>r</mi><mspace width="0.28em" class="thickpace"/> <mo class="MathClass-rel" stretchy="false">=</mo> <mspace width="0.28em" class="thickpace"/><msub><mrow><mi>r</mi></mrow><mrow><mi class="qopname">max</mi><mo> ⁡ </mo></mrow></msub 
+><mspace width="0.17em" class="thinspace"/> <mfrac><mrow><mi>I</mi></mrow> 
+<mrow><mi>I</mi> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>σ</mi></mrow></mfrac><mo class="MathClass-punc" stretchy="false">,</mo>
+</math></td><td class="eq-no">(11.2)</td></tr></table>
+</div><p class="noindent"> где <math display="inline"><mi>σ</mi></math> —
+яркость, при которой ответ достигает половины <span class="cite">[<a href="refs.html#XNakaRushton1966">93</a>]</span>. Сама по себе (<a href="#x14-107001r2">11.2</a>) охватывает лишь два-три
+порядка. Но <math display="inline"><mi>σ</mi></math>
+не постоянна: при долгой работе на ярком фоне она растёт вслед за средней яркостью. Кривая
+ответа сдвигается вдоль логарифмической оси яркости и всякий раз ставит свой крутой участок
+туда, где сейчас находится вход (рис. <a href="#x14-1070022">11.2</a>). Это то же деление на общую активность, что и
+шунтирующее торможение главы <a href="03.html#x6-250003">3</a> <span class="cite">[<a href="refs.html#XCarandini2012">14</a>]</span>, только знаменатель здесь — средняя яркость за
+последние секунды.
+</p>
+ <figure class="figure"> 
+<a id="x14-1070022"></a>
+<p class="noindent"><img src="img/full36x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<figcaption class="caption"><span class="id">Рис. 11.2: </span><span class="content">Регулировка усиления датчика света по (<a href="#x14-107001r2">11.2</a>).
+Каждая кривая охватывает два-три порядка яркости; при переходе на более яркий фон
+<math display="inline"><mi>σ</mi></math>
+растёт, и кривая сдвигается по логарифмической оси. Вместе сдвигающиеся кривые
+покрывают весь диапазон.</span></figcaption>
+ </figure>
+<p class="indent"> У регулировки есть цена, знакомая по главе <a href="04.html#x7-350004">4</a>: датчик сообщает не яркость, а яркость <span class="lati-1095">по</span>
+<span class="lati-1095">отношению к фону</span>. Постоянный вход постепенно перестаёт вызывать ответ, а каждое изменение
+вызывает. Входы машины с самого начала говорят о переменах, а не об уровнях, и в этом
+та же экономия импульсов, что и в утверждении <a href="04.html#x7-44002r5">4.5</a> <span class="cite">[<a href="refs.html#XBarlow1961">68</a>]</span>. Отсюда и включающие и
+выключающие датчики главы <a href="02.html#x5-150002">2</a> <span class="cite">[<a href="refs.html#XSchiller1992">56</a>]</span>: одни сообщают, что стало ярче, другие — что
+темнее.
+</p><p class="indent"> Инженеры повторили этот приём в <span class="lati-1095">событийных камерах</span>. Такая камера не снимает кадры по
+часам: каждый её пиксель сам, без общего такта, выдаёт событие «ярче» или «темнее», когда
+логарифм яркости изменился на заданную долю <span class="cite">[<a href="refs.html#XLichtsteiner2008">94</a>]</span>. Это ровно двухпроводный код
+включения—выключения из главы <a href="02.html#x5-150002">2</a>, воплощённый в кремнии, и он даёт камере диапазон и
+быстроту, недоступные обычной матрице <span class="cite">[<a href="refs.html#XGallego2022">134</a>]</span>.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">11.4 </span> <a id="x14-10800011.4"></a>Глаз: сжатие до провода</h3>
+<p class="noindent">В глазу около <math display="inline"><mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>8</mn></mrow></msup 
+></math>
+датчиков света <span class="cite">[<a href="refs.html#XCurcio1990">107</a>]</span>, а выходных нейронов, которые везут изображение в мозг, — около
+миллиона. Прежде чем сигнал покинет глаз, его сжимают примерно в сто раз. Главные приёмы
+сжатия нам знакомы. Каждый выходной нейрон отвечает на разницу между яркостью в
+маленьком пятне и яркостью вокруг него — это вычитание соседей через торможение, как в
+главе <a href="03.html#x6-250003">3</a>. Ровные участки картинки почти ничего не стоят, а края и перемены передаются. Разные
+выходные нейроны специализированы: одни сообщают о посветлении, другие о потемнении,
+третьи о движении в определённую сторону (рис. <a href="03.html#x6-280021">3.1</a>); у мыши таких выходных каналов
+насчитали больше тридцати <span class="cite">[<a href="refs.html#XBaden2016">151</a>]</span>.
+</p><p class="indent"> Какова пропускная способность получившегося кабеля? У морской свинки по записям выходных нейронов
+измерили около <math display="inline"><mn>8</mn><mn>7</mn><mn>5</mn></math> тысяч
+бит в секунду на <math display="inline"> <mo class="MathClass-rel" stretchy="false">∼</mo> <mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>5</mn></mrow></msup 
+></math>
+таких нейронов; пересчёт на миллион выходных нейронов человека даёт порядка
+<math display="inline"><mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>7</mn></mrow></msup 
+></math> бит в
+секунду <span class="cite">[<a href="refs.html#XKoch2006">95</a>]</span> — столько же, сколько старый сетевой кабель на десять мегабит. При средней
+частоте в несколько импульсов в секунду на нейрон это несколько бит на импульс, как и
+получалось в главе <a href="04.html#x7-350004">4</a>.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">11.5 </span> <a id="x14-10900011.5"></a>Ухо: банк фильтров</h3>
+<p class="noindent">Ухо решает другую задачу: звук надо разложить по частотам. Инженер поставил бы банк
+полосовых фильтров, и ухо делает именно это механически. Звуковое колебание бежит по
+упругой перегородке, свойства которой плавно меняются вдоль её длины, и каждый участок
+резонирует на свою частоту. Датчики, сидящие на участке, отвечают только на свою полосу
+(рис. <a href="#x14-1090013">11.3</a>). Частоты разложены по месту примерно логарифмически: каждой октаве достаётся
+похожая доля датчиков. Номер сработавшего датчика — это частота, код местом из
+главы <a href="04.html#x7-350004">4</a>.
+</p>
+ <figure class="figure"> 
+<a id="x14-1090013"></a>
+<p class="noindent"><img src="img/full37x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<figcaption class="caption"><span class="id">Рис. 11.3: </span><span class="content">Ухо как банк полосовых фильтров, схема. Каждая кривая — ответ датчиков
+одного участка на звук разной частоты; центральные частоты идут через октаву, как
+клавиши на логарифмической шкале. У настоящих фильтров крутой высокочастотный
+склон и пологий низкочастотный. Внизу — клавиатура: на ней, как и в ухе, каждой октаве
+достаётся одинаковое место.</span></figcaption>
+ </figure>
+<p class="indent"> Резонаторы уха не пассивны. Часть датчиков сама раскачивает перегородку
+в такт звуку и усиливает слабые колебания в тысячи раз по амплитуде (на
+<math display="inline"><mn>6</mn><mn>6</mn></math>–<math display="inline"><mn>7</mn><mn>6</mn></math>дБ),
+а с ростом громкости усиление падает <span class="cite">[<a href="refs.html#XRuggero1997">292</a>, <a href="refs.html#XRobles2001">96</a>]</span>. Для инженера это усилитель с положительной
+обратной связью, поставленный у самой границы самовозбуждения, — та же жизнь на грани, что
+и у сети главы <a href="03.html#x6-250003">3</a>: у границы система особенно чувствительна к малым сигналам. Сжатие
+громкости здесь делается тем же усилителем: тихое усиливается сильно, громкое —
+слабо.
+</p><p class="indent"> У уха есть и второй код. На низких частотах импульсы нейронов идут в фазе
+со звуком: нейрон срабатывает на определённом участке каждой волны, хотя и
+не на каждой волне. У морской свинки привязка к фазе начинает слабеть около
+<math display="inline"><mn>6</mn><mn>0</mn><mn>0</mn></math>Гц и ещё заметна
+примерно до <math display="inline"><mn>3</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn></math>кГц <span class="cite">[<a href="refs.html#XPalmerRussell1986">298</a>]</span>.
+Так в моментах импульсов сохраняется точное время звука, а из него — разница прихода звука в
+два уха, по которой сеть главы <a href="02.html#x5-150002">2</a> находит направление <span class="cite">[<a href="refs.html#XGrothe2010">57</a>]</span>. На высоких частотах импульсы за
+волной не успевают, и остаётся только код местом. Одно ухо пользуется обоими кодами главы <a href="04.html#x7-350004">4</a>:
+временем там, где нейроны успевают, и местом там, где нет.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">11.6 </span> <a id="x14-11000011.6"></a>Остальные датчики</h3>
+ <div class="table">
+<p class="indent"> <a id="x14-1100011"></a></p><figure class="float">
+<div class="tabular">
+ <table id="TBL-14" class="tabular"><colgroup id="TBL-14-1g"><col id="TBL-14-1" /><col id="TBL-14-2" /><col id="TBL-14-3" /><col id="TBL-14-4" /></colgroup><tr style="vertical-align:baseline;" id="TBL-14-1-"><td style="text-align:left;" id="TBL-14-1-1" class="td11"> <p class="noindent"><span class="larm-0900">Чувство</span> </p></td><td style="text-align:left;" id="TBL-14-1-2" class="td11"> <p class="noindent"><span class="larm-0900">Что</span>
+ <span class="larm-0900">измеряет</span> </p></td><td style="text-align:left;" id="TBL-14-1-3" class="td11"> <p class="noindent"><span class="larm-0900">Как</span>
+ <span class="larm-0900">устроен</span>
+ <span class="larm-0900">вход</span> </p></td><td style="text-align:left;" id="TBL-14-1-4" class="td11"> <p class="noindent"><span class="larm-0900">Приём</span>
+ <span class="larm-0900">из</span>
+ <span class="larm-0900">книги</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-14-2-"><td style="text-align:left;" id="TBL-14-2-1" class="td11"> <p class="noindent"><span class="larm-0900">зрение</span> </p></td><td style="text-align:left;" id="TBL-14-2-2" class="td11"> <p class="noindent"><span class="larm-0900">свет</span> </p></td><td style="text-align:left;" id="TBL-14-2-3" class="td11"> <p class="noindent"><math display="inline"> <mo class="MathClass-rel" stretchy="false">∼</mo><mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>8</mn></mrow></msup 
+></math>
+ <span class="larm-0900">датчиков,</span>
+ <span class="larm-0900">сжатие</span>
+ <span class="larm-0900">в</span>
+ <math display="inline"> <mo class="MathClass-rel" stretchy="false">∼</mo><mn>1</mn><mn>0</mn><mn>0</mn></math>
+ <span class="larm-0900">раз,</span>
+ <math display="inline"> <mo class="MathClass-rel" stretchy="false">∼</mo><mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>7</mn></mrow></msup 
+></math>
+ <span class="larm-0900">бит/с</span> </p></td><td style="text-align:left;" id="TBL-14-2-4" class="td11"> <p class="noindent"><span class="larm-0900">регулировка</span>
+ <span class="larm-0900">усиления,</span>
+ <span class="larm-0900">вычитание</span>
+ <span class="larm-0900">соседей,</span>
+ <span class="larm-0900">два</span>
+ <span class="larm-0900">провода,</span>
+ <span class="larm-0900">направление</span>
+ <span class="larm-0900">движения</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-14-3-"><td style="text-align:left;" id="TBL-14-3-1" class="td11"> <p class="noindent"><span class="larm-0900">слух</span> </p></td><td style="text-align:left;" id="TBL-14-3-2" class="td11"> <p class="noindent"><span class="larm-0900">давление</span>
+ <span class="larm-0900">воздуха</span> </p></td><td style="text-align:left;" id="TBL-14-3-3" class="td11"> <p class="noindent"><span class="larm-0900">механический</span>
+ <span class="larm-0900">банк</span>
+ <span class="larm-0900">фильтров,</span>
+ <span class="larm-0900">активный</span>
+ <span class="larm-0900">усилитель</span> </p></td><td style="text-align:left;" id="TBL-14-3-4" class="td11"> <p class="noindent"><span class="larm-0900">код</span>
+ <span class="larm-0900">местом</span>
+ <span class="larm-0900">и</span>
+ <span class="larm-0900">код</span>
+ <span class="larm-0900">временем,</span>
+ <span class="larm-0900">задержки</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-14-4-"><td style="text-align:left;" id="TBL-14-4-1" class="td11"> <p class="noindent"><span class="larm-0900">осязание</span> </p></td><td style="text-align:left;" id="TBL-14-4-2" class="td11"> <p class="noindent"><span class="larm-0900">давление,</span>
+ <span class="larm-0900">вибрация</span> </p></td><td style="text-align:left;" id="TBL-14-4-3" class="td11"> <p class="noindent"><span class="larm-0900">быстро</span>
+ <span class="larm-0900">и</span>
+ <span class="larm-0900">медленно</span>
+ <span class="larm-0900">привыкающие</span>
+ <span class="larm-0900">датчики</span> </p></td><td style="text-align:left;" id="TBL-14-4-4" class="td11"> <p class="noindent"><span class="larm-0900">пара</span>
+ <span class="larm-0900">«фильтр</span>
+ <span class="larm-0900">верхних</span>
+ <span class="larm-0900">частот</span>
+ <span class="larm-0900">—</span>
+ <span class="larm-0900">фильтр</span>
+ <span class="larm-0900">нижних»</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-14-5-"><td style="text-align:left;" id="TBL-14-5-1" class="td11"> <p class="noindent"><span class="larm-0900">температура</span> </p></td><td style="text-align:left;" id="TBL-14-5-2" class="td11"> <p class="noindent"><span class="larm-0900">тепло</span> </p></td><td style="text-align:left;" id="TBL-14-5-3" class="td11"> <p class="noindent"><span class="larm-0900">отдельные</span>
+ <span class="larm-0900">датчики</span>
+ <span class="larm-0900">тепла</span>
+ <span class="larm-0900">и</span>
+ <span class="larm-0900">холода</span> </p></td><td style="text-align:left;" id="TBL-14-5-4" class="td11"> <p class="noindent"><span class="larm-0900">двухпроводный</span>
+ <span class="larm-0900">код</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-14-6-"><td style="text-align:left;" id="TBL-14-6-1" class="td11"> <p class="noindent"><span class="larm-0900">обоняние</span> </p></td><td style="text-align:left;" id="TBL-14-6-2" class="td11"> <p class="noindent"><span class="larm-0900">молекулы</span> </p></td><td style="text-align:left;" id="TBL-14-6-3" class="td11"> <p class="noindent"><math display="inline"> <mo class="MathClass-rel" stretchy="false">∼</mo><mn>4</mn><mn>0</mn><mn>0</mn></math>
+ <span class="larm-0900">типов</span>
+ <span class="larm-0900">рецепторов,</span>
+ <span class="larm-0900">у</span>
+ <span class="larm-0900">каждого</span>
+ <span class="larm-0900">датчика</span>
+ <span class="larm-0900">один</span>
+ <span class="larm-0900">тип</span> </p></td><td style="text-align:left;" id="TBL-14-6-4" class="td11"> <p class="noindent"><span class="larm-0900">комбинаторный</span>
+ <span class="larm-0900">код:</span>
+ <span class="larm-0900">запах</span>
+ <span class="larm-0900">—</span>
+ <span class="larm-0900">набор</span>
+ <span class="larm-0900">сработавших</span>
+ <span class="larm-0900">типов</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-14-7-"><td style="text-align:left;" id="TBL-14-7-1" class="td11"> <p class="noindent"><span class="larm-0900">вкус</span> </p></td><td style="text-align:left;" id="TBL-14-7-2" class="td11"> <p class="noindent"><span class="larm-0900">вещества</span>
+ <span class="larm-0900">в</span>
+ <span class="larm-0900">пище</span> </p></td><td style="text-align:left;" id="TBL-14-7-3" class="td11"> <p class="noindent"><span class="larm-0900">пять</span>
+ <span class="larm-0900">качеств:</span>
+ <span class="larm-0900">сладкое,</span>
+ <span class="larm-0900">горькое,</span>
+ <span class="larm-0900">солёное,</span>
+ <span class="larm-0900">кислое,</span>
+ <span class="larm-0900">умами</span> </p></td><td style="text-align:left;" id="TBL-14-7-4" class="td11"> <p class="noindent"><span class="larm-0900">меченые</span>
+ <span class="larm-0900">линии;</span>
+ <span class="larm-0900">часть</span>
+ <span class="larm-0900">клеток</span>
+ <span class="larm-0900">выбрасывает</span>
+ <span class="larm-0900">АТФ</span>
+ <span class="larm-0900">или</span>
+ <span class="larm-0900">серотонин,</span>
+ <span class="larm-0900">а</span>
+ <span class="larm-0900">не</span>
+ <span class="larm-0900">глутамат</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-14-8-"><td style="text-align:left;" id="TBL-14-8-1" class="td11"> <p class="noindent"><span class="larm-0900">положение</span>
+ <span class="larm-0900">тела</span> </p></td><td style="text-align:left;" id="TBL-14-8-2" class="td11"> <p class="noindent"><span class="larm-0900">растяжение</span>
+ <span class="larm-0900">мышц</span> </p></td><td style="text-align:left;" id="TBL-14-8-3" class="td11"> <p class="noindent"><span class="larm-0900">датчики</span>
+ <span class="larm-0900">длины</span>
+ <span class="larm-0900">и</span>
+ <span class="larm-0900">скорости</span>
+ <span class="larm-0900">растяжения</span> </p></td><td style="text-align:left;" id="TBL-14-8-4" class="td11"> <p class="noindent"><span class="larm-0900">обратная</span>
+ <span class="larm-0900">связь</span>
+ <span class="larm-0900">для</span>
+ <span class="larm-0900">регулятора</span>
+ <span class="larm-0900">движения</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-14-9-"><td style="text-align:left;" id="TBL-14-9-1" class="td11"> </td></tr></table> </div>
+<figcaption class="caption"><span class="id">Таблица 11.1: </span><span class="content">Как подключены датчики. Все устройства в третьем столбце измерены;
+правый столбец связывает их с приёмами из предыдущих глав.</span></figcaption>
+ </figure>
+ </div>
+<p class="indent"> Остальные чувства собраны в таблице <a href="#x14-1100011">11.1</a>, и почти в каждой строке узнаётся приём из
+предыдущих глав. Осязание пользуется парой фильтров: одни датчики давления отвечают на
+прикосновение и сразу замолкают, другие держат ответ, пока давление есть. Температуру
+передают два провода, отдельные для тепла и для холода. Самый необычный вход — обоняние.
+Типов обонятельных рецепторов у человека около четырёхсот, и каждый обонятельный нейрон
+несёт только один тип <span class="cite">[<a href="refs.html#XMombaerts2004">97</a>]</span>. Запах активирует не один тип, а набор, и сообщение — это <span class="lati-1095">какие</span>
+типы сработали. Для инженера это двоичный вектор длиной около четырёхсот, у которого число
+возможных значений астрономическое.
+</p>
+ <div class="tcolorbox keyblock" id="tcolobox-28"> 
+<div class="tcolorbox-content"><div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x14-110002r1"></a>
+<span class="labx-1095">Утверждение 11.1 </span>(Входы машины)<span class="labx-1095">.</span> </span> <span class="lati-1095">Каждое чувство — преобразователь, который</span>
+<span class="lati-1095">работает у физического предела чувствительности, сжимает огромный динамический</span>
+<span class="lati-1095">диапазон автоматической регулировкой усиления и передаёт по шине </span><span class="nt"><span class="lati-1095">GLUT</span></span> <span class="lati-1095">прежде</span>
+<span class="lati-1095">всего </span>перемены<span class="lati-1095">. Для этого датчики пользуются теми же приёмами, что и сама</span>
+<span class="lati-1095">машина: двухпроводным кодом, кодом местом, кодом временем и делением на фон.</span>
+<span class="lati-1095">Устройство датчиков измерено; то, что их коды подстроены под наибольшую</span>
+<span class="lati-1095">информацию на импульс, — хорошо обоснованная гипотеза.</span>
+</p>
+</div>
+ 
+</div> 
+</div>
+<p class="indent"> Входы, как и всё остальное, работают асинхронно. Каждый датчик выдаёт импульс, когда у
+него есть что сообщить, а разные чувства приходят с разными задержками: звук —
+через миллисекунды, свет — через десятки миллисекунд. Как машина сводит их в одну
+картину мира, если общего такта нет, — одна из задач согласования во времени из
+главы <a href="10.html#x13-9500010">10</a>.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">11.7 </span> <a id="x14-11100011.7"></a>Задачи</h3>
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x14-111001r1"></a>
+<span class="labx-1095">Задача 11.1 </span>(<math display="inline"><mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Сколько копить фотоны. </span>В сумерках в датчик попадает <math display="inline"><mn>1</mn><mn>0</mn><mn>0</mn></math>
+фотонов в секунду; прибавка заметна, если она в <math display="inline"><mn>3</mn></math>
+раза больше дрожания (<a href="#x14-106001r1">11.1</a>). (а) Сколько времени нужно одному датчику, чтобы заметить
+изменение яркости на <math display="inline"><mn>1</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mi>%</mi></math>?
+(б) Сколько датчиков надо сложить, чтобы успеть за <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>с</mtext></mstyle></math>,
+и во сколько раз упадёт разрешение по оси?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">(а) <math display="inline"><mi>T</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <msup><mrow><mi>k</mi></mrow><mrow><mn>2</mn></mrow></msup 
+><mo class="MathClass-bin" stretchy="false">∕</mo><mrow><mo class="MathClass-open" fence="true" mathsize="1.19em">(</mo><mrow><mi mathvariant="normal">Φ</mi><msup><mrow><mo class="MathClass-open" stretchy="false">(</mo><mi mathvariant="normal">Δ</mi><mi>I</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mi>I</mi><mo class="MathClass-close" stretchy="false">)</mo></mrow><mrow><mn>2</mn></mrow></msup 
+></mrow><mo class="MathClass-close" fence="true" mathsize="1.19em">)</mo></mrow> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>9</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>с</mtext></mstyle></math>.
+(б) <math display="inline"><mn>4</mn><mn>5</mn></math> датчиков,
+пятно <math display="inline"> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>7</mn> <mo class="MathClass-bin" stretchy="false">×</mo> <mn>7</mn></math>, разрешение
+хуже в <math display="inline"> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>7</mn></math>
+раз.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x14-111002r2"></a>
+<span class="labx-1095">Задача 11.2 </span>(<math display="inline"><mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Сколько бит в импульсе. </span>(а) Глаз передаёт <math display="inline"> <mo class="MathClass-rel" stretchy="false">∼</mo> <mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>7</mn></mrow></msup 
+></math>
+бит/с по <math display="inline"><mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>6</mn></mrow></msup 
+></math>
+выходным нейронам с частотой <math display="inline"><mn>3</mn></math>–<math display="inline"><mn>5</mn></math>
+импульсов в секунду. Какую долю ёмкости (<a href="04.html#x7-37001r1">4.1</a>) при <math display="inline"><mi mathvariant="normal">Δ</mi><mi>t</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>
+он использует? (б) Запах включает <math display="inline"><mn>2</mn><mn>0</mn></math>
+из <math display="inline"> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>4</mn><mn>0</mn><mn>0</mn></math>
+типов рецепторов. Сколько бит несёт такой набор и сколько общих типов в среднем у двух
+случайных запахов?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">(а) <math display="inline"><mn>2</mn></math>–<math display="inline"><mn>3</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>3</mn></math>
+бита на импульс, <math display="inline"><mn>2</mn><mn>2</mn></math>–<math display="inline"><mn>3</mn><mn>4</mn><mspace width="0.17em" class="thinspace"/><mi>%</mi></math>
+границы (<math display="inline"><mn>9</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn></math>–<math display="inline"><mn>9</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>8</mn></math>
+бита). (б) <math display="inline"><msub><mrow> <mi class="loglike">log</mi><mo>⁡</mo></mrow><mrow><mn>2</mn></mrow></msub 
+><mfenced separators="" open="(" close=")"><mfrac linethickness="0.0pt"><mrow><mn>4</mn><mn>0</mn><mn>0</mn></mrow> 
+ <mrow><mn>2</mn><mn>0</mn></mrow></mfrac></mfenced> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>1</mn><mn>1</mn><mn>1</mn></math>
+бит; в среднем <math display="inline"><mn>1</mn></math>
+общий тип.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x14-111003r3"></a>
+<span class="labx-1095">Задача 11.3 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Что умеет одна кривая</span><span class="lati-1095"> </span>(<a href="#x14-107001r2">11.2</a>)<span class="lati-1095">. </span>(а) В каком диапазоне яркостей ответ растёт от <math display="inline"><mn>1</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mi>%</mi></math>
+до <math display="inline"><mn>9</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mi>%</mi></math>
+от <math display="inline"><msub><mrow><mi>r</mi></mrow><mrow><mi class="qopname">max</mi><mo> ⁡ </mo></mrow></msub 
+></math>?
+Сколько это порядков? (б) Сколько положений сдвигающейся кривой нужно, чтобы покрыть
+десять порядков яркости? двенадцать порядков громкости?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">(а) <math display="inline"><mi>σ</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mn>9</mn> <mo class="MathClass-rel" stretchy="false">≤</mo> <mi>I</mi> <mo class="MathClass-rel" stretchy="false">≤</mo> <mn>9</mn><mi>σ</mi></math>,
+<math display="inline"><mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>9</mn></math> порядка.
+(б) <math display="inline"><mn>6</mn></math> и
+<math display="inline"><mn>7</mn></math>.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x14-111004r4"></a>
+<span class="labx-1095">Задача 11.4 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Предел кода временем в ухе. </span>Разница прихода звука в два уха — до <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn><mn>2</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>м</mtext></mstyle><mo class="MathClass-bin" stretchy="false">∕</mo><mn>3</mn><mn>4</mn><mn>3</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>м/с</mtext></mstyle></math>.
+(а) Импульсы идут в фазе с тоном: до какой частоты направление по ним определяется
+однозначно? (б) Импульс дрожит на <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>,
+а различать нужно <math display="inline"><mn>2</mn><mn>0</mn></math> мкс.
+Сколько нейронов по <math display="inline"><mn>1</mn><mn>0</mn><mn>0</mn></math>
+импульсов в секунду надо усреднить за <math display="inline"><mn>5</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">(а) <math display="inline"><mi>f</mi> <mo class="MathClass-rel" stretchy="false">&#x003C;</mo> <mn>3</mn><mn>4</mn><mn>3</mn><mo class="MathClass-bin" stretchy="false">∕</mo><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>4</mn><mn>4</mn> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>7</mn><mn>8</mn><mn>0</mn></math> Гц.
+(б) <math display="inline"><mn>6</mn><mn>2</mn><mn>5</mn></math>
+импульсов, <math display="inline"><mn>1</mn><mn>2</mn><mn>5</mn></math>
+нейронов.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x14-111005r5"></a>
+<span class="labx-1095">Задача 11.5 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Событийная камера на кабель глаза. </span>Камера из <math display="inline"><mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>6</mn></mrow></msup 
+></math>
+пикселей с выходом <math display="inline"><mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>7</mn></mrow></msup 
+></math>
+бит/с шлёт событие (адрес и знак), когда <math display="inline"> <mi class="loglike">ln</mi><mo>⁡</mo><mi>I</mi></math>
+в пикселе изменился на <math display="inline"> <mi class="loglike">ln</mi><mo>⁡</mo><mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn></math>.
+С какой наибольшей скоростью может бежать край длиной <math display="inline"><mn>5</mn><mn>0</mn><mn>0</mn></math>
+пикселей с перепадом яркости <math display="inline"><mn>4</mn></math>?
+Сколько кадров в секунду дала бы через тот же выход обычная камера по <math display="inline"><mn>8</mn></math>
+бит на пиксель?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent"><math display="inline"><mn>2</mn><mn>1</mn></math> бит на
+событие, <math display="inline"><mn>4</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>8</mn> <mo class="MathClass-bin" stretchy="false">⋅</mo> <mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>5</mn></mrow></msup 
+></math> событий/с,
+<math display="inline"><mn>7</mn></math> событий на пиксель
+края: <math display="inline"><mn>1</mn><mn>3</mn><mn>6</mn></math> пикселей/с.
+Обычная камера — <math display="inline"><mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn><mn>5</mn></math>
+кадра/с.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x14-111006r6"></a>
+<span class="labx-1095">Задача 11.6 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Моделирование: регулировка усиления. </span>Датчик (<a href="#x14-107001r2">11.2</a>) подстраивает <math display="inline"><mi>σ</mi></math>
+с <math display="inline"><mi>τ</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>с</mtext></mstyle></math>
+в логарифмах, <math display="inline"><mi>τ</mi><mspace width="0.17em" class="thinspace"/><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi class="loglike">ln</mi><mo>⁡</mo><mi>σ</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>t</mi> <mo class="MathClass-rel" stretchy="false">=</mo><mo> <mi class="loglike">ln</mi><mo>⁡</mo></mo><mi>I</mi> <mo class="MathClass-bin" stretchy="false">−</mo><mo><mi class="loglike">ln</mi><mo>⁡</mo></mo><mi>σ</mi></math>,
+или линейно, <math display="inline"><mi>τ</mi><mspace width="0.17em" class="thinspace"/><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>σ</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>t</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mi>I</mi> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>σ</mi></math>;
+фон скачет <math display="inline"><mn>1</mn> <mo class="MathClass-rel" stretchy="false">→</mo> <mn>1</mn><mn>0</mn><mn>0</mn> <mo class="MathClass-rel" stretchy="false">→</mo> <mn>1</mn></math>.
+Через сколько секунд ответ на пробу <math display="inline"> <mo class="MathClass-bin" stretchy="false">+</mo> <mn>1</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mi>%</mi></math>
+восстанавливается до половины привыкшего после скачка вверх и вниз при каждом законе?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">В логарифмах <math display="inline"> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>с</mtext></mstyle></math>
+в обе стороны (теория <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>9</mn><mn>6</mn><mi>τ</mi></math>);
+линейно <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>с</mtext></mstyle></math>
+вверх и <math display="inline"><mn>3</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>с</mtext></mstyle></math> вниз
+(теория <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn><mn>8</mn><mi>τ</mi></math> и
+<math display="inline"><mn>3</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>0</mn><mi>τ</mi></math>).
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x14-111007r7"></a>
+<span class="labx-1095">Задача 11.7 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo><mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Под какой мир подстроена кривая. </span>При малом постоянном шуме выхода информация о
+яркости наибольшая, когда <math display="inline"><mi>r</mi><mo class="MathClass-open" stretchy="false">(</mo><mi>I</mi><mo class="MathClass-close" stretchy="false">)</mo> <mo class="MathClass-rel" stretchy="false">=</mo> <msub><mrow><mi>r</mi></mrow><mrow><mi class="qopname">max</mi><mo> ⁡ </mo></mrow></msub 
+><msub><mrow><mi mathvariant="normal">Φ</mi></mrow><mrow><mi>I</mi></mrow></msub 
+><mo class="MathClass-open" stretchy="false">(</mo><mi>I</mi><mo class="MathClass-close" stretchy="false">)</mo></math>,
+где <math display="inline"><msub><mrow><mi mathvariant="normal">Φ</mi></mrow><mrow><mi>I</mi></mrow></msub 
+></math>
+— функция распределения яркостей. (а) Для какого распределения оптимальна кривая (<a href="#x14-107001r2">11.2</a>)
+и каков его разброс <math display="inline"><msub><mrow> <mi class="loglike">log</mi><mo>⁡</mo></mrow><mrow><mn>1</mn><mn>0</mn></mrow></msub 
+><mi>I</mi></math>?
+(б) Какая кривая оптимальна при пуассоновском шуме выхода?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">(а) <math display="inline"> <mi class="loglike">ln</mi><mo>⁡</mo><mi>I</mi></math> распределён
+логистически с медианой <math display="inline"> <mi class="loglike">ln</mi><mo>⁡</mo><mi>σ</mi></math>
+и масштабом <math display="inline"><mn>1</mn></math>: разброс
+<math display="inline"><mi>π</mi><mo class="MathClass-bin" stretchy="false">∕</mo><msqrt><mrow><mn>3</mn></mrow></msqrt></math> в натуральных
+логарифмах, <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>7</mn><mn>9</mn></math>
+порядка. (б) <math display="inline"><mi>r</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <msub><mrow><mi>r</mi></mrow><mrow><mi class="qopname">max</mi><mo> ⁡ </mo></mrow></msub 
+><msub><mrow><mi mathvariant="normal">Φ</mi></mrow><mrow><mi>I</mi></mrow></msub 
+><msup><mrow><mo class="MathClass-open" stretchy="false">(</mo><mi>I</mi><mo class="MathClass-close" stretchy="false">)</mo></mrow><mrow><mn>2</mn></mrow></msup 
+></math>.
+</p></div></details>
+
+<p class="indent"> <a id="tailfullch11.html"></a> </p> 
+
+  </article>
+  <article class="text short" id="text-short" hidden>
+
+ <a id="s-x14-5900011"></a>
+<p class="noindent">Любой орган чувств — это преобразователь, как микрофон
+или фотоэлемент. Свет, звук или молекула действуют
+на особый белок в клетке-датчике, белок открывает
+«кран», течёт ток, и в конце цепочки получаются щелчки,
+которые уходят в сеть. Почти все датчики выбрасывают
+глутамат, так что входы машины подключаются прямо к её
+телефонной сети.
+</p>
+ <h3 class="likesectionHead"> <a id="s-x14-60000"></a>На пределе физики</h3>
+<p class="noindent">Датчики мозга работают у самого предела возможного.
+Датчик света в темноте отвечает на одну-единственную
+частицу света. Датчик звука замечает смещение меньше
+нанометра — меньше размера нескольких атомов. В
+полутьме точность ограничивает уже не глаз, а сам свет:
+частицы приходят случайно, и чтобы различить оттенок, их
+нужно накопить побольше. Поэтому в сумерках мы видим
+медленнее — глаз дольше копит свет, как фотоаппарат с
+длинной выдержкой.
+</p>
+ <h3 class="likesectionHead"> <a id="s-x14-61000"></a>Автоматическая экспозиция</h3>
+<p class="noindent">Освещённость от звёздной ночи до солнечного снега меняется в
+миллиарды раз, громкость звука — ещё сильнее. А частота
+щелчков меняется от нуля до нескольких сотен в секунду.
+Втиснуть одно в другое напрямую невозможно. Решение то
+же, что у фотоаппарата: автоматическая экспозиция.
+Датчик всё время подстраивает чувствительность под
+средний уровень вокруг и сообщает не яркость, а яркость <span class="lati-1095">по</span>
+<span class="lati-1095">сравнению с фоном</span>. Постоянное со временем перестаёт
+вызывать ответ, а каждое изменение — вызывает. Входы
+машины с самого начала говорят о переменах.
+</p>
+<div class="center">
+<p class="noindent"><img src="img/short20x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<div class="minipage"><p class="noindent"><span class="lati-1000">Свет становится ярче ступенями, каждая в</span>
+<span class="lati-1000">десять раз. Датчик отвечает на каждую перемену</span>
+<span class="lati-1000">всплеском и быстро возвращается к прежнему</span>
+<span class="lati-1000">уровню. Когда снова темнеет, он на время</span>
+<span class="lati-1000">замолкает.</span> </p></div></div>
+<p class="indent"> Инженеры повторили этот приём в событийных камерах.
+Такая камера не снимает кадры по часам: каждый её
+пиксель сам сообщает «стало ярче» или «стало темнее»,
+когда что-то изменилось. Это та самая пара проводов «да» и
+«нет» из второй главы, только в кремнии.
+</p>
+ <h3 class="likesectionHead"> <a id="s-x14-62000"></a>Глаз сжимает картинку</h3>
+<p class="noindent">В глазу около ста миллионов датчиков света, а проводов,
+которые везут изображение в мозг, — около миллиона.
+Прежде чем картинка покинет глаз, её сжимают примерно в
+сто раз. Ровные участки почти ничего не стоят, передаются
+края и перемены. По оценке, сделанной на глазах животных
+и пересчитанной на человека, глаз передаёт в мозг порядка
+десяти миллионов бит в секунду — как старый сетевой
+кабель.
+</p>
+ <h3 class="likesectionHead"> <a id="s-x14-63000"></a>Ухо — это пианино</h3>
+<p class="noindent">Ухо раскладывает звук по частотам, как инженер поставил бы
+набор фильтров. Упругая перегородка в ухе в разных местах
+откликается на разные частоты, и датчики на каждом
+участке слушают свою «клавишу». Номер сработавшего
+датчика — это высота тона.
+</p>
+<div class="center">
+<p class="noindent"><img src="img/short21x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<div class="minipage"><p class="noindent"><span class="lati-1000">Ухо устроено как пианино наоборот: каждая</span>
+<span class="lati-1000">клавиша слушает свою ноту.</span> </p></div></div>
+<p class="indent"> Более того, ухо не пассивно. Часть его клеток сама
+раскачивает перегородку в такт звуку и усиливает тихие
+звуки в тысячи раз, а громкие — почти не усиливает. Это
+усилитель у самой границы самовозбуждения: там он
+особенно чувствителен. А на низких частотах нейроны ещё и
+щёлкают в такт волне, сохраняя точное время звука, — по
+нему мозг и находит направление на источник. Чем выше
+частота, тем хуже нейроны за ней успевают, и остаётся
+только код местом.
+</p>
+ <h3 class="likesectionHead"> <a id="s-x14-64000"></a>Остальные чувства</h3>
+<p class="noindent">Почти в каждом чувстве узнаётся приём из предыдущих
+глав. Температуру передают два провода, отдельные для
+тепла и для холода. Осязание пользуется датчиками,
+которые отвечают на прикосновение и сразу замолкают, и
+датчиками, которые держат ответ, пока давление есть. А
+обоняние устроено как штрихкод: типов обонятельных
+датчиков у человека около четырёхсот, и запах — это набор
+сработавших типов. Число таких наборов астрономическое.
+</p><p class="noindent"><span class="lati-1000">Формулы, модели, задачи и источники — в полной версии,</span>
+<span class="lati-1000">глава</span><span class="lati-1000"> 11.</span>
+</p>
+<p class="indent"> <a id="s-tailshortch11.html"></a> </p> 
+
+  </article>
+
+  <aside class="starline"><span data-ru="Книга бесплатная и открытая. Если глава была полезной, поставьте книге звезду на GitHub: так её найдут другие." data-en="The book is free and open. If this chapter was useful, star the book on GitHub so others can find it.">Книга бесплатная и открытая.</span> <a href="https://github.com/kladkogex/20-watt-computer" target="_blank" rel="noopener" data-ru="★ Звезда на GitHub" data-en="★ Star on GitHub">★ Звезда на GitHub</a></aside>
+  <nav class="pager">
+    <a class="prev" href="10.html"><span data-ru="← Назад" data-en="← Previous">← Назад</span><b>Вся машина</b></a>
+    <a class="next" href="12.html"><span data-ru="Дальше →" data-en="Next →">Дальше →</span><b>Распознавание изображений и видео</b></a>
+  </nav>
+  <footer>
+    <span data-ru='Константин Кладько · текст — <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.ru">CC BY-NC-SA 4.0</a>' data-en='Konstantin Kladko · text: <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>'>Константин Кладько</span>
+    <span><a href="../pdf/20-watt-computer-ru.pdf">PDF</a> · <a href="../breadboard/" data-ru="Макетная плата" data-en="Breadboard">Макетная плата</a> · <a href="https://github.com/kladkogex/20-watt-computer">GitHub</a></span>
+  </footer>
+</main>
+
+<script>
+(function(){
+  const NAV = [{"slug": "00", "title": "Как читать эту книгу", "kicker": "Введение"}, {"slug": "01", "title": "Типы нейронов", "kicker": "Глава 1"}, {"slug": "02", "title": "Что вычисляют GLUT-нейроны", "kicker": "Глава 2"}, {"slug": "03", "title": "GLUT и GABA вместе", "kicker": "Глава 3"}, {"slug": "04", "title": "Азбука Морзе: что мы знаем о языке, на котором говорят GLUT- и GABA-нейроны", "kicker": "Глава 4"}, {"slug": "05", "title": "Что вычисляют SERO-нейроны", "kicker": "Глава 5"}, {"slug": "06", "title": "Нейронные сети, которые умеют учиться: добавляем DOPA", "kicker": "Глава 6"}, {"slug": "07", "title": "Альтернативные современные теории обучения на основе дофамина", "kicker": "Глава 7"}, {"slug": "08", "title": "Когда искать, а когда решать: добавляем NORA", "kicker": "Глава 8"}, {"slug": "09", "title": "Когда писать, а когда читать: добавляем ACET", "kicker": "Глава 9"}, {"slug": "10", "title": "Вся машина", "kicker": "Глава 10"}, {"slug": "11", "title": "Входы машины: как к ней подключены глаза, уши и другие датчики", "kicker": "Глава 11"}, {"slug": "12", "title": "Распознавание изображений и видео", "kicker": "Глава 12"}, {"slug": "13", "title": "Выходы машины: как мозг управляет мышцами", "kicker": "Глава 13"}, {"slug": "14", "title": "Боль: сигнал тревоги", "kicker": "Глава 14"}, {"slug": "15", "title": "Как машина учится двигаться", "kicker": "Глава 15"}, {"slug": "16", "title": "Второй выход: как мозг управляет химией тела", "kicker": "Глава 16"}, {"slug": "17", "title": "Отладка машины", "kicker": "Глава 17"}, {"slug": "18", "title": "Типы нейронов по электрической функции", "kicker": "Глава 18"}, {"slug": "19", "title": "Нейроны по числу дендритов", "kicker": "Глава 19"}, {"slug": "20", "title": "Что делают нейроны во сне", "kicker": "Глава 20"}, {"slug": "21", "title": "Машина из живых нейронов", "kicker": "Глава 21"}, {"slug": "22", "title": "DishBrain", "kicker": "Глава 22"}, {"slug": "a", "title": "Вещества, которые не задают тип нейрона", "kicker": "Приложение A"}, {"slug": "b", "title": "Обозначения", "kicker": "Приложение B"}, {"slug": "c", "title": "Ответы", "kicker": "Приложение C"}, {"slug": "d", "title": "Экспериментальное приложение", "kicker": "Приложение D"}, {"slug": "refs", "title": "Литература", "kicker": ""}];
+  const SLUG = "11";
+  const store = {get(k){try{return localStorage.getItem(k)}catch(e){return null}}, set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+
+  // chapter selector
+  const sel = document.getElementById("jump");
+  NAV.forEach(p => { const o = document.createElement("option"); o.value = p.slug;
+    o.textContent = (p.kicker ? p.kicker + ". " : "") + p.title; if (p.slug === SLUG) o.selected = true; sel.appendChild(o); });
+  sel.addEventListener("change", () => { location.href = sel.value + ".html" + (location.hash === "#short" ? "#short" : ""); });
+
+  // Коротко / Полностью
+  const modeBox = document.querySelector(".mode");
+  const hasShort = modeBox.dataset.hasShort === "true";
+  const full = document.getElementById("text-full"), short = document.getElementById("text-short");
+  function setMode(m, remember){
+    if (!hasShort) m = "full";
+    document.body.dataset.mode = m;
+    full.hidden = m !== "full"; short.hidden = m !== "short";
+    modeBox.querySelectorAll(".seg").forEach(b => b.setAttribute("aria-pressed", b.dataset.mode === m));
+    if (remember) store.set("20w-mode", m);
+  }
+  if (!hasShort) modeBox.hidden = true;
+  modeBox.addEventListener("click", e => { const b = e.target.closest(".seg"); if (b) { setMode(b.dataset.mode, true); history.replaceState(null, "", "#" + b.dataset.mode); } });
+  document.addEventListener("click", e => { const a = e.target.closest("a[data-mode]"); if (a) { e.preventDefault(); setMode(a.dataset.mode, true); window.scrollTo(0, 0); } });
+  // a link into the text (#x...) that lives in the other version switches to it
+  function follow(){
+    const h = decodeURIComponent(location.hash.slice(1));
+    if (h === "short" || h === "full") { setMode(h, true); return; }
+    if (!h) return;
+    const t = document.getElementById(h);
+    if (t) { setMode(short.contains(t) ? "short" : "full", false); t.scrollIntoView(); }
+  }
+  setMode(store.get("20w-mode") || "full", false);
+  follow();
+  window.addEventListener("hashchange", follow);
+  // links that leave the book open in the whole window when the page sits inside the reader
+  if (document.documentElement.classList.contains("embedded"))
+    document.querySelectorAll('a[href^="../"], a[href^="http"]').forEach(a => { a.target = a.href.startsWith(location.origin) ? "_top" : "_blank"; });
+
+  // interface language (the text itself is Russian)
+  function setLang(l){
+    document.querySelectorAll("[data-ru]").forEach(el => { el.innerHTML = el.dataset[l]; });
+    document.getElementById("lang-ru").setAttribute("aria-pressed", l === "ru");
+    document.getElementById("lang-en").setAttribute("aria-pressed", l === "en");
+    store.set("20w-lang", l);
+  }
+  document.getElementById("lang-ru").onclick = () => setLang("ru");
+  document.getElementById("lang-en").onclick = () => setLang("en");
+  setLang(store.get("20w-lang") === "en" ? "en" : "ru");
+  window.addEventListener("storage", e => {
+    if (e.key === "20w-lang" && (e.newValue === "ru" || e.newValue === "en")) setLang(e.newValue);
+    if (e.key === "20w-theme" && (e.newValue === "light" || e.newValue === "dark")) document.documentElement.setAttribute("data-theme", e.newValue);
+  });
+})();
+</script>
+<script>
+(function(){var b=document.getElementById("theme");if(!b)return;var r=document.documentElement;function cur(){var t=r.getAttribute("data-theme");if(t)return t;return window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";}function show(){b.textContent=cur()==="dark"?"☀":"☾";b.setAttribute("aria-pressed",cur()==="dark");}b.onclick=function(){var t=cur()==="dark"?"light":"dark";r.setAttribute("data-theme",t);try{localStorage.setItem("20w-theme",t);}catch(e){}show();};if(window.matchMedia)matchMedia("(prefers-color-scheme: dark)").addEventListener("change",show);show();})();
+</script>
+</body>
+</html>

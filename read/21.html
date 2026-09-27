@@ -1,0 +1,875 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<script>try{var t=localStorage.getItem("20w-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);}catch(e){}if(window.self!==window.top)document.documentElement.classList.add("embedded");</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Глава 21. Машина из живых нейронов · Компьютер на 20 ваттах</title>
+<meta name="description" content="В главе 17 мы отлаживали машину, у которой нет схемы: щуп слышит тысячу нейронов из восьмидесяти миллиардов, и всё остальное приходится угадывать. Инженер в таком положении сделал …">
+<link rel="canonical" href="https://kladkogex.github.io/20-watt-computer/read/21.html">
+<meta property="og:type" content="book">
+<meta property="og:title" content="Глава 21. Машина из живых нейронов · Компьютер на 20 ваттах">
+<meta property="og:description" content="В главе 17 мы отлаживали машину, у которой нет схемы: щуп слышит тысячу нейронов из восьмидесяти миллиардов, и всё остальное приходится угадывать. Инженер в таком положении сделал …">
+<meta property="og:url" content="https://kladkogex.github.io/20-watt-computer/read/21.html">
+<meta property="og:locale" content="ru_RU">
+<meta property="og:image" content="https://kladkogex.github.io/20-watt-computer/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Your brain runs on 20 watts. Here is its datasheet. The 20-Watt Computer, a free textbook for engineers.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://kladkogex.github.io/20-watt-computer/og-card.png">
+<meta name="twitter:title" content="Глава 21. Машина из живых нейронов · The 20-Watt Computer">
+<meta name="twitter:description" content="В главе 17 мы отлаживали машину, у которой нет схемы: щуп слышит тысячу нейронов из восьмидесяти миллиардов, и всё остальное приходится угадывать. Инженер в таком положении сделал …">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Chapter", "name": "Машина из живых нейронов", "url": "https://kladkogex.github.io/20-watt-computer/read/21.html", "position": 21, "inLanguage": "ru", "isAccessibleForFree": true, "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/", "author": {"@type": "Person", "name": "Константин Кладько", "alternateName": "Konstantin Kladko"}, "isPartOf": {"@type": "Book", "name": "Компьютер на 20 ваттах. Как вычисляет мозг: количественный подход для инженеров", "alternateName": "The 20-Watt Computer: How the Brain Computes. A Quantitative Approach for Engineers", "author": {"@type": "Person", "name": "Константин Кладько", "alternateName": "Konstantin Kladko"}, "url": "https://kladkogex.github.io/20-watt-computer/", "inLanguage": "ru", "isAccessibleForFree": true, "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/"}}</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap">
+<link rel="stylesheet" href="book.css">
+</head>
+<body>
+<header class="bar">
+  <a class="home" href="../#toc"><span class="w">20</span> <span data-ru="Компьютер на 20 ваттах" data-en="The 20-Watt Computer">Компьютер на 20 ваттах</span></a>
+  <label class="jump"><span class="sr" data-ru="Перейти к главе" data-en="Go to chapter">Перейти к главе</span>
+    <select id="jump"></select></label>
+  <div class="langs" role="group" aria-label="Language">
+    <button class="chip" id="lang-ru" type="button">RU</button>
+    <button class="chip" id="lang-en" type="button">EN</button>
+    <button class="chip theme" id="theme" type="button" aria-label="Light or dark theme" title="Light / dark">☾</button>
+  </div>
+</header>
+
+<main class="page">
+  <div class="pagehead">
+    <p class="kicker" data-ru="Глава 21" data-en="Chapter 21">Глава 21</p>
+    <h1><span class="t-full">Машина из живых нейронов</span><span class="t-short">Компьютер из живых клеток</span></h1>
+    <div class="mode" role="group" aria-label="Version" data-has-short="true">
+      <button type="button" class="seg" data-mode="short"><b data-ru="Коротко" data-en="Short">Коротко</b><span data-ru="без формул, с рисунками" data-en="no formulas, with drawings">без формул, с рисунками</span></button>
+      <button type="button" class="seg" data-mode="full"><b data-ru="Полностью" data-en="Full">Полностью</b><span data-ru="формулы, модели, задачи" data-en="formulas, models, exercises">формулы, модели, задачи</span></button>
+    </div>
+    <p class="lang-note" data-ru="" data-en="The online reader is in Russian for now; the book in other languages is in the PDF downloads in the menu.">.</p>
+  </div>
+
+  <article class="text full" id="text-full">
+
+ <a id="x24-19000021"></a>
+ <h3 class="sectionHead"><span class="titlemark">21.1 </span> <a id="x24-19100021.1"></a>Стенд с открытой схемой</h3>
+<p class="noindent">В главе <a href="17.html#x20-15300017">17</a> мы отлаживали машину, у которой нет схемы: щуп слышит тысячу нейронов из
+восьмидесяти миллиардов, и всё остальное приходится угадывать. Инженер в таком положении
+сделал бы простую вещь — собрал бы маленький кусок схемы на макетной плате, где видна
+каждая деталь. С нейронами это тоже можно сделать.
+</p><p class="indent"> Нейроны коры разделяют и выращивают на чипе с решёткой электродов — от нескольких
+десятков до десятков тысяч. Через несколько недель клетки прорастают отростками и
+соединяются в сеть из тысяч или сотен тысяч нейронов, в основном <span class="nt">GLUT</span> и меньшая
+доля <span class="nt">GABA</span>, которая зависит от препарата: в культурах гиппокампа это около
+<math display="inline"><mn>6</mn><mi>%</mi></math>
+нейронов <span class="cite">[<a href="refs.html#XBenson1994">369</a>]</span>. Каждый электрод умеет и слушать, как щуп главы <a href="17.html#x20-15300017">17</a>, и подавать ток, как
+тестовый сигнал. Вторая разновидность стенда — <span class="lati-1095">органоиды</span>: трёхмерные комочки нервной ткани
+размером около миллиметра, выращенные из стволовых клеток человека <span class="cite">[<a href="refs.html#XLancaster2013">215</a>]</span>. На таких стендах
+живые сети работают месяцами; есть площадки, где опыты на органоидах можно ставить
+удалённо, по сети, больше ста дней подряд <span class="cite">[<a href="refs.html#XJordan2024">216</a>]</span>. Эту область называют <span class="lati-1095">биологическими</span>
+<span class="lati-1095">вычислениями </span>или <span class="lati-1095">органоидным интеллектом</span> <span class="cite">[<a href="refs.html#XSmirnova2023">217</a>]</span>.
+</p><p class="indent"> У стенда два важных отличия от мозга. Он крошечный: в нём в сто тысяч раз меньше
+нейронов. И в нём нет широковещательных каналов: нейронов <span class="nt">DOPA</span>, <span class="nt">SERO</span>, <span class="nt">NORA</span> и <span class="nt">ACET</span> в
+культуре из коры нет. Это машина, у которой есть шина данных и управление потоком, но нет
+регистров управления. Посмотрим, на что она способна.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">21.2 </span> <a id="x24-19200021.2"></a>Что сеть делает сама</h3>
+<p class="noindent">Оставленная в покое, культура не молчит и не шумит равномерно. Время от времени почти вся
+сеть вспыхивает разом — <span class="lati-1095">залпом </span>— и снова затихает; интервалы между залпами — от
+секунды до минут, в зависимости от культуры <span class="cite">[<a href="refs.html#XWagenaar2006">218</a>]</span>. Для инженера это знакомая картина:
+усилитель с сильной положительной обратной связью и без нагрузки превращается в
+генератор.
+</p><p class="indent"> Механизм мы уже знаем. Сильные взаимные связи <span class="nt">GLUT</span>-нейронов запускают лавину, как в
+главе <a href="03.html#x6-250003">3</a> при нарушении условий утверждения <a href="03.html#x6-32003r3">3.3</a>. Лавина быстро истощает запас медиатора
+в синапсах (<a href="04.html#x7-42001r6">4.6</a>), и сеть замолкает. Запас восстанавливается с постоянной времени
+<math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mstyle class="text"><mtext>вос</mtext></mstyle></mrow></msub 
+></math>, и когда
+восстановится доля <math display="inline"><msup><mrow><mi>x</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">∗</mo></mrow></msup 
+></math>,
+достаточная для новой лавины, следует новый залп. Интервал между залпами
+</p><div class="keyformula"><table class="equation"><tr><td>
+<math display="block" class="equation">
+ <mstyle id="x24-192001r1" class="label"></mstyle><msub><mrow><mi>T</mi></mrow><mrow><mstyle class="text"><mtext>залп</mtext></mstyle></mrow></msub 
+><mspace width="0.28em" class="thickpace"/> <mo class="MathClass-rel" stretchy="false">≈</mo><mspace width="0.28em" class="thickpace"/><msub><mrow><mi>τ</mi></mrow><mrow><mstyle class="text"><mtext>вос</mtext></mstyle></mrow></msub 
+><mspace width="0.17em" class="thinspace"/> <mi class="loglike">ln</mi><mo>⁡</mo> <mfrac><mrow><mn>1</mn></mrow> 
+<mrow><mn>1</mn> <mo class="MathClass-bin" stretchy="false">−</mo> <msup><mrow><mi>x</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">∗</mo></mrow></msup 
+></mrow></mfrac><mo class="MathClass-punc" stretchy="false">.</mo>
+</math></td><td class="eq-no">(21.1)</td></tr></table>
+</div><p class="noindent"> При <math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mstyle class="text"><mtext>вос</mtext></mstyle></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>8</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>с</mtext></mstyle></math> из главы <a href="04.html#x7-350004">4</a> и
+<math display="inline"><msup><mrow><mi>x</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">∗</mo></mrow></msup 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>9</mn></math> получается около двух
+секунд, при <math display="inline"><msup><mrow><mi>x</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">∗</mo></mrow></msup 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>9</mn><mn>9</mn></math> — около четырёх.
+Это оценка модели с <math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mstyle class="text"><mtext>вос</mtext></mstyle></mrow></msub 
+></math>
+книги, и она попадает в короткий край измеренных интервалов. Прямое измерение на
+микрокультурах даёт восстановление запаса медиатора после залпа за десятки секунд <span class="cite">[<a href="refs.html#XCohenSegal2011">367</a>]</span>, то есть
+<math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mstyle class="text"><mtext>вос</mtext></mstyle></mrow></msub 
+></math> там больше;
+с таким <math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mstyle class="text"><mtext>вос</mtext></mstyle></mrow></msub 
+></math>
+формула (<a href="#x24-192001r1">21.1</a>) даёт десятки секунд и минуты, как в медленных культурах. Это генератор
+релаксационного типа, родственник генератора ритма из главы <a href="13.html#x16-12100013">13</a>: там его перезаряжала
+усталость групп, здесь — запас медиатора.
+</p><p class="indent"> Залпы — то, что сеть делает, когда ей нечего делать. В живом мозге похожая картина
+бывает в глубоком сне (глава <a href="20.html#x23-18000020">20</a>) и в развивающемся мозге, до того как в него пошли
+настоящие входы. Сходство это наводит на мысль, но одинаковость механизмов —
+гипотеза.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">21.3 </span> <a id="x24-19300021.3"></a>Как учить сеть без учителя-дофамина</h3>
+<p class="noindent">Раз <span class="nt">DOPA</span> в культуре нет, сигнал «лучше или хуже» приходится подавать самим — электродами.
+Опыты показывают, что сеть на стенде действительно меняет ответы, и самое интересное в них —
+<span class="lati-1095">чем </span>её учат.
+</p><p class="indent"> <span class="lati-1095">Учитель, который замолкает. </span>Сеть стимулируют через один электрод раз
+в секунду-три, пока на другом электроде не появится нужный ответ через
+<math display="inline"><mn>5</mn><mn>0</mn> <mo class="MathClass-bin" stretchy="false">±</mo> <mn>1</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math> после
+стимула. Как только он появился, стимуляцию выключают на пять минут. После нескольких
+таких циклов нужный ответ появляется на стимул сразу <span class="cite">[<a href="refs.html#XShahaf2001">219</a>]</span>. Награда здесь — тишина: стимул
+расшатывает сеть, а прекращение стимула оставляет её в том состоянии, которое дало
+правильный ответ. Это спуск по градиенту через случайные отклонения из главы <a href="06.html#x9-560006">6</a>
+(утверждение <a href="06.html#x9-61003r3">6.3</a>), где роль ошибки играет сам факт тряски: трясут, пока не станет
+правильно.
+</p><p class="indent"> <span class="lati-1095">Сеть, которая играет в теннис. </span>В опыте на стенде с плотной решёткой электродов около
+миллиона нейронов подключили к компьютерной игре в теннис с одной ракеткой <span class="cite">[<a href="refs.html#XKagan2022">220</a>]</span>.
+Положение мяча подавалось током на «чувствительные» электроды: где мяч — кодом местом,
+как далеко — частотой. Активность в двух «двигательных» областях двигала ракетку вверх или
+вниз. Правило обучения было необычным. Если ракетка отбила мяч, сеть получала короткий
+<span class="lati-1095">предсказуемый </span>стимул; если промахнулась — несколько секунд <span class="lati-1095">непредсказуемого </span>случайного
+тока. За двадцать минут игры серии отбитых мячей удлинялись. Значимый рост внутри сеанса
+был только при полной обратной связи; при тишине вместо стимула культура к концу сеанса
+тоже играла лучше, чем без обратной связи, но с меньшим эффектом, а устойчивого обучения
+от сеанса к сеансу за несколько дней не было. Подробный разбор этого опыта — в
+главе <a href="22.html#x25-20300022">22</a>.
+</p><p class="indent"> Авторы объяснили результат гипотезой, что сеть действует так, чтобы её вход был
+предсказуемым <span class="cite">[<a href="refs.html#XFriston2010">221</a>]</span>. Это та же идея, что экономия импульсов в главе <a href="04.html#x7-350004">4</a> и предсказание кадра в
+главе <a href="12.html#x15-11200012">12</a>: машина тратит меньше, когда вход ожидаем. Но и сам опыт, и особенно слова авторов о
+«разумности» культуры, вызвали резкую критику: эффект невелик, а объяснить его можно и
+проще <span class="cite">[<a href="refs.html#XBalci2023">222</a>]</span>. Честная оценка такая: культура на стенде меняет поведение под действием
+обратной связи — это измерено, а что она учится именно предсказывать свой вход —
+гипотеза.
+</p><p class="indent"> <span class="lati-1095">Сеть, которая водит тело. </span>Похожим образом культуру подключали к простому
+виртуальному «телу» и учили его двигаться к цели, подбирая пространственно-временной
+рисунок тренирующих стимулов <span class="cite">[<a href="refs.html#XBakkum2008">223</a>]</span>. Ни в одном из этих опытов нет дофамина: учителем
+служит рисунок тока, который выбирает инженер. Что меняется, когда учителем становится
+программа или сам дофамин, — в разделах <a href="#x24-19600021.6">21.6</a>–<a href="#x24-19900021.9">21.9</a>.
+</p>
+ <figure class="figure"> 
+<a id="x24-1930011"></a>
+<p class="noindent"><img src="img/full52x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<figcaption class="caption"><span class="id">Рис. 21.1: </span><span class="content">Два способа заставить живую сеть вычислять. (а) Замкнутая петля: положение
+мяча подаётся током, импульсы двигательных областей двигают ракетку, а предсказуемый
+или случайный стимул после удара служит учителем. (б) Резервуар (<a href="#x24-194001r2">21.2</a>): органоиду
+не подают учебного сигнала, он расщепляет вход на множество нелинейных откликов с
+памятью; по ошибке учится одно линейное считывание снаружи. Связи самого органоида
+при этом тоже меняются — без учителя.</span></figcaption>
+ </figure>
+ <h3 class="sectionHead"><span class="titlemark">21.4 </span> <a id="x24-19400021.4"></a>Живой резервуар</h3>
+<p class="noindent">Есть и другой способ использовать живую сеть: не учить её вовсе. В технике он называется
+<span class="lati-1095">вычислением на резервуаре</span> <span class="cite">[<a href="refs.html#XMaass2002">224</a>, <a href="refs.html#XJaegerHaas2004">225</a>]</span>. Берут готовую нелинейную систему с памятью —
+любую, лишь бы её отклик на вход был богатым и зависел от недавнего прошлого. Вход
+<math display="inline"><mi>u</mi><mo class="MathClass-open" stretchy="false">(</mo><mi>t</mi><mo class="MathClass-close" stretchy="false">)</mo></math> раскачивает её, получается
+вектор откликов <math display="inline"><mstyle mathvariant="bold"><mi>r</mi></mstyle><mo class="MathClass-open" stretchy="false">(</mo><mi>t</mi><mo class="MathClass-close" stretchy="false">)</mo></math>,
+и обучается только линейное считывание
+</p><div class="keyformula"><table class="equation"><tr><td>
+<math display="block" class="equation">
+ <mstyle id="x24-194001r2" class="label"></mstyle><mi>y</mi><mo class="MathClass-open" stretchy="false">(</mo><mi>t</mi><mo class="MathClass-close" stretchy="false">)</mo><mspace width="0.28em" class="thickpace"/> <mo class="MathClass-rel" stretchy="false">=</mo> <mspace width="0.28em" class="thickpace"/><msub><mrow><mi>W</mi></mrow><mrow><mstyle class="text"><mtext>вых</mtext></mstyle></mrow></msub 
+><mspace width="0.17em" class="thinspace"/><mstyle mathvariant="bold"><mi>r</mi></mstyle><mo class="MathClass-open" stretchy="false">(</mo><mi>t</mi><mo class="MathClass-close" stretchy="false">)</mo><mo class="MathClass-punc" stretchy="false">,</mo>
+</math></td><td class="eq-no">(21.2)</td></tr></table>
+</div><p class="noindent"> веса которого подбираются правилом наименьших квадратов (<a href="15.html#x18-139001r1">15.1</a>) из главы <a href="15.html#x18-13800015">15</a>.
+Резервуар делает то, что делали маленькие <span class="nt">GLUT</span>-нейроны главы <a href="15.html#x18-13800015">15</a>: расщепляет
+вход на длинный вектор, в котором нужные классы становятся разделимы плоскостью
+(глава <a href="19.html#x22-17000019">19</a>).
+</p><p class="indent"> Органоид на решётке электродов подошёл на роль такого резервуара. Звуки речи, поданные на него
+рисунками тока, после обучения одного линейного считывания различались по говорящему с точностью
+около <math display="inline"><mn>7</mn><mn>8</mn><mi>%</mi></math> <span class="cite">[<a href="refs.html#XCai2023">226</a>]</span>.
+Точность <math display="inline"><mn>7</mn><mn>8</mn><mi>%</mi></math>
+— цифра, которую сообщают сами авторы и повторяет пресса. Результат полезный, но важно
+понимать, где в нём «ум»: органоид даёт нелинейность и затухающую память, обучение по
+ошибке сделано снаружи, в кремнии (рис. <a href="#x24-1930011">21.1</a>). При этом органоид не остаётся неизменным: по
+данным авторов, за время тренировки менялась его собственная функциональная связность, и
+называют это обучением без учителя в самом органоиде <span class="cite">[<a href="refs.html#XCai2023">226</a>]</span>. Какую долю точности даёт это
+изменение, а какую — считывание, не разделено.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">21.5 </span> <a id="x24-19500021.5"></a>Что стенд говорит о машине</h3>
+<p class="noindent"><span class="lati-1095">Энергия. </span>По оценке (<a href="04.html#x7-44001r8">4.8</a>) импульс стоит около
+<math display="inline"><mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mo class="MathClass-bin" stretchy="false">−</mo><mn>1</mn><mn>0</mn></mrow></msup 
+></math> Дж.
+Культура из миллиона нейронов при частоте в импульс в секунду тратит на передачу
+сигналов
+</p><div class="keyformula"><table class="equation"><tr><td>
+<math display="block" class="equation">
+ <mstyle id="x24-195001r3" class="label"></mstyle><mi>P</mi><mspace width="0.28em" class="thickpace"/> <mo class="MathClass-rel" stretchy="false">≈</mo><mspace width="0.28em" class="thickpace"/><mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>6</mn></mrow></msup 
+> <mo class="MathClass-bin" stretchy="false">×</mo> <mn>1</mn><mspace width="0.17em" class="thinspace"/><msup><mrow><mstyle class="text"><mtext>с</mtext></mstyle></mrow><mrow><mo class="MathClass-bin" stretchy="false">−</mo><mn>1</mn></mrow></msup 
+> <mo class="MathClass-bin" stretchy="false">×</mo> <mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mo class="MathClass-bin" stretchy="false">−</mo><mn>1</mn><mn>0</mn></mrow></msup 
+><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>Дж</mtext></mstyle><mspace width="0.28em" class="thickpace"/> <mo class="MathClass-rel" stretchy="false">=</mo> <mspace width="0.28em" class="thickpace"/><mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mo class="MathClass-bin" stretchy="false">−</mo><mn>4</mn></mrow></msup 
+><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>Вт</mtext></mstyle><mo class="MathClass-punc" stretchy="false">,</mo>
+</math></td><td class="eq-no">(21.3)</td></tr></table>
+</div><p class="noindent"> десятую долю милливатта. Электроника, которая стимулирует, записывает и обрабатывает
+эти импульсы, тратит на порядки больше. Как и в главе <a href="17.html#x20-15300017">17</a>, узкое место — не вычисление, а
+связь с ним.
+</p><p class="indent"> <span class="lati-1095">Недостающие детали. </span>Стенд показывает, сколько умеет шина <span class="nt">GLUT</span> с управлением потоком
+<span class="nt">GABA</span> без регистров управления: самоорганизоваться, генерировать залпы, менять ответы под
+действием обратной связи и служить хорошим резервуаром. Чего она без них не умеет, — сама
+решить, что считать успехом. Этот сигнал на стенде подаёт инженер, а в мозге, как мы видели в
+главах <a href="06.html#x9-560006">6</a>–<a href="09.html#x12-860009">9</a>, — широковещательные каналы.
+</p><p class="indent"> <span class="lati-1095">Этика. </span>Органоиды выращивают из клеток человека, и чем сложнее они становятся, тем
+серьёзнее вопрос, может ли такая ткань что-то чувствовать. Инженерный взгляд подсказывает
+частичный ответ: боль в главе <a href="14.html#x17-12900014">14</a> — это не сигнал одного датчика, а целая система тревоги с
+воротами, регулятором громкости и широковещательными каналами, которых на стенде нет. Но
+это рассуждение, а не доказательство, и сама область предлагает вести этическую оценку вместе
+с опытами, с самого начала <span class="cite">[<a href="refs.html#XSmirnova2023">217</a>]</span>.
+</p>
+ <div class="tcolorbox keyblock" id="tcolobox-41"> 
+<div class="tcolorbox-content"><div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x24-195002r1"></a>
+<span class="labx-1095">Утверждение 21.1 </span>(Живая сеть на стенде)<span class="labx-1095">.</span> </span> <span class="lati-1095">Сеть из </span><span class="nt"><span class="lati-1095">GLUT</span></span><span class="lati-1095">- и </span><span class="nt"><span class="lati-1095">GABA</span></span><span class="lati-1095">-нейронов на</span>
+<span class="lati-1095">решётке электродов сама порождает залпы</span><span class="lati-1095"> </span>(<a href="#x24-192001r1">21.1</a>)<span class="lati-1095">, меняет ответы под действием</span>
+<span class="lati-1095">обратной связи и может служить резервуаром</span><span class="lati-1095"> </span>(<a href="#x24-194001r2">21.2</a>) <span class="lati-1095">для обученного снаружи</span>
+<span class="lati-1095">считывания. Всё это измерено. Что такая сеть учится по какому-то общему правилу,</span>
+<span class="lati-1095">например предсказывать свой вход, — гипотеза, а громкие слова о её «разумности»</span>
+<span class="lati-1095">большинство специалистов не принимает.</span>
+</p>
+</div>
+ 
+</div> 
+</div>
+ <h3 class="sectionHead"><span class="titlemark">21.6 </span> <a id="x24-19600021.6"></a>Дофамин по вспышке света</h3>
+<p class="noindent">Единственный известный нам прямой опыт, где культуре дали дофамин как учителя, поставлен
+на платформе из органоидов, к которой исследователи подключаются удалённо <span class="cite">[<a href="refs.html#XJordan2024">216</a>]</span>. В
+жидкость, омывающую органоиды, добавили дофамин в светочувствительной «клетке»:
+связанная молекула не действует на рецепторы. Концентрация клеточного дофамина —
+<math display="inline"><mn>1</mn></math> мМ.
+Когда нужно наградить сеть, на неё светят ультрафиолетом: клетка распадается, и дофамин
+выходит в объём.
+</p><p class="indent"> Петля устроена так. Один и тот же стимул подаётся раз за разом; если он вызвал
+больше импульсов, чем прежде, включается вспышка и высвобождается дофамин. За
+<math display="inline"><mn>2</mn><mn>4</mn><mn>0</mn></math>
+повторов число вызванных импульсов в целом росло. Авторы сами пишут, что по одному такому
+опыту нельзя заключить, что рост вызван дофамином <span class="cite">[<a href="refs.html#XJordan2024">216</a>]</span>.
+</p><p class="indent"> Для инженера это первая попытка собрать в чашке правило трёх множителей (<a href="06.html#x9-60001r5">6.5</a>): активность
+отправителя и получателя оставляет след, а общий сигнал решает, закрепить ли изменение. Но
+сигнал здесь бывает только положительным: награда есть или её нет, отрицательной ошибки
+<math display="inline"><mi>δ</mi> <mo class="MathClass-rel" stretchy="false">&#x003C;</mo> <mn>0</mn></math>
+установка не выдаёт. Дофамин к тому же расплывается и откачивается медленно,
+как концентрация в (<a href="05.html#x8-51001r3">5.3</a>), так что частые вспышки могут просто поднять его общий
+уровень. Чтобы отличить обучение от этого, нужны два контроля: столько же вспышек в
+случайные моменты, не связанные с ответом сети, и те же вспышки без клеточного
+дофамина. И нужна проверка после отдыха: осталось ли изменение, когда дофамин
+ушёл.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">21.7 </span> <a id="x24-19700021.7"></a>Дофамин учит кремний</h3>
+<p class="noindent">В обратном опыте живые клетки учат электронику <span class="cite">[<a href="refs.html#XKeene2020">229</a>]</span>. Клетки, выделяющие дофамин,
+выращивают в микроканале над органическим нейроморфным элементом — транзистором,
+проводимость канала которого играет роль веса синапса. Дофамин, вышедший из клеток,
+окисляется у электрода элемента, и это меняет проводимость. Устройство повторяет и механизм
+уборки медиатора из щели, поэтому вес можно не только изменить надолго, но и вернуть
+обратно.
+</p><p class="indent"> Схемотехнически это интегратор с утечкой по химическому входу: вес копит поток дофамина,
+а «откачка» задаёт, как быстро он забывается, — та же RC-цепь, что и (<a href="05.html#x8-51001r3">5.3</a>). Главное здесь
+направление связи. Щуп из главы <a href="17.html#x20-15300017">17</a> не видит широковещательных регистров, потому что они
+химические. Этот элемент читает именно химический регистр и превращает его в электрический
+вес. Для интерфейсов мозг—компьютер это путь к датчику, который слышит не только шину
+данных, но и регистры управления.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">21.8 </span> <a id="x24-19800021.8"></a>Органоиды со своими дофаминовыми нейронами</h3>
+<p class="noindent">Из стволовых клеток человека умеют выращивать органоиды, похожие на ту область мозга, где
+сидят <span class="nt">DOPA</span>-нейроны. В них есть работающие дофаминовые нейроны, которые выделяют
+дофамин <span class="cite">[<a href="refs.html#XJo2016">230</a>]</span>. Такие органоиды выращивают в основном для изучения болезней. Опытов, где их
+дофамин служил бы учителем для другой сети, мы не нашли.
+</p><p class="indent"> Для машины из живых нейронов это недостающая деталь. Стенд из главы <a href="#x24-19000021">21</a> — шина данных
+и управление потоком без регистров управления; здесь источник широковещательного сигнала
+уже есть. Не хватает критика: сети, которая вычисляла бы ошибку предсказания (<a href="06.html#x9-63002r8">6.8</a>) и
+управляла бы этими нейронами. Соединить органоид коры с таким органоидом так,
+чтобы дофамин выделялся по ошибке, — открытая задача, и пока это гипотеза, а не
+опыт.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">21.9 </span> <a id="x24-19900021.9"></a>Органоид балансирует шестом без дофамина</h3>
+<p class="noindent">Самый полный из недавних опытов обходится без дофамина совсем <span class="cite">[<a href="refs.html#XRobbins2026">228</a>]</span>. Органоиды коры мыши
+подключили в замкнутую петлю к задаче «шест на тележке»: активность органоида двигает
+тележку, положение шеста подаётся обратно стимуляцией. Между попытками органоид получает
+короткие высокочастотные учебные стимулы. Какие именно — выбирает программа обучения с
+подкреплением.
+</p><p class="indent"> Результаты измерены: </p>
+ <ul class="itemize1">
+ <li class="itemize">
+ <p class="noindent">у большинства органоидов учебные сигналы, выбранные программой, дали лучший
+ результат, чем случайно выбранные сигналы или отсутствие сигнала;
+ </p></li>
+ <li class="itemize">
+ <p class="noindent">после <math display="inline"><mn>4</mn><mn>5</mn></math>
+ минут отдыха улучшение не сохранялось;
+ </p></li>
+ <li class="itemize">
+ <p class="noindent">блокада рецепторов глутамата обоих типов, AMPA и NMDA, отменяла улучшение.</p></li></ul>
+<p class="indent"> Последний пункт говорит, где живёт выученное: в <span class="nt">GLUT</span>-синапсах, и через тот рецептор,
+который в разделе <a href="06.html#x9-580006.2">6.2</a> работает как детектор совпадения входа и выхода. Второй пункт
+показывает, чего не хватает: быстрое изменение есть, закрепления нет, как у быстрого
+ученика из главы <a href="15.html#x18-13800015">15</a> без медленного. А роль учителя изменилась: инженера, который
+выбирает рисунок тока, заменила программа, но учитель по-прежнему стоит снаружи
+чашки.
+</p><p class="indent"> Среди более ранних опытов обучения культур на электродных матрицах мы также не нашли
+ни одного, где использовался бы дофамин: учебным сигналом везде служила электрическая
+стимуляция.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">21.10 </span> <a id="x24-20000021.10"></a>Кто учит культуру</h3>
+ <div class="table">
+<p class="indent"> <a id="x24-2000011"></a></p><figure class="float">
+<div class="tabular">
+ <table id="TBL-25" class="tabular"><colgroup id="TBL-25-1g"><col id="TBL-25-1" /><col id="TBL-25-2" /><col id="TBL-25-3" /><col id="TBL-25-4" /></colgroup><tr style="vertical-align:baseline;" id="TBL-25-1-"><td style="text-align:left;" id="TBL-25-1-1" class="td11"> <p class="noindent"><span class="larm-0900">Опыт</span> </p></td><td style="text-align:left;" id="TBL-25-1-2" class="td11"> <p class="noindent"><span class="larm-0900">Кто</span>
+ <span class="larm-0900">учит</span> </p></td><td style="text-align:left;" id="TBL-25-1-3" class="td11"> <p class="noindent"><span class="larm-0900">Учебный</span>
+ <span class="larm-0900">сигнал</span> </p></td><td style="text-align:left;" id="TBL-25-1-4" class="td11"> <p class="noindent"><span class="larm-0900">Что</span>
+ <span class="larm-0900">известно</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-25-2-"><td style="text-align:left;" id="TBL-25-2-1" class="td11"> <p class="noindent"><span class="larm-0900">остановка</span>
+ <span class="larm-0900">стимуляции</span>
+ <span class="larm-0900">при</span>
+ <span class="larm-0900">нужном</span>
+ <span class="larm-0900">ответе</span> </p></td><td style="text-align:left;" id="TBL-25-2-2" class="td11"> <p class="noindent"><span class="larm-0900">инженер</span> </p></td><td style="text-align:left;" id="TBL-25-2-3" class="td11"> <p class="noindent"><span class="larm-0900">конец</span>
+ <span class="larm-0900">стимуляции</span> </p></td><td style="text-align:left;" id="TBL-25-2-4" class="td11"> <p class="noindent"><span class="larm-0900">ответ</span>
+ <span class="larm-0900">закрепляется</span>
+ <span class="larm-0900">—</span>
+ <span class="larm-0900">измерено</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-25-3-"><td style="text-align:left;" id="TBL-25-3-1" class="td11"> <p class="noindent"><span class="larm-0900">DishBrain</span>
+ <span class="larm-0900">(гл.</span><span class="larm-0900"> </span><a href="22.html#x25-20300022"><span class="larm-0900">22</span></a><span class="larm-0900">)</span> </p></td><td style="text-align:left;" id="TBL-25-3-2" class="td11"> <p class="noindent"><span class="larm-0900">инженер</span> </p></td><td style="text-align:left;" id="TBL-25-3-3" class="td11"> <p class="noindent"><span class="larm-0900">предсказуемый</span>
+ <span class="larm-0900">или</span>
+ <span class="larm-0900">случайный</span>
+ <span class="larm-0900">ток</span> </p></td><td style="text-align:left;" id="TBL-25-3-4" class="td11"> <p class="noindent"><span class="larm-0900">значимый</span>
+ <span class="larm-0900">рост</span>
+ <span class="larm-0900">розыгрышей</span>
+ <span class="larm-0900">за</span>
+ <span class="larm-0900">сеанс</span>
+ <span class="larm-0900">только</span>
+ <span class="larm-0900">при</span>
+ <span class="larm-0900">полной</span>
+ <span class="larm-0900">обратной</span>
+ <span class="larm-0900">связи,</span>
+ <span class="larm-0900">при</span>
+ <span class="larm-0900">тишине</span>
+ <span class="larm-0900">эффект</span>
+ <span class="larm-0900">меньше</span>
+ <span class="larm-0900">—</span>
+ <span class="larm-0900">измерено;</span>
+ <span class="larm-0900">от</span>
+ <span class="larm-0900">сеанса</span>
+ <span class="larm-0900">к</span>
+ <span class="larm-0900">сеансу</span>
+ <span class="larm-0900">неустойчив;</span>
+ <span class="larm-0900">причина</span>
+ <span class="larm-0900">обсуждается</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-25-4-"><td style="text-align:left;" id="TBL-25-4-1" class="td11"> <p class="noindent"><span class="larm-0900">шест</span>
+ <span class="larm-0900">на</span>
+ <span class="larm-0900">тележке</span> </p></td><td style="text-align:left;" id="TBL-25-4-2" class="td11"> <p class="noindent"><span class="larm-0900">программа</span>
+ <span class="larm-0900">обучения</span>
+ <span class="larm-0900">с</span>
+ <span class="larm-0900">подкреплением</span> </p></td><td style="text-align:left;" id="TBL-25-4-3" class="td11"> <p class="noindent"><span class="larm-0900">выбранные</span>
+ <span class="larm-0900">программой</span>
+ <span class="larm-0900">высокочастотные</span>
+ <span class="larm-0900">стимулы</span> </p></td><td style="text-align:left;" id="TBL-25-4-4" class="td11"> <p class="noindent"><span class="larm-0900">лучше</span>
+ <span class="larm-0900">случайных,</span>
+ <span class="larm-0900">но</span>
+ <span class="larm-0900">не</span>
+ <span class="larm-0900">сохраняется</span>
+ <span class="larm-0900">после</span>
+ <span class="larm-0900">отдыха</span>
+ <span class="larm-0900">—</span>
+ <span class="larm-0900">измерено</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-25-5-"><td style="text-align:left;" id="TBL-25-5-1" class="td11"> <p class="noindent"><span class="larm-0900">дофамин</span>
+ <span class="larm-0900">по</span>
+ <span class="larm-0900">вспышке</span> </p></td><td style="text-align:left;" id="TBL-25-5-2" class="td11"> <p class="noindent"><span class="larm-0900">правило</span>
+ <span class="larm-0900">«больше</span>
+ <span class="larm-0900">импульсов</span>
+ <span class="larm-0900">—</span>
+ <span class="larm-0900">награда»</span> </p></td><td style="text-align:left;" id="TBL-25-5-3" class="td11"> <p class="noindent"><span class="larm-0900">дофамин,</span>
+ <span class="larm-0900">освобождённый</span>
+ <span class="larm-0900">светом</span> </p></td><td style="text-align:left;" id="TBL-25-5-4" class="td11"> <p class="noindent"><span class="larm-0900">рост</span>
+ <span class="larm-0900">импульсов</span>
+ <span class="larm-0900">—</span>
+ <span class="larm-0900">наблюдение;</span>
+ <span class="larm-0900">роль</span>
+ <span class="larm-0900">дофамина</span>
+ <span class="larm-0900">не</span>
+ <span class="larm-0900">доказана</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-25-6-"><td style="text-align:left;" id="TBL-25-6-1" class="td11"> <p class="noindent"><span class="larm-0900">биогибридный</span>
+ <span class="larm-0900">синапс</span> </p></td><td style="text-align:left;" id="TBL-25-6-2" class="td11"> <p class="noindent"><span class="larm-0900">живые</span>
+ <span class="larm-0900">клетки</span> </p></td><td style="text-align:left;" id="TBL-25-6-3" class="td11"> <p class="noindent"><span class="larm-0900">дофамин</span>
+ <span class="larm-0900">от</span>
+ <span class="larm-0900">клеток</span> </p></td><td style="text-align:left;" id="TBL-25-6-4" class="td11"> <p class="noindent"><span class="larm-0900">долгое</span>
+ <span class="larm-0900">изменение</span>
+ <span class="larm-0900">и</span>
+ <span class="larm-0900">возврат</span>
+ <span class="larm-0900">веса</span>
+ <span class="larm-0900">элемента</span>
+ <span class="larm-0900">—</span>
+ <span class="larm-0900">измерено</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-25-7-"><td style="text-align:left;" id="TBL-25-7-1" class="td11"> <p class="noindent"><span class="larm-0900">органоиды</span>
+ <span class="larm-0900">с</span>
+ <span class="nt"><span class="larm-0900">DOPA</span></span><span class="larm-0900">-нейронами</span> </p></td><td style="text-align:left;" id="TBL-25-7-2" class="td11"> <p class="noindent"><span class="larm-0900">—</span> </p></td><td style="text-align:left;" id="TBL-25-7-3" class="td11"> <p class="noindent"><span class="larm-0900">—</span> </p></td><td style="text-align:left;" id="TBL-25-7-4" class="td11"> <p class="noindent"><span class="larm-0900">источник</span>
+ <span class="larm-0900">дофамина</span>
+ <span class="larm-0900">есть;</span>
+ <span class="larm-0900">как</span>
+ <span class="larm-0900">учитель</span>
+ <span class="larm-0900">не</span>
+ <span class="larm-0900">использован</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-25-8-"><td style="text-align:left;" id="TBL-25-8-1" class="td11"> </td></tr></table> </div>
+<figcaption class="caption"><span class="id">Таблица 21.1: </span><span class="content">Кто и чем учит живые нейроны на чипе.</span></figcaption>
+ </figure>
+ </div>
+<p class="indent"> Во всех опытах, где учится сама культура, учитель пока снаружи (таблица <a href="#x24-2000011">21.1</a>): инженер,
+программа или правило, заданное инженером. Дофамин вошёл в чашку лишь однажды, и его
+роль ещё предстоит доказать. Собрать в чашке настоящий широковещательный канал — с
+критиком, ошибкой и следом, как в главе <a href="06.html#x9-560006">6</a>, — следующий шаг, которого никто ещё не
+сделал.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">21.11 </span> <a id="x24-20100021.11"></a>Итог</h3>
+ <div class="table">
+<p class="indent"> <a id="x24-2010012"></a></p><figure class="float">
+<div class="tabular">
+ <table id="TBL-26" class="tabular"><colgroup id="TBL-26-1g"><col id="TBL-26-1" /><col id="TBL-26-2" /><col id="TBL-26-3" /></colgroup><tr style="vertical-align:baseline;" id="TBL-26-1-"><td style="text-align:left;" id="TBL-26-1-1" class="td11"> <p class="noindent"><span class="larm-0900">Опыт</span> </p></td><td style="text-align:left;" id="TBL-26-1-2" class="td11"> <p class="noindent"><span class="larm-0900">Что</span>
+ <span class="larm-0900">делает</span>
+ <span class="larm-0900">живая</span>
+ <span class="larm-0900">сеть</span> </p></td><td style="text-align:left;" id="TBL-26-1-3" class="td11"> <p class="noindent"><span class="larm-0900">Что</span>
+ <span class="larm-0900">известно</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-26-2-"><td style="text-align:left;" id="TBL-26-2-1" class="td11"> <p class="noindent"><span class="larm-0900">сеть</span>
+ <span class="larm-0900">без</span>
+ <span class="larm-0900">входа</span> </p></td><td style="text-align:left;" id="TBL-26-2-2" class="td11"> <p class="noindent"><span class="larm-0900">залпы</span>
+ <span class="larm-0900">с</span>
+ <span class="larm-0900">интервалами</span>
+ <span class="larm-0900">от</span>
+ <span class="larm-0900">секунды</span>
+ <span class="larm-0900">до</span>
+ <span class="larm-0900">минут</span><span class="larm-0900"> </span><span class="larm-0900">(</span><a href="#x24-192001r1"><span class="larm-0900">21.1</span></a><span class="larm-0900">)</span> </p></td><td style="text-align:left;" id="TBL-26-2-3" class="td11"> <p class="noindent"><span class="larm-0900">измерено;</span>
+ <span class="larm-0900">механизм</span>
+ <span class="larm-0900">через</span>
+ <span class="larm-0900">истощение</span>
+ <span class="larm-0900">синапсов</span>
+ <span class="larm-0900">—</span>
+ <span class="larm-0900">общепринятая</span>
+ <span class="larm-0900">модель</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-26-3-"><td style="text-align:left;" id="TBL-26-3-1" class="td11"> <p class="noindent"><span class="larm-0900">учитель,</span>
+ <span class="larm-0900">который</span>
+ <span class="larm-0900">замолкает</span> </p></td><td style="text-align:left;" id="TBL-26-3-2" class="td11"> <p class="noindent"><span class="larm-0900">нужный</span>
+ <span class="larm-0900">ответ</span>
+ <span class="larm-0900">закрепляется,</span>
+ <span class="larm-0900">когда</span>
+ <span class="larm-0900">стимуляцию</span>
+ <span class="larm-0900">выключают</span> </p></td><td style="text-align:left;" id="TBL-26-3-3" class="td11"> <p class="noindent"><span class="larm-0900">измерено</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-26-4-"><td style="text-align:left;" id="TBL-26-4-1" class="td11"> <p class="noindent"><span class="larm-0900">игра</span>
+ <span class="larm-0900">в</span>
+ <span class="larm-0900">теннис</span> </p></td><td style="text-align:left;" id="TBL-26-4-2" class="td11"> <p class="noindent"><span class="larm-0900">серии</span>
+ <span class="larm-0900">отбитых</span>
+ <span class="larm-0900">мячей</span>
+ <span class="larm-0900">удлиняются;</span>
+ <span class="larm-0900">значимый</span>
+ <span class="larm-0900">рост</span>
+ <span class="larm-0900">за</span>
+ <span class="larm-0900">сеанс</span>
+ <span class="larm-0900">—</span>
+ <span class="larm-0900">только</span>
+ <span class="larm-0900">при</span>
+ <span class="larm-0900">полной</span>
+ <span class="larm-0900">обратной</span>
+ <span class="larm-0900">связи</span> </p></td><td style="text-align:left;" id="TBL-26-4-3" class="td11"> <p class="noindent"><span class="larm-0900">изменение</span>
+ <span class="larm-0900">поведения</span>
+ <span class="larm-0900">измерено;</span>
+ <span class="larm-0900">обучение</span>
+ <span class="larm-0900">от</span>
+ <span class="larm-0900">сеанса</span>
+ <span class="larm-0900">к</span>
+ <span class="larm-0900">сеансу</span>
+ <span class="larm-0900">неустойчиво;</span>
+ <span class="larm-0900">величина</span>
+ <span class="larm-0900">эффекта</span>
+ <span class="larm-0900">и</span>
+ <span class="larm-0900">объяснение</span>
+ <span class="larm-0900">предсказанием</span>
+ <span class="larm-0900">входа</span>
+ <span class="larm-0900">спорны</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-26-5-"><td style="text-align:left;" id="TBL-26-5-1" class="td11"> <p class="noindent"><span class="larm-0900">виртуальное</span>
+ <span class="larm-0900">тело</span> </p></td><td style="text-align:left;" id="TBL-26-5-2" class="td11"> <p class="noindent"><span class="larm-0900">движение</span>
+ <span class="larm-0900">к</span>
+ <span class="larm-0900">цели</span>
+ <span class="larm-0900">при</span>
+ <span class="larm-0900">подобранном</span>
+ <span class="larm-0900">рисунке</span>
+ <span class="larm-0900">стимулов</span> </p></td><td style="text-align:left;" id="TBL-26-5-3" class="td11"> <p class="noindent"><span class="larm-0900">измерено</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-26-6-"><td style="text-align:left;" id="TBL-26-6-1" class="td11"> <p class="noindent"><span class="larm-0900">резервуар</span> </p></td><td style="text-align:left;" id="TBL-26-6-2" class="td11"> <p class="noindent"><span class="larm-0900">нелинейность</span>
+ <span class="larm-0900">и</span>
+ <span class="larm-0900">память</span>
+ <span class="larm-0900">для</span>
+ <span class="larm-0900">считывания</span><span class="larm-0900"> </span><span class="larm-0900">(</span><a href="#x24-194001r2"><span class="larm-0900">21.2</span></a><span class="larm-0900">)</span> </p></td><td style="text-align:left;" id="TBL-26-6-3" class="td11"> <p class="noindent"><span class="larm-0900">измерено;</span>
+ <span class="larm-0900">обучение</span>
+ <span class="larm-0900">по</span>
+ <span class="larm-0900">ошибке</span>
+ <span class="larm-0900">—</span>
+ <span class="larm-0900">снаружи,</span>
+ <span class="larm-0900">в</span>
+ <span class="larm-0900">кремнии;</span>
+ <span class="larm-0900">связи</span>
+ <span class="larm-0900">органоида</span>
+ <span class="larm-0900">тоже</span>
+ <span class="larm-0900">меняются</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-26-7-"><td style="text-align:left;" id="TBL-26-7-1" class="td11"> <p class="noindent"><span class="larm-0900">энергия</span> </p></td><td style="text-align:left;" id="TBL-26-7-2" class="td11"> <p class="noindent"><span class="larm-0900">около</span>
+ <math display="inline"><mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mo class="MathClass-bin" stretchy="false">−</mo><mn>4</mn></mrow></msup 
+></math><span class="larm-0900"> Вт</span>
+ <span class="larm-0900">на</span>
+ <span class="larm-0900">миллион</span>
+ <span class="larm-0900">нейронов</span><span class="larm-0900"> </span><span class="larm-0900">(</span><a href="#x24-195001r3"><span class="larm-0900">21.3</span></a><span class="larm-0900">)</span> </p></td><td style="text-align:left;" id="TBL-26-7-3" class="td11"> <p class="noindent"><span class="larm-0900">оценка</span>
+ <span class="larm-0900">по</span><span class="larm-0900"> </span><span class="larm-0900">(</span><a href="04.html#x7-44001r8"><span class="larm-0900">4.8</span></a><span class="larm-0900">)</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-26-8-"><td style="text-align:left;" id="TBL-26-8-1" class="td11"> </td></tr></table> </div>
+<figcaption class="caption"><span class="id">Таблица 21.2: </span><span class="content">Что показали машины из живых нейронов.</span></figcaption>
+ </figure>
+ </div>
+<p class="indent"> Машина из живых нейронов (таблица <a href="#x24-2010012">21.2</a>) — это стенд, на котором видно, что умеют шина
+данных и управление потоком без регистров управления. Они умеют многое, но не умеют сами
+решить, что хорошо. На стенде эту роль играет инженер со своим рисунком тока;
+в мозге — те немногие широковещательные провода, которым посвящена середина
+книги.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">21.12 </span> <a id="x24-20200021.12"></a>Задачи</h3>
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x24-202001r1"></a>
+<span class="labx-1095">Задача 21.1 </span>(<math display="inline"><mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Интервал между залпами. </span>Залп истощает запас до нуля, затем <math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mstyle class="text"><mtext>вос</mtext></mstyle></mrow></msub 
+><mspace width="0.17em" class="thinspace"/><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>x</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>t</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>x</mi></math>,
+и новый залп начинается при <math display="inline"><mi>x</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <msup><mrow><mi>x</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">∗</mo></mrow></msup 
+></math>;
+<math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mstyle class="text"><mtext>вос</mtext></mstyle></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>8</mn></math> с.
+(а) Найдите интервал при <math display="inline"><msup><mrow><mi>x</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">∗</mo></mrow></msup 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>9</mn></math>
+и <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>9</mn><mn>9</mn></math>.
+(б) Порог <math display="inline"><msup><mrow><mi>x</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">∗</mo></mrow></msup 
+></math>
+случайно меняется на <math display="inline"> <mo class="MathClass-bin" stretchy="false">±</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>0</mn><mn>0</mn><mn>5</mn></math>
+около <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>9</mn><mn>9</mn></math>.
+В каком диапазоне лежат интервалы?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">(а) <math display="inline"><mi>T</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <msub><mrow><mi>τ</mi></mrow><mrow><mstyle class="text"><mtext>вос</mtext></mstyle></mrow></msub 
+> <mi class="loglike">ln</mi><mo>⁡</mo> <mfrac><mrow><mn>1</mn></mrow> 
+<mrow><mn>1</mn><mo class="MathClass-bin" stretchy="false">−</mo><msup><mrow><mi>x</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">∗</mo></mrow></msup 
+></mrow></mfrac></math>:
+<math display="inline"><mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>8</mn><mn>4</mn></math> с и
+<math display="inline"><mn>3</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>6</mn><mn>8</mn></math> с.
+(б) От <math display="inline"><mn>3</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>3</mn><mn>6</mn></math>
+до <math display="inline"><mn>4</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn><mn>4</mn></math> с:
+чувствительность <math display="inline"><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>T</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mstyle mathvariant="normal"><mi>d</mi></mstyle><msup><mrow><mi>x</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">∗</mo></mrow></msup 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <msub><mrow><mi>τ</mi></mrow><mrow><mstyle class="text"><mtext>вос</mtext></mstyle></mrow></msub 
+><mo class="MathClass-bin" stretchy="false">∕</mo><mo class="MathClass-open" stretchy="false">(</mo><mn>1</mn> <mo class="MathClass-bin" stretchy="false">−</mo> <msup><mrow><mi>x</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">∗</mo></mrow></msup 
+><mo class="MathClass-close" stretchy="false">)</mo> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>8</mn><mn>0</mn></math> с,
+при <math display="inline"><msup><mrow><mi>x</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">∗</mo></mrow></msup 
+><mo class="MathClass-rel" stretchy="false">→</mo> <mn>1</mn></math>
+залпы нерегулярны.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x24-202002r2"></a>
+<span class="labx-1095">Задача 21.2 </span>(<math display="inline"><mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Энергия стенда. </span>(а) Какую мощность даёт оценка (<a href="#x24-195001r3">21.3</a>) для всего мозга (<math display="inline"><mn>8</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>6</mn> <mo class="MathClass-bin" stretchy="false">⋅</mo> <mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>1</mn><mn>0</mn></mrow></msup 
+></math>
+нейронов)? (б) Стенд записывает <math display="inline"><mn>1</mn><mn>0</mn><mn>2</mn><mn>4</mn></math>
+электрода с частотой <math display="inline"><mn>2</mn><mn>0</mn></math> кГц
+по <math display="inline"><mn>1</mn><mn>0</mn></math> бит
+на отсчёт. Во сколько раз передача этого потока при <math display="inline"><mn>1</mn></math> нДж
+на бит дороже мощности самой культуры?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">(а) <math display="inline"><mn>8</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>6</mn></math> Вт, как
+в (<a href="fullch4.html#x7-44001r8">4.8</a>). (б) <math display="inline"><mn>2</mn><mn>0</mn><mn>5</mn></math> Мбит/с,
+<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn></math> Вт — в
+<math display="inline"><mn>2</mn> <mo class="MathClass-bin" stretchy="false">⋅</mo> <mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>3</mn></mrow></msup 
+></math> раз больше
+культуры (<math display="inline"><mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mo class="MathClass-bin" stretchy="false">−</mo><mn>4</mn></mrow></msup 
+></math> Вт).
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x24-202003r3"></a>
+<span class="labx-1095">Задача 21.3 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Проектирование: подавить залпы. </span>Редкая стимуляция через много электродов заставляет
+каждый синапс выбрасывать медиатор с частотой <math display="inline"><msub><mrow><mi>r</mi></mrow><mrow><mi>b</mi></mrow></msub 
+></math>;
+запас <math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mstyle class="text"><mtext>вос</mtext></mstyle></mrow></msub 
+><mspace width="0.17em" class="thinspace"/><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>x</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>t</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>x</mi> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>U</mi><msub><mrow><mi>r</mi></mrow><mrow><mi>b</mi></mrow></msub 
+><msub><mrow><mi>τ</mi></mrow><mrow><mstyle class="text"><mtext>вос</mtext></mstyle></mrow></msub 
+><mi>x</mi></math>,
+<math display="inline"><mi>U</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn></math>,
+<math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mstyle class="text"><mtext>вос</mtext></mstyle></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>8</mn></math> с.
+При какой наименьшей <math display="inline"><msub><mrow><mi>r</mi></mrow><mrow><mi>b</mi></mrow></msub 
+></math>
+запас не дорастает до <math display="inline"><msup><mrow><mi>x</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">∗</mo></mrow></msup 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>9</mn></math>;
+<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>9</mn><mn>9</mn></math>
+и насколько при этом ослабевает синапс?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent"><math display="inline"><msub><mrow><mi>x</mi></mrow><mrow><mstyle class="text"><mtext>уст</mtext></mstyle></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mo class="MathClass-bin" stretchy="false">∕</mo><mo class="MathClass-open" stretchy="false">(</mo><mn>1</mn> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>U</mi><msub><mrow><mi>r</mi></mrow><mrow><mi>b</mi></mrow></msub 
+><msub><mrow><mi>τ</mi></mrow><mrow><mstyle class="text"><mtext>вос</mtext></mstyle></mrow></msub 
+><mo class="MathClass-close" stretchy="false">)</mo> <mo class="MathClass-rel" stretchy="false">&#x003C;</mo> <msup><mrow><mi>x</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">∗</mo></mrow></msup 
+></math> при
+<math display="inline"><msub><mrow><mi>r</mi></mrow><mrow><mi>b</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">&#x003E;</mo> <mo class="MathClass-open" stretchy="false">(</mo><mn>1</mn><mo class="MathClass-bin" stretchy="false">∕</mo><msup><mrow><mi>x</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">∗</mo></mrow></msup 
+><mo class="MathClass-bin" stretchy="false">−</mo> <mn>1</mn><mo class="MathClass-close" stretchy="false">)</mo><mo class="MathClass-bin" stretchy="false">∕</mo><mo class="MathClass-open" stretchy="false">(</mo><mi>U</mi><msub><mrow><mi>τ</mi></mrow><mrow><mstyle class="text"><mtext>вос</mtext></mstyle></mrow></msub 
+><mo class="MathClass-close" stretchy="false">)</mo> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn><mn>8</mn></math> Гц
+для <math display="inline"><msup><mrow><mi>x</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">∗</mo></mrow></msup 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>9</mn></math> и
+<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>0</mn><mn>2</mn><mn>5</mn></math> Гц для
+<math display="inline"><msup><mrow><mi>x</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">∗</mo></mrow></msup 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>9</mn><mn>9</mn></math>; сила синапса
+падает до <math display="inline"><msub><mrow><mi>x</mi></mrow><mrow><mstyle class="text"><mtext>уст</mtext></mstyle></mrow></msub 
+></math>,
+то есть на <math display="inline"><mn>1</mn><mn>0</mn><mi>%</mi></math>
+и <math display="inline"><mn>1</mn><mi>%</mi></math>.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x24-202004r4"></a>
+<span class="labx-1095">Задача 21.4 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Память резервуара не больше числа нейронов. </span>Резервуар с <math display="inline"><mi>N</mi></math>
+выходами <math display="inline"><mstyle mathvariant="bold"><mi>r</mi></mstyle><mo class="MathClass-open" stretchy="false">(</mo><mi>t</mi><mo class="MathClass-close" stretchy="false">)</mo></math>
+получает белый вход <math display="inline"><mi>u</mi><mo class="MathClass-open" stretchy="false">(</mo><mi>t</mi><mo class="MathClass-close" stretchy="false">)</mo></math>
+с нулевым средним и единичной дисперсией; <math display="inline"><msub><mrow><mi>m</mi></mrow><mrow><mi>k</mi></mrow></msub 
+></math>
+— наибольший квадрат корреляции считывания <math display="inline"><msub><mrow><mstyle mathvariant="bold"><mi>w</mi></mstyle></mrow><mrow><mi>k</mi></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">⋅</mo><mstyle mathvariant="bold"><mi>r</mi></mstyle><mo class="MathClass-open" stretchy="false">(</mo><mi>t</mi><mo class="MathClass-close" stretchy="false">)</mo></math>
+с <math display="inline"><mi>u</mi><mo class="MathClass-open" stretchy="false">(</mo><mi>t</mi> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>k</mi><mo class="MathClass-close" stretchy="false">)</mo></math>.
+Докажите, что ёмкость памяти <math display="inline"><mstyle mathvariant="normal"><mi>M</mi><mi>C</mi></mstyle> <mo class="MathClass-rel" stretchy="false">=</mo><msub><mrow> <mi class="MathClass-op">∑</mi><mo> ⁡</mo>
+ </mrow><mrow><mi>k</mi><mo class="MathClass-rel" stretchy="false">≥</mo><mn>0</mn></mrow></msub 
+><msub><mrow><mi>m</mi></mrow><mrow><mi>k</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">≤</mo> <mi>N</mi></math>.
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent"><math display="inline"><mi>u</mi><mo class="MathClass-open" stretchy="false">(</mo><mi>t</mi> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>k</mi><mo class="MathClass-close" stretchy="false">)</mo></math>
+ортонормированы, <math display="inline"><msub><mrow><mi>m</mi></mrow><mrow><mi>k</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mo class="MathClass-rel" stretchy="false">∥</mo><msub><mrow><mi>P</mi></mrow><mrow><mi>V</mi> </mrow></msub 
+><mi>u</mi><mo class="MathClass-open" stretchy="false">(</mo><mi>t</mi> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>k</mi><mo class="MathClass-close" stretchy="false">)</mo><msup><mrow><mo class="MathClass-rel" stretchy="false">∥</mo></mrow><mrow><mn>2</mn></mrow></msup 
+></math>,
+где <math display="inline"><msub><mrow><mi>P</mi></mrow><mrow><mi>V</mi> </mrow></msub 
+></math> — проектор на
+<math display="inline"><mi>N</mi></math>-мерную оболочку выходов;
+по неравенству Бесселя <math display="inline"><msub><mrow> <mi class="MathClass-op">∑</mi><mo> ⁡</mo>
+ </mrow><mrow><mi>k</mi></mrow></msub 
+><msub><mrow><mi>m</mi></mrow><mrow><mi>k</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">≤</mo> <mi>N</mi></math>.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x24-202005r5"></a>
+<span class="labx-1095">Задача 21.5 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Моделирование: резервуар в кремнии. </span>Резервуар <math display="inline"><mstyle mathvariant="bold"><mi>r</mi></mstyle><mo class="MathClass-open" stretchy="false">(</mo><mi>t</mi> <mo class="MathClass-bin" stretchy="false">+</mo> <mn>1</mn><mo class="MathClass-close" stretchy="false">)</mo> <mo class="MathClass-rel" stretchy="false">=</mo> <mi class="loglike">tanh</mi><mo>⁡</mo><mo class="MathClass-open" stretchy="false">(</mo><mi>W</mi><mstyle mathvariant="bold"><mi>r</mi></mstyle><mo class="MathClass-open" stretchy="false">(</mo><mi>t</mi><mo class="MathClass-close" stretchy="false">)</mo> <mo class="MathClass-bin" stretchy="false">+</mo> <mstyle mathvariant="bold"><mi>v</mi></mstyle><mspace width="0.17em" class="thinspace"/><mi>u</mi><mo class="MathClass-open" stretchy="false">(</mo><mi>t</mi><mo class="MathClass-close" stretchy="false">)</mo> <mo class="MathClass-bin" stretchy="false">+</mo> <mstyle mathvariant="bold"><mi>c</mi></mstyle><mo class="MathClass-close" stretchy="false">)</mo></math>,
+<math display="inline"><mi>N</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>3</mn><mn>0</mn></math>,
+<math display="inline"><mi>W</mi></math>
+случайная со спектральным радиусом <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>9</mn></math>,
+<math display="inline"><msub><mrow><mi>v</mi></mrow><mrow><mi>i</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">∼</mo> <mi>U</mi><mo class="MathClass-open" stretchy="false">(</mo><mo class="MathClass-bin" stretchy="false">−</mo><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn><mo class="MathClass-punc" stretchy="false">,</mo><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn><mo class="MathClass-close" stretchy="false">)</mo></math>,
+<math display="inline"><msub><mrow><mi>c</mi></mrow><mrow><mi>i</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">∼</mo> <mi>U</mi><mo class="MathClass-open" stretchy="false">(</mo><mo class="MathClass-bin" stretchy="false">−</mo><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn><mo class="MathClass-punc" stretchy="false">,</mo><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn><mo class="MathClass-close" stretchy="false">)</mo></math>,
+<math display="inline"><mi>u</mi> <mo class="MathClass-rel" stretchy="false">∼</mo> <mi>U</mi><mo class="MathClass-open" stretchy="false">(</mo><mo class="MathClass-bin" stretchy="false">−</mo><mn>1</mn><mo class="MathClass-punc" stretchy="false">,</mo><mn>1</mn><mo class="MathClass-close" stretchy="false">)</mo></math>,
+считывание — гребневая регрессия. Найдите ёмкость памяти задачи <a href="#x24-202004r4">21.4</a> с <math display="inline"> <mi class="loglike">tanh</mi><mo>⁡</mo></math>
+и без него. Какой резервуар помнит больше?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent"><math display="inline"><mstyle mathvariant="normal"><mi>M</mi><mi>C</mi></mstyle> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>9</mn></math>–<math display="inline"><mn>1</mn><mn>1</mn></math>
+с <math display="inline"> <mi class="loglike">tanh</mi><mo>⁡</mo></math> и
+<math display="inline"><mn>1</mn><mn>5</mn></math>–<math display="inline"><mn>1</mn><mn>8</mn></math>
+для линейного резервуара (три затравки), оба
+<math display="inline"> <mo class="MathClass-rel" stretchy="false">≤</mo> <mn>3</mn><mn>0</mn></math>:
+нелинейность платит памятью.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x24-202006r6"></a>
+<span class="labx-1095">Задача 21.6 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Считывание для живого резервуара. </span>Органоид даёт <math display="inline"><mn>1</mn><mn>0</mn><mn>2</mn><mn>4</mn></math>
+канала и <math display="inline"><mi>P</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>2</mn><mn>4</mn><mn>0</mn></math>
+обучающих записей двух классов. (а) Сколько признаков <math display="inline"><mi>n</mi></math>
+можно оставить, чтобы по формуле задачи <a href="19.html#x22-179003r3">19.3</a> случайная разметка была разделима с
+вероятностью не больше <math display="inline"><mn>1</mn><mi>%</mi></math>?
+(б) На сколько сигм выше угадывания точность <math display="inline"><mn>7</mn><mn>8</mn><mi>%</mi></math>
+на <math display="inline"><mn>1</mn><mn>0</mn><mn>0</mn></math>
+проверочных записях?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">(а) <math display="inline"><mi>n</mi> <mo class="MathClass-rel" stretchy="false">≤</mo> <mn>1</mn><mn>0</mn><mn>2</mn></math>.
+(б) На <math display="inline"><mn>5</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>6</mn></math>.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x24-202007r7"></a>
+<span class="labx-1095">Задача 21.7 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo><mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Исследование: учитель без широковещательного канала. </span>Предложите протокол стимуляции,
+который реализует на стенде трёхфакторное правило главы <a href="06.html#x9-560006">6</a> через <math display="inline"><mn>8</mn></math>–<math display="inline"><mn>1</mn><mn>0</mn><mn>2</mn><mn>4</mn></math>
+электродов, и контроль с замороженным считыванием, отличающий обучение весов от
+сдвига состояния сети. Какой результат опроверг бы гипотезу об обучении?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">Открытая задача. Ключевой контроль: заморозить считывание и проверить,
+сохраняется ли улучшение после паузы без стимуляции; если нет, изменилось состояние, а не
+веса.
+</p></div></details>
+
+<p class="indent"> <a id="tailfullch21.html"></a> </p> 
+
+  </article>
+  <article class="text short" id="text-short" hidden>
+
+ <a id="s-x24-10800021"></a>
+<div class="center">
+<p class="noindent"><img src="img/short38x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<div class="minipage"><p class="noindent"><span class="lati-1000">Живые нейроны на чипе: под ними тысячи</span>
+<span class="lati-1000">электродов, и каждый умеет и слушать, и</span>
+<span class="lati-1000">говорить.</span> </p></div></div>
+<p class="noindent">Можно ли построить машину не из кремния, а из живых
+нейронов? Можно, и её уже строят. Нейроны выращивают
+прямо на чипе с тысячами электродов — плоским слоем или
+комочками, похожими на крошечный мозг. Каждый
+электрод умеет и слушать, и подавать сигнал. Это стенд с
+открытой схемой: всё можно измерить и во всё можно
+вмешаться. Только радиостанций в нём нет — это шина
+данных без регистров управления.
+</p>
+ <h3 class="likesectionHead"> <a id="s-x24-109000"></a>Что сеть делает сама</h3>
+<p class="noindent">Предоставленная самой себе, культура время от времени
+вспыхивает целиком: почти все нейроны щёлкают вместе, а
+потом затихают, — с промежутками от секунды до минут.
+Это уже знакомый генератор: сеть возбуждает сама
+себя и устаёт, пока соединения не восстановят запас
+вещества.
+</p>
+<div class="center">
+<p class="noindent"><img src="img/short39x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<div class="minipage"><p class="noindent"><span class="lati-1000">Культура на чипе, предоставленная самой себе.</span>
+<span class="lati-1000">Одиночные щелчки редки, а время от времени</span>
+<span class="lati-1000">почти вся сеть вспыхивает разом — и затихает,</span>
+<span class="lati-1000">пока соединения не восстановят запас.</span> </p></div></div>
+ <h3 class="likesectionHead"> <a id="s-x24-110000"></a>Учитель без дофамина</h3>
+<p class="noindent">Как научить такую сеть, если дофамина нет? Первые способы
+были электрическими. Например: стимулировать сеть, пока
+она не выдаст нужный ответ, — и сразу остановиться. Ответ
+закрепляется. В другом опыте культура управляла простым
+виртуальным «телом» и училась вести его к цели. Во всех
+этих опытах учитель — рисунок тока, который выбирает
+инженер.
+</p>
+ <h3 class="likesectionHead"> <a id="s-x24-111000"></a>Дофамин по вспышке света</h3>
+<p class="noindent">Однажды учителя попробовали сделать химическим. На одной
+из платформ с живыми комочками нейронов в питательную
+жидкость добавили дофамин в светочувствительной
+«клетке», которая не даёт ему действовать. Когда сеть
+отвечала на стимул сильнее прежнего, её «награждали»:
+вспышка ультрафиолета разрушала клетку, и дофамин
+выходил наружу. За двести сорок повторов ответы в
+целом росли. Но сами авторы честно пишут, что по
+одному такому опыту нельзя сказать, дофамин ли тому
+причиной.
+</p>
+ <h3 class="likesectionHead"> <a id="s-x24-112000"></a>Шест на тележке</h3>
+<p class="noindent">В недавнем опыте комочки нейронов учили балансировать
+шестом на тележке — классическая задача для программ
+обучения. Какие учебные импульсы подавать, выбирала
+программа. Выбранные программой сигналы работали лучше
+случайных, но через три четверти часа отдыха выученное
+исчезало. А если заблокировать <span class="nt">GLUT</span>-соединения, обучение
+не шло вовсе: выученное живёт именно там. Учитель же
+по-прежнему снаружи — только теперь это не инженер, а
+программа.
+</p>
+ <h3 class="likesectionHead"> <a id="s-x24-113000"></a>Живой резервуар</h3>
+<p class="noindent">Есть и другой подход: живую сеть не учат вовсе. Её
+используют как «резервуар» — богатую, запутанную
+систему, чьи ответы простой электронный счётчик учится
+разбирать. Так живой комочек помогал различать голоса.
+Правда, по словам авторов, связи в самом комочке во время
+работы тоже менялись.
+</p>
+ <h3 class="likesectionHead"> <a id="s-x24-114000"></a>Цена и вопрос</h3>
+<p class="noindent">Миллион нейронов на чипе потребляет примерно
+десятитысячную долю ватта — куда меньше, чем электроника
+вокруг них. И стенд не умеет сам решить, что считать
+успехом: эту роль всегда играет кто-то снаружи. А по мере
+того как такие системы растут, встаёт и вопрос этики,
+который пока никто не решил.
+</p><p class="noindent"><span class="lati-1000">Формулы, модели, задачи и источники — в полной версии,</span>
+<span class="lati-1000">глава</span><span class="lati-1000"> 21.</span>
+</p>
+<p class="indent"> <a id="s-tailshortch21.html"></a> </p> 
+
+  </article>
+
+  <aside class="starline"><span data-ru="Книга бесплатная и открытая. Если глава была полезной, поставьте книге звезду на GitHub: так её найдут другие." data-en="The book is free and open. If this chapter was useful, star the book on GitHub so others can find it.">Книга бесплатная и открытая.</span> <a href="https://github.com/kladkogex/20-watt-computer" target="_blank" rel="noopener" data-ru="★ Звезда на GitHub" data-en="★ Star on GitHub">★ Звезда на GitHub</a></aside>
+  <nav class="pager">
+    <a class="prev" href="20.html"><span data-ru="← Назад" data-en="← Previous">← Назад</span><b>Что делают нейроны во сне</b></a>
+    <a class="next" href="22.html"><span data-ru="Дальше →" data-en="Next →">Дальше →</span><b>DishBrain</b></a>
+  </nav>
+  <footer>
+    <span data-ru='Константин Кладько · текст — <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.ru">CC BY-NC-SA 4.0</a>' data-en='Konstantin Kladko · text: <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>'>Константин Кладько</span>
+    <span><a href="../pdf/20-watt-computer-ru.pdf">PDF</a> · <a href="../breadboard/" data-ru="Макетная плата" data-en="Breadboard">Макетная плата</a> · <a href="https://github.com/kladkogex/20-watt-computer">GitHub</a></span>
+  </footer>
+</main>
+
+<script>
+(function(){
+  const NAV = [{"slug": "00", "title": "Как читать эту книгу", "kicker": "Введение"}, {"slug": "01", "title": "Типы нейронов", "kicker": "Глава 1"}, {"slug": "02", "title": "Что вычисляют GLUT-нейроны", "kicker": "Глава 2"}, {"slug": "03", "title": "GLUT и GABA вместе", "kicker": "Глава 3"}, {"slug": "04", "title": "Азбука Морзе: что мы знаем о языке, на котором говорят GLUT- и GABA-нейроны", "kicker": "Глава 4"}, {"slug": "05", "title": "Что вычисляют SERO-нейроны", "kicker": "Глава 5"}, {"slug": "06", "title": "Нейронные сети, которые умеют учиться: добавляем DOPA", "kicker": "Глава 6"}, {"slug": "07", "title": "Альтернативные современные теории обучения на основе дофамина", "kicker": "Глава 7"}, {"slug": "08", "title": "Когда искать, а когда решать: добавляем NORA", "kicker": "Глава 8"}, {"slug": "09", "title": "Когда писать, а когда читать: добавляем ACET", "kicker": "Глава 9"}, {"slug": "10", "title": "Вся машина", "kicker": "Глава 10"}, {"slug": "11", "title": "Входы машины: как к ней подключены глаза, уши и другие датчики", "kicker": "Глава 11"}, {"slug": "12", "title": "Распознавание изображений и видео", "kicker": "Глава 12"}, {"slug": "13", "title": "Выходы машины: как мозг управляет мышцами", "kicker": "Глава 13"}, {"slug": "14", "title": "Боль: сигнал тревоги", "kicker": "Глава 14"}, {"slug": "15", "title": "Как машина учится двигаться", "kicker": "Глава 15"}, {"slug": "16", "title": "Второй выход: как мозг управляет химией тела", "kicker": "Глава 16"}, {"slug": "17", "title": "Отладка машины", "kicker": "Глава 17"}, {"slug": "18", "title": "Типы нейронов по электрической функции", "kicker": "Глава 18"}, {"slug": "19", "title": "Нейроны по числу дендритов", "kicker": "Глава 19"}, {"slug": "20", "title": "Что делают нейроны во сне", "kicker": "Глава 20"}, {"slug": "21", "title": "Машина из живых нейронов", "kicker": "Глава 21"}, {"slug": "22", "title": "DishBrain", "kicker": "Глава 22"}, {"slug": "a", "title": "Вещества, которые не задают тип нейрона", "kicker": "Приложение A"}, {"slug": "b", "title": "Обозначения", "kicker": "Приложение B"}, {"slug": "c", "title": "Ответы", "kicker": "Приложение C"}, {"slug": "d", "title": "Экспериментальное приложение", "kicker": "Приложение D"}, {"slug": "refs", "title": "Литература", "kicker": ""}];
+  const SLUG = "21";
+  const store = {get(k){try{return localStorage.getItem(k)}catch(e){return null}}, set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+
+  // chapter selector
+  const sel = document.getElementById("jump");
+  NAV.forEach(p => { const o = document.createElement("option"); o.value = p.slug;
+    o.textContent = (p.kicker ? p.kicker + ". " : "") + p.title; if (p.slug === SLUG) o.selected = true; sel.appendChild(o); });
+  sel.addEventListener("change", () => { location.href = sel.value + ".html" + (location.hash === "#short" ? "#short" : ""); });
+
+  // Коротко / Полностью
+  const modeBox = document.querySelector(".mode");
+  const hasShort = modeBox.dataset.hasShort === "true";
+  const full = document.getElementById("text-full"), short = document.getElementById("text-short");
+  function setMode(m, remember){
+    if (!hasShort) m = "full";
+    document.body.dataset.mode = m;
+    full.hidden = m !== "full"; short.hidden = m !== "short";
+    modeBox.querySelectorAll(".seg").forEach(b => b.setAttribute("aria-pressed", b.dataset.mode === m));
+    if (remember) store.set("20w-mode", m);
+  }
+  if (!hasShort) modeBox.hidden = true;
+  modeBox.addEventListener("click", e => { const b = e.target.closest(".seg"); if (b) { setMode(b.dataset.mode, true); history.replaceState(null, "", "#" + b.dataset.mode); } });
+  document.addEventListener("click", e => { const a = e.target.closest("a[data-mode]"); if (a) { e.preventDefault(); setMode(a.dataset.mode, true); window.scrollTo(0, 0); } });
+  // a link into the text (#x...) that lives in the other version switches to it
+  function follow(){
+    const h = decodeURIComponent(location.hash.slice(1));
+    if (h === "short" || h === "full") { setMode(h, true); return; }
+    if (!h) return;
+    const t = document.getElementById(h);
+    if (t) { setMode(short.contains(t) ? "short" : "full", false); t.scrollIntoView(); }
+  }
+  setMode(store.get("20w-mode") || "full", false);
+  follow();
+  window.addEventListener("hashchange", follow);
+  // links that leave the book open in the whole window when the page sits inside the reader
+  if (document.documentElement.classList.contains("embedded"))
+    document.querySelectorAll('a[href^="../"], a[href^="http"]').forEach(a => { a.target = a.href.startsWith(location.origin) ? "_top" : "_blank"; });
+
+  // interface language (the text itself is Russian)
+  function setLang(l){
+    document.querySelectorAll("[data-ru]").forEach(el => { el.innerHTML = el.dataset[l]; });
+    document.getElementById("lang-ru").setAttribute("aria-pressed", l === "ru");
+    document.getElementById("lang-en").setAttribute("aria-pressed", l === "en");
+    store.set("20w-lang", l);
+  }
+  document.getElementById("lang-ru").onclick = () => setLang("ru");
+  document.getElementById("lang-en").onclick = () => setLang("en");
+  setLang(store.get("20w-lang") === "en" ? "en" : "ru");
+  window.addEventListener("storage", e => {
+    if (e.key === "20w-lang" && (e.newValue === "ru" || e.newValue === "en")) setLang(e.newValue);
+    if (e.key === "20w-theme" && (e.newValue === "light" || e.newValue === "dark")) document.documentElement.setAttribute("data-theme", e.newValue);
+  });
+})();
+</script>
+<script>
+(function(){var b=document.getElementById("theme");if(!b)return;var r=document.documentElement;function cur(){var t=r.getAttribute("data-theme");if(t)return t;return window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";}function show(){b.textContent=cur()==="dark"?"☀":"☾";b.setAttribute("aria-pressed",cur()==="dark");}b.onclick=function(){var t=cur()==="dark"?"light":"dark";r.setAttribute("data-theme",t);try{localStorage.setItem("20w-theme",t);}catch(e){}show();};if(window.matchMedia)matchMedia("(prefers-color-scheme: dark)").addEventListener("change",show);show();})();
+</script>
+</body>
+</html>

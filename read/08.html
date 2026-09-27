@@ -1,0 +1,832 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<script>try{var t=localStorage.getItem("20w-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);}catch(e){}if(window.self!==window.top)document.documentElement.classList.add("embedded");</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Глава 8. Когда искать, а когда решать: добавляем NORA · Компьютер на 20 ваттах</title>
+<meta name="description" content="В главе 6 сеть училась благодаря шуму: случайные отклонения активности были поиском, а DOPA сообщал, стало ли от них лучше. Но там же остался незаданным один параметр — сколько …">
+<link rel="canonical" href="https://kladkogex.github.io/20-watt-computer/read/08.html">
+<meta property="og:type" content="book">
+<meta property="og:title" content="Глава 8. Когда искать, а когда решать: добавляем NORA · Компьютер на 20 ваттах">
+<meta property="og:description" content="В главе 6 сеть училась благодаря шуму: случайные отклонения активности были поиском, а DOPA сообщал, стало ли от них лучше. Но там же остался незаданным один параметр — сколько …">
+<meta property="og:url" content="https://kladkogex.github.io/20-watt-computer/read/08.html">
+<meta property="og:locale" content="ru_RU">
+<meta property="og:image" content="https://kladkogex.github.io/20-watt-computer/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Your brain runs on 20 watts. Here is its datasheet. The 20-Watt Computer, a free textbook for engineers.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://kladkogex.github.io/20-watt-computer/og-card.png">
+<meta name="twitter:title" content="Глава 8. Когда искать, а когда решать: добавляем NORA · The 20-Watt Computer">
+<meta name="twitter:description" content="В главе 6 сеть училась благодаря шуму: случайные отклонения активности были поиском, а DOPA сообщал, стало ли от них лучше. Но там же остался незаданным один параметр — сколько …">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Chapter", "name": "Когда искать, а когда решать: добавляем NORA", "url": "https://kladkogex.github.io/20-watt-computer/read/08.html", "position": 8, "inLanguage": "ru", "isAccessibleForFree": true, "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/", "author": {"@type": "Person", "name": "Константин Кладько", "alternateName": "Konstantin Kladko"}, "isPartOf": {"@type": "Book", "name": "Компьютер на 20 ваттах. Как вычисляет мозг: количественный подход для инженеров", "alternateName": "The 20-Watt Computer: How the Brain Computes. A Quantitative Approach for Engineers", "author": {"@type": "Person", "name": "Константин Кладько", "alternateName": "Konstantin Kladko"}, "url": "https://kladkogex.github.io/20-watt-computer/", "inLanguage": "ru", "isAccessibleForFree": true, "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/"}}</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap">
+<link rel="stylesheet" href="book.css">
+</head>
+<body>
+<header class="bar">
+  <a class="home" href="../#toc"><span class="w">20</span> <span data-ru="Компьютер на 20 ваттах" data-en="The 20-Watt Computer">Компьютер на 20 ваттах</span></a>
+  <label class="jump"><span class="sr" data-ru="Перейти к главе" data-en="Go to chapter">Перейти к главе</span>
+    <select id="jump"></select></label>
+  <div class="langs" role="group" aria-label="Language">
+    <button class="chip" id="lang-ru" type="button">RU</button>
+    <button class="chip" id="lang-en" type="button">EN</button>
+    <button class="chip theme" id="theme" type="button" aria-label="Light or dark theme" title="Light / dark">☾</button>
+  </div>
+</header>
+
+<main class="page">
+  <div class="pagehead">
+    <p class="kicker" data-ru="Глава 8" data-en="Chapter 8">Глава 8</p>
+    <h1><span class="t-full">Когда искать, а когда решать: добавляем <span class="nt">NORA</span></span><span class="t-short">Ручка азарта</span></h1>
+    <div class="mode" role="group" aria-label="Version" data-has-short="true">
+      <button type="button" class="seg" data-mode="short"><b data-ru="Коротко" data-en="Short">Коротко</b><span data-ru="без формул, с рисунками" data-en="no formulas, with drawings">без формул, с рисунками</span></button>
+      <button type="button" class="seg" data-mode="full"><b data-ru="Полностью" data-en="Full">Полностью</b><span data-ru="формулы, модели, задачи" data-en="formulas, models, exercises">формулы, модели, задачи</span></button>
+    </div>
+    <p class="lang-note" data-ru="" data-en="The online reader is in Russian for now; the book in other languages is in the PDF downloads in the menu.">.</p>
+  </div>
+
+  <article class="text full" id="text-full">
+
+ <a id="x11-770008"></a>
+ <h3 class="sectionHead"><span class="titlemark">8.1 </span> <a id="x11-780008.1"></a>Чего не хватает</h3>
+<p class="noindent">В главе <a href="06.html#x9-560006">6</a> сеть училась благодаря шуму: случайные отклонения активности были поиском, а
+<span class="nt">DOPA</span> сообщал, стало ли от них лучше. Но там же остался незаданным один параметр — <span class="lati-1095">сколько</span>
+искать. Если шум слишком силён, сеть мечется и не пользуется тем, что уже знает. Если
+слишком слаб, она раз за разом выбирает одно и то же и не замечает, что где-то рядом стало
+лучше. В обучении с подкреплением это называют выбором между использованием и поиском, и у
+каждого алгоритма для него есть ручка. В главе <a href="01.html#x4-40001">1</a> мы предположили, что в мозге эту ручку
+крутит <span class="nt">NORA</span>.
+</p><p class="indent"> Норадреналиновых нейронов у человека несколько десятков тысяч (таблица <a href="01.html#x4-60021">1.1</a>), почти все
+они собраны в одной маленькой группе, а их выходы расходятся практически по всему мозгу,
+хотя разные части этой группы, как выяснилось, отчасти обслуживают разные области <span class="cite">[<a href="refs.html#XPoe2020">155</a>]</span>. Это
+широковещательный канал, ещё более узкий, чем <span class="nt">DOPA</span>. Работает он в двух режимах <span class="cite">[<a href="refs.html#XAstonJones2005">7</a>]</span>. В
+<span class="lati-1095">фоновом </span>нейроны выдают импульсы ровно, с частотой от долей до нескольких импульсов в
+секунду, и эта частота медленно меняется вместе с бодрствованием. В <span class="lati-1095">отрывистом </span>они отвечают
+короткой пачкой на важное для текущей задачи событие, примерно в момент принятия решения.
+Удобная, но неточная контрольная точка — диаметр зрачка: он меняется вместе с
+активностью этих нейронов, но также вместе с активностью других областей <span class="cite">[<a href="refs.html#XJoshi2016">59</a>]</span> и
+холинергических выходов в коре <span class="cite">[<a href="refs.html#XReimer2016">131</a>]</span>. Зрачок показывает общий уровень возбуждения, а не одну
+<span class="nt">NORA</span>.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">8.2 </span> <a id="x11-790008.2"></a>Коэффициент усиления</h3>
+<p class="noindent">Измерено вот что: норадреналин подавляет фоновую активность нейронов сильнее, чем их ответ
+на стимул, и отношение сигнала к фону растёт <span class="cite">[<a href="refs.html#XFoote1975NE">276</a>]</span>. Что крутизна характеристики отдельного
+нейрона при этом буквально умножается на коэффициент, из опыта не следует. Как и
+в главе <a href="01.html#x4-40001">1</a>, возьмём простую модель, которая передаёт этот эффект: норадреналин
+меняет крутизну передаточной характеристики получателя <span class="cite">[<a href="refs.html#XServanSchreiber1990">60</a>]</span>. Слабые, подпороговые
+входы (фон) тогда дают ещё меньше, а сильные — ещё больше. Пусть нейрон отвечает
+частотой
+</p><div class="keyformula"><table class="equation"><tr><td>
+<math display="block" class="equation">
+ <mstyle id="x11-79001r1" class="label"></mstyle><mi>r</mi><mspace width="0.28em" class="thickpace"/> <mo class="MathClass-rel" stretchy="false">=</mo> <mspace width="0.28em" class="thickpace"/><mi>F</mi><mrow><mo class="MathClass-open" fence="true" mathsize="1.19em">(</mo><mrow><mi>g</mi><mspace width="0.17em" class="thinspace"/><mo class="MathClass-open" stretchy="false">(</mo><mi>u</mi> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>𝜃</mi><mo class="MathClass-close" stretchy="false">)</mo></mrow><mo class="MathClass-close" fence="true" mathsize="1.19em">)</mo></mrow><mo class="MathClass-punc" stretchy="false">,</mo><mspace width="2em" class="qquad"/><mi>F</mi><mo class="MathClass-open" stretchy="false">(</mo><mi>z</mi><mo class="MathClass-close" stretchy="false">)</mo> <mo class="MathClass-rel" stretchy="false">=</mo> <mfrac><mrow><msub><mrow><mi>r</mi></mrow><mrow><mi class="qopname">max</mi><mo> ⁡ </mo></mrow></msub 
+></mrow> 
+<mrow><mn>1</mn> <mo class="MathClass-bin" stretchy="false">+</mo> <msup><mrow><mi>e</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">−</mo><mi>z</mi></mrow></msup 
+></mrow></mfrac><mo class="MathClass-punc" stretchy="false">,</mo>
+</math></td><td class="eq-no">(8.1)</td></tr></table>
+</div><p class="noindent"> где <math display="inline"><mi>u</mi></math> —
+входной ток, <math display="inline"><mi>𝜃</mi></math>
+— порог, а <math display="inline"><mi>g</mi></math>
+— коэффициент усиления, которым в модели управляет <span class="nt">NORA</span>. При малом
+<math display="inline"><mi>g</mi></math> частота
+плавно следует за входом в широком диапазоне: нейрон — <span class="lati-1095">аналоговый усилитель</span>. При большом
+<math display="inline"><mi>g</mi></math> почти
+любой вход выше порога даёт полную частоту, а ниже — ноль: нейрон — <span class="lati-1095">компаратор</span>, почти
+цифровой элемент (рис. <a href="#x11-790021">8.1</a>). Одна ручка переключает тот же нейрон между двумя режимами,
+которые в электронике делают разные схемы.
+</p>
+ <figure class="figure"> 
+<a id="x11-790021"></a>
+<p class="noindent"><img src="img/full28x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<figcaption class="caption"><span class="id">Рис. 8.1: </span><span class="content">Передаточная характеристика (<a href="#x11-79001r1">8.1</a>) при трёх значениях коэффициента усиления
+<math display="inline"><mi>g</mi></math>.</span></figcaption>
+ </figure>
+<p class="indent"> Помогает ли большое усиление против шума? Не всегда. Пусть два входа отличаются на
+<math display="inline"><mi mathvariant="normal">Δ</mi><mi>u</mi></math>, и надо сказать, какой
+больше. Если шум <math display="inline"><msub><mrow><mi>σ</mi></mrow><mrow><mstyle class="text"><mtext>до</mtext></mstyle></mrow></msub 
+></math>
+добавлен к входу <span class="lati-1095">до </span>усилителя, то усиливается и сигнал, и шум, и их отношение не меняется. Если
+же шум <math display="inline"><msub><mrow><mi>σ</mi></mrow><mrow><mstyle class="text"><mtext>после</mtext></mstyle></mrow></msub 
+></math>
+добавляется <span class="lati-1095">после </span>усилителя — от ненадёжных синапсов и случайных импульсов самой сети, как
+в главе <a href="04.html#x7-350004">4</a>, — то отношение сигнала к шуму
+</p><div class="keyformula"><table class="equation"><tr><td>
+<math display="block" class="equation">
+ <mstyle id="x11-79003r2" class="label"></mstyle><msup><mrow><mi>d</mi></mrow><mrow><mi>′</mi></mrow></msup 
+><mspace width="0.28em" class="thickpace"/> <mo class="MathClass-rel" stretchy="false">=</mo> <mspace width="0.28em" class="thickpace"/> <mfrac><mrow><mi>g</mi><mspace width="0.17em" class="thinspace"/><mi mathvariant="normal">Δ</mi><mi>u</mi></mrow> 
+<mrow><msqrt><mrow><msup><mrow><mi>g</mi></mrow><mrow><mn>2</mn> </mrow> </msup 
+> <msubsup><mrow><mi>σ</mi></mrow><mrow><mstyle class="text"><mtext>до</mtext></mstyle> </mrow> <mrow> <mn>2</mn> </mrow> </msubsup 
+> <mo class="MathClass-bin" stretchy="false">+</mo> <msubsup><mrow><mi>σ</mi></mrow><mrow><mstyle class="text"><mtext>после</mtext></mstyle> </mrow> <mrow> <mn>2</mn></mrow></msubsup 
+></mrow></msqrt></mrow></mfrac>
+</math></td><td class="eq-no">(8.2)</td></tr></table>
+</div><p class="noindent"> растёт с <math display="inline"><mi>g</mi></math>,
+пока <math display="inline"><mi>g</mi><msub><mrow><mi>σ</mi></mrow><mrow><mstyle class="text"><mtext>до</mtext></mstyle></mrow></msub 
+></math> не
+сравняется с <math display="inline"><msub><mrow><mi>σ</mi></mrow><mrow><mstyle class="text"><mtext>после</mtext></mstyle></mrow></msub 
+></math> <span class="cite">[<a href="refs.html#XServanSchreiber1990">60</a>]</span>.
+</p>
+ <div class="tcolorbox keyblock" id="tcolobox-22"> 
+<div class="tcolorbox-content"><div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x11-79004r1"></a>
+<span class="labx-1095">Утверждение 8.1 </span>(Когда усиление помогает)<span class="labx-1095">.</span> </span> <span class="lati-1095">Увеличивая коэффициент усиления,</span>
+<span class="nt"><span class="lati-1095">NORA</span></span> <span class="lati-1095">улучшает различение входов только против того шума, который возникает</span>
+после <span class="lati-1095">усилителя, в самой сети. Шум, пришедший вместе со входом, усиление не</span>
+<span class="lati-1095">уберёт.</span>
+</p>
+</div>
+ 
+</div> 
+</div>
+ <h3 class="sectionHead"><span class="titlemark">8.3 </span> <a id="x11-800008.3"></a>Усиление в выборе из двух</h3>
+<p class="noindent">Вернёмся к выбору из главы <a href="03.html#x6-250003">3</a>: две группы <span class="nt">GLUT</span>-нейронов со входами
+<math display="inline"><msub><mrow><mi>I</mi></mrow><mrow><mn>1</mn></mrow></msub 
+></math>,
+<math display="inline"><msub><mrow><mi>I</mi></mrow><mrow><mn>2</mn></mrow></msub 
+></math> тормозят друг друга с силой
+<math display="inline"><mi>β</mi></math>. Теперь у каждой группы
+есть коэффициент усиления <math display="inline"><mi>g</mi></math>:
+в уравнениях выбора (<a href="03.html#x6-30001r4">3.4</a>) выражение в скобках умножается на
+<math display="inline"><mi>g</mi></math>.
+Пока работают обе группы, установившиеся частоты находятся из
+<math display="inline"><msub><mrow><mi>r</mi></mrow><mrow><mn>1</mn></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mi>g</mi><mo class="MathClass-open" stretchy="false">(</mo><msub><mrow><mi>I</mi></mrow><mrow><mn>1</mn></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>β</mi><msub><mrow><mi>r</mi></mrow><mrow><mn>2</mn></mrow></msub 
+><mo class="MathClass-close" stretchy="false">)</mo></math>,
+<math display="inline"><msub><mrow><mi>r</mi></mrow><mrow><mn>2</mn></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mi>g</mi><mo class="MathClass-open" stretchy="false">(</mo><msub><mrow><mi>I</mi></mrow><mrow><mn>2</mn></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>β</mi><msub><mrow><mi>r</mi></mrow><mrow><mn>1</mn></mrow></msub 
+><mo class="MathClass-close" stretchy="false">)</mo></math>. Сложив и вычтя эти
+равенства, получим сумму <math display="inline"><msub><mrow><mi>r</mi></mrow><mrow><mn>1</mn></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">+</mo> <msub><mrow><mi>r</mi></mrow><mrow><mn>2</mn></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mi>g</mi><mo class="MathClass-open" stretchy="false">(</mo><msub><mrow><mi>I</mi></mrow><mrow><mn>1</mn></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">+</mo> <msub><mrow><mi>I</mi></mrow><mrow><mn>2</mn></mrow></msub 
+><mo class="MathClass-close" stretchy="false">)</mo><mo class="MathClass-bin" stretchy="false">∕</mo><mo class="MathClass-open" stretchy="false">(</mo><mn>1</mn> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>g</mi><mi>β</mi><mo class="MathClass-close" stretchy="false">)</mo></math>
+и разность <math display="inline"><msub><mrow><mi>r</mi></mrow><mrow><mn>1</mn></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">−</mo> <msub><mrow><mi>r</mi></mrow><mrow><mn>2</mn></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mi>g</mi><mo class="MathClass-open" stretchy="false">(</mo><msub><mrow><mi>I</mi></mrow><mrow><mn>1</mn></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">−</mo> <msub><mrow><mi>I</mi></mrow><mrow><mn>2</mn></mrow></msub 
+><mo class="MathClass-close" stretchy="false">)</mo><mo class="MathClass-bin" stretchy="false">∕</mo><mo class="MathClass-open" stretchy="false">(</mo><mn>1</mn> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>g</mi><mi>β</mi><mo class="MathClass-close" stretchy="false">)</mo></math>.
+Их отношение — насколько резко сеть предпочитает один вход другому:
+</p><div class="keyformula"><table class="equation"><tr><td>
+<math display="block" class="equation">
+ <mstyle id="x11-80001r3" class="label"></mstyle><mfrac><mrow><msub><mrow><mi>r</mi></mrow><mrow><mn>1</mn></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">−</mo> <msub><mrow><mi>r</mi></mrow><mrow><mn>2</mn></mrow></msub 
+></mrow>
+<mrow><msub><mrow><mi>r</mi></mrow><mrow><mn>1</mn></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">+</mo> <msub><mrow><mi>r</mi></mrow><mrow><mn>2</mn></mrow></msub 
+></mrow></mfrac><mspace width="0.28em" class="thickpace"/> <mo class="MathClass-rel" stretchy="false">=</mo> <mspace width="0.28em" class="thickpace"/><mi>𝜀</mi><mspace width="0.17em" class="thinspace"/><mfrac><mrow><mn>1</mn> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>g</mi><mi>β</mi></mrow>
+<mrow><mn>1</mn> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>g</mi><mi>β</mi></mrow></mfrac><mo class="MathClass-punc" stretchy="false">,</mo><mspace width="2em" class="qquad"/><mi>𝜀</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mfrac><mrow><msub><mrow><mi>I</mi></mrow><mrow><mn>1</mn></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">−</mo> <msub><mrow><mi>I</mi></mrow><mrow><mn>2</mn></mrow></msub 
+></mrow> 
+<mrow><msub><mrow><mi>I</mi></mrow><mrow><mn>1</mn></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">+</mo> <msub><mrow><mi>I</mi></mrow><mrow><mn>2</mn></mrow></msub 
+></mrow></mfrac><mo class="MathClass-punc" stretchy="false">,</mo><mspace width="1em" class="quad"/><mi>g</mi><mi>β</mi> <mo class="MathClass-rel" stretchy="false">&#x003C;</mo> <mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo>
+</math></td><td class="eq-no">(8.3)</td></tr></table>
+</div><p class="noindent"> Малая разница входов <math display="inline"><mi>𝜀</mi></math>
+усиливается в <math display="inline"><mo class="MathClass-open" stretchy="false">(</mo><mn>1</mn> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>g</mi><mi>β</mi><mo class="MathClass-close" stretchy="false">)</mo><mo class="MathClass-bin" stretchy="false">∕</mo><mo class="MathClass-open" stretchy="false">(</mo><mn>1</mn> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>g</mi><mi>β</mi><mo class="MathClass-close" stretchy="false">)</mo></math>
+раз, и этот множитель неограниченно растёт, когда
+<math display="inline"><mi>g</mi><mi>β</mi></math> подходит к
+единице. При <math display="inline"><mi>g</mi><mi>β</mi> <mo class="MathClass-rel" stretchy="false">&#x003E;</mo> <mn>1</mn></math>
+состояние, где работают обе группы, неустойчиво, как в утверждении <a href="03.html#x6-30003r2">3.2</a>: побеждает одна,
+другая молчит (рис. <a href="#x11-800022">8.2</a>).
+</p>
+ <figure class="figure"> 
+<a id="x11-800022"></a>
+<p class="noindent"><img src="img/full29x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<figcaption class="caption"><span class="id">Рис. 8.2: </span><span class="content">Выбор из двух при разном коэффициенте усиления, входы отличаются на
+<math display="inline"><mi>𝜀</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>0</mn><mn>5</mn></math>.
+При <math display="inline"><mi>g</mi><mi>β</mi> <mo class="MathClass-rel" stretchy="false">&#x003E;</mo> <mn>1</mn></math>
+устойчивы оба решения (сплошные линии; победа слабого входа — при
+<math display="inline"><mi>g</mi><mi>β</mi> <mo class="MathClass-rel" stretchy="false">&#x003E;</mo> <mo class="MathClass-open" stretchy="false">(</mo><mn>1</mn> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>𝜀</mi><mo class="MathClass-close" stretchy="false">)</mo><mo class="MathClass-bin" stretchy="false">∕</mo><mo class="MathClass-open" stretchy="false">(</mo><mn>1</mn> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>𝜀</mi><mo class="MathClass-close" stretchy="false">)</mo> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn></math>),
+и сеть держит то, которое уже приняла; симметричное состояние (штриховая линия)
+неустойчиво.</span></figcaption>
+ </figure>
+ <div class="tcolorbox keyblock" id="tcolobox-23"> 
+<div class="tcolorbox-content"><div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x11-80003r2"></a>
+<span class="labx-1095">Утверждение 8.2 </span>(Усиление переключает режим выбора)<span class="labx-1095">.</span> </span> <span class="lati-1095">В сети выбора с</span>
+<span class="lati-1095">взаимным торможением </span><math display="inline"><mi>β</mi></math>
+<span class="lati-1095">коэффициент усиления </span><math display="inline"><mi>g</mi></math>
+<span class="lati-1095">переводит сеть через границу </span><math display="inline"><mi>g</mi><mi>β</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn></math><span class="lati-1095">.</span>
+<span class="lati-1095">Ниже неё сеть «размышляет»: обе группы работают, а разница входов усиливается</span>
+<span class="lati-1095">по</span><span class="lati-1095"> </span>(<a href="#x11-80001r3">8.3</a>)<span class="lati-1095">. Выше — сеть «решила»: работает одна группа, и решение держится. Меняя</span>
+<math display="inline"><mi>g</mi></math><span class="lati-1095">,</span>
+<span class="nt"><span class="lati-1095">NORA</span></span> <span class="lati-1095">может переключать сеть между этими режимами, не трогая ни одного веса.</span>
+</p>
+</div>
+ 
+</div> 
+</div>
+ <h3 class="sectionHead"><span class="titlemark">8.4 </span> <a id="x11-810008.4"></a>Усиление как температура</h3>
+<p class="noindent">Теперь добавим к выбору шум, возникающий в самой сети, после усилителя. Какая группа победит, решает
+знак величины <math display="inline"><mi>g</mi><mo class="MathClass-open" stretchy="false">(</mo><msub><mrow><mi>u</mi></mrow><mrow><mi>A</mi></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">−</mo> <msub><mrow><mi>u</mi></mrow><mrow><mi>B</mi></mrow></msub 
+><mo class="MathClass-close" stretchy="false">)</mo> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>η</mi></math>,
+где <math display="inline"><msub><mrow><mi>u</mi></mrow><mrow><mi>A</mi></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">−</mo> <msub><mrow><mi>u</mi></mrow><mrow><mi>B</mi></mrow></msub 
+></math>
+— разница входов, то есть разница выученных весов из главы <a href="06.html#x9-560006">6</a>, а
+<math display="inline"><mi>η</mi></math> — шум с
+масштабом <math display="inline"><mi>σ</mi></math>.
+Если шум распределён по логистическому закону (для гауссова кривая почти та же), вероятность
+выбрать <math display="inline"><mi>A</mi></math>
+равна
+</p><div class="keyformula"><table class="equation"><tr><td>
+<math display="block" class="equation">
+ <mstyle id="x11-81001r4" class="label"></mstyle><mi>P</mi><mo class="MathClass-open" stretchy="false">(</mo><mi>A</mi><mo class="MathClass-close" stretchy="false">)</mo><mspace width="0.28em" class="thickpace"/> <mo class="MathClass-rel" stretchy="false">=</mo> <mspace width="0.28em" class="thickpace"/> <mfrac><mrow><mn>1</mn></mrow> 
+<mrow><mn>1</mn> <mo class="MathClass-bin" stretchy="false">+</mo> <msup><mrow><mi>e</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">−</mo><mi>g</mi><mspace width="0.17em" class="thinspace"/><mo class="MathClass-open" stretchy="false">(</mo><msub><mrow><mi>u</mi></mrow><mrow><mi>A</mi></mrow></msub 
+><mo class="MathClass-bin" stretchy="false">−</mo><msub><mrow><mi>u</mi></mrow><mrow><mi>B</mi></mrow></msub 
+><mo class="MathClass-close" stretchy="false">)</mo><mo class="MathClass-bin" stretchy="false">∕</mo><mi>σ</mi></mrow></msup 
+></mrow></mfrac><mo class="MathClass-punc" stretchy="false">.</mo>
+</math></td><td class="eq-no">(8.4)</td></tr></table>
+</div><p class="noindent"> Программист узнает здесь выбор по softmax с температурой
+<math display="inline"><mi>T</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mi>σ</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mi>g</mi></math>.
+Коэффициент усиления — обратная температура. При малом
+<math display="inline"><mi>g</mi></math> даже
+заметно лучший вариант выбирается ненамного чаще худшего: сеть много ищет. При большом
+<math display="inline"><mi>g</mi></math>
+лучший известный вариант выбирается почти всегда: сеть пользуется тем, что знает.
+</p><p class="indent"> Уточним, что такое <math display="inline"><mi>g</mi></math>
+в (<a href="#x11-80001r3">8.3</a>) и (<a href="#x11-81001r4">8.4</a>): это <span class="lati-1095">действующее </span>усиление разницы входов текущей задачи в момент выбора.
+Два режима <span class="nt">NORA</span> действуют на него противоположно. Отрывистая пачка в момент
+решения повышает его, и сеть закрепляет выбор. Высокая фоновая активность, наоборот,
+идёт вместе с поиском: у людей перед выбором наугад базовый зрачок шире <span class="cite">[<a href="refs.html#XJepmaNieuwenhuis2011">277</a>]</span>,
+а у крыс вход <span class="nt">NORA</span> в переднюю поясную кору переводит выбор в случайный
+режим <span class="cite">[<a href="refs.html#XTervo2014stochastic">278</a>]</span>. Значит, высокой фоновой <span class="nt">NORA</span> соответствует <span class="lati-1095">малое </span>действующее
+<math display="inline"><mi>g</mi></math>, а
+пачке — большое.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">8.5 </span> <a id="x11-820008.5"></a>Сколько искать</h3>
+<p class="noindent">Какое усиление лучше? Мы проверили это на модели. Сеть выбирает одно из двух действий
+по (<a href="#x11-81001r4">8.4</a>); каждое приносит награду с какой-то вероятностью, и сеть оценивает её по наградам
+выбранного действия, как в главе <a href="06.html#x9-560006">6</a>. Время от времени мир меняется: обе вероятности
+разыгрываются заново. Меняться может и выбранное действие, и то, которое сеть
+давно не пробовала; о втором сеть может узнать только поиском. На рис. <a href="#x11-820013">8.3</a> показано,
+какую долю наилучшей возможной награды получает сеть при разных постоянных
+<math display="inline"><mi>g</mi></math>.
+</p>
+ <figure class="figure"> 
+<a id="x11-820013"></a>
+<p class="noindent"><img src="img/full30x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<figcaption class="caption"><span class="id">Рис. 8.3: </span><span class="content">Доля наилучшей возможной награды при постоянном коэффициенте усиления
+<math display="inline"><mi>g</mi></math>
+(шкала по <math display="inline"><mi>g</mi></math>
+логарифмическая). Синяя кривая — мир меняется в среднем раз в
+тысячу попыток, красная — раз в двадцать. Стрелки отмечают лучшее
+<math display="inline"><mi>g</mi></math>:
+в быстро меняющемся мире оно вдвое меньше. Среднее по 60 прогонам по 4000 попыток.</span></figcaption>
+ </figure>
+<p class="indent"> При <math display="inline"><mi>g</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn></math>
+сеть почти не пользуется знанием и получает около трёх четвертей возможного, при очень большом
+<math display="inline"><mi>g</mi></math> упускает перемены. Лучшее
+значение: <math display="inline"><mi>g</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mn>6</mn></math>, когда мир меняется
+раз в тысячу попыток (доля <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>9</mn><mn>7</mn><mn>6</mn></math>),
+и <math display="inline"><mi>g</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>8</mn></math>, когда раз в
+двадцать (<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>8</mn><mn>8</mn><mn>6</mn></math>).
+</p>
+ <div class="tcolorbox keyblock" id="tcolobox-24"> 
+<div class="tcolorbox-content"><div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x11-82002r3"></a>
+<span class="labx-1095">Утверждение 8.3 </span>(Перевёрнутое U)<span class="labx-1095">.</span> </span> <span class="lati-1095">Награда, которую собирает сеть, зависит от</span>
+<span class="lati-1095">коэффициента усиления как перевёрнутое U: слишком малое</span>
+<math display="inline"><mi>g</mi></math>
+<span class="lati-1095">тратит попытки на поиск, слишком большое не замечает перемен. Лучшее</span>
+<math display="inline"><mi>g</mi></math>
+<span class="lati-1095">тем меньше, чем быстрее меняется мир.</span>
+</p>
+</div>
+ 
+</div> 
+</div>
+<p class="indent"> Перевёрнутое U наблюдается и в опытах: животные решают задачу лучше всего при умеренной
+фоновой активности <span class="nt">NORA</span>-нейронов с чёткими отрывистыми ответами, а при высокой фоновой
+активности отвлекаются и переключаются между задачами <span class="cite">[<a href="refs.html#XAstonJones2005">7</a>]</span>. Это согласуется с различием
+режимов из предыдущего раздела: отрывистая пачка в момент решения даёт большое действующее
+<math display="inline"><mi>g</mi></math>
+как раз тогда, когда надо выбрать, а высокая фоновая активность без пачек
+усиливает всё подряд, в том числе посторонние входы, так что действующее
+<math display="inline"><mi>g</mi></math> для
+текущей задачи падает, — это поиск.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">8.6 </span> <a id="x11-830008.6"></a>Кто крутит ручку</h3>
+<p class="noindent">Раз лучшее усиление зависит от того, как быстро меняется мир, его хорошо бы подстраивать. Но
+откуда <span class="nt">NORA</span>-нейронам знать, что мир изменился? Естественный признак — <span class="lati-1095">неожиданность</span>:
+ошибки предсказания стали больше обычного. Важно различать два вида неопределённости. Если
+награда просто случайна, ошибки велики всегда, и это ожидаемо. Если же ошибки вдруг
+выросли по сравнению с их обычной величиной, значит, что-то поменялось. По одной из
+гипотез, именно эту неожиданную неопределённость и сообщает <span class="nt">NORA</span>, а ожидаемую —
+<span class="nt">ACET</span> <span class="cite">[<a href="refs.html#XYuDayan2005">61</a>]</span>.
+</p><p class="indent"> Что с этим сигналом делать? Можно понизить усиление и больше искать. Можно повысить
+скорость обучения, чтобы быстрее забыть устаревшие оценки: опыты показывают, что после
+резкой перемены люди учатся быстрее, и зрачок при этом расширяется <span class="cite">[<a href="refs.html#XNassar2012">62</a>]</span>; напомним, что
+зрачок — показатель не только <span class="nt">NORA</span>, но и <span class="nt">ACET</span> <span class="cite">[<a href="refs.html#XReimer2016">131</a>]</span>. А можно сделать и то и другое сразу: по
+ещё одной гипотезе отрывистая пачка <span class="nt">NORA</span> работает как <span class="lati-1095">прерывание </span>— сигнал, по которому
+сеть сбрасывает текущее состояние и перестраивается под новую обстановку <span class="cite">[<a href="refs.html#XBouretSara2005">63</a>]</span>, как общая
+линия прерывания процессора.
+</p><p class="indent"> Честно скажем, чего мы не нашли. В модели мы пробовали оба простых способа подстройки:
+понижать <math display="inline"><mi>g</mi></math>
+или повышать скорость обучения, когда сглаженная ошибка превышает свою долговременную
+среднюю. В мире, который то подолгу стоит, то часто меняется, лучшие настройки обоих способов дали
+<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>9</mn><mn>2</mn><mn>6</mn></math>–<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>9</mn><mn>2</mn><mn>7</mn></math>
+от наилучшей награды — почти столько же, сколько лучшее постоянное
+<math display="inline"><mi>g</mi></math>
+(<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>9</mn><mn>2</mn><mn>5</mn></math> при
+<math display="inline"><mi>g</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>8</mn></math>)
+или постоянная, но достаточно большая скорость обучения
+(<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>9</mn><mn>2</mn><mn>8</mn></math>), а
+неудачные настройки — меньше. Кривые на рис. <a href="#x11-820013">8.3</a> у вершины пологие, и в таком мире
+подстраивать почти нечего. Подстройка должна окупаться там, где разные режимы требуют
+очень разных настроек. Какой именно закон управления реализует <span class="nt">NORA</span>, пока не
+установлено.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">8.7 </span> <a id="x11-840008.7"></a>Итог</h3>
+ <div class="table">
+<p class="indent"> <a id="x11-840011"></a></p><figure class="float">
+<div class="tabular">
+ <table id="TBL-10" class="tabular"><colgroup id="TBL-10-1g"><col id="TBL-10-1" /><col id="TBL-10-2" /><col id="TBL-10-3" /></colgroup><tr style="vertical-align:baseline;" id="TBL-10-1-"><td style="text-align:left;" id="TBL-10-1-1" class="td11"> <p class="noindent"><span class="larm-0900">Что</span>
+ <span class="larm-0900">делает</span>
+ <span class="nt"><span class="larm-0900">NORA</span></span> </p></td><td style="text-align:left;" id="TBL-10-1-2" class="td11"> <p class="noindent"><span class="larm-0900">Как</span> </p></td><td style="text-align:left;" id="TBL-10-1-3" class="td11"> <p class="noindent"><span class="larm-0900">Что</span>
+ <span class="larm-0900">известно</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-10-2-"><td style="text-align:left;" id="TBL-10-2-1" class="td11"> <p class="noindent"><span class="larm-0900">меняет</span>
+ <span class="larm-0900">крутизну</span>
+ <span class="larm-0900">ответа</span>
+ <span class="larm-0900">нейронов</span> </p></td><td style="text-align:left;" id="TBL-10-2-2" class="td11"> <p class="noindent"><span class="larm-0900">коэффициент</span>
+ <span class="larm-0900">усиления</span>
+ <math display="inline"><mi>g</mi></math>
+ <span class="larm-0900">в</span><span class="larm-0900"> </span><span class="larm-0900">(</span><a href="#x11-79001r1"><span class="larm-0900">8.1</span></a><span class="larm-0900">)</span> </p></td><td style="text-align:left;" id="TBL-10-2-3" class="td11"> <p class="noindent"><span class="larm-0900">повышение</span>
+ <span class="larm-0900">отношения</span>
+ <span class="larm-0900">сигнала</span>
+ <span class="larm-0900">к</span>
+ <span class="larm-0900">шуму</span>
+ <span class="larm-0900">измерено;</span>
+ <span class="larm-0900">мультипликативная</span>
+ <span class="larm-0900">модель</span>
+ <span class="larm-0900">—</span>
+ <span class="larm-0900">упрощение</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-10-3-"><td style="text-align:left;" id="TBL-10-3-1" class="td11"> <p class="noindent"><span class="larm-0900">переключает</span>
+ <span class="larm-0900">выбор</span> </p></td><td style="text-align:left;" id="TBL-10-3-2" class="td11"> <p class="noindent"><span class="larm-0900">переводит</span>
+ <span class="larm-0900">сеть</span>
+ <span class="larm-0900">через</span>
+ <math display="inline"><mi>g</mi><mi>β</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn></math> </p></td><td style="text-align:left;" id="TBL-10-3-3" class="td11"> <p class="noindent"><span class="larm-0900">следует</span>
+ <span class="larm-0900">из</span>
+ <span class="larm-0900">модели</span><span class="larm-0900"> </span><span class="larm-0900">(</span><a href="#x11-80001r3"><span class="larm-0900">8.3</span></a><span class="larm-0900">)</span><span class="larm-0900">;</span>
+ <span class="larm-0900">прямых</span>
+ <span class="larm-0900">измерений</span>
+ <span class="larm-0900">порога</span>
+ <span class="larm-0900">нет</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-10-4-"><td style="text-align:left;" id="TBL-10-4-1" class="td11"> <p class="noindent"><span class="larm-0900">задаёт,</span>
+ <span class="larm-0900">сколько</span>
+ <span class="larm-0900">искать</span> </p></td><td style="text-align:left;" id="TBL-10-4-2" class="td11"> <p class="noindent"><math display="inline"><mi>g</mi></math>
+ <span class="larm-0900">—</span>
+ <span class="larm-0900">обратная</span>
+ <span class="larm-0900">температура</span><span class="larm-0900"> </span><span class="larm-0900">(</span><a href="#x11-81001r4"><span class="larm-0900">8.4</span></a><span class="larm-0900">)</span><span class="larm-0900">;</span>
+ <span class="larm-0900">фон</span>
+ <span class="larm-0900">—</span>
+ <span class="larm-0900">малое</span>
+ <span class="larm-0900">действующее</span>
+ <math display="inline"><mi>g</mi></math>
+ <span class="larm-0900">(поиск),</span>
+ <span class="larm-0900">пачка</span>
+ <span class="larm-0900">—</span>
+ <span class="larm-0900">большое</span>
+ <span class="larm-0900">(решение)</span> </p></td><td style="text-align:left;" id="TBL-10-4-3" class="td11"> <p class="noindent"><span class="larm-0900">перевёрнутое</span>
+ <span class="larm-0900">U</span>
+ <span class="larm-0900">и</span>
+ <span class="larm-0900">два</span>
+ <span class="larm-0900">режима</span>
+ <span class="larm-0900">работы</span>
+ <span class="larm-0900">измерены;</span>
+ <span class="larm-0900">связь</span>
+ <span class="larm-0900">с</span>
+ <span class="larm-0900">поиском</span>
+ <span class="larm-0900">—</span>
+ <span class="larm-0900">хорошо</span>
+ <span class="larm-0900">обоснованная</span>
+ <span class="larm-0900">гипотеза</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-10-5-"><td style="text-align:left;" id="TBL-10-5-1" class="td11"> <p class="noindent"><span class="larm-0900">сообщает</span>
+ <span class="larm-0900">о</span>
+ <span class="larm-0900">переменах</span> </p></td><td style="text-align:left;" id="TBL-10-5-2" class="td11"> <p class="noindent"><span class="larm-0900">неожиданная</span>
+ <span class="larm-0900">неопределённость</span> </p></td><td style="text-align:left;" id="TBL-10-5-3" class="td11"> <p class="noindent"><span class="larm-0900">зрачок</span>
+ <span class="larm-0900">и</span>
+ <span class="larm-0900">скорость</span>
+ <span class="larm-0900">обучения</span>
+ <span class="larm-0900">растут</span>
+ <span class="larm-0900">после</span>
+ <span class="larm-0900">перемен</span>
+ <span class="larm-0900">—</span>
+ <span class="larm-0900">измерено;</span>
+ <span class="larm-0900">что</span>
+ <span class="larm-0900">это</span>
+ <span class="larm-0900">сигнал</span>
+ <span class="nt"><span class="larm-0900">NORA</span></span>
+ <span class="larm-0900">—</span>
+ <span class="larm-0900">гипотеза</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-10-6-"><td style="text-align:left;" id="TBL-10-6-1" class="td11"> <p class="noindent"><span class="larm-0900">прерывает</span>
+ <span class="larm-0900">и</span>
+ <span class="larm-0900">сбрасывает</span> </p></td><td style="text-align:left;" id="TBL-10-6-2" class="td11"> <p class="noindent"><span class="larm-0900">отрывистая</span>
+ <span class="larm-0900">пачка</span>
+ <span class="larm-0900">на</span>
+ <span class="larm-0900">неожиданное</span>
+ <span class="larm-0900">событие</span> </p></td><td style="text-align:left;" id="TBL-10-6-3" class="td11"> <p class="noindent"><span class="larm-0900">пачки</span>
+ <span class="larm-0900">на</span>
+ <span class="larm-0900">важные</span>
+ <span class="larm-0900">события</span>
+ <span class="larm-0900">измерены;</span>
+ <span class="larm-0900">«прерывание»</span>
+ <span class="larm-0900">—</span>
+ <span class="larm-0900">гипотеза</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-10-7-"><td style="text-align:left;" id="TBL-10-7-1" class="td11"> </td></tr></table> </div>
+<figcaption class="caption"><span class="id">Таблица 8.1: </span><span class="content">Что добавляет <span class="nt">NORA</span> к сети из <span class="nt">GLUT</span>, <span class="nt">GABA</span> и <span class="nt">DOPA</span>.</span></figcaption>
+ </figure>
+ </div>
+<p class="indent"> <span class="nt">DOPA</span> говорит сети, <span class="lati-1095">куда </span>менять веса. <span class="nt">NORA</span> не меняет ни одного веса, но решает, <span class="lati-1095">как </span>сеть
+пользуется тем, что уже знает (таблица <a href="#x11-840011">8.1</a>): одна ручка — коэффициент усиления — превращает
+нейрон из усилителя в компаратор, сеть выбора — из «размышляющей» в «решившую», а выбор
+— из поиска в использование. Как <span class="nt">NORA</span> узнаёт, насколько быстро меняется мир, — открытый
+вопрос.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">8.8 </span> <a id="x11-850008.8"></a>Задачи</h3>
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x11-85001r1"></a>
+<span class="labx-1095">Задача 8.1 </span>(<math display="inline"><mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Одна ручка на весь мозг. </span>(а) По таблице <a href="01.html#x4-60021">1.1</a> оцените, сколько нейронов мозга приходится
+на один <span class="nt">NORA</span>-нейрон. (б) Шум до усилителя <math display="inline"><msub><mrow><mi>σ</mi></mrow><mrow><mstyle class="text"><mtext>до</mtext></mstyle></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn></math>,
+после — <math display="inline"><msub><mrow><mi>σ</mi></mrow><mrow><mstyle class="text"><mtext>после</mtext></mstyle></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>4</mn></math>.
+При каком <math display="inline"><mi>g</mi></math>
+величина <math display="inline"><msup><mrow><mi>d</mi></mrow><mrow><mi>′</mi></mrow></msup 
+></math>
+из (<a href="#x11-79003r2">8.2</a>) достигает <math display="inline"><mn>9</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mi>%</mi></math>
+своего предела?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">(а) <math display="inline"> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>7</mn> <mo class="MathClass-bin" stretchy="false">⋅</mo> <mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>6</mn></mrow></msup 
+></math>.
+(б) <math display="inline"><mi>g</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mfrac><mrow><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>9</mn></mrow> 
+<mrow><msqrt><mrow><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn><mn>9</mn></mrow></msqrt></mrow></mfrac><mspace width="0.17em" class="thinspace"/><msub><mrow><mi>σ</mi></mrow><mrow><mstyle class="text"><mtext>после</mtext></mstyle></mrow></msub 
+><mo class="MathClass-bin" stretchy="false">∕</mo><msub><mrow><mi>σ</mi></mrow><mrow><mstyle class="text"><mtext>до</mtext></mstyle></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>1</mn><mn>6</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn></math>:
+ответ зависит только от отношения шумов.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x11-85002r2"></a>
+<span class="labx-1095">Задача 8.2 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Выбор с коэффициентом усиления. </span><math display="inline"><mi>τ</mi><mspace width="0.17em" class="thinspace"/><mstyle mathvariant="normal"><mi>d</mi></mstyle><msub><mrow><mi>r</mi></mrow><mrow><mn>1</mn></mrow></msub 
+><mo class="MathClass-bin" stretchy="false">∕</mo><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>t</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mo class="MathClass-bin" stretchy="false">−</mo><msub><mrow><mi>r</mi></mrow><mrow><mn>1</mn></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>g</mi><msub><mrow><mo class="MathClass-open" stretchy="false">[</mo><msub><mrow><mi>I</mi></mrow><mrow><mn>1</mn></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>β</mi><msub><mrow><mi>r</mi></mrow><mrow><mn>2</mn></mrow></msub 
+><mo class="MathClass-close" stretchy="false">]</mo></mrow><mrow><mo class="MathClass-bin" stretchy="false">+</mo></mrow></msub 
+></math>,
+<math display="inline"><mi>τ</mi><mspace width="0.17em" class="thinspace"/><mstyle mathvariant="normal"><mi>d</mi></mstyle><msub><mrow><mi>r</mi></mrow><mrow><mn>2</mn></mrow></msub 
+><mo class="MathClass-bin" stretchy="false">∕</mo><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>t</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mo class="MathClass-bin" stretchy="false">−</mo><msub><mrow><mi>r</mi></mrow><mrow><mn>2</mn></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>g</mi><msub><mrow><mo class="MathClass-open" stretchy="false">[</mo><msub><mrow><mi>I</mi></mrow><mrow><mn>2</mn></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>β</mi><msub><mrow><mi>r</mi></mrow><mrow><mn>1</mn></mrow></msub 
+><mo class="MathClass-close" stretchy="false">]</mo></mrow><mrow><mo class="MathClass-bin" stretchy="false">+</mo></mrow></msub 
+></math>,
+<math display="inline"><mi>τ</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>2</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>.
+(а) За какое время затухает <math display="inline"><msub><mrow><mi>r</mi></mrow><mrow><mn>1</mn></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">−</mo> <msub><mrow><mi>r</mi></mrow><mrow><mn>2</mn></mrow></msub 
+></math>
+при <math display="inline"><mi>g</mi><mi>β</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn></math>
+и <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>9</mn></math>?
+(б) При <math display="inline"><mi>𝜀</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>0</mn><mn>5</mn></math>
+найдите <math display="inline"><mi>g</mi><mi>β</mi></math>,
+ниже которого работают обе группы и выше которого устойчива победа слабого входа.
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">(а) Собственные числа <math display="inline"> <mo class="MathClass-bin" stretchy="false">−</mo> <mo class="MathClass-open" stretchy="false">(</mo><mn>1</mn> <mo class="MathClass-bin" stretchy="false">±</mo> <mi>g</mi><mi>β</mi><mo class="MathClass-close" stretchy="false">)</mo><mo class="MathClass-bin" stretchy="false">∕</mo><mi>τ</mi></math>;
+разность затухает за <math display="inline"><mi>τ</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mo class="MathClass-open" stretchy="false">(</mo><mn>1</mn> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>g</mi><mi>β</mi><mo class="MathClass-close" stretchy="false">)</mo></math>:
+<math display="inline"><mn>4</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math> при
+<math display="inline"><mi>g</mi><mi>β</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn></math> (разница входов
+усилена втрое), <math display="inline"><mn>2</mn><mn>0</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>
+при <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>9</mn></math> (в
+<math display="inline"><mn>1</mn><mn>9</mn></math> раз).
+(б) <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>9</mn><mn>0</mn><mn>5</mn></math> и
+<math display="inline"><mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn><mn>0</mn><mn>5</mn></math>;
+между границами побеждает только сильный вход.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x11-85003r3"></a>
+<span class="labx-1095">Задача 8.3 </span>(<math display="inline"><mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Softmax из шума. </span>Каждая из <math display="inline"><mi>K</mi></math>
+групп получает свой шум Гумбеля, <math display="inline"><mi>P</mi><mo class="MathClass-open" stretchy="false">(</mo><msub><mrow><mi>η</mi></mrow><mrow><mi>k</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">&#x003C;</mo> <mi>z</mi><mo class="MathClass-close" stretchy="false">)</mo> <mo class="MathClass-rel" stretchy="false">=</mo> <mi class="loglike">exp</mi><mo>⁡</mo><mo class="MathClass-open" stretchy="false">(</mo><mo class="MathClass-bin" stretchy="false">−</mo><msup><mrow><mi>e</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">−</mo><mi>z</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mi>σ</mi></mrow></msup 
+><mo class="MathClass-close" stretchy="false">)</mo></math>,
+и побеждает наибольшее <math display="inline"><mi>g</mi><msub><mrow><mi>u</mi></mrow><mrow><mi>k</mi></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">+</mo> <msub><mrow><mi>η</mi></mrow><mrow><mi>k</mi></mrow></msub 
+></math>.
+Найдите <math display="inline"><mi>P</mi><mo class="MathClass-open" stretchy="false">(</mo><mi>k</mi><mo class="MathClass-close" stretchy="false">)</mo></math>.
+При каком <math display="inline"><mi>g</mi></math>
+лучший из двух вариантов с <math display="inline"><msub><mrow><mi>u</mi></mrow><mrow><mi>A</mi></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">−</mo> <msub><mrow><mi>u</mi></mrow><mrow><mi>B</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn></math>,
+<math display="inline"><mi>σ</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn></math>,
+выбирается в <math display="inline"><mn>9</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mi>%</mi></math>
+случаев?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent"><math display="inline"><mi>P</mi><mo class="MathClass-open" stretchy="false">(</mo><mi>k</mi><mo class="MathClass-close" stretchy="false">)</mo> <mo class="MathClass-rel" stretchy="false">=</mo> <msup><mrow><mi>e</mi></mrow><mrow><mi>g</mi><msub><mrow><mi>u</mi></mrow><mrow><mi>k</mi></mrow></msub 
+><mo class="MathClass-bin" stretchy="false">∕</mo><mi>σ</mi></mrow></msup 
+><mo class="MathClass-bin" stretchy="false">∕</mo><msub><mrow><mi class="MathClass-op">∑</mi><mo> ⁡</mo></mrow><mrow><mi>l</mi></mrow></msub 
+><msup><mrow><mi>e</mi></mrow><mrow><mi>g</mi><msub><mrow><mi>u</mi></mrow><mrow><mi>l</mi></mrow></msub 
+><mo class="MathClass-bin" stretchy="false">∕</mo><mi>σ</mi></mrow></msup 
+></math>, то
+есть (<a href="fullch8.html#x11-81001r4">8.4</a>); <math display="inline"><mi>g</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mn>0</mn><mi class="loglike">ln</mi><mo>⁡</mo><mn>9</mn> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>2</mn><mn>2</mn></math>.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x11-85004r4"></a>
+<span class="labx-1095">Задача 8.4 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Оценка лучшего усиления. </span>В модели рис. <a href="#x11-820013">8.3</a> вероятности наград после перемены равномерны
+на <math display="inline"><mo class="MathClass-open" stretchy="false">[</mo><mn>0</mn><mo class="MathClass-punc" stretchy="false">,</mo><mn>1</mn><mo class="MathClass-close" stretchy="false">]</mo></math>.
+Сеть пробует худшее действие раз в <math display="inline"><msup><mrow><mi>e</mi></mrow><mrow><mi>g</mi><mi mathvariant="normal">Δ</mi></mrow></msup 
+></math>
+попыток; приравняв это к <math display="inline"><mn>1</mn><mo class="MathClass-bin" stretchy="false">∕</mo><mi>h</mi></math>,
+получим <math display="inline"><msup><mrow><mi>g</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">∗</mo></mrow></msup 
+><mo class="MathClass-rel" stretchy="false">≈</mo><mi class="loglike">ln</mi><mo>⁡</mo><mo class="MathClass-open" stretchy="false">(</mo><mn>1</mn><mo class="MathClass-bin" stretchy="false">∕</mo><mi>h</mi><mo class="MathClass-close" stretchy="false">)</mo><mo class="MathClass-bin" stretchy="false">∕</mo><mover accent="true"><mrow><mi mathvariant="normal">Δ</mi></mrow><mo accent="true">¯</mo></mover></math>.
+Найдите <math display="inline"><mover accent="true"><mrow><mi mathvariant="normal">Δ</mi></mrow><mo accent="true">¯</mo></mover> <mo class="MathClass-rel" stretchy="false">=</mo> <mo class="MathClass-open" stretchy="false">⟨</mo><mo class="MathClass-rel" stretchy="false">|</mo><msub><mrow><mi>p</mi></mrow><mrow><mi>A</mi></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">−</mo> <msub><mrow><mi>p</mi></mrow><mrow><mi>B</mi></mrow></msub 
+><mo class="MathClass-rel" stretchy="false">|</mo><mo class="MathClass-close" stretchy="false">⟩</mo></math>
+и <math display="inline"><msup><mrow><mi>g</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">∗</mo></mrow></msup 
+></math>
+при <math display="inline"><mi>h</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>0</mn><mn>0</mn><mn>1</mn></math>,
+<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>0</mn><mn>1</mn></math>,
+<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>0</mn><mn>5</mn></math>.
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent"><math display="inline"><mover accent="true"><mrow><mi mathvariant="normal">Δ</mi></mrow><mo accent="true">¯</mo></mover> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mo class="MathClass-bin" stretchy="false">∕</mo><mn>3</mn></math>,
+<math display="inline"><msup><mrow><mi>g</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">∗</mo></mrow></msup 
+><mo class="MathClass-rel" stretchy="false">≈</mo> <mn>3</mn><mi class="loglike">ln</mi><mo>⁡</mo><mo class="MathClass-open" stretchy="false">(</mo><mn>1</mn><mo class="MathClass-bin" stretchy="false">∕</mo><mi>h</mi><mo class="MathClass-close" stretchy="false">)</mo></math>:
+<math display="inline"><mn>2</mn><mn>1</mn></math>,
+<math display="inline"><mn>1</mn><mn>4</mn></math>,
+<math display="inline"><mn>9</mn></math> против
+<math display="inline"><mn>1</mn><mn>6</mn></math>–<math display="inline"><mn>2</mn><mn>3</mn></math>,
+<math display="inline"><mn>1</mn><mn>1</mn></math> и
+<math display="inline"><mn>8</mn></math> в
+модели.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x11-85005r5"></a>
+<span class="labx-1095">Задача 8.5 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Моделирование: усиление и скорость перемен. </span>Найдите <math display="inline"><msup><mrow><mi>g</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">∗</mo></mrow></msup 
+><mo class="MathClass-open" stretchy="false">(</mo><mi>h</mi><mo class="MathClass-close" stretchy="false">)</mo></math>
+при <math display="inline"><mi>h</mi></math>
+от <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>0</mn><mn>0</mn><mn>1</mn></math>
+до <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn></math>
+копией <span class="latt-1095">models/nora_explore.py </span>(она пишет файлы в текущую папку). Где верна оценка
+задачи <a href="#x11-85004r4">8.4</a> и почему при быстрых переменах <math display="inline"><msup><mrow><mi>g</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">∗</mo></mrow></msup 
+></math>
+перестаёт убывать?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent"><math display="inline"><msup><mrow><mi>g</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">∗</mo></mrow></msup 
+></math> от
+<math display="inline"><mn>1</mn><mn>6</mn></math>–<math display="inline"><mn>2</mn><mn>3</mn></math>
+при <math display="inline"><mi>h</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>0</mn><mn>0</mn><mn>1</mn></math> до
+<math display="inline"><mn>6</mn></math>–<math display="inline"><mn>8</mn></math>
+при <math display="inline"><mi>h</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn></math>; оценка
+<math display="inline"><mn>3</mn><mi class="loglike">ln</mi><mo>⁡</mo><mo class="MathClass-open" stretchy="false">(</mo><mn>1</mn><mo class="MathClass-bin" stretchy="false">∕</mo><mi>h</mi><mo class="MathClass-close" stretchy="false">)</mo></math> верна в пределах
+полутора раз при <math display="inline"><mi>h</mi> <mo class="MathClass-rel" stretchy="false">≤</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>0</mn><mn>5</mn></math>;
+при <math display="inline"><mi>h</mi> <mo class="MathClass-rel" stretchy="false">≳</mo> <mi>η</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mn>1</mn><mn>0</mn></math> правило
+<math display="inline"><mi>Q</mi> <mo class="MathClass-rel" stretchy="false">←</mo> <mi>Q</mi> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>η</mi><mo class="MathClass-open" stretchy="false">(</mo><mi>R</mi> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>Q</mi><mo class="MathClass-close" stretchy="false">)</mo></math> не успевает усвоить
+добытое поиском, и <math display="inline"><msup><mrow><mi>g</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">∗</mo></mrow></msup 
+></math>
+застревает около <math display="inline"><mn>8</mn></math>.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x11-85006r6"></a>
+<span class="labx-1095">Задача 8.6 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Проектирование: прерывание для сети выбора. </span>Сеть задачи <a href="#x11-85002r2">8.2</a> с <math display="inline"><mi>β</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>2</mn></math>,
+<math display="inline"><mi>τ</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>2</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>,
+<math display="inline"><mi>g</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn></math>
+держит <math display="inline"><msub><mrow><mi>r</mi></mrow><mrow><mn>1</mn></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>9</mn></math>,
+<math display="inline"><msub><mrow><mi>r</mi></mrow><mrow><mn>2</mn></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn></math>,
+хотя входы теперь <math display="inline"><msub><mrow><mi>I</mi></mrow><mrow><mn>1</mn></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>9</mn></math>,
+<math display="inline"><msub><mrow><mi>I</mi></mrow><mrow><mn>2</mn></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>0</mn></math>.
+<span class="nt">NORA</span> на время <math display="inline"><msub><mrow><mi>T</mi></mrow><mrow><mi>p</mi></mrow></msub 
+></math>
+снижает <math display="inline"><mi>g</mi></math>
+до <math display="inline"><msub><mrow><mi>g</mi></mrow><mrow><mstyle class="text"><mtext>lo</mtext></mstyle></mrow></msub 
+></math>.
+Найдите наименьшее <math display="inline"><msub><mrow><mi>T</mi></mrow><mrow><mi>p</mi></mrow></msub 
+></math>
+при <math display="inline"><msub><mrow><mi>g</mi></mrow><mrow><mstyle class="text"><mtext>lo</mtext></mstyle></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn></math>
+аналитически и моделью при <math display="inline"><msub><mrow><mi>g</mi></mrow><mrow><mstyle class="text"><mtext>lo</mtext></mstyle></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn><mn>5</mn></math>.
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent"><math display="inline"><msub><mrow><mi>T</mi></mrow><mrow><mi>p</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mi>τ</mi><mi class="loglike">ln</mi><mo>⁡</mo><mn>9</mn> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>4</mn><mn>4</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>
+при <math display="inline"><msub><mrow><mi>g</mi></mrow><mrow><mstyle class="text"><mtext>lo</mtext></mstyle></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn></math>
+(модель <math display="inline"><mn>4</mn><mn>4</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>) и
+<math display="inline"><mn>7</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math> при
+<math display="inline"><msub><mrow><mi>g</mi></mrow><mrow><mstyle class="text"><mtext>lo</mtext></mstyle></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn><mn>5</mn></math>: пачка в
+<math display="inline"><mn>2</mn></math>–<math display="inline"><mn>3</mn><mi>τ</mi></math>
+при усилении около нуля.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x11-85007r7"></a>
+<span class="labx-1095">Задача 8.7 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo><mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Когда подстройка окупается. </span>Оракул знает, спокойная эпоха или переменчивая, и ставит в
+каждой своё <math display="inline"><mi>g</mi></math>.
+(а) Моделью найдите его выигрыш над лучшим постоянным <math display="inline"><mi>g</mi></math>
+в мире главы (эпохи по <math display="inline"><mn>1</mn><mn>0</mn><mn>0</mn><mn>0</mn></math>
+попыток, <math display="inline"><mi>h</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>0</mn><mn>0</mn><mn>1</mn></math>
+и <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>0</mn><mn>5</mn></math>).
+(б) Постройте мир, где выигрыш больше, и найдите, какую его часть забирает подстройка
+по неожиданности.
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">(а) Лучшее постоянное <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>9</mn><mn>2</mn><mn>5</mn></math>
+(<math display="inline"><mi>g</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>8</mn></math>),
+оракул <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>9</mn><mn>2</mn><mn>9</mn></math>
+(<math display="inline"><mn>1</mn><mn>6</mn><mo class="MathClass-bin" stretchy="false">∕</mo><mn>8</mn></math>)
+— выигрывать почти нечего. (б) Например, спокойные эпохи с редкими наградами
+(<math display="inline"><mi>p</mi> <mo class="MathClass-rel" stretchy="false">∈</mo> <mo class="MathClass-open" stretchy="false">[</mo><mn>0</mn><mo class="MathClass-punc" stretchy="false">,</mo><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>3</mn><mo class="MathClass-close" stretchy="false">]</mo></math>) и
+переменчивые с <math display="inline"><mi>h</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn></math>:
+<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>8</mn><mn>5</mn><mn>0</mn></math> против
+<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>8</mn><mn>7</mn><mn>2</mn></math>; подстройка забирает
+около четверти при <math display="inline"><mi>η</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn></math>
+и почти всё при <math display="inline"><mi>η</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>0</mn><mn>5</mn></math>.
+</p></div></details>
+
+<p class="indent"> <a id="tailfullch8.html"></a> </p> 
+
+  </article>
+  <article class="text short" id="text-short" hidden>
+
+ <a id="s-x11-450008"></a>
+<p class="noindent">Вы выбираете, где пообедать. Пойти в проверенное кафе или
+попробовать новое? Если всегда ходить в проверенное,
+никогда не узнаешь, что за углом есть лучше. Если всё
+время пробовать новое, будешь часто обедать плохо. Где
+золотая середина? Эта задача — искать или пользоваться
+найденным — стоит перед любым обучающимся существом.
+В мозге за неё, по-видимому, отвечает радиостанция <span class="nt">NORA</span>
+— норадреналин.
+</p>
+ <h3 class="likesectionHead"> <a id="s-x11-46000"></a>Ручка контрастности</h3>
+<p class="noindent">Норадреналин меняет то, насколько резко нейрон отвечает
+на сигнал. При слабом действии нейрон похож на плавный
+регулятор яркости: чуть больше сигнал — чуть ярче
+ответ. При сильном он похож на выключатель: ниже
+порога — тишина, выше — полный ответ. Точнее говоря,
+опыты показывают, что норадреналин подавляет фоновую
+болтовню нейронов сильнее, чем их ответ на настоящий
+сигнал; «ручка контрастности» — удобная модель этого
+эффекта.
+</p>
+<div class="center">
+<p class="noindent"><img src="img/short15x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<div class="minipage"><p class="noindent"><span class="lati-1000">Ручка азарта: повернёшь влево — машина пробует</span>
+<span class="lati-1000">новое, вправо — решительно выбирает проверенное.</span></p></div></div>
+ <h3 class="likesectionHead"> <a id="s-x11-47000"></a>Думать или решать</h3>
+<p class="noindent">Вспомните из третьей главы две группы, тормозящие друг
+друга. Когда контрастность низкая, обе работают, слабая
+чуть тише: сеть ещё «думает», взвешивает варианты. Когда
+контрастность выше определённого порога, сеть резко
+переходит в режим «решила»: одна группа побеждает,
+другая замолкает. Одна ручка переключает машину между
+раздумьем и решением.
+</p>
+ <h3 class="likesectionHead"> <a id="s-x11-48000"></a>Сколько искать</h3>
+<p class="noindent">Добавим шум. При низкой контрастности шум легко
+перевешивает небольшую разницу между вариантами, и
+машина часто пробует не лучший вариант — ищет. При
+высокой шум ничего не решает, и машина всегда берёт то,
+что считает лучшим, — пользуется.
+</p><p class="indent"> В нашей модели мир время от времени меняется:
+лучший вариант становится худшим. Выигрыш зависит
+от ручки как перевёрнутая буква U. Слишком мало
+контрастности — машина бродит вслепую. Слишком много —
+она не замечает, что мир изменился, и упрямо ходит в
+испортившееся кафе. И чем чаще меняется мир, тем
+ниже лучшая настройка: в изменчивом мире выгоднее
+искать.
+</p>
+<div class="center">
+<p class="noindent"><img src="img/short16x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<div class="minipage"><p class="noindent"><span class="lati-1000">Выигрыш модели при разных положениях ручки. У</span>
+<span class="lati-1000">каждой кривой есть вершина; когда мир меняется</span>
+<span class="lati-1000">часто, она ниже и левее.</span> </p></div></div>
+ <h3 class="likesectionHead"> <a id="s-x11-49000"></a>Кто крутит ручку</h3>
+<p class="noindent">Естественный признак перемен — неожиданность: ошибки
+стали больше обычного. По одной гипотезе, именно о такой
+неожиданной перемене и сообщает норадреналин. Тут важна
+тонкость: постоянный, фоновый уровень норадреналина
+связан скорее с поиском и рассеянностью, а короткие
+вспышки на важное событие — с сосредоточенностью и
+решением. Возможно, вспышка работает как прерывание в
+компьютере: «бросай текущее, мир изменился, пересобери
+план».
+</p><p class="indent"> Косвенный признак этой системы виден снаружи: зрачок
+расширяется, когда что-то неожиданно меняется и люди
+начинают учиться быстрее. Правда, зрачок следит не
+только за норадреналином, так что это подсказка, а не
+прибор.
+</p><p class="indent"> И честное признание: в нашей модели подстройка ручки
+по неожиданности выиграла совсем немного по сравнению
+с лучшей постоянной настройкой. Где именно такая
+подстройка окупается, ещё предстоит понять.
+</p><p class="noindent"><span class="lati-1000">Формулы, модели, задачи и источники — в полной версии,</span>
+<span class="lati-1000">глава</span><span class="lati-1000"> 8.</span>
+</p>
+<p class="indent"> <a id="s-tailshortch8.html"></a> </p> 
+
+  </article>
+
+  <aside class="starline"><span data-ru="Книга бесплатная и открытая. Если глава была полезной, поставьте книге звезду на GitHub: так её найдут другие." data-en="The book is free and open. If this chapter was useful, star the book on GitHub so others can find it.">Книга бесплатная и открытая.</span> <a href="https://github.com/kladkogex/20-watt-computer" target="_blank" rel="noopener" data-ru="★ Звезда на GitHub" data-en="★ Star on GitHub">★ Звезда на GitHub</a></aside>
+  <nav class="pager">
+    <a class="prev" href="07.html"><span data-ru="← Назад" data-en="← Previous">← Назад</span><b>Альтернативные современные теории обучения на основе дофамина</b></a>
+    <a class="next" href="09.html"><span data-ru="Дальше →" data-en="Next →">Дальше →</span><b>Когда писать, а когда читать: добавляем ACET</b></a>
+  </nav>
+  <footer>
+    <span data-ru='Константин Кладько · текст — <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.ru">CC BY-NC-SA 4.0</a>' data-en='Konstantin Kladko · text: <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>'>Константин Кладько</span>
+    <span><a href="../pdf/20-watt-computer-ru.pdf">PDF</a> · <a href="../breadboard/" data-ru="Макетная плата" data-en="Breadboard">Макетная плата</a> · <a href="https://github.com/kladkogex/20-watt-computer">GitHub</a></span>
+  </footer>
+</main>
+
+<script>
+(function(){
+  const NAV = [{"slug": "00", "title": "Как читать эту книгу", "kicker": "Введение"}, {"slug": "01", "title": "Типы нейронов", "kicker": "Глава 1"}, {"slug": "02", "title": "Что вычисляют GLUT-нейроны", "kicker": "Глава 2"}, {"slug": "03", "title": "GLUT и GABA вместе", "kicker": "Глава 3"}, {"slug": "04", "title": "Азбука Морзе: что мы знаем о языке, на котором говорят GLUT- и GABA-нейроны", "kicker": "Глава 4"}, {"slug": "05", "title": "Что вычисляют SERO-нейроны", "kicker": "Глава 5"}, {"slug": "06", "title": "Нейронные сети, которые умеют учиться: добавляем DOPA", "kicker": "Глава 6"}, {"slug": "07", "title": "Альтернативные современные теории обучения на основе дофамина", "kicker": "Глава 7"}, {"slug": "08", "title": "Когда искать, а когда решать: добавляем NORA", "kicker": "Глава 8"}, {"slug": "09", "title": "Когда писать, а когда читать: добавляем ACET", "kicker": "Глава 9"}, {"slug": "10", "title": "Вся машина", "kicker": "Глава 10"}, {"slug": "11", "title": "Входы машины: как к ней подключены глаза, уши и другие датчики", "kicker": "Глава 11"}, {"slug": "12", "title": "Распознавание изображений и видео", "kicker": "Глава 12"}, {"slug": "13", "title": "Выходы машины: как мозг управляет мышцами", "kicker": "Глава 13"}, {"slug": "14", "title": "Боль: сигнал тревоги", "kicker": "Глава 14"}, {"slug": "15", "title": "Как машина учится двигаться", "kicker": "Глава 15"}, {"slug": "16", "title": "Второй выход: как мозг управляет химией тела", "kicker": "Глава 16"}, {"slug": "17", "title": "Отладка машины", "kicker": "Глава 17"}, {"slug": "18", "title": "Типы нейронов по электрической функции", "kicker": "Глава 18"}, {"slug": "19", "title": "Нейроны по числу дендритов", "kicker": "Глава 19"}, {"slug": "20", "title": "Что делают нейроны во сне", "kicker": "Глава 20"}, {"slug": "21", "title": "Машина из живых нейронов", "kicker": "Глава 21"}, {"slug": "22", "title": "DishBrain", "kicker": "Глава 22"}, {"slug": "a", "title": "Вещества, которые не задают тип нейрона", "kicker": "Приложение A"}, {"slug": "b", "title": "Обозначения", "kicker": "Приложение B"}, {"slug": "c", "title": "Ответы", "kicker": "Приложение C"}, {"slug": "d", "title": "Экспериментальное приложение", "kicker": "Приложение D"}, {"slug": "refs", "title": "Литература", "kicker": ""}];
+  const SLUG = "08";
+  const store = {get(k){try{return localStorage.getItem(k)}catch(e){return null}}, set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+
+  // chapter selector
+  const sel = document.getElementById("jump");
+  NAV.forEach(p => { const o = document.createElement("option"); o.value = p.slug;
+    o.textContent = (p.kicker ? p.kicker + ". " : "") + p.title; if (p.slug === SLUG) o.selected = true; sel.appendChild(o); });
+  sel.addEventListener("change", () => { location.href = sel.value + ".html" + (location.hash === "#short" ? "#short" : ""); });
+
+  // Коротко / Полностью
+  const modeBox = document.querySelector(".mode");
+  const hasShort = modeBox.dataset.hasShort === "true";
+  const full = document.getElementById("text-full"), short = document.getElementById("text-short");
+  function setMode(m, remember){
+    if (!hasShort) m = "full";
+    document.body.dataset.mode = m;
+    full.hidden = m !== "full"; short.hidden = m !== "short";
+    modeBox.querySelectorAll(".seg").forEach(b => b.setAttribute("aria-pressed", b.dataset.mode === m));
+    if (remember) store.set("20w-mode", m);
+  }
+  if (!hasShort) modeBox.hidden = true;
+  modeBox.addEventListener("click", e => { const b = e.target.closest(".seg"); if (b) { setMode(b.dataset.mode, true); history.replaceState(null, "", "#" + b.dataset.mode); } });
+  document.addEventListener("click", e => { const a = e.target.closest("a[data-mode]"); if (a) { e.preventDefault(); setMode(a.dataset.mode, true); window.scrollTo(0, 0); } });
+  // a link into the text (#x...) that lives in the other version switches to it
+  function follow(){
+    const h = decodeURIComponent(location.hash.slice(1));
+    if (h === "short" || h === "full") { setMode(h, true); return; }
+    if (!h) return;
+    const t = document.getElementById(h);
+    if (t) { setMode(short.contains(t) ? "short" : "full", false); t.scrollIntoView(); }
+  }
+  setMode(store.get("20w-mode") || "full", false);
+  follow();
+  window.addEventListener("hashchange", follow);
+  // links that leave the book open in the whole window when the page sits inside the reader
+  if (document.documentElement.classList.contains("embedded"))
+    document.querySelectorAll('a[href^="../"], a[href^="http"]').forEach(a => { a.target = a.href.startsWith(location.origin) ? "_top" : "_blank"; });
+
+  // interface language (the text itself is Russian)
+  function setLang(l){
+    document.querySelectorAll("[data-ru]").forEach(el => { el.innerHTML = el.dataset[l]; });
+    document.getElementById("lang-ru").setAttribute("aria-pressed", l === "ru");
+    document.getElementById("lang-en").setAttribute("aria-pressed", l === "en");
+    store.set("20w-lang", l);
+  }
+  document.getElementById("lang-ru").onclick = () => setLang("ru");
+  document.getElementById("lang-en").onclick = () => setLang("en");
+  setLang(store.get("20w-lang") === "en" ? "en" : "ru");
+  window.addEventListener("storage", e => {
+    if (e.key === "20w-lang" && (e.newValue === "ru" || e.newValue === "en")) setLang(e.newValue);
+    if (e.key === "20w-theme" && (e.newValue === "light" || e.newValue === "dark")) document.documentElement.setAttribute("data-theme", e.newValue);
+  });
+})();
+</script>
+<script>
+(function(){var b=document.getElementById("theme");if(!b)return;var r=document.documentElement;function cur(){var t=r.getAttribute("data-theme");if(t)return t;return window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";}function show(){b.textContent=cur()==="dark"?"☀":"☾";b.setAttribute("aria-pressed",cur()==="dark");}b.onclick=function(){var t=cur()==="dark"?"light":"dark";r.setAttribute("data-theme",t);try{localStorage.setItem("20w-theme",t);}catch(e){}show();};if(window.matchMedia)matchMedia("(prefers-color-scheme: dark)").addEventListener("change",show);show();})();
+</script>
+</body>
+</html>

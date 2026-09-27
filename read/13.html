@@ -1,0 +1,786 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<script>try{var t=localStorage.getItem("20w-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);}catch(e){}if(window.self!==window.top)document.documentElement.classList.add("embedded");</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Глава 13. Выходы машины: как мозг управляет мышцами · Компьютер на 20 ваттах</title>
+<meta name="description" content="Всё, что машина делает в мире быстро, она делает мышцами. Слово, взгляд, шаг, улыбка — это сокращения мышц. Второй, медленный выход — химия тела — разобран в главе 16 . На рис. …">
+<link rel="canonical" href="https://kladkogex.github.io/20-watt-computer/read/13.html">
+<meta property="og:type" content="book">
+<meta property="og:title" content="Глава 13. Выходы машины: как мозг управляет мышцами · Компьютер на 20 ваттах">
+<meta property="og:description" content="Всё, что машина делает в мире быстро, она делает мышцами. Слово, взгляд, шаг, улыбка — это сокращения мышц. Второй, медленный выход — химия тела — разобран в главе 16 . На рис. …">
+<meta property="og:url" content="https://kladkogex.github.io/20-watt-computer/read/13.html">
+<meta property="og:locale" content="ru_RU">
+<meta property="og:image" content="https://kladkogex.github.io/20-watt-computer/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Your brain runs on 20 watts. Here is its datasheet. The 20-Watt Computer, a free textbook for engineers.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://kladkogex.github.io/20-watt-computer/og-card.png">
+<meta name="twitter:title" content="Глава 13. Выходы машины: как мозг управляет мышцами · The 20-Watt Computer">
+<meta name="twitter:description" content="Всё, что машина делает в мире быстро, она делает мышцами. Слово, взгляд, шаг, улыбка — это сокращения мышц. Второй, медленный выход — химия тела — разобран в главе 16 . На рис. …">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Chapter", "name": "Выходы машины: как мозг управляет мышцами", "url": "https://kladkogex.github.io/20-watt-computer/read/13.html", "position": 13, "inLanguage": "ru", "isAccessibleForFree": true, "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/", "author": {"@type": "Person", "name": "Константин Кладько", "alternateName": "Konstantin Kladko"}, "isPartOf": {"@type": "Book", "name": "Компьютер на 20 ваттах. Как вычисляет мозг: количественный подход для инженеров", "alternateName": "The 20-Watt Computer: How the Brain Computes. A Quantitative Approach for Engineers", "author": {"@type": "Person", "name": "Константин Кладько", "alternateName": "Konstantin Kladko"}, "url": "https://kladkogex.github.io/20-watt-computer/", "inLanguage": "ru", "isAccessibleForFree": true, "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/"}}</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap">
+<link rel="stylesheet" href="book.css">
+</head>
+<body>
+<header class="bar">
+  <a class="home" href="../#toc"><span class="w">20</span> <span data-ru="Компьютер на 20 ваттах" data-en="The 20-Watt Computer">Компьютер на 20 ваттах</span></a>
+  <label class="jump"><span class="sr" data-ru="Перейти к главе" data-en="Go to chapter">Перейти к главе</span>
+    <select id="jump"></select></label>
+  <div class="langs" role="group" aria-label="Language">
+    <button class="chip" id="lang-ru" type="button">RU</button>
+    <button class="chip" id="lang-en" type="button">EN</button>
+    <button class="chip theme" id="theme" type="button" aria-label="Light or dark theme" title="Light / dark">☾</button>
+  </div>
+</header>
+
+<main class="page">
+  <div class="pagehead">
+    <p class="kicker" data-ru="Глава 13" data-en="Chapter 13">Глава 13</p>
+    <h1><span class="t-full">Выходы машины: как мозг управляет мышцами</span><span class="t-short">Единственный быстрый выход</span></h1>
+    <div class="mode" role="group" aria-label="Version" data-has-short="true">
+      <button type="button" class="seg" data-mode="short"><b data-ru="Коротко" data-en="Short">Коротко</b><span data-ru="без формул, с рисунками" data-en="no formulas, with drawings">без формул, с рисунками</span></button>
+      <button type="button" class="seg" data-mode="full"><b data-ru="Полностью" data-en="Full">Полностью</b><span data-ru="формулы, модели, задачи" data-en="formulas, models, exercises">формулы, модели, задачи</span></button>
+    </div>
+    <p class="lang-note" data-ru="" data-en="The online reader is in Russian for now; the book in other languages is in the PDF downloads in the menu.">.</p>
+  </div>
+
+  <article class="text full" id="text-full">
+
+ <a id="x16-12100013"></a>
+ <h3 class="sectionHead"><span class="titlemark">13.1 </span> <a id="x16-12200013.1"></a>Быстрый выход</h3>
+<p class="noindent">Всё, что машина делает в мире быстро, она делает мышцами. Слово, взгляд, шаг, улыбка — это
+сокращения мышц. Второй, медленный выход — химия тела — разобран в главе <a href="16.html#x19-14500016">16</a>. На рис. <a href="10.html#x13-960011">10.1</a>
+выход был стрелкой «мышцы»; теперь посмотрим, что за этой стрелкой.
+</p><p class="indent"> Последнее звено цепи — <span class="nt">ACET</span>-нейроны, те самые, у которых в таблице <a href="01.html#x4-60021">1.1</a> записано «выход
+на мышцу». Каждое мышечное волокно получает вход ровно от одного такого нейрона, а один
+нейрон управляет группой волокон — от нескольких сотен до пары тысяч <span class="cite">[<a href="refs.html#XFeinstein1955mu">313</a>]</span>. В мышцах,
+которым нужна тонкая подстройка, единицы мельче, в больших мышцах ног — крупнее. Нейрон
+вместе со своими волокнами называют <span class="lati-1095">двигательной единицей</span>: это наименьший кусок мышцы,
+который мозг может включить отдельно.
+</p><p class="indent"> Синапс нейрона на мышце устроен совсем не так, как синапсы коры из главы <a href="04.html#x7-350004">4</a>. Там большая
+часть импульсов терялась. Здесь каждый импульс выбрасывает в несколько раз больше
+ацетилхолина, чем нужно, чтобы волокно сработало <span class="cite">[<a href="refs.html#XWoodSlater2001">98</a>]</span>. Это синапс с <span class="lati-1095">запасом надёжности</span>:
+один импульс нейрона — ровно одно сокращение волокон. Внутри машины можно позволить себе
+ненадёжные связи и исправлять ошибки избыточностью; на выходе ошибка стоит движения, и
+надёжность куплена прямо в железе.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">13.2 </span> <a id="x16-12300013.2"></a>Сила: частота и число единиц</h3>
+<p class="noindent">Один импульс даёт одиночное сокращение — подёргивание: сила нарастает за несколько десятков
+миллисекунд и спадает. Хорошее приближение для него <span class="cite">[<a href="refs.html#XFuglevand1993">106</a>]</span> </p><table class="equation"><tr><td>
+<math display="block" class="equation">
+ <mstyle id="x16-123001r1" class="label"></mstyle><mi>h</mi><mo class="MathClass-open" stretchy="false">(</mo><mi>t</mi><mo class="MathClass-close" stretchy="false">)</mo><mspace width="0.28em" class="thickpace"/> <mo class="MathClass-rel" stretchy="false">=</mo> <mspace width="0.28em" class="thickpace"/><msub><mrow><mi>F</mi></mrow><mrow><mn>1</mn></mrow></msub 
+><mspace width="0.17em" class="thinspace"/> <mfrac><mrow><mi>t</mi></mrow> 
+<mrow><msub><mrow><mi>T</mi></mrow><mrow><mi>c</mi></mrow></msub 
+></mrow></mfrac><mspace width="0.17em" class="thinspace"/><msup><mrow><mi>e</mi></mrow><mrow><mspace width="0.17em" class="thinspace"/><mn>1</mn><mo class="MathClass-bin" stretchy="false">−</mo><mi>t</mi><mo class="MathClass-bin" stretchy="false">∕</mo><msub><mrow><mi>T</mi></mrow><mrow><mi>c</mi></mrow></msub 
+>
+ </mrow></msup 
+><mo class="MathClass-punc" stretchy="false">,</mo>
+</math></td><td class="eq-no">(13.1)</td></tr></table>
+<p class="noindent">где <math display="inline"><msub><mrow><mi>T</mi></mrow><mrow><mi>c</mi></mrow></msub 
+></math> — время
+нарастания, порядка <math display="inline"><mn>5</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>,
+а <math display="inline"><msub><mrow><mi>F</mi></mrow><mrow><mn>1</mn></mrow></msub 
+></math> —
+сила одного подёргивания. Если импульсы идут чаще, подёргивания складываются:
+</p><div class="keyformula"><table class="equation"><tr><td>
+<math display="block" class="equation">
+ <mstyle id="x16-123002r2" class="label"></mstyle><mi>F</mi><mo class="MathClass-open" stretchy="false">(</mo><mi>t</mi><mo class="MathClass-close" stretchy="false">)</mo><mspace width="0.28em" class="thickpace"/> <mo class="MathClass-rel" stretchy="false">=</mo> <mspace width="0.28em" class="thickpace"/><munder class="msub"><mrow><mo>∑</mo>
+ </mrow><mrow><mi>k</mi></mrow></munder 
+><mi>h</mi><mrow><mo class="MathClass-open" fence="true" mathsize="1.19em">(</mo><mrow><mi>t</mi> <mo class="MathClass-bin" stretchy="false">−</mo> <msub><mrow><mi>t</mi></mrow><mrow><mi>k</mi></mrow></msub 
+></mrow><mo class="MathClass-close" fence="true" mathsize="1.19em">)</mo></mrow><mo class="MathClass-punc" stretchy="false">.</mo>
+</math></td><td class="eq-no">(13.2)</td></tr></table>
+</div><p class="noindent"> Это тот же фильтр нижних частот, что превращал импульсы в концентрацию в
+главе <a href="05.html#x8-470005">5</a>, только теперь на выходе не концентрация, а сила. Мышца — цифро-аналоговый
+преобразователь из импульсов в силу (рис. <a href="#x16-1230031">13.1</a>). В нашей модели при пяти
+импульсах в секунду подёргивания почти не перекрываются и сила скачет от
+<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn><msub><mrow><mi>F</mi></mrow><mrow><mn>1</mn></mrow></msub 
+></math> до
+<math display="inline"><mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn><msub><mrow><mi>F</mi></mrow><mrow><mn>1</mn></mrow></msub 
+></math>; при пятнадцати она
+уже держится между <math display="inline"><mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>8</mn><msub><mrow><mi>F</mi></mrow><mrow><mn>1</mn></mrow></msub 
+></math> и
+<math display="inline"><mn>2</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn><msub><mrow><mi>F</mi></mrow><mrow><mn>1</mn></mrow></msub 
+></math>; при сорока становится
+почти ровной, около <math display="inline"><mn>5</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>4</mn><msub><mrow><mi>F</mi></mrow><mrow><mn>1</mn></mrow></msub 
+></math>.
+Настоящая мышца при частых импульсах насыщается, так что линейная сумма (<a href="#x16-123002r2">13.2</a>) верна
+лишь до нескольких десятков импульсов в секунду.
+</p>
+ <figure class="figure"> 
+<a id="x16-1230031"></a>
+<p class="noindent"><img src="img/full40x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<figcaption class="caption"><span class="id">Рис. 13.1: </span><span class="content">Мышца как цифро-аналоговый преобразователь:
+сила (<a href="#x16-123002r2">13.2</a>) при регулярных импульсах одной двигательной единицы,
+<math display="inline"><msub><mrow><mi>T</mi></mrow><mrow><mi>c</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>5</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>.
+Редкие импульсы дают отдельные подёргивания, частые сливаются в ровную силу — так
+же, как частые импульсы сливаются в ровную концентрацию на рис. <a href="05.html#x8-510023">5.3</a>.</span></figcaption>
+ </figure>
+<p class="indent"> У мозга две ручки силы: частота импульсов каждой единицы и число включённых единиц. И
+вторая ручка устроена очень изобретательно. Единицы в мышце разные: самые слабые в сотню
+раз слабее самых сильных. Когда сила нужна всё большая, единицы включаются <span class="lati-1095">по порядку</span>
+<span class="lati-1095">размера</span>, от маленьких к большим <span class="cite">[<a href="refs.html#XHenneman1957">99</a>]</span>. Никто этот порядок не вычисляет: маленькие нейроны
+просто легче возбуждаются от того же общего входа, так что порядок включения задан самим
+железом.
+</p><p class="indent"> Что это даёт? Пусть каждая следующая по порядку единица сильнее предыдущей в
+<math display="inline"><mi>q</mi></math> раз,
+где <math display="inline"><mi>q</mi></math>
+немного больше единицы. Сила всех включённых единиц — сумма геометрической прогрессии, и
+почти вся она приходится на последние единицы. Тогда очередная включённая единица
+добавляет
+</p><div class="keyformula"><table class="equation"><tr><td>
+<math display="block" class="equation">
+ <mstyle id="x16-123004r3" class="label"></mstyle><mfrac><mrow><mi mathvariant="normal">Δ</mi><mi>F</mi></mrow>
+ <mrow><mi>F</mi></mrow></mfrac> <mspace width="0.28em" class="thickpace"/> <mo class="MathClass-rel" stretchy="false">≈</mo><mspace width="0.28em" class="thickpace"/><mi>q</mi> <mo class="MathClass-bin" stretchy="false">−</mo> <mn>1</mn><mspace width="0.28em" class="thickpace"/> <mo class="MathClass-rel" stretchy="false">=</mo> <mspace width="0.28em" class="thickpace"/><mstyle class="text"><mtext>const</mtext></mstyle><mo class="MathClass-punc" stretchy="false">,</mo>
+</math></td><td class="eq-no">(13.3)</td></tr></table>
+</div><p class="noindent"> то есть шаг силы пропорционален самой силе. При слабом усилии мозг дозирует его мелкими
+порциями, при сильном — крупными. Это <span class="lati-1095">число с плавающей точкой</span>: порядок задаётся тем,
+сколько единиц включено, а мантисса — частотой их импульсов. Та же логарифмическая
+шкала, что у датчиков главы <a href="11.html#x14-10400011">11</a>: вход и выход машины меряют мир в относительных
+долях.
+</p><p class="indent"> У плавающей точки есть обратная сторона. Разброс силы тоже растёт пропорционально ей
+самой: сильное движение неизбежно менее точно, чем слабое. По одной влиятельной гипотезе,
+именно этот шум, зависящий от сигнала, объясняет, почему наши движения плавные: плавная
+команда даёт наименьший разброс в конечной точке <span class="cite">[<a href="refs.html#XHarrisWolpert1998">100</a>]</span>.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">13.3 </span> <a id="x16-12400013.3"></a>Тянуть, но не толкать: два провода на сустав</h3>
+<p class="noindent">Мышца умеет только тянуть. Толкать она не может, как не может <span class="nt">GLUT</span>-нейрон выдать
+отрицательный сигнал. Решение знакомо по главе <a href="02.html#x5-150002">2</a>: <span class="lati-1095">два провода</span>. Каждый сустав
+обслуживает пара мышц, тянущих в противоположные стороны (рис. <a href="#x16-1240022">13.2</a>). Если их силы
+<math display="inline"><msub><mrow><mi>F</mi></mrow><mrow><mn>1</mn></mrow></msub 
+></math> и
+<math display="inline"><msub><mrow><mi>F</mi></mrow><mrow><mn>2</mn></mrow></msub 
+></math>, а
+плечо <math display="inline"><mi>ℓ</mi></math>,
+то вращающий момент и жёсткость сустава равны
+</p><div class="keyformula"><table class="equation"><tr><td>
+<math display="block" class="equation">
+ <mstyle id="x16-124001r4" class="label"></mstyle><mi>M</mi><mspace width="0.28em" class="thickpace"/> <mo class="MathClass-rel" stretchy="false">=</mo> <mspace width="0.28em" class="thickpace"/><mi>ℓ</mi><mspace width="0.17em" class="thinspace"/><mo class="MathClass-open" stretchy="false">(</mo><msub><mrow><mi>F</mi></mrow><mrow><mn>1</mn></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">−</mo> <msub><mrow><mi>F</mi></mrow><mrow><mn>2</mn></mrow></msub 
+><mo class="MathClass-close" stretchy="false">)</mo><mo class="MathClass-punc" stretchy="false">,</mo><mspace width="2em" class="qquad"/><mi>K</mi><mspace width="0.28em" class="thickpace"/> <mo class="MathClass-rel" stretchy="false">≈</mo><mspace width="0.28em" class="thickpace"/><msub><mrow><mi>κ</mi></mrow><mrow><mi>m</mi></mrow></msub 
+><mspace width="0.17em" class="thinspace"/><mo class="MathClass-open" stretchy="false">(</mo><msub><mrow><mi>F</mi></mrow><mrow><mn>1</mn></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">+</mo> <msub><mrow><mi>F</mi></mrow><mrow><mn>2</mn></mrow></msub 
+><mo class="MathClass-close" stretchy="false">)</mo><mo class="MathClass-punc" stretchy="false">,</mo>
+</math></td><td class="eq-no">(13.4)</td></tr></table>
+</div><p class="noindent"> где <math display="inline"><msub><mrow><mi>κ</mi></mrow><mrow><mi>m</mi></mrow></msub 
+></math> —
+коэффициент, связывающий силу мышцы с её жёсткостью: напряжённая мышца пружинит
+сильнее расслабленной. Разность сил задаёт момент, сумма — жёсткость <span class="cite">[<a href="refs.html#XHogan1984">101</a>]</span>. Двумя проводами
+мозг управляет двумя независимыми величинами: куда повернуть сустав и насколько
+твёрдо его держать. Когда надо удержать чашку, не расплескав, мы напрягаем обе
+мышцы сразу: момент тот же, жёсткость выше, и случайный толчок меньше сбивает
+руку.
+</p>
+ <figure class="figure"> 
+<a id="x16-1240022"></a>
+<p class="noindent"><img src="img/full41x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<figcaption class="caption"><span class="id">Рис. 13.2: </span><span class="content">Две мышцы на один сустав и самая быстрая петля обратной связи.
+<span class="nt">ACET</span>-нейроны получают команды мозга и тянут сустав в разные стороны; разность
+сил поворачивает его, сумма делает жёстче. Датчик растяжения (<span class="nt">GLUT</span>) левой мышцы
+возбуждает её собственный <span class="nt">ACET</span>-нейрон и через <span class="nt">GLYC</span>-посредника тормозит нейрон
+мышцы-противника — запрет из главы <a href="03.html#x6-250003">3</a>.</span></figcaption>
+ </figure>
+ <h3 class="sectionHead"><span class="titlemark">13.4 </span> <a id="x16-12500013.4"></a>Обратная связь с задержкой</h3>
+<p class="noindent">Мышцы не работают вслепую. В каждой сидят датчики растяжения, о которых шла речь в
+таблице <a href="11.html#x14-1100011">11.1</a>, и самая короткая петля замыкается прямо в спинном мозге (рис. <a href="#x16-1240022">13.2</a>). Мышцу
+неожиданно растянули — датчик растяжения возбуждает её собственный <span class="nt">ACET</span>-нейрон, мышца
+сокращается и возвращает сустав. Одновременно через тормозящий нейрон-посредник
+выключается мышца-противник, чтобы не мешала. Этим посредником работает <span class="nt">GLYC</span> — тот
+самый тип из таблицы <a href="01.html#x4-60021">1.1</a>, которому не досталось своей главы: его место именно здесь, в
+быстрых петлях спинного мозга.
+</p><p class="indent"> У каждой петли есть задержка
+<math display="inline"><mi>d</mi></math>: у спинномозговой около
+<math display="inline"><mn>2</mn><mn>5</mn></math>–<math display="inline"><mn>3</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>
+для руки, у петли через кору — в полтора–три раза больше, у петли через глаз —
+<math display="inline"><mn>1</mn><mn>0</mn><mn>0</mn></math>–<math display="inline"><mn>2</mn><mn>0</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>.
+А задержанная обратная связь, как мы видели в утверждении <a href="03.html#x6-32003r3">3.3</a>,
+раскачивает систему. Для простейшего регулятора, исправляющего отклонение
+<math display="inline"><mi>x</mi></math> со скоростью
+<math display="inline"><mi>G</mi></math> по сведениям
+<math display="inline"><mi>d</mi></math> секунд
+давности, <math display="inline"><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>x</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>t</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mo class="MathClass-bin" stretchy="false">−</mo><mi>G</mi><mspace width="0.17em" class="thinspace"/><mi>x</mi><mo class="MathClass-open" stretchy="false">(</mo><mi>t</mi> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>d</mi><mo class="MathClass-close" stretchy="false">)</mo></math>,
+условие устойчивости таково <span class="cite">[<a href="refs.html#XHayes1950">108</a>]</span>:
+</p><div class="keyformula"><table class="equation"><tr><td>
+<math display="block" class="equation">
+ <mstyle id="x16-125001r5" class="label"></mstyle><mi>G</mi><mspace width="0.17em" class="thinspace"/><mi>d</mi><mspace width="0.28em" class="thickpace"/> <mo class="MathClass-rel" stretchy="false">&#x003C;</mo> <mspace width="0.28em" class="thickpace"/><mfrac><mrow><mi>π</mi></mrow> 
+<mrow><mn>2</mn></mrow></mfrac><mo class="MathClass-punc" stretchy="false">,</mo>
+</math></td><td class="eq-no">(13.5)</td></tr></table>
+</div><p class="noindent"> а на границе система колеблется с частотой
+<math display="inline"><mn>1</mn><mo class="MathClass-bin" stretchy="false">∕</mo><mo class="MathClass-open" stretchy="false">(</mo><mn>4</mn><mi>d</mi><mo class="MathClass-close" stretchy="false">)</mo></math>. Мы проверили это на
+модели: при <math display="inline"><mi>d</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>3</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math> отклонение
+затухает при <math display="inline"><mi>G</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>4</mn><mn>0</mn></math> в секунду,
+а при <math display="inline"><mi>G</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>5</mn><mn>5</mn></math> в секунду,
+чуть выше границы <math display="inline"><mn>5</mn><mn>2</mn></math>,
+раскачивается.
+</p><p class="indent"> Отсюда два следствия. Первое: чем длиннее петля, тем медленнее она обязана исправлять. Через
+глаз с задержкой в полторы сотни миллисекунд руку нельзя поправлять быстрее, чем примерно
+за десятую долю секунды, иначе она задрожит. Второе: граница устойчивости спинномозговой
+петли, <math display="inline"><mn>1</mn><mo class="MathClass-bin" stretchy="false">∕</mo><mo class="MathClass-open" stretchy="false">(</mo><mn>4</mn> <mo class="MathClass-bin" stretchy="false">⋅</mo> <mn>3</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle><mo class="MathClass-close" stretchy="false">)</mo> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>8</mn></math>
+колебаний в секунду, близка к частоте мелкой дрожи, которая есть у каждого здорового
+человека, — восемь-двенадцать колебаний в секунду. Петля растяжения — один из вероятных
+источников этой дрожи <span class="cite">[<a href="refs.html#XMcAuleyMarsden2000">102</a>]</span>.
+</p><p class="indent"> Как тогда мозг двигается быстро и точно, если обратная связь запаздывает? По
+распространённой гипотезе — <span class="lati-1095">предсказывает</span>: держит внутреннюю модель тела и вычисляет,
+каким будет результат команды, не дожидаясь датчиков <span class="cite">[<a href="refs.html#XWolpertGhahramani2000">103</a>]</span>. Датчики нужны, чтобы
+исправлять модель, а не каждое движение. Инженер назвал бы это управлением с упреждением и
+наблюдателем состояния.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">13.5 </span> <a id="x16-12600013.5"></a>Генераторы ритма движений</h3>
+<p class="noindent">Ходьба, дыхание, жевание — ритмические движения. Нужны ли для них часы? Нет. В спинном
+мозге и стволе есть небольшие сети, которые сами порождают ритм, даже если на них
+не приходит ничего ритмического <span class="cite">[<a href="refs.html#XMarderBucher2001">104</a>]</span>. Простейшая такая сеть собрана из деталей,
+которые у нас уже есть: две группы <span class="nt">GLUT</span>-нейронов, которые тормозят друг друга
+через <span class="nt">GABA</span>- или <span class="nt">GLYC</span>-посредников, как на рис. <a href="03.html#x6-300023">3.3</a>, и медленно устают, как память
+главы <a href="02.html#x5-150002">2</a>:
+</p><div class="keyformula"><table class="equation"><tr><td>
+<math display="block" class="equation">
+ <mstyle id="x16-126001r6" class="label"></mstyle><mi>τ</mi><mspace width="0.17em" class="thinspace"/><mfrac><mrow><mstyle mathvariant="normal"><mi>d</mi></mstyle><msub><mrow><mi>r</mi></mrow><mrow><mi>i</mi></mrow></msub 
+></mrow> 
+ <mrow><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>t</mi></mrow></mfrac> <mo class="MathClass-rel" stretchy="false">=</mo> <mo class="MathClass-bin" stretchy="false">−</mo><msub><mrow><mi>r</mi></mrow><mrow><mi>i</mi></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">+</mo><msub><mrow><mrow><mo class="MathClass-open" fence="true" mathsize="1.19em">[</mo><mrow><mi>I</mi> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>β</mi><mspace width="0.17em" class="thinspace"/><msub><mrow><mi>r</mi></mrow><mrow><mi>j</mi></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">−</mo> <msub><mrow><mi>a</mi></mrow><mrow><mi>i</mi></mrow></msub 
+></mrow><mo class="MathClass-close" fence="true" mathsize="1.19em">]</mo></mrow></mrow><mrow><mo class="MathClass-bin" stretchy="false">+</mo></mrow></msub 
+><mo class="MathClass-punc" stretchy="false">,</mo><mspace width="2em" class="qquad"/><msub><mrow><mi>τ</mi></mrow><mrow><mi>a</mi></mrow></msub 
+><mspace width="0.17em" class="thinspace"/><mfrac><mrow><mstyle mathvariant="normal"><mi>d</mi></mstyle><msub><mrow><mi>a</mi></mrow><mrow><mi>i</mi></mrow></msub 
+></mrow> 
+ <mrow><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>t</mi></mrow></mfrac> <mo class="MathClass-rel" stretchy="false">=</mo> <mo class="MathClass-bin" stretchy="false">−</mo><msub><mrow><mi>a</mi></mrow><mrow><mi>i</mi></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>b</mi><mspace width="0.17em" class="thinspace"/><msub><mrow><mi>r</mi></mrow><mrow><mi>i</mi></mrow></msub 
+><mo class="MathClass-punc" stretchy="false">,</mo>
+</math></td><td class="eq-no">(13.6)</td></tr></table>
+</div><p class="noindent"> где <math display="inline"><msub><mrow><mi>a</mi></mrow><mrow><mi>i</mi></mrow></msub 
+></math> —
+усталость группы <math display="inline"><mi>i</mi></math>,
+<math display="inline"><mi>j</mi></math> — другая группа.
+Взаимное торможение с <math display="inline"><mi>β</mi> <mo class="MathClass-rel" stretchy="false">&#x003E;</mo> <mn>1</mn></math>
+выбирает победителя (утверждение <a href="03.html#x6-30003r2">3.2</a>). Победитель работает и устаёт; когда усталость съедает
+его вход, проигравший, уже отдохнувший, вырывается вперёд и сам начинает уставать. Группы
+работают по очереди, и каждая управляет своей мышцей пары (рис. <a href="#x16-1260023">13.3</a>).
+</p>
+ <figure class="figure"> 
+<a id="x16-1260023"></a>
+<p class="noindent"><img src="img/full42x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<figcaption class="caption"><span class="id">Рис. 13.3: </span><span class="content">Генератор ритма по модели (<a href="#x16-126001r6">13.6</a>): <math display="inline"><mi>I</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn></math>,
+<math display="inline"><mi>β</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>2</mn></math>,
+<math display="inline"><mi>b</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>2</mn></math>,
+<math display="inline"><mi>τ</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>2</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>,
+<math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>a</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>4</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>с</mtext></mstyle></math>.
+Две группы со взаимным торможением и усталостью работают по очереди с периодом
+<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>8</mn><mn>4</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>с</mtext></mstyle></math>,
+хотя на вход подаётся постоянный сигнал.</span></figcaption>
+ </figure>
+<p class="indent"> В нашей модели при постоянном входе группы сменяют друг друга с периодом
+<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>8</mn><mn>4</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>с</mtext></mstyle></math>, примерно вдвое больше
+времени усталости <math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>a</mi></mrow></msub 
+></math>.
+Постоянная команда сверху — «иди» — превращается в ритм на месте. Это ещё один местный
+ритм, как ритм петли <span class="nt">GLUT</span>–<span class="nt">GABA</span> в главе <a href="03.html#x6-250003">3</a>: он возникает, только когда сеть работает, и задаёт
+такт лишь тем мышцам, которыми управляет.
+</p>
+ <div class="tcolorbox keyblock" id="tcolobox-31"> 
+<div class="tcolorbox-content"><div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x16-126003r1"></a>
+<span class="labx-1095">Утверждение 13.1 </span>(Выход машины)<span class="labx-1095">.</span> </span> <span class="lati-1095">Мозг управляет мышцами как иерархия</span>
+<span class="lati-1095">регуляторов. Наверху выбирается действие (глава</span><span class="lati-1095"> </span><a href="06.html#x9-560006"><span class="lati-1095">6</span></a><span class="lati-1095">); ниже местные генераторы</span>
+<span class="lati-1095">превращают постоянные команды в ритм, а быстрые петли спинного мозга держат</span>
+<span class="lati-1095">суставы. Сила задаётся в плавающей точке: порядок — числом единиц, включаемых</span>
+<span class="lati-1095">по размеру, мантисса — частотой импульсов. Каждый сустав управляется парой</span>
+<span class="lati-1095">тянущих мышц, разность сил которых задаёт момент, а сумма — жёсткость. Эти</span>
+<span class="lati-1095">устройства измерены; что мозг опирается на внутреннюю модель тела, — хорошо</span>
+<span class="lati-1095">обоснованная гипотеза.</span>
+</p>
+</div>
+ 
+</div> 
+</div>
+ <h3 class="sectionHead"><span class="titlemark">13.6 </span> <a id="x16-12700013.6"></a>Итог</h3>
+ <div class="table">
+<p class="indent"> <a id="x16-1270011"></a></p><figure class="float">
+<div class="tabular">
+ <table id="TBL-16" class="tabular"><colgroup id="TBL-16-1g"><col id="TBL-16-1" /><col id="TBL-16-2" /><col id="TBL-16-3" /></colgroup><tr style="vertical-align:baseline;" id="TBL-16-1-"><td style="text-align:left;" id="TBL-16-1-1" class="td11"> <p class="noindent"><span class="larm-0900">Что</span>
+ <span class="larm-0900">делает</span>
+ <span class="larm-0900">выход</span> </p></td><td style="text-align:left;" id="TBL-16-1-2" class="td11"> <p class="noindent"><span class="larm-0900">Как</span> </p></td><td style="text-align:left;" id="TBL-16-1-3" class="td11"> <p class="noindent"><span class="larm-0900">Что</span>
+ <span class="larm-0900">известно</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-16-2-"><td style="text-align:left;" id="TBL-16-2-1" class="td11"> <p class="noindent"><span class="larm-0900">превращает</span>
+ <span class="larm-0900">импульсы</span>
+ <span class="larm-0900">в</span>
+ <span class="larm-0900">силу</span> </p></td><td style="text-align:left;" id="TBL-16-2-2" class="td11"> <p class="noindent"><span class="larm-0900">сумма</span>
+ <span class="larm-0900">подёргиваний</span><span class="larm-0900"> </span><span class="larm-0900">(</span><a href="#x16-123002r2"><span class="larm-0900">13.2</span></a><span class="larm-0900">)</span><span class="larm-0900">,</span>
+ <span class="larm-0900">фильтр</span>
+ <span class="larm-0900">нижних</span>
+ <span class="larm-0900">частот</span> </p></td><td style="text-align:left;" id="TBL-16-2-3" class="td11"> <p class="noindent"><span class="larm-0900">измерено;</span>
+ <span class="larm-0900">линейная</span>
+ <span class="larm-0900">сумма</span>
+ <span class="larm-0900">—</span>
+ <span class="larm-0900">упрощение</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-16-3-"><td style="text-align:left;" id="TBL-16-3-1" class="td11"> <p class="noindent"><span class="larm-0900">дозирует</span>
+ <span class="larm-0900">силу</span> </p></td><td style="text-align:left;" id="TBL-16-3-2" class="td11"> <p class="noindent"><span class="larm-0900">включение</span>
+ <span class="larm-0900">единиц</span>
+ <span class="larm-0900">по</span>
+ <span class="larm-0900">размеру,</span>
+ <span class="larm-0900">плавающая</span>
+ <span class="larm-0900">точка</span><span class="larm-0900"> </span><span class="larm-0900">(</span><a href="#x16-123004r3"><span class="larm-0900">13.3</span></a><span class="larm-0900">)</span> </p></td><td style="text-align:left;" id="TBL-16-3-3" class="td11"> <p class="noindent"><span class="larm-0900">порядок</span>
+ <span class="larm-0900">включения</span>
+ <span class="larm-0900">измерен</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-16-4-"><td style="text-align:left;" id="TBL-16-4-1" class="td11"> <p class="noindent"><span class="larm-0900">толкает,</span>
+ <span class="larm-0900">умея</span>
+ <span class="larm-0900">только</span>
+ <span class="larm-0900">тянуть</span> </p></td><td style="text-align:left;" id="TBL-16-4-2" class="td11"> <p class="noindent"><span class="larm-0900">пара</span>
+ <span class="larm-0900">мышц:</span>
+ <span class="larm-0900">момент</span>
+ <span class="larm-0900">—</span>
+ <span class="larm-0900">разность,</span>
+ <span class="larm-0900">жёсткость</span>
+ <span class="larm-0900">—</span>
+ <span class="larm-0900">сумма</span><span class="larm-0900"> </span><span class="larm-0900">(</span><a href="#x16-124001r4"><span class="larm-0900">13.4</span></a><span class="larm-0900">)</span> </p></td><td style="text-align:left;" id="TBL-16-4-3" class="td11"> <p class="noindent"><span class="larm-0900">измерено</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-16-5-"><td style="text-align:left;" id="TBL-16-5-1" class="td11"> <p class="noindent"><span class="larm-0900">держит</span>
+ <span class="larm-0900">сустав</span> </p></td><td style="text-align:left;" id="TBL-16-5-2" class="td11"> <p class="noindent"><span class="larm-0900">петля</span>
+ <span class="larm-0900">растяжения,</span>
+ <span class="larm-0900">запрет</span>
+ <span class="larm-0900">противника</span>
+ <span class="larm-0900">через</span>
+ <span class="nt"><span class="larm-0900">GLYC</span></span> </p></td><td style="text-align:left;" id="TBL-16-5-3" class="td11"> <p class="noindent"><span class="larm-0900">измерено</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-16-6-"><td style="text-align:left;" id="TBL-16-6-1" class="td11"> <p class="noindent"><span class="larm-0900">не</span>
+ <span class="larm-0900">дрожит</span> </p></td><td style="text-align:left;" id="TBL-16-6-2" class="td11"> <p class="noindent"><math display="inline"><mi>G</mi><mi>d</mi> <mo class="MathClass-rel" stretchy="false">&#x003C;</mo> <mi>π</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mn>2</mn></math><span class="larm-0900"> </span><span class="larm-0900">(</span><a href="#x16-125001r5"><span class="larm-0900">13.5</span></a><span class="larm-0900">)</span> </p> </td><td style="text-align:left;" id="TBL-16-6-3" class="td11"> <p class="noindent"><span class="larm-0900">следует</span>
+ <span class="larm-0900">из</span>
+ <span class="larm-0900">теории</span>
+ <span class="larm-0900">регулирования;</span>
+ <span class="larm-0900">вклад</span>
+ <span class="larm-0900">в</span>
+ <span class="larm-0900">дрожь</span>
+ <span class="larm-0900">—</span>
+ <span class="larm-0900">вероятная</span>
+ <span class="larm-0900">причина</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-16-7-"><td style="text-align:left;" id="TBL-16-7-1" class="td11"> <p class="noindent"><span class="larm-0900">двигается</span>
+ <span class="larm-0900">быстро</span> </p></td><td style="text-align:left;" id="TBL-16-7-2" class="td11"> <p class="noindent"><span class="larm-0900">предсказание</span>
+ <span class="larm-0900">по</span>
+ <span class="larm-0900">внутренней</span>
+ <span class="larm-0900">модели</span> </p></td><td style="text-align:left;" id="TBL-16-7-3" class="td11"> <p class="noindent"><span class="larm-0900">хорошо</span>
+ <span class="larm-0900">обоснованная</span>
+ <span class="larm-0900">гипотеза</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-16-8-"><td style="text-align:left;" id="TBL-16-8-1" class="td11"> <p class="noindent"><span class="larm-0900">ходит</span>
+ <span class="larm-0900">и</span>
+ <span class="larm-0900">дышит</span>
+ <span class="larm-0900">ритмично</span> </p></td><td style="text-align:left;" id="TBL-16-8-2" class="td11"> <p class="noindent"><span class="larm-0900">генератор</span>
+ <span class="larm-0900">ритма</span><span class="larm-0900"> </span><span class="larm-0900">(</span><a href="#x16-126001r6"><span class="larm-0900">13.6</span></a><span class="larm-0900">)</span> </p></td><td style="text-align:left;" id="TBL-16-8-3" class="td11"> <p class="noindent"><span class="larm-0900">генераторы</span>
+ <span class="larm-0900">измерены;</span>
+ <span class="larm-0900">простейшая</span>
+ <span class="larm-0900">схема</span>
+ <span class="larm-0900">—</span>
+ <span class="larm-0900">модель</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-16-9-"><td style="text-align:left;" id="TBL-16-9-1" class="td11"> </td></tr></table> </div>
+<figcaption class="caption"><span class="id">Таблица 13.1: </span><span class="content">Как машина управляет мышцами.</span></figcaption>
+ </figure>
+ </div>
+<p class="indent"> Выход машины устроен теми же приёмами, что и всё остальное (таблица <a href="#x16-1270011">13.1</a>): два провода
+вместо знака, фильтр нижних частот вместо ЦАП, логарифмическая шкала вместо линейной,
+взаимное торможение и усталость вместо тактового генератора. Вход (глава <a href="11.html#x14-10400011">11</a>) и выход меряют
+мир в относительных долях, а между ними работает машина, которой посвящена эта
+книга.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">13.7 </span> <a id="x16-12800013.7"></a>Задачи</h3>
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x16-128001r1"></a>
+<span class="labx-1095">Задача 13.1 </span>(<math display="inline"><mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Плавающая точка в цифрах. </span>В мышце <math display="inline"><mi>N</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mn>0</mn><mn>0</mn></math>
+двигательных единиц с силами <math display="inline"><msub><mrow><mi>f</mi></mrow><mrow><mi>n</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <msub><mrow><mi>f</mi></mrow><mrow><mn>1</mn></mrow></msub 
+><msup><mrow><mi>q</mi></mrow><mrow><mspace width="0.17em" class="thinspace"/><mi>n</mi><mo class="MathClass-bin" stretchy="false">−</mo><mn>1</mn></mrow></msup 
+></math>;
+самая сильная в <math display="inline"><mn>1</mn><mn>0</mn><mn>0</mn></math>
+раз сильнее самой слабой. (а) Найдите <math display="inline"><mi>q</mi></math>,
+относительный шаг (<a href="#x16-123004r3">13.3</a>) и динамический диапазон в децибелах. (б) Каков шаг при силе
+<math display="inline"><mn>1</mn><mn>0</mn><msub><mrow><mi>f</mi></mrow><mrow><mn>1</mn></mrow></msub 
+></math>
+у «линейного ЦАП» из <math display="inline"><mn>1</mn><mn>0</mn><mn>0</mn></math>
+одинаковых единиц той же суммарной силы?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">(а) <math display="inline"><mi>q</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mn>0</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>1</mn><mo class="MathClass-bin" stretchy="false">∕</mo><mn>9</mn><mn>9</mn></mrow></msup 
+> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>0</mn><mn>4</mn><mn>8</mn></math>,
+шаг <math display="inline"> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>4</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>8</mn><mi>%</mi></math>;
+диапазон <math display="inline"> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>2</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn> <mo class="MathClass-bin" stretchy="false">⋅</mo> <mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>3</mn></mrow></msup 
+></math>
+(<math display="inline"><mn>6</mn><mn>7</mn></math> дБ).
+(б) Шаг <math display="inline"><mn>2</mn><mn>2</mn><msub><mrow><mi>f</mi></mrow><mrow><mn>1</mn></mrow></msub 
+></math>,
+т.е. <math display="inline"><mn>2</mn><mn>2</mn><mn>0</mn><mi>%</mi></math>
+при <math display="inline"><mn>1</mn><mn>0</mn><msub><mrow><mi>f</mi></mrow><mrow><mn>1</mn></mrow></msub 
+></math>.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x16-128002r2"></a>
+<span class="labx-1095">Задача 13.2 </span>(<math display="inline"><mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Цена запаса надёжности. </span>На каждый импульс синапс на мышечном волокне выбрасывает
+пуассоновское число порций со средним <math display="inline"><mi>m</mi></math>,
+а волокно срабатывает при <math display="inline"><msub><mrow><mi>n</mi></mrow><mrow><mstyle class="text"><mtext>пор</mtext></mstyle></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>2</mn><mn>0</mn></math>
+порциях и больше; запас надёжности <math display="inline"><mi>S</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mi>m</mi><mo class="MathClass-bin" stretchy="false">∕</mo><msub><mrow><mi>n</mi></mrow><mrow><mstyle class="text"><mtext>пор</mtext></mstyle></mrow></msub 
+></math>.
+Сколько сбоев в сутки даёт единица, работающая с частотой <math display="inline"><mn>2</mn><mn>0</mn></math>
+импульсов в секунду, при <math display="inline"><mi>S</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>2</mn></math>
+и при <math display="inline"><mi>S</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>4</mn></math>?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent"><math display="inline"><msub><mrow><mi>P</mi></mrow><mrow><mstyle class="text"><mtext>сбоя</mtext></mstyle></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>8</mn> <mo class="MathClass-bin" stretchy="false">⋅</mo> <mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mo class="MathClass-bin" stretchy="false">−</mo><mn>4</mn></mrow></msup 
+></math> и
+<math display="inline"><mn>2</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>8</mn> <mo class="MathClass-bin" stretchy="false">⋅</mo> <mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mo class="MathClass-bin" stretchy="false">−</mo><mn>1</mn><mn>6</mn></mrow></msup 
+></math>: около
+<math display="inline"><mn>3</mn><mn>0</mn><mn>0</mn></math> сбоев в
+сутки при <math display="inline"><mi>S</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>2</mn></math>
+и <math display="inline"><mn>5</mn> <mo class="MathClass-bin" stretchy="false">⋅</mo> <mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mo class="MathClass-bin" stretchy="false">−</mo><mn>1</mn><mn>0</mn></mrow></msup 
+></math> в сутки
+при <math display="inline"><mi>S</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>4</mn></math>.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x16-128003r3"></a>
+<span class="labx-1095">Задача 13.3 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Мышца как фильтр. </span>Подёргивание (<a href="#x16-123001r1">13.1</a>) с <math display="inline"><msub><mrow><mi>T</mi></mrow><mrow><mi>c</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>5</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>
+— импульсная характеристика линейной системы. (а) Найдите её передаточную функцию
+<math display="inline"><mi>H</mi><mo class="MathClass-open" stretchy="false">(</mo><mi>s</mi><mo class="MathClass-close" stretchy="false">)</mo></math>
+и частоту среза. (б) При какой частоте регулярных импульсов размах пульсаций силы
+составляет <math display="inline"><mn>1</mn><mn>0</mn><mi>%</mi></math>
+от средней силы?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">(а) <math display="inline"><mi>H</mi><mo class="MathClass-open" stretchy="false">(</mo><mi>s</mi><mo class="MathClass-close" stretchy="false">)</mo> <mo class="MathClass-rel" stretchy="false">=</mo> <mi>e</mi><msub><mrow><mi>F</mi></mrow><mrow><mn>1</mn></mrow></msub 
+><msub><mrow><mi>T</mi></mrow><mrow><mi>c</mi></mrow></msub 
+><mo class="MathClass-bin" stretchy="false">∕</mo><msup><mrow><mo class="MathClass-open" stretchy="false">(</mo><mn>1</mn> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>s</mi><msub><mrow><mi>T</mi></mrow><mrow><mi>c</mi></mrow></msub 
+><mo class="MathClass-close" stretchy="false">)</mo></mrow><mrow><mn>2</mn></mrow></msup 
+></math>, фильтр второго
+порядка с частотой среза <math display="inline"><mn>1</mn><mo class="MathClass-bin" stretchy="false">∕</mo><mo class="MathClass-open" stretchy="false">(</mo><mn>2</mn><mi>π</mi><msub><mrow><mi>T</mi></mrow><mrow><mi>c</mi></mrow></msub 
+><mo class="MathClass-close" stretchy="false">)</mo> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>3</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn></math> Гц.
+(б) <math display="inline"><mi>r</mi> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>2</mn><mn>2</mn></math> имп/с (по
+первой гармонике <math display="inline"> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>2</mn><mn>0</mn></math>).
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x16-128004r4"></a>
+<span class="labx-1095">Задача 13.4 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Быстрее задержки не исправить. </span>Регулятор <math display="inline"><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>x</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>t</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mo class="MathClass-bin" stretchy="false">−</mo><mi>G</mi><mspace width="0.17em" class="thinspace"/><mi>x</mi><mo class="MathClass-open" stretchy="false">(</mo><mi>t</mi> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>d</mi><mo class="MathClass-close" stretchy="false">)</mo></math>.
+(а) Покажите, что быстрее всего отклонение затухает без колебаний при <math display="inline"><mi>G</mi><mi>d</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mo class="MathClass-bin" stretchy="false">∕</mo><mi>e</mi></math>,
+со скоростью <math display="inline"><mn>1</mn><mo class="MathClass-bin" stretchy="false">∕</mo><mi>d</mi></math>.
+(б) Найдите это <math display="inline"><mi>G</mi></math>
+и постоянную времени затухания для спинномозговой петли, <math display="inline"><mi>d</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>3</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>,
+и для петли через глаз, <math display="inline"><mi>d</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mn>5</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>.
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">(а) При <math display="inline"><mi>G</mi><mi>d</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mo class="MathClass-bin" stretchy="false">∕</mo><mi>e</mi></math> корень
+<math display="inline"><mi>s</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mo class="MathClass-bin" stretchy="false">−</mo><mn>1</mn><mo class="MathClass-bin" stretchy="false">∕</mo><mi>d</mi></math> двойной, и ни при каком
+другом <math display="inline"><mi>G</mi></math> самый правый
+корень не лежит левее. (б) <math display="inline"><mi>d</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>3</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>:
+<math display="inline"><mi>G</mi> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>1</mn><mn>2</mn></math> с<math display="inline"><msup><mrow></mrow><mrow><mo class="MathClass-bin" stretchy="false">−</mo><mn>1</mn></mrow></msup 
+></math>,
+<math display="inline"><mi>τ</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>3</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>;
+<math display="inline"><mi>d</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mn>5</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>:
+<math display="inline"><mi>G</mi> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>2</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn></math> с<math display="inline"><msup><mrow></mrow><mrow><mo class="MathClass-bin" stretchy="false">−</mo><mn>1</mn></mrow></msup 
+></math>,
+<math display="inline"><mi>τ</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mn>5</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math> —
+постоянная времени равна задержке.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x16-128005r5"></a>
+<span class="labx-1095">Задача 13.5 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Период генератора ритма. </span>При <math display="inline"><mi>τ</mi> <mo class="MathClass-rel" stretchy="false">≪</mo> <msub><mrow><mi>τ</mi></mrow><mrow><mi>a</mi></mrow></msub 
+></math>
+период <math display="inline"><mi>T</mi></math>
+модели (<a href="#x16-126001r6">13.6</a>) задаётся уравнением <math display="inline"><mo class="MathClass-open" stretchy="false">(</mo><mi>β</mi> <mo class="MathClass-bin" stretchy="false">−</mo> <mn>1</mn><mo class="MathClass-close" stretchy="false">)</mo><mo class="MathClass-open" stretchy="false">(</mo><mn>1</mn> <mo class="MathClass-bin" stretchy="false">−</mo> <msup><mrow><mi>E</mi></mrow><mrow><mn>2</mn><mo class="MathClass-bin" stretchy="false">+</mo><mi>b</mi></mrow></msup 
+><mo class="MathClass-close" stretchy="false">)</mo><mo class="MathClass-bin" stretchy="false">∕</mo><mo class="MathClass-open" stretchy="false">(</mo><mi>β</mi> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>E</mi><mo class="MathClass-close" stretchy="false">)</mo> <mo class="MathClass-rel" stretchy="false">=</mo> <mi>b</mi><mspace width="0.17em" class="thinspace"/><mo class="MathClass-open" stretchy="false">(</mo><mn>1</mn> <mo class="MathClass-bin" stretchy="false">−</mo> <msup><mrow><mi>E</mi></mrow><mrow><mn>1</mn><mo class="MathClass-bin" stretchy="false">+</mo><mi>b</mi></mrow></msup 
+><mo class="MathClass-close" stretchy="false">)</mo><mo class="MathClass-bin" stretchy="false">∕</mo><mo class="MathClass-open" stretchy="false">(</mo><mn>1</mn> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>b</mi><mo class="MathClass-close" stretchy="false">)</mo></math>,
+где <math display="inline"><mi>E</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <msup><mrow><mi>e</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">−</mo><mi>T</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mo class="MathClass-open" stretchy="false">(</mo><mn>2</mn><msub><mrow><mi>τ</mi></mrow><mrow><mi>a</mi></mrow></msub 
+><mo class="MathClass-close" stretchy="false">)</mo></mrow></msup 
+></math>.
+(а) Найдите <math display="inline"><mi>T</mi></math>
+при <math display="inline"><mi>β</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mi>b</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>2</mn></math>,
+<math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>a</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>4</mn></math> с.
+(б) Покажите, что <math display="inline"><mi>T</mi></math>
+не зависит от входа <math display="inline"><mi>I</mi></math>,
+а ритм возможен только при <math display="inline"><mi>b</mi> <mo class="MathClass-rel" stretchy="false">&#x003E;</mo> <mi>β</mi> <mo class="MathClass-bin" stretchy="false">−</mo> <mn>1</mn></math>.
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">(а) <math display="inline"><mi>E</mi> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>4</mn><mn>2</mn><mn>7</mn></math>,
+<math display="inline"><mi>T</mi> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>7</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><msub><mrow><mi>τ</mi></mrow><mrow><mi>a</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>6</mn><mn>8</mn></math> с (модель
+с <math display="inline"><mi>τ</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>2</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math> даёт
+<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>8</mn><mn>4</mn></math> с). (б) Уравнение
+не содержит <math display="inline"><mi>I</mi></math>; ритм
+существует при <math display="inline"><mi>b</mi> <mo class="MathClass-rel" stretchy="false">&#x003E;</mo> <mi>β</mi> <mo class="MathClass-bin" stretchy="false">−</mo> <mn>1</mn></math>.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x16-128006r6"></a>
+<span class="labx-1095">Задача 13.6 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Моделирование генератора. </span>Импортируйте функцию <span class="latt-1095">halfcentre </span>из <span class="latt-1095">models/muscle_models.py</span>
+(сам файл не запускайте) и измерьте период, отбросив первые два цикла, при <math display="inline"><mi>b</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>8</mn></math>,
+<math display="inline"><mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>0</mn><mn>5</mn></math>,
+<math display="inline"><mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn></math>,
+<math display="inline"><mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn></math>,
+<math display="inline"><mn>2</mn></math>,
+<math display="inline"><mn>4</mn></math>
+и при <math display="inline"><mi>I</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn></math>,
+<math display="inline"><mn>1</mn></math>,
+<math display="inline"><mn>2</mn></math>.
+Может ли команда «иди быстрее» менять темп через <math display="inline"><mi>I</mi></math>?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">При <math display="inline"><mi>b</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>8</mn></math>
+ритма нет; при <math display="inline"><mi>b</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>0</mn><mn>5</mn></math>,
+<math display="inline"><mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn></math>,
+<math display="inline"><mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn></math>,
+<math display="inline"><mn>2</mn></math>,
+<math display="inline"><mn>4</mn></math>
+<math display="inline"><mi>T</mi> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>2</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>7</mn><mn>3</mn></math>,
+<math display="inline"><mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>7</mn><mn>4</mn></math>,
+<math display="inline"><mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn><mn>9</mn></math>,
+<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>8</mn><mn>4</mn></math>,
+<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>4</mn><mn>5</mn></math> с; при
+любом <math display="inline"><mi>I</mi></math>
+<math display="inline"><mi>T</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>8</mn><mn>4</mn><mn>0</mn></math> с:
+вход меняет только размах, а не темп.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x16-128007r7"></a>
+<span class="labx-1095">Задача 13.7 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Жёсткость против рефлекса. </span>Сустав охвачен петлёй растяжения: <math display="inline"><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>𝜃</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>t</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mo class="MathClass-bin" stretchy="false">−</mo><mi>a</mi><mi>𝜃</mi><mo class="MathClass-open" stretchy="false">(</mo><mi>t</mi><mo class="MathClass-close" stretchy="false">)</mo> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>G</mi><mi>𝜃</mi><mo class="MathClass-open" stretchy="false">(</mo><mi>t</mi> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>d</mi><mo class="MathClass-close" stretchy="false">)</mo></math>,
+<math display="inline"><mi>a</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mi>K</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mi>B</mi></math>,
+<math display="inline"><mi>d</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>3</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>.
+Сведите её к задаче <a href="#x16-128004r4">13.4</a> и найдите наименьшее <math display="inline"><mi>a</mi></math>,
+при котором отклонение затухает без колебаний с постоянной времени <math display="inline"><mn>1</mn><mn>5</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>,
+и нужное <math display="inline"><mi>G</mi></math>.
+Как менять <math display="inline"><mi>G</mi></math>
+при усилении совместного напряжения мышц?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">Подстановка <math display="inline"><mi>s</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mi>u</mi> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>a</mi></math> даёт
+наибольшую скорость затухания <math display="inline"><mi>a</mi> <mo class="MathClass-bin" stretchy="false">+</mo> <mn>1</mn><mo class="MathClass-bin" stretchy="false">∕</mo><mi>d</mi></math>
+при <math display="inline"><mi>G</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <msup><mrow><mi>e</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">−</mo><mn>1</mn><mo class="MathClass-bin" stretchy="false">−</mo><mi>a</mi><mi>d</mi></mrow></msup 
+><mo class="MathClass-bin" stretchy="false">∕</mo><mi>d</mi></math>;
+<math display="inline"><mi>a</mi> <mo class="MathClass-rel" stretchy="false">≥</mo> <mn>3</mn><mn>3</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>3</mn></math> с<math display="inline"><msup><mrow></mrow><mrow><mo class="MathClass-bin" stretchy="false">−</mo><mn>1</mn></mrow></msup 
+></math>,
+<math display="inline"><mi>G</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <msup><mrow><mi>e</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">−</mo><mn>2</mn></mrow></msup 
+><mo class="MathClass-bin" stretchy="false">∕</mo><mi>d</mi> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>4</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn></math> с<math display="inline"><msup><mrow></mrow><mrow><mo class="MathClass-bin" stretchy="false">−</mo><mn>1</mn></mrow></msup 
+></math>;
+чем сильнее совместное напряжение (больше
+<math display="inline"><mi>a</mi></math>), тем меньше
+надо брать <math display="inline"><mi>G</mi></math>.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x16-128008r8"></a>
+<span class="labx-1095">Задача 13.8 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo><mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Ручка темпа. </span>По задачам <a href="#x16-128005r5">13.5</a> и <a href="#x16-128006r6">13.6</a> вход <math display="inline"><mi>I</mi></math>
+генератора (<a href="#x16-126001r6">13.6</a>) меняет только размах, но не темп. Предложите минимальное изменение
+модели из деталей книги, при котором ниже некоторого <math display="inline"><msub><mrow><mi>I</mi></mrow><mrow><mi class="qopname">min</mi><mo> ⁡ </mo></mrow></msub 
+></math>
+ритма нет, а выше период убывает с ростом <math display="inline"><mi>I</mi></math>,
+хотя бы вдвое при утроении <math display="inline"><mi>I</mi></math>.
+Найдите <math display="inline"><msub><mrow><mi>I</mi></mrow><mrow><mi class="qopname">min</mi><mo> ⁡ </mo></mrow></msub 
+></math>
+при <math display="inline"><mi>τ</mi> <mo class="MathClass-rel" stretchy="false">≪</mo> <msub><mrow><mi>τ</mi></mrow><mrow><mi>a</mi></mrow></msub 
+></math>
+и проверьте моделированием.
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">Открытая задача. Например, порог в накачке усталости
+<math display="inline"><mi>b</mi><msub><mrow><mo class="MathClass-open" stretchy="false">[</mo><msub><mrow><mi>r</mi></mrow><mrow><mi>i</mi></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">−</mo> <msub><mrow><mi>r</mi></mrow><mrow><mn>0</mn></mrow></msub 
+><mo class="MathClass-close" stretchy="false">]</mo></mrow><mrow><mo class="MathClass-bin" stretchy="false">+</mo></mrow></msub 
+></math> даёт
+<math display="inline"><msub><mrow><mi>I</mi></mrow><mrow><mi class="qopname">min</mi><mo> ⁡ </mo></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mi>β</mi><mi>b</mi><msub><mrow><mi>r</mi></mrow><mrow><mn>0</mn></mrow></msub 
+><mo class="MathClass-bin" stretchy="false">∕</mo><mo class="MathClass-open" stretchy="false">(</mo><mi>b</mi> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>β</mi> <mo class="MathClass-bin" stretchy="false">+</mo> <mn>1</mn><mo class="MathClass-close" stretchy="false">)</mo> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn><mn>3</mn></math> при
+<math display="inline"><mi>b</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>4</mn></math>,
+<math display="inline"><msub><mrow><mi>r</mi></mrow><mrow><mn>0</mn></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn></math> и период
+от <math display="inline"><mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>8</mn></math> с
+при <math display="inline"><mi>I</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>6</mn></math> до
+<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn><mn>2</mn></math> с при
+<math display="inline"><mi>I</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>3</mn></math>.
+</p></div></details>
+
+<p class="indent"> <a id="tailfullch13.html"></a> </p> 
+
+  </article>
+  <article class="text short" id="text-short" hidden>
+
+ <a id="s-x16-7000013"></a>
+<p class="noindent">Всё, что вы делаете в мире быстро, — слово, взгляд, шаг —
+это сокращение мышц. У машины есть и второй, медленный
+выход, химический, о нём глава шестнадцатая. А здесь —
+мышцы.
+</p><p class="indent"> Последнее звено цепочки — <span class="nt">ACET</span>-нейроны. Каждое
+мышечное волокно слушает ровно один такой нейрон, а один
+нейрон управляет группой волокон, от сотен до пары
+тысяч. Интересно, что соединение нерва с мышцей —
+самое надёжное в теле. Внутри мозга соединения теряют
+больше половины сигналов, а здесь каждый щелчок
+выбрасывает в несколько раз больше вещества, чем нужно.
+На выходе ошибка стоит движения, и надёжность куплена с
+запасом.
+</p>
+ <h3 class="likesectionHead"> <a id="s-x16-71000"></a>Барабанная дробь становится толчком</h3>
+<p class="noindent">Один щелчок — одно короткое подёргивание мышцы. Если
+щелчки идут редко, мышца дёргается отдельными рывками.
+Если часто, подёргивания сливаются в ровное усилие, как
+барабанная дробь сливается в гул. Мышца превращает поток
+импульсов в силу, как простейший цифро-аналоговый
+преобразователь.
+</p>
+<div class="center">
+<p class="noindent"><img src="img/short24x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<div class="minipage"><p class="noindent"><span class="lati-1000">Редкие щелчки дают отдельные подёргивания</span>
+<span class="lati-1000">мышцы; частые сливаются в ровную и гораздо</span>
+<span class="lati-1000">большую силу.</span> </p></div></div>
+ <h3 class="likesectionHead"> <a id="s-x16-72000"></a>Сила с плавающей точкой</h3>
+<p class="noindent">У мозга две ручки силы: как часто щёлкают нейроны и
+сколько групп волокон включено. Группы включаются по
+порядку — от самых слабых к самым сильным, и никто этот
+порядок не вычисляет: маленькие нейроны просто легче
+возбуждаются. В итоге каждая новая группа добавляет
+примерно одну и ту же <span class="lati-1095">долю </span>к уже имеющейся силе. Когда
+вы берёте яйцо, силу дозируют крохотными порциями, когда
+поднимаете чемодан — большими. Инженер узнает здесь
+число с плавающей точкой: порядок задаётся числом
+включённых групп, а точное значение — частотой щелчков.
+Обратная сторона: чем сильнее движение, тем оно менее
+точно. По одной влиятельной гипотезе, поэтому наши
+движения такие плавные: плавная команда даёт наименьший
+разброс.
+</p>
+ <h3 class="likesectionHead"> <a id="s-x16-73000"></a>Тянуть, но не толкать</h3>
+<p class="noindent">Мышца умеет только тянуть. Поэтому каждый сустав
+обслуживает пара мышц, тянущих в разные стороны, — снова
+два провода вместо знака. Разница их сил поворачивает
+сустав, а сумма делает его жёстче. Когда вы несёте полную
+чашку, вы напрягаете обе мышцы сразу: поворот тот же, но
+рука твёрже держит удар.
+</p>
+<div class="center">
+<p class="noindent"><img src="img/short25x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<div class="minipage"><p class="noindent"><span class="lati-1000">Мышца умеет только тянуть, поэтому их две:</span>
+<span class="lati-1000">разность сил поворачивает сустав, сумма делает</span>
+<span class="lati-1000">его твёрже.</span> </p></div></div>
+ <h3 class="likesectionHead"> <a id="s-x16-74000"></a>Обратная связь с опозданием</h3>
+<p class="noindent">В мышцах есть датчики растяжения, и самая короткая
+петля замыкается прямо в спинном мозге: мышцу растянули
+— она сама сократилась, а мышца-противник на это время
+выключилась. Выключает её тормозной нейрон типа <span class="nt">GLYC</span>:
+вот и нашлась работа этому типу.
+</p><p class="indent"> Но у каждой петли есть задержка — в спинном мозге
+десятки миллисекунд, через глаз — сотни. А запоздалая
+обратная связь раскачивает систему, как шофёр, который
+рулит, глядя на дорогу с опозданием. Чем длиннее петля,
+тем медленнее она обязана исправлять. Граница, за
+которой спинномозговая петля начинает раскачиваться,
+— около восьми колебаний в секунду. Это близко к
+частоте мелкой дрожи, которая есть у каждого здорового
+человека, и петля растяжения — один из её вероятных
+источников.
+</p><p class="indent"> Как же мы двигаемся быстро и точно? По распространённой
+гипотезе — предсказываем: держим внутреннюю модель
+тела и рассчитываем результат команды, не дожидаясь
+датчиков.
+</p>
+ <h3 class="likesectionHead"> <a id="s-x16-75000"></a>Ритм без метронома</h3>
+<p class="noindent">Ходьба и дыхание ритмичны, но метроном для них не
+нужен. Две группы нейронов, тормозящие друг друга и
+постепенно устающие, работают по очереди сами: победитель
+устаёт, отдохнувший соперник берёт верх, и так снова и
+снова. Постоянная команда сверху — «иди» — превращается
+на месте в ритм «левой-правой».
+</p><p class="noindent"><span class="lati-1000">Формулы, модели, задачи и источники — в полной версии,</span>
+<span class="lati-1000">глава</span><span class="lati-1000"> 13.</span>
+</p>
+<p class="indent"> <a id="s-tailshortch13.html"></a> </p> 
+
+  </article>
+
+  <aside class="starline"><span data-ru="Книга бесплатная и открытая. Если глава была полезной, поставьте книге звезду на GitHub: так её найдут другие." data-en="The book is free and open. If this chapter was useful, star the book on GitHub so others can find it.">Книга бесплатная и открытая.</span> <a href="https://github.com/kladkogex/20-watt-computer" target="_blank" rel="noopener" data-ru="★ Звезда на GitHub" data-en="★ Star on GitHub">★ Звезда на GitHub</a></aside>
+  <nav class="pager">
+    <a class="prev" href="12.html"><span data-ru="← Назад" data-en="← Previous">← Назад</span><b>Распознавание изображений и видео</b></a>
+    <a class="next" href="14.html"><span data-ru="Дальше →" data-en="Next →">Дальше →</span><b>Боль: сигнал тревоги</b></a>
+  </nav>
+  <footer>
+    <span data-ru='Константин Кладько · текст — <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.ru">CC BY-NC-SA 4.0</a>' data-en='Konstantin Kladko · text: <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>'>Константин Кладько</span>
+    <span><a href="../pdf/20-watt-computer-ru.pdf">PDF</a> · <a href="../breadboard/" data-ru="Макетная плата" data-en="Breadboard">Макетная плата</a> · <a href="https://github.com/kladkogex/20-watt-computer">GitHub</a></span>
+  </footer>
+</main>
+
+<script>
+(function(){
+  const NAV = [{"slug": "00", "title": "Как читать эту книгу", "kicker": "Введение"}, {"slug": "01", "title": "Типы нейронов", "kicker": "Глава 1"}, {"slug": "02", "title": "Что вычисляют GLUT-нейроны", "kicker": "Глава 2"}, {"slug": "03", "title": "GLUT и GABA вместе", "kicker": "Глава 3"}, {"slug": "04", "title": "Азбука Морзе: что мы знаем о языке, на котором говорят GLUT- и GABA-нейроны", "kicker": "Глава 4"}, {"slug": "05", "title": "Что вычисляют SERO-нейроны", "kicker": "Глава 5"}, {"slug": "06", "title": "Нейронные сети, которые умеют учиться: добавляем DOPA", "kicker": "Глава 6"}, {"slug": "07", "title": "Альтернативные современные теории обучения на основе дофамина", "kicker": "Глава 7"}, {"slug": "08", "title": "Когда искать, а когда решать: добавляем NORA", "kicker": "Глава 8"}, {"slug": "09", "title": "Когда писать, а когда читать: добавляем ACET", "kicker": "Глава 9"}, {"slug": "10", "title": "Вся машина", "kicker": "Глава 10"}, {"slug": "11", "title": "Входы машины: как к ней подключены глаза, уши и другие датчики", "kicker": "Глава 11"}, {"slug": "12", "title": "Распознавание изображений и видео", "kicker": "Глава 12"}, {"slug": "13", "title": "Выходы машины: как мозг управляет мышцами", "kicker": "Глава 13"}, {"slug": "14", "title": "Боль: сигнал тревоги", "kicker": "Глава 14"}, {"slug": "15", "title": "Как машина учится двигаться", "kicker": "Глава 15"}, {"slug": "16", "title": "Второй выход: как мозг управляет химией тела", "kicker": "Глава 16"}, {"slug": "17", "title": "Отладка машины", "kicker": "Глава 17"}, {"slug": "18", "title": "Типы нейронов по электрической функции", "kicker": "Глава 18"}, {"slug": "19", "title": "Нейроны по числу дендритов", "kicker": "Глава 19"}, {"slug": "20", "title": "Что делают нейроны во сне", "kicker": "Глава 20"}, {"slug": "21", "title": "Машина из живых нейронов", "kicker": "Глава 21"}, {"slug": "22", "title": "DishBrain", "kicker": "Глава 22"}, {"slug": "a", "title": "Вещества, которые не задают тип нейрона", "kicker": "Приложение A"}, {"slug": "b", "title": "Обозначения", "kicker": "Приложение B"}, {"slug": "c", "title": "Ответы", "kicker": "Приложение C"}, {"slug": "d", "title": "Экспериментальное приложение", "kicker": "Приложение D"}, {"slug": "refs", "title": "Литература", "kicker": ""}];
+  const SLUG = "13";
+  const store = {get(k){try{return localStorage.getItem(k)}catch(e){return null}}, set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+
+  // chapter selector
+  const sel = document.getElementById("jump");
+  NAV.forEach(p => { const o = document.createElement("option"); o.value = p.slug;
+    o.textContent = (p.kicker ? p.kicker + ". " : "") + p.title; if (p.slug === SLUG) o.selected = true; sel.appendChild(o); });
+  sel.addEventListener("change", () => { location.href = sel.value + ".html" + (location.hash === "#short" ? "#short" : ""); });
+
+  // Коротко / Полностью
+  const modeBox = document.querySelector(".mode");
+  const hasShort = modeBox.dataset.hasShort === "true";
+  const full = document.getElementById("text-full"), short = document.getElementById("text-short");
+  function setMode(m, remember){
+    if (!hasShort) m = "full";
+    document.body.dataset.mode = m;
+    full.hidden = m !== "full"; short.hidden = m !== "short";
+    modeBox.querySelectorAll(".seg").forEach(b => b.setAttribute("aria-pressed", b.dataset.mode === m));
+    if (remember) store.set("20w-mode", m);
+  }
+  if (!hasShort) modeBox.hidden = true;
+  modeBox.addEventListener("click", e => { const b = e.target.closest(".seg"); if (b) { setMode(b.dataset.mode, true); history.replaceState(null, "", "#" + b.dataset.mode); } });
+  document.addEventListener("click", e => { const a = e.target.closest("a[data-mode]"); if (a) { e.preventDefault(); setMode(a.dataset.mode, true); window.scrollTo(0, 0); } });
+  // a link into the text (#x...) that lives in the other version switches to it
+  function follow(){
+    const h = decodeURIComponent(location.hash.slice(1));
+    if (h === "short" || h === "full") { setMode(h, true); return; }
+    if (!h) return;
+    const t = document.getElementById(h);
+    if (t) { setMode(short.contains(t) ? "short" : "full", false); t.scrollIntoView(); }
+  }
+  setMode(store.get("20w-mode") || "full", false);
+  follow();
+  window.addEventListener("hashchange", follow);
+  // links that leave the book open in the whole window when the page sits inside the reader
+  if (document.documentElement.classList.contains("embedded"))
+    document.querySelectorAll('a[href^="../"], a[href^="http"]').forEach(a => { a.target = a.href.startsWith(location.origin) ? "_top" : "_blank"; });
+
+  // interface language (the text itself is Russian)
+  function setLang(l){
+    document.querySelectorAll("[data-ru]").forEach(el => { el.innerHTML = el.dataset[l]; });
+    document.getElementById("lang-ru").setAttribute("aria-pressed", l === "ru");
+    document.getElementById("lang-en").setAttribute("aria-pressed", l === "en");
+    store.set("20w-lang", l);
+  }
+  document.getElementById("lang-ru").onclick = () => setLang("ru");
+  document.getElementById("lang-en").onclick = () => setLang("en");
+  setLang(store.get("20w-lang") === "en" ? "en" : "ru");
+  window.addEventListener("storage", e => {
+    if (e.key === "20w-lang" && (e.newValue === "ru" || e.newValue === "en")) setLang(e.newValue);
+    if (e.key === "20w-theme" && (e.newValue === "light" || e.newValue === "dark")) document.documentElement.setAttribute("data-theme", e.newValue);
+  });
+})();
+</script>
+<script>
+(function(){var b=document.getElementById("theme");if(!b)return;var r=document.documentElement;function cur(){var t=r.getAttribute("data-theme");if(t)return t;return window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";}function show(){b.textContent=cur()==="dark"?"☀":"☾";b.setAttribute("aria-pressed",cur()==="dark");}b.onclick=function(){var t=cur()==="dark"?"light":"dark";r.setAttribute("data-theme",t);try{localStorage.setItem("20w-theme",t);}catch(e){}show();};if(window.matchMedia)matchMedia("(prefers-color-scheme: dark)").addEventListener("change",show);show();})();
+</script>
+</body>
+</html>

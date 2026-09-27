@@ -1,0 +1,861 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<script>try{var t=localStorage.getItem("20w-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);}catch(e){}if(window.self!==window.top)document.documentElement.classList.add("embedded");</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Глава 7. Альтернативные современные теории обучения на основе дофамина · Компьютер на 20 ваттах</title>
+<meta name="description" content="В главе 6 DOPA -система была у нас одним проводом, по которому идёт одно число — ошибка предсказания награды … ( 6.8 ). Эта картина объясняет многое, но чем точнее измеряют …">
+<link rel="canonical" href="https://kladkogex.github.io/20-watt-computer/read/07.html">
+<meta property="og:type" content="book">
+<meta property="og:title" content="Глава 7. Альтернативные современные теории обучения на основе дофамина · Компьютер на 20 ваттах">
+<meta property="og:description" content="В главе 6 DOPA -система была у нас одним проводом, по которому идёт одно число — ошибка предсказания награды … ( 6.8 ). Эта картина объясняет многое, но чем точнее измеряют …">
+<meta property="og:url" content="https://kladkogex.github.io/20-watt-computer/read/07.html">
+<meta property="og:locale" content="ru_RU">
+<meta property="og:image" content="https://kladkogex.github.io/20-watt-computer/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Your brain runs on 20 watts. Here is its datasheet. The 20-Watt Computer, a free textbook for engineers.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://kladkogex.github.io/20-watt-computer/og-card.png">
+<meta name="twitter:title" content="Глава 7. Альтернативные современные теории обучения на основе дофамина · The 20-Watt Computer">
+<meta name="twitter:description" content="В главе 6 DOPA -система была у нас одним проводом, по которому идёт одно число — ошибка предсказания награды … ( 6.8 ). Эта картина объясняет многое, но чем точнее измеряют …">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Chapter", "name": "Альтернативные современные теории обучения на основе дофамина", "url": "https://kladkogex.github.io/20-watt-computer/read/07.html", "position": 7, "inLanguage": "ru", "isAccessibleForFree": true, "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/", "author": {"@type": "Person", "name": "Константин Кладько", "alternateName": "Konstantin Kladko"}, "isPartOf": {"@type": "Book", "name": "Компьютер на 20 ваттах. Как вычисляет мозг: количественный подход для инженеров", "alternateName": "The 20-Watt Computer: How the Brain Computes. A Quantitative Approach for Engineers", "author": {"@type": "Person", "name": "Константин Кладько", "alternateName": "Konstantin Kladko"}, "url": "https://kladkogex.github.io/20-watt-computer/", "inLanguage": "ru", "isAccessibleForFree": true, "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/"}}</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap">
+<link rel="stylesheet" href="book.css">
+</head>
+<body>
+<header class="bar">
+  <a class="home" href="../#toc"><span class="w">20</span> <span data-ru="Компьютер на 20 ваттах" data-en="The 20-Watt Computer">Компьютер на 20 ваттах</span></a>
+  <label class="jump"><span class="sr" data-ru="Перейти к главе" data-en="Go to chapter">Перейти к главе</span>
+    <select id="jump"></select></label>
+  <div class="langs" role="group" aria-label="Language">
+    <button class="chip" id="lang-ru" type="button">RU</button>
+    <button class="chip" id="lang-en" type="button">EN</button>
+    <button class="chip theme" id="theme" type="button" aria-label="Light or dark theme" title="Light / dark">☾</button>
+  </div>
+</header>
+
+<main class="page">
+  <div class="pagehead">
+    <p class="kicker" data-ru="Глава 7" data-en="Chapter 7">Глава 7</p>
+    <h1><span class="t-full">Альтернативные современные теории обучения на основе дофамина</span><span class="t-short">Что на самом деле говорит дофамин</span></h1>
+    <div class="mode" role="group" aria-label="Version" data-has-short="true">
+      <button type="button" class="seg" data-mode="short"><b data-ru="Коротко" data-en="Short">Коротко</b><span data-ru="без формул, с рисунками" data-en="no formulas, with drawings">без формул, с рисунками</span></button>
+      <button type="button" class="seg" data-mode="full"><b data-ru="Полностью" data-en="Full">Полностью</b><span data-ru="формулы, модели, задачи" data-en="formulas, models, exercises">формулы, модели, задачи</span></button>
+    </div>
+    <p class="lang-note" data-ru="" data-en="The online reader is in Russian for now; the book in other languages is in the PDF downloads in the menu.">.</p>
+  </div>
+
+  <article class="text full" id="text-full">
+
+ <a id="x10-670007"></a>
+ <h3 class="sectionHead"><span class="titlemark">7.1 </span> <a id="x10-680007.1"></a>Что на самом деле идёт по проводу</h3>
+<p class="noindent">В главе <a href="06.html#x9-560006">6</a> <span class="nt">DOPA</span>-система была у нас одним проводом, по которому идёт одно число — ошибка предсказания
+награды <math display="inline"><mi>δ</mi></math> (<a href="06.html#x9-63002r8">6.8</a>).
+Эта картина объясняет многое, но чем точнее измеряют дофамин, тем больше находят того, что в
+неё не укладывается. Одни нейроны отвечают на неприятное, как на награду; концентрация
+дофамина растёт, пока животное бежит к цели, хотя ничего неожиданного не происходит; разные
+<span class="nt">DOPA</span>-нейроны ведут себя по-разному.
+</p><p class="indent"> Для инженера все эти находки — вопрос об одном: <span class="lati-1095">какой формат у сигнала</span>
+<span class="lati-1095">на широковещательной шине? </span>Одно число или вектор? Один сигнал на
+проводе или несколько, разнесённых по частоте? Говорит ли он о будущем, как
+<math display="inline"><mi>δ</mi></math>, или о
+прошлом? Ниже — шесть современных ответов; для каждого мы отделим измеренное от
+предполагаемого.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">7.2 </span> <a id="x10-690007.2"></a>Не одно число, а распределение</h3>
+<p class="noindent">Ошибка (<a href="06.html#x9-63002r8">6.8</a>) учит критика <span class="lati-1095">среднему </span>ожиданию награды. Но верные полкапли сока и капля с
+вероятностью одна вторая имеют одинаковое среднее. Чтобы их различать, нужно всё
+распределение награды.
+</p><p class="indent"> Возьмём простейшую задачу: после предвестника приходит награда случайного размера
+<math display="inline"><mi>r</mi></math>. Пусть <span class="nt">DOPA</span>-нейронов много,
+и каждый, <math display="inline"><mi>i</mi></math>-й, обслуживает
+свою оценку <math display="inline"><msub><mrow><mi>V</mi> </mrow><mrow><mi>i</mi></mrow></msub 
+></math>, так что в момент
+награды его ошибка равна <math display="inline"><msub><mrow><mi>δ</mi></mrow><mrow><mi>i</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mi>r</mi> <mo class="MathClass-bin" stretchy="false">−</mo> <msub><mrow><mi>V</mi> </mrow><mrow><mi>i</mi></mrow></msub 
+></math>.
+И пусть положительную ошибку каждый учитывает с весом
+<math display="inline"><msubsup><mrow><mi>α</mi></mrow><mrow><mi>i</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">+</mo></mrow></msubsup 
+></math>, отрицательную
+— с весом <math display="inline"><msubsup><mrow><mi>α</mi></mrow><mrow><mi>i</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">−</mo></mrow></msubsup 
+></math>.
+После каждой награды оценка сдвигается на </p><table class="equation"><tr><td>
+<math display="block" class="equation">
+ <mstyle id="x10-69001r1" class="label"></mstyle><mi mathvariant="normal">Δ</mi><msub><mrow><mi>V</mi> </mrow><mrow><mi>i</mi></mrow></msub 
+><mspace width="0.28em" class="thickpace"/> <mo class="MathClass-rel" stretchy="false">=</mo> <mspace width="0.28em" class="thickpace"/><mi>η</mi><mspace width="0.17em" class="thinspace"/><mrow><mo class="MathClass-open" fence="true" mathsize="1.19em">(</mo><mrow><msubsup><mrow><mi>α</mi></mrow><mrow><mi>i</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">+</mo></mrow></msubsup 
+><mspace width="0.17em" class="thinspace"/><msub><mrow><mo class="MathClass-open" stretchy="false">[</mo><msub><mrow><mi>δ</mi></mrow><mrow>
+<mi>i</mi></mrow></msub 
+><mo class="MathClass-close" stretchy="false">]</mo></mrow><mrow><mo class="MathClass-bin" stretchy="false">+</mo></mrow></msub 
+><mspace width="0.28em" class="thickpace"/> <mo class="MathClass-bin" stretchy="false">−</mo><mspace width="0.28em" class="thickpace"/><msubsup><mrow><mi>α</mi></mrow><mrow><mi>i</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">−</mo></mrow></msubsup 
+><mspace width="0.17em" class="thinspace"/><msub><mrow><mo class="MathClass-open" stretchy="false">[</mo><mo class="MathClass-bin" stretchy="false">−</mo><msub><mrow><mi>δ</mi></mrow><mrow>
+<mi>i</mi></mrow></msub 
+><mo class="MathClass-close" stretchy="false">]</mo></mrow><mrow><mo class="MathClass-bin" stretchy="false">+</mo></mrow></msub 
+></mrow><mo class="MathClass-close" fence="true" mathsize="1.19em">)</mo></mrow><mo class="MathClass-punc" stretchy="false">.</mo>
+</math></td><td class="eq-no">(7.1)</td></tr></table>
+<p class="noindent">Оценка перестаёт меняться, когда в среднем положительные поправки уравновешивают
+отрицательные:
+</p><div class="keyformula"><table class="equation"><tr><td>
+<math display="block" class="equation">
+ <mstyle id="x10-69002r2" class="label"></mstyle><msubsup><mrow><mi>α</mi></mrow><mrow><mi>i</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">+</mo></mrow></msubsup 
+><mspace width="0.17em" class="thinspace"/><mrow><mo class="MathClass-open" fence="true" mathsize="1.19em">⟨</mo><mrow><msub><mrow><mo class="MathClass-open" stretchy="false">[</mo><mi>r</mi> <mo class="MathClass-bin" stretchy="false">−</mo> <msub><mrow><mi>V</mi> </mrow><mrow>
+<mi>i</mi></mrow></msub 
+><mo class="MathClass-close" stretchy="false">]</mo></mrow><mrow><mo class="MathClass-bin" stretchy="false">+</mo></mrow></msub 
+></mrow><mo class="MathClass-close" fence="true" mathsize="1.19em">⟩</mo></mrow><mspace width="0.28em" class="thickpace"/> <mo class="MathClass-rel" stretchy="false">=</mo> <mspace width="0.28em" class="thickpace"/><msubsup><mrow><mi>α</mi></mrow><mrow><mi>i</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">−</mo></mrow></msubsup 
+><mspace width="0.17em" class="thinspace"/><mrow><mo class="MathClass-open" fence="true" mathsize="1.19em">⟨</mo><mrow><msub><mrow><mo class="MathClass-open" stretchy="false">[</mo><msub><mrow><mi>V</mi> </mrow><mrow>
+<mi>i</mi></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>r</mi><mo class="MathClass-close" stretchy="false">]</mo></mrow><mrow><mo class="MathClass-bin" stretchy="false">+</mo></mrow></msub 
+></mrow><mo class="MathClass-close" fence="true" mathsize="1.19em">⟩</mo></mrow><mo class="MathClass-punc" stretchy="false">,</mo><mspace width="2em" class="qquad"/><msub><mrow><mi>κ</mi></mrow><mrow><mi>i</mi></mrow></msub 
+><mspace width="0.28em" class="thickpace"/> <mo class="MathClass-rel" stretchy="false">=</mo> <mspace width="0.28em" class="thickpace"/> <mfrac><mrow><msubsup><mrow><mi>α</mi></mrow><mrow><mi>i</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">+</mo></mrow></msubsup 
+></mrow> 
+<mrow><msubsup><mrow><mi>α</mi></mrow><mrow><mi>i</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">+</mo></mrow></msubsup 
+> <mo class="MathClass-bin" stretchy="false">+</mo> <msubsup><mrow><mi>α</mi></mrow><mrow><mi>i</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">−</mo></mrow></msubsup 
+></mrow></mfrac><mo class="MathClass-punc" stretchy="false">.</mo>
+</math></td><td class="eq-no">(7.2)</td></tr></table>
+</div><p class="noindent"> При <math display="inline"><msub><mrow><mi>κ</mi></mrow><mrow><mi>i</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mo class="MathClass-bin" stretchy="false">∕</mo><mn>2</mn></math> это обычное
+среднее. При <math display="inline"><msub><mrow><mi>κ</mi></mrow><mrow><mi>i</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">&#x003E;</mo> <mn>1</mn><mo class="MathClass-bin" stretchy="false">∕</mo><mn>2</mn></math>
+нейрон — «оптимист»: его оценка сдвинута к верхнему краю распределения, при
+<math display="inline"><msub><mrow><mi>κ</mi></mrow><mrow><mi>i</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">&#x003C;</mo> <mn>1</mn><mo class="MathClass-bin" stretchy="false">∕</mo><mn>2</mn></math> —
+«пессимист».
+</p><p class="indent"> Пример: сок приходит с вероятностью <math display="inline"><mn>1</mn><mo class="MathClass-bin" stretchy="false">∕</mo><mn>2</mn></math>,
+размер капли <math display="inline"><mn>1</mn></math>.
+Тогда (<a href="#x10-69002r2">7.2</a>) даёт <math display="inline"><msub><mrow><mi>κ</mi></mrow><mrow><mi>i</mi></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">⋅</mo><mstyle displaystyle="false"><mfrac><mrow><mn>1</mn>
+</mrow><mrow><mn>2</mn></mrow></mfrac></mstyle><mo class="MathClass-open" stretchy="false">(</mo><mn>1</mn> <mo class="MathClass-bin" stretchy="false">−</mo> <msub><mrow><mi>V</mi> </mrow><mrow><mi>i</mi></mrow></msub 
+><mo class="MathClass-close" stretchy="false">)</mo> <mo class="MathClass-rel" stretchy="false">=</mo> <mo class="MathClass-open" stretchy="false">(</mo><mn>1</mn> <mo class="MathClass-bin" stretchy="false">−</mo> <msub><mrow><mi>κ</mi></mrow><mrow><mi>i</mi></mrow></msub 
+><mo class="MathClass-close" stretchy="false">)</mo> <mo class="MathClass-bin" stretchy="false">⋅</mo><mstyle displaystyle="false"><mfrac><mrow><mn>1</mn>
+</mrow><mrow><mn>2</mn></mrow></mfrac></mstyle><msub><mrow><mi>V</mi> </mrow><mrow><mi>i</mi></mrow></msub 
+></math>, то
+есть <math display="inline"><msub><mrow><mi>V</mi> </mrow><mrow><mi>i</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <msub><mrow><mi>κ</mi></mrow><mrow><mi>i</mi></mrow></msub 
+></math> (рис. <a href="#x10-690031">7.1</a>). Набор
+нейронов с разными <math display="inline"><msub><mrow><mi>κ</mi></mrow><mrow><mi>i</mi></mrow></msub 
+></math>
+записывает распределение награды так же, как набор квантилей записывает распределение в
+статистике.
+</p>
+ <figure class="figure"> 
+<a id="x10-690031"></a>
+<p class="noindent"><img src="img/full26x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<figcaption class="caption"><span class="id">Рис. 7.1: </span><span class="content">Распределение награды записано набором <span class="nt">DOPA</span>-нейронов. Награда
+<math display="inline"><mn>0</mn></math>
+или <math display="inline"><mn>1</mn></math>
+с вероятностью <math display="inline"><mn>1</mn><mo class="MathClass-bin" stretchy="false">∕</mo><mn>2</mn></math>
+(синие столбики); нейрон с долей <math display="inline"><mi>κ</mi></math>
+приходит к оценке <math display="inline"><mi>V</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mi>κ</mi></math> (<a href="#x10-69002r2">7.2</a>).</span></figcaption>
+ </figure>
+<p class="indent"> Что измерено: у разных <span class="nt">DOPA</span>-нейронов разная «точка переворота» — размер награды, при
+котором ответ сменяется со всплеска на провал, — и нейроны с большей асимметрией
+ответов на положительные и отрицательные ошибки переворачиваются при больших
+наградах, как и требует (<a href="#x10-69002r2">7.2</a>) <span class="cite">[<a href="refs.html#XDabney2020">39</a>]</span>. Из ответов группы нейронов удаётся восстановить
+форму распределения. Что это главная функция разброса, а не побочный эффект, —
+гипотеза.
+</p>
+ <div class="tcolorbox keyblock" id="tcolobox-19"> 
+<div class="tcolorbox-content"><div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x10-69004r1"></a>
+<span class="labx-1095">Утверждение 7.1 </span>(Распределение из асимметрии)<span class="labx-1095">.</span> </span> <span class="lati-1095">Если </span><span class="nt"><span class="lati-1095">DOPA</span></span><span class="lati-1095">-нейроны различаются</span>
+<span class="lati-1095">долей </span><math display="inline"><msub><mrow><mi>κ</mi></mrow><mrow><mi>i</mi></mrow></msub 
+></math><span class="lati-1095">,</span>
+<span class="lati-1095">с которой они учитывают положительные ошибки, их оценки сходятся к разным</span>
+<span class="lati-1095">точкам</span><span class="lati-1095"> </span>(<a href="#x10-69002r2">7.2</a>) <span class="lati-1095">распределения награды. Группа нейронов передаёт не среднее, а</span>
+<span class="lati-1095">распределение, и тем самым — риск.</span>
+</p>
+</div>
+ 
+</div> 
+</div>
+ <h3 class="sectionHead"><span class="titlemark">7.3 </span> <a id="x10-700007.3"></a>Не только ошибка, но и важность</h3>
+<p class="noindent">По формуле ошибки (<a href="06.html#x9-63002r8">6.8</a>) неприятное событие — удар, горький вкус — должно вызывать
+провал: вышло хуже, чем ожидалось. Часть <span class="nt">DOPA</span>-нейронов так и делает, а другая
+отвечает на неприятное <span class="lati-1095">всплеском</span>, как на награду <span class="cite">[<a href="refs.html#XMatsumoto2009">40</a>]</span>. Эти нейроны сообщают не
+знак ошибки, а то, что случилось что-то <span class="lati-1095">важное</span>: неожиданное, сильное, требующее
+внимания <span class="cite">[<a href="refs.html#XBrombergMartin2010">41</a>]</span>.
+</p><p class="indent"> Инженеру удобно думать об этом как о двух сигналах. Первый — знаковая ошибка
+<math display="inline"><mi>δ</mi></math>: куда менять веса.
+Второй — её модуль <math display="inline"><mo class="MathClass-rel" stretchy="false">|</mo><mi>δ</mi><mo class="MathClass-rel" stretchy="false">|</mo></math>
+или новизна события: <span class="lati-1095">насколько сильно </span>их менять, то есть скорость обучения; после
+неожиданного события учиться надо быстрее. По смыслу он близок к норадреналиновому
+коэффициенту усиления из главы <a href="01.html#x4-40001">1</a>.
+</p><p class="indent"> Есть и третий вариант: отдельный провод для отдельной оси. <span class="nt">DOPA</span>-нейроны, идущие к одной
+из областей выбора действий, отвечают не на награду, а на новизну и силу раздражителя и
+нужны, чтобы животное научилось избегать опасного <span class="cite">[<a href="refs.html#XMenegas2018">42</a>]</span>: по проводу идёт не «лучше или хуже»,
+а «опасно или нет».
+</p><p class="indent"> Что измерено: разные группы <span class="nt">DOPA</span>-нейронов отвечают на неприятное и на новое по-разному,
+и разные выходы учат разному. Как именно мозг пользуется сигналом важности — как скоростью
+обучения, как сигналом внимания или как отдельной ошибкой по оси опасности, —
+обсуждается.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">7.4 </span> <a id="x10-710007.4"></a>Не только учить, но и подгонять</h3>
+<p class="noindent">У дофамина есть и немедленное действие: чем его больше, тем охотнее и быстрее животное
+действует. Как совместить это с обучением?
+</p><p class="indent"> Инженерный ответ — <span class="lati-1095">разделение по частоте</span>. Быстрые всплески и провалы длительностью в сотни
+миллисекунд несут <math display="inline"><mi>δ</mi></math> и
+учат. Медленный уровень, меняющийся за минуты, несёт другую величину — среднюю награду в единицу времени
+<math display="inline"><mover accent="true"><mrow><mi>R</mi></mrow><mo accent="true">¯</mo></mover></math> <span class="cite">[<a href="refs.html#XNiv2007">43</a>]</span>. Пусть действие,
+выполненное за время <math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>a</mi></mrow></msub 
+></math>,
+требует усилия <math display="inline"><mi>C</mi><mo class="MathClass-bin" stretchy="false">∕</mo><msub><mrow><mi>τ</mi></mrow><mrow><mi>a</mi></mrow></msub 
+></math>:
+чем быстрее, тем дороже. Зато каждая секунда промедления стоит
+<math display="inline"><mover accent="true"><mrow><mi>R</mi></mrow><mo accent="true">¯</mo></mover></math>
+— столько награды можно было бы за неё получить. Суммарная цена
+<math display="inline"><mi>C</mi><mo class="MathClass-bin" stretchy="false">∕</mo><msub><mrow><mi>τ</mi></mrow><mrow><mi>a</mi></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">+</mo> <mover accent="true"><mrow><mi>R</mi></mrow><mo accent="true">¯</mo></mover><mspace width="0.17em" class="thinspace"/><msub><mrow><mi>τ</mi></mrow><mrow><mi>a</mi></mrow></msub 
+></math>
+минимальна при
+</p><div class="keyformula"><table class="equation"><tr><td>
+<math display="block" class="equation">
+ <mstyle id="x10-71001r3" class="label"></mstyle><msubsup><mrow><mi>τ</mi></mrow><mrow><mi>a</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">∗</mo></mrow></msubsup 
+><mspace width="0.28em" class="thickpace"/> <mo class="MathClass-rel" stretchy="false">=</mo> <mspace width="0.28em" class="thickpace"/><msqrt><mrow> <mfrac> <mrow> <mi>C</mi></mrow>
+<mrow><mover accent="true"><mrow><mi>R</mi></mrow><mo accent="true">¯</mo></mover></mrow></mfrac></mrow></msqrt><mo class="MathClass-punc" stretchy="false">.</mo>
+</math></td><td class="eq-no">(7.3)</td></tr></table>
+</div><p class="noindent"> Чем богаче обстановка, тем дороже время и тем быстрее выгодно действовать: если
+<math display="inline"><mover accent="true"><mrow><mi>R</mi></mrow><mo accent="true">¯</mo></mover></math> удвоилась, время
+действия уменьшается в <math display="inline"><msqrt><mrow><mn>2</mn></mrow></msqrt> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>4</mn></math>
+раза. Заметьте, что <math display="inline"><mover accent="true"><mrow><mi>R</mi></mrow><mo accent="true">¯</mo></mover></math>
+— та самая ожидаемая награда, которую вычитали в главе <a href="06.html#x9-560006">6</a>.
+</p><p class="indent"> Выброс дофамина в месте назначения может меняться и без изменения частоты импульсов:
+его подстраивают местные сигналы у самих выходов <span class="cite">[<a href="refs.html#XMohebi2019">44</a>]</span>. Но медленные составляющие есть и в
+самих импульсах: в опытах следующего раздела плавный рост при приближении к награде виден
+и в частоте <span class="nt">DOPA</span>-нейронов <span class="cite">[<a href="refs.html#XKim2020">46</a>]</span>. Значит, медленный уровень складывается из двух источников —
+частоты импульсов и местной регулировки выброса, — и какой из них главный, по-видимому,
+зависит от выхода и от задачи.
+</p>
+ <div class="tcolorbox keyblock" id="tcolobox-20"> 
+<div class="tcolorbox-content"><div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x10-71002r2"></a>
+<span class="labx-1095">Утверждение 7.2 </span>(Два сигнала на одном проводе)<span class="labx-1095">.</span> </span> <span class="nt"><span class="lati-1095">DOPA</span></span><span class="lati-1095">-система передаёт</span>
+<span class="lati-1095">по меньшей мере две величины, разнесённые по времени: быструю ошибку</span>
+<math display="inline"><mi>δ</mi></math><span class="lati-1095">,</span>
+<span class="lati-1095">которая учит, и медленный уровень, который задаёт цену времени</span><span class="lati-1095"> </span>(<a href="#x10-71001r3">7.3</a>)
+<span class="lati-1095">и тем самым скорость действий. Измерено, что быстрая и медленная</span>
+<span class="lati-1095">составляющие ведут себя по-разному; что медленная равна именно</span>
+<math display="inline"><mover accent="true"><mrow><mi>R</mi></mrow><mo accent="true">¯</mo></mover></math><span class="lati-1095">,</span>
+<span class="lati-1095">— гипотеза.</span>
+</p>
+</div>
+ 
+</div> 
+</div>
+ <h3 class="sectionHead"><span class="titlemark">7.5 </span> <a id="x10-720007.5"></a>Рост при приближении</h3>
+<p class="noindent">Если животное бежит по коридору к далёкой награде, концентрация дофамина в области выбора действий
+плавно растёт в течение секунд, пока цель приближается <span class="cite">[<a href="refs.html#XHamid2016">45</a>]</span>. По главе <a href="06.html#x9-560006">6</a> этого быть не должно: всё идёт
+по плану, и <math display="inline"><mi>δ</mi></math>
+должна быть нулём.
+</p><p class="indent"> Первое объяснение: этот рост — не <math display="inline"><mi>δ</mi></math>,
+а само ожидание <math display="inline"><mi>V</mi> </math>,
+сигнал «цель близко, стоит постараться» из предыдущего раздела <span class="cite">[<a href="refs.html#XHamid2016">45</a>]</span>. Второе объяснение сохраняет
+<math display="inline"><mi>δ</mi></math> <span class="cite">[<a href="refs.html#XKim2020">46</a>]</span>. Если ожидание
+верно, то при горизонте <math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>γ</mi></mrow></msub 
+></math>
+на пути к награде <math display="inline"><mi>R</mi></math>
+оно растёт как <math display="inline"><mi>V</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mi>R</mi><msup><mrow><mi>e</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">−</mo><mo class="MathClass-open" stretchy="false">(</mo><mi>T</mi><mo class="MathClass-bin" stretchy="false">−</mo><mi>t</mi><mo class="MathClass-close" stretchy="false">)</mo><mo class="MathClass-bin" stretchy="false">∕</mo><msub><mrow><mi>τ</mi></mrow><mrow><mi>γ</mi></mrow></msub 
+></mrow></msup 
+></math>, и по
+формуле ошибки (<a href="06.html#x9-63002r8">6.8</a>) <math display="inline"><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>V</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>t</mi> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>V</mi><mo class="MathClass-bin" stretchy="false">∕</mo><msub><mrow><mi>τ</mi></mrow><mrow><mi>γ</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn></math>.
+Но пусть издалека ожидание занижено, а по мере приближения оценка уточняется. Тогда ожидание растёт
+круче, скажем как <math display="inline"><mi>V</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mi>R</mi><msup><mrow><mi>e</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">−</mo><mo class="MathClass-open" stretchy="false">(</mo><mi>T</mi><mo class="MathClass-bin" stretchy="false">−</mo><mi>t</mi><mo class="MathClass-close" stretchy="false">)</mo><mo class="MathClass-bin" stretchy="false">∕</mo><msub><mrow><mi>τ</mi></mrow><mrow><mi>v</mi></mrow></msub 
+></mrow></msup 
+></math>
+с <math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>v</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">&#x003C;</mo> <msub><mrow><mi>τ</mi></mrow><mrow><mi>γ</mi></mrow></msub 
+></math>,
+и
+</p><div class="keyformula"><table class="equation"><tr><td>
+<math display="block" class="equation">
+ <mstyle id="x10-72001r4" class="label"></mstyle><mi>δ</mi><mo class="MathClass-open" stretchy="false">(</mo><mi>t</mi><mo class="MathClass-close" stretchy="false">)</mo><mspace width="0.28em" class="thickpace"/> <mo class="MathClass-rel" stretchy="false">=</mo> <mspace width="0.28em" class="thickpace"/><mfrac><mrow><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>V</mi> </mrow> 
+ <mrow><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>t</mi></mrow></mfrac> <mo class="MathClass-bin" stretchy="false">−</mo> <mfrac><mrow><mi>V</mi> </mrow> 
+<mrow><msub><mrow><mi>τ</mi></mrow><mrow><mi>γ</mi></mrow></msub 
+></mrow></mfrac><mspace width="0.28em" class="thickpace"/> <mo class="MathClass-rel" stretchy="false">=</mo> <mspace width="0.28em" class="thickpace"/><mi>V</mi> <mrow><mo class="MathClass-open" fence="true" mathsize="1.61em">(</mo><mrow> <mfrac><mrow><mn>1</mn></mrow> 
+<mrow><msub><mrow><mi>τ</mi></mrow><mrow><mi>v</mi></mrow></msub 
+></mrow></mfrac> <mo class="MathClass-bin" stretchy="false">−</mo> <mfrac><mrow><mn>1</mn></mrow> 
+<mrow><msub><mrow><mi>τ</mi></mrow><mrow><mi>γ</mi></mrow></msub 
+></mrow></mfrac></mrow><mo class="MathClass-close" fence="true" mathsize="1.61em">)</mo></mrow><mspace width="0.28em" class="thickpace"/> <mo class="MathClass-rel" stretchy="false">&#x003E;</mo> <mspace width="0.28em" class="thickpace"/><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo>
+</math></td><td class="eq-no">(7.4)</td></tr></table>
+</div><p class="noindent"> Ошибка положительна и растёт вместе с
+<math display="inline"><mi>V</mi> </math> — тот самый плавный
+рост (рис. <a href="#x10-720022">7.2</a>). При <math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>γ</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>4</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>с</mtext></mstyle></math>
+и <math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>v</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>с</mtext></mstyle></math>
+получается <math display="inline"><mi>δ</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>7</mn><mn>5</mn><mspace width="0.17em" class="thinspace"/><mi>V</mi> </math>
+в секунду. Эту версию проверяли в виртуальном коридоре, мгновенно перенося животное
+ближе к цели: дофамин отвечал всплеском, как и положено производной, а не плавному
+уровню <span class="cite">[<a href="refs.html#XKim2020">46</a>]</span>.
+</p>
+ <figure class="figure"> 
+<a id="x10-720022"></a>
+<p class="noindent"><img src="img/full27x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<figcaption class="caption"><span class="id">Рис. 7.2: </span><span class="content">Рост дофамина при приближении к награде как ошибка предсказания,
+<math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>γ</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>4</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>с</mtext></mstyle></math>.
+Штриховая линия — ожидание, растущее ровно как требует горизонт
+(<math display="inline"><mi>δ</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn></math>);
+синяя — ожидание, растущее круче; красная — ошибка (<a href="#x10-72001r4">7.4</a>).</span></figcaption>
+ </figure>
+<p class="indent"> Что измерено: плавный рост есть — и в концентрации дофамина, и в частоте импульсов
+<span class="nt">DOPA</span>-нейронов <span class="cite">[<a href="refs.html#XKim2020">46</a>]</span>, — и мгновенные скачки обстановки вызывают скачки дофамина. Какое из
+двух объяснений верно — или оба верны на разных выходах, — обсуждается.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">7.6 </span> <a id="x10-730007.6"></a>Взгляд назад</h3>
+<p class="noindent">Все теории выше смотрят <span class="lati-1095">вперёд</span>. Одна из современных теорий переворачивает направление <span class="cite">[<a href="refs.html#XJeong2022">47</a>]</span>.
+Пусть мозг учится не предсказывать награду по предвестнику, а, получив награду, <span class="lati-1095">оглядываться</span>:
+какое событие чаще других ей предшествовало? Мера такой связи — разность двух
+вероятностей:
+</p><div class="keyformula"><table class="equation"><tr><td>
+<math display="block" class="equation">
+ <mstyle id="x10-73001r5" class="label"></mstyle><mi>M</mi><mspace width="0.28em" class="thickpace"/> <mo class="MathClass-rel" stretchy="false">=</mo> <mspace width="0.28em" class="thickpace"/><mi>P</mi><mo class="MathClass-open" stretchy="false">(</mo><mstyle class="text"><mtext>предвестник перед наградой</mtext></mstyle><mo class="MathClass-close" stretchy="false">)</mo><mspace width="0.28em" class="thickpace"/> <mo class="MathClass-bin" stretchy="false">−</mo><mspace width="0.28em" class="thickpace"/><mi>P</mi><mo class="MathClass-open" stretchy="false">(</mo><mstyle class="text"><mtext>предвестник в случайном окне</mtext></mstyle><mo class="MathClass-close" stretchy="false">)</mo><mo class="MathClass-punc" stretchy="false">.</mo>
+</math></td><td class="eq-no">(7.5)</td></tr></table>
+</div><p class="noindent"> Если предвестник часто бывает и без награды, второе слагаемое велико, и связь слаба. В этой
+теории дофамин сообщает не ошибку предсказания, а то, насколько данное событие — вероятная
+<span class="lati-1095">причина </span>награды.
+</p><p class="indent"> Механизм оглядки требует того же, что и правило трёх множителей главы <a href="06.html#x9-560006">6</a>: каждое событие
+должно оставлять тающий след, чтобы в момент награды можно было прочитать, что было перед
+ней. Разница не в синапсе, а в том, что передаёт <span class="nt">DOPA</span>.
+</p><p class="indent"> В опытах, где теория (<a href="#x10-73001r5">7.5</a>) и ошибка (<a href="06.html#x9-63002r8">6.8</a>) предсказывают разное, выброс дофамина в ряде
+случаев следовал первой <span class="cite">[<a href="refs.html#XJeong2022">47</a>]</span>. Но в других опытах ответ дофамина при обучении постепенно
+сдвигался от момента награды к моменту предвестника — как требует обучение по
+ошибке (<a href="06.html#x9-63002r8">6.8</a>) <span class="cite">[<a href="refs.html#XAmo2022">48</a>]</span>. Какая теория описывает мозг, пока неизвестно.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">7.7 </span> <a id="x10-740007.7"></a>Ошибка не только в награде</h3>
+<p class="noindent">Последнее расширение — о том, <span class="lati-1095">о чём </span>ошибка. Если заменить ожидаемый сок другим, таким же
+ценным, но иного вкуса, ценность не изменилась, и ошибка (<a href="06.html#x9-63002r8">6.8</a>) равна нулю. Однако
+<span class="nt">DOPA</span>-нейроны на такую замену отвечают <span class="cite">[<a href="refs.html#XTakahashi2017">49</a>]</span>. А искусственно вызванные всплески дофамина
+могут научить животное связи между двумя нейтральными раздражителями, вообще без
+награды <span class="cite">[<a href="refs.html#XSharpe2017">50</a>]</span>. Похоже, <span class="nt">DOPA</span> сообщает об ошибке предсказания не только награды, но и того,
+<span class="lati-1095">что </span>произойдёт.
+</p><p class="indent"> Формально это простое обобщение (<a href="06.html#x9-63002r8">6.8</a>): вместо одного потока награды
+<math display="inline"><mi>r</mi></math> берётся набор признаков
+происходящего <math display="inline"><msub><mrow><mi>φ</mi></mrow><mrow><mi>k</mi></mrow></msub 
+></math>
+— вкус, место, звук, — и для каждого своё ожидание
+<math display="inline"><msub><mrow><mi>M</mi></mrow><mrow><mi>k</mi></mrow></msub 
+></math> и своя
+ошибка <span class="cite">[<a href="refs.html#XGardner2018">51</a>]</span>:
+</p><div class="keyformula"><table class="equation"><tr><td>
+<math display="block" class="equation">
+ <mstyle id="x10-74001r6" class="label"></mstyle><msub><mrow><mi>δ</mi></mrow><mrow><mi>k</mi></mrow></msub 
+><mo class="MathClass-open" stretchy="false">(</mo><mi>t</mi><mo class="MathClass-close" stretchy="false">)</mo><mspace width="0.28em" class="thickpace"/> <mo class="MathClass-rel" stretchy="false">=</mo> <mspace width="0.28em" class="thickpace"/><msub><mrow><mi>φ</mi></mrow><mrow><mi>k</mi></mrow></msub 
+><mo class="MathClass-open" stretchy="false">(</mo><mi>t</mi><mo class="MathClass-close" stretchy="false">)</mo><mspace width="0.28em" class="thickpace"/> <mo class="MathClass-bin" stretchy="false">+</mo> <mspace width="0.28em" class="thickpace"/><mfrac><mrow><mstyle mathvariant="normal"><mi>d</mi></mstyle><msub><mrow><mi>M</mi></mrow><mrow><mi>k</mi></mrow></msub 
+></mrow> 
+ <mrow><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>t</mi></mrow></mfrac> <mspace width="0.28em" class="thickpace"/> <mo class="MathClass-bin" stretchy="false">−</mo><mspace width="0.28em" class="thickpace"/><mfrac><mrow><msub><mrow><mi>M</mi></mrow><mrow><mi>k</mi></mrow></msub 
+></mrow> 
+ <mrow><msub><mrow><mi>τ</mi></mrow><mrow><mi>γ</mi></mrow></msub 
+></mrow></mfrac> <mo class="MathClass-punc" stretchy="false">,</mo><mspace width="2em" class="qquad"/><mi>k</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mo class="MathClass-punc" stretchy="false">,</mo><mi>…</mi><mo class="MathClass-punc" stretchy="false">,</mo><mi>K</mi><mo class="MathClass-punc" stretchy="false">.</mo>
+</math></td><td class="eq-no">(7.6)</td></tr></table>
+</div><p class="noindent"> Награда — лишь один из признаков, и вектор ошибок учит не только тому, что хорошо, но и
+тому, что за чем следует, — модели мира.
+</p><p class="indent"> С этим согласуется неоднородность <span class="nt">DOPA</span>-нейронов: в одной задаче разные нейроны несут
+разные величины — одни связаны с наградой, другие с движением, третьи с тем, куда направлено
+внимание <span class="cite">[<a href="refs.html#XEngelhard2019">52</a>]</span>.
+</p>
+ <div class="tcolorbox keyblock" id="tcolobox-21"> 
+<div class="tcolorbox-content"><div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x10-74002r3"></a>
+<span class="labx-1095">Утверждение 7.3 </span>(Жгут вместо провода)<span class="labx-1095">.</span> </span> <span class="lati-1095">Сигнал </span><span class="nt"><span class="lati-1095">DOPA</span></span><span class="lati-1095">-системы — не одно число.</span>
+<span class="lati-1095">Он разложен по нейронам (распределение</span><span class="lati-1095"> </span>(<a href="#x10-69002r2">7.2</a>)<span class="lati-1095">, разные признаки</span><span class="lati-1095"> </span>(<a href="#x10-74001r6">7.6</a>)<span class="lati-1095">, отдельная ось</span>
+<span class="lati-1095">опасности) и по времени (быстрая ошибка и медленный уровень</span><span class="lati-1095"> </span>(<a href="#x10-71001r3">7.3</a>)<span class="lati-1095">). Скалярная</span>
+<span class="lati-1095">ошибка</span><span class="lati-1095"> </span>(<a href="06.html#x9-63002r8">6.8</a>) <span class="lati-1095">— первое приближение к этому сигналу, как сумматор с порогом — первое</span>
+<span class="lati-1095">приближение к нейрону.</span>
+</p>
+</div>
+ 
+</div> 
+</div>
+ <h3 class="sectionHead"><span class="titlemark">7.8 </span> <a id="x10-750007.8"></a>Итог</h3>
+ <div class="table">
+<p class="indent"> <a id="x10-750011"></a></p><figure class="float">
+<div class="tabular">
+ <table id="TBL-9" class="tabular"><colgroup id="TBL-9-1g"><col id="TBL-9-1" /><col id="TBL-9-2" /><col id="TBL-9-3" /><col id="TBL-9-4" /></colgroup><tr style="vertical-align:baseline;" id="TBL-9-1-"><td style="text-align:left;" id="TBL-9-1-1" class="td11"> <p class="noindent"><span class="larm-0900">Теория</span> </p></td><td style="text-align:left;" id="TBL-9-1-2" class="td11"> <p class="noindent"><span class="larm-0900">Что</span>
+ <span class="larm-0900">идёт</span>
+ <span class="larm-0900">по</span>
+ <span class="larm-0900">проводу</span> </p></td><td style="text-align:left;" id="TBL-9-1-3" class="td11"> <p class="noindent"><span class="larm-0900">Главное</span>
+ <span class="larm-0900">измерение</span> </p></td><td style="text-align:left;" id="TBL-9-1-4" class="td11"> <p class="noindent"><span class="larm-0900">Что</span>
+ <span class="larm-0900">известно</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-9-2-"><td style="text-align:left;" id="TBL-9-2-1" class="td11"> <p class="noindent"><span class="larm-0900">ошибка</span>
+ <span class="larm-0900">предсказания</span>
+ <span class="larm-0900">(гл.</span><span class="larm-0900"> </span><a href="06.html#x9-560006"><span class="larm-0900">6</span></a><span class="larm-0900">)</span> </p></td><td style="text-align:left;" id="TBL-9-2-2" class="td11"> <p class="noindent"><span class="larm-0900">скаляр</span>
+ <math display="inline"><mi>δ</mi></math><span class="larm-0900"> </span><span class="larm-0900">(</span><a href="06.html#x9-63002r8"><span class="larm-0900">6.8</span></a><span class="larm-0900">)</span> </p> </td><td style="text-align:left;" id="TBL-9-2-3" class="td11"> <p class="noindent"><span class="larm-0900">всплеск,</span>
+ <span class="larm-0900">перенос</span>
+ <span class="larm-0900">на</span>
+ <span class="larm-0900">предвестник,</span>
+ <span class="larm-0900">провал</span> </p></td><td style="text-align:left;" id="TBL-9-2-4" class="td11"> <p class="noindent"><span class="larm-0900">измерено;</span>
+ <span class="larm-0900">первое</span>
+ <span class="larm-0900">приближение</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-9-3-"><td style="text-align:left;" id="TBL-9-3-1" class="td11"> <p class="noindent"><span class="larm-0900">распределение</span> </p></td><td style="text-align:left;" id="TBL-9-3-2" class="td11"> <p class="noindent"><span class="larm-0900">набор</span>
+ <math display="inline"><msub><mrow><mi>δ</mi></mrow><mrow><mi>i</mi></mrow></msub 
+></math>
+ <span class="larm-0900">с</span>
+ <span class="larm-0900">разной</span>
+ <span class="larm-0900">асимметрией</span> </p></td><td style="text-align:left;" id="TBL-9-3-3" class="td11"> <p class="noindent"><span class="larm-0900">разные</span>
+ <span class="larm-0900">точки</span>
+ <span class="larm-0900">переворота</span>
+ <span class="larm-0900">у</span>
+ <span class="larm-0900">разных</span>
+ <span class="larm-0900">нейронов</span> </p></td><td style="text-align:left;" id="TBL-9-3-4" class="td11"> <p class="noindent"><span class="larm-0900">согласие</span>
+ <span class="larm-0900">с</span>
+ <span class="larm-0900">опытом</span>
+ <span class="larm-0900">есть;</span>
+ <span class="larm-0900">роль</span>
+ <span class="larm-0900">разброса</span>
+ <span class="larm-0900">—</span>
+ <span class="larm-0900">гипотеза</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-9-4-"><td style="text-align:left;" id="TBL-9-4-1" class="td11"> <p class="noindent"><span class="larm-0900">важность</span> </p></td><td style="text-align:left;" id="TBL-9-4-2" class="td11"> <p class="noindent"><math display="inline"><mo class="MathClass-rel" stretchy="false">|</mo><mi>δ</mi><mo class="MathClass-rel" stretchy="false">|</mo></math><span class="larm-0900">,</span>
+ <span class="larm-0900">новизна;</span>
+ <span class="larm-0900">ось</span>
+ <span class="larm-0900">опасности</span> </p></td><td style="text-align:left;" id="TBL-9-4-3" class="td11"> <p class="noindent"><span class="larm-0900">всплески</span>
+ <span class="larm-0900">на</span>
+ <span class="larm-0900">неприятное</span>
+ <span class="larm-0900">у</span>
+ <span class="larm-0900">части</span>
+ <span class="larm-0900">нейронов</span> </p></td><td style="text-align:left;" id="TBL-9-4-4" class="td11"> <p class="noindent"><span class="larm-0900">измерено;</span>
+ <span class="larm-0900">как</span>
+ <span class="larm-0900">используется</span>
+ <span class="larm-0900">—</span>
+ <span class="larm-0900">обсуждается</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-9-5-"><td style="text-align:left;" id="TBL-9-5-1" class="td11"> <p class="noindent"><span class="larm-0900">цена</span>
+ <span class="larm-0900">времени</span> </p></td><td style="text-align:left;" id="TBL-9-5-2" class="td11"> <p class="noindent"><span class="larm-0900">медленный</span>
+ <span class="larm-0900">уровень</span>
+ <math display="inline"><mover accent="true"><mrow><mi>R</mi></mrow><mo accent="true">¯</mo></mover></math> </p></td><td style="text-align:left;" id="TBL-9-5-3" class="td11"> <p class="noindent"><span class="larm-0900">дофамин</span>
+ <span class="larm-0900">ускоряет</span>
+ <span class="larm-0900">действия;</span>
+ <span class="larm-0900">медленная</span>
+ <span class="larm-0900">составляющая</span>
+ <span class="larm-0900">—</span>
+ <span class="larm-0900">и</span>
+ <span class="larm-0900">в</span>
+ <span class="larm-0900">выбросе</span>
+ <span class="larm-0900">у</span>
+ <span class="larm-0900">выходов,</span>
+ <span class="larm-0900">и</span>
+ <span class="larm-0900">в</span>
+ <span class="larm-0900">частоте</span>
+ <span class="larm-0900">импульсов</span> </p></td><td style="text-align:left;" id="TBL-9-5-4" class="td11"> <p class="noindent"><span class="larm-0900">разделение</span>
+ <span class="larm-0900">быстрого</span>
+ <span class="larm-0900">и</span>
+ <span class="larm-0900">медленного</span>
+ <span class="larm-0900">измерено;</span>
+ <math display="inline"><mover accent="true"><mrow><mi>R</mi></mrow><mo accent="true">¯</mo></mover></math>
+ <span class="larm-0900">—</span>
+ <span class="larm-0900">гипотеза</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-9-6-"><td style="text-align:left;" id="TBL-9-6-1" class="td11"> <p class="noindent"><span class="larm-0900">рост</span>
+ <span class="larm-0900">при</span>
+ <span class="larm-0900">приближении</span> </p></td><td style="text-align:left;" id="TBL-9-6-2" class="td11"> <p class="noindent"><math display="inline"><mi>V</mi> </math>
+ <span class="larm-0900">или</span>
+ <math display="inline"><mi>δ</mi></math>
+ <span class="larm-0900">при</span>
+ <span class="larm-0900">уточнении</span>
+ <span class="larm-0900">оценки</span><span class="larm-0900"> </span><span class="larm-0900">(</span><a href="#x10-72001r4"><span class="larm-0900">7.4</span></a><span class="larm-0900">)</span> </p></td><td style="text-align:left;" id="TBL-9-6-3" class="td11"> <p class="noindent"><span class="larm-0900">плавный</span>
+ <span class="larm-0900">рост,</span>
+ <span class="larm-0900">скачки</span>
+ <span class="larm-0900">при</span>
+ <span class="larm-0900">переносе</span>
+ <span class="larm-0900">в</span>
+ <span class="larm-0900">коридоре</span> </p></td><td style="text-align:left;" id="TBL-9-6-4" class="td11"> <p class="noindent"><span class="larm-0900">рост</span>
+ <span class="larm-0900">измерен;</span>
+ <span class="larm-0900">объяснение</span>
+ <span class="larm-0900">обсуждается</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-9-7-"><td style="text-align:left;" id="TBL-9-7-1" class="td11"> <p class="noindent"><span class="larm-0900">взгляд</span>
+ <span class="larm-0900">назад</span> </p></td><td style="text-align:left;" id="TBL-9-7-2" class="td11"> <p class="noindent"><span class="larm-0900">мера</span>
+ <span class="larm-0900">причинной</span>
+ <span class="larm-0900">связи</span><span class="larm-0900"> </span><span class="larm-0900">(</span><a href="#x10-73001r5"><span class="larm-0900">7.5</span></a><span class="larm-0900">)</span> </p></td><td style="text-align:left;" id="TBL-9-7-3" class="td11"> <p class="noindent"><span class="larm-0900">опыты,</span>
+ <span class="larm-0900">где</span>
+ <span class="larm-0900">предсказания</span>
+ <span class="larm-0900">двух</span>
+ <span class="larm-0900">теорий</span>
+ <span class="larm-0900">расходятся</span> </p></td><td style="text-align:left;" id="TBL-9-7-4" class="td11"> <p class="noindent"><span class="larm-0900">результаты</span>
+ <span class="larm-0900">противоречат</span>
+ <span class="larm-0900">друг</span>
+ <span class="larm-0900">другу</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-9-8-"><td style="text-align:left;" id="TBL-9-8-1" class="td11"> <p class="noindent"><span class="larm-0900">вектор</span>
+ <span class="larm-0900">ошибок</span> </p></td><td style="text-align:left;" id="TBL-9-8-2" class="td11"> <p class="noindent"><math display="inline"><msub><mrow><mi>δ</mi></mrow><mrow><mi>k</mi></mrow></msub 
+></math>
+ <span class="larm-0900">по</span>
+ <span class="larm-0900">признакам</span><span class="larm-0900"> </span><span class="larm-0900">(</span><a href="#x10-74001r6"><span class="larm-0900">7.6</span></a><span class="larm-0900">)</span> </p></td><td style="text-align:left;" id="TBL-9-8-3" class="td11"> <p class="noindent"><span class="larm-0900">ответ</span>
+ <span class="larm-0900">на</span>
+ <span class="larm-0900">смену</span>
+ <span class="larm-0900">вкуса;</span>
+ <span class="larm-0900">обучение</span>
+ <span class="larm-0900">без</span>
+ <span class="larm-0900">награды</span> </p></td><td style="text-align:left;" id="TBL-9-8-4" class="td11"> <p class="noindent"><span class="larm-0900">измерено;</span>
+ <span class="larm-0900">векторная</span>
+ <span class="larm-0900">форма</span>
+ <span class="larm-0900">—</span>
+ <span class="larm-0900">гипотеза</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-9-9-"><td style="text-align:left;" id="TBL-9-9-1" class="td11"> </td></tr></table> </div>
+<figcaption class="caption"><span class="id">Таблица 7.1: </span><span class="content">Что передаёт <span class="nt">DOPA</span>-система: стандартная картина главы <a href="06.html#x9-560006">6</a> и её современные
+расширения.</span></figcaption>
+ </figure>
+ </div>
+<p class="indent"> Теории таблицы <a href="#x10-750011">7.1</a> не исключают друг друга: почти все сохраняют ошибку предсказания как
+основу и расширяют её формат. Всерьёз конкурирует с ней только взгляд назад, и этот спор
+решат опыты. Для инженера вывод простой: цена широковещания из утверждения <a href="06.html#x9-62001r4">6.4</a> падает,
+если провод на самом деле — много проводов с разными адресатами.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">7.9 </span> <a id="x10-760007.9"></a>Задачи</h3>
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x10-76001r1"></a>
+<span class="labx-1095">Задача 7.1 </span>(<math display="inline"><mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Точки распределения для одной капли. </span>Сок размера <math display="inline"><mn>1</mn></math>
+приходит с вероятностью <math display="inline"><mi>p</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn></math>,
+иначе награда <math display="inline"><mn>0</mn></math>.
+Найдите по (<a href="#x10-69002r2">7.2</a>) <math display="inline"><msub><mrow><mi>V</mi> </mrow><mrow><mi>i</mi></mrow></msub 
+></math>
+для <math display="inline"><msub><mrow><mi>κ</mi></mrow><mrow><mi>i</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn></math>,
+<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn></math>,
+<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>8</mn></math>.
+Чему равна медиана этой награды, и чем точка (<a href="#x10-69002r2">7.2</a>) отличается от квантиля?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent"><math display="inline"><mi>V</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mi>κ</mi><mi>p</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mrow><mo class="MathClass-open" fence="true" mathsize="1.19em">(</mo><mrow><mi>κ</mi><mi>p</mi> <mo class="MathClass-bin" stretchy="false">+</mo> <mo class="MathClass-open" stretchy="false">(</mo><mn>1</mn> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>κ</mi><mo class="MathClass-close" stretchy="false">)</mo><mo class="MathClass-open" stretchy="false">(</mo><mn>1</mn> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>p</mi><mo class="MathClass-close" stretchy="false">)</mo></mrow><mo class="MathClass-close" fence="true" mathsize="1.19em">)</mo></mrow></math>:
+<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>0</mn><mn>5</mn><mn>9</mn></math>,
+<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn><mn>0</mn></math>,
+<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn><mn>0</mn></math>; медиана равна
+<math display="inline"><mn>0</mn></math>, а точка (<a href="fullch7.html#x10-69002r2">7.2</a>)
+меняется с <math display="inline"><mi>κ</mi></math>
+плавно.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x10-76002r2"></a>
+<span class="labx-1095">Задача 7.2 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Распределение по двум нейронам. </span>Награда равна <math display="inline"><mn>0</mn></math>
+или <math display="inline"><mi>x</mi></math>,
+вероятность <math display="inline"><mi>x</mi></math>
+равна <math display="inline"><mi>p</mi></math>.
+Два нейрона с правилом (<a href="#x10-69001r1">7.1</a>) сообщили <math display="inline"><mi>V</mi> <mo class="MathClass-open" stretchy="false">(</mo><mn>1</mn><mo class="MathClass-bin" stretchy="false">∕</mo><mn>2</mn><mo class="MathClass-close" stretchy="false">)</mo> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn><mn>5</mn></math>
+и <math display="inline"><mi>V</mi> <mo class="MathClass-open" stretchy="false">(</mo><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>8</mn><mo class="MathClass-close" stretchy="false">)</mo> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn></math>.
+Восстановите <math display="inline"><mi>p</mi></math>,
+<math display="inline"><mi>x</mi></math>
+и стандартное отклонение награды. Что сообщит нейрон с <math display="inline"><mi>κ</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn></math>?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent"><math display="inline"><mi>p</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mo class="MathClass-bin" stretchy="false">∕</mo><mn>3</mn></math>,
+<math display="inline"><mi>x</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>7</mn><mn>5</mn></math>,
+<math display="inline"><msub><mrow><mi>σ</mi></mrow><mrow><mi>r</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>3</mn><mn>5</mn></math>,
+<math display="inline"><mi>V</mi> <mo class="MathClass-open" stretchy="false">(</mo><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn><mo class="MathClass-close" stretchy="false">)</mo> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>0</mn><mn>8</mn><mn>3</mn></math>.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x10-76003r3"></a>
+<span class="labx-1095">Задача 7.3 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Моделирование: распределение из асимметрии. </span>Смоделируйте девять <span class="nt">DOPA</span>-нейронов с
+<math display="inline"><msub><mrow><mi>κ</mi></mrow><mrow><mi>i</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn><mo class="MathClass-punc" stretchy="false">,</mo><mi>…</mi><mo class="MathClass-punc" stretchy="false">,</mo><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>9</mn></math>
+и правилом (<a href="#x10-69001r1">7.1</a>), <math display="inline"><msubsup><mrow><mi>α</mi></mrow><mrow><mi>i</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">+</mo></mrow></msubsup 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>2</mn><msub><mrow><mi>κ</mi></mrow><mrow><mi>i</mi></mrow></msub 
+></math>,
+<math display="inline"><msubsup><mrow><mi>α</mi></mrow><mrow><mi>i</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">−</mo></mrow></msubsup 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>2</mn><mo class="MathClass-open" stretchy="false">(</mo><mn>1</mn> <mo class="MathClass-bin" stretchy="false">−</mo> <msub><mrow><mi>κ</mi></mrow><mrow><mi>i</mi></mrow></msub 
+><mo class="MathClass-close" stretchy="false">)</mo></math>,
+при награде, равномерной на <math display="inline"><mo class="MathClass-open" stretchy="false">[</mo><mn>0</mn><mo class="MathClass-punc" stretchy="false">,</mo><mn>1</mn><mo class="MathClass-close" stretchy="false">]</mo></math>.
+Как разброс <math display="inline"><msub><mrow><mi>V</mi> </mrow><mrow><mi>i</mi></mrow></msub 
+></math>
+зависит от <math display="inline"><mi>η</mi></math>,
+и какое <math display="inline"><mi>η</mi></math>
+нужно, чтобы отличить это распределение от двух равновероятных капель <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn><mn>5</mn></math>
+и <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>7</mn><mn>5</mn></math>?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent"><math display="inline"><mi>V</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <msqrt><mrow><mi>κ</mi></mrow></msqrt><mo class="MathClass-bin" stretchy="false">∕</mo><mo class="MathClass-open" stretchy="false">(</mo><msqrt><mrow><mi>κ</mi></mrow></msqrt> <mo class="MathClass-bin" stretchy="false">+</mo> <msqrt><mrow><mn>1</mn> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>κ</mi></mrow></msqrt><mo class="MathClass-close" stretchy="false">)</mo></math>,
+от <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn><mn>5</mn></math> до
+<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>7</mn><mn>5</mn></math>; разброс
+<math display="inline"> <mo class="MathClass-rel" stretchy="false">∝</mo><msqrt><mrow><mi>η</mi></mrow></msqrt></math>; у капель
+<math display="inline"><mi>V</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn><mn>5</mn> <mo class="MathClass-bin" stretchy="false">+</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn><mi>κ</mi></math>, распределения
+различаются на <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>0</mn><mn>5</mn></math> у крайних
+нейронов, нужно <math display="inline"><mi>η</mi> <mo class="MathClass-rel" stretchy="false">≲</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>0</mn><mn>1</mn></math>.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x10-76004r4"></a>
+<span class="labx-1095">Задача 7.4 </span>(<math display="inline"><mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Цена времени. </span>(а) Выведите (<a href="#x10-71001r3">7.3</a>) и найдите суммарную цену в оптимуме. (б) Мозг оценил
+<math display="inline"><mover accent="true"><mrow><mi>R</mi></mrow><mo accent="true">¯</mo></mover></math>
+с ошибкой в <math display="inline"><mi>k</mi></math>
+раз. Найдите относительную переплату при <math display="inline"><mi>k</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>2</mn></math>
+и <math display="inline"><mi>k</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>4</mn></math>.
+Насколько точно медленный уровень дофамина должен сообщать <math display="inline"><mover accent="true"><mrow><mi>R</mi></mrow><mo accent="true">¯</mo></mover></math>?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">(а) <math display="inline"><msup><mrow><mi>J</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">∗</mo></mrow></msup 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>2</mn><msqrt><mrow><mi>C</mi><mover accent="true"><mrow><mi>R</mi></mrow><mo accent="true">¯</mo></mover></mrow></msqrt></math>.
+(б) Переплата <math display="inline"><mrow><mo class="MathClass-open" fence="true" mathsize="1.19em">(</mo><mrow><msup><mrow><mi>k</mi></mrow><mrow><mn>1</mn><mo class="MathClass-bin" stretchy="false">∕</mo><mn>2</mn></mrow></msup 
+> <mo class="MathClass-bin" stretchy="false">+</mo> <msup><mrow><mi>k</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">−</mo><mn>1</mn><mo class="MathClass-bin" stretchy="false">∕</mo><mn>2</mn></mrow></msup 
+></mrow><mo class="MathClass-close" fence="true" mathsize="1.19em">)</mo></mrow><mo class="MathClass-bin" stretchy="false">∕</mo><mn>2</mn> <mo class="MathClass-bin" stretchy="false">−</mo> <mn>1</mn></math>:
+<math display="inline"><mn>6</mn><mspace width="0.17em" class="thinspace"/><mi>%</mi></math> при
+<math display="inline"><mi>k</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>2</mn></math> и
+<math display="inline"><mn>2</mn><mn>5</mn><mspace width="0.17em" class="thinspace"/><mi>%</mi></math> при
+<math display="inline"><mi>k</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>4</mn></math> —
+хватает точности «в пределах двух раз».
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x10-76005r5"></a>
+<span class="labx-1095">Задача 7.5 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Всплеск при переносе. </span>Ожидание растёт по (<a href="#x10-72001r4">7.4</a>) с <math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>v</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>с</mtext></mstyle></math>,
+<math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>γ</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>4</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>с</mtext></mstyle></math>;
+животное мгновенно переносят из точки <math display="inline"><mi>T</mi> <mo class="MathClass-bin" stretchy="false">−</mo> <mn>2</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>с</mtext></mstyle></math>
+в <math display="inline"><mi>T</mi> <mo class="MathClass-bin" stretchy="false">−</mo> <mn>1</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>с</mtext></mstyle></math>.
+Найдите площадь всплеска <math display="inline"><mi>δ</mi></math>
+в долях <math display="inline"><mi>R</mi></math>
+и сколько секунд рампы до переноса он заменяет. Что покажет перенос, если дофамин
+сообщает само <math display="inline"><mi>V</mi> </math>?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">Всплеск площади <math display="inline"><mi>R</mi><mo class="MathClass-open" stretchy="false">(</mo><msup><mrow><mi>e</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">−</mo><mn>1</mn></mrow></msup 
+> <mo class="MathClass-bin" stretchy="false">−</mo> <msup><mrow><mi>e</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">−</mo><mn>2</mn></mrow></msup 
+><mo class="MathClass-close" stretchy="false">)</mo> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn><mn>3</mn><mi>R</mi></math>
+— как <math display="inline"><mn>2</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>3</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>с</mtext></mstyle></math> рампы; если
+дофамин сообщает <math display="inline"><mi>V</mi> </math>,
+всплеска нет, уровень просто ступенькой вырастает в
+<math display="inline"><mi>e</mi></math>
+раз.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x10-76006r6"></a>
+<span class="labx-1095">Задача 7.6 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Проектирование: два сигнала на проводе. </span>По проводу <span class="nt">DOPA</span> идут уровень, растущий до
+<math display="inline"><mi>s</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mo class="MathClass-bin" stretchy="false">∕</mo><mn>6</mn><mn>0</mn></math>
+импульса в секунду за секунду, и события по <math display="inline"><mi>A</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>3</mn></math>
+импульса. Синапс со следом <math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>e</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>с</mtext></mstyle></math>
+вычитает из частоты её копию, сглаженную с <math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>f</mi></mrow></msub 
+></math>.
+При каких <math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>f</mi></mrow></msub 
+></math>
+теряется не больше <math display="inline"><mn>1</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mi>%</mi></math>
+события, а вклад уровня за время следа меньше <math display="inline"><mn>1</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mi>%</mi></math>
+вклада события?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">Событие сдвигает вес <math display="inline"> <mo class="MathClass-rel" stretchy="false">∝</mo> <mi>A</mi><msub><mrow><mi>τ</mi></mrow><mrow><mi>f</mi></mrow></msub 
+><mo class="MathClass-bin" stretchy="false">∕</mo><mo class="MathClass-open" stretchy="false">(</mo><msub><mrow><mi>τ</mi></mrow><mrow><mi>e</mi></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">+</mo> <msub><mrow><mi>τ</mi></mrow><mrow><mi>f</mi></mrow></msub 
+><mo class="MathClass-close" stretchy="false">)</mo></math>,
+уровень даёт ошибку <math display="inline"><mi>s</mi><msub><mrow><mi>τ</mi></mrow><mrow><mi>f</mi></mrow></msub 
+></math>:
+<math display="inline"><mn>9</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>с</mtext></mstyle> <mo class="MathClass-rel" stretchy="false">≤</mo> <msub><mrow><mi>τ</mi></mrow><mrow><mi>f</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">≤</mo> <mn>1</mn><mn>7</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>с</mtext></mstyle></math>.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x10-76007r7"></a>
+<span class="labx-1095">Задача 7.7 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Проектирование опыта: взгляд назад против ошибки. </span>В окне предвестник бывает с вероятностью
+<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn></math>,
+после него награда — с вероятностью <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>8</mn></math>.
+Сравните <math display="inline"><mi mathvariant="normal">Δ</mi><mi>P</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mi>P</mi><mo class="MathClass-open" stretchy="false">(</mo><mstyle class="text"><mtext>нагр.</mtext></mstyle><mo class="MathClass-rel" stretchy="false">∣</mo><mstyle class="text"><mtext>предв.</mtext></mstyle><mo class="MathClass-close" stretchy="false">)</mo> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>P</mi><mo class="MathClass-open" stretchy="false">(</mo><mstyle class="text"><mtext>нагр.</mtext></mstyle><mo class="MathClass-rel" stretchy="false">∣</mo><mstyle class="text"><mtext>нет</mtext></mstyle><mo class="MathClass-close" stretchy="false">)</mo></math>
+и <math display="inline"><mi>M</mi></math>
+из (<a href="#x10-73001r5">7.5</a>), если (а) добавить награды без предвестника, <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>0</mn><mn>8</mn></math>
+на окно; (б) удвоить частоту предвестника без наград.
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">Исходно <math display="inline"><mi mathvariant="normal">Δ</mi><mi>P</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>8</mn><mn>0</mn></math>,
+<math display="inline"><mi>M</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>9</mn><mn>0</mn></math>.
+(а) <math display="inline"><mi mathvariant="normal">Δ</mi><mi>P</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>7</mn><mn>4</mn></math>
+(<math display="inline"> <mo class="MathClass-bin" stretchy="false">−</mo> <mn>8</mn><mspace width="0.17em" class="thinspace"/><mi>%</mi></math>),
+<math display="inline"><mi>M</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>4</mn><mn>3</mn></math>
+(<math display="inline"> <mo class="MathClass-bin" stretchy="false">−</mo> <mn>5</mn><mn>2</mn><mspace width="0.17em" class="thinspace"/><mi>%</mi></math>);
+(б) <math display="inline"><mi mathvariant="normal">Δ</mi><mi>P</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>4</mn><mn>0</mn></math>
+(<math display="inline"> <mo class="MathClass-bin" stretchy="false">−</mo> <mn>5</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mi>%</mi></math>),
+<math display="inline"><mi>M</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>8</mn><mn>0</mn></math>
+(<math display="inline"> <mo class="MathClass-bin" stretchy="false">−</mo> <mn>1</mn><mn>1</mn><mspace width="0.17em" class="thinspace"/><mi>%</mi></math>):
+двойная диссоциация.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x10-76008r8"></a>
+<span class="labx-1095">Задача 7.8 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo><mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Жгут и цена широковещания. </span>В модели задачи <a href="06.html#x9-66008r8">6.8</a> <math display="inline"><mi>N</mi></math>
+нейронов разбиты на <math display="inline"><mi>K</mi></math>
+групп со своими проводами, и в каждый провод просачивается доля <math display="inline"><mi>ρ</mi></math>
+чужих ошибок. Покажите, что постоянная обучения равна <math display="inline"><mi>N</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mi>K</mi> <mo class="MathClass-bin" stretchy="false">+</mo> <mn>2</mn> <mo class="MathClass-bin" stretchy="false">+</mo> <msup><mrow><mi>ρ</mi></mrow><mrow><mn>2</mn></mrow></msup 
+><mi>N</mi><mo class="MathClass-open" stretchy="false">(</mo><mn>1</mn> <mo class="MathClass-bin" stretchy="false">−</mo> <mn>1</mn><mo class="MathClass-bin" stretchy="false">∕</mo><mi>K</mi><mo class="MathClass-close" stretchy="false">)</mo></math>.
+Сколько попыток она даёт при <math display="inline"><mi>K</mi> <mo class="MathClass-rel" stretchy="false">→</mo><mi>∞</mi></math>,
+<math display="inline"><mi>N</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>1</mn><mn>0</mn></mrow></msup 
+></math>
+и <math display="inline"><mi>ρ</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>0</mn><mn>1</mn></math>?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent"><math display="inline"><msub><mrow><mi>N</mi></mrow><mrow><mstyle class="text"><mtext>эфф</mtext></mstyle></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">→</mo> <mn>2</mn> <mo class="MathClass-bin" stretchy="false">+</mo> <msup><mrow><mi>ρ</mi></mrow><mrow><mn>2</mn></mrow></msup 
+><mi>N</mi> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>6</mn></mrow></msup 
+></math> попыток: в
+<math display="inline"><mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>4</mn></mrow></msup 
+></math> раз меньше, чем с одним
+проводом, но утечка в <math display="inline"><mn>1</mn><mspace width="0.17em" class="thinspace"/><mi>%</mi></math>
+всё ещё стоит миллиона попыток.
+</p></div></details>
+
+<p class="indent"> <a id="tailfullch7.html"></a> </p> 
+
+  </article>
+  <article class="text short" id="text-short" hidden>
+
+ <a id="s-x10-380007"></a>
+<p class="noindent">В прошлой главе дофамин был простым: одно число, «лучше
+или хуже, чем ожидалось». Это первое приближение, и оно
+хорошо работает. Но опыты последних лет показали, что по
+этому «проводу» идёт больше, чем одно число. Эта
+глава — о том, где картина сложнее и где учёные пока
+спорят.
+</p>
+ <h3 class="likesectionHead"> <a id="s-x10-39000"></a>Оптимисты и пессимисты</h3>
+<p class="noindent">Дофаминовые нейроны не одинаковы. Одни сильнее
+реагируют на приятные сюрпризы, чем на неприятные, — это
+оптимисты. Другие наоборот — пессимисты. Если каждый
+нейрон учится по своему правилу, оптимист выучит, какой
+будет награда в лучшем случае, а пессимист — в худшем.
+Вместе они записывают не одно среднее ожидание, а весь
+разброс возможных исходов, как букмекер, который знает
+не только фаворита, но и шансы каждого. Согласие с
+опытом у этой идеи есть; зачем мозгу весь разброс — пока
+гипотеза.
+</p>
+<div class="center">
+<p class="noindent"><img src="img/short14x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<div class="minipage"><p class="noindent"><span class="lati-1000">Каждый дофаминовый нейрон держит свою точку</span>
+<span class="lati-1000">на кривой возможных наград: вместе они помнят</span>
+<span class="lati-1000">всю кривую.</span> </p></div></div>
+ <h3 class="likesectionHead"> <a id="s-x10-40000"></a>Не только «лучше», но и «важно»</h3>
+<p class="noindent">Часть дофаминовых нейронов вспыхивает и на неприятные,
+но важные события: громкий звук, опасность. Похоже, что
+по дофаминовой сети идёт не только знак сюрприза, но и его
+значимость — сигнал «обрати внимание».
+</p>
+ <h3 class="likesectionHead"> <a id="s-x10-41000"></a>Два сигнала на одном проводе</h3>
+<p class="noindent">Быстрые всплески учат. А медленный средний уровень
+дофамина, меняющийся за минуты, похоже, говорит о
+другом: насколько богата сейчас обстановка. Если награды
+вокруг много, время дорого — и животное действует
+быстрее. Опыты подтверждают, что уровень дофамина
+связан с энергичностью действий. Инженер назвал бы это
+разделением сигналов по частоте: высокие частоты несут
+одно, низкие — другое.
+</p>
+ <h3 class="likesectionHead"> <a id="s-x10-42000"></a>Нарастание у цели</h3>
+<p class="noindent">Когда животное приближается к награде, дофамин часто не
+вспыхивает, а плавно растёт. Одно объяснение: это само
+ожидание, сигнал «цель близко, поднажми». Другое
+сохраняет идею сюрприза: издалека животное оценивает
+обстановку размыто, по мере приближения всё точнее, и
+каждое уточнение — маленький приятный сюрприз.
+Изящный опыт в виртуальном коридоре, где животное
+мгновенно переносили ближе к цели, говорит в пользу
+второго: дофамин отвечал всплеском, как и положено
+сюрпризу.
+</p>
+ <h3 class="likesectionHead"> <a id="s-x10-43000"></a>Взгляд назад</h3>
+<p class="noindent">Есть и смелая альтернатива: дофамин отвечает не на вопрос
+«что будет?», а на вопрос «что было причиной награды?» —
+смотрит в прошлое, а не в будущее. Опыты, где две теории
+предсказывают разное, пока противоречат друг другу. Это
+живой научный спор.
+</p>
+ <h3 class="likesectionHead"> <a id="s-x10-44000"></a>Вектор вместо числа</h3>
+<p class="noindent">Наконец, дофамин реагирует и на смену <span class="lati-1095">вкуса </span>награды,
+когда её ценность не изменилась, и помогает учиться без
+всякой награды. Похоже, это не одна ошибка, а целый
+пучок ошибок — по одной на каждую черту того, что
+произошло.
+</p><p class="indent"> Вывод главы: большинство новых теорий не отменяет
+простой картины, а расширяет её. Дофамин — не один
+провод, а небольшой жгут из нескольких. Только «взгляд
+назад» спорит с ней всерьёз.
+</p><p class="noindent"><span class="lati-1000">Формулы, модели, задачи и источники — в полной версии,</span>
+<span class="lati-1000">глава</span><span class="lati-1000"> 7.</span>
+</p>
+<p class="indent"> <a id="s-tailshortch7.html"></a> </p> 
+
+  </article>
+
+  <aside class="starline"><span data-ru="Книга бесплатная и открытая. Если глава была полезной, поставьте книге звезду на GitHub: так её найдут другие." data-en="The book is free and open. If this chapter was useful, star the book on GitHub so others can find it.">Книга бесплатная и открытая.</span> <a href="https://github.com/kladkogex/20-watt-computer" target="_blank" rel="noopener" data-ru="★ Звезда на GitHub" data-en="★ Star on GitHub">★ Звезда на GitHub</a></aside>
+  <nav class="pager">
+    <a class="prev" href="06.html"><span data-ru="← Назад" data-en="← Previous">← Назад</span><b>Нейронные сети, которые умеют учиться: добавляем DOPA</b></a>
+    <a class="next" href="08.html"><span data-ru="Дальше →" data-en="Next →">Дальше →</span><b>Когда искать, а когда решать: добавляем NORA</b></a>
+  </nav>
+  <footer>
+    <span data-ru='Константин Кладько · текст — <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.ru">CC BY-NC-SA 4.0</a>' data-en='Konstantin Kladko · text: <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>'>Константин Кладько</span>
+    <span><a href="../pdf/20-watt-computer-ru.pdf">PDF</a> · <a href="../breadboard/" data-ru="Макетная плата" data-en="Breadboard">Макетная плата</a> · <a href="https://github.com/kladkogex/20-watt-computer">GitHub</a></span>
+  </footer>
+</main>
+
+<script>
+(function(){
+  const NAV = [{"slug": "00", "title": "Как читать эту книгу", "kicker": "Введение"}, {"slug": "01", "title": "Типы нейронов", "kicker": "Глава 1"}, {"slug": "02", "title": "Что вычисляют GLUT-нейроны", "kicker": "Глава 2"}, {"slug": "03", "title": "GLUT и GABA вместе", "kicker": "Глава 3"}, {"slug": "04", "title": "Азбука Морзе: что мы знаем о языке, на котором говорят GLUT- и GABA-нейроны", "kicker": "Глава 4"}, {"slug": "05", "title": "Что вычисляют SERO-нейроны", "kicker": "Глава 5"}, {"slug": "06", "title": "Нейронные сети, которые умеют учиться: добавляем DOPA", "kicker": "Глава 6"}, {"slug": "07", "title": "Альтернативные современные теории обучения на основе дофамина", "kicker": "Глава 7"}, {"slug": "08", "title": "Когда искать, а когда решать: добавляем NORA", "kicker": "Глава 8"}, {"slug": "09", "title": "Когда писать, а когда читать: добавляем ACET", "kicker": "Глава 9"}, {"slug": "10", "title": "Вся машина", "kicker": "Глава 10"}, {"slug": "11", "title": "Входы машины: как к ней подключены глаза, уши и другие датчики", "kicker": "Глава 11"}, {"slug": "12", "title": "Распознавание изображений и видео", "kicker": "Глава 12"}, {"slug": "13", "title": "Выходы машины: как мозг управляет мышцами", "kicker": "Глава 13"}, {"slug": "14", "title": "Боль: сигнал тревоги", "kicker": "Глава 14"}, {"slug": "15", "title": "Как машина учится двигаться", "kicker": "Глава 15"}, {"slug": "16", "title": "Второй выход: как мозг управляет химией тела", "kicker": "Глава 16"}, {"slug": "17", "title": "Отладка машины", "kicker": "Глава 17"}, {"slug": "18", "title": "Типы нейронов по электрической функции", "kicker": "Глава 18"}, {"slug": "19", "title": "Нейроны по числу дендритов", "kicker": "Глава 19"}, {"slug": "20", "title": "Что делают нейроны во сне", "kicker": "Глава 20"}, {"slug": "21", "title": "Машина из живых нейронов", "kicker": "Глава 21"}, {"slug": "22", "title": "DishBrain", "kicker": "Глава 22"}, {"slug": "a", "title": "Вещества, которые не задают тип нейрона", "kicker": "Приложение A"}, {"slug": "b", "title": "Обозначения", "kicker": "Приложение B"}, {"slug": "c", "title": "Ответы", "kicker": "Приложение C"}, {"slug": "d", "title": "Экспериментальное приложение", "kicker": "Приложение D"}, {"slug": "refs", "title": "Литература", "kicker": ""}];
+  const SLUG = "07";
+  const store = {get(k){try{return localStorage.getItem(k)}catch(e){return null}}, set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+
+  // chapter selector
+  const sel = document.getElementById("jump");
+  NAV.forEach(p => { const o = document.createElement("option"); o.value = p.slug;
+    o.textContent = (p.kicker ? p.kicker + ". " : "") + p.title; if (p.slug === SLUG) o.selected = true; sel.appendChild(o); });
+  sel.addEventListener("change", () => { location.href = sel.value + ".html" + (location.hash === "#short" ? "#short" : ""); });
+
+  // Коротко / Полностью
+  const modeBox = document.querySelector(".mode");
+  const hasShort = modeBox.dataset.hasShort === "true";
+  const full = document.getElementById("text-full"), short = document.getElementById("text-short");
+  function setMode(m, remember){
+    if (!hasShort) m = "full";
+    document.body.dataset.mode = m;
+    full.hidden = m !== "full"; short.hidden = m !== "short";
+    modeBox.querySelectorAll(".seg").forEach(b => b.setAttribute("aria-pressed", b.dataset.mode === m));
+    if (remember) store.set("20w-mode", m);
+  }
+  if (!hasShort) modeBox.hidden = true;
+  modeBox.addEventListener("click", e => { const b = e.target.closest(".seg"); if (b) { setMode(b.dataset.mode, true); history.replaceState(null, "", "#" + b.dataset.mode); } });
+  document.addEventListener("click", e => { const a = e.target.closest("a[data-mode]"); if (a) { e.preventDefault(); setMode(a.dataset.mode, true); window.scrollTo(0, 0); } });
+  // a link into the text (#x...) that lives in the other version switches to it
+  function follow(){
+    const h = decodeURIComponent(location.hash.slice(1));
+    if (h === "short" || h === "full") { setMode(h, true); return; }
+    if (!h) return;
+    const t = document.getElementById(h);
+    if (t) { setMode(short.contains(t) ? "short" : "full", false); t.scrollIntoView(); }
+  }
+  setMode(store.get("20w-mode") || "full", false);
+  follow();
+  window.addEventListener("hashchange", follow);
+  // links that leave the book open in the whole window when the page sits inside the reader
+  if (document.documentElement.classList.contains("embedded"))
+    document.querySelectorAll('a[href^="../"], a[href^="http"]').forEach(a => { a.target = a.href.startsWith(location.origin) ? "_top" : "_blank"; });
+
+  // interface language (the text itself is Russian)
+  function setLang(l){
+    document.querySelectorAll("[data-ru]").forEach(el => { el.innerHTML = el.dataset[l]; });
+    document.getElementById("lang-ru").setAttribute("aria-pressed", l === "ru");
+    document.getElementById("lang-en").setAttribute("aria-pressed", l === "en");
+    store.set("20w-lang", l);
+  }
+  document.getElementById("lang-ru").onclick = () => setLang("ru");
+  document.getElementById("lang-en").onclick = () => setLang("en");
+  setLang(store.get("20w-lang") === "en" ? "en" : "ru");
+  window.addEventListener("storage", e => {
+    if (e.key === "20w-lang" && (e.newValue === "ru" || e.newValue === "en")) setLang(e.newValue);
+    if (e.key === "20w-theme" && (e.newValue === "light" || e.newValue === "dark")) document.documentElement.setAttribute("data-theme", e.newValue);
+  });
+})();
+</script>
+<script>
+(function(){var b=document.getElementById("theme");if(!b)return;var r=document.documentElement;function cur(){var t=r.getAttribute("data-theme");if(t)return t;return window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";}function show(){b.textContent=cur()==="dark"?"☀":"☾";b.setAttribute("aria-pressed",cur()==="dark");}b.onclick=function(){var t=cur()==="dark"?"light":"dark";r.setAttribute("data-theme",t);try{localStorage.setItem("20w-theme",t);}catch(e){}show();};if(window.matchMedia)matchMedia("(prefers-color-scheme: dark)").addEventListener("change",show);show();})();
+</script>
+</body>
+</html>

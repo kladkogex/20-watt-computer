@@ -1,0 +1,678 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<script>try{var t=localStorage.getItem("20w-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);}catch(e){}if(window.self!==window.top)document.documentElement.classList.add("embedded");</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Глава 17. Отладка машины · Компьютер на 20 ваттах</title>
+<meta name="description" content="Инженер, которому дали работающую плату без схемы, отлаживает её четырьмя приёмами. Он ставит щуп и смотрит, что идёт по проводу. Он подаёт тестовый сигнал и смотрит, что …">
+<link rel="canonical" href="https://kladkogex.github.io/20-watt-computer/read/17.html">
+<meta property="og:type" content="book">
+<meta property="og:title" content="Глава 17. Отладка машины · Компьютер на 20 ваттах">
+<meta property="og:description" content="Инженер, которому дали работающую плату без схемы, отлаживает её четырьмя приёмами. Он ставит щуп и смотрит, что идёт по проводу. Он подаёт тестовый сигнал и смотрит, что …">
+<meta property="og:url" content="https://kladkogex.github.io/20-watt-computer/read/17.html">
+<meta property="og:locale" content="ru_RU">
+<meta property="og:image" content="https://kladkogex.github.io/20-watt-computer/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Your brain runs on 20 watts. Here is its datasheet. The 20-Watt Computer, a free textbook for engineers.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://kladkogex.github.io/20-watt-computer/og-card.png">
+<meta name="twitter:title" content="Глава 17. Отладка машины · The 20-Watt Computer">
+<meta name="twitter:description" content="Инженер, которому дали работающую плату без схемы, отлаживает её четырьмя приёмами. Он ставит щуп и смотрит, что идёт по проводу. Он подаёт тестовый сигнал и смотрит, что …">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Chapter", "name": "Отладка машины", "url": "https://kladkogex.github.io/20-watt-computer/read/17.html", "position": 17, "inLanguage": "ru", "isAccessibleForFree": true, "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/", "author": {"@type": "Person", "name": "Константин Кладько", "alternateName": "Konstantin Kladko"}, "isPartOf": {"@type": "Book", "name": "Компьютер на 20 ваттах. Как вычисляет мозг: количественный подход для инженеров", "alternateName": "The 20-Watt Computer: How the Brain Computes. A Quantitative Approach for Engineers", "author": {"@type": "Person", "name": "Константин Кладько", "alternateName": "Konstantin Kladko"}, "url": "https://kladkogex.github.io/20-watt-computer/", "inLanguage": "ru", "isAccessibleForFree": true, "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/"}}</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap">
+<link rel="stylesheet" href="book.css">
+</head>
+<body>
+<header class="bar">
+  <a class="home" href="../#toc"><span class="w">20</span> <span data-ru="Компьютер на 20 ваттах" data-en="The 20-Watt Computer">Компьютер на 20 ваттах</span></a>
+  <label class="jump"><span class="sr" data-ru="Перейти к главе" data-en="Go to chapter">Перейти к главе</span>
+    <select id="jump"></select></label>
+  <div class="langs" role="group" aria-label="Language">
+    <button class="chip" id="lang-ru" type="button">RU</button>
+    <button class="chip" id="lang-en" type="button">EN</button>
+    <button class="chip theme" id="theme" type="button" aria-label="Light or dark theme" title="Light / dark">☾</button>
+  </div>
+</header>
+
+<main class="page">
+  <div class="pagehead">
+    <p class="kicker" data-ru="Глава 17" data-en="Chapter 17">Глава 17</p>
+    <h1><span class="t-full">Отладка машины</span><span class="t-short">Как чинить машину без схемы</span></h1>
+    <div class="mode" role="group" aria-label="Version" data-has-short="true">
+      <button type="button" class="seg" data-mode="short"><b data-ru="Коротко" data-en="Short">Коротко</b><span data-ru="без формул, с рисунками" data-en="no formulas, with drawings">без формул, с рисунками</span></button>
+      <button type="button" class="seg" data-mode="full"><b data-ru="Полностью" data-en="Full">Полностью</b><span data-ru="формулы, модели, задачи" data-en="formulas, models, exercises">формулы, модели, задачи</span></button>
+    </div>
+    <p class="lang-note" data-ru="" data-en="The online reader is in Russian for now; the book in other languages is in the PDF downloads in the menu.">.</p>
+  </div>
+
+  <article class="text full" id="text-full">
+
+ <a id="x20-15300017"></a>
+ <h3 class="sectionHead"><span class="titlemark">17.1 </span> <a id="x20-15400017.1"></a>Как отлаживают машину без схемы</h3>
+<p class="noindent">Инженер, которому дали работающую плату без схемы, отлаживает её четырьмя приёмами. Он
+ставит <span class="lati-1095">щуп </span>и смотрит, что идёт по проводу. Он <span class="lati-1095">подаёт тестовый сигнал </span>и смотрит, что
+изменилось. Он <span class="lati-1095">отключает </span>кусок схемы и смотрит, что перестало работать. И он <span class="lati-1095">читает</span>
+<span class="lati-1095">регистры управления</span>, чтобы узнать, в каком режиме работает плата. Вся эта книга —
+попытка прочитать схему мозга, и в этой главе посмотрим, какими из четырёх приёмов
+инженеры уже умеют пользоваться и что им говорят предыдущие главы о том, чего
+ждать.
+</p><p class="indent"> Самый заметный сегодня пример такой отладки — интерфейсы мозг–компьютер: устройства,
+которые читают импульсы нейронов и превращают их в команды для внешних машин, или,
+наоборот, подают в мозг сигналы извне. Им и посвящена большая часть главы, и в первую
+очередь тому, что делает компания Neuralink.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">17.2 </span> <a id="x20-15500017.2"></a>Щуп: что слышит электрод</h3>
+<p class="noindent">Щуп мозга — тонкий электрод, вставленный в ткань. Он слышит импульсы нейронов,
+лежащих в радиусе порядка сотни микрометров, — обычно от одного до нескольких.
+Импульс на электроде — всплеск в десятки–сотни микровольт длительностью около
+миллисекунды, и по его форме можно отличить соседние нейроны друг от друга. Лучше всего
+слышны крупные <span class="nt">GLUT</span>-нейроны: их в коре большинство (таблица <a href="01.html#x4-60021">1.1</a>), и их токи
+сильнее.
+</p><p class="indent"> Сразу видна главная трудность. Хороший щуп сегодня — это сотни или тысячи электродов, а нейронов
+в мозге <math display="inline"><mn>8</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>6</mn> <mo class="MathClass-bin" stretchy="false">⋅</mo> <mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>1</mn><mn>0</mn></mrow></msup 
+></math>.
+Мы подслушиваем примерно одну стомиллионную машины. Почему же из такой ничтожной
+выборки вообще что-то можно понять? Ответ дала глава <a href="04.html#x7-350004">4</a>. Соседние нейроны шумят
+согласованно, и усреднение по группе упирается в предел (утверждение <a href="04.html#x7-39003r2">4.2</a>): сотня
+нейронов несёт почти столько же, сколько тысяча. К тому же задача, которую решает
+двигательная кора, маломерна: у руки немного суставов (глава <a href="13.html#x16-12100013">13</a>), и активность сотен
+нейронов, управляющих ею, укладывается в пространство всего из десятка-другого общих
+переменных <span class="cite">[<a href="refs.html#XGallego2017">144</a>]</span>. Щуп на сотню нейронов слышит почти все эти переменные. Если бы
+мозг хранил независимое сообщение в каждом нейроне, такое подслушивание было бы
+бесполезно.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">17.3 </span> <a id="x20-15600017.3"></a>Поток данных: сжатие прямо на щупе</h3>
+<p class="noindent">Щуп выдаёт огромный поток. Чтобы увидеть форму импульса, каждый электрод нужно оцифровывать
+примерно <math display="inline"><mn>2</mn><mn>0</mn></math>
+тысяч раз в секунду с точностью около десяти бит. Тысяча электродов дают
+</p><div class="keyformula"><table class="equation"><tr><td>
+<math display="block" class="equation">
+<mstyle id="x20-156001r1" class="label"></mstyle><mtable class="aligned" displaystyle="true"><mtr><mtd columnalign="right"><msub><mrow><mi>R</mi></mrow><mrow><mstyle class="text"><mtext>сырой</mtext></mstyle></mrow></msub 
+><mspace width="0.28em" class="thickpace"/></mtd><mtd columnalign="left"> <mo class="MathClass-rel" stretchy="false">=</mo> <mspace width="0.28em" class="thickpace"/><mi>N</mi><mspace width="0.17em" class="thinspace"/><msub><mrow><mi>f</mi></mrow><mrow><mi>s</mi></mrow></msub 
+><mspace width="0.17em" class="thinspace"/><mi>b</mi><mspace width="0.28em" class="thickpace"/> <mo class="MathClass-rel" stretchy="false">≈</mo><mspace width="0.28em" class="thickpace"/><mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>3</mn></mrow></msup 
+> <mo class="MathClass-bin" stretchy="false">⋅</mo> <mn>2</mn> <mo class="MathClass-bin" stretchy="false">⋅</mo> <mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>4</mn></mrow></msup 
+> <mo class="MathClass-bin" stretchy="false">⋅</mo> <mn>1</mn><mn>0</mn><mspace width="0.28em" class="thickpace"/> <mo class="MathClass-rel" stretchy="false">≈</mo><mspace width="0.28em" class="thickpace"/><mn>2</mn> <mo class="MathClass-bin" stretchy="false">⋅</mo> <mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>8</mn></mrow></msup 
+><mspace width="0.33em" class="nbsp" /><mstyle class="text"><mtext>бит/с</mtext></mstyle><mo class="MathClass-punc" stretchy="false">,</mo></mtd><mtd columnalign="right"></mtd>
+</mtr><mtr><mtd columnalign="right"><msub><mrow><mi>R</mi></mrow><mrow><mstyle class="text"><mtext>имп</mtext></mstyle></mrow></msub 
+><mspace width="0.28em" class="thickpace"/></mtd> <mtd columnalign="left"> <mo class="MathClass-rel" stretchy="false">≈</mo><mspace width="0.28em" class="thickpace"/><mi>N</mi><mspace width="0.17em" class="thinspace"/><mi>r</mi><mspace width="0.17em" class="thinspace"/><msub><mrow><mi class="loglike">log</mi><mo>⁡</mo></mrow><mrow><mn>2</mn></mrow></msub 
+> <mfrac><mrow><mi>e</mi></mrow> 
+<mrow><mi>r</mi><mspace width="0.17em" class="thinspace"/><mi mathvariant="normal">Δ</mi><mi>t</mi></mrow></mfrac><mspace width="0.28em" class="thickpace"/> <mo class="MathClass-rel" stretchy="false">≈</mo><mspace width="0.28em" class="thickpace"/><mn>8</mn> <mo class="MathClass-bin" stretchy="false">⋅</mo> <mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>4</mn></mrow></msup 
+><mspace width="0.33em" class="nbsp" /><mstyle class="text"><mtext>бит/с</mtext></mstyle><mo class="MathClass-punc" stretchy="false">.</mo></mtd>
+ </mtr> </mtable>
+</math></td><td class="eq-no">(17.1)</td></tr></table>
+</div><p class="noindent"> Вторая оценка — ёмкость потока импульсов (<a href="04.html#x7-37001r1">4.1</a>) при
+<math display="inline"><mi>r</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mn>0</mn></math> импульсов в
+секунду и точности <math display="inline"><mi mathvariant="normal">Δ</mi><mi>t</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>:
+всё, что в нём на самом деле есть, занимает в две с половиной тысячи раз меньше. Для
+вживлённого устройства это решающая разница: сырой поток нельзя передать по радио через
+кожу с тем питанием, которое можно позволить внутри головы, не нагревая ткань.
+Поэтому вживлённому устройству нужно выделять импульсы прямо на кристалле
+рядом с электродами и передавать наружу только события — номер канала и момент
+импульса. В первом описании системы Neuralink до этого ещё не дошли: кристаллы
+усиливают и оцифровывают сигналы, весь сырой поток уходит по кабелю, а импульсы
+выделяет программа снаружи; сжатие на кристалле и связь без проводов названы там
+планом <span class="cite">[<a href="refs.html#XMusk2019">140</a>]</span>.
+</p><p class="indent"> Это знакомый приём. Глаз сжимает сигнал в сто раз, прежде чем отправить его по длинному
+кабелю (глава <a href="11.html#x14-10400011">11</a>); событийная камера передаёт не кадры, а изменения. Щуп, чтобы уложиться в
+провод, вынужден делать то же, что делает сам мозг: говорить импульсами и только о
+новостях.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">17.4 </span> <a id="x20-15700017.4"></a>Что делает Neuralink</h3>
+<p class="noindent">Устройство Neuralink — щуп, собранный под эти ограничения <span class="cite">[<a href="refs.html#XMusk2019">140</a>]</span>. Вместо жёсткой решётки иголок
+— много гибких нитей тоньше волоса с электродами вдоль каждой: в первом описании системы — до
+<math display="inline"><mn>3</mn><mn>0</mn><mn>7</mn><mn>2</mn></math> электродов
+на <math display="inline"><mn>9</mn><mn>6</mn></math> нитях,
+по <math display="inline"><mn>3</mn><mn>2</mn></math> на
+нить, а в устройстве, вживлённом людям, по сообщениям компании, около тысячи каналов на
+<math display="inline"><mn>6</mn><mn>4</mn></math> нитях.
+Гибкие нити меньше повреждают ткань и лучше переносят то, что мозг внутри черепа всё время
+слегка сдвигается. Нити вставляет робот, обходя сосуды. В первом описании, как сказано выше,
+сырой поток (<a href="#x20-156001r1">17.1</a>) шёл наружу по кабелю. Устройство для людей, по сообщениям компании,
+устроено иначе: корпус полностью закрыт кожей, импульсы выделяются внутри, данные уходят
+по радио, питание приходит без проводов.
+</p><p class="indent"> Задача первого устройства — чтение. Нити ставят в ту часть коры, которая планирует
+движения руки, и декодер превращает импульсы в движение курсора на экране. Человек с
+параличом рук управляет компьютером, представляя движение. Сама идея не нова: интерфейсы
+на жёстких решётках из сотни электродов давно позволяли управлять курсором <span class="cite">[<a href="refs.html#XHochberg2006">141</a>]</span>, писать
+текст, представляя движения руки при письме <span class="cite">[<a href="refs.html#XWillett2021">142</a>]</span>, и даже переводить попытки говорить в
+текст на экране со скоростью около шестидесяти слов в минуту <span class="cite">[<a href="refs.html#XWillett2023">143</a>]</span>. Новое у Neuralink —
+инженерия: число каналов, беспроводность, закрытый корпус и роботизированная
+вставка, то есть попытка сделать щуп, который можно носить годами вне лаборатории.
+Насколько нам известно, результаты испытаний на людях публиковались в основном самой
+компанией, а не в рецензируемых статьях; компания сообщала, в частности, что часть нитей
+после вставки сместилась и число работающих каналов уменьшилось. Для отладки это
+обычная неприятность: щуп, который двигается относительно платы, слышит уже другие
+провода.
+</p><p class="indent"> Второе направление компании — запись: устройство для зрения, которое подаёт
+сигналы в зрительную кору человека, потерявшего зрение. О нём ниже, в разделе о
+записи.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">17.5 </span> <a id="x20-15800017.5"></a>Чтение: декодер как получатель</h3>
+<p class="noindent">Декодер интерфейса — это получатель в смысле утверждения <a href="04.html#x7-41003r3">4.3</a>: он сам решает, какую часть
+сообщения прочитать. Практически все интерфейсы читают <span class="lati-1095">частоты групп</span>: считают импульсы
+каждого канала в окнах по несколько десятков миллисекунд и складывают их с весами,
+подобранными так, чтобы получалось задуманное движение. Это частотный код группы из
+раздела <a href="04.html#x7-390004.4">4.4</a>, и он выбран не случайно: при нескольких импульсах на окно частота одного нейрона
+не определена, а сумма по сотне уже работает.
+</p><p class="indent"> Сколько информации удаётся вынуть? Письмо «мысленной рукой» шло со скоростью около
+девяноста знаков в минуту <span class="cite">[<a href="refs.html#XWillett2021">142</a>]</span>, то есть полтора знака в секунду: даже при пяти битах на знак
+это меньше восьми бит в секунду. Управление курсором, по сообщениям Neuralink, даёт порядка
+десяти бит в секунду. А верхняя граница (<a href="04.html#x7-37001r1">4.1</a>) для <span class="lati-1095">одного </span>нейрона — десятки бит в секунду, для
+сотни — тысячи. Интерфейс вынимает из подслушанных нейронов малую долю того, что они
+могли бы нести. Узкое место — не провод, а то, сколько независимых переменных несёт группа
+(утверждение <a href="04.html#x7-39003r2">4.2</a>) и насколько хорошо декодер понимает код, который, как мы видели в главе <a href="04.html#x7-350004">4</a>,
+до конца не расшифрован.
+</p><p class="indent"> Есть и вторая особенность, знакомая по главе <a href="15.html#x18-13800015">15</a>. Декодер и мозг учатся друг у друга. Мозг
+видит, куда поехал курсор, получает ошибку и подстраивает свои команды — то же обучение
+движениям по проводу ошибки. А инженеры время от времени заново подбирают веса
+декодера, потому что нейроны под нитями меняются и связи в сети переучиваются.
+Получаются два ученика, которые подстраиваются друг под друга; чтобы такая пара не ушла
+вразнос, скорости их обучения удобно развести: пусть один учится быстро, а другой
+медленно.
+</p>
+ <div class="tcolorbox keyblock" id="tcolobox-37"> 
+<div class="tcolorbox-content"><div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x20-158001r1"></a>
+<span class="labx-1095">Утверждение 17.1 </span>(Почему щуп на тысячу нейронов работает)<span class="labx-1095">.</span> </span> <span class="lati-1095">Интерфейс,</span>
+<span class="lati-1095">подслушивающий ничтожную долю нейронов, может управлять движением потому,</span>
+<span class="lati-1095">что активность группы маломерна и её шумы согласованы: несколько сотен нейронов</span>
+<span class="lati-1095">несут почти все общие переменные. По той же причине интерфейс вынимает лишь</span>
+<span class="lati-1095">несколько бит в секунду — столько, сколько независимых переменных в задаче, а не</span>
+<span class="lati-1095">столько, сколько вмещает поток импульсов. Работа интерфейсов измерена; насколько</span>
+<span class="lati-1095">лучше станет декодер, когда код будет понят, — открытый вопрос.</span>
+</p>
+</div>
+ 
+</div> 
+</div>
+ <h3 class="sectionHead"><span class="titlemark">17.6 </span> <a id="x20-15900017.6"></a>Запись: труднее, чем чтение</h3>
+<p class="noindent">Подать сигнал в машину труднее, чем прочитать. Электрод, через который пропускают ток,
+возбуждает не один нейрон, а все нейроны и провода вокруг себя, без разбора типа и знака.
+Записать им код, в котором важно, <span class="lati-1095">какой </span>нейрон и <span class="lati-1095">когда </span>сработал (глава <a href="04.html#x7-350004">4</a>), нельзя: можно лишь
+грубо задать, <span class="lati-1095">где </span>и <span class="lati-1095">насколько сильно</span>.
+</p><p class="indent"> Для зрения этого отчасти хватает. Ток через электрод в зрительной коре человек видит как
+светящуюся точку в определённом месте поля зрения; когда точки зажигали одновременно, до
+шестнадцати сразу, человек, потерявший зрение, узнавал некоторые буквы и различал
+границы предметов <span class="cite">[<a href="refs.html#XFernandez2021">145</a>]</span>. Это код местом, и его записать можно. Но вспомните главу <a href="11.html#x14-10400011">11</a>:
+глаз посылает в мозг не пиксели, а сжатое описание — края, перемены, посветление и
+потемнение, по отдельным проводам. Запись «точек света» в кору — это запись пикселей в
+машину, которая ждёт на входе совсем другой код. Поэтому искусственное зрение пока
+грубее, чем можно было бы ждать по числу электродов. Есть и испытательные сигналы,
+которым электрод не нужен: зрительные иллюзии подают через глаз необычный вход и
+выводят машину из обычного режима, а каждая ошибка указывает на свой механизм
+(раздел <a href="12.html#x15-11800012.6">12.6</a>).
+</p>
+ <h3 class="sectionHead"><span class="titlemark">17.7 </span> <a id="x20-16000017.7"></a>Чего щуп не видит</h3>
+<p class="noindent">Электрод слышит адресную шину — импульсы <span class="nt">GLUT</span>-нейронов и хуже, мелких <span class="nt">GABA</span>. Но в
+главах <a href="05.html#x8-470005">5</a>–<a href="09.html#x12-860009">9</a> мы видели, что режим работы всей машины задают широковещательные регистры:
+концентрации <span class="nt">SERO</span>, <span class="nt">DOPA</span>, <span class="nt">NORA</span>, <span class="nt">ACET</span>. Их электрод не слышит: нейронов-источников
+ничтожно мало, и их сигнал — не импульс рядом с щупом, а концентрация в объёме.
+Отладчик, который видит шину данных, но не видит регистров управления, всегда будет
+удивляться: один и тот же вход будет давать разные ответы, потому что где-то изменился
+<math display="inline"><mi>g</mi></math>,
+<math display="inline"><mi>a</mi></math> или
+<math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>γ</mi></mrow></msub 
+></math>.
+Концентрации можно мерить химическими датчиками прямо в ткани <span class="cite">[<a href="refs.html#XBunin1998">83</a>]</span>, но в интерфейсах
+такие датчики пока не используются. Совсем вне поля зрения щупа остаётся и второй,
+медленный выход машины — гормоны в крови (глава <a href="16.html#x19-14500016">16</a>): их меряют в пробах крови, а не
+электродом.
+</p><p class="indent"> Не видит щуп и весов — а именно в них хранится почти вся память и всё выученное. Их
+можно лишь угадывать по тому, как меняются ответы. И не видит он боли так, как её чувствует
+человек: в главе <a href="14.html#x17-12900014">14</a> мы видели, что сила сигнала тревоги задаётся самой машиной — воротами в
+спинном мозге и регуляторами сверху, так что по датчику нельзя прочитать, насколько
+больно.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">17.8 </span> <a id="x20-16100017.8"></a>Итог: отладка и открытые вопросы</h3>
+ <div class="table">
+<p class="indent"> <a id="x20-1610011"></a></p><figure class="float">
+<div class="tabular">
+ <table id="TBL-20" class="tabular"><colgroup id="TBL-20-1g"><col id="TBL-20-1" /><col id="TBL-20-2" /><col id="TBL-20-3" /><col id="TBL-20-4" /></colgroup><tr style="vertical-align:baseline;" id="TBL-20-1-"><td style="text-align:left;" id="TBL-20-1-1" class="td11"> <p class="noindent"><span class="larm-0900">Приём</span>
+ <span class="larm-0900">отладки</span> </p></td><td style="text-align:left;" id="TBL-20-1-2" class="td11"> <p class="noindent"><span class="larm-0900">Что</span>
+ <span class="larm-0900">делает</span>
+ <span class="larm-0900">интерфейс</span> </p></td><td style="text-align:left;" id="TBL-20-1-3" class="td11"> <p class="noindent"><span class="larm-0900">Что</span>
+ <span class="larm-0900">объясняет</span>
+ <span class="larm-0900">книга</span> </p></td><td style="text-align:left;" id="TBL-20-1-4" class="td11"> <p class="noindent"><span class="larm-0900">Что</span>
+ <span class="larm-0900">известно</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-20-2-"><td style="text-align:left;" id="TBL-20-2-1" class="td11"> <p class="noindent"><span class="larm-0900">щуп</span> </p></td><td style="text-align:left;" id="TBL-20-2-2" class="td11"> <p class="noindent"><span class="larm-0900">слышит</span>
+ <span class="larm-0900">сотни–тысячи</span>
+ <span class="larm-0900">нейронов</span> </p></td><td style="text-align:left;" id="TBL-20-2-3" class="td11"> <p class="noindent"><span class="larm-0900">маломерность</span>
+ <span class="larm-0900">и</span>
+ <span class="larm-0900">согласованный</span>
+ <span class="larm-0900">шум</span>
+ <span class="larm-0900">(гл.</span><span class="larm-0900"> </span><a href="04.html#x7-350004"><span class="larm-0900">4</span></a><span class="larm-0900">)</span> </p></td><td style="text-align:left;" id="TBL-20-2-4" class="td11"> <p class="noindent"><span class="larm-0900">измерено</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-20-3-"><td style="text-align:left;" id="TBL-20-3-1" class="td11"> <p class="noindent"><span class="larm-0900">сжатие</span>
+ <span class="larm-0900">на</span>
+ <span class="larm-0900">щупе</span> </p></td><td style="text-align:left;" id="TBL-20-3-2" class="td11"> <p class="noindent"><span class="larm-0900">передаёт</span>
+ <span class="larm-0900">события</span>
+ <span class="larm-0900">вместо</span>
+ <span class="larm-0900">сырого</span>
+ <span class="larm-0900">сигнала</span> </p></td><td style="text-align:left;" id="TBL-20-3-3" class="td11"> <p class="noindent"><span class="larm-0900">ёмкость</span>
+ <span class="larm-0900">потока</span>
+ <span class="larm-0900">импульсов</span><span class="larm-0900"> </span><span class="larm-0900">(</span><a href="04.html#x7-37001r1"><span class="larm-0900">4.1</span></a><span class="larm-0900">)</span> </p></td><td style="text-align:left;" id="TBL-20-3-4" class="td11"> <p class="noindent"><span class="larm-0900">инженерно</span>
+ <span class="larm-0900">решено</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-20-4-"><td style="text-align:left;" id="TBL-20-4-1" class="td11"> <p class="noindent"><span class="larm-0900">чтение</span> </p></td><td style="text-align:left;" id="TBL-20-4-2" class="td11"> <p class="noindent"><span class="larm-0900">частоты</span>
+ <span class="larm-0900">групп</span>
+ <math display="inline"> <mo class="MathClass-rel" stretchy="false">→</mo></math>
+ <span class="larm-0900">движение,</span>
+ <span class="larm-0900">текст,</span>
+ <span class="larm-0900">речь</span> </p></td><td style="text-align:left;" id="TBL-20-4-3" class="td11"> <p class="noindent"><span class="larm-0900">декодер</span>
+ <span class="larm-0900">—</span>
+ <span class="larm-0900">получатель,</span>
+ <span class="larm-0900">частотный</span>
+ <span class="larm-0900">код</span>
+ <span class="larm-0900">группы</span> </p></td><td style="text-align:left;" id="TBL-20-4-4" class="td11"> <p class="noindent"><span class="larm-0900">работает;</span>
+ <span class="larm-0900">несколько</span>
+ <span class="larm-0900">бит</span>
+ <span class="larm-0900">в</span>
+ <span class="larm-0900">секунду</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-20-5-"><td style="text-align:left;" id="TBL-20-5-1" class="td11"> <p class="noindent"><span class="larm-0900">совместное</span>
+ <span class="larm-0900">обучение</span> </p></td><td style="text-align:left;" id="TBL-20-5-2" class="td11"> <p class="noindent"><span class="larm-0900">мозг</span>
+ <span class="larm-0900">и</span>
+ <span class="larm-0900">декодер</span>
+ <span class="larm-0900">подстраиваются</span>
+ <span class="larm-0900">друг</span>
+ <span class="larm-0900">под</span>
+ <span class="larm-0900">друга</span> </p></td><td style="text-align:left;" id="TBL-20-5-3" class="td11"> <p class="noindent"><span class="larm-0900">провод</span>
+ <span class="larm-0900">ошибки</span>
+ <span class="larm-0900">(гл.</span><span class="larm-0900"> </span><a href="15.html#x18-13800015"><span class="larm-0900">15</span></a><span class="larm-0900">)</span> </p></td><td style="text-align:left;" id="TBL-20-5-4" class="td11"> <p class="noindent"><span class="larm-0900">наблюдается;</span>
+ <span class="larm-0900">правила</span>
+ <span class="larm-0900">подстройки</span>
+ <span class="larm-0900">—</span>
+ <span class="larm-0900">предмет</span>
+ <span class="larm-0900">исследований</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-20-6-"><td style="text-align:left;" id="TBL-20-6-1" class="td11"> <p class="noindent"><span class="larm-0900">запись</span> </p></td><td style="text-align:left;" id="TBL-20-6-2" class="td11"> <p class="noindent"><span class="larm-0900">ток</span>
+ <span class="larm-0900">зажигает</span>
+ <span class="larm-0900">точки</span>
+ <span class="larm-0900">в</span>
+ <span class="larm-0900">поле</span>
+ <span class="larm-0900">зрения</span> </p></td><td style="text-align:left;" id="TBL-20-6-3" class="td11"> <p class="noindent"><span class="larm-0900">код</span>
+ <span class="larm-0900">местом</span>
+ <span class="larm-0900">записать</span>
+ <span class="larm-0900">можно,</span>
+ <span class="larm-0900">временной</span>
+ <span class="larm-0900">—</span>
+ <span class="larm-0900">нет</span>
+ <span class="larm-0900">(гл.</span><span class="larm-0900"> </span><a href="11.html#x14-10400011"><span class="larm-0900">11</span></a><span class="larm-0900">)</span> </p></td><td style="text-align:left;" id="TBL-20-6-4" class="td11"> <p class="noindent"><span class="larm-0900">точки</span>
+ <span class="larm-0900">измерены;</span>
+ <span class="larm-0900">полезное</span>
+ <span class="larm-0900">зрение</span>
+ <span class="larm-0900">—</span>
+ <span class="larm-0900">пока</span>
+ <span class="larm-0900">нет</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-20-7-"><td style="text-align:left;" id="TBL-20-7-1" class="td11"> <p class="noindent"><span class="larm-0900">чтение</span>
+ <span class="larm-0900">регистров</span> </p></td><td style="text-align:left;" id="TBL-20-7-2" class="td11"> <p class="noindent"><span class="larm-0900">почти</span>
+ <span class="larm-0900">не</span>
+ <span class="larm-0900">делается</span> </p></td><td style="text-align:left;" id="TBL-20-7-3" class="td11"> <p class="noindent"><span class="larm-0900">широковещательные</span>
+ <span class="larm-0900">каналы</span>
+ <span class="larm-0900">(гл.</span><span class="larm-0900"> </span><a href="05.html#x8-470005"><span class="larm-0900">5</span></a><span class="larm-0900">–</span><a href="09.html#x12-860009"><span class="larm-0900">9</span></a><span class="larm-0900">)</span> </p></td><td style="text-align:left;" id="TBL-20-7-4" class="td11"> <p class="noindent"><span class="larm-0900">химические</span>
+ <span class="larm-0900">датчики</span>
+ <span class="larm-0900">есть</span>
+ <span class="larm-0900">в</span>
+ <span class="larm-0900">опытах</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-20-8-"><td style="text-align:left;" id="TBL-20-8-1" class="td11"> </td></tr></table> </div>
+<figcaption class="caption"><span class="id">Таблица 17.1: </span><span class="content">Отладка машины: что умеют интерфейсы мозг–компьютер и что о них
+говорят главы книги.</span></figcaption>
+ </figure>
+ </div>
+<p class="indent"> Таблица <a href="#x20-1610011">17.1</a> сводит главу. Интерфейсы мозг–компьютер уже умеют ставить щуп на
+адресную шину и читать с неё несколько бит в секунду, и то, что это вообще работает,
+объясняется маломерностью и согласованным шумом из главы <a href="04.html#x7-350004">4</a>. Записывать в машину они
+умеют лишь грубо, потому что её входной код сжат и адресован отдельным проводам. А
+регистры управления и веса — то, что делает машину обучаемой и настраиваемой, — щупу пока
+почти не видны.
+</p><p class="indent"> Каждый открытый вопрос главы <a href="10.html#x13-9500010">10</a> — это и задача для отладчика. Какой код читать,
+решится, когда щупы станут плотнее и декодеры научатся пользоваться временем импульсов, а
+не только частотами. Как учится многослойная сеть, можно проверить, поставив щупы
+сразу в несколько слоёв и глядя, как меняются их ответы при обучении. Что передают
+широковещательные каналы, станет видно, когда к электрическим щупам добавятся химические.
+Эта книга — попытка прочитать схему машины по её поведению и по законам, которые знает
+любой инженер. Отладчики, которые строятся сейчас, дадут возможность проверить эту схему
+щупом.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">17.9 </span> <a id="x20-16200017.9"></a>Задачи</h3>
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x20-162001r1"></a>
+<span class="labx-1095">Задача 17.1 </span>(<math display="inline"><mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Бюджет радиоканала. </span>Передача через кожу стоит <math display="inline"><mn>1</mn></math> нДж
+на бит, передатчику можно тратить не больше <math display="inline"><mn>1</mn><mn>0</mn></math> мВт.
+Какая мощность нужна для сырого потока (<a href="#x20-156001r1">17.1</a>) при <math display="inline"><mi>N</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mn>0</mn><mn>0</mn><mn>0</mn></math>
+электродов и для потока импульсов? Какой энергии на бит потребовал бы сырой поток?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent"><math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn></math> Вт против
+<math display="inline"><mn>8</mn><mn>1</mn></math> мкВт; сырому потоку
+нужно не больше <math display="inline"><mn>5</mn><mn>0</mn></math> пДж/бит.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x20-162002r2"></a>
+<span class="labx-1095">Задача 17.2 </span>(<math display="inline"><mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Сколько бит в сотне нейронов. </span>Декодер складывает импульсы <math display="inline"><mi>N</mi></math>
+нейронов за окна <math display="inline"><mn>5</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>
+при <math display="inline"><mi>r</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>2</mn><mn>0</mn></math> имп/с,
+попарная корреляция шума <math display="inline"><mi>c</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn></math>,
+сигнал меняет частоту группы на <math display="inline"><mn>3</mn><mn>0</mn><mi>%</mi></math>
+(среднеквадратично). Оцените скорость <math display="inline"><mstyle displaystyle="false"><mfrac><mrow><mn>1</mn>
+</mrow><mrow><mn>2</mn></mrow></mfrac></mstyle><msub><mrow> <mi class="loglike">log</mi><mo>⁡</mo></mrow><mrow><mn>2</mn></mrow></msub 
+><mo class="MathClass-open" stretchy="false">(</mo><mn>1</mn> <mo class="MathClass-bin" stretchy="false">+</mo> <mstyle class="text"><mtext>SNR</mtext></mstyle><mo class="MathClass-close" stretchy="false">)</mo></math>
+за окно при <math display="inline"><mi>N</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mn>0</mn></math>,
+<math display="inline"><mn>1</mn><mn>0</mn><mn>0</mn></math>,
+<math display="inline"><mn>1</mn><mn>0</mn><mn>0</mn><mn>0</mn></math>
+и <math display="inline"><mi>N</mi> <mo class="MathClass-rel" stretchy="false">→</mo><mi>∞</mi></math>.
+А при <math display="inline"><mi>c</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn></math>,
+<math display="inline"><mi>N</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mn>0</mn><mn>0</mn><mn>0</mn></math>?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">При <math display="inline"><mi>c</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn></math>
+<math display="inline"><mn>5</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>6</mn></math>,
+<math display="inline"><mn>8</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>7</mn></math>,
+<math display="inline"><mn>9</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn></math> бит/с, предел
+<math display="inline"><mn>9</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>3</mn></math> бит/с;
+при <math display="inline"><mi>c</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn></math> и
+<math display="inline"><mi>N</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mn>0</mn><mn>0</mn><mn>0</mn></math>
+<math display="inline"><mn>6</mn><mn>5</mn></math> бит/с.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x20-162003r3"></a>
+<span class="labx-1095">Задача 17.3 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Скорость интерфейса-клавиатуры. </span>Интерфейс полтора раза в секунду выбирает один из
+<math display="inline"><mi>N</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>3</mn><mn>2</mn></math>
+знаков: задуманный с вероятностью <math display="inline"><mi>P</mi></math>,
+ошибки равновероятны. Сколько бит в секунду он передаёт при <math display="inline"><mi>P</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>9</mn><mn>9</mn></math>,
+<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>9</mn><mn>4</mn></math>,
+<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>8</mn></math>?
+Сколько знаков в секунду нужно при <math display="inline"><mi>P</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>9</mn><mn>4</mn></math>
+для <math display="inline"><mn>1</mn><mn>0</mn></math> бит/с?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent"><math display="inline"><mi>B</mi> <mo class="MathClass-rel" stretchy="false">=</mo><msub><mrow> <mi class="loglike">log</mi><mo>⁡</mo></mrow><mrow><mn>2</mn></mrow></msub 
+><mi>N</mi> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>P</mi><msub><mrow><mo><mi class="loglike">log</mi><mo>⁡</mo></mo></mrow><mrow><mn>2</mn></mrow></msub 
+><mi>P</mi> <mo class="MathClass-bin" stretchy="false">+</mo> <mo class="MathClass-open" stretchy="false">(</mo><mn>1</mn> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>P</mi><mo class="MathClass-close" stretchy="false">)</mo><msub><mrow><mo><mi class="loglike">log</mi><mo>⁡</mo></mo></mrow><mrow><mn>2</mn></mrow></msub 
+> <mfrac><mrow><mn>1</mn><mo class="MathClass-bin" stretchy="false">−</mo><mi>P</mi></mrow> 
+<mrow><mi>N</mi><mo class="MathClass-bin" stretchy="false">−</mo><mn>1</mn></mrow></mfrac> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>4</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>8</mn><mn>7</mn></math>,
+<math display="inline"><mn>4</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>3</mn><mn>7</mn></math>,
+<math display="inline"><mn>3</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn><mn>9</mn></math> бита на знак,
+то есть <math display="inline"><mn>7</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>3</mn></math>,
+<math display="inline"><mn>6</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>6</mn></math>,
+<math display="inline"><mn>4</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>9</mn></math> бит/с;
+для <math display="inline"><mn>1</mn><mn>0</mn></math> бит/с
+нужно <math display="inline"><mn>2</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>3</mn></math> знака
+в секунду.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x20-162004r4"></a>
+<span class="labx-1095">Задача 17.4 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Моделирование: декодер группы. </span><math display="inline"><mi>N</mi></math>
+нейронов с <math display="inline"><msub><mrow><mi>λ</mi></mrow><mrow><mi>i</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <msub><mrow><mo class="MathClass-open" stretchy="false">[</mo><mi>b</mi> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>m</mi><mspace width="0.17em" class="thinspace"/><mstyle mathvariant="bold"><mi>v</mi></mstyle> <mo class="MathClass-bin" stretchy="false">⋅</mo><msub><mrow><mstyle mathvariant="bold"><mi>p</mi></mstyle></mrow><mrow><mi>i</mi></mrow></msub 
+><mo class="MathClass-close" stretchy="false">]</mo></mrow><mrow><mo class="MathClass-bin" stretchy="false">+</mo></mrow></msub 
+></math>,
+<math display="inline"><mi>b</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>2</mn><mn>0</mn></math>,
+<math display="inline"><mi>m</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mn>5</mn></math> имп/с,
+окна <math display="inline"><mn>5</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>,
+<math display="inline"><mstyle mathvariant="bold"><mi>v</mi></mstyle></math>
+со стандартным отклонением <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn></math>
+по компоненте; все видят общий шум, <math display="inline"><mstyle mathvariant="bold"><mi>v</mi></mstyle> <mo class="MathClass-bin" stretchy="false">+</mo> <mstyle mathvariant="bold-italic"><mi>ξ</mi></mstyle></math>,
+<math display="inline"><msub><mrow><mi>σ</mi></mrow><mrow><mi>ξ</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn></math>.
+Смоделируйте несмещённый декодер вектором группы. При каком <math display="inline"><mi>N</mi></math>
+оба шума равны и сколько бит на компоненту за окно даёт <math display="inline"><mi>N</mi> <mo class="MathClass-rel" stretchy="false">→</mo><mi>∞</mi></math>?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">Дисперсия ошибки <math display="inline"><mn>2</mn><mi>b</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mo class="MathClass-open" stretchy="false">(</mo><mi>N</mi><msup><mrow><mi>m</mi></mrow><mrow><mn>2</mn></mrow></msup 
+><mi>T</mi><mo class="MathClass-close" stretchy="false">)</mo> <mo class="MathClass-bin" stretchy="false">+</mo> <msubsup><mrow><mi>σ</mi></mrow><mrow><mi>ξ</mi></mrow><mrow><mn>2</mn></mrow></msubsup 
+></math> на
+компоненту; вклады равны при <math display="inline"><mi>N</mi> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>9</mn><mn>0</mn></math>;
+предел <math display="inline"><mstyle displaystyle="false"><mfrac><mrow><mn>1</mn>
+</mrow><mrow><mn>2</mn></mrow></mfrac></mstyle><msub><mrow> <mi class="loglike">log</mi><mo>⁡</mo></mrow><mrow><mn>2</mn></mrow></msub 
+><mo class="MathClass-open" stretchy="false">(</mo><mn>1</mn> <mo class="MathClass-bin" stretchy="false">+</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn><mn>5</mn><mo class="MathClass-bin" stretchy="false">∕</mo><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>0</mn><mn>4</mn><mo class="MathClass-close" stretchy="false">)</mo> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>4</mn></math> бита
+на компоненту за окно.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x20-162005r5"></a>
+<span class="labx-1095">Задача 17.5 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Два ученика. </span>Мозг выдаёт команду <math display="inline"><mi>m</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mi>b</mi><mspace width="0.17em" class="thinspace"/><msup><mrow><mi>v</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">∗</mo></mrow></msup 
+></math>,
+декодер — <math display="inline"><mi>v</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mi>d</mi><mspace width="0.17em" class="thinspace"/><mi>m</mi></math>,
+<math display="inline"><mo class="MathClass-open" stretchy="false">⟨</mo><msup><mrow><mi>v</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">∗</mo><mn>2</mn></mrow></msup 
+><mo class="MathClass-close" stretchy="false">⟩</mo> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn></math>.
+Оба после каждой попытки делают шаг градиента по <math display="inline"><mstyle displaystyle="false"><mfrac><mrow><mn>1</mn>
+</mrow><mrow><mn>2</mn></mrow></mfrac></mstyle><msup><mrow><mo class="MathClass-open" stretchy="false">(</mo><mi>v</mi> <mo class="MathClass-bin" stretchy="false">−</mo> <msup><mrow><mi>v</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">∗</mo></mrow></msup 
+><mo class="MathClass-close" stretchy="false">)</mo></mrow><mrow><mn>2</mn></mrow></msup 
+></math>
+со скоростью <math display="inline"><mi>η</mi></math>.
+Смоделируйте из <math display="inline"><mi>b</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn></math>,
+<math display="inline"><mi>d</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn></math>
+при <math display="inline"><mi>η</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>8</mn></math>,
+<math display="inline"><mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn></math>,
+<math display="inline"><mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn></math>,
+<math display="inline"><mn>2</mn></math>.
+Каждый поодиночке устойчив при <math display="inline"><mi>η</mi> <mo class="MathClass-rel" stretchy="false">&#x003C;</mo> <mn>2</mn></math>;
+при каком <math display="inline"><mi>η</mi></math>
+устойчива пара?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">Пара сходится при <math display="inline"><msub><mrow><mi>η</mi></mrow><mrow><mi>b</mi></mrow></msub 
+><msup><mrow><mi>d</mi></mrow><mrow><mn>2</mn></mrow></msup 
+> <mo class="MathClass-bin" stretchy="false">+</mo> <msub><mrow><mi>η</mi></mrow><mrow><mi>d</mi></mrow></msub 
+><msup><mrow><mi>b</mi></mrow><mrow><mn>2</mn></mrow></msup 
+> <mo class="MathClass-rel" stretchy="false">&#x003C;</mo> <mn>2</mn></math>,
+то есть примерно при <math display="inline"><mi>η</mi> <mo class="MathClass-rel" stretchy="false">&#x003C;</mo> <mn>1</mn></math>:
+при <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>8</mn></math> сходится,
+при <math display="inline"><mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn></math> устойчивые
+колебания периода <math display="inline"><mn>2</mn></math>,
+при <math display="inline"><mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn></math> непериодические,
+при <math display="inline"><mn>2</mn></math>
+разнос; скорости учеников надо разводить.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x20-162006r6"></a>
+<span class="labx-1095">Задача 17.6 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Проектирование: конвейер щупа. </span><math display="inline"><mn>1</mn><mn>0</mn><mn>2</mn><mn>4</mn></math>
+канала по <math display="inline"><mn>2</mn><mn>0</mn></math> тыс.
+отсчётов в секунду, нейроны <math display="inline"><mn>1</mn><mn>0</mn></math> имп/с,
+радио <math display="inline"><mn>1</mn></math> нДж/бит.
+Какой порог по белому шуму отсчётов даёт не больше <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn></math> Гц
+ложных импульсов на канал? Передаём числа импульсов за <math display="inline"><mn>2</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>
+по <math display="inline"><mn>2</mn></math> бита:
+какова мощность и во сколько раз она меньше, чем для сырых <math display="inline"><mn>1</mn><mn>0</mn></math>-битных
+отсчётов?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">Порог <math display="inline"> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>4</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>4</mn><mi>σ</mi></math>;
+<math display="inline"><mn>1</mn><mn>0</mn><mn>2</mn></math> кбит/с,
+<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn><mn>0</mn></math> мВт против
+<math display="inline"><mn>2</mn><mn>0</mn><mn>5</mn></math> мВт для сырого
+потока, в <math display="inline"><mn>2</mn><mn>0</mn><mn>0</mn><mn>0</mn></math> раз меньше;
+насыщается (больше <math display="inline"><mn>3</mn></math>
+импульсов) лишь <math display="inline"><mn>5</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>7</mn> <mo class="MathClass-bin" stretchy="false">⋅</mo> <mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mo class="MathClass-bin" stretchy="false">−</mo><mn>5</mn></mrow></msup 
+></math>
+отсчётов.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x20-162007r7"></a>
+<span class="labx-1095">Задача 17.7 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo><mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Предел скорости интерфейса. </span>Оцените <math display="inline"><mi>R</mi> <mo class="MathClass-rel" stretchy="false">≤</mo> <mi>D</mi><mi>W</mi><msub><mrow><mi class="loglike">log</mi><mo>⁡</mo></mrow><mrow><mn>2</mn></mrow></msub 
+><mo class="MathClass-open" stretchy="false">(</mo><mn>1</mn> <mo class="MathClass-bin" stretchy="false">+</mo> <mstyle class="text"><mtext>SNR</mtext></mstyle><mo class="MathClass-close" stretchy="false">)</mo></math>
+для <math display="inline"><mi>D</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mn>0</mn></math>
+переменных с полосой <math display="inline"><mi>W</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>5</mn></math> Гц
+при <math display="inline"><mstyle class="text"><mtext>SNR</mtext></mstyle> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>9</mn></math>
+(шум, похожий на сигнал) и <math display="inline"><mn>9</mn><mn>0</mn></math>
+(независимый шум <math display="inline"><mn>1</mn><mn>0</mn><mn>0</mn><mn>0</mn></math>
+нейронов). Измерено около <math display="inline"><mn>1</mn><mn>0</mn></math> бит/с.
+Какой опыт отличит два объяснения разрыва: шум, похожий на сигнал, и незнание кода?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">Открытая задача. Около <math display="inline"><mn>4</mn><mn>6</mn></math> бит/с
+при <math display="inline"><mstyle class="text"><mtext>SNR</mtext></mstyle> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>9</mn></math> и около
+<math display="inline"><mn>3</mn><mn>3</mn><mn>0</mn></math> бит/с
+при независимом шуме. Если мешает шум, похожий на сигнал, извлечённая информация
+насыщается с ростом числа каналов; если незнание кода, она растёт при лучшем декодере
+(например, учитывающем времена импульсов).
+</p></div></details>
+
+<p class="indent"> <a id="tailfullch17.html"></a> </p> 
+
+  </article>
+  <article class="text short" id="text-short" hidden>
+
+ <a id="s-x20-9100017"></a>
+<div class="center">
+<p class="noindent"><img src="img/short32x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<div class="minipage"><p class="noindent"><span class="lati-1000">Плата без схемы: щуп слышит лишь несколько</span>
+<span class="lati-1000">проводов из миллиардов.</span> </p></div></div>
+<p class="noindent">Представьте, что вам дали работающую плату без схемы
+и попросили её починить. У инженера есть четыре
+инструмента: щуп, чтобы послушать сигнал; генератор,
+чтобы подать свой сигнал; возможность отключить
+деталь и посмотреть, что сломается; и доступ к регистрам
+управления. Ровно этими инструментами изучают и
+мозг.
+</p>
+ <h3 class="likesectionHead"> <a id="s-x20-92000"></a>Щуп на тысячу нейронов</h3>
+<p class="noindent">Электрод, воткнутый в мозг, слышит щелчки нескольких
+нейронов рядом. Казалось бы, из восьмидесяти шести
+миллиардов тысяча электродов — ничто. Но их хватает,
+чтобы управлять курсором на экране. Почему? Соседние
+нейроны шумят похоже, и активность, управляющая рукой,
+на самом деле описывается всего десятком-двумя общих
+переменных. Не нужно слушать всех, достаточно услышать
+эти несколько «голосов».
+</p><p class="indent"> Сырой сигнал с тысячи электродов — это сотни миллионов
+бит в секунду: радиоканалу из-под черепа не пропустить. А
+сами щелчки несут примерно в тысячу раз меньше.
+Поэтому щелчки выгодно выделять прямо на имплантате и
+отправлять наружу только их — тот же приём сжатия, что в
+глазу.
+</p>
+ <h3 class="likesectionHead"> <a id="s-x20-93000"></a>Что делает Neuralink</h3>
+<p class="noindent">Компания Neuralink взялась за инженерную сторону задачи:
+тонкие гибкие нити вместо жёстких иголок, робот, который
+вживляет их, и герметичный беспроводной имплантат. В её
+опубликованной работе описана система, соединённая с
+компьютером кабелем, а сжатие и беспроводная связь
+названы планами. Данные о человеке с парализованными
+руками, который управляет курсором, пока известны в
+основном по отчётам самой компании; по ним в имплантате
+около тысячи каналов на нескольких десятках нитей, и часть
+нитей после вживления сместилась. Сама идея не нова:
+академические группы с жёсткими решётками примерно из
+сотни электродов уже давали людям управлять курсором,
+«писать» буквы силой мысли и превращать попытки
+говорить в текст на экране со скоростью около шестидесяти
+слов в минуту.
+</p>
+ <h3 class="likesectionHead"> <a id="s-x20-94000"></a>Чтение и запись</h3>
+<p class="noindent">Декодер читает частоты щелчков многих нейронов и
+получает меньше десяти бит в секунду — ничтожную долю
+того, что несут сами нейроны. Зато и мозг, и декодер учатся
+друг у друга: человек приспосабливается к декодеру,
+декодер — к человеку. Два ученика, подстраивающихся
+друг под друга, — тонкая задача: даже когда каждый в
+отдельности устойчив, вместе они могут раскачаться.
+</p><p class="indent"> Записывать в мозг труднее, чем читать. Ток через
+электрод возбуждает всё вокруг, а не один нужный нейрон.
+Можно «нарисовать» точки света, как светящиеся пиксели,
+и человек различит простые буквы. Но записать сжатый код
+глаза так, чтобы мозг увидел картинку, пока не умеет
+никто.
+</p>
+ <h3 class="likesectionHead"> <a id="s-x20-95000"></a>Чего щуп не видит</h3>
+<p class="noindent">Электрод слышит телефонную сеть данных. Но радиостанции
+— дофамин, серотонин, норадреналин, ацетилхолин
+— это концентрации веществ, их щуп не слышит. Не
+видит он и силы связей, где хранится вся память. И не
+видит боли так, как её чувствует человек. Отладчик,
+который видит данные, но не видит регистров, всегда будет
+удивляться, почему один и тот же вход даёт разные
+ответы.
+</p><p class="noindent"><span class="lati-1000">Формулы, модели, задачи и источники — в полной версии,</span>
+<span class="lati-1000">глава</span><span class="lati-1000"> 17.</span>
+</p>
+<p class="indent"> <a id="s-tailshortch17.html"></a> </p> 
+
+  </article>
+
+  <aside class="starline"><span data-ru="Книга бесплатная и открытая. Если глава была полезной, поставьте книге звезду на GitHub: так её найдут другие." data-en="The book is free and open. If this chapter was useful, star the book on GitHub so others can find it.">Книга бесплатная и открытая.</span> <a href="https://github.com/kladkogex/20-watt-computer" target="_blank" rel="noopener" data-ru="★ Звезда на GitHub" data-en="★ Star on GitHub">★ Звезда на GitHub</a></aside>
+  <nav class="pager">
+    <a class="prev" href="16.html"><span data-ru="← Назад" data-en="← Previous">← Назад</span><b>Второй выход: как мозг управляет химией тела</b></a>
+    <a class="next" href="18.html"><span data-ru="Дальше →" data-en="Next →">Дальше →</span><b>Типы нейронов по электрической функции</b></a>
+  </nav>
+  <footer>
+    <span data-ru='Константин Кладько · текст — <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.ru">CC BY-NC-SA 4.0</a>' data-en='Konstantin Kladko · text: <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>'>Константин Кладько</span>
+    <span><a href="../pdf/20-watt-computer-ru.pdf">PDF</a> · <a href="../breadboard/" data-ru="Макетная плата" data-en="Breadboard">Макетная плата</a> · <a href="https://github.com/kladkogex/20-watt-computer">GitHub</a></span>
+  </footer>
+</main>
+
+<script>
+(function(){
+  const NAV = [{"slug": "00", "title": "Как читать эту книгу", "kicker": "Введение"}, {"slug": "01", "title": "Типы нейронов", "kicker": "Глава 1"}, {"slug": "02", "title": "Что вычисляют GLUT-нейроны", "kicker": "Глава 2"}, {"slug": "03", "title": "GLUT и GABA вместе", "kicker": "Глава 3"}, {"slug": "04", "title": "Азбука Морзе: что мы знаем о языке, на котором говорят GLUT- и GABA-нейроны", "kicker": "Глава 4"}, {"slug": "05", "title": "Что вычисляют SERO-нейроны", "kicker": "Глава 5"}, {"slug": "06", "title": "Нейронные сети, которые умеют учиться: добавляем DOPA", "kicker": "Глава 6"}, {"slug": "07", "title": "Альтернативные современные теории обучения на основе дофамина", "kicker": "Глава 7"}, {"slug": "08", "title": "Когда искать, а когда решать: добавляем NORA", "kicker": "Глава 8"}, {"slug": "09", "title": "Когда писать, а когда читать: добавляем ACET", "kicker": "Глава 9"}, {"slug": "10", "title": "Вся машина", "kicker": "Глава 10"}, {"slug": "11", "title": "Входы машины: как к ней подключены глаза, уши и другие датчики", "kicker": "Глава 11"}, {"slug": "12", "title": "Распознавание изображений и видео", "kicker": "Глава 12"}, {"slug": "13", "title": "Выходы машины: как мозг управляет мышцами", "kicker": "Глава 13"}, {"slug": "14", "title": "Боль: сигнал тревоги", "kicker": "Глава 14"}, {"slug": "15", "title": "Как машина учится двигаться", "kicker": "Глава 15"}, {"slug": "16", "title": "Второй выход: как мозг управляет химией тела", "kicker": "Глава 16"}, {"slug": "17", "title": "Отладка машины", "kicker": "Глава 17"}, {"slug": "18", "title": "Типы нейронов по электрической функции", "kicker": "Глава 18"}, {"slug": "19", "title": "Нейроны по числу дендритов", "kicker": "Глава 19"}, {"slug": "20", "title": "Что делают нейроны во сне", "kicker": "Глава 20"}, {"slug": "21", "title": "Машина из живых нейронов", "kicker": "Глава 21"}, {"slug": "22", "title": "DishBrain", "kicker": "Глава 22"}, {"slug": "a", "title": "Вещества, которые не задают тип нейрона", "kicker": "Приложение A"}, {"slug": "b", "title": "Обозначения", "kicker": "Приложение B"}, {"slug": "c", "title": "Ответы", "kicker": "Приложение C"}, {"slug": "d", "title": "Экспериментальное приложение", "kicker": "Приложение D"}, {"slug": "refs", "title": "Литература", "kicker": ""}];
+  const SLUG = "17";
+  const store = {get(k){try{return localStorage.getItem(k)}catch(e){return null}}, set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+
+  // chapter selector
+  const sel = document.getElementById("jump");
+  NAV.forEach(p => { const o = document.createElement("option"); o.value = p.slug;
+    o.textContent = (p.kicker ? p.kicker + ". " : "") + p.title; if (p.slug === SLUG) o.selected = true; sel.appendChild(o); });
+  sel.addEventListener("change", () => { location.href = sel.value + ".html" + (location.hash === "#short" ? "#short" : ""); });
+
+  // Коротко / Полностью
+  const modeBox = document.querySelector(".mode");
+  const hasShort = modeBox.dataset.hasShort === "true";
+  const full = document.getElementById("text-full"), short = document.getElementById("text-short");
+  function setMode(m, remember){
+    if (!hasShort) m = "full";
+    document.body.dataset.mode = m;
+    full.hidden = m !== "full"; short.hidden = m !== "short";
+    modeBox.querySelectorAll(".seg").forEach(b => b.setAttribute("aria-pressed", b.dataset.mode === m));
+    if (remember) store.set("20w-mode", m);
+  }
+  if (!hasShort) modeBox.hidden = true;
+  modeBox.addEventListener("click", e => { const b = e.target.closest(".seg"); if (b) { setMode(b.dataset.mode, true); history.replaceState(null, "", "#" + b.dataset.mode); } });
+  document.addEventListener("click", e => { const a = e.target.closest("a[data-mode]"); if (a) { e.preventDefault(); setMode(a.dataset.mode, true); window.scrollTo(0, 0); } });
+  // a link into the text (#x...) that lives in the other version switches to it
+  function follow(){
+    const h = decodeURIComponent(location.hash.slice(1));
+    if (h === "short" || h === "full") { setMode(h, true); return; }
+    if (!h) return;
+    const t = document.getElementById(h);
+    if (t) { setMode(short.contains(t) ? "short" : "full", false); t.scrollIntoView(); }
+  }
+  setMode(store.get("20w-mode") || "full", false);
+  follow();
+  window.addEventListener("hashchange", follow);
+  // links that leave the book open in the whole window when the page sits inside the reader
+  if (document.documentElement.classList.contains("embedded"))
+    document.querySelectorAll('a[href^="../"], a[href^="http"]').forEach(a => { a.target = a.href.startsWith(location.origin) ? "_top" : "_blank"; });
+
+  // interface language (the text itself is Russian)
+  function setLang(l){
+    document.querySelectorAll("[data-ru]").forEach(el => { el.innerHTML = el.dataset[l]; });
+    document.getElementById("lang-ru").setAttribute("aria-pressed", l === "ru");
+    document.getElementById("lang-en").setAttribute("aria-pressed", l === "en");
+    store.set("20w-lang", l);
+  }
+  document.getElementById("lang-ru").onclick = () => setLang("ru");
+  document.getElementById("lang-en").onclick = () => setLang("en");
+  setLang(store.get("20w-lang") === "en" ? "en" : "ru");
+  window.addEventListener("storage", e => {
+    if (e.key === "20w-lang" && (e.newValue === "ru" || e.newValue === "en")) setLang(e.newValue);
+    if (e.key === "20w-theme" && (e.newValue === "light" || e.newValue === "dark")) document.documentElement.setAttribute("data-theme", e.newValue);
+  });
+})();
+</script>
+<script>
+(function(){var b=document.getElementById("theme");if(!b)return;var r=document.documentElement;function cur(){var t=r.getAttribute("data-theme");if(t)return t;return window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";}function show(){b.textContent=cur()==="dark"?"☀":"☾";b.setAttribute("aria-pressed",cur()==="dark");}b.onclick=function(){var t=cur()==="dark"?"light":"dark";r.setAttribute("data-theme",t);try{localStorage.setItem("20w-theme",t);}catch(e){}show();};if(window.matchMedia)matchMedia("(prefers-color-scheme: dark)").addEventListener("change",show);show();})();
+</script>
+</body>
+</html>

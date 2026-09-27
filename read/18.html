@@ -1,0 +1,778 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<script>try{var t=localStorage.getItem("20w-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);}catch(e){}if(window.self!==window.top)document.documentElement.classList.add("embedded");</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Глава 18. Типы нейронов по электрической функции · Компьютер на 20 ваттах</title>
+<meta name="description" content="В главе 1 мы рассортировали нейроны по тому, какой медиатор выбрасывает их выход. Электронщик рассортировал бы их иначе: по тому, что нейрон делает со своим сигналом, — каким …">
+<link rel="canonical" href="https://kladkogex.github.io/20-watt-computer/read/18.html">
+<meta property="og:type" content="book">
+<meta property="og:title" content="Глава 18. Типы нейронов по электрической функции · Компьютер на 20 ваттах">
+<meta property="og:description" content="В главе 1 мы рассортировали нейроны по тому, какой медиатор выбрасывает их выход. Электронщик рассортировал бы их иначе: по тому, что нейрон делает со своим сигналом, — каким …">
+<meta property="og:url" content="https://kladkogex.github.io/20-watt-computer/read/18.html">
+<meta property="og:locale" content="ru_RU">
+<meta property="og:image" content="https://kladkogex.github.io/20-watt-computer/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Your brain runs on 20 watts. Here is its datasheet. The 20-Watt Computer, a free textbook for engineers.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://kladkogex.github.io/20-watt-computer/og-card.png">
+<meta name="twitter:title" content="Глава 18. Типы нейронов по электрической функции · The 20-Watt Computer">
+<meta name="twitter:description" content="В главе 1 мы рассортировали нейроны по тому, какой медиатор выбрасывает их выход. Электронщик рассортировал бы их иначе: по тому, что нейрон делает со своим сигналом, — каким …">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Chapter", "name": "Типы нейронов по электрической функции", "url": "https://kladkogex.github.io/20-watt-computer/read/18.html", "position": 18, "inLanguage": "ru", "isAccessibleForFree": true, "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/", "author": {"@type": "Person", "name": "Константин Кладько", "alternateName": "Konstantin Kladko"}, "isPartOf": {"@type": "Book", "name": "Компьютер на 20 ваттах. Как вычисляет мозг: количественный подход для инженеров", "alternateName": "The 20-Watt Computer: How the Brain Computes. A Quantitative Approach for Engineers", "author": {"@type": "Person", "name": "Константин Кладько", "alternateName": "Konstantin Kladko"}, "url": "https://kladkogex.github.io/20-watt-computer/", "inLanguage": "ru", "isAccessibleForFree": true, "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/"}}</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap">
+<link rel="stylesheet" href="book.css">
+</head>
+<body>
+<header class="bar">
+  <a class="home" href="../#toc"><span class="w">20</span> <span data-ru="Компьютер на 20 ваттах" data-en="The 20-Watt Computer">Компьютер на 20 ваттах</span></a>
+  <label class="jump"><span class="sr" data-ru="Перейти к главе" data-en="Go to chapter">Перейти к главе</span>
+    <select id="jump"></select></label>
+  <div class="langs" role="group" aria-label="Language">
+    <button class="chip" id="lang-ru" type="button">RU</button>
+    <button class="chip" id="lang-en" type="button">EN</button>
+    <button class="chip theme" id="theme" type="button" aria-label="Light or dark theme" title="Light / dark">☾</button>
+  </div>
+</header>
+
+<main class="page">
+  <div class="pagehead">
+    <p class="kicker" data-ru="Глава 18" data-en="Chapter 18">Глава 18</p>
+    <h1><span class="t-full">Типы нейронов по электрической функции</span><span class="t-short">Нейрон — не один прибор</span></h1>
+    <div class="mode" role="group" aria-label="Version" data-has-short="true">
+      <button type="button" class="seg" data-mode="short"><b data-ru="Коротко" data-en="Short">Коротко</b><span data-ru="без формул, с рисунками" data-en="no formulas, with drawings">без формул, с рисунками</span></button>
+      <button type="button" class="seg" data-mode="full"><b data-ru="Полностью" data-en="Full">Полностью</b><span data-ru="формулы, модели, задачи" data-en="formulas, models, exercises">формулы, модели, задачи</span></button>
+    </div>
+    <p class="lang-note" data-ru="" data-en="The online reader is in Russian for now; the book in other languages is in the PDF downloads in the menu.">.</p>
+  </div>
+
+  <article class="text full" id="text-full">
+
+ <a id="x21-16300018"></a>
+<p class="noindent">В главе <a href="01.html#x4-40001">1</a> мы рассортировали нейроны по тому, какой медиатор выбрасывает их выход.
+Электронщик рассортировал бы их иначе: по тому, что нейрон делает со своим сигналом, —
+каким прибором он работает. Главный прибор книги мы знаем с главы <a href="02.html#x5-150002">2</a>: интегрирующий нейрон
+с утечкой (<a href="02.html#x5-16001r1">2.1</a>), RC-цепь с компаратором. Но в мозге есть и другие. В таблице <a href="#x21-163001r1">18.1</a> они собраны
+по четырём группам, и почти каждый уже встречался в книге.
+</p>
+<div class="center">
+<p class="noindent">
+<a id="x21-163001r1"></a>
+</p><div class="longtable"> <table id="TBL-21" class="longtable"><colgroup id="TBL-21-1g"><col id="TBL-21-1" /><col id="TBL-21-2" /><col id="TBL-21-3" /><col id="TBL-21-4" /></colgroup>
+<caption class="longtable"><span class="id"><span class="larm-0900">Таблица</span><span class="larm-0900"> 18.1:</span><span class="larm-0900"> </span></span><span class="content"><span class="larm-0900">Нейроны как приборы: название, аналог в электронике, что прибор делает и где он встречается в</span>
+<span class="larm-0900">книге.</span></span></caption>
+<tr style="vertical-align:baseline;" id="TBL-21-1-"><td style="text-align:left;" id="TBL-21-1-1" class="td11"> </td>
+</tr><tr style="vertical-align:baseline;" id="TBL-21-2-"><td colspan="4" style="text-align:left;" id="TBL-21-2-1" class="td11"><span class="cmidrule"></span>
+</td></tr><tr style="vertical-align:baseline;" id="TBL-21-3-"><td style="text-align:left;" id="TBL-21-3-1" class="td11">
+ <p class="noindent"><span class="larm-0900">Нейрон</span> </p></td><td style="text-align:left;" id="TBL-21-3-2" class="td11">
+ <p class="noindent"><span class="larm-0900">Прибор</span> </p></td><td style="text-align:left;" id="TBL-21-3-3" class="td11">
+ <p class="noindent"><span class="larm-0900">Что</span>
+ <span class="larm-0900">делает</span> </p></td><td style="text-align:left;" id="TBL-21-3-4" class="td11">
+ <p class="noindent"><span class="larm-0900">Где</span>
+ <span class="larm-0900">в</span>
+ <span class="larm-0900">книге</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-21-4-"><td colspan="4" style="text-align:left;" id="TBL-21-4-1" class="td11"><span class="cmidrule"></span>
+</td></tr><tr style="vertical-align:baseline;" id="TBL-21-5-"><td style="text-align:left;" id="TBL-21-5-1" class="td11"> </td>
+</tr><tr style="vertical-align:baseline;" id="TBL-21-6-"><td style="text-align:left;" id="TBL-21-6-1" class="td11"> </td><td style="text-align:left;" id="TBL-21-6-2" class="td11"> </td><td style="text-align:left;" id="TBL-21-6-3" class="td11"> </td><td style="text-align:left;" id="TBL-21-6-4" class="td11"></td></tr>
+<tr style="vertical-align:baseline;" id="TBL-21-15-"><td colspan="4" style="text-align:left; white-space:nowrap;" id="TBL-21-15-1" class="td11"> <div class="multicolumn" style="text-align:left; white-space:nowrap;"><span class="lati-0900">Фильтры и интеграторы</span></div>
+</td></tr><tr style="vertical-align:baseline;" id="TBL-21-16-"><td style="text-align:left;" id="TBL-21-16-1" class="td11">
+ <p class="noindent"><span class="larm-0900">интегрирующий</span>
+ <span class="larm-0900">нейрон</span>
+ <span class="larm-0900">с</span>
+ <span class="larm-0900">утечкой</span> </p></td><td style="text-align:left;" id="TBL-21-16-2" class="td11">
+ <p class="noindent"><span class="larm-0900">RC-интегратор</span>
+ <span class="larm-0900">с</span>
+ <span class="larm-0900">компаратором</span> </p></td><td style="text-align:left;" id="TBL-21-16-3" class="td11">
+ <p class="noindent"><span class="larm-0900">складывает</span>
+ <span class="larm-0900">входы</span>
+ <span class="larm-0900">в</span>
+ <span class="larm-0900">окне</span>
+ <math display="inline"><mi>τ</mi></math>
+ <span class="larm-0900">и</span>
+ <span class="larm-0900">срабатывает</span>
+ <span class="larm-0900">у</span>
+ <span class="larm-0900">порога</span> </p></td><td style="text-align:left;" id="TBL-21-16-4" class="td11">
+ <p class="noindent"><span class="larm-0900">гл.</span><span class="larm-0900"> </span><a href="02.html#x5-150002"><span class="larm-0900">2</span></a><span class="larm-0900">,</span>
+ <span class="larm-0900">(</span><a href="02.html#x5-16001r1"><span class="larm-0900">2.1</span></a><span class="larm-0900">)</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-21-17-"><td style="text-align:left;" id="TBL-21-17-1" class="td11">
+ <p class="noindent"><span class="larm-0900">детектор</span>
+ <span class="larm-0900">совпадений</span> </p></td><td style="text-align:left;" id="TBL-21-17-2" class="td11">
+ <p class="noindent"><span class="larm-0900">И</span>
+ <span class="larm-0900">с</span>
+ <span class="larm-0900">временным</span>
+ <span class="larm-0900">окном</span> </p></td><td style="text-align:left;" id="TBL-21-17-3" class="td11">
+ <p class="noindent"><span class="larm-0900">срабатывает,</span>
+ <span class="larm-0900">только</span>
+ <span class="larm-0900">если</span>
+ <span class="larm-0900">входы</span>
+ <span class="larm-0900">пришли</span>
+ <span class="larm-0900">почти</span>
+ <span class="larm-0900">вместе;</span>
+ <span class="larm-0900">очень</span>
+ <span class="larm-0900">малое</span>
+ <math display="inline"><mi>τ</mi></math> </p></td><td style="text-align:left;" id="TBL-21-17-4" class="td11">
+ <p class="noindent"><span class="larm-0900">гл.</span><span class="larm-0900"> </span><a href="02.html#x5-150002"><span class="larm-0900">2</span></a><span class="larm-0900">,</span>
+ <a href="04.html#x7-350004"><span class="larm-0900">4</span></a><span class="larm-0900">,</span>
+ <span class="larm-0900">(</span><a href="02.html#x5-17001r2"><span class="larm-0900">2.2</span></a><span class="larm-0900">)</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-21-18-"><td style="text-align:left;" id="TBL-21-18-1" class="td11">
+ <p class="noindent"><span class="larm-0900">фазический</span>
+ <span class="larm-0900">нейрон</span> </p></td><td style="text-align:left;" id="TBL-21-18-2" class="td11">
+ <p class="noindent"><span class="larm-0900">фильтр</span>
+ <span class="larm-0900">верхних</span>
+ <span class="larm-0900">частот,</span>
+ <span class="larm-0900">детектор</span>
+ <span class="larm-0900">фронта</span> </p></td><td style="text-align:left;" id="TBL-21-18-3" class="td11">
+ <p class="noindent"><span class="larm-0900">отвечает</span>
+ <span class="larm-0900">на</span>
+ <span class="larm-0900">изменение</span>
+ <span class="larm-0900">входа</span>
+ <span class="larm-0900">и</span>
+ <span class="larm-0900">замолкает</span> </p></td><td style="text-align:left;" id="TBL-21-18-4" class="td11">
+ <p class="noindent"><span class="larm-0900">гл.</span><span class="larm-0900"> </span><a href="11.html#x14-10400011"><span class="larm-0900">11</span></a> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-21-19-"><td style="text-align:left;" id="TBL-21-19-1" class="td11">
+ <p class="noindent"><span class="larm-0900">адаптирующийся</span>
+ <span class="larm-0900">нейрон</span> </p></td><td style="text-align:left;" id="TBL-21-19-2" class="td11">
+ <p class="noindent"><span class="larm-0900">фильтр</span>
+ <span class="larm-0900">верхних</span>
+ <span class="larm-0900">частот</span>
+ <span class="larm-0900">с</span>
+ <span class="larm-0900">автоматической</span>
+ <span class="larm-0900">регулировкой</span>
+ <span class="larm-0900">усиления</span> </p></td><td style="text-align:left;" id="TBL-21-19-3" class="td11">
+ <p class="noindent"><span class="larm-0900">частота</span>
+ <span class="larm-0900">падает</span>
+ <span class="larm-0900">при</span>
+ <span class="larm-0900">постоянном</span>
+ <span class="larm-0900">входе</span> </p></td><td style="text-align:left;" id="TBL-21-19-4" class="td11">
+ <p class="noindent"><span class="larm-0900">гл.</span><span class="larm-0900"> </span><a href="11.html#x14-10400011"><span class="larm-0900">11</span></a><span class="larm-0900">,</span>
+ <span class="larm-0900">(</span><a href="11.html#x14-107001r2"><span class="larm-0900">11.2</span></a><span class="larm-0900">)</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-21-20-"><td style="text-align:left;" id="TBL-21-20-1" class="td11">
+ <p class="noindent"><span class="larm-0900">резонатор</span> </p></td><td style="text-align:left;" id="TBL-21-20-2" class="td11">
+ <p class="noindent"><span class="larm-0900">колебательный</span>
+ <span class="larm-0900">контур,</span>
+ <span class="larm-0900">полосовой</span>
+ <span class="larm-0900">фильтр</span> </p></td><td style="text-align:left;" id="TBL-21-20-3" class="td11">
+ <p class="noindent"><span class="larm-0900">лучше</span>
+ <span class="larm-0900">всего</span>
+ <span class="larm-0900">отвечает</span>
+ <span class="larm-0900">на</span>
+ <span class="larm-0900">вход</span>
+ <span class="larm-0900">своей</span>
+ <span class="larm-0900">частоты</span> </p></td><td style="text-align:left;" id="TBL-21-20-4" class="td11">
+ <p class="noindent"><span class="larm-0900">раздел</span><span class="larm-0900"> </span><a href="#x21-16500018.1.1"><span class="larm-0900">18.1.1</span></a> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-21-21-"><td style="text-align:left;" id="TBL-21-21-1" class="td11">
+ <p class="noindent"><span class="larm-0900">интегратор</span>
+ <span class="larm-0900">без</span>
+ <span class="larm-0900">утечки</span> </p></td><td style="text-align:left;" id="TBL-21-21-2" class="td11">
+ <p class="noindent"><span class="larm-0900">интегратор</span>
+ <span class="larm-0900">на</span>
+ <span class="larm-0900">операционном</span>
+ <span class="larm-0900">усилителе</span> </p></td><td style="text-align:left;" id="TBL-21-21-3" class="td11">
+ <p class="noindent"><span class="larm-0900">превращает</span>
+ <span class="larm-0900">скорость</span>
+ <span class="larm-0900">в</span>
+ <span class="larm-0900">положение</span>
+ <span class="larm-0900">и</span>
+ <span class="larm-0900">держит</span>
+ <span class="larm-0900">его</span> </p></td><td style="text-align:left;" id="TBL-21-21-4" class="td11">
+ <p class="noindent"><span class="larm-0900">раздел</span><span class="larm-0900"> </span><a href="#x21-16600018.1.2"><span class="larm-0900">18.1.2</span></a> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-21-22-"><td colspan="4" style="text-align:left;" id="TBL-21-22-1" class="td11"><span class="cmidrule"></span>
+</td></tr><tr style="vertical-align:baseline;" id="TBL-21-23-"><td colspan="4" style="text-align:left; white-space:nowrap;" id="TBL-21-23-1" class="td11"> <div class="multicolumn" style="text-align:left; white-space:nowrap;"><span class="lati-0900">Преобразователи</span></div>
+</td></tr><tr style="vertical-align:baseline;" id="TBL-21-24-"><td style="text-align:left;" id="TBL-21-24-1" class="td11">
+ <p class="noindent"><span class="larm-0900">тонический</span>
+ <span class="larm-0900">нейрон</span> </p></td><td style="text-align:left;" id="TBL-21-24-2" class="td11">
+ <p class="noindent"><span class="larm-0900">преобразователь</span>
+ <span class="larm-0900">напряжение—частота</span> </p></td><td style="text-align:left;" id="TBL-21-24-3" class="td11">
+ <p class="noindent"><span class="larm-0900">частота</span>
+ <span class="larm-0900">линейно</span>
+ <span class="larm-0900">следует</span>
+ <span class="larm-0900">за</span>
+ <span class="larm-0900">входом</span>
+ <span class="larm-0900">и</span>
+ <span class="larm-0900">почти</span>
+ <span class="larm-0900">не</span>
+ <span class="larm-0900">устаёт</span> </p></td><td style="text-align:left;" id="TBL-21-24-4" class="td11">
+ <p class="noindent"><span class="larm-0900">гл.</span><span class="larm-0900"> </span><a href="04.html#x7-350004"><span class="larm-0900">4</span></a> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-21-25-"><td style="text-align:left;" id="TBL-21-25-1" class="td11">
+ <p class="noindent"><span class="larm-0900">градуальный</span>
+ <span class="larm-0900">нейрон</span>
+ <span class="larm-0900">(без</span>
+ <span class="larm-0900">импульсов)</span> </p></td><td style="text-align:left;" id="TBL-21-25-2" class="td11">
+ <p class="noindent"><span class="larm-0900">аналоговый</span>
+ <span class="larm-0900">усилитель,</span>
+ <span class="larm-0900">буфер</span> </p></td><td style="text-align:left;" id="TBL-21-25-3" class="td11">
+ <p class="noindent"><span class="larm-0900">передаёт</span>
+ <span class="larm-0900">плавное</span>
+ <span class="larm-0900">напряжение</span>
+ <span class="larm-0900">на</span>
+ <span class="larm-0900">короткое</span>
+ <span class="larm-0900">расстояние</span> </p></td><td style="text-align:left;" id="TBL-21-25-4" class="td11">
+ <p class="noindent"><span class="larm-0900">гл.</span><span class="larm-0900"> </span><a href="11.html#x14-10400011"><span class="larm-0900">11</span></a> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-21-26-"><td style="text-align:left;" id="TBL-21-26-1" class="td11">
+ <p class="noindent"><span class="larm-0900">выпрямляющий</span>
+ <span class="larm-0900">нейрон</span> </p></td><td style="text-align:left;" id="TBL-21-26-2" class="td11">
+ <p class="noindent"><span class="larm-0900">однополупериодный</span>
+ <span class="larm-0900">выпрямитель</span> </p></td><td style="text-align:left;" id="TBL-21-26-3" class="td11">
+ <p class="noindent"><span class="larm-0900">частота</span>
+ <span class="larm-0900">не</span>
+ <span class="larm-0900">бывает</span>
+ <span class="larm-0900">отрицательной,</span>
+ <math display="inline"><msub><mrow><mo class="MathClass-open" stretchy="false">[</mo><mi>u</mi><mo class="MathClass-close" stretchy="false">]</mo></mrow><mrow><mo class="MathClass-bin" stretchy="false">+</mo></mrow></msub 
+></math> </p></td><td style="text-align:left;" id="TBL-21-26-4" class="td11">
+ <p class="noindent"><span class="larm-0900">гл.</span><span class="larm-0900"> </span><a href="02.html#x5-150002"><span class="larm-0900">2</span></a><span class="larm-0900">,</span>
+ <a href="03.html#x6-250003"><span class="larm-0900">3</span></a> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-21-27-"><td style="text-align:left;" id="TBL-21-27-1" class="td11">
+ <p class="noindent"><span class="larm-0900">пара</span>
+ <span class="larm-0900">«включение—выключение»</span> </p> </td><td style="text-align:left;" id="TBL-21-27-2" class="td11">
+ <p class="noindent"><span class="larm-0900">пара</span>
+ <span class="larm-0900">выпрямителей,</span>
+ <span class="larm-0900">двухпроводный</span>
+ <span class="larm-0900">код</span> </p></td><td style="text-align:left;" id="TBL-21-27-3" class="td11">
+ <p class="noindent"><span class="larm-0900">один</span>
+ <span class="larm-0900">отвечает</span>
+ <span class="larm-0900">на</span>
+ <span class="larm-0900">«больше»,</span>
+ <span class="larm-0900">другой</span>
+ <span class="larm-0900">—</span>
+ <span class="larm-0900">на</span>
+ <span class="larm-0900">«меньше»</span> </p></td><td style="text-align:left;" id="TBL-21-27-4" class="td11">
+ <p class="noindent"><span class="larm-0900">гл.</span><span class="larm-0900"> </span><a href="02.html#x5-150002"><span class="larm-0900">2</span></a><span class="larm-0900">,</span>
+ <span class="larm-0900">(</span><a href="02.html#x5-19001r4"><span class="larm-0900">2.4</span></a><span class="larm-0900">)</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-21-28-"><td style="text-align:left;" id="TBL-21-28-1" class="td11">
+ <p class="noindent"><span class="larm-0900">нейрон</span>
+ <span class="larm-0900">с</span>
+ <span class="larm-0900">шунтирующим</span>
+ <span class="larm-0900">торможением</span> </p></td><td style="text-align:left;" id="TBL-21-28-2" class="td11">
+ <p class="noindent"><span class="larm-0900">аналоговый</span>
+ <span class="larm-0900">делитель,</span>
+ <span class="larm-0900">регулировка</span>
+ <span class="larm-0900">усиления</span> </p></td><td style="text-align:left;" id="TBL-21-28-3" class="td11">
+ <p class="noindent"><span class="larm-0900">делит</span>
+ <span class="larm-0900">вход,</span>
+ <span class="larm-0900">а</span>
+ <span class="larm-0900">не</span>
+ <span class="larm-0900">вычитает</span>
+ <span class="larm-0900">из</span>
+ <span class="larm-0900">него</span> </p></td><td style="text-align:left;" id="TBL-21-28-4" class="td11">
+ <p class="noindent"><span class="larm-0900">гл.</span><span class="larm-0900"> </span><a href="03.html#x6-250003"><span class="larm-0900">3</span></a><span class="larm-0900">,</span>
+ <span class="larm-0900">(</span><a href="03.html#x6-29001r3"><span class="larm-0900">3.3</span></a><span class="larm-0900">)</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-21-29-"><td colspan="4" style="text-align:left;" id="TBL-21-29-1" class="td11"><span class="cmidrule"></span>
+</td></tr><tr style="vertical-align:baseline;" id="TBL-21-30-"><td colspan="4" style="text-align:left; white-space:nowrap;" id="TBL-21-30-1" class="td11"> <div class="multicolumn" style="text-align:left; white-space:nowrap;"><span class="lati-0900">Генераторы и время</span></div>
+</td></tr><tr style="vertical-align:baseline;" id="TBL-21-31-"><td style="text-align:left;" id="TBL-21-31-1" class="td11">
+ <p class="noindent"><span class="larm-0900">ритмоводитель</span> </p></td><td style="text-align:left;" id="TBL-21-31-2" class="td11">
+ <p class="noindent"><span class="larm-0900">релаксационный</span>
+ <span class="larm-0900">генератор,</span>
+ <span class="larm-0900">мультивибратор</span> </p></td><td style="text-align:left;" id="TBL-21-31-3" class="td11">
+ <p class="noindent"><span class="larm-0900">сам</span>
+ <span class="larm-0900">выдаёт</span>
+ <span class="larm-0900">импульсы</span>
+ <span class="larm-0900">с</span>
+ <span class="larm-0900">постоянной</span>
+ <span class="larm-0900">частотой</span> </p></td><td style="text-align:left;" id="TBL-21-31-4" class="td11">
+ <p class="noindent"><span class="larm-0900">гл.</span><span class="larm-0900"> </span><a href="05.html#x8-470005"><span class="larm-0900">5</span></a><span class="larm-0900">,</span>
+ <a href="06.html#x9-560006"><span class="larm-0900">6</span></a> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-21-32-"><td style="text-align:left;" id="TBL-21-32-1" class="td11">
+ <p class="noindent"><span class="larm-0900">ритмоводитель</span>
+ <span class="larm-0900">с</span>
+ <span class="larm-0900">входом</span> </p></td><td style="text-align:left;" id="TBL-21-32-2" class="td11">
+ <p class="noindent"><span class="larm-0900">генератор,</span>
+ <span class="larm-0900">управляемый</span>
+ <span class="larm-0900">напряжением</span> </p></td><td style="text-align:left;" id="TBL-21-32-3" class="td11">
+ <p class="noindent"><span class="larm-0900">свой</span>
+ <span class="larm-0900">ритм,</span>
+ <span class="larm-0900">который</span>
+ <span class="larm-0900">вход</span>
+ <span class="larm-0900">ускоряет</span>
+ <span class="larm-0900">или</span>
+ <span class="larm-0900">замедляет</span> </p></td><td style="text-align:left;" id="TBL-21-32-4" class="td11">
+ <p class="noindent"><span class="larm-0900">гл.</span><span class="larm-0900"> </span><a href="16.html#x19-14500016"><span class="larm-0900">16</span></a> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-21-33-"><td style="text-align:left;" id="TBL-21-33-1" class="td11">
+ <p class="noindent"><span class="larm-0900">пачечный</span>
+ <span class="larm-0900">нейрон</span> </p></td><td style="text-align:left;" id="TBL-21-33-2" class="td11">
+ <p class="noindent"><span class="larm-0900">стробируемый</span>
+ <span class="larm-0900">генератор</span>
+ <span class="larm-0900">пачек</span> </p></td><td style="text-align:left;" id="TBL-21-33-3" class="td11">
+ <p class="noindent"><span class="larm-0900">выдаёт</span>
+ <span class="larm-0900">пачки</span>
+ <span class="larm-0900">частых</span>
+ <span class="larm-0900">импульсов</span>
+ <span class="larm-0900">—</span>
+ <span class="larm-0900">«тире»</span> </p></td><td style="text-align:left;" id="TBL-21-33-4" class="td11">
+ <p class="noindent"><span class="larm-0900">гл.</span><span class="larm-0900"> </span><a href="04.html#x7-350004"><span class="larm-0900">4</span></a><span class="larm-0900">,</span>
+ <span class="larm-0900">(</span><a href="04.html#x7-42003r7"><span class="larm-0900">4.7</span></a><span class="larm-0900">)</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-21-34-"><td style="text-align:left;" id="TBL-21-34-1" class="td11">
+ <p class="noindent"><span class="larm-0900">нейрон,</span>
+ <span class="larm-0900">привязанный</span>
+ <span class="larm-0900">к</span>
+ <span class="larm-0900">фазе</span> </p></td><td style="text-align:left;" id="TBL-21-34-2" class="td11">
+ <p class="noindent"><span class="larm-0900">фазовый</span>
+ <span class="larm-0900">детектор,</span>
+ <span class="larm-0900">фазовая</span>
+ <span class="larm-0900">автоподстройка</span> </p></td><td style="text-align:left;" id="TBL-21-34-3" class="td11">
+ <p class="noindent"><span class="larm-0900">срабатывает</span>
+ <span class="larm-0900">на</span>
+ <span class="larm-0900">определённой</span>
+ <span class="larm-0900">фазе</span>
+ <span class="larm-0900">входной</span>
+ <span class="larm-0900">волны</span> </p></td><td style="text-align:left;" id="TBL-21-34-4" class="td11">
+ <p class="noindent"><span class="larm-0900">гл.</span><span class="larm-0900"> </span><a href="11.html#x14-10400011"><span class="larm-0900">11</span></a><span class="larm-0900">,</span>
+ <a href="16.html#x19-14500016"><span class="larm-0900">16</span></a> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-21-35-"><td style="text-align:left;" id="TBL-21-35-1" class="td11">
+ <p class="noindent"><span class="larm-0900">аксон</span>
+ <span class="larm-0900">с</span>
+ <span class="larm-0900">задержкой</span> </p></td><td style="text-align:left;" id="TBL-21-35-2" class="td11">
+ <p class="noindent"><span class="larm-0900">линия</span>
+ <span class="larm-0900">задержки</span> </p></td><td style="text-align:left;" id="TBL-21-35-3" class="td11">
+ <p class="noindent"><span class="larm-0900">задерживает</span>
+ <span class="larm-0900">сигнал</span>
+ <span class="larm-0900">на</span>
+ <span class="larm-0900">заданное</span>
+ <span class="larm-0900">время</span> </p></td><td style="text-align:left;" id="TBL-21-35-4" class="td11">
+ <p class="noindent"><span class="larm-0900">гл.</span><span class="larm-0900"> </span><a href="02.html#x5-150002"><span class="larm-0900">2</span></a><span class="larm-0900">,</span>
+ <span class="larm-0900">рис.</span><span class="larm-0900"> </span><a href="02.html#x5-200023"><span class="larm-0900">2.3</span></a> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-21-36-"><td colspan="4" style="text-align:left;" id="TBL-21-36-1" class="td11"><span class="cmidrule"></span>
+</td></tr><tr style="vertical-align:baseline;" id="TBL-21-37-"><td colspan="4" style="text-align:left; white-space:nowrap;" id="TBL-21-37-1" class="td11"> <div class="multicolumn" style="text-align:left; white-space:nowrap;"><span class="lati-0900">Память и переключение</span></div>
+</td></tr><tr style="vertical-align:baseline;" id="TBL-21-38-"><td style="text-align:left;" id="TBL-21-38-1" class="td11">
+ <p class="noindent"><span class="larm-0900">бистабильный</span>
+ <span class="larm-0900">нейрон</span> </p></td><td style="text-align:left;" id="TBL-21-38-2" class="td11">
+ <p class="noindent"><span class="larm-0900">триггер</span>
+ <span class="larm-0900">Шмитта,</span>
+ <span class="larm-0900">защёлка</span> </p></td><td style="text-align:left;" id="TBL-21-38-3" class="td11">
+ <p class="noindent"><span class="larm-0900">короткий</span>
+ <span class="larm-0900">вход</span>
+ <span class="larm-0900">переводит</span>
+ <span class="larm-0900">его</span>
+ <span class="larm-0900">в</span>
+ <span class="larm-0900">длительное</span>
+ <span class="larm-0900">состояние</span> </p></td><td style="text-align:left;" id="TBL-21-38-4" class="td11">
+ <p class="noindent"><span class="larm-0900">раздел</span><span class="larm-0900"> </span><a href="#x21-16700018.1.3"><span class="larm-0900">18.1.3</span></a> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-21-39-"><td style="text-align:left;" id="TBL-21-39-1" class="td11">
+ <p class="noindent"><span class="larm-0900">нейрон</span>
+ <span class="larm-0900">с</span>
+ <span class="larm-0900">дендритными</span>
+ <span class="larm-0900">ветвями</span> </p></td><td style="text-align:left;" id="TBL-21-39-2" class="td11">
+ <p class="noindent"><span class="larm-0900">мультиплексор,</span>
+ <span class="larm-0900">маленькая</span>
+ <span class="larm-0900">многослойная</span>
+ <span class="larm-0900">сеть</span> </p></td><td style="text-align:left;" id="TBL-21-39-3" class="td11">
+ <p class="noindent"><span class="larm-0900">ветвь</span>
+ <span class="larm-0900">пропускает</span>
+ <span class="larm-0900">вход,</span>
+ <span class="larm-0900">только</span>
+ <span class="larm-0900">если</span>
+ <span class="larm-0900">есть</span>
+ <span class="larm-0900">разрешающий</span>
+ <span class="larm-0900">вход</span> </p></td><td style="text-align:left;" id="TBL-21-39-4" class="td11">
+ <p class="noindent"><span class="larm-0900">гл.</span><span class="larm-0900"> </span><a href="10.html#x13-9500010"><span class="larm-0900">10</span></a> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-21-40-"><td style="text-align:left;" id="TBL-21-40-1" class="td11"> </td>
+</tr><tr style="vertical-align:baseline;" id="TBL-21-41-"><td style="text-align:left;" id="TBL-21-41-1" class="td11"> </td>
+</tr><tr style="vertical-align:baseline;" id="TBL-21-42-"><td style="text-align:left;" id="TBL-21-42-1" class="td11"> </td>
+</tr><tr style="vertical-align:baseline;" id="TBL-21-43-"><td style="text-align:left;" id="TBL-21-43-1" class="td11"> </td>
+</tr><tr style="vertical-align:baseline;" id="TBL-21-44-"><td style="text-align:left;" id="TBL-21-44-1" class="td11"> </td></tr>
+<tr style="vertical-align:baseline;" id="TBL-21-12-"><td colspan="4" style="text-align:left;" id="TBL-21-12-1" class="td11"><span class="cmidrule"></span>
+</td></tr><tr style="vertical-align:baseline;" id="TBL-21-13-"><td style="text-align:left;" id="TBL-21-13-1" class="td11"> </td>
+</tr><tr style="vertical-align:baseline;" id="TBL-21-14-"><td style="text-align:left;" id="TBL-21-14-1" class="td11"> </td></tr>
+</table></div>
+</div>
+<p class="indent"> Одна оговорка важнее всей таблицы: это не разные клетки, а разные <span class="lati-1095">режимы</span>. Один и тот же
+нейрон может быть интегратором при медленном входе и детектором совпадений, когда торможение
+укоротило его <math display="inline"><mi>τ</mi></math>
+(глава <a href="04.html#x7-350004">4</a>); ритмоводителем в бодрствовании и молчаливым приёмником во сне. Какой прибор
+получится, решают ионные каналы мембраны и широковещательные каналы, которые их
+подстраивают.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">18.1 </span> <a id="x21-16400018.1"></a>Четыре прибора, которых в книге ещё не было</h3>
+ <h4 class="subsectionHead"><span class="titlemark">18.1.1 </span> <a id="x21-16500018.1.1"></a>Резонатор</h4>
+<p class="noindent">У некоторых нейронов есть медленный ток, который противодействует любому изменению
+напряжения: напряжение растёт — ток его тянет вниз, падает — тянет вверх, но с
+запаздыванием. Для электронщика такой ток ведёт себя как индуктивность, а вместе с
+ёмкостью мембраны они образуют колебательный контур. Нейрон отвечает сильнее
+всего на вход определённой частоты, обычно от единиц до десятка-другого герц, и
+слабее — на более медленный и более быстрый <span class="cite">[<a href="refs.html#XHutcheonYarom2000">193</a>]</span>. Это полосовой фильтр в одной
+клетке: из шумного входа он выбирает ритм своей частоты, например местный ритм
+главы <a href="03.html#x6-250003">3</a>.
+</p>
+ <h4 class="subsectionHead"><span class="titlemark">18.1.2 </span> <a id="x21-16600018.1.2"></a>Интегратор без утечки</h4>
+<p class="noindent">Интегратор с утечкой помнит вход лишь время
+<math display="inline"><mi>τ</mi></math>
+— десятки миллисекунд. Но глазу, чтобы стоять неподвижно, нужно помнить своё
+положение секундами: команда «повернуть» приходит как кратковременная
+скорость, а держать глаз надо в новом положении. Сеть решает это той же обратной
+связью, что и память главы <a href="02.html#x5-150002">2</a>. Если группа нейронов с постоянной времени
+<math display="inline"><mi>τ</mi></math> возбуждает сама
+себя с весом <math display="inline"><mi>w</mi></math>,
+то <math display="inline"><mi>τ</mi><mspace width="0.17em" class="thinspace"/><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>r</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>t</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mo class="MathClass-bin" stretchy="false">−</mo><mi>r</mi> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>w</mi><mspace width="0.17em" class="thinspace"/><mi>r</mi> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>I</mi></math>, и
+постоянная времени группы равна
+</p><div class="keyformula"><table class="equation"><tr><td>
+<math display="block" class="equation">
+ <mstyle id="x21-166001r1" class="label"></mstyle><msub><mrow><mi>τ</mi></mrow><mrow><mstyle class="text"><mtext>эфф</mtext></mstyle></mrow></msub 
+><mspace width="0.28em" class="thickpace"/> <mo class="MathClass-rel" stretchy="false">=</mo> <mspace width="0.28em" class="thickpace"/> <mfrac><mrow><mi>τ</mi></mrow> 
+<mrow><mn>1</mn> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>w</mi></mrow></mfrac><mo class="MathClass-punc" stretchy="false">.</mo>
+</math></td><td class="eq-no">(18.1)</td></tr></table>
+</div><p class="noindent"> При <math display="inline"><mi>τ</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>с</mtext></mstyle></math> и
+<math display="inline"><mi>w</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>9</mn><mn>9</mn><mn>5</mn></math> получается
+<math display="inline"><mn>2</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>с</mtext></mstyle></math>:
+почти идеальный интегратор из нейронов, каждый из которых сам по себе
+забывает за десятую долю секунды <span class="cite">[<a href="refs.html#XSeung1996">194</a>]</span>. Цена — точная настройка: при
+<math display="inline"><mi>w</mi></math> чуть
+больше единицы интегратор уходит в насыщение, при чуть меньшей — быстро забывает. Поэтому
+такому интегратору нужна постоянная подстройка обучением, вроде той, что описана в
+главе <a href="15.html#x18-13800015">15</a>.
+</p>
+ <h4 class="subsectionHead"><span class="titlemark">18.1.3 </span> <a id="x21-16700018.1.3"></a>Бистабильный нейрон</h4>
+<p class="noindent">В главах <a href="02.html#x5-150002">2</a> и <a href="03.html#x6-250003">3</a> триггер собирался из группы нейронов. Но бывает триггер и в одной клетке. У
+некоторых нейронов есть ток, который, однажды включившись, сам поддерживает
+возбуждение: короткий вход переводит нейрон в длительную работу — <span class="lati-1095">плато</span>, — а торможение
+возвращает в покой. Это триггер Шмитта: у нейрона два устойчивых состояния и гистерезис
+между ними. Так ведут себя, например, <span class="nt">ACET</span>-нейроны, управляющие мышцами, и
+включается это свойство широковещательным каналом: плато появляется, когда до нейрона
+доходит серотонин <span class="cite">[<a href="refs.html#XHounsgaard1988">195</a>]</span>. Одна и та же клетка с <span class="nt">SERO</span> — защёлка, без него — обычный
+интегратор.
+</p>
+ <h4 class="subsectionHead"><span class="titlemark">18.1.4 </span> <a id="x21-16800018.1.4"></a>Интеграторы и резонаторы</h4>
+<p class="noindent">Теория разделяет возбудимые клетки на два класса <span class="cite">[<a href="refs.html#XIzhikevich2007">196</a>]</span>. <span class="lati-1095">Интеграторы </span>похожи на
+генератор, управляемый напряжением, который начинает с нуля: чуть выше порога нейрон
+работает сколь угодно медленно, и частота плавно растёт со входом. Такой нейрон
+складывает всё, что пришло, и хорошо передаёт частотой величину входа. <span class="lati-1095">Резонаторы</span>
+похожи на генератор с минимальной частотой: медленно работать они не умеют, при
+пороговом входе сразу выдают импульсы с конечной частотой и предпочитают вход
+своей частоты. Первые — естественные приборы частотного кода главы <a href="04.html#x7-350004">4</a>, вторые —
+временного.
+</p>
+ <div class="tcolorbox keyblock" id="tcolobox-38"> 
+<div class="tcolorbox-content"><div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x21-168001r1"></a>
+<span class="labx-1095">Утверждение 18.1 </span>(Один нейрон — много приборов)<span class="labx-1095">.</span> </span> <span class="lati-1095">По электрической функции</span>
+<span class="lati-1095">нейроны работают как интеграторы с утечкой и без неё, детекторы совпадений,</span>
+<span class="lati-1095">фильтры верхних и полосовых частот, преобразователи напряжение—частота,</span>
+<span class="lati-1095">выпрямители, делители, генераторы, линии задержки и триггеры. Какой прибор</span>
+<span class="lati-1095">получится из данной клетки, задают её ионные каналы и широковещательные каналы,</span>
+<span class="lati-1095">которые их подстраивают. Сами режимы измерены; то, насколько мозг использует</span>
+<span class="lati-1095">такую перестройку для вычислений, — в основном гипотеза.</span>
+</p>
+</div>
+ 
+</div> 
+</div>
+<p class="indent"> Для инженера это похоже на программируемую логическую матрицу: железо одно, а прибор
+задаёт конфигурация. Только конфигурацию здесь меняют не при прошивке, а на ходу, —
+медленными широковещательными каналами, о которых шла речь в главах <a href="05.html#x8-470005">5</a>–<a href="09.html#x12-860009">9</a>.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">18.2 </span> <a id="x21-16900018.2"></a>Задачи</h3>
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x21-169001r1"></a>
+<span class="labx-1095">Задача 18.1 </span>(<math display="inline"><mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Допуск интегратора без утечки. </span>Нейроны с <math display="inline"><mi>τ</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn></math> с
+держат положение глаза по (<a href="#x21-166001r1">18.1</a>) в течение <math display="inline"><mi>T</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn></math> с
+с ошибкой не более <math display="inline"><mn>5</mn><mi>%</mi></math>
+в обе стороны. (а) Найдите допустимый диапазон <math display="inline"><mi>w</mi></math>.
+(б) <math display="inline"><mi>w</mi></math>
+— сумма весов <math display="inline"><mi>K</mi></math>
+синапсов, каждый с независимой ошибкой <math display="inline"><mn>1</mn><mn>0</mn><mi>%</mi></math>.
+При каком <math display="inline"><mi>K</mi></math>
+разброс суммы укладывается в допуск?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">(а) <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>9</mn><mn>9</mn><mn>4</mn><mn>9</mn> <mo class="MathClass-rel" stretchy="false">≤</mo> <mi>w</mi> <mo class="MathClass-rel" stretchy="false">≤</mo> <mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>0</mn><mn>0</mn><mn>4</mn><mn>9</mn></math>,
+то есть <math display="inline"><mo class="MathClass-rel" stretchy="false">|</mo><mn>1</mn> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>w</mi><mo class="MathClass-rel" stretchy="false">|</mo><mo class="MathClass-rel" stretchy="false">≲</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>0</mn><mn>0</mn><mn>5</mn></math>.
+(б) <math display="inline"><mi>K</mi> <mo class="MathClass-rel" stretchy="false">≥</mo> <mn>4</mn><mn>0</mn><mn>0</mn></math>
+синапсов.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x21-169002r2"></a>
+<span class="labx-1095">Задача 18.2 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Резонатор как контур. </span>Медленный ток раздела <a href="#x21-16500018.1.1">18.1.1</a> опишем переменной <math display="inline"><mi>W</mi></math>:
+<math display="inline"><mi>C</mi><mspace width="0.17em" class="thinspace"/><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>V</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>t</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mo class="MathClass-bin" stretchy="false">−</mo><msub><mrow><mi>g</mi></mrow><mrow><mi>L</mi></mrow></msub 
+><mi>V</mi> <mo class="MathClass-bin" stretchy="false">−</mo> <msub><mrow><mi>g</mi></mrow><mrow><mi>w</mi></mrow></msub 
+><mi>W</mi> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>I</mi></math>,
+<math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>w</mi></mrow></msub 
+><mspace width="0.17em" class="thinspace"/><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>W</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>t</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mi>V</mi> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>W</mi></math>.
+Покажите, что это <math display="inline"><mi>R</mi><mi>C</mi></math>-цепь
+с параллельной ветвью <math display="inline"><msub><mrow><mi>R</mi></mrow><mrow><mi>w</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mo class="MathClass-bin" stretchy="false">∕</mo><msub><mrow><mi>g</mi></mrow><mrow><mi>w</mi></mrow></msub 
+></math>,
+<math display="inline"><msub><mrow><mi>L</mi></mrow><mrow><mi>w</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <msub><mrow><mi>τ</mi></mrow><mrow><mi>w</mi></mrow></msub 
+><mo class="MathClass-bin" stretchy="false">∕</mo><msub><mrow><mi>g</mi></mrow><mrow><mi>w</mi></mrow></msub 
+></math>,
+и при <math display="inline"><mi>C</mi><mo class="MathClass-bin" stretchy="false">∕</mo><msub><mrow><mi>g</mi></mrow><mrow><mi>L</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>,
+<math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>w</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mn>0</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>,
+<math display="inline"><mi>α</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <msub><mrow><mi>g</mi></mrow><mrow><mi>w</mi></mrow></msub 
+><mo class="MathClass-bin" stretchy="false">∕</mo><msub><mrow><mi>g</mi></mrow><mrow><mi>L</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>4</mn></math>
+найдите частоту резонанса и выигрыш <math display="inline"><mo class="MathClass-rel" stretchy="false">|</mo><mi>Z</mi><mo class="MathClass-rel" stretchy="false">|</mo></math>
+в нём над <math display="inline"><mo class="MathClass-rel" stretchy="false">|</mo><mi>Z</mi><mo class="MathClass-open" stretchy="false">(</mo><mn>0</mn><mo class="MathClass-close" stretchy="false">)</mo><mo class="MathClass-rel" stretchy="false">|</mo></math>.
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent"><math display="inline"><msup><mrow><mo class="MathClass-open" stretchy="false">(</mo><msub><mrow><mi>ω</mi></mrow><mrow><mi>R</mi></mrow></msub 
+><msub><mrow><mi>τ</mi></mrow><mrow><mi>w</mi></mrow></msub 
+><mo class="MathClass-close" stretchy="false">)</mo></mrow><mrow><mn>2</mn></mrow></msup 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <msqrt><mrow><mi>α</mi><mo class="MathClass-open" stretchy="false">(</mo><mi>α</mi> <mo class="MathClass-bin" stretchy="false">+</mo> <mn>2</mn> <mo class="MathClass-bin" stretchy="false">+</mo> <mn>2</mn><mi>ϱ</mi><mo class="MathClass-close" stretchy="false">)</mo></mrow></msqrt><mo class="MathClass-bin" stretchy="false">∕</mo><mi>ϱ</mi> <mo class="MathClass-bin" stretchy="false">−</mo> <mn>1</mn></math>,
+<math display="inline"><mi>ϱ</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <msub><mrow><mi>τ</mi></mrow><mrow><mi>m</mi></mrow></msub 
+><mo class="MathClass-bin" stretchy="false">∕</mo><msub><mrow><mi>τ</mi></mrow><mrow><mi>w</mi></mrow></msub 
+></math>;
+<math display="inline"><msub><mrow><mi>f</mi></mrow><mrow><mi>R</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>1</mn><mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn></math> Гц;
+<math display="inline"><mo class="MathClass-rel" stretchy="false">|</mo><mi>Z</mi><mo class="MathClass-open" stretchy="false">(</mo><msub><mrow><mi>ω</mi></mrow><mrow><mi>R</mi></mrow></msub 
+><mo class="MathClass-close" stretchy="false">)</mo><mo class="MathClass-rel" stretchy="false">|</mo><mo class="MathClass-bin" stretchy="false">∕</mo><mo class="MathClass-rel" stretchy="false">|</mo><mi>Z</mi><mo class="MathClass-open" stretchy="false">(</mo><mn>0</mn><mo class="MathClass-close" stretchy="false">)</mo><mo class="MathClass-rel" stretchy="false">|</mo> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>4</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>6</mn></math>.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x21-169003r3"></a>
+<span class="labx-1095">Задача 18.3 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Как интегратор начинает работать. </span>(а) Нейрон <math display="inline"><mi>τ</mi><mspace width="0.17em" class="thinspace"/><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>V</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>t</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mo class="MathClass-bin" stretchy="false">−</mo><mi>V</mi> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>μ</mi></math>,
+<math display="inline"><mi>τ</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>,
+с порогом <math display="inline"><mi>𝜃</mi></math>
+и сбросом в ноль. При каком <math display="inline"><mi>μ</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mi>𝜃</mi> <mo class="MathClass-bin" stretchy="false">−</mo> <mn>1</mn></math>
+частота равна <math display="inline"><mn>1</mn></math> Гц?
+(б) Какую частоту даёт модель <math display="inline"><mi>τ</mi><mspace width="0.17em" class="thinspace"/><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>v</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>t</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <msup><mrow><mi>v</mi></mrow><mrow><mn>2</mn></mrow></msup 
+> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>μ</mi></math>
+(импульс — уход <math display="inline"><mi>v</mi></math>
+в <math display="inline"> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>∞</mi></math>,
+сброс в <math display="inline"> <mo class="MathClass-bin" stretchy="false">−</mo><mi>∞</mi></math>)
+при <math display="inline"><mi>μ</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>0</mn><mn>1</mn></math>?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">(а) <math display="inline"><mi>f</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mo class="MathClass-bin" stretchy="false">∕</mo><mrow><mo class="MathClass-open" fence="true" mathsize="1.19em">(</mo><mrow><mi>τ</mi><mi class="loglike">ln</mi><mo>⁡</mo> <mfrac><mrow><mi>μ</mi></mrow> 
+<mrow><mi>μ</mi><mo class="MathClass-bin" stretchy="false">−</mo><mi>𝜃</mi></mrow></mfrac></mrow><mo class="MathClass-close" fence="true" mathsize="1.19em">)</mo></mrow></math>;
+для <math display="inline"><mn>1</mn></math> Гц
+нужно <math display="inline"><mi>μ</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mi>𝜃</mi> <mo class="MathClass-bin" stretchy="false">−</mo> <mn>1</mn> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>3</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>7</mn> <mo class="MathClass-bin" stretchy="false">⋅</mo> <mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mo class="MathClass-bin" stretchy="false">−</mo><mn>4</mn><mn>4</mn></mrow></msup 
+></math>.
+(б) <math display="inline"><mi>T</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mi>π</mi><mi>τ</mi><mo class="MathClass-bin" stretchy="false">∕</mo><msqrt><mrow><mi>μ</mi></mrow></msqrt></math>,
+<math display="inline"><mi>f</mi> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>3</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn></math> Гц:
+<math display="inline"><mi>f</mi> <mo class="MathClass-rel" stretchy="false">∝</mo><msqrt><mrow><mi>μ</mi></mrow></msqrt></math>.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x21-169004r4"></a>
+<span class="labx-1095">Задача 18.4 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Моделирование: интегратор и резонатор. </span>Модель задачи <a href="#x21-169002r2">18.2</a> с <math display="inline"><msub><mrow><mi>g</mi></mrow><mrow><mi>L</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn></math>,
+<math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>m</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>,
+<math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>w</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mn>0</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>,
+порогом <math display="inline"><mn>1</mn></math>
+и сбросом <math display="inline"><mi>V</mi> <mo class="MathClass-rel" stretchy="false">→</mo> <mn>0</mn></math>
+(<math display="inline"><mi>W</mi></math>
+не меняется) получает <math display="inline"><mi>μ</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn><mi class="loglike">sin</mi><mo>⁡</mo><mn>2</mn><mi>π</mi><mi>f</mi><mi>t</mi></math>,
+<math display="inline"><mi>f</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn></math>–<math display="inline"><mn>4</mn><mn>0</mn></math> Гц.
+В какой полосе частот нейрон выдаёт импульсы при <math display="inline"><mi>α</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn></math>
+и при <math display="inline"><mi>α</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>4</mn></math>?
+Сравните с условием <math display="inline"><mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn><mspace width="0.17em" class="thinspace"/><mo class="MathClass-rel" stretchy="false">|</mo><mi>Z</mi><mo class="MathClass-open" stretchy="false">(</mo><mi>f</mi><mo class="MathClass-close" stretchy="false">)</mo><mo class="MathClass-rel" stretchy="false">|</mo> <mo class="MathClass-rel" stretchy="false">&#x003E;</mo> <mn>1</mn></math>.
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">Интегратор работает при <math display="inline"><mi>f</mi> <mo class="MathClass-rel" stretchy="false">≲</mo> <mn>1</mn><mn>7</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>7</mn></math> Гц
+(фильтр нижних частот), резонатор — только в полосе
+<math display="inline"><mn>5</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn></math>–<math display="inline"><mn>2</mn><mn>2</mn></math> Гц
+(полосовой фильтр).
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x21-169005r5"></a>
+<span class="labx-1095">Задача 18.5 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Защёлка из одной клетки. </span>Нейрон с током плато: <math display="inline"><mi>τ</mi><mspace width="0.17em" class="thinspace"/><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>r</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>t</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mo class="MathClass-bin" stretchy="false">−</mo><mi>r</mi> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>F</mi><mo class="MathClass-open" stretchy="false">(</mo><mi>w</mi><mi>r</mi> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>I</mi><mo class="MathClass-close" stretchy="false">)</mo></math>,
+<math display="inline"><mi>F</mi><mo class="MathClass-open" stretchy="false">(</mo><mi>x</mi><mo class="MathClass-close" stretchy="false">)</mo> <mo class="MathClass-rel" stretchy="false">=</mo><mi class="qopname"> min</mi><mo> ⁡ </mo><mo class="MathClass-open" stretchy="false">(</mo><mn>1</mn><mo class="MathClass-punc" stretchy="false">,</mo><mi class="qopname">max</mi><mo> ⁡ </mo><mo class="MathClass-open" stretchy="false">(</mo><mn>0</mn><mo class="MathClass-punc" stretchy="false">,</mo><mi>x</mi><mo class="MathClass-close" stretchy="false">)</mo><mo class="MathClass-close" stretchy="false">)</mo></math>,
+<math display="inline"><mi>τ</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>,
+<math display="inline"><mi>w</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn></math>,
+фон <math display="inline"><mi>I</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mo class="MathClass-bin" stretchy="false">−</mo><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn></math>.
+(а) Какой наименьшей длительности импульс <math display="inline"><mi>I</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>3</mn></math>
+переводит нейрон из <math display="inline"><mi>r</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn></math>
+в плато? (б) Какой наименьшей амплитуды <math display="inline"><mi>B</mi></math>
+длинный импульс <math display="inline"><mi>I</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mo class="MathClass-bin" stretchy="false">−</mo><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>B</mi></math>
+возвращает его в покой?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">(а) <math display="inline"><msub><mrow><mi>T</mi></mrow><mrow><mi class="qopname">min</mi><mo> ⁡ </mo></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mfrac><mrow><mi>τ</mi></mrow> 
+<mrow><mi>w</mi><mo class="MathClass-bin" stretchy="false">−</mo><mn>1</mn></mrow></mfrac> <mi class="loglike">ln</mi><mo>⁡</mo> <mfrac><mrow><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn></mrow> 
+<mrow><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>3</mn></mrow></mfrac> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>1</mn><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>.
+(б) <math display="inline"><mi>B</mi> <mo class="MathClass-rel" stretchy="false">&#x003E;</mo> <mi>w</mi> <mo class="MathClass-bin" stretchy="false">−</mo> <mn>1</mn> <mo class="MathClass-bin" stretchy="false">−</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>3</mn></math>.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x21-169006r6"></a>
+<span class="labx-1095">Задача 18.6 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Самонастройка интегратора. </span>При фиксации взгляда вход <math display="inline"><mi>I</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn></math>,
+датчик скольжения даёт скорость ухода <math display="inline"><mi>e</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>r</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>t</mi></math>,
+и <math display="inline"><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>w</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>t</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mo class="MathClass-bin" stretchy="false">−</mo><mi>η</mi><mspace width="0.17em" class="thinspace"/><mi>e</mi><mspace width="0.17em" class="thinspace"/><mi>r</mi></math>.
+При <math display="inline"><mi>w</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>9</mn><mn>5</mn></math>,
+<math display="inline"><mi>τ</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn></math> с,
+<math display="inline"><mo class="MathClass-open" stretchy="false">⟨</mo><msup><mrow><mi>r</mi></mrow><mrow><mn>2</mn></mrow></msup 
+><mo class="MathClass-close" stretchy="false">⟩</mo> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn></math>
+найдите <math display="inline"><mi>η</mi></math>,
+при котором за <math display="inline"><mn>6</mn><mn>0</mn></math> с
+фиксаций <math display="inline"><mo class="MathClass-rel" stretchy="false">|</mo><mn>1</mn> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>w</mi><mo class="MathClass-rel" stretchy="false">|</mo></math>
+войдёт в допуск задачи <a href="#x21-169001r1">18.1</a>. Что сломается, если учиться и во время поворотов глаза?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">Постоянная времени подстройки <math display="inline"><mi>τ</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mo class="MathClass-open" stretchy="false">(</mo><mi>η</mi><mo class="MathClass-open" stretchy="false">⟨</mo><msup><mrow><mi>r</mi></mrow><mrow><mn>2</mn></mrow></msup 
+><mo class="MathClass-close" stretchy="false">⟩</mo><mo class="MathClass-close" stretchy="false">)</mo></math>,
+<math display="inline"><mi>η</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mi>τ</mi><mi class="loglike">ln</mi><mo>⁡</mo><mn>1</mn><mn>0</mn><mo class="MathClass-bin" stretchy="false">∕</mo><mn>6</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>с</mtext></mstyle> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>3</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>8</mn> <mo class="MathClass-bin" stretchy="false">⋅</mo> <mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mo class="MathClass-bin" stretchy="false">−</mo><mn>3</mn></mrow></msup 
+></math>; при
+<math display="inline"><mi>I</mi><mo class="MathClass-rel" stretchy="false">≠</mo><mn>0</mn></math> вес смещается, из
+<math display="inline"><mi>e</mi></math> нужно вычесть
+копию команды <math display="inline"><mi>I</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mi>τ</mi></math>.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x21-169007r7"></a>
+<span class="labx-1095">Задача 18.7 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo><mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Зачем перестраивать прибор? </span>Широковещательный канал переключает <math display="inline"><mi>α</mi></math>
+модели задачи <a href="#x21-169002r2">18.2</a> между <math display="inline"><mn>0</mn></math>
+и <math display="inline"><mn>4</mn></math>.
+Во сколько раз резонатор выигрывает у интегратора в отношении сигнал/шум для слабого
+синуса в белом шуме тока при <math display="inline"><mn>1</mn><mn>1</mn></math> Гц
+и при <math display="inline"><mn>1</mn></math> Гц?
+Придумайте задачу, где выгодно именно переключение режима.
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">Открытая задача. Резонатор выигрывает лишь в
+<math display="inline"><mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>3</mn><mn>5</mn></math> раза при
+<math display="inline"><mn>1</mn><mn>1</mn></math> Гц и
+проигрывает в <math display="inline"><mn>1</mn><mn>7</mn></math>
+раз при <math display="inline"><mn>1</mn></math> Гц;
+основной выигрыш от перестройки — в пороговом выборе полосы (задача <a href="fullch18.html#x21-169004r4">18.4</a>).
+</p></div></details>
+
+<p class="indent"> <a id="tailfullch18.html"></a> </p> 
+
+  </article>
+  <article class="text short" id="text-short" hidden>
+
+ <a id="s-x21-9600018"></a>
+<p class="noindent">В первой главе мы рассортировали нейроны по тому, какое
+вещество они выбрасывают. Инженер рассортировал бы их
+иначе: каким прибором каждый из них работает. И
+оказывается, что под одинаковым видом прячется целый
+ящик радиодеталей.
+</p>
+ <h3 class="likesectionHead"> <a id="s-x21-97000"></a>Ящик радиодеталей</h3>
+<p class="noindent">Дырявое ведро из второй главы — это накопитель с
+утечкой: он складывает сигналы за короткое окно. С очень
+маленьким окном он превращается в детектор совпадений.
+Нейрон, который отвечает только на перемены и тут же
+замолкает, — это фильтр, пропускающий изменения. Нейрон,
+который работает сам, — метроном, генератор; если его
+темп подкручивает вход, это генератор, управляемый
+напряжением. Нейрон, выдающий пачки щелчков, —
+генератор пачек, пишущий «тире». Нейрон, щёлкающий в
+такт звуковой волне, — детектор фазы.
+</p>
+<div class="center">
+<p class="noindent"><img src="img/short33x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<div class="minipage"><p class="noindent"><span class="lati-1000">Под одинаковым видом прячется целый ящик</span>
+<span class="lati-1000">радиодеталей: сопротивление, конденсатор,</span>
+<span class="lati-1000">катушка, генератор.</span> </p></div></div>
+<p class="indent"> Есть и приборы, о которых мы раньше не говорили.
+<span class="lati-1095">Резонатор </span>похож на качели: он лучше всего отвечает
+на толчки определённого ритма, как качели, которые
+раскачиваются, только если толкать их вовремя. Внутри
+нейрона роль пружины играет медленный ток, который
+сопротивляется изменениям. <span class="lati-1095">Накопитель без утечки</span>
+держит значение долго, как конденсатор без утечки, — так
+работает сеть, удерживающая положение глаз, когда вы
+смотрите в сторону. Но для этого обратная связь должна
+быть подогнана почти идеально, и это дорогая настройка.
+<span class="lati-1095">Защёлка </span>— нейрон, который короткий толчок переводит в
+долгую работу, пока его не выключат, как выключатель с
+фиксацией; у нейронов, управляющих мышцами, такой
+режим включает серотонин.
+</p>
+ <h3 class="likesectionHead"> <a id="s-x21-98000"></a>Прибор-хамелеон</h3>
+<p class="noindent">Главное открытие этой сортировки: это не разные детали, а
+разные <span class="lati-1095">режимы </span>одной и той же. Один и тот же нейрон
+может быть накопителем днём и генератором пачек ночью, в
+зависимости от того, что ему говорят радиостанции.
+Инженер назвал бы мозг перепрограммируемой логической
+матрицей: схема одна, а назначение деталей меняют
+настройки.
+</p><p class="indent"> Что нейроны умеют работать во всех этих режимах,
+измерено. Как мозг пользуется переключением режимов для
+вычислений — по большей части гипотеза.
+</p><p class="noindent"><span class="lati-1000">Формулы, модели, задачи и источники — в полной версии,</span>
+<span class="lati-1000">глава</span><span class="lati-1000"> 18.</span>
+</p>
+<p class="indent"> <a id="s-tailshortch18.html"></a> </p> 
+
+  </article>
+
+  <aside class="starline"><span data-ru="Книга бесплатная и открытая. Если глава была полезной, поставьте книге звезду на GitHub: так её найдут другие." data-en="The book is free and open. If this chapter was useful, star the book on GitHub so others can find it.">Книга бесплатная и открытая.</span> <a href="https://github.com/kladkogex/20-watt-computer" target="_blank" rel="noopener" data-ru="★ Звезда на GitHub" data-en="★ Star on GitHub">★ Звезда на GitHub</a></aside>
+  <nav class="pager">
+    <a class="prev" href="17.html"><span data-ru="← Назад" data-en="← Previous">← Назад</span><b>Отладка машины</b></a>
+    <a class="next" href="19.html"><span data-ru="Дальше →" data-en="Next →">Дальше →</span><b>Нейроны по числу дендритов</b></a>
+  </nav>
+  <footer>
+    <span data-ru='Константин Кладько · текст — <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.ru">CC BY-NC-SA 4.0</a>' data-en='Konstantin Kladko · text: <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>'>Константин Кладько</span>
+    <span><a href="../pdf/20-watt-computer-ru.pdf">PDF</a> · <a href="../breadboard/" data-ru="Макетная плата" data-en="Breadboard">Макетная плата</a> · <a href="https://github.com/kladkogex/20-watt-computer">GitHub</a></span>
+  </footer>
+</main>
+
+<script>
+(function(){
+  const NAV = [{"slug": "00", "title": "Как читать эту книгу", "kicker": "Введение"}, {"slug": "01", "title": "Типы нейронов", "kicker": "Глава 1"}, {"slug": "02", "title": "Что вычисляют GLUT-нейроны", "kicker": "Глава 2"}, {"slug": "03", "title": "GLUT и GABA вместе", "kicker": "Глава 3"}, {"slug": "04", "title": "Азбука Морзе: что мы знаем о языке, на котором говорят GLUT- и GABA-нейроны", "kicker": "Глава 4"}, {"slug": "05", "title": "Что вычисляют SERO-нейроны", "kicker": "Глава 5"}, {"slug": "06", "title": "Нейронные сети, которые умеют учиться: добавляем DOPA", "kicker": "Глава 6"}, {"slug": "07", "title": "Альтернативные современные теории обучения на основе дофамина", "kicker": "Глава 7"}, {"slug": "08", "title": "Когда искать, а когда решать: добавляем NORA", "kicker": "Глава 8"}, {"slug": "09", "title": "Когда писать, а когда читать: добавляем ACET", "kicker": "Глава 9"}, {"slug": "10", "title": "Вся машина", "kicker": "Глава 10"}, {"slug": "11", "title": "Входы машины: как к ней подключены глаза, уши и другие датчики", "kicker": "Глава 11"}, {"slug": "12", "title": "Распознавание изображений и видео", "kicker": "Глава 12"}, {"slug": "13", "title": "Выходы машины: как мозг управляет мышцами", "kicker": "Глава 13"}, {"slug": "14", "title": "Боль: сигнал тревоги", "kicker": "Глава 14"}, {"slug": "15", "title": "Как машина учится двигаться", "kicker": "Глава 15"}, {"slug": "16", "title": "Второй выход: как мозг управляет химией тела", "kicker": "Глава 16"}, {"slug": "17", "title": "Отладка машины", "kicker": "Глава 17"}, {"slug": "18", "title": "Типы нейронов по электрической функции", "kicker": "Глава 18"}, {"slug": "19", "title": "Нейроны по числу дендритов", "kicker": "Глава 19"}, {"slug": "20", "title": "Что делают нейроны во сне", "kicker": "Глава 20"}, {"slug": "21", "title": "Машина из живых нейронов", "kicker": "Глава 21"}, {"slug": "22", "title": "DishBrain", "kicker": "Глава 22"}, {"slug": "a", "title": "Вещества, которые не задают тип нейрона", "kicker": "Приложение A"}, {"slug": "b", "title": "Обозначения", "kicker": "Приложение B"}, {"slug": "c", "title": "Ответы", "kicker": "Приложение C"}, {"slug": "d", "title": "Экспериментальное приложение", "kicker": "Приложение D"}, {"slug": "refs", "title": "Литература", "kicker": ""}];
+  const SLUG = "18";
+  const store = {get(k){try{return localStorage.getItem(k)}catch(e){return null}}, set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+
+  // chapter selector
+  const sel = document.getElementById("jump");
+  NAV.forEach(p => { const o = document.createElement("option"); o.value = p.slug;
+    o.textContent = (p.kicker ? p.kicker + ". " : "") + p.title; if (p.slug === SLUG) o.selected = true; sel.appendChild(o); });
+  sel.addEventListener("change", () => { location.href = sel.value + ".html" + (location.hash === "#short" ? "#short" : ""); });
+
+  // Коротко / Полностью
+  const modeBox = document.querySelector(".mode");
+  const hasShort = modeBox.dataset.hasShort === "true";
+  const full = document.getElementById("text-full"), short = document.getElementById("text-short");
+  function setMode(m, remember){
+    if (!hasShort) m = "full";
+    document.body.dataset.mode = m;
+    full.hidden = m !== "full"; short.hidden = m !== "short";
+    modeBox.querySelectorAll(".seg").forEach(b => b.setAttribute("aria-pressed", b.dataset.mode === m));
+    if (remember) store.set("20w-mode", m);
+  }
+  if (!hasShort) modeBox.hidden = true;
+  modeBox.addEventListener("click", e => { const b = e.target.closest(".seg"); if (b) { setMode(b.dataset.mode, true); history.replaceState(null, "", "#" + b.dataset.mode); } });
+  document.addEventListener("click", e => { const a = e.target.closest("a[data-mode]"); if (a) { e.preventDefault(); setMode(a.dataset.mode, true); window.scrollTo(0, 0); } });
+  // a link into the text (#x...) that lives in the other version switches to it
+  function follow(){
+    const h = decodeURIComponent(location.hash.slice(1));
+    if (h === "short" || h === "full") { setMode(h, true); return; }
+    if (!h) return;
+    const t = document.getElementById(h);
+    if (t) { setMode(short.contains(t) ? "short" : "full", false); t.scrollIntoView(); }
+  }
+  setMode(store.get("20w-mode") || "full", false);
+  follow();
+  window.addEventListener("hashchange", follow);
+  // links that leave the book open in the whole window when the page sits inside the reader
+  if (document.documentElement.classList.contains("embedded"))
+    document.querySelectorAll('a[href^="../"], a[href^="http"]').forEach(a => { a.target = a.href.startsWith(location.origin) ? "_top" : "_blank"; });
+
+  // interface language (the text itself is Russian)
+  function setLang(l){
+    document.querySelectorAll("[data-ru]").forEach(el => { el.innerHTML = el.dataset[l]; });
+    document.getElementById("lang-ru").setAttribute("aria-pressed", l === "ru");
+    document.getElementById("lang-en").setAttribute("aria-pressed", l === "en");
+    store.set("20w-lang", l);
+  }
+  document.getElementById("lang-ru").onclick = () => setLang("ru");
+  document.getElementById("lang-en").onclick = () => setLang("en");
+  setLang(store.get("20w-lang") === "en" ? "en" : "ru");
+  window.addEventListener("storage", e => {
+    if (e.key === "20w-lang" && (e.newValue === "ru" || e.newValue === "en")) setLang(e.newValue);
+    if (e.key === "20w-theme" && (e.newValue === "light" || e.newValue === "dark")) document.documentElement.setAttribute("data-theme", e.newValue);
+  });
+})();
+</script>
+<script>
+(function(){var b=document.getElementById("theme");if(!b)return;var r=document.documentElement;function cur(){var t=r.getAttribute("data-theme");if(t)return t;return window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";}function show(){b.textContent=cur()==="dark"?"☀":"☾";b.setAttribute("aria-pressed",cur()==="dark");}b.onclick=function(){var t=cur()==="dark"?"light":"dark";r.setAttribute("data-theme",t);try{localStorage.setItem("20w-theme",t);}catch(e){}show();};if(window.matchMedia)matchMedia("(prefers-color-scheme: dark)").addEventListener("change",show);show();})();
+</script>
+</body>
+</html>

@@ -1,0 +1,851 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<script>try{var t=localStorage.getItem("20w-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);}catch(e){}if(window.self!==window.top)document.documentElement.classList.add("embedded");</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Глава 5. Что вычисляют SERO-нейроны · Компьютер на 20 ваттах</title>
+<meta name="description" content="До сих пор все нейроны книги говорили по адресной шине: GLUT и GABA посылали импульсы определённым получателям, и мы выяснили, что такая сеть вычисляет и на каком языке она …">
+<link rel="canonical" href="https://kladkogex.github.io/20-watt-computer/read/05.html">
+<meta property="og:type" content="book">
+<meta property="og:title" content="Глава 5. Что вычисляют SERO-нейроны · Компьютер на 20 ваттах">
+<meta property="og:description" content="До сих пор все нейроны книги говорили по адресной шине: GLUT и GABA посылали импульсы определённым получателям, и мы выяснили, что такая сеть вычисляет и на каком языке она …">
+<meta property="og:url" content="https://kladkogex.github.io/20-watt-computer/read/05.html">
+<meta property="og:locale" content="ru_RU">
+<meta property="og:image" content="https://kladkogex.github.io/20-watt-computer/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Your brain runs on 20 watts. Here is its datasheet. The 20-Watt Computer, a free textbook for engineers.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://kladkogex.github.io/20-watt-computer/og-card.png">
+<meta name="twitter:title" content="Глава 5. Что вычисляют SERO-нейроны · The 20-Watt Computer">
+<meta name="twitter:description" content="До сих пор все нейроны книги говорили по адресной шине: GLUT и GABA посылали импульсы определённым получателям, и мы выяснили, что такая сеть вычисляет и на каком языке она …">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Chapter", "name": "Что вычисляют SERO-нейроны", "url": "https://kladkogex.github.io/20-watt-computer/read/05.html", "position": 5, "inLanguage": "ru", "isAccessibleForFree": true, "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/", "author": {"@type": "Person", "name": "Константин Кладько", "alternateName": "Konstantin Kladko"}, "isPartOf": {"@type": "Book", "name": "Компьютер на 20 ваттах. Как вычисляет мозг: количественный подход для инженеров", "alternateName": "The 20-Watt Computer: How the Brain Computes. A Quantitative Approach for Engineers", "author": {"@type": "Person", "name": "Константин Кладько", "alternateName": "Konstantin Kladko"}, "url": "https://kladkogex.github.io/20-watt-computer/", "inLanguage": "ru", "isAccessibleForFree": true, "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/"}}</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap">
+<link rel="stylesheet" href="book.css">
+</head>
+<body>
+<header class="bar">
+  <a class="home" href="../#toc"><span class="w">20</span> <span data-ru="Компьютер на 20 ваттах" data-en="The 20-Watt Computer">Компьютер на 20 ваттах</span></a>
+  <label class="jump"><span class="sr" data-ru="Перейти к главе" data-en="Go to chapter">Перейти к главе</span>
+    <select id="jump"></select></label>
+  <div class="langs" role="group" aria-label="Language">
+    <button class="chip" id="lang-ru" type="button">RU</button>
+    <button class="chip" id="lang-en" type="button">EN</button>
+    <button class="chip theme" id="theme" type="button" aria-label="Light or dark theme" title="Light / dark">☾</button>
+  </div>
+</header>
+
+<main class="page">
+  <div class="pagehead">
+    <p class="kicker" data-ru="Глава 5" data-en="Chapter 5">Глава 5</p>
+    <h1><span class="t-full">Что вычисляют <span class="nt">SERO</span>-нейроны</span><span class="t-short">Разговор через воздух</span></h1>
+    <div class="mode" role="group" aria-label="Version" data-has-short="true">
+      <button type="button" class="seg" data-mode="short"><b data-ru="Коротко" data-en="Short">Коротко</b><span data-ru="без формул, с рисунками" data-en="no formulas, with drawings">без формул, с рисунками</span></button>
+      <button type="button" class="seg" data-mode="full"><b data-ru="Полностью" data-en="Full">Полностью</b><span data-ru="формулы, модели, задачи" data-en="formulas, models, exercises">формулы, модели, задачи</span></button>
+    </div>
+    <p class="lang-note" data-ru="" data-en="The online reader is in Russian for now; the book in other languages is in the PDF downloads in the menu.">.</p>
+  </div>
+
+  <article class="text full" id="text-full">
+
+ <a id="x8-470005"></a>
+ <h3 class="sectionHead"><span class="titlemark">5.1 </span> <a id="x8-480005.1"></a>Первый широковещательный канал</h3>
+<p class="noindent">До сих пор все нейроны книги говорили по адресной шине: <span class="nt">GLUT</span> и <span class="nt">GABA</span> посылали импульсы
+определённым получателям, и мы выяснили, что такая сеть вычисляет и на каком языке она
+говорит. Теперь переходим ко второй шине из раздела <a href="01.html#x4-70001.3">1.3</a> — широковещательной.
+Первый её канал — <span class="nt">SERO</span>. Как и раньше, разрешим себе только то, что бывает в живом
+организме.
+</p><p class="indent"> В этой главе появятся три устройства, которыми потом будут пользоваться все
+широковещательные каналы: нейрон, который при ровном фоновом притоке работает сам, пока
+его не остановили; провод, который на самом деле объём ткани; и медленная концентрация
+вместо отдельных импульсов. <span class="nt">DOPA</span>, <span class="nt">NORA</span> и <span class="nt">ACET</span> в главах <a href="06.html#x9-560006">6</a>–<a href="09.html#x12-860009">9</a> будут собраны из тех же
+деталей.
+</p><p class="indent"> С точки зрения инженера у <span class="nt">SERO</span>-нейрона четыре важных отличия.
+</p><p class="indent"> <span class="lati-1095">Первое: знак выбирает получатель. </span>У серотонина есть рецепторы обоих знаков, и
+правило (<a href="01.html#x4-6004r1">1.1</a>) здесь не действует: знак определяет не отправитель, а рецептор получателя
+(утверждение <a href="01.html#x4-12001r2">1.2</a>) <span class="cite">[<a href="refs.html#XBarnesSharp1999">82</a>]</span>.
+</p><p class="indent"> <span class="lati-1095">Второе: </span><span class="nt"><span class="lati-1095">SERO</span></span><span class="lati-1095">-нейрон работает сам, если есть ровный фон. </span>В бодрствовании он ровно,
+несколько раз в секунду, выдаёт импульсы, и толчок на каждый импульс ему не нужен: это
+ритмоводитель. Но ему нужен постоянный фоновый приток. В срезе мозга, где этого притока нет,
+большинство таких клеток молчит; ровный ритм возвращается, если подать норадреналин через
+<math display="inline"><msub><mrow><mi>α</mi></mrow><mrow><mn>1</mn></mrow></msub 
+></math>-рецепторы,
+а их блокада его гасит <span class="cite">[<a href="refs.html#XVandermaelenAghajanian1983">253</a>]</span>. В организме этот фон приходит от <span class="nt">NORA</span>. Для схемы это
+генератор, которому нужно питание: пока оно есть, он работает сам, пока его не остановит
+торможение.
+</p><p class="indent"> <span class="lati-1095">Третье: он медленный. </span>Почти все рецепторы серотонина метаботропные: они не открывают
+канал сами, а запускают внутри клетки цепочку реакций. Ответ медленный: тормозящий ток
+через главный рецептор нарастает и спадает в пределах примерно секунды <span class="cite">[<a href="refs.html#XCourtneyFord2016">254</a>]</span> — в десятки раз
+дольше, чем ответ быстрого синапса <span class="nt">GLUT</span>.
+</p><p class="indent"> <span class="lati-1095">Четвёртое: он выбрасывает медиатор не в провод, а в объём. </span>В областях, куда идут выходы
+<span class="nt">SERO</span>-нейронов, серотонин часто выходит не в узкую щель, а в межклеточное пространство и
+расплывается вокруг <span class="cite">[<a href="refs.html#XBunin1998">83</a>]</span>. Получатель чувствует концентрацию и не может знать, от какого
+отправителя пришла молекула.
+</p><p class="indent"> Отдельные импульсы при таких временах уже неважны, поэтому описывать сеть будем частотами
+<math display="inline"><msub><mrow><mi>r</mi></mrow><mrow><mi>j</mi></mrow></msub 
+></math> и концентрациями.
+Концентрация <math display="inline"><mi>c</mi></math>
+серотонина в объёме, куда выбрасывают медиатор нейроны
+<math display="inline"><mi>j</mi></math>, растёт
+от выброса и убывает, потому что медиатор откачивают обратно:
+</p><div class="keyformula"><table class="equation"><tr><td>
+<math display="block" class="equation">
+ <mstyle id="x8-48001r1" class="label"></mstyle><msub><mrow><mi>τ</mi></mrow><mrow><mi>c</mi></mrow></msub 
+><mspace width="0.17em" class="thinspace"/><mfrac><mrow><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>c</mi></mrow> 
+<mrow><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>t</mi></mrow></mfrac><mspace width="0.28em" class="thickpace"/> <mo class="MathClass-rel" stretchy="false">=</mo> <mspace width="0.28em" class="thickpace"/> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>c</mi><mspace width="0.28em" class="thickpace"/> <mo class="MathClass-bin" stretchy="false">+</mo> <mspace width="0.28em" class="thickpace"/><mi>κ</mi><munder class="msub"><mrow><mo>∑</mo>
+ </mrow><mrow><mi>j</mi></mrow></munder 
+><msub><mrow><mi>r</mi></mrow><mrow><mi>j</mi></mrow></msub 
+><mo class="MathClass-punc" stretchy="false">,</mo><mspace width="2em" class="qquad"/><msub><mrow><mi>r</mi></mrow><mrow><mi>i</mi></mrow></msub 
+><mspace width="0.28em" class="thickpace"/> <mo class="MathClass-rel" stretchy="false">=</mo> <mspace width="0.28em" class="thickpace"/><msub><mrow><mi>f</mi></mrow><mrow><mi>i</mi></mrow></msub 
+><mrow><mo class="MathClass-open" fence="true" mathsize="1.19em">(</mo><mrow><msub><mrow><mi>b</mi></mrow><mrow><mi>i</mi></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">+</mo> <msub><mrow><mi>s</mi></mrow><mrow><mi>i</mi></mrow></msub 
+><mspace width="0.17em" class="thinspace"/><mi>g</mi><mspace width="0.17em" class="thinspace"/><mi>c</mi></mrow><mo class="MathClass-close" fence="true" mathsize="1.19em">)</mo></mrow><mo class="MathClass-punc" stretchy="false">,</mo><mspace width="1em" class="quad"/><msub><mrow><mi>s</mi></mrow><mrow><mi>i</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mo class="MathClass-bin" stretchy="false">±</mo><mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo>
+</math></td><td class="eq-no">(5.1)</td></tr></table>
+</div><p class="noindent"> Это ещё один способ прочитать поток импульсов, дополняющий утверждение <a href="04.html#x7-41003r3">4.3</a>: объём не
+видит ни отдельных импульсов, ни их порядка, а только частоту, усреднённую за время
+<math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>c</mi></mrow></msub 
+></math>. Первое уравнение — та же
+RC-цепь, что и мембрана: <math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>c</mi></mrow></msub 
+></math>
+— время жизни медиатора в объёме; прямо оно не измерено, и мы принимаем его порядка секунды,
+<math display="inline"><mi>κ</mi></math>
+— сколько медиатора даёт один импульс. Второе описывает получателя:
+<math display="inline"><msub><mrow><mi>b</mi></mrow><mrow><mi>i</mi></mrow></msub 
+></math> — его
+собственный приток, у ритмоводителя положительный (в него входит и ровный фоновый вход от <span class="nt">NORA</span>);
+<math display="inline"><mi>g</mi></math> — чувствительность
+рецептора; знак <math display="inline"><msub><mrow><mi>s</mi></mrow><mrow><mi>i</mi></mrow></msub 
+></math>
+выбирает получатель; <math display="inline"><msub><mrow><mi>f</mi></mrow><mrow><mi>i</mi></mrow></msub 
+></math>
+— неубывающая передаточная характеристика.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">5.2 </span> <a id="x8-490005.2"></a>НЕ за один нейрон</h3>
+<p class="noindent">Возьмём ритмоводитель с тормозящим рецептором,
+<math display="inline"><mi>s</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mo class="MathClass-bin" stretchy="false">−</mo><mn>1</mn></math>.
+Пока серотонина вокруг нет, он работает на своём собственном притоке
+<math display="inline"><mi>b</mi></math>. Когда серотонин появляется,
+приток уменьшается на <math display="inline"><mi>g</mi><mi>c</mi></math>,
+и если <math display="inline"><mi>g</mi><mi>c</mi> <mo class="MathClass-rel" stretchy="false">&#x003E;</mo> <mi>b</mi></math>,
+нейрон замолкает. Это НЕ: выход есть, когда входа нет. На него ушёл один нейрон (рис. <a href="#x8-490011">5.1</a>).
+Утверждение <a href="02.html#x5-18002r1">2.1</a> здесь неприменимо: оно требовало положительных весов.
+</p><p class="indent"> Если на тот же ритмоводитель действует серотонин из двух разных объёмов, он молчит, когда
+серотонин есть хотя бы в одном. Это ИЛИ-НЕ, а из ИЛИ-НЕ можно собрать любую логическую
+функцию. Двухпроводный код <span class="nt">GLUT</span>-сети здесь не нужен: отсутствие сигнала вычисляют
+нейроны, которые работают, пока их не остановили.
+</p>
+ <figure class="figure"> 
+<a id="x8-490011"></a>
+<p class="noindent"><img src="img/full18x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<figcaption class="caption"><span class="id">Рис. 5.1: </span><span class="content">Логика из <span class="nt">SERO</span>-нейронов. Двойной кружок —
+ритмоводитель: при ровном фоновом притоке он работает сам,
+пока его не затормозят. Линия с чертой — тормозящий рецептор,
+<math display="inline"><mi>s</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mo class="MathClass-bin" stretchy="false">−</mo><mn>1</mn></math>;
+<math display="inline"><mi>c</mi></math>,
+<math display="inline"><msub><mrow><mi>c</mi></mrow><mrow><mn>1</mn></mrow></msub 
+></math>,
+<math display="inline"><msub><mrow><mi>c</mi></mrow><mrow><mn>2</mn></mrow></msub 
+></math>
+— концентрации серотонина в объёмах вокруг получателя. Слева — НЕ, справа — ИЛИ-НЕ.</span></figcaption>
+ </figure>
+ <div class="tcolorbox keyblock" id="tcolobox-13"> 
+<div class="tcolorbox-content"><div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x8-49002r1"></a>
+<span class="labx-1095">Утверждение 5.1 </span>(Полнота <span class="nt">SERO</span>-логики)<span class="labx-1095">.</span> </span> <span class="lati-1095">Если в сети есть ритмоводители с</span>
+<span class="lati-1095">тормозящими рецепторами и выбросы в разные объёмы не смешиваются, сеть</span><span class="lati-1095"> </span>(<a href="#x8-48001r1">5.1</a>)
+<span class="lati-1095">может вычислить любую логическую функцию, и каждый бит передаётся одним</span>
+<span class="lati-1095">проводом.</span>
+</p>
+</div>
+ 
+</div> 
+</div>
+<p class="indent"> Логически <span class="nt">SERO</span>-сеть сильнее <span class="nt">GLUT</span>, но условие «выбросы в разные объёмы не
+смешиваются» в мозге не выполняется (раздел <a href="#x8-520005.5">5.5</a>).
+</p>
+ <h3 class="sectionHead"><span class="titlemark">5.3 </span> <a id="x8-500005.3"></a>Отрицательная обратная связь</h3>
+<p class="noindent">У серотониновых нейронов есть тормозящие рецепторы на них самих <span class="cite">[<a href="refs.html#XSprouse1987">84</a>]</span>. Серотонин, который
+они выбросили, возвращается к ним же и притормаживает их. Для инженера это знакомая схема:
+усилитель с отрицательной обратной связью (рис. <a href="#x8-500012">5.2</a>).
+</p><p class="indent"> Что здесь измерено, а что — модель. В самом ядре шва, где сидят <span class="nt">SERO</span>-нейроны, серотонин
+тормозит соседей не через общий объём, а точка-точка, через синапсы: переносчик быстро
+убирает его и не даёт накопиться вне щели. Одиночный выброс даёт лишь короткую паузу в
+разряде, а средняя частота от этого не меняется <span class="cite">[<a href="refs.html#XCourtneyFord2016">254</a>]</span>. Поэтому петля ниже, замкнутая через
+общий объём, — модель: мы считаем, что делала бы такая обратная связь, если бы она работала
+на уровне средних частот.
+</p>
+ <figure class="figure"> 
+<a id="x8-500012"></a>
+<p class="noindent"><img src="img/full19x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<figcaption class="caption"><span class="id">Рис. 5.2: </span><span class="content"><span class="nt">SERO</span>-нейрон с обратной связью через собственный медиатор: концентрация
+<math display="inline"><mi>c</mi></math>
+идёт ко всем получателям и тормозит сам нейрон. В модели это регулятор уровня; в мозге
+такая роль петли — гипотеза.</span></figcaption>
+ </figure>
+<p class="indent"> Посчитаем, что делает эта петля. Пусть передаточная характеристика линейна,
+<math display="inline"><mi>f</mi><mo class="MathClass-open" stretchy="false">(</mo><mi>u</mi><mo class="MathClass-close" stretchy="false">)</mo> <mo class="MathClass-rel" stretchy="false">=</mo> <mi>a</mi><mi>u</mi></math> при
+<math display="inline"><mi>u</mi> <mo class="MathClass-rel" stretchy="false">&#x003E;</mo> <mn>0</mn></math>. В
+равновесии <math display="inline"><mi>c</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mi>κ</mi><mi>r</mi></math>
+и <math display="inline"><mi>r</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mi>a</mi><mo class="MathClass-open" stretchy="false">(</mo><mi>b</mi> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>g</mi><mi>c</mi><mo class="MathClass-close" stretchy="false">)</mo></math>.
+Подставив одно в другое, получим
+</p><div class="keyformula"><table class="equation"><tr><td>
+<math display="block" class="equation">
+ <mstyle id="x8-50002r2" class="label"></mstyle><mi>r</mi><mspace width="0.28em" class="thickpace"/> <mo class="MathClass-rel" stretchy="false">=</mo> <mspace width="0.28em" class="thickpace"/> <mfrac><mrow><mi>a</mi><mspace width="0.17em" class="thinspace"/><mi>b</mi></mrow> 
+<mrow><mn>1</mn> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>G</mi></mrow></mfrac><mo class="MathClass-punc" stretchy="false">,</mo><mspace width="2em" class="qquad"/><mi>G</mi><mspace width="0.28em" class="thickpace"/> <mo class="MathClass-rel" stretchy="false">=</mo> <mspace width="0.28em" class="thickpace"/><mi>a</mi><mspace width="0.17em" class="thinspace"/><mi>g</mi><mspace width="0.17em" class="thinspace"/><mi>κ</mi><mo class="MathClass-punc" stretchy="false">.</mo>
+</math></td><td class="eq-no">(5.2)</td></tr></table>
+</div><p class="noindent"> Величина <math display="inline"><mi>G</mi></math>
+— усиление петли. Это та же формула, что и для любого усилителя с отрицательной обратной
+связью, и она даёт те же два выигрыша.
+</p><p class="indent"> <span class="lati-1095">Устойчивость к разбросу. </span>Пусть возбудимость нейрона
+<math display="inline"><mi>a</mi></math> изменилась
+на долю <math display="inline"><mi>𝜀</mi></math>.
+Без обратной связи на ту же долю изменилась бы и частота. С обратной связью, при
+<math display="inline"><mi>G</mi> <mo class="MathClass-rel" stretchy="false">≫</mo> <mn>1</mn></math>, частота
+<math display="inline"><mi>r</mi> <mo class="MathClass-rel" stretchy="false">≈</mo> <mi>b</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mo class="MathClass-open" stretchy="false">(</mo><mi>g</mi><mi>κ</mi><mo class="MathClass-close" stretchy="false">)</mo></math> от
+<math display="inline"><mi>a</mi></math> почти не зависит:
+её изменение в <math display="inline"><mn>1</mn> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>G</mi></math>
+раз меньше. При <math display="inline"><mi>G</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>9</mn></math>
+разброс подавляется вдесятеро.
+</p><p class="indent"> <span class="lati-1095">Быстрота. </span>Подставим <math display="inline"><mi>r</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mi>a</mi><mo class="MathClass-open" stretchy="false">(</mo><mi>b</mi> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>g</mi><mi>c</mi><mo class="MathClass-close" stretchy="false">)</mo></math> в
+первое уравнение (<a href="#x8-48001r1">5.1</a>): получим <math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>c</mi></mrow></msub 
+><mspace width="0.17em" class="thinspace"/><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>c</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>t</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mo class="MathClass-bin" stretchy="false">−</mo><mo class="MathClass-open" stretchy="false">(</mo><mn>1</mn> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>G</mi><mo class="MathClass-close" stretchy="false">)</mo><mspace width="0.17em" class="thinspace"/><mi>c</mi> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>κ</mi><mi>a</mi><mi>b</mi></math>.
+Концентрация подходит к своему уровню с постоянной времени
+<math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>c</mi></mrow></msub 
+><mo class="MathClass-bin" stretchy="false">∕</mo><mo class="MathClass-open" stretchy="false">(</mo><mn>1</mn> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>G</mi><mo class="MathClass-close" stretchy="false">)</mo></math> — в
+<math display="inline"><mn>1</mn> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>G</mi></math> раз
+быстрее, чем без обратной связи.
+</p><p class="indent"> Вот первое вычисление, которое могла бы выполнять <span class="nt">SERO</span>-система: держать общий уровень
+серотонина в мозге на заданной отметке, как термостат держит температуру. Это гипотеза: в
+опыте автоторможение пока видно только как короткие паузы, не меняющие средней
+частоты.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">5.4 </span> <a id="x8-510005.4"></a>Из импульсов — в уровень</h3>
+<p class="noindent">Второе вычисление спрятано в первом уравнении (<a href="#x8-48001r1">5.1</a>). Нейроны выдают отдельные
+импульсы, а получатель чувствует концентрацию, которая сглаживает их за время
+<math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>c</mi></mrow></msub 
+></math>. Если
+частота источника меняется, концентрация следует за ней с запаздыванием: </p><table class="equation"><tr><td>
+<math display="block" class="equation">
+ <mstyle id="x8-51001r3" class="label"></mstyle><mi>c</mi><mo class="MathClass-open" stretchy="false">(</mo><mi>t</mi><mo class="MathClass-close" stretchy="false">)</mo><mspace width="0.28em" class="thickpace"/> <mo class="MathClass-rel" stretchy="false">=</mo> <mspace width="0.28em" class="thickpace"/> <mfrac><mrow><mi>κ</mi></mrow> 
+<mrow><msub><mrow><mi>τ</mi></mrow><mrow><mi>c</mi></mrow></msub 
+></mrow></mfrac><msubsup><mrow><mo> ∫
+ </mo></mrow><mrow><mo class="MathClass-bin" stretchy="false">−</mo><mi>∞</mi></mrow><mrow><mi>t</mi></mrow></msubsup 
+><msup><mrow><mi>e</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">−</mo><mo class="MathClass-open" stretchy="false">(</mo><mi>t</mi><mo class="MathClass-bin" stretchy="false">−</mo><msup><mrow><mi>t</mi></mrow><mrow><mi>′</mi></mrow></msup 
+><mo class="MathClass-close" stretchy="false">)</mo><mo class="MathClass-bin" stretchy="false">∕</mo><msub><mrow><mi>τ</mi></mrow><mrow><mi>c</mi></mrow></msub 
+>
+ </mrow></msup 
+><mspace width="0.17em" class="thinspace"/><munder class="msub"><mrow><mo> ∑</mo>
+ </mrow><mrow><mi>j</mi></mrow></munder 
+><msub><mrow><mi>r</mi></mrow><mrow><mi>j</mi></mrow></msub 
+><mo class="MathClass-open" stretchy="false">(</mo><msup><mrow><mi>t</mi></mrow><mrow><mi>′</mi></mrow></msup 
+><mo class="MathClass-close" stretchy="false">)</mo><mspace width="0.17em" class="thinspace"/><mstyle mathvariant="normal"><mi>d</mi></mstyle><msup><mrow><mi>t</mi></mrow><mrow><mi>′</mi></mrow></msup 
+><mo class="MathClass-punc" stretchy="false">.</mo>
+</math></td><td class="eq-no">(5.3)</td></tr></table>
+<p class="noindent">Это скользящее среднее активности источников за последние несколько
+<math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>c</mi></mrow></msub 
+></math> —
+фильтр нижних частот (рис. <a href="#x8-510023">5.3</a>). Так простейший цифро-аналоговый преобразователь
+пропускает импульсы через RC-цепь и превращает их частоту в уровень. <span class="nt">SERO</span>-система делает то
+же с сотнями тысяч нейронов сразу.
+</p><p class="indent"> Эта величина заодно и память. После того как источники замолчали, концентрация держится ещё
+время порядка <math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>c</mi></mrow></msub 
+></math>.
+Это не бит, а плавно тающий след.
+</p>
+ <figure class="figure"> 
+<a id="x8-510023"></a>
+<p class="noindent"><img src="img/full20x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<figcaption class="caption"><span class="id">Рис. 5.3: </span><span class="content">Из импульсов — в уровень. Сверху — импульсы <span class="nt">SERO</span>-нейронов: две секунды
+редко, три секунды часто, потом снова редко. Снизу — концентрация серотонина (<a href="#x8-51001r3">5.3</a>) при
+<math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>c</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>с</mtext></mstyle></math>.
+Штриховая линия — то же, если бы импульсы шли идеально ровно.</span></figcaption>
+ </figure>
+ <h3 class="sectionHead"><span class="titlemark">5.5 </span> <a id="x8-520005.5"></a>Провод — это объём</h3>
+<p class="noindent">Вернёмся к условию утверждения <a href="#x8-49002r1">5.1</a>. Серотонин, выброшенный поблизости разными
+отправителями, складывается в одну концентрацию.
+</p><p class="indent"> <span class="lati-1095">Провод здесь — не волокно, а объём ткани. </span>Два сигнала остаются разными, только если их
+выбрасывают в области, разнесённые дальше, чем успевает расплыться медиатор. За время
+<math display="inline"><mi>τ</mi></math> молекула с
+коэффициентом диффузии <math display="inline"><mi>D</mi></math>
+уходит на
+</p><div class="keyformula"><table class="equation"><tr><td>
+<math display="block" class="equation">
+ <mstyle id="x8-52001r4" class="label"></mstyle><mi>ℓ</mi><mspace width="0.28em" class="thickpace"/> <mo class="MathClass-rel" stretchy="false">∼</mo><mspace width="0.28em" class="thickpace"/><msqrt><mrow><mi>D</mi><mspace width="0.17em" class="thinspace"/><mi>τ</mi></mrow></msqrt><mspace width="0.17em" class="thinspace"/><mo class="MathClass-punc" stretchy="false">.</mo>
+</math></td><td class="eq-no">(5.4)</td></tr></table>
+</div><p class="noindent"> Извилистость межклеточных щелей замедляет диффузию небольшой молекулы примерно в
+<math display="inline"><mn>2</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>6</mn></math> раза <span class="cite">[<a href="refs.html#XSykova2008">85</a>]</span>, а коэффициент
+диффузии самого серотонина в ткани не измерен; по размеру молекулы оценим его в несколько единиц на
+<math display="inline"><mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mo class="MathClass-bin" stretchy="false">−</mo><mn>6</mn></mrow></msup 
+></math> см<math display="inline"><msup><mrow></mrow><mrow><mn>2</mn></mrow></msup 
+></math>/с.
+Если сигнал живёт <math display="inline"><mi>τ</mi> <mo class="MathClass-rel" stretchy="false">∼</mo> <mn>1</mn></math> с
+(тоже оценка), то <math display="inline"><mi>ℓ</mi> <mo class="MathClass-rel" stretchy="false">∼</mo><msqrt><mrow><mn>3</mn> <mo class="MathClass-bin" stretchy="false">⋅</mo> <mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mo class="MathClass-bin" stretchy="false">−</mo><mn>6</mn></mrow></msup 
+></mrow></msqrt></math> см
+<math display="inline"> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>2</mn><mn>0</mn></math> мкм.
+Адрес в такой сети — это <span class="lati-1095">место</span>: получатель узнаёт, от кого сигнал, только по тому, где он сам
+находится.
+</p><p class="indent"> Настоящие <span class="nt">SERO</span>-нейроны устроены так, что этих отдельных адресов почти не остаётся.
+Выход каждого из них раскидан по огромным участкам мозга: ветви одной клетки доходят до
+многих далёких друг от друга областей <span class="cite">[<a href="refs.html#XGagnonParent2014">252</a>]</span>. Мест выброса на клетку по оценке около
+<math display="inline"><mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>5</mn></mrow></msup 
+></math>
+(таблица <a href="01.html#x4-60021">1.1</a>); прямо их не подсчитали. «Провода» разных <span class="nt">SERO</span>-нейронов перекрываются и
+смешиваются. Совсем в один провод они всё же не сливаются: <span class="nt">SERO</span>-нейроны делятся на
+несколько подсистем, которые шлют выход в разные области и по-разному отвечают на одно и то
+же событие <span class="cite">[<a href="refs.html#XRen2018">161</a>]</span>. Но таких подсистем единицы, а не сотни тысяч.
+</p>
+ <div class="tcolorbox keyblock" id="tcolobox-14"> 
+<div class="tcolorbox-content"><div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x8-52002r2"></a>
+<span class="labx-1095">Утверждение 5.2 </span>(Число независимых проводов)<span class="labx-1095">.</span> </span> <span class="lati-1095">В сети с</span>
+<span class="lati-1095">объёмной передачей число независимых сигналов ограничено не</span>
+<span class="lati-1095">числом нейронов, а числом непересекающихся областей размером</span>
+<math display="inline"><mi>ℓ</mi> <mo class="MathClass-rel" stretchy="false">∼</mo><msqrt><mrow><mi>D</mi><mi>τ</mi></mrow></msqrt></math><span class="lati-1095">,</span>
+<span class="lati-1095">в которые они выбрасывают медиатор. Если выход каждого нейрона раскидан по</span>
+<span class="lati-1095">большому объёму, вся сеть передаёт лишь несколько общих переменных.</span>
+</p>
+</div>
+ 
+</div> 
+</div>
+<p class="indent"> Поэтому логические схемы утверждения <a href="#x8-49002r1">5.1</a> в мозге собрать не из чего. А регулятору (<a href="#x8-50002r2">5.2</a>) и
+фильтру (<a href="#x8-51001r3">5.3</a>) отдельные провода не нужны: им хватает одной общей величины. Фильтр прямо
+следует из измеренного выброса в объём в областях назначения <span class="cite">[<a href="refs.html#XBunin1998">83</a>]</span>; регулятор уровня —
+гипотеза.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">5.6 </span> <a id="x8-530005.6"></a>Горизонт планирования</h3>
+<p class="noindent">Для чего может пригодиться одна общая медленная величина? Хороший кандидат
+— параметр, который должен быть одинаков для всей сети и меняться не быстрее,
+чем за секунды или минуты. В главе <a href="01.html#x4-40001">1</a> такой параметр уже появлялся: коэффициент
+<math display="inline"><mi>γ</mi></math>
+в формуле ошибки (<a href="01.html#x4-10002r2">1.2</a>), который говорит, насколько будущая награда
+дешевле немедленной. В непрерывном времени его место занимает <span class="lati-1095">горизонт</span>
+<math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>γ</mi></mrow></msub 
+></math>: награда
+<math display="inline"><mi>R</mi></math>, до которой
+ждать время <math display="inline"><mi>D</mi></math>,
+стоит сейчас <math display="inline"><mi>R</mi><mspace width="0.17em" class="thinspace"/><msup><mrow><mi>e</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">−</mo><mi>D</mi><mo class="MathClass-bin" stretchy="false">∕</mo><msub><mrow><mi>τ</mi></mrow><mrow><mi>γ</mi></mrow></msub 
+></mrow></msup 
+></math>.
+</p><p class="indent"> Горизонт решает, стоит ли ждать. Пусть можно сразу взять маленькую награду
+<math display="inline"><msub><mrow><mi>r</mi></mrow><mrow><mn>0</mn></mrow></msub 
+></math> или подождать
+большую <math display="inline"><mi>R</mi></math>.
+Ждать выгодно, пока
+</p><div class="keyformula"><table class="equation"><tr><td>
+<math display="block" class="equation">
+ <mstyle id="x8-53001r5" class="label"></mstyle><mi>D</mi><mspace width="0.28em" class="thickpace"/> <mo class="MathClass-rel" stretchy="false">&#x003C;</mo> <mspace width="0.28em" class="thickpace"/><msub><mrow><mi>τ</mi></mrow><mrow><mi>γ</mi></mrow></msub 
+><mspace width="0.17em" class="thinspace"/> <mi class="loglike">ln</mi><mo>⁡</mo> <mfrac><mrow><mi>R</mi></mrow> 
+<mrow><msub><mrow><mi>r</mi></mrow><mrow><mn>0</mn></mrow></msub 
+></mrow></mfrac><mo class="MathClass-punc" stretchy="false">.</mo>
+</math></td><td class="eq-no">(5.5)</td></tr></table>
+</div><p class="noindent"> При <math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>γ</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>2</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>с</mtext></mstyle></math>
+и втрое большей отложенной награде стоит ждать до
+<math display="inline"><mn>2</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>с</mtext></mstyle></math>; если горизонт вдвое
+длиннее, — до <math display="inline"><mn>4</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>4</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>с</mtext></mstyle></math>.
+Терпение пропорционально горизонту.
+</p><p class="indent"> Формула (<a href="#x8-53001r5">5.5</a>) опирается на экспоненциальное обесценивание.
+Измеренное обесценивание на задержках в секунды ближе к гиперболе
+<math display="inline"><mi>R</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mo class="MathClass-open" stretchy="false">(</mo><mn>1</mn> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>D</mi><mo class="MathClass-bin" stretchy="false">∕</mo><msub><mrow><mi>τ</mi></mrow><mrow><mi>γ</mi></mrow></msub 
+><mo class="MathClass-close" stretchy="false">)</mo></math>:
+так у обезьян падают и ценность отложенной награды в выборе, и ответ
+<span class="nt">DOPA</span>-нейронов на её предвестник <span class="cite">[<a href="refs.html#XKobayashiSchultz2008">257</a>]</span>. Для гиперболы условие (<a href="#x8-53001r5">5.5</a>) заменяется на
+<math display="inline"><mi>D</mi> <mo class="MathClass-rel" stretchy="false">&#x003C;</mo> <msub><mrow><mi>τ</mi></mrow><mrow><mi>γ</mi></mrow></msub 
+><mspace width="0.17em" class="thinspace"/><mo class="MathClass-open" stretchy="false">(</mo><mi>R</mi><mo class="MathClass-bin" stretchy="false">∕</mo><msub><mrow><mi>r</mi></mrow><mrow><mn>0</mn></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">−</mo> <mn>1</mn><mo class="MathClass-close" stretchy="false">)</mo></math>:
+зависимость от отношения наград уже не логарифмическая, а линейная, и при тех же числах
+граница ожидания сдвигается почти вдвое. Гипербола получается из той же экспоненты, если
+задержка случайна (задача <a href="#x8-55007r7">5.7</a>), а пропорциональность терпения масштабу времени
+сохраняется.
+</p><p class="indent"> По гипотезе, горизонт и задаёт <span class="nt">SERO</span> <span class="cite">[<a href="refs.html#XDoya2002">4</a>]</span>. Для такой роли у него всё есть: один
+общий уровень на всю сеть, который меняется за секунды. Есть и прямые опыты: если
+искусственно включить серотониновые нейроны, животное дольше ждёт отложенную
+награду, прежде чем бросить ожидание <span class="cite">[<a href="refs.html#XMiyazaki2014">105</a>]</span>, и дольше пытается добыть награду там,
+где она стала редкой <span class="cite">[<a href="refs.html#XLottem2018">152</a>]</span>. Как именно концентрация серотонина превращается в
+<math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>γ</mi></mrow></msub 
+></math> внутри
+сети, неизвестно. В следующей главе горизонт войдёт в ошибку, которую рассылает
+<span class="nt">DOPA</span>.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">5.7 </span> <a id="x8-540005.7"></a>Итог</h3>
+ <div class="table">
+<p class="indent"> <a id="x8-540011"></a></p><figure class="float">
+<div class="tabular">
+ <table id="TBL-7" class="tabular"><colgroup id="TBL-7-1g"><col id="TBL-7-1" /><col id="TBL-7-2" /><col id="TBL-7-3" /></colgroup><tr style="vertical-align:baseline;" id="TBL-7-1-"><td style="text-align:left;" id="TBL-7-1-1" class="td11"> </td><td style="text-align:left;" id="TBL-7-1-2" class="td11"> <p class="noindent"><span class="nt"><span class="larm-1000">GLUT</span></span> </p></td><td style="text-align:left;" id="TBL-7-1-3" class="td11"> <p class="noindent"><span class="nt"><span class="larm-1000">SERO</span></span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-7-2-"><td style="text-align:left;" id="TBL-7-2-1" class="td11"> <p class="noindent"><span class="larm-1000">время</span>
+ <span class="larm-1000">реакции</span> </p></td><td style="text-align:left;" id="TBL-7-2-2" class="td11"> <p class="noindent"><span class="larm-1000">миллисекунды</span> </p></td><td style="text-align:left;" id="TBL-7-2-3" class="td11"> <p class="noindent"><span class="larm-1000">доли</span>
+ <span class="larm-1000">секунды</span>
+ <span class="larm-1000">—</span>
+ <span class="larm-1000">секунда</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-7-3-"><td style="text-align:left;" id="TBL-7-3-1" class="td11"> <p class="noindent"><span class="larm-1000">знак</span>
+ <span class="larm-1000">действия</span> </p></td><td style="text-align:left;" id="TBL-7-3-2" class="td11"> <p class="noindent"><span class="larm-1000">только</span>
+ <math display="inline"><mo class="MathClass-bin" stretchy="false">+</mo></math> </p></td><td style="text-align:left;" id="TBL-7-3-3" class="td11"> <p class="noindent"><math display="inline"><mo class="MathClass-bin" stretchy="false">+</mo></math>
+ <span class="larm-1000">и</span>
+ <math display="inline"><mo class="MathClass-bin" stretchy="false">−</mo></math><span class="larm-1000">,</span>
+ <span class="larm-1000">выбирает</span>
+ <span class="larm-1000">получатель</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-7-4-"><td style="text-align:left;" id="TBL-7-4-1" class="td11"> <p class="noindent"><span class="larm-1000">без</span>
+ <span class="larm-1000">входа</span> </p></td><td style="text-align:left;" id="TBL-7-4-2" class="td11"> <p class="noindent"><span class="larm-1000">молчит</span> </p></td><td style="text-align:left;" id="TBL-7-4-3" class="td11"> <p class="noindent"><span class="larm-1000">работает</span>
+ <span class="larm-1000">сам</span>
+ <span class="larm-1000">при</span>
+ <span class="larm-1000">ровном</span>
+ <span class="larm-1000">фоновом</span>
+ <span class="larm-1000">притоке</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-7-5-"><td style="text-align:left;" id="TBL-7-5-1" class="td11"> <p class="noindent"><span class="larm-1000">адресация</span> </p></td><td style="text-align:left;" id="TBL-7-5-2" class="td11"> <p class="noindent"><span class="larm-1000">точка</span>
+ <span class="larm-1000">—</span>
+ <span class="larm-1000">точка</span> </p></td><td style="text-align:left;" id="TBL-7-5-3" class="td11"> <p class="noindent"><span class="larm-1000">объём,</span>
+ <span class="larm-1000">адрес</span>
+ <span class="larm-1000">—</span>
+ <span class="larm-1000">место</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-7-6-"><td style="text-align:left;" id="TBL-7-6-1" class="td11"> <p class="noindent"><span class="larm-1000">НЕ</span> </p></td><td style="text-align:left;" id="TBL-7-6-2" class="td11"> <p class="noindent"><span class="larm-1000">только</span>
+ <span class="larm-1000">через</span>
+ <span class="larm-1000">датчики</span>
+ <span class="larm-1000">«выключения»</span> </p></td><td style="text-align:left;" id="TBL-7-6-3" class="td11"> <p class="noindent"><span class="larm-1000">один</span>
+ <span class="larm-1000">нейрон</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-7-7-"><td style="text-align:left;" id="TBL-7-7-1" class="td11"> <p class="noindent"><span class="larm-1000">память</span> </p></td><td style="text-align:left;" id="TBL-7-7-2" class="td11"> <p class="noindent"><span class="larm-1000">самоподдерживающаяся</span>
+ <span class="larm-1000">активность,</span>
+ <span class="larm-1000">гаснет</span>
+ <span class="larm-1000">от</span>
+ <span class="larm-1000">усталости</span> </p></td><td style="text-align:left;" id="TBL-7-7-3" class="td11"> <p class="noindent"><span class="larm-1000">концентрация,</span>
+ <span class="larm-1000">тает</span>
+ <span class="larm-1000">за</span>
+ <span class="larm-1000">время</span>
+ <math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>c</mi></mrow></msub 
+></math> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-7-8-"><td style="text-align:left;" id="TBL-7-8-1" class="td11"> <p class="noindent"><span class="larm-1000">главные</span>
+ <span class="larm-1000">вычисления</span> </p></td><td style="text-align:left;" id="TBL-7-8-2" class="td11"> <p class="noindent"><span class="larm-1000">совпадения,</span>
+ <span class="larm-1000">задержки,</span>
+ <span class="larm-1000">логика,</span>
+ <span class="larm-1000">последовательности</span> </p></td><td style="text-align:left;" id="TBL-7-8-3" class="td11"> <p class="noindent"><span class="larm-1000">сглаживание;</span>
+ <span class="larm-1000">регулирование</span>
+ <span class="larm-1000">уровня</span>
+ <span class="larm-1000">и</span>
+ <span class="larm-1000">горизонт</span>
+ <math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>γ</mi></mrow></msub 
+></math>
+ <span class="larm-1000">(гипотезы)</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-7-9-"><td style="text-align:left;" id="TBL-7-9-1" class="td11"> </td></tr></table> </div>
+<figcaption class="caption"><span class="id">Таблица 5.1: </span><span class="content">Что вычисляют сети из одних <span class="nt">GLUT</span>-нейронов и из одних <span class="nt">SERO</span>-нейронов.</span></figcaption>
+ </figure>
+ </div>
+<p class="indent"> Как логический элемент (таблица <a href="#x8-540011">5.1</a>) <span class="nt">SERO</span>-нейрон богаче <span class="nt">GLUT</span>, но как система
+связи он — широковещательная рассылка: медленная и почти без адресов. Поэтому он
+не пытается быть процессором, а сглаживает и рассылает несколько общих величин,
+о которых шла речь в главе <a href="01.html#x4-40001">1</a>, — по гипотезе, в том числе горизонт планирования.
+Ритмоводитель, объём и медленная концентрация встретятся нам ещё трижды: у <span class="nt">DOPA</span>, <span class="nt">NORA</span> и
+<span class="nt">ACET</span>.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">5.8 </span> <a id="x8-550005.8"></a>Задачи</h3>
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x8-55001r1"></a>
+<span class="labx-1095">Задача 5.1 </span>(<math display="inline"><mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Провод — это объём. </span>Примите для серотонина <math display="inline"><mi>D</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>3</mn> <mo class="MathClass-bin" stretchy="false">⋅</mo> <mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mo class="MathClass-bin" stretchy="false">−</mo><mn>6</mn></mrow></msup 
+></math> см<math display="inline"><msup><mrow></mrow><mrow><mn>2</mn></mrow></msup 
+></math>/с
+(раздел <a href="#x8-520005.5">5.5</a>). Найдите по (<a href="#x8-52001r4">5.4</a>) <math display="inline"><mi>ℓ</mi></math>
+для сигнала, живущего <math display="inline"><mn>1</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>с</mtext></mstyle></math>,
+и время, за которое медиатор расплывётся на <math display="inline"><mn>5</mn></math> см.
+Чем тогда обеспечена широковещательность <span class="nt">SERO</span> — диффузией или ветвлением провода с
+<math display="inline"> <mo class="MathClass-rel" stretchy="false">∼</mo> <mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>5</mn></mrow></msup 
+></math>
+мест выброса?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent"><math display="inline"><mi>ℓ</mi> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>1</mn><mn>7</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мкм</mtext></mstyle></math>;
+<math display="inline"> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>1</mn><mn>0</mn><mn>0</mn></math> суток:
+рассылку по мозгу делает ветвление провода, диффузия лишь размывает каждое место выброса
+на <math display="inline"> <mo class="MathClass-rel" stretchy="false">∼</mo> <mn>2</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мкм</mtext></mstyle></math>.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x8-55002r2"></a>
+<span class="labx-1095">Задача 5.2 </span>(<math display="inline"><mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Регулятор уровня. </span>Покажите, что в (<a href="#x8-48001r1">5.1</a>) при <math display="inline"><mi>f</mi><mo class="MathClass-open" stretchy="false">(</mo><mi>u</mi><mo class="MathClass-close" stretchy="false">)</mo> <mo class="MathClass-rel" stretchy="false">=</mo> <mi>a</mi><mi>u</mi></math>
+относительная чувствительность <math display="inline"><mi>S</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mo class="MathClass-open" stretchy="false">(</mo><mi>a</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mi>r</mi><mo class="MathClass-close" stretchy="false">)</mo><mspace width="0.17em" class="thinspace"/><mi>∂</mi><mi>r</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mi>∂</mi><mi>a</mi></math>
+равна <math display="inline"><mn>1</mn><mo class="MathClass-bin" stretchy="false">∕</mo><mo class="MathClass-open" stretchy="false">(</mo><mn>1</mn> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>G</mi><mo class="MathClass-close" stretchy="false">)</mo></math>
+точно, а не только при <math display="inline"><mi>G</mi> <mo class="MathClass-rel" stretchy="false">≫</mo> <mn>1</mn></math>.
+При <math display="inline"><mi>G</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>9</mn></math>
+возбудимость <math display="inline"><mi>a</mi></math>
+выросла на <math display="inline"><mn>2</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mi>%</mi></math>.
+На сколько процентов изменится <math display="inline"><mi>r</mi></math>
+без линеаризации?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent"><math display="inline"><mi>r</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mi>a</mi><mi>b</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mo class="MathClass-open" stretchy="false">(</mo><mn>1</mn> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>G</mi><mo class="MathClass-close" stretchy="false">)</mo></math>,
+<math display="inline"><mi>S</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mo class="MathClass-bin" stretchy="false">∕</mo><mo class="MathClass-open" stretchy="false">(</mo><mn>1</mn> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>G</mi><mo class="MathClass-close" stretchy="false">)</mo></math> точно;
+<math display="inline"> <mo class="MathClass-bin" stretchy="false">+</mo> <mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>7</mn><mspace width="0.17em" class="thinspace"/><mi>%</mi></math> вместо
+<math display="inline"> <mo class="MathClass-bin" stretchy="false">+</mo> <mn>2</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mi>%</mi></math>.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x8-55003r3"></a>
+<span class="labx-1095">Задача 5.3 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Медленный рецептор в петле. </span>Рецептор <span class="nt">SERO</span> отвечает с задержкой: <math display="inline"><mi>r</mi><mo class="MathClass-open" stretchy="false">(</mo><mi>t</mi><mo class="MathClass-close" stretchy="false">)</mo> <mo class="MathClass-rel" stretchy="false">=</mo> <mi>a</mi><mrow><mo class="MathClass-open" fence="true" mathsize="1.19em">(</mo><mrow><mi>b</mi> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>g</mi><mi>c</mi><mo class="MathClass-open" stretchy="false">(</mo><mi>t</mi> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>T</mi><mo class="MathClass-close" stretchy="false">)</mo></mrow><mo class="MathClass-close" fence="true" mathsize="1.19em">)</mo></mrow></math>,
+объём — по (<a href="#x8-48001r1">5.1</a>). Покажите, что при <math display="inline"><mi>G</mi> <mo class="MathClass-rel" stretchy="false">&#x003E;</mo> <mn>1</mn></math>
+петля устойчива лишь при <math display="inline"><mi>T</mi> <mo class="MathClass-rel" stretchy="false">&#x003C;</mo> <msup><mrow><mi>T</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">∗</mo></mrow></msup 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <msub><mrow><mi>τ</mi></mrow><mrow><mi>c</mi></mrow></msub 
+> <mi class="loglike">arccos</mi><mo>⁡</mo><mo class="MathClass-open" stretchy="false">(</mo><mo class="MathClass-bin" stretchy="false">−</mo><mn>1</mn><mo class="MathClass-bin" stretchy="false">∕</mo><mi>G</mi><mo class="MathClass-close" stretchy="false">)</mo><mo class="MathClass-bin" stretchy="false">∕</mo><msqrt><mrow><msup><mrow><mi>G</mi></mrow><mrow><mn>2</mn> </mrow> </msup 
+> <mo class="MathClass-bin" stretchy="false">−</mo> <mn>1</mn></mrow></msqrt></math>.
+Найдите <math display="inline"><msup><mrow><mi>T</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">∗</mo></mrow></msup 
+></math>
+при <math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>c</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>с</mtext></mstyle></math>
+для <math display="inline"><mi>G</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>2</mn></math>
+и <math display="inline"><mi>G</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>9</mn></math>.
+Какое подавление разброса доступно при задержке в сотни миллисекунд?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent"><math display="inline"><msup><mrow><mi>T</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">∗</mo></mrow></msup 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn><mn>1</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>с</mtext></mstyle></math>
+при <math display="inline"><mi>G</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>2</mn></math> и
+<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn><mn>9</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>с</mtext></mstyle></math> при
+<math display="inline"><mi>G</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>9</mn></math>: реально
+<math display="inline"><mi>G</mi> <mo class="MathClass-rel" stretchy="false">∼</mo> <mn>2</mn></math>–<math display="inline"><mn>4</mn></math>,
+подавление в <math display="inline"><mn>3</mn></math>–<math display="inline"><mn>5</mn></math>
+раз.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x8-55004r4"></a>
+<span class="labx-1095">Задача 5.4 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Дробовой шум уровня. </span>Каждый импульс добавляет к <math display="inline"><mi>c</mi></math>
+по (<a href="#x8-51001r3">5.3</a>) экспоненту с <math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>c</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>с</mtext></mstyle></math>.
+Найдите коэффициент вариации <math display="inline"><mi>c</mi></math>,
+если в один объём выбрасывают пуассоновские импульсы все <math display="inline"><mn>3</mn> <mo class="MathClass-bin" stretchy="false">⋅</mo> <mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>5</mn></mrow></msup 
+></math>
+<span class="nt">SERO</span>-нейронов по <math display="inline"><mn>2</mn></math>
+в секунду. Какое <math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>c</mi></mrow></msub 
+></math>
+дало бы <math display="inline"><mstyle mathvariant="normal"><mi>C</mi><mi>V</mi></mstyle> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mi>%</mi></math>
+одному нейрону с частотой <math display="inline"><mn>4</mn></math>
+импульса в секунду?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent"><math display="inline"><mstyle mathvariant="normal"><mi>C</mi><mi>V</mi></mstyle> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mo class="MathClass-bin" stretchy="false">∕</mo><msqrt><mrow><mn>2</mn><mi>λ</mi><msub><mrow><mi>τ</mi></mrow><mrow><mi>c</mi></mrow></msub 
+></mrow></msqrt> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>9</mn> <mo class="MathClass-bin" stretchy="false">⋅</mo> <mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mo class="MathClass-bin" stretchy="false">−</mo><mn>4</mn></mrow></msup 
+></math> при суммарной
+частоте <math display="inline"><mi>λ</mi></math>; одному
+нейрону нужно <math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>c</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mn>2</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>с</mtext></mstyle></math>.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x8-55005r5"></a>
+<span class="labx-1095">Задача 5.5 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Моделирование: обратная связь против шума. </span>Смоделируйте <math display="inline"><mi>N</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>5</mn><mn>0</mn></math>
+пуассоновских ритмоводителей с частотами <math display="inline"><msub><mrow><mi>r</mi></mrow><mrow><mi>i</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <msub><mrow><mi>a</mi></mrow><mrow><mi>i</mi></mrow></msub 
+><msub><mrow><mo class="MathClass-open" stretchy="false">[</mo><mi>b</mi> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>g</mi><mi>c</mi><mo class="MathClass-close" stretchy="false">]</mo></mrow><mrow><mo class="MathClass-bin" stretchy="false">+</mo></mrow></msub 
+></math>,
+<math display="inline"><msub><mrow><mi>a</mi></mrow><mrow><mi>i</mi></mrow></msub 
+></math>
+равномерны в <math display="inline"><mo class="MathClass-open" stretchy="false">[</mo><mn>2</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>8</mn><mo class="MathClass-punc" stretchy="false">,</mo><mspace width="0.17em" class="thinspace"/><mn>5</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn><mo class="MathClass-close" stretchy="false">]</mo></math>,
+и объём (<a href="#x8-48001r1">5.1</a>) с <math display="inline"><mi>κ</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mo class="MathClass-bin" stretchy="false">∕</mo><mi>N</mi></math>,
+<math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>c</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>с</mtext></mstyle></math>.
+Во сколько раз обратная связь (<math display="inline"><mi>b</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn></math>,
+<math display="inline"><mi>g</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>2</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn><mn>5</mn></math>)
+снижает CV уровня <math display="inline"><mi>c</mi></math>
+по сравнению с <math display="inline"><mi>b</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn></math>,
+<math display="inline"><mi>g</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn></math>?
+Выравнивает ли она частоты нейронов?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent"><math display="inline"><mi>c</mi> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>4</mn><mn>0</mn></math> в обоих
+случаях; <math display="inline"><mstyle mathvariant="normal"><mi>C</mi><mi>V</mi></mstyle> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>0</mn><mn>5</mn><mn>0</mn></math>
+против <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn><mn>5</mn><mn>8</mn></math>, в
+<math display="inline"><msqrt><mrow>
+<mn>1</mn><mn>0</mn></mrow></msqrt></math>
+раз. Частоты отдельных нейронов остаются пропорциональны
+<math display="inline"><msub><mrow><mi>a</mi></mrow><mrow><mi>i</mi></mrow></msub 
+></math>:
+регулируется только сумма.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x8-55006r6"></a>
+<span class="labx-1095">Задача 5.6 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Проектирование: XOR на </span><span class="nt"><span class="lati-1095">SERO</span></span><span class="lati-1095">-логике. </span>Вентиль — ритмоводитель, выдающий <math display="inline"><msub><mrow><mi>r</mi></mrow><mrow><mn>0</mn></mrow></msub 
+></math>,
+если <math display="inline"><mi>b</mi> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>g</mi><msub><mrow><mi class="MathClass-op">∑</mi><mo> ⁡</mo>
+ </mrow><mrow><mi>k</mi></mrow></msub 
+><msub><mrow><mi>c</mi></mrow><mrow><mi>k</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">&#x003E;</mo> <mn>0</mn></math>,
+и <math display="inline"><mn>0</mn></math>
+иначе, в свой объём <math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>c</mi></mrow></msub 
+><mspace width="0.17em" class="thinspace"/><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>c</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>t</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mo class="MathClass-bin" stretchy="false">−</mo><mi>c</mi> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>κ</mi><mi>r</mi></math>;
+он вычисляет ИЛИ-НЕ. Соберите XOR из пяти таких вентилей и найдите время его установления
+при <math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>c</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>с</mtext></mstyle></math>
+и <math display="inline"><msup><mrow><mi>G</mi></mrow><mrow><mi>′</mi></mrow></msup 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mi>g</mi><mi>κ</mi><msub><mrow><mi>r</mi></mrow><mrow><mn>0</mn></mrow></msub 
+><mo class="MathClass-bin" stretchy="false">∕</mo><mi>b</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>2</mn></math>.
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent"><math display="inline"><msub><mrow><mi>N</mi></mrow><mrow><mn>1</mn></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mover accent="false" class="mml-overline"><mrow><mi>A</mi> <mo class="MathClass-bin" stretchy="false">∨</mo> <mi>B</mi></mrow><mo accent="true">¯</mo></mover></math>,
+<math display="inline"><msub><mrow><mi>N</mi></mrow><mrow><mn>2</mn></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mover accent="false" class="mml-overline"><mrow><mi>A</mi> <mo class="MathClass-bin" stretchy="false">∨</mo> <msub><mrow><mi>N</mi></mrow><mrow><mn>1</mn></mrow></msub 
+></mrow><mo accent="true">¯</mo></mover></math>,
+<math display="inline"><msub><mrow><mi>N</mi></mrow><mrow><mn>3</mn></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mover accent="false" class="mml-overline"><mrow><mi>B</mi> <mo class="MathClass-bin" stretchy="false">∨</mo> <msub><mrow><mi>N</mi></mrow><mrow><mn>1</mn></mrow></msub 
+></mrow><mo accent="true">¯</mo></mover></math>,
+<math display="inline"><msub><mrow><mi>N</mi></mrow><mrow><mn>4</mn></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mover accent="false" class="mml-overline"><mrow><msub><mrow><mi>N</mi></mrow><mrow><mn>2</mn></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">∨</mo> <msub><mrow><mi>N</mi></mrow><mrow><mn>3</mn></mrow></msub 
+></mrow><mo accent="true">¯</mo></mover></math>, XOR
+<math display="inline"> <mo class="MathClass-rel" stretchy="false">=</mo> <msub><mrow><mi>N</mi></mrow><mrow><mn>5</mn></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mover accent="false" class="mml-overline"><mrow><msub><mrow><mi>N</mi></mrow><mrow><mn>4</mn></mrow></msub 
+></mrow><mo accent="true">¯</mo></mover></math>; каждое переключение
+занимает <math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>c</mi></mrow></msub 
+> <mi class="loglike">ln</mi><mo>⁡</mo><mn>2</mn></math>,
+путь из <math display="inline"><mn>4</mn></math>
+вентилей — <math display="inline"><mn>2</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>8</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>с</mtext></mstyle></math>
+на один XOR.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x8-55007r7"></a>
+<span class="labx-1095">Задача 5.7 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Терпение при неизвестной задержке. </span>(а) Животное соглашается ждать втрое большую
+награду, если ожидание не длиннее <math display="inline"><mn>6</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>с</mtext></mstyle></math>.
+Какой горизонт <math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>γ</mi></mrow></msub 
+></math>
+это означает? (б) Пусть задержка <math display="inline"><mi>D</mi></math>
+распределена экспоненциально со средним <math display="inline"><mover accent="true"><mrow><mi>D</mi></mrow><mo accent="true">¯</mo></mover></math>.
+Покажите, что ждать выгодно при <math display="inline"><mover accent="true"><mrow><mi>D</mi></mrow><mo accent="true">¯</mo></mover> <mo class="MathClass-rel" stretchy="false">&#x003C;</mo> <msub><mrow><mi>τ</mi></mrow><mrow><mi>γ</mi></mrow></msub 
+><mo class="MathClass-open" stretchy="false">(</mo><mi>R</mi><mo class="MathClass-bin" stretchy="false">∕</mo><msub><mrow><mi>r</mi></mrow><mrow><mn>0</mn></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">−</mo> <mn>1</mn><mo class="MathClass-close" stretchy="false">)</mo></math>,
+и сравните с фиксированной задержкой при <math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>γ</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>2</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>с</mtext></mstyle></math>,
+<math display="inline"><mi>R</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>3</mn><msub><mrow><mi>r</mi></mrow><mrow><mn>0</mn></mrow></msub 
+></math>.
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">(а) <math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>γ</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>6</mn><mo class="MathClass-bin" stretchy="false">∕</mo><mi class="loglike">ln</mi><mo>⁡</mo><mn>3</mn> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>5</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>с</mtext></mstyle></math>.
+(б) <math display="inline"><mover accent="true"><mrow><mi>D</mi></mrow><mo accent="true">¯</mo></mover> <mo class="MathClass-rel" stretchy="false">&#x003C;</mo> <mn>4</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>с</mtext></mstyle></math>
+против <math display="inline"><mi>D</mi> <mo class="MathClass-rel" stretchy="false">&#x003C;</mo> <mn>2</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>с</mtext></mstyle></math>:
+непредсказуемость задержки делает терпеливее.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x8-55008r8"></a>
+<span class="labx-1095">Задача 5.8 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo><mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Как концентрация задаёт горизонт. </span><span class="nt">DOPA</span>-нейрон получает <math display="inline"><mi>V</mi> </math>
+прямо с весом <math display="inline"><msub><mrow><mi>k</mi></mrow><mrow><mn>1</mn></mrow></msub 
+></math>
+и через <span class="nt">GABA</span>-посредника, сглаживающего с <math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>d</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>с</mtext></mstyle></math>,
+с весом <math display="inline"> <mo class="MathClass-bin" stretchy="false">−</mo> <msub><mrow><mi>k</mi></mrow><mrow><mn>2</mn></mrow></msub 
+></math>;
+для медленных <math display="inline"><mi>V</mi> </math>
+сумма равна <math display="inline"><mo class="MathClass-open" stretchy="false">(</mo><msub><mrow><mi>k</mi></mrow><mrow><mn>1</mn></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">−</mo> <msub><mrow><mi>k</mi></mrow><mrow><mn>2</mn></mrow></msub 
+><mo class="MathClass-close" stretchy="false">)</mo><mi>V</mi> <mo class="MathClass-bin" stretchy="false">+</mo> <msub><mrow><mi>k</mi></mrow><mrow><mn>2</mn></mrow></msub 
+><msub><mrow><mi>τ</mi></mrow><mrow><mi>d</mi></mrow></msub 
+><mover accent="true"><mrow><mi>V</mi> </mrow><mo accent="true">˙</mo></mover></math>.
+Подберите <math display="inline"><msub><mrow><mi>k</mi></mrow><mrow><mn>1</mn></mrow></msub 
+></math>,
+<math display="inline"><msub><mrow><mi>k</mi></mrow><mrow><mn>2</mn></mrow></msub 
+></math>
+под (<a href="06.html#x9-63002r8">6.8</a>) с <math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>γ</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>2</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>с</mtext></mstyle></math>.
+<span class="nt">SERO</span> умножает <math display="inline"><msub><mrow><mi>k</mi></mrow><mrow><mn>1</mn></mrow></msub 
+></math>
+на <math display="inline"><mi>m</mi></math>:
+насколько надо изменить <math display="inline"><mi>m</mi></math>,
+чтобы удвоить горизонт?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent"><math display="inline"><msub><mrow><mi>k</mi></mrow><mrow><mn>2</mn></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mo class="MathClass-bin" stretchy="false">∕</mo><msub><mrow><mi>τ</mi></mrow><mrow><mi>d</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><msup><mrow><mstyle class="text"><mtext>с</mtext></mstyle></mrow><mrow><mo class="MathClass-bin" stretchy="false">−</mo><mn>1</mn></mrow></msup 
+></math>,
+<math display="inline"><msub><mrow><mi>k</mi></mrow><mrow><mn>1</mn></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mo class="MathClass-bin" stretchy="false">∕</mo><msub><mrow><mi>τ</mi></mrow><mrow><mi>d</mi></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">−</mo> <mn>1</mn><mo class="MathClass-bin" stretchy="false">∕</mo><msub><mrow><mi>τ</mi></mrow><mrow><mi>γ</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>9</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn><mspace width="0.17em" class="thinspace"/><msup><mrow><mstyle class="text"><mtext>с</mtext></mstyle></mrow><mrow><mo class="MathClass-bin" stretchy="false">−</mo><mn>1</mn></mrow></msup 
+></math>;
+<math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>γ</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mo class="MathClass-bin" stretchy="false">∕</mo><mo class="MathClass-open" stretchy="false">(</mo><msub><mrow><mi>k</mi></mrow><mrow><mn>2</mn></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>m</mi><msub><mrow><mi>k</mi></mrow><mrow><mn>1</mn></mrow></msub 
+><mo class="MathClass-close" stretchy="false">)</mo></math>: удвоение
+при <math display="inline"> <mo class="MathClass-bin" stretchy="false">+</mo> <mn>2</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>6</mn><mspace width="0.17em" class="thinspace"/><mi>%</mi></math> (а
+при <math display="inline"> <mo class="MathClass-bin" stretchy="false">+</mo> <mn>5</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>3</mn><mspace width="0.17em" class="thinspace"/><mi>%</mi></math>
+горизонт бесконечен).
+</p></div></details>
+
+<p class="indent"> <a id="tailfullch5.html"></a> </p> 
+
+  </article>
+  <article class="text short" id="text-short" hidden>
+
+ <a id="s-x8-270005"></a>
+<div class="center">
+<p class="noindent"><img src="img/short10x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<div class="minipage"><p class="noindent"><span class="lati-1000">Слева телефон: провод от одного к одному. Справа</span>
+<span class="lati-1000">радио: одно сообщение сразу всем вокруг.</span> </p></div></div>
+<p class="noindent">До сих пор нейроны говорили друг с другом по телефону:
+провод к проводу, адресно. Теперь включим первую
+радиостанцию — <span class="nt">SERO</span>-нейроны, выбрасывающие серотонин.
+Их всего несколько сотен тысяч на весь мозг, но их провода
+расходятся по огромным его областям.
+</p>
+ <h3 class="likesectionHead"> <a id="s-x8-28000"></a>Четыре отличия</h3>
+<p class="noindent"><span class="nt">SERO</span>-нейрон непохож на <span class="nt">GLUT</span>. Во-первых, знак его
+сигнала выбирает получатель: у серотонина есть «замки» и
+того, и другого знака. Во-вторых, он работает сам: в
+бодрствовании ровно щёлкает несколько раз в секунду, если
+получает постоянную фоновую подпитку, — это метроном.
+В-третьих, он медленный: его сигнал действует не за
+миллисекунды, а за сотни миллисекунд. В-четвёртых,
+он часто выбрасывает вещество не в узкую щель, а в
+пространство вокруг, где оно расплывается, как капля
+чернил в воде. Получатель чувствует концентрацию и не
+знает, от кого пришла молекула.
+</p>
+ <h3 class="likesectionHead"> <a id="s-x8-29000"></a>Логика, которой нет</h3>
+<p class="noindent">Метроном с тормозящим «замком» — это готовое «не»: пока
+серотонина нет, нейрон работает; появился — замолчал.
+Один нейрон вместо целой схемы. Кажется, серотониновая
+сеть логически сильнее <span class="nt">GLUT</span>-сети.
+</p><p class="indent"> Но есть загвоздка. Выброшенное в пространство вещество
+смешивается. Два сигнала остаются разными, только если их
+выпустили в местах, разнесённых дальше, чем вещество
+успевает расплыться, — а это десятки микрометров. У
+каждого же серотонинового нейрона огромное количество
+мест выброса, раскиданных по большим областям, и
+«провода» разных нейронов перекрываются. Отдельных
+битов по такой сети не передашь. Она может передавать
+лишь несколько общих величин — как радио, по которому
+все слушают одну и ту же станцию.
+</p>
+<div class="center">
+<p class="noindent"><img src="img/short11x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<div class="minipage"><p class="noindent"><span class="lati-1000">Серотонин выбрасывается в пространство и</span>
+<span class="lati-1000">расплывается облаком. Два источника дают два</span>
+<span class="lati-1000">разных сигнала, только если они дальше друг от</span>
+<span class="lati-1000">друга, чем вещество успевает расплыться. Если</span>
+<span class="lati-1000">ближе, облака сливаются в один общий уровень.</span> </p></div></div>
+ <h3 class="likesectionHead"> <a id="s-x8-30000"></a>Что она делает на самом деле</h3>
+<p class="noindent">Для одной общей величины у этой системы всё есть.
+Концентрация серотонина сглаживает отдельные щелчки в
+плавный уровень — так простейший преобразователь
+превращает поток импульсов в напряжение. Этот уровень
+держится секунды и сам тает: не бит, который надо стирать,
+а медленно исчезающий след.
+</p><p class="indent"> Ещё у серотониновых нейронов есть «замки» на самих
+себе: выброшенный серотонин притормаживает собственный
+источник. Инженер узнает в этом усилитель с отрицательной
+обратной связью — термостат, держащий уровень. Правда,
+опыты показывают, что это самоторможение устроено
+адресно и вызывает лишь короткие паузы, так что роль
+термостата пока скорее гипотеза, чем факт.
+</p>
+ <h3 class="likesectionHead"> <a id="s-x8-31000"></a>Сколько стоит ждать</h3>
+<p class="noindent">Какую общую величину стоит держать медленной и
+одинаковой для всей сети? Хороший кандидат — <span class="lati-1095">терпение</span>.
+Представьте выбор: маленькая награда сейчас или большая, но
+через несколько секунд. Сколько вы готовы ждать, зависит
+от того, как быстро для вас «обесценивается» будущее. По
+одной из гипотез, эту ручку и крутит серотонин. Есть опыты
+в её пользу: если искусственно включить серотониновые
+нейроны, мышь дольше ждёт отложенную награду, прежде
+чем сдаться.
+</p><p class="indent"> Эта глава вводит три устройства, которыми будут
+пользоваться все радиостанции мозга: нейрон-метроном,
+«провод», который на самом деле объём, и медленный
+уровень вместо отдельных щелчков.
+</p><p class="noindent"><span class="lati-1000">Формулы, модели, задачи и источники — в полной версии,</span>
+<span class="lati-1000">глава</span><span class="lati-1000"> 5.</span>
+</p>
+<p class="indent"> <a id="s-tailshortch5.html"></a> </p> 
+
+  </article>
+
+  <aside class="starline"><span data-ru="Книга бесплатная и открытая. Если глава была полезной, поставьте книге звезду на GitHub: так её найдут другие." data-en="The book is free and open. If this chapter was useful, star the book on GitHub so others can find it.">Книга бесплатная и открытая.</span> <a href="https://github.com/kladkogex/20-watt-computer" target="_blank" rel="noopener" data-ru="★ Звезда на GitHub" data-en="★ Star on GitHub">★ Звезда на GitHub</a></aside>
+  <nav class="pager">
+    <a class="prev" href="04.html"><span data-ru="← Назад" data-en="← Previous">← Назад</span><b>Азбука Морзе: что мы знаем о языке, на котором говорят GLUT- и GABA-нейроны</b></a>
+    <a class="next" href="06.html"><span data-ru="Дальше →" data-en="Next →">Дальше →</span><b>Нейронные сети, которые умеют учиться: добавляем DOPA</b></a>
+  </nav>
+  <footer>
+    <span data-ru='Константин Кладько · текст — <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.ru">CC BY-NC-SA 4.0</a>' data-en='Konstantin Kladko · text: <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>'>Константин Кладько</span>
+    <span><a href="../pdf/20-watt-computer-ru.pdf">PDF</a> · <a href="../breadboard/" data-ru="Макетная плата" data-en="Breadboard">Макетная плата</a> · <a href="https://github.com/kladkogex/20-watt-computer">GitHub</a></span>
+  </footer>
+</main>
+
+<script>
+(function(){
+  const NAV = [{"slug": "00", "title": "Как читать эту книгу", "kicker": "Введение"}, {"slug": "01", "title": "Типы нейронов", "kicker": "Глава 1"}, {"slug": "02", "title": "Что вычисляют GLUT-нейроны", "kicker": "Глава 2"}, {"slug": "03", "title": "GLUT и GABA вместе", "kicker": "Глава 3"}, {"slug": "04", "title": "Азбука Морзе: что мы знаем о языке, на котором говорят GLUT- и GABA-нейроны", "kicker": "Глава 4"}, {"slug": "05", "title": "Что вычисляют SERO-нейроны", "kicker": "Глава 5"}, {"slug": "06", "title": "Нейронные сети, которые умеют учиться: добавляем DOPA", "kicker": "Глава 6"}, {"slug": "07", "title": "Альтернативные современные теории обучения на основе дофамина", "kicker": "Глава 7"}, {"slug": "08", "title": "Когда искать, а когда решать: добавляем NORA", "kicker": "Глава 8"}, {"slug": "09", "title": "Когда писать, а когда читать: добавляем ACET", "kicker": "Глава 9"}, {"slug": "10", "title": "Вся машина", "kicker": "Глава 10"}, {"slug": "11", "title": "Входы машины: как к ней подключены глаза, уши и другие датчики", "kicker": "Глава 11"}, {"slug": "12", "title": "Распознавание изображений и видео", "kicker": "Глава 12"}, {"slug": "13", "title": "Выходы машины: как мозг управляет мышцами", "kicker": "Глава 13"}, {"slug": "14", "title": "Боль: сигнал тревоги", "kicker": "Глава 14"}, {"slug": "15", "title": "Как машина учится двигаться", "kicker": "Глава 15"}, {"slug": "16", "title": "Второй выход: как мозг управляет химией тела", "kicker": "Глава 16"}, {"slug": "17", "title": "Отладка машины", "kicker": "Глава 17"}, {"slug": "18", "title": "Типы нейронов по электрической функции", "kicker": "Глава 18"}, {"slug": "19", "title": "Нейроны по числу дендритов", "kicker": "Глава 19"}, {"slug": "20", "title": "Что делают нейроны во сне", "kicker": "Глава 20"}, {"slug": "21", "title": "Машина из живых нейронов", "kicker": "Глава 21"}, {"slug": "22", "title": "DishBrain", "kicker": "Глава 22"}, {"slug": "a", "title": "Вещества, которые не задают тип нейрона", "kicker": "Приложение A"}, {"slug": "b", "title": "Обозначения", "kicker": "Приложение B"}, {"slug": "c", "title": "Ответы", "kicker": "Приложение C"}, {"slug": "d", "title": "Экспериментальное приложение", "kicker": "Приложение D"}, {"slug": "refs", "title": "Литература", "kicker": ""}];
+  const SLUG = "05";
+  const store = {get(k){try{return localStorage.getItem(k)}catch(e){return null}}, set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+
+  // chapter selector
+  const sel = document.getElementById("jump");
+  NAV.forEach(p => { const o = document.createElement("option"); o.value = p.slug;
+    o.textContent = (p.kicker ? p.kicker + ". " : "") + p.title; if (p.slug === SLUG) o.selected = true; sel.appendChild(o); });
+  sel.addEventListener("change", () => { location.href = sel.value + ".html" + (location.hash === "#short" ? "#short" : ""); });
+
+  // Коротко / Полностью
+  const modeBox = document.querySelector(".mode");
+  const hasShort = modeBox.dataset.hasShort === "true";
+  const full = document.getElementById("text-full"), short = document.getElementById("text-short");
+  function setMode(m, remember){
+    if (!hasShort) m = "full";
+    document.body.dataset.mode = m;
+    full.hidden = m !== "full"; short.hidden = m !== "short";
+    modeBox.querySelectorAll(".seg").forEach(b => b.setAttribute("aria-pressed", b.dataset.mode === m));
+    if (remember) store.set("20w-mode", m);
+  }
+  if (!hasShort) modeBox.hidden = true;
+  modeBox.addEventListener("click", e => { const b = e.target.closest(".seg"); if (b) { setMode(b.dataset.mode, true); history.replaceState(null, "", "#" + b.dataset.mode); } });
+  document.addEventListener("click", e => { const a = e.target.closest("a[data-mode]"); if (a) { e.preventDefault(); setMode(a.dataset.mode, true); window.scrollTo(0, 0); } });
+  // a link into the text (#x...) that lives in the other version switches to it
+  function follow(){
+    const h = decodeURIComponent(location.hash.slice(1));
+    if (h === "short" || h === "full") { setMode(h, true); return; }
+    if (!h) return;
+    const t = document.getElementById(h);
+    if (t) { setMode(short.contains(t) ? "short" : "full", false); t.scrollIntoView(); }
+  }
+  setMode(store.get("20w-mode") || "full", false);
+  follow();
+  window.addEventListener("hashchange", follow);
+  // links that leave the book open in the whole window when the page sits inside the reader
+  if (document.documentElement.classList.contains("embedded"))
+    document.querySelectorAll('a[href^="../"], a[href^="http"]').forEach(a => { a.target = a.href.startsWith(location.origin) ? "_top" : "_blank"; });
+
+  // interface language (the text itself is Russian)
+  function setLang(l){
+    document.querySelectorAll("[data-ru]").forEach(el => { el.innerHTML = el.dataset[l]; });
+    document.getElementById("lang-ru").setAttribute("aria-pressed", l === "ru");
+    document.getElementById("lang-en").setAttribute("aria-pressed", l === "en");
+    store.set("20w-lang", l);
+  }
+  document.getElementById("lang-ru").onclick = () => setLang("ru");
+  document.getElementById("lang-en").onclick = () => setLang("en");
+  setLang(store.get("20w-lang") === "en" ? "en" : "ru");
+  window.addEventListener("storage", e => {
+    if (e.key === "20w-lang" && (e.newValue === "ru" || e.newValue === "en")) setLang(e.newValue);
+    if (e.key === "20w-theme" && (e.newValue === "light" || e.newValue === "dark")) document.documentElement.setAttribute("data-theme", e.newValue);
+  });
+})();
+</script>
+<script>
+(function(){var b=document.getElementById("theme");if(!b)return;var r=document.documentElement;function cur(){var t=r.getAttribute("data-theme");if(t)return t;return window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";}function show(){b.textContent=cur()==="dark"?"☀":"☾";b.setAttribute("aria-pressed",cur()==="dark");}b.onclick=function(){var t=cur()==="dark"?"light":"dark";r.setAttribute("data-theme",t);try{localStorage.setItem("20w-theme",t);}catch(e){}show();};if(window.matchMedia)matchMedia("(prefers-color-scheme: dark)").addEventListener("change",show);show();})();
+</script>
+</body>
+</html>

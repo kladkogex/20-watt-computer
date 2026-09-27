@@ -1,0 +1,1055 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<script>try{var t=localStorage.getItem("20w-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);}catch(e){}if(window.self!==window.top)document.documentElement.classList.add("embedded");</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Глава 22. DishBrain · Компьютер на 20 ваттах</title>
+<meta name="description" content="DishBrain — так авторы назвали стенд, на котором культура живых нейронов, выращенная на чипе с электродами, играет в упрощённый теннис с одной ракеткой [ 220 ] . Это самый …">
+<link rel="canonical" href="https://kladkogex.github.io/20-watt-computer/read/22.html">
+<meta property="og:type" content="book">
+<meta property="og:title" content="Глава 22. DishBrain · Компьютер на 20 ваттах">
+<meta property="og:description" content="DishBrain — так авторы назвали стенд, на котором культура живых нейронов, выращенная на чипе с электродами, играет в упрощённый теннис с одной ракеткой [ 220 ] . Это самый …">
+<meta property="og:url" content="https://kladkogex.github.io/20-watt-computer/read/22.html">
+<meta property="og:locale" content="ru_RU">
+<meta property="og:image" content="https://kladkogex.github.io/20-watt-computer/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Your brain runs on 20 watts. Here is its datasheet. The 20-Watt Computer, a free textbook for engineers.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://kladkogex.github.io/20-watt-computer/og-card.png">
+<meta name="twitter:title" content="Глава 22. DishBrain · The 20-Watt Computer">
+<meta name="twitter:description" content="DishBrain — так авторы назвали стенд, на котором культура живых нейронов, выращенная на чипе с электродами, играет в упрощённый теннис с одной ракеткой [ 220 ] . Это самый …">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Chapter", "name": "DishBrain", "url": "https://kladkogex.github.io/20-watt-computer/read/22.html", "position": 22, "inLanguage": "ru", "isAccessibleForFree": true, "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/", "author": {"@type": "Person", "name": "Константин Кладько", "alternateName": "Konstantin Kladko"}, "isPartOf": {"@type": "Book", "name": "Компьютер на 20 ваттах. Как вычисляет мозг: количественный подход для инженеров", "alternateName": "The 20-Watt Computer: How the Brain Computes. A Quantitative Approach for Engineers", "author": {"@type": "Person", "name": "Константин Кладько", "alternateName": "Konstantin Kladko"}, "url": "https://kladkogex.github.io/20-watt-computer/", "inLanguage": "ru", "isAccessibleForFree": true, "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/"}}</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap">
+<link rel="stylesheet" href="book.css">
+</head>
+<body>
+<header class="bar">
+  <a class="home" href="../#toc"><span class="w">20</span> <span data-ru="Компьютер на 20 ваттах" data-en="The 20-Watt Computer">Компьютер на 20 ваттах</span></a>
+  <label class="jump"><span class="sr" data-ru="Перейти к главе" data-en="Go to chapter">Перейти к главе</span>
+    <select id="jump"></select></label>
+  <div class="langs" role="group" aria-label="Language">
+    <button class="chip" id="lang-ru" type="button">RU</button>
+    <button class="chip" id="lang-en" type="button">EN</button>
+    <button class="chip theme" id="theme" type="button" aria-label="Light or dark theme" title="Light / dark">☾</button>
+  </div>
+</header>
+
+<main class="page">
+  <div class="pagehead">
+    <p class="kicker" data-ru="Глава 22" data-en="Chapter 22">Глава 22</p>
+    <h1><span class="t-full">DishBrain</span><span class="t-short">Нейроны играют в теннис</span></h1>
+    <div class="mode" role="group" aria-label="Version" data-has-short="true">
+      <button type="button" class="seg" data-mode="short"><b data-ru="Коротко" data-en="Short">Коротко</b><span data-ru="без формул, с рисунками" data-en="no formulas, with drawings">без формул, с рисунками</span></button>
+      <button type="button" class="seg" data-mode="full"><b data-ru="Полностью" data-en="Full">Полностью</b><span data-ru="формулы, модели, задачи" data-en="formulas, models, exercises">формулы, модели, задачи</span></button>
+    </div>
+    <p class="lang-note" data-ru="" data-en="The online reader is in Russian for now; the book in other languages is in the PDF downloads in the menu.">.</p>
+  </div>
+
+  <article class="text full" id="text-full">
+
+ <a id="x25-20300022"></a>
+ <h3 class="sectionHead"><span class="titlemark">22.1 </span> <a id="x25-20400022.1"></a>Сеть в чашке играет в теннис</h3>
+<p class="noindent">DishBrain — так авторы назвали стенд, на котором культура живых нейронов, выращенная на
+чипе с электродами, играет в упрощённый теннис с одной ракеткой <span class="cite">[<a href="refs.html#XKagan2022">220</a>]</span>. Это самый
+обсуждаемый опыт с машиной из живых нейронов (обзор таких машин — в главе <a href="21.html#x24-19000021">21</a>), и для
+нашей книги он особенно удобен. Здесь маленькая сеть доступна целиком: каждый вход задаёт
+экспериментатор, каждый выход записывается. Все вопросы предыдущих глав — как записан
+сигнал, кто учит, что видит щуп — можно задать сети, у которой нет ни глаз, ни мышц, ни
+<span class="nt">DOPA</span>-нейронов. Разберём опыт как инженер разбирает чужой стенд: схема, вход, выход,
+учитель, результат, споры.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">22.2 </span> <a id="x25-20500022.2"></a>Стенд</h3>
+<p class="noindent">Нейроны берут из коры зародыша мыши — около
+<math display="inline"><mn>8</mn><mn>0</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mn>0</mn><mn>0</mn><mn>0</mn></math> клеток на
+чип — или выращивают из стволовых клеток человека, около миллиона на чип. Несколько недель они
+растут на чипе, прорастают друг в друга и начинают сами выдавать импульсы и пачки. На площадке в
+<math display="inline"><mn>8</mn></math> мм<math display="inline"><msup><mrow></mrow><mrow><mn>2</mn></mrow></msup 
+></math>
+под ними лежит <math display="inline"><mn>2</mn><mn>6</mn><mspace width="0.17em" class="thinspace"/><mn>0</mn><mn>0</mn><mn>0</mn></math>
+платиновых электродов; одновременно можно записывать до
+<math display="inline"><mn>1</mn><mn>0</mn><mn>2</mn><mn>4</mn></math> из них,
+а стимулировать на практике — через восемь.
+</p><p class="indent"> Вокруг культуры замкнута петля (рис. <a href="#x25-2050011">22.1</a>). Компьютер моделирует игру: мяч летит,
+отражается от стен, ракетка движется вверх и вниз. Положение мяча превращается в ток на восьми
+«чувствительных» электродах. Импульсы из двух «двигательных» областей считаются окнами по
+<math display="inline"><mn>1</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math> и двигают
+ракетку. После каждого удара или промаха культура получает ещё один стимул — обратную связь.
+Окна по <math display="inline"><mn>1</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math> —
+это такт компьютера стенда, а не культуры: сама сеть по-прежнему работает асинхронно, как и
+все сети этой книги.
+</p>
+ <figure class="figure"> 
+<a id="x25-2050011"></a>
+<p class="noindent"><img src="img/full53x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<figcaption class="caption"><span class="id">Рис. 22.1: </span><span class="content">Петля DishBrain. Синяя стрелка — вход: положение мяча записано кодом местом
+и частотным кодом (глава <a href="04.html#x7-350004">4</a>). Красная — выход: разность счётов двух областей двигает
+ракетку. Зелёная штриховая — обратная связь после каждого розыгрыша, единственный
+«учитель» стенда.</span></figcaption>
+ </figure>
+ <h3 class="sectionHead"><span class="titlemark">22.3 </span> <a id="x25-20600022.3"></a>Вход и выход</h3>
+<p class="noindent"><span class="lati-1095">Вход </span>записан сразу двумя кодами главы <a href="04.html#x7-350004">4</a>. Какой из восьми электродов
+стимулируется, говорит, на какой высоте мяч: это код местом, как у датчиков
+главы <a href="11.html#x14-10400011">11</a>. Как часто идут импульсы стимуляции, говорит, насколько мяч далеко:
+<math display="inline"><mn>4</mn></math>
+в секунду, когда он у дальней стены, и линейно больше, до
+<math display="inline"><mn>4</mn><mn>0</mn></math> в
+секунду, когда он у стены ракетки. Это частотный код; амплитуда импульсов мяча —
+<math display="inline"><mn>7</mn><mn>5</mn></math> мВ.
+Культура не «знает» ни одного из этих кодов заранее: код задан экспериментатором, и сеть
+должна научиться его читать.
+</p><p class="indent"> <span class="lati-1095">Выход </span>читается так же, как в интерфейсах главы <a href="17.html#x20-15300017">17</a>. Импульсы одной двигательной области
+толкают ракетку вверх, другой — вниз; в простейшей записи за каждое окно
+</p><div class="keyformula"><table class="equation"><tr><td>
+<math display="block" class="equation">
+ <mstyle id="x25-206001r1" class="label"></mstyle><mi mathvariant="normal">Δ</mi><mi>p</mi><mspace width="0.28em" class="thickpace"/> <mo class="MathClass-rel" stretchy="false">=</mo> <mspace width="0.28em" class="thickpace"/><mi>c</mi><mspace width="0.17em" class="thinspace"/><mrow><mo class="MathClass-open" fence="true" mathsize="1.19em">(</mo><mrow><msub><mrow><mi>n</mi></mrow><mrow><mi>↑</mi></mrow></msub 
+><mo class="MathClass-bin" stretchy="false">−</mo> <msub><mrow><mi>n</mi></mrow><mrow><mi>↓</mi></mrow></msub 
+></mrow><mo class="MathClass-close" fence="true" mathsize="1.19em">)</mo></mrow><mo class="MathClass-punc" stretchy="false">,</mo>
+</math></td><td class="eq-no">(22.1)</td></tr></table>
+</div><p class="noindent"> где <math display="inline"><msub><mrow><mi>n</mi></mrow><mrow><mi>↑</mi></mrow></msub 
+></math>,
+<math display="inline"><msub><mrow><mi>n</mi></mrow><mrow><mi>↓</mi></mrow></msub 
+></math> — числа импульсов
+двух областей за <math display="inline"><mn>1</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>,
+а <math display="inline"><mi>c</mi></math> —
+коэффициент стенда. Это двухпроводный код главы <a href="02.html#x5-150002">2</a>: знак движения несёт не знак сигнала, а
+то, какой из двух проводов громче.
+</p><p class="indent"> Посмотрим на шум такого выхода. Если область выдаёт в сумме
+<math display="inline"><mi>R</mi></math> импульсов в секунду,
+за окно <math display="inline"><mi>T</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math> их в среднем
+<math display="inline"><mi>R</mi><mi>T</mi></math>, и по (<a href="04.html#x7-39001r2">4.2</a>) относительный
+разброс равен <math display="inline"><mn>1</mn><mo class="MathClass-bin" stretchy="false">∕</mo><msqrt><mrow><mi>R</mi><mi>T</mi></mrow></msqrt></math>. При
+<math display="inline"><mi>R</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mn>0</mn><mn>0</mn><mn>0</mn></math> импульсов в секунду
+это около <math display="inline"><mn>3</mn><mn>0</mn></math> процентов
+в каждом окне; при <math display="inline"><mi>R</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mn>0</mn><mn>0</mn></math>
+— больше ста. Ракетка неизбежно дрожит, и обучиться сеть может лишь одним способом —
+сдвинуть <span class="lati-1095">среднюю </span>разность счётов в нужную сторону. Это те же законы, что ограничивают
+любой интерфейс главы <a href="17.html#x20-15300017">17</a>, только теперь по обе стороны петли.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">22.4 </span> <a id="x25-20700022.4"></a>Учитель без дофамина</h3>
+<p class="noindent">Самое интересное в стенде — учитель. В культуре нейронов коры нет <span class="nt">DOPA</span>-нейронов, и никакого
+сигнала «лучше, чем ожидалось» стенд не посылает. Обратная связь другая. Отбила сеть мяч —
+на все восемь чувствительных электродов сразу подаётся короткий <span class="lati-1095">предсказуемый </span>стимул: импульсы
+по <math display="inline"><mn>7</mn><mn>5</mn></math> мВ,
+<math display="inline"><mn>1</mn><mn>0</mn><mn>0</mn></math> в секунду
+в течение <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>с</mtext></mstyle></math>.
+Промахнулась — четыре секунды идёт стимул, который авторы называют <span class="lati-1095">непредсказуемым</span>: импульсы
+по <math display="inline"><mn>1</mn><mn>5</mn><mn>0</mn></math> мВ,
+<math display="inline"><mn>5</mn></math> в
+секунду, в случайные моменты на случайно выбранные электроды; затем четыре секунды паузы
+без стимуляции, и мяч стартует заново <span class="cite">[<a href="refs.html#XKagan2022">220</a>]</span>.
+</p><p class="indent"> Авторы исходили из гипотезы, что сеть действует так, чтобы её вход становился
+предсказуемым <span class="cite">[<a href="refs.html#XFriston2010">221</a>]</span>. Для инженера смысл простой: у культуры есть ровно один способ
+избавиться от четырёх секунд случайного шума — отбить мяч. Та же идея встречалась нам в
+экономии импульсов главы <a href="04.html#x7-350004">4</a> и в предсказании кадра в главе <a href="12.html#x15-11200012">12</a>.
+</p><p class="indent"> Но нужна ли здесь именно предсказуемость? Возможен и более грубый механизм. Пусть
+непредсказуемый стимул после промаха просто <span class="lati-1095">перемешивает </span>недавние изменения в
+сети, а спокойный после удара их не трогает. Опишем настройку сети одним вектором
+<math display="inline"><mstyle mathvariant="bold-italic"><mi>ψ</mi></mstyle></math>, и пусть в настройке
+<math display="inline"><mstyle mathvariant="bold-italic"><mi>ψ</mi></mstyle></math> сеть промахивается с
+вероятностью <math display="inline"><msub><mrow><mi>P</mi></mrow><mrow><mstyle class="text"><mtext>пр</mtext></mstyle></mrow></msub 
+><mo class="MathClass-open" stretchy="false">(</mo><mstyle mathvariant="bold-italic"><mi>ψ</mi></mstyle><mo class="MathClass-close" stretchy="false">)</mo></math>. Если
+толчки симметричны — из <math display="inline"><mstyle mathvariant="bold-italic"><mi>ψ</mi></mstyle></math>
+в <math display="inline"><msup><mrow><mstyle mathvariant="bold-italic"><mi>ψ</mi></mstyle></mrow><mrow><mi>′</mi></mrow></msup 
+></math> так
+же вероятно, как обратно, — то в установившемся режиме поток уходов из каждой настройки
+уравновешен потоком приходов, и доля времени, которую сеть проводит в настройке
+<math display="inline"><mstyle mathvariant="bold-italic"><mi>ψ</mi></mstyle></math>,
+равна
+</p><div class="keyformula"><table class="equation"><tr><td>
+<math display="block" class="equation">
+ <mstyle id="x25-207001r2" class="label"></mstyle><mi>ρ</mi><mo class="MathClass-open" stretchy="false">(</mo><mstyle mathvariant="bold-italic"><mi>ψ</mi></mstyle><mo class="MathClass-close" stretchy="false">)</mo><mspace width="0.28em" class="thickpace"/> <mo class="MathClass-rel" stretchy="false">∝</mo><mspace width="0.28em" class="thickpace"/> <mfrac><mrow><mn>1</mn></mrow> 
+<mrow><msub><mrow><mi>P</mi></mrow><mrow><mstyle class="text"><mtext>пр</mtext></mstyle></mrow></msub 
+><mo class="MathClass-open" stretchy="false">(</mo><mstyle mathvariant="bold-italic"><mi>ψ</mi></mstyle><mo class="MathClass-close" stretchy="false">)</mo></mrow></mfrac><mo class="MathClass-punc" stretchy="false">.</mo>
+</math></td><td class="eq-no">(22.2)</td></tr></table>
+</div><p class="noindent"> Настройка, которая промахивается вдесятеро реже, удерживается вдесятеро дольше.
+Никто не сообщает сети, в какую сторону менять веса: хорошие настройки просто реже
+разрушаются.
+</p><p class="indent"> Мы проверили это на модели, сведя культуру к двум числам: ракетка приходит в точку
+<math display="inline"><mi>a</mi><mspace width="0.17em" class="thinspace"/><mi>y</mi> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>b</mi></math>, когда мяч приходит на
+высоту <math display="inline"><mi>y</mi></math>, и отбивает, если
+промахнулась меньше чем на <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn></math>.
+После промаха оба числа получают случайный толчок, после удара остаются прежними. Доля отбитых мячей
+за <math display="inline"><mn>2</mn><mn>0</mn><mn>0</mn><mn>0</mn></math> розыгрышей
+выросла с <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn><mn>1</mn></math> в первых
+двухстах до <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>3</mn><mn>8</mn></math>
+в последних пятистах (сорок «культур», рис. <a href="#x25-2070022">22.2</a>). Если толчок давать после
+<span class="lati-1095">каждого </span>розыгрыша, сведений в обратной связи нет, и доля остаётся около
+<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn><mn>2</mn></math>; если толчков нет
+вовсе, она стоит на <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn><mn>9</mn></math>.
+Опыт на стенде с этим согласуется: значимый рост внутри сеанса был только при полной
+обратной связи. При тишине вместо стимулов культура к концу сеанса всё же играла лучше, чем
+без обратной связи, но с меньшим эффектом <span class="cite">[<a href="refs.html#XKagan2022">220</a>]</span>; заметим, что и в этом условии после промаха
+следует долгая пауза, а после удара — короткая, так что различие между исходами не исчезает
+целиком.
+</p>
+ <figure class="figure"> 
+<a id="x25-2070022"></a>
+<p class="noindent"><img src="img/full54x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<figcaption class="caption"><span class="id">Рис. 22.2: </span><span class="content">Модель «перемешивание при промахе» (<span class="latt-1095">dishbrain_model.py</span>): доля отбитых
+мячей в начале и в конце
+<math display="inline"><mn>2</mn><mn>0</mn><mn>0</mn><mn>0</mn></math>
+розыгрышей, среднее по сорока моделям-культурам. Обучение идёт, только если толчок
+следует за промахом, но не за ударом, — как и в опыте, где значимый рост за сеанс был
+лишь при полной обратной связи.</span></figcaption>
+ </figure>
+ <div class="tcolorbox keyblock" id="tcolobox-42"> 
+<div class="tcolorbox-content"><div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x25-207003r1"></a>
+<span class="labx-1095">Утверждение 22.1 </span>(Учитель-перемешиватель)<span class="labx-1095">.</span> </span> <span class="lati-1095">Если неудача встряхивает сеть, а</span>
+<span class="lati-1095">удача оставляет её в покое, сеть сама дрейфует к настройкам, которые реже</span>
+<span class="lati-1095">ошибаются: время, проведённое в настройке, обратно пропорционально вероятности</span>
+<span class="lati-1095">неудачи</span><span class="lati-1095"> </span>(<a href="#x25-207001r2">22.2</a>)<span class="lati-1095">. Для такого обучения не нужны ни сигнал награды, ни его знак, ни</span>
+<span class="lati-1095">предсказуемость как таковая — достаточно, чтобы обратная связь после удачи и</span>
+<span class="lati-1095">после неудачи различалась. Изменение поведения культуры измерено; какой механизм</span>
+<span class="lati-1095">работает в чашке — предсказание входа или перемешивание, — не установлено.</span>
+</p>
+</div>
+ 
+</div> 
+</div>
+<p class="indent"> Сравните с главой <a href="06.html#x9-560006">6</a>. Там шум тоже служил поиском, но у дофамина был знак: ошибка
+<math display="inline"><mi>δ</mi></math>
+говорила, в какую сторону сдвинуть веса, и шаг шёл по градиенту (<a href="06.html#x9-61001r6">6.6</a>). Здесь знака
+нет — есть только «оставить» или «встряхнуть». Такой поиск грубее и медленнее, но
+требует от сети меньше: ни <span class="nt">DOPA</span>-нейронов, ни критика, ни следа, растянутого на
+секунды.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">22.5 </span> <a id="x25-20800022.5"></a>Что измерили и о чём спорят</h3>
+<p class="noindent">Каждая игра длилась <math display="inline"><mn>2</mn><mn>0</mn></math>
+минут; сравнивали первые <math display="inline"><mn>5</mn></math>
+минут с последними <math display="inline"><mn>1</mn><mn>5</mn></math>.
+У культур с полной обратной связью серии отбитых мячей стали длиннее, а мгновенных
+промахов — меньше; в контролях без клеток, без игры и с компьютерной «ракеткой» ничего
+подобного не было. Культуры из клеток человека в среднем отбивали дольше мышиных.
+Улучшение статистически надёжно — на девяти мышиных и одиннадцати человеческих
+культурах, в сотне с лишним игр каждой группы, — но невелико: сеть не стала хорошим игроком,
+она стала немного лучше случайного. Надёжно оно внутри сеанса; устойчивого обучения от
+сеанса к сеансу за несколько дней авторы не получили <span class="cite">[<a href="refs.html#XKagan2022">220</a>]</span>. В следующей работе той же группы
+нашли, что во время игры активность культуры приближается к <span class="lati-1095">критическому </span>режиму —
+границе между затуханием и лавиной, той самой жизни на грани, что в главе <a href="03.html#x6-250003">3</a>, — и чем ближе,
+тем лучше игра <span class="cite">[<a href="refs.html#XHabibollahi2023">227</a>]</span>.
+</p><p class="indent"> Главный спор вызвали не цифры, а слова. Заголовок статьи утверждал, что нейроны в чашке
+«проявляют разумность» (sentience), и группа исследователей возразила: изменение поведения в
+замкнутой петле — ещё не разум и не ощущение, а выводы нужно формулировать скромнее <span class="cite">[<a href="refs.html#XBalci2023">222</a>]</span>.
+С инженерной точки зрения открыты два вопроса, и оба — о механизме. Первый: учится ли сеть,
+то есть меняются ли её веса надолго, или обратная связь лишь сдвигает её текущее
+состояние? Второй: нужна ли именно предсказуемость, или хватает любого различия
+между откликом на удачу и на неудачу, как в утверждении <a href="#x25-207003r1">22.1</a>? Стенд, на котором
+доступен каждый электрод, позволяет ответить на оба — и это, пожалуй, его главная
+ценность.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">22.6 </span> <a id="x25-20900022.6"></a>Спецификация стенда: как его воспроизвести</h3>
+<p class="noindent">Ниже собрано всё, что нужно, чтобы собрать такой стенд заново: оборудование, петля,
+кодирование входа, чтение выхода, обратная связь и протокол опыта. Каждый параметр помечен
+источником. «Статья» — значение взято из текста работы <span class="cite">[<a href="refs.html#XKagan2022">220</a>]</span>. «Выбор» — в статье его нет, и
+для воспроизведения его придётся задать самому; мы предлагаем значение по умолчанию и
+говорим, как его проверить.
+</p>
+ <h4 class="likesubsectionHead"> <a id="x25-210000"></a>Оборудование и культура</h4>
+<div class="center">
+
+<div class="tabular">
+ <table id="TBL-27" class="tabular"><colgroup id="TBL-27-1g"><col id="TBL-27-1" /><col id="TBL-27-2" /><col id="TBL-27-3" /></colgroup><tr style="vertical-align:baseline;" id="TBL-27-1-"><td style="text-align:left;" id="TBL-27-1-1" class="td11"> <p class="noindent"><span class="larm-0900">Параметр</span> </p></td><td style="text-align:left;" id="TBL-27-1-2" class="td11"> <p class="noindent"><span class="larm-0900">Значение</span> </p></td><td style="text-align:left;" id="TBL-27-1-3" class="td11"> <p class="noindent"><span class="larm-0900">Источник</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-27-2-"><td style="text-align:left;" id="TBL-27-2-1" class="td11"> <p class="noindent"><span class="larm-0900">чип</span> </p></td><td style="text-align:left;" id="TBL-27-2-2" class="td11"> <p class="noindent"><span class="larm-0900">матрица</span>
+ <span class="larm-0900">MaxOne:</span>
+ <math display="inline"><mn>2</mn><mn>6</mn><mspace width="0.17em" class="thinspace"/><mn>0</mn><mn>0</mn><mn>0</mn></math>
+ <span class="larm-0900">платиновых</span>
+ <span class="larm-0900">электродов</span>
+ <span class="larm-0900">на</span>
+ <span class="larm-0900">площадке</span>
+ <math display="inline"><mn>8</mn></math><span class="larm-0900"> мм</span><math display="inline"><msup><mrow></mrow><mrow><mn>2</mn></mrow></msup 
+></math> </p> </td><td style="text-align:left;" id="TBL-27-2-3" class="td11"> <p class="noindent"><span class="larm-0900">статья</span> </p> </td>
+</tr><tr style="vertical-align:baseline;" id="TBL-27-3-"><td style="text-align:left;" id="TBL-27-3-1" class="td11"> <p class="noindent"><span class="larm-0900">запись</span> </p></td><td style="text-align:left;" id="TBL-27-3-2" class="td11"> <p class="noindent"><span class="larm-0900">до</span>
+ <math display="inline"><mn>1</mn><mn>0</mn><mn>2</mn><mn>4</mn></math>
+ <span class="larm-0900">каналов</span>
+ <span class="larm-0900">одновременно,</span>
+ <math display="inline"><mn>2</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mn>0</mn><mn>0</mn><mn>0</mn></math>
+ <span class="larm-0900">отсчётов</span>
+ <span class="larm-0900">в</span>
+ <span class="larm-0900">секунду</span> </p></td><td style="text-align:left;" id="TBL-27-3-3" class="td11"> <p class="noindent"><span class="larm-0900">статья</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-27-4-"><td style="text-align:left;" id="TBL-27-4-1" class="td11"> <p class="noindent"><span class="larm-0900">стимуляция</span> </p></td><td style="text-align:left;" id="TBL-27-4-2" class="td11"> <p class="noindent"><span class="larm-0900">до</span>
+ <math display="inline"><mn>3</mn><mn>2</mn></math>
+ <span class="larm-0900">электродов</span>
+ <span class="larm-0900">технически,</span>
+ <span class="larm-0900">в</span>
+ <span class="larm-0900">опыте</span>
+ <span class="larm-0900">—</span>
+ <math display="inline"><mn>8</mn></math>
+ <span class="larm-0900">независимых</span> </p></td><td style="text-align:left;" id="TBL-27-4-3" class="td11"> <p class="noindent"><span class="larm-0900">статья</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-27-5-"><td style="text-align:left;" id="TBL-27-5-1" class="td11"> <p class="noindent"><span class="larm-0900">клетки</span> </p></td><td style="text-align:left;" id="TBL-27-5-2" class="td11"> <p class="noindent"><span class="larm-0900">кора</span>
+ <span class="larm-0900">зародыша</span>
+ <span class="larm-0900">мыши;</span>
+ <span class="larm-0900">нейроны</span>
+ <span class="larm-0900">человека</span>
+ <span class="larm-0900">из</span>
+ <span class="larm-0900">стволовых</span>
+ <span class="larm-0900">клеток</span>
+ <span class="larm-0900">(два</span>
+ <span class="larm-0900">способа</span>
+ <span class="larm-0900">выращивания);</span>
+ <span class="larm-0900">клетки</span>
+ <span class="larm-0900">HEK293T</span>
+ <span class="larm-0900">(не</span>
+ <span class="larm-0900">нейроны)</span>
+ <span class="larm-0900">для</span>
+ <span class="larm-0900">контроля</span> </p></td><td style="text-align:left;" id="TBL-27-5-3" class="td11"> <p class="noindent"><span class="larm-0900">статья</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-27-6-"><td style="text-align:left;" id="TBL-27-6-1" class="td11"> <p class="noindent"><span class="larm-0900">посев</span> </p></td><td style="text-align:left;" id="TBL-27-6-2" class="td11"> <p class="noindent"><span class="larm-0900">около</span>
+ <math display="inline"><mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>6</mn></mrow></msup 
+></math>
+ <span class="larm-0900">клеток</span>
+ <span class="larm-0900">на</span>
+ <span class="larm-0900">чип</span> </p></td><td style="text-align:left;" id="TBL-27-6-3" class="td11"> <p class="noindent"><span class="larm-0900">статья</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-27-7-"><td style="text-align:left;" id="TBL-27-7-1" class="td11"> <p class="noindent"><span class="larm-0900">возраст</span>
+ <span class="larm-0900">культуры</span>
+ <span class="larm-0900">к</span>
+ <span class="larm-0900">опыту</span> </p></td><td style="text-align:left;" id="TBL-27-7-2" class="td11"> <p class="noindent"><span class="larm-0900">мышь:</span>
+ <span class="larm-0900">с</span>
+ <math display="inline"> <mo class="MathClass-rel" stretchy="false">∼</mo><mn>1</mn><mn>0</mn></math>
+ <span class="larm-0900">суток;</span>
+ <span class="larm-0900">человек:</span>
+ <math display="inline"><mn>1</mn><mn>4</mn></math><span class="larm-0900">–</span><math display="inline"><mn>2</mn><mn>4</mn></math>
+ <span class="larm-0900">суток</span>
+ <span class="larm-0900">или</span>
+ <math display="inline"> <mo class="MathClass-rel" stretchy="false">∼</mo><mn>8</mn><mn>0</mn></math>
+ <span class="larm-0900">суток</span>
+ <span class="larm-0900">в</span>
+ <span class="larm-0900">зависимости</span>
+ <span class="larm-0900">от</span>
+ <span class="larm-0900">способа</span>
+ <span class="larm-0900">выращивания</span> </p></td><td style="text-align:left;" id="TBL-27-7-3" class="td11"> <p class="noindent"><span class="larm-0900">статья</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-27-8-"><td style="text-align:left;" id="TBL-27-8-1" class="td11"> </td></tr></table> </div></div>
+ <h4 class="likesubsectionHead"> <a id="x25-211000"></a>Петля и время</h4>
+<p class="noindent">Петля работает окнами по <math display="inline"><mn>1</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>
+(<math display="inline"><mn>2</mn><mn>0</mn><mn>0</mn></math>
+отсчётов): за окно считаются импульсы на электродах двигательных областей, игра обновляется,
+и выдаётся очередная стимуляция. Задержка от импульса в культуре до ответного стимула — около
+<math display="inline"><mn>5</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>. Во время
+игры сигнал каждого электрода проходит фильтр верхних частот Бесселя 2-го порядка с частотой
+среза <math display="inline"><mn>1</mn><mn>0</mn><mn>0</mn></math> Гц;
+модуль сигнала сглаживается фильтром нижних частот Бесселя 1-го порядка с частотой
+<math display="inline"><mn>1</mn></math> Гц, и порог
+импульса пропорционален этому сглаженному модулю. Порог в шесть стандартных отклонений
+фона статья указывает для отдельных измерений активности, а не для игры. Чтобы стимуляция
+не засчитывалась как ответ культуры, все сигналы гасятся, когда одновременно приходит больше
+<math display="inline"><mn>1</mn><mn>5</mn></math> крупных,
+выше <math display="inline"><mn>7</mn><mn>5</mn></math> мВ,
+импульсов. Всё это — статья.
+</p>
+ <h4 class="likesubsectionHead"> <a id="x25-212000"></a>Кодирование мяча</h4>
+<div class="center">
+
+<div class="tabular">
+ <table id="TBL-28" class="tabular"><colgroup id="TBL-28-1g"><col id="TBL-28-1" /><col id="TBL-28-2" /><col id="TBL-28-3" /></colgroup><tr style="vertical-align:baseline;" id="TBL-28-1-"><td style="text-align:left;" id="TBL-28-1-1" class="td11"> <p class="noindent"><span class="larm-0900">Параметр</span> </p></td><td style="text-align:left;" id="TBL-28-1-2" class="td11"> <p class="noindent"><span class="larm-0900">Значение</span> </p></td><td style="text-align:left;" id="TBL-28-1-3" class="td11"> <p class="noindent"><span class="larm-0900">Источник</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-28-2-"><td style="text-align:left;" id="TBL-28-2-1" class="td11"> <p class="noindent"><span class="larm-0900">чувствительная</span>
+ <span class="larm-0900">область</span> </p></td><td style="text-align:left;" id="TBL-28-2-2" class="td11"> <p class="noindent"><math display="inline"><mn>8</mn></math>
+ <span class="larm-0900">электродов,</span>
+ <span class="larm-0900">расположенных</span>
+ <span class="larm-0900">так,</span>
+ <span class="larm-0900">чтобы</span>
+ <span class="larm-0900">соседние</span>
+ <span class="larm-0900">электроды</span>
+ <span class="larm-0900">означали</span>
+ <span class="larm-0900">соседние</span>
+ <span class="larm-0900">положения</span>
+ <span class="larm-0900">мяча</span> </p></td><td style="text-align:left;" id="TBL-28-2-3" class="td11"> <p class="noindent"><span class="larm-0900">статья</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-28-3-"><td style="text-align:left;" id="TBL-28-3-1" class="td11"> <p class="noindent"><span class="larm-0900">код</span>
+ <span class="larm-0900">местом</span> </p></td><td style="text-align:left;" id="TBL-28-3-2" class="td11"> <p class="noindent"><span class="larm-0900">номер</span>
+ <span class="larm-0900">электрода</span>
+ <math display="inline"><mi>k</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mo class="MathClass-punc" stretchy="false">,</mo><mi>…</mi><mo class="MathClass-punc" stretchy="false">,</mo><mn>8</mn></math>
+ <span class="larm-0900">задаёт</span>
+ <span class="larm-0900">положение</span>
+ <span class="larm-0900">мяча</span>
+ <span class="larm-0900">относительно</span>
+ <span class="larm-0900">центра</span>
+ <span class="larm-0900">ракетки</span> </p></td><td style="text-align:left;" id="TBL-28-3-3" class="td11"> <p class="noindent"><span class="larm-0900">статья</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-28-4-"><td style="text-align:left;" id="TBL-28-4-1" class="td11"> <p class="noindent"><span class="larm-0900">какая</span>
+ <span class="larm-0900">координата</span> </p></td><td style="text-align:left;" id="TBL-28-4-2" class="td11"> <p class="noindent"><span class="larm-0900">вертикальное</span>
+ <span class="larm-0900">положение</span>
+ <span class="larm-0900">мяча;</span>
+ <span class="larm-0900">для</span>
+ <span class="larm-0900">воспроизведения</span>
+ <span class="larm-0900">—</span>
+ <span class="larm-0900">относительно</span>
+ <span class="larm-0900">ракетки,</span>
+ <math display="inline"><mi>k</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mo class="MathClass-open" stretchy="false">⌈</mo><mn>8</mn><mo class="MathClass-open" stretchy="false">(</mo><mi>y</mi> <mo class="MathClass-bin" stretchy="false">−</mo><mi>p</mi> <mo class="MathClass-bin" stretchy="false">+</mo> <mstyle displaystyle="false"><mfrac><mrow><mn>1</mn>
+</mrow><mrow><mn>2</mn></mrow></mfrac></mstyle><mo class="MathClass-close" stretchy="false">)</mo><mo class="MathClass-close" stretchy="false">⌉</mo></math>
+ <span class="larm-0900">при</span>
+ <math display="inline"><mi>y</mi> <mo class="MathClass-bin" stretchy="false">−</mo><mi>p</mi> <mo class="MathClass-rel" stretchy="false">∈</mo><mo class="MathClass-open" stretchy="false">[</mo><mo class="MathClass-bin" stretchy="false">−</mo><mstyle displaystyle="false"><mfrac><mrow><mn>1</mn>
+</mrow><mrow><mn>2</mn></mrow></mfrac></mstyle><mo class="MathClass-punc" stretchy="false">,</mo><mstyle displaystyle="false"><mfrac><mrow><mn>1</mn>
+</mrow><mrow><mn>2</mn></mrow></mfrac></mstyle><mo class="MathClass-close" stretchy="false">]</mo></math> </p></td><td style="text-align:left;" id="TBL-28-4-3" class="td11"> <p class="noindent"><span class="larm-0900">статья;</span>
+ <span class="larm-0900">формула</span>
+ <span class="larm-0900">—</span>
+ <span class="larm-0900">выбор</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-28-5-"><td style="text-align:left;" id="TBL-28-5-1" class="td11"> <p class="noindent"><span class="larm-0900">код</span>
+ <span class="larm-0900">частотой</span> </p></td><td style="text-align:left;" id="TBL-28-5-2" class="td11"> <p class="noindent"><span class="larm-0900">частота</span>
+ <span class="larm-0900">стимуляции</span>
+ <span class="larm-0900">от</span>
+ <math display="inline"><mn>4</mn></math>
+ <span class="larm-0900">до</span>
+ <math display="inline"><mn>4</mn><mn>0</mn></math><span class="larm-0900"> имп/с</span>
+ <span class="larm-0900">несёт</span>
+ <span class="larm-0900">расстояние</span>
+ <span class="larm-0900">до</span>
+ <span class="larm-0900">ракетки</span> </p></td><td style="text-align:left;" id="TBL-28-5-3" class="td11"> <p class="noindent"><span class="larm-0900">статья</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-28-6-"><td style="text-align:left;" id="TBL-28-6-1" class="td11"> <p class="noindent"><span class="larm-0900">направление</span>
+ <span class="larm-0900">шкалы</span> </p></td><td style="text-align:left;" id="TBL-28-6-2" class="td11"> <p class="noindent"><math display="inline"><mn>4</mn></math><span class="larm-0900"> имп/с,</span>
+ <span class="larm-0900">когда</span>
+ <span class="larm-0900">мяч</span>
+ <span class="larm-0900">у</span>
+ <span class="larm-0900">противоположной</span>
+ <span class="larm-0900">стены,</span>
+ <span class="larm-0900">и</span>
+ <span class="larm-0900">линейно</span>
+ <span class="larm-0900">до</span>
+ <math display="inline"><mn>4</mn><mn>0</mn></math><span class="larm-0900"> имп/с,</span>
+ <span class="larm-0900">когда</span>
+ <span class="larm-0900">он</span>
+ <span class="larm-0900">у</span>
+ <span class="larm-0900">стены</span>
+ <span class="larm-0900">ракетки:</span>
+ <math display="inline"><mi>f</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>4</mn> <mo class="MathClass-bin" stretchy="false">+</mo> <mn>3</mn><mn>6</mn><mspace width="0.17em" class="thinspace"/><mo class="MathClass-open" stretchy="false">(</mo><mn>1</mn> <mo class="MathClass-bin" stretchy="false">−</mo><mi>x</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mi>L</mi><mo class="MathClass-close" stretchy="false">)</mo></math><span class="larm-0900">,</span>
+ <math display="inline"><mi>x</mi></math>
+ <span class="larm-0900">—</span>
+ <span class="larm-0900">расстояние</span>
+ <span class="larm-0900">до</span>
+ <span class="larm-0900">стены</span>
+ <span class="larm-0900">ракетки,</span>
+ <math display="inline"><mi>L</mi></math>
+ <span class="larm-0900">—</span>
+ <span class="larm-0900">ширина</span>
+ <span class="larm-0900">корта</span> </p></td><td style="text-align:left;" id="TBL-28-6-3" class="td11"> <p class="noindent"><span class="larm-0900">статья</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-28-7-"><td style="text-align:left;" id="TBL-28-7-1" class="td11"> <p class="noindent"><span class="larm-0900">форма</span>
+ <span class="larm-0900">импульса</span> </p></td><td style="text-align:left;" id="TBL-28-7-2" class="td11"> <p class="noindent"><span class="larm-0900">короткий</span>
+ <span class="larm-0900">прямоугольный</span>
+ <span class="larm-0900">двухфазный:</span>
+ <span class="larm-0900">сначала</span>
+ <span class="larm-0900">положительная,</span>
+ <span class="larm-0900">потом</span>
+ <span class="larm-0900">отрицательная</span>
+ <span class="larm-0900">фаза</span> </p></td><td style="text-align:left;" id="TBL-28-7-3" class="td11"> <p class="noindent"><span class="larm-0900">статья</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-28-8-"><td style="text-align:left;" id="TBL-28-8-1" class="td11"> <p class="noindent"><span class="larm-0900">амплитуда</span> </p></td><td style="text-align:left;" id="TBL-28-8-2" class="td11"> <p class="noindent"><math display="inline"><mn>7</mn><mn>5</mn></math><span class="larm-0900"> мВ;</span>
+ <span class="larm-0900">выбрана</span>
+ <span class="larm-0900">так,</span>
+ <span class="larm-0900">чтобы</span>
+ <span class="larm-0900">не</span>
+ <span class="larm-0900">заставлять</span>
+ <span class="larm-0900">срабатывать</span>
+ <span class="larm-0900">заторможенные</span>
+ <span class="larm-0900">клетки</span> </p></td><td style="text-align:left;" id="TBL-28-8-3" class="td11"> <p class="noindent"><span class="larm-0900">статья</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-28-9-"><td style="text-align:left;" id="TBL-28-9-1" class="td11"> <p class="noindent"><span class="larm-0900">длительность</span>
+ <span class="larm-0900">фаз</span> </p></td><td style="text-align:left;" id="TBL-28-9-2" class="td11"> <p class="noindent"><span class="larm-0900">не</span>
+ <span class="larm-0900">указана;</span>
+ <span class="larm-0900">взять</span>
+ <span class="larm-0900">стандартную</span>
+ <span class="larm-0900">настройку</span>
+ <span class="larm-0900">системы</span>
+ <span class="larm-0900">стимуляции</span>
+ <span class="larm-0900">и</span>
+ <span class="larm-0900">не</span>
+ <span class="larm-0900">менять</span>
+ <span class="larm-0900">её</span>
+ <span class="larm-0900">в</span>
+ <span class="larm-0900">течение</span>
+ <span class="larm-0900">опыта</span> </p></td><td style="text-align:left;" id="TBL-28-9-3" class="td11"> <p class="noindent"><span class="larm-0900">выбор</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-28-10-"><td style="text-align:left;" id="TBL-28-10-1" class="td11"> </td></tr></table> </div></div>
+ <h4 class="likesubsectionHead"> <a id="x25-213000"></a>Чтение ракетки</h4>
+<p class="noindent">В статье две двигательные области: импульсы в первой двигают ракетку вверх, во второй —
+вниз; вклад областей взвешивается, чтобы учесть разную плотность клеток и разную
+активность <span class="cite">[<a href="refs.html#XKagan2022">220</a>]</span>. Точная формула не приведена. Для воспроизведения берём правило (<a href="#x25-206001r1">22.1</a>),
+<math display="inline"><mi mathvariant="normal">Δ</mi><mi>p</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mi>c</mi><mspace width="0.17em" class="thinspace"/><mo class="MathClass-open" stretchy="false">(</mo><msub><mrow><mi>n</mi></mrow><mrow><mi>↑</mi></mrow></msub 
+><mo class="MathClass-bin" stretchy="false">−</mo> <msub><mrow><mi>n</mi></mrow><mrow><mi>↓</mi></mrow></msub 
+><mo class="MathClass-close" stretchy="false">)</mo></math> за каждое
+окно <math display="inline"><mn>1</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>,
+с весом, уравнивающим области по их средней активности в покое (выбор):
+<math display="inline"><msub><mrow><mi>n</mi></mrow><mrow><mi>↑</mi></mrow></msub 
+></math> и
+<math display="inline"><msub><mrow><mi>n</mi></mrow><mrow><mi>↓</mi></mrow></msub 
+></math>
+делятся на средний счёт своей области за окно, измеренный перед игрой. Коэффициент
+<math display="inline"><mi>c</mi></math>
+выбираем так, чтобы разница в один средний счёт сдвигала ракетку на
+<math display="inline"><mn>1</mn><mi>%</mi></math> высоты
+корта за окно (выбор); тогда постоянный перевес одной области проводит ракетку через весь корт за
+<math display="inline"><mn>1</mn></math> с.
+</p><p class="indent"> Расположение областей на чипе в тексте статьи координатами не задано; есть только схема.
+Для воспроизведения достаточно трёх непересекающихся групп электродов: восемь
+чувствительных в центре и по группе записывающих электродов с двух сторон, одна — «вверх»,
+другая — «вниз» (выбор).
+</p>
+ <h4 class="likesubsectionHead"> <a id="x25-214000"></a>Игра</h4>
+<p class="noindent">Размеры корта, длина ракетки и скорость мяча в статье не указаны; сказано только, что мяч
+летит с постоянной скоростью и отражается от стен. Для воспроизведения (выбор): корт
+<math display="inline"><mn>1</mn> <mo class="MathClass-bin" stretchy="false">×</mo> <mn>1</mn></math>, ракетка на правой
+стенке длиной <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn></math>
+(попадание при <math display="inline"><mo class="MathClass-rel" stretchy="false">|</mo><mi>y</mi> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>p</mi><mo class="MathClass-rel" stretchy="false">|</mo> <mo class="MathClass-rel" stretchy="false">&#x003C;</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn></math>,
+как в модели <span class="latt-1095">models/dishbrain_model.py</span>), мяч пересекает корт за
+<math display="inline"><mn>1</mn></math> с.
+Промах без единого отбитого мяча в розыгрыше считается «эйсом»; розыгрыш длиннее трёх
+ударов подряд — «длинным» (статья).
+</p>
+ <h4 class="likesubsectionHead"> <a id="x25-215000"></a>Обратная связь</h4>
+<div class="center">
+
+<div class="tabular">
+ <table id="TBL-29" class="tabular"><colgroup id="TBL-29-1g"><col id="TBL-29-1" /><col id="TBL-29-2" /><col id="TBL-29-3" /></colgroup><tr style="vertical-align:baseline;" id="TBL-29-1-"><td style="text-align:left;" id="TBL-29-1-1" class="td11"> <p class="noindent"><span class="larm-0900">Событие</span> </p></td><td style="text-align:left;" id="TBL-29-1-2" class="td11"> <p class="noindent"><span class="larm-0900">Что</span>
+ <span class="larm-0900">подаётся</span> </p></td><td style="text-align:left;" id="TBL-29-1-3" class="td11"> <p class="noindent"><span class="larm-0900">Источник</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-29-2-"><td style="text-align:left;" id="TBL-29-2-1" class="td11"> <p class="noindent"><span class="larm-0900">удар</span> </p></td><td style="text-align:left;" id="TBL-29-2-2" class="td11"> <p class="noindent"><span class="larm-0900">предсказуемый</span>
+ <span class="larm-0900">стимул:</span>
+ <span class="larm-0900">все</span>
+ <math display="inline"><mn>8</mn></math>
+ <span class="larm-0900">чувствительных</span>
+ <span class="larm-0900">электродов</span>
+ <span class="larm-0900">одновременно,</span>
+ <math display="inline"><mn>7</mn><mn>5</mn></math><span class="larm-0900"> мВ,</span>
+ <math display="inline"><mn>1</mn><mn>0</mn><mn>0</mn></math><span class="larm-0900"> имп/с,</span>
+ <math display="inline"><mn>1</mn><mn>0</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math><span class="larm-0900">;</span>
+ <span class="larm-0900">обычная</span>
+ <span class="larm-0900">стимуляция</span>
+ <span class="larm-0900">мяча</span>
+ <span class="larm-0900">на</span>
+ <span class="larm-0900">это</span>
+ <span class="larm-0900">время</span>
+ <span class="larm-0900">прерывается</span> </p></td><td style="text-align:left;" id="TBL-29-2-3" class="td11"> <p class="noindent"><span class="larm-0900">статья</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-29-3-"><td style="text-align:left;" id="TBL-29-3-1" class="td11"> <p class="noindent"><span class="larm-0900">промах</span> </p></td><td style="text-align:left;" id="TBL-29-3-2" class="td11"> <p class="noindent"><span class="larm-0900">непредсказуемый</span>
+ <span class="larm-0900">стимул:</span>
+ <math display="inline"><mn>1</mn><mn>5</mn><mn>0</mn></math><span class="larm-0900"> мВ,</span>
+ <math display="inline"><mn>5</mn></math><span class="larm-0900"> имп/с,</span>
+ <math display="inline"><mn>4</mn></math><span class="larm-0900"> с,</span>
+ <span class="larm-0900">в</span>
+ <span class="larm-0900">случайные</span>
+ <span class="larm-0900">моменты</span>
+ <span class="larm-0900">на</span>
+ <span class="larm-0900">случайно</span>
+ <span class="larm-0900">выбранные</span>
+ <span class="larm-0900">из</span>
+ <math display="inline"><mn>8</mn></math>
+ <span class="larm-0900">электродов;</span>
+ <span class="larm-0900">затем</span>
+ <math display="inline"><mn>4</mn></math><span class="larm-0900"> с</span>
+ <span class="larm-0900">без</span>
+ <span class="larm-0900">стимуляции,</span>
+ <span class="larm-0900">и</span>
+ <span class="larm-0900">мяч</span>
+ <span class="larm-0900">стартует</span>
+ <span class="larm-0900">в</span>
+ <span class="larm-0900">случайном</span>
+ <span class="larm-0900">направлении</span> </p></td><td style="text-align:left;" id="TBL-29-3-3" class="td11"> <p class="noindent"><span class="larm-0900">статья</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-29-4-"><td style="text-align:left;" id="TBL-29-4-1" class="td11"> <p class="noindent"><span class="larm-0900">закон</span>
+ <span class="larm-0900">случайности</span> </p></td><td style="text-align:left;" id="TBL-29-4-2" class="td11"> <p class="noindent"><span class="larm-0900">не</span>
+ <span class="larm-0900">указан;</span>
+ <span class="larm-0900">для</span>
+ <span class="larm-0900">воспроизведения</span>
+ <span class="larm-0900">—</span>
+ <span class="larm-0900">моменты</span>
+ <span class="larm-0900">импульсов</span>
+ <span class="larm-0900">как</span>
+ <span class="larm-0900">пуассоновский</span>
+ <span class="larm-0900">поток</span>
+ <span class="larm-0900">со</span>
+ <span class="larm-0900">средней</span>
+ <span class="larm-0900">частотой</span>
+ <math display="inline"><mn>5</mn></math><span class="larm-0900"> имп/с</span> </p> </td><td style="text-align:left;" id="TBL-29-4-3" class="td11"> <p class="noindent"><span class="larm-0900">выбор</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-29-5-"><td style="text-align:left;" id="TBL-29-5-1" class="td11"> </td></tr></table> </div></div>
+ <h4 class="likesubsectionHead"> <a id="x25-216000"></a>Протокол и контроль</h4>
+<p class="noindent">Один сеанс длится <math display="inline"><mn>2</mn><mn>0</mn></math> мин;
+сравнивают первые <math display="inline"><mn>5</mn></math>
+и последние <math display="inline"><mn>1</mn><mn>5</mn></math> мин
+(статья). Три меры результата: средняя длина розыгрыша, доля эйсов и доля длинных
+розыгрышей. Условия опыта (статья): </p>
+ <ul class="itemize1">
+ <li class="itemize">
+ <p class="noindent"><span class="lati-1095">стимул </span>— полная петля, как описано выше;
+ </p></li>
+ <li class="itemize">
+ <p class="noindent"><span class="lati-1095">тишина </span>— вместо стимула удара или промаха столько же времени без всякой
+ стимуляции, затем мяч стартует в случайном направлении;
+ </p></li>
+ <li class="itemize">
+ <p class="noindent"><span class="lati-1095">без обратной связи </span>— мяч после промаха просто отражается и летит дальше,
+ стимуляция положения мяча продолжается;
+ </p></li>
+ <li class="itemize">
+ <p class="noindent"><span class="lati-1095">покой </span>— игра идёт и ракетка движется по активности, но стимуляции нет совсем;
+ </p></li>
+ <li class="itemize">
+ <p class="noindent"><span class="lati-1095">контроли </span>— чип только со средой; клетки HEK293T; «культура в компьютере»,
+ симуляция вместо клеток.</p></li></ul>
+<p class="noindent">Объём выборки в основной серии: <math display="inline"><mn>9</mn></math>
+культур мыши (<math display="inline"><mn>1</mn><mn>0</mn><mn>1</mn></math>
+сеанс), <math display="inline"><mn>1</mn><mn>1</mn></math> культур
+человека (<math display="inline"><mn>1</mn><mn>3</mn><mn>8</mn></math>),
+<math display="inline"><mn>6</mn></math> чипов со
+средой (<math display="inline"><mn>8</mn><mn>0</mn></math>),
+<math display="inline"><mn>2</mn><mn>0</mn></math> культур в
+покое (<math display="inline"><mn>4</mn><mn>2</mn></math>),
+<math display="inline"><mn>3</mn></math> симуляции
+(<math display="inline"><mn>3</mn><mn>8</mn></math>), всего
+<math display="inline"><mn>3</mn><mn>9</mn><mn>9</mn></math> сеансов. В серии про
+обратную связь — <math display="inline"><mn>4</mn><mn>8</mn><mn>6</mn></math>
+сеансов за <math display="inline"><mn>3</mn></math>
+дня по <math display="inline"><mn>3</mn></math>
+сеанса в день, условия «стимул», «тишина» и «без обратной связи»
+(<math display="inline"><mi>n</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>2</mn><mn>7</mn></math>,
+<math display="inline"><mn>1</mn><mn>7</mn></math> и
+<math display="inline"><mn>1</mn><mn>5</mn></math>). Рост средней длины
+розыгрыша от первых <math display="inline"><mn>5</mn></math>
+минут к последним <math display="inline"><mn>1</mn><mn>5</mn></math>
+получен только у живых культур. В серии про обратную связь значимый рост во времени —
+только в условии «стимул»; в конце сеанса условие «тишина» всё же превосходило «без обратной
+связи», но с меньшим эффектом, а устойчивого обучения от сеанса к сеансу за три дня не
+было <span class="cite">[<a href="refs.html#XKagan2022">220</a>]</span>.
+</p>
+ <h4 class="likesubsectionHead"> <a id="x25-217000"></a>Цикл стенда по шагам</h4>
+<p class="noindent">Каждые <math display="inline"><mn>1</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>
+компьютер стенда делает следующее.
+ </p><ol class="enumerate1">
+<li class="enumerate" id="x25-217002x1">
+ <p class="noindent">Считывает число импульсов <math display="inline"><msub><mrow><mi>n</mi></mrow><mrow><mi>↑</mi></mrow></msub 
+></math>,
+ <math display="inline"><msub><mrow><mi>n</mi></mrow><mrow><mi>↓</mi></mrow></msub 
+></math>
+ в двух двигательных областях за прошедшее окно и нормирует их на средний счёт
+ области в покое.
+ </p></li>
+<li class="enumerate" id="x25-217004x2">
+ <p class="noindent">Сдвигает ракетку на <math display="inline"><mi mathvariant="normal">Δ</mi><mi>p</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mi>c</mi><mspace width="0.17em" class="thinspace"/><mo class="MathClass-open" stretchy="false">(</mo><msub><mrow><mi>n</mi></mrow><mrow><mi>↑</mi></mrow></msub 
+><mo class="MathClass-bin" stretchy="false">−</mo> <msub><mrow><mi>n</mi></mrow><mrow><mi>↓</mi></mrow></msub 
+><mo class="MathClass-close" stretchy="false">)</mo></math>
+ и ограничивает её краями корта.
+ </p></li>
+<li class="enumerate" id="x25-217006x3">
+ <p class="noindent">Сдвигает мяч на один шаг; отражает его от верхней, нижней и левой стенок.
+ </p></li>
+<li class="enumerate" id="x25-217008x4">
+ <p class="noindent">Если мяч дошёл до правой стенки: при <math display="inline"><mo class="MathClass-rel" stretchy="false">|</mo><mi>y</mi> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>p</mi><mo class="MathClass-rel" stretchy="false">|</mo> <mo class="MathClass-rel" stretchy="false">&#x003C;</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn></math>
+ — удар, счёт розыгрыша растёт на один, подаётся стимул удара (<math display="inline"><mn>1</mn><mn>0</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>);
+ иначе — промах, розыгрыш записывается, подаётся стимул промаха (<math display="inline"><mn>4</mn></math> с),
+ затем <math display="inline"><mn>4</mn></math> с
+ паузы, и мяч стартует заново.
+ </p></li>
+<li class="enumerate" id="x25-217010x5">
+ <p class="noindent">Иначе выбирает электрод <math display="inline"><mi>k</mi></math>
+ по вертикальному положению мяча и частоту <math display="inline"><mi>f</mi></math>
+ по расстоянию до стены ракетки и подаёт на электрод <math display="inline"><mi>k</mi></math>
+ двухфазные импульсы <math display="inline"><mn>7</mn><mn>5</mn></math> мВ
+ с частотой <math display="inline"><mi>f</mi></math>
+ до следующего окна.</p></li></ol>
+<p class="noindent">Этого достаточно, чтобы собрать стенд, совместимый с опубликованным, и проверить главный
+вопрос главы: учит ли культуру предсказуемость или простая разница между ответом
+на удар и на промах. Для этого к трём условиям статьи стоит добавить четвёртое,
+которого в ней нет: после промаха — <span class="lati-1095">предсказуемый </span>стимул той же длительности и
+энергии, что и непредсказуемый. Если культура учится и так, дело в разнице, а не в
+предсказуемости.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">22.7 </span> <a id="x25-21800022.7"></a>Итог</h3>
+ <div class="table">
+<p class="indent"> <a id="x25-2180011"></a></p><figure class="float">
+<div class="tabular">
+ <table id="TBL-30" class="tabular"><colgroup id="TBL-30-1g"><col id="TBL-30-1" /><col id="TBL-30-2" /><col id="TBL-30-3" /><col id="TBL-30-4" /></colgroup><tr style="vertical-align:baseline;" id="TBL-30-1-"><td style="text-align:left;" id="TBL-30-1-1" class="td11"> <p class="noindent"><span class="larm-0900">Узел</span>
+ <span class="larm-0900">стенда</span> </p></td><td style="text-align:left;" id="TBL-30-1-2" class="td11"> <p class="noindent"><span class="larm-0900">Как</span>
+ <span class="larm-0900">устроен</span> </p></td><td style="text-align:left;" id="TBL-30-1-3" class="td11"> <p class="noindent"><span class="larm-0900">Глава</span>
+ <span class="larm-0900">книги</span> </p></td><td style="text-align:left;" id="TBL-30-1-4" class="td11"> <p class="noindent"><span class="larm-0900">Что</span>
+ <span class="larm-0900">известно</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-30-2-"><td style="text-align:left;" id="TBL-30-2-1" class="td11"> <p class="noindent"><span class="larm-0900">вход</span> </p></td><td style="text-align:left;" id="TBL-30-2-2" class="td11"> <p class="noindent"><span class="larm-0900">место</span>
+ <span class="larm-0900">(какой</span>
+ <span class="larm-0900">из</span>
+ <span class="larm-0900">8</span>
+ <span class="larm-0900">электродов)</span>
+ <span class="larm-0900">и</span>
+ <span class="larm-0900">частота</span>
+ <span class="larm-0900">(4–40</span>
+ <span class="larm-0900">имп/с)</span> </p></td><td style="text-align:left;" id="TBL-30-2-3" class="td11"> <p class="noindent"><a href="04.html#x7-350004"><span class="larm-0900">4</span></a><span class="larm-0900">,</span>
+ <a href="11.html#x14-10400011"><span class="larm-0900">11</span></a> </p></td><td style="text-align:left;" id="TBL-30-2-4" class="td11"> <p class="noindent"><span class="larm-0900">задано</span>
+ <span class="larm-0900">экспериментатором</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-30-3-"><td style="text-align:left;" id="TBL-30-3-1" class="td11"> <p class="noindent"><span class="larm-0900">выход</span> </p></td><td style="text-align:left;" id="TBL-30-3-2" class="td11"> <p class="noindent"><span class="larm-0900">разность</span>
+ <span class="larm-0900">счётов</span>
+ <span class="larm-0900">двух</span>
+ <span class="larm-0900">областей</span>
+ <span class="larm-0900">за</span>
+ <math display="inline"><mn>1</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math><span class="larm-0900"> </span><span class="larm-0900">(</span><a href="#x25-206001r1"><span class="larm-0900">22.1</span></a><span class="larm-0900">)</span> </p> </td><td style="text-align:left;" id="TBL-30-3-3" class="td11"> <p class="noindent"><a href="02.html#x5-150002"><span class="larm-0900">2</span></a><span class="larm-0900">,</span>
+ <a href="17.html#x20-15300017"><span class="larm-0900">17</span></a> </p></td><td style="text-align:left;" id="TBL-30-3-4" class="td11"> <p class="noindent"><span class="larm-0900">задано</span>
+ <span class="larm-0900">экспериментатором;</span>
+ <span class="larm-0900">шум</span>
+ <span class="larm-0900">по</span><span class="larm-0900"> </span><span class="larm-0900">(</span><a href="04.html#x7-39001r2"><span class="larm-0900">4.2</span></a><span class="larm-0900">)</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-30-4-"><td style="text-align:left;" id="TBL-30-4-1" class="td11"> <p class="noindent"><span class="larm-0900">учитель</span> </p></td><td style="text-align:left;" id="TBL-30-4-2" class="td11"> <p class="noindent"><span class="larm-0900">предсказуемый</span>
+ <span class="larm-0900">стимул</span>
+ <span class="larm-0900">после</span>
+ <span class="larm-0900">удара,</span>
+ <span class="larm-0900">непредсказуемый</span>
+ <span class="larm-0900">после</span>
+ <span class="larm-0900">промаха;</span>
+ <span class="larm-0900">дофамина</span>
+ <span class="larm-0900">нет</span> </p></td><td style="text-align:left;" id="TBL-30-4-3" class="td11"> <p class="noindent"><a href="06.html#x9-560006"><span class="larm-0900">6</span></a> </p></td><td style="text-align:left;" id="TBL-30-4-4" class="td11"> <p class="noindent"><span class="larm-0900">значимый</span>
+ <span class="larm-0900">рост</span>
+ <span class="larm-0900">за</span>
+ <span class="larm-0900">сеанс</span>
+ <span class="larm-0900">—</span>
+ <span class="larm-0900">только</span>
+ <span class="larm-0900">при</span>
+ <span class="larm-0900">полной</span>
+ <span class="larm-0900">обратной</span>
+ <span class="larm-0900">связи;</span>
+ <span class="larm-0900">при</span>
+ <span class="larm-0900">тишине</span>
+ <span class="larm-0900">эффект</span>
+ <span class="larm-0900">меньше;</span>
+ <span class="larm-0900">от</span>
+ <span class="larm-0900">сеанса</span>
+ <span class="larm-0900">к</span>
+ <span class="larm-0900">сеансу</span>
+ <span class="larm-0900">неустойчив</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-30-5-"><td style="text-align:left;" id="TBL-30-5-1" class="td11"> <p class="noindent"><span class="larm-0900">механизм</span> </p></td><td style="text-align:left;" id="TBL-30-5-2" class="td11"> <p class="noindent"><span class="larm-0900">предсказание</span>
+ <span class="larm-0900">входа</span>
+ <span class="larm-0900">или</span>
+ <span class="larm-0900">перемешивание</span>
+ <span class="larm-0900">при</span>
+ <span class="larm-0900">промахе</span><span class="larm-0900"> </span><span class="larm-0900">(</span><a href="#x25-207001r2"><span class="larm-0900">22.2</span></a><span class="larm-0900">)</span> </p></td><td style="text-align:left;" id="TBL-30-5-3" class="td11"> <p class="noindent"><a href="06.html#x9-560006"><span class="larm-0900">6</span></a><span class="larm-0900">,</span>
+ <a href="12.html#x15-11200012"><span class="larm-0900">12</span></a> </p></td><td style="text-align:left;" id="TBL-30-5-4" class="td11"> <p class="noindent"><span class="larm-0900">не</span>
+ <span class="larm-0900">установлен;</span>
+ <span class="larm-0900">оба</span>
+ <span class="larm-0900">объясняют</span>
+ <span class="larm-0900">результат</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-30-6-"><td style="text-align:left;" id="TBL-30-6-1" class="td11"> <p class="noindent"><span class="larm-0900">режим</span>
+ <span class="larm-0900">сети</span> </p></td><td style="text-align:left;" id="TBL-30-6-2" class="td11"> <p class="noindent"><span class="larm-0900">приближение</span>
+ <span class="larm-0900">к</span>
+ <span class="larm-0900">критическому</span>
+ <span class="larm-0900">режиму</span>
+ <span class="larm-0900">во</span>
+ <span class="larm-0900">время</span>
+ <span class="larm-0900">игры</span> </p></td><td style="text-align:left;" id="TBL-30-6-3" class="td11"> <p class="noindent"><a href="03.html#x6-250003"><span class="larm-0900">3</span></a> </p></td><td style="text-align:left;" id="TBL-30-6-4" class="td11"> <p class="noindent"><span class="larm-0900">связь</span>
+ <span class="larm-0900">с</span>
+ <span class="larm-0900">качеством</span>
+ <span class="larm-0900">игры</span>
+ <span class="larm-0900">измерена</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-30-7-"><td style="text-align:left;" id="TBL-30-7-1" class="td11"> <p class="noindent"><span class="larm-0900">«разумность»</span> </p></td><td style="text-align:left;" id="TBL-30-7-2" class="td11"> <p class="noindent"><span class="larm-0900">утверждение</span>
+ <span class="larm-0900">авторов</span> </p></td><td style="text-align:left;" id="TBL-30-7-3" class="td11"> <p class="noindent"><span class="larm-0900">—</span> </p></td><td style="text-align:left;" id="TBL-30-7-4" class="td11"> <p class="noindent"><span class="larm-0900">не</span>
+ <span class="larm-0900">показана;</span>
+ <span class="larm-0900">оспорена</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-30-8-"><td style="text-align:left;" id="TBL-30-8-1" class="td11"> </td></tr></table> </div>
+<figcaption class="caption"><span class="id">Таблица 22.1: </span><span class="content">DishBrain глазами инженера.</span></figcaption>
+ </figure>
+ </div>
+<p class="indent"> DishBrain — машина из живых нейронов в самом простом виде: вход задан кодом, выход
+прочитан счётом, учитель — различие между откликом на удачу и на неудачу (таблица <a href="#x25-2180011">22.1</a>).
+Сеть без глаз, мышц и дофамина чуть-чуть научилась играть, и уже одно это превращает её в
+испытательный стенд для идей книги. Каким бы ни оказался механизм — предсказание,
+перемешивание или что-то третье, — ответ будет найден так, как советует глава <a href="17.html#x20-15300017">17</a>:
+щупом, тестовым сигналом и выключением частей на машине, которую наконец видно
+целиком.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">22.8 </span> <a id="x25-21900022.8"></a>Задачи</h3>
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x25-219001r1"></a>
+<span class="labx-1095">Задача 22.1 </span>(<math display="inline"><mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Сколько нужно сдвинуть счёт. </span>Две области выдают вместе <math display="inline"><msub><mrow><mi>R</mi></mrow><mrow><mi>↑</mi></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">+</mo> <msub><mrow><mi>R</mi></mrow><mrow><mi>↓</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>2</mn><mn>0</mn><mn>0</mn><mn>0</mn></math>
+импульсов в секунду, потоки пуассоновские. (а) Каков относительный разброс счёта одной
+области за <math display="inline"><mn>1</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>
+при <math display="inline"><mi>R</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mn>0</mn><mn>0</mn><mn>0</mn></math>
+и <math display="inline"><mi>R</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mn>0</mn><mn>0</mn></math>?
+(б) За <math display="inline"><mn>1</mn></math> с
+полёта мяча смещения (<a href="#x25-206001r1">22.1</a>) складываются. При какой наименьшей <math display="inline"><msub><mrow><mi>R</mi></mrow><mrow><mi>↑</mi></mrow></msub 
+><mo class="MathClass-bin" stretchy="false">−</mo> <msub><mrow><mi>R</mi></mrow><mrow><mi>↓</mi></mrow></msub 
+></math>
+среднее смещение вдвое больше разброса?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">(а) <math display="inline"><mn>3</mn><mn>2</mn><mi>%</mi></math>
+и <math display="inline"><mn>1</mn><mn>0</mn><mn>0</mn><mi>%</mi></math>.
+(б) <math display="inline"><msub><mrow><mi>R</mi></mrow><mrow><mi>↑</mi></mrow></msub 
+><mo class="MathClass-bin" stretchy="false">−</mo> <msub><mrow><mi>R</mi></mrow><mrow><mi>↓</mi></mrow></msub 
+><mo class="MathClass-rel" stretchy="false">≥</mo> <mn>2</mn><msqrt><mrow><mn>2</mn><mn>0</mn><mn>0</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>Гц</mtext></mstyle> <mo class="MathClass-bin" stretchy="false">∕</mo><mn>1</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>с</mtext></mstyle></mrow></msqrt> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>8</mn><mn>9</mn></math> Гц,
+всего <math display="inline"><mn>4</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn><mi>%</mi></math>
+суммарной частоты.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x25-219002r2"></a>
+<span class="labx-1095">Задача 22.2 </span>(<math display="inline"><mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Сколько розыгрышей нужно, чтобы увидеть обучение. </span>Розыгрыши независимы, доля
+отбитых биномиальна. Сколько розыгрышей нужно в каждом из двух периодов, чтобы рост
+доли отбитых превысил два стандартных отклонения разности: (а) с <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn><mn>0</mn></math>
+до <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn><mn>5</mn></math>;
+(б) с <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn><mn>1</mn></math>
+до <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>3</mn><mn>8</mn></math>,
+как в модели?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">(а) <math display="inline"><mi>n</mi> <mo class="MathClass-rel" stretchy="false">≥</mo> <mn>4</mn><mo class="MathClass-open" stretchy="false">(</mo><msub><mrow><mi>p</mi></mrow><mrow><mn>1</mn></mrow></msub 
+><msub><mrow><mi>q</mi></mrow><mrow><mn>1</mn></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">+</mo> <msub><mrow><mi>p</mi></mrow><mrow><mn>2</mn></mrow></msub 
+><msub><mrow><mi>q</mi></mrow><mrow><mn>2</mn></mrow></msub 
+><mo class="MathClass-close" stretchy="false">)</mo><mo class="MathClass-bin" stretchy="false">∕</mo><msup><mrow><mi mathvariant="normal">Δ</mi></mrow><mrow><mn>2</mn></mrow></msup 
+> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>5</mn><mn>6</mn><mn>0</mn></math>.
+(б) <math display="inline"> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>5</mn><mn>6</mn></math>.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x25-219003r3"></a>
+<span class="labx-1095">Задача 22.3 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Вывод</span><span class="lati-1095"> </span>(<a href="#x25-207001r2">22.2</a>)<span class="lati-1095">. </span>Настройка <math display="inline"><mstyle mathvariant="bold-italic"><mi>ψ</mi></mstyle></math>
+пробегает конечное множество; при промахе (вероятность <math display="inline"><mi>P</mi><mo class="MathClass-open" stretchy="false">(</mo><mstyle mathvariant="bold-italic"><mi>ψ</mi></mstyle><mo class="MathClass-close" stretchy="false">)</mo> <mo class="MathClass-rel" stretchy="false">&#x003E;</mo> <mn>0</mn></math>)
+сеть переходит в <math display="inline"><msup><mrow><mstyle mathvariant="bold-italic"><mi>ψ</mi></mstyle></mrow><mrow><mi>′</mi></mrow></msup 
+></math>
+с симметричной вероятностью <math display="inline"><mi>K</mi><mo class="MathClass-open" stretchy="false">(</mo><mstyle mathvariant="bold-italic"><mi>ψ</mi></mstyle><mo class="MathClass-punc" stretchy="false">,</mo><msup><mrow><mstyle mathvariant="bold-italic"><mi>ψ</mi></mstyle></mrow><mrow><mi>′</mi></mrow></msup 
+><mo class="MathClass-close" stretchy="false">)</mo></math>,
+при ударе остаётся. (а) Докажите, что <math display="inline"><mi>ρ</mi> <mo class="MathClass-rel" stretchy="false">∝</mo> <mn>1</mn><mo class="MathClass-bin" stretchy="false">∕</mo><mi>P</mi></math>
+— стационарное распределение. (б) Какова доля промахов при двух настройках с <math display="inline"><mi>P</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>9</mn></math>
+и <math display="inline"><mi>P</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn></math>?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">(а) Детальный баланс: <math display="inline"><mi>ρ</mi><mi>P</mi><mi>K</mi></math>
+симметричен. (б) Доля промахов равна среднему гармоническому
+<math display="inline"><mn>1</mn><mo class="MathClass-bin" stretchy="false">∕</mo><mo class="MathClass-open" stretchy="false">⟨</mo><mn>1</mn><mo class="MathClass-bin" stretchy="false">∕</mo><mi>P</mi><mo class="MathClass-close" stretchy="false">⟩</mo> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn><mn>8</mn></math> против
+<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn></math> без
+обратной связи.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x25-219004r4"></a>
+<span class="labx-1095">Задача 22.4 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Поглощающая область модели. </span>Ракетка приходит в <math display="inline"><mi>p</mi> <mo class="MathClass-rel" stretchy="false">=</mo><mi class="qopname"> min</mi><mo> ⁡ </mo><mrow><mo class="MathClass-open" fence="true" mathsize="1.19em">(</mo><mrow><mn>1</mn><mo class="MathClass-punc" stretchy="false">,</mo><mi class="qopname">max</mi><mo> ⁡ </mo><mo class="MathClass-open" stretchy="false">(</mo><mn>0</mn><mo class="MathClass-punc" stretchy="false">,</mo><mi>a</mi><mi>y</mi> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>b</mi><mo class="MathClass-close" stretchy="false">)</mo></mrow><mo class="MathClass-close" fence="true" mathsize="1.19em">)</mo></mrow></math>,
+мяч — на высоту <math display="inline"><mi>y</mi> <mo class="MathClass-rel" stretchy="false">∼</mo> <mi>U</mi><mo class="MathClass-open" stretchy="false">(</mo><mn>0</mn><mo class="MathClass-punc" stretchy="false">,</mo><mn>1</mn><mo class="MathClass-close" stretchy="false">)</mo></math>,
+удар — если <math display="inline"><mo class="MathClass-rel" stretchy="false">|</mo><mi>p</mi> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>y</mi><mo class="MathClass-rel" stretchy="false">|</mo> <mo class="MathClass-rel" stretchy="false">&#x003C;</mo> <mi>h</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn></math>.
+(а) Докажите, что при <math display="inline"><mo class="MathClass-rel" stretchy="false">|</mo><mi>b</mi><mo class="MathClass-rel" stretchy="false">|</mo> <mo class="MathClass-rel" stretchy="false">&#x003C;</mo> <mi>h</mi></math>
+и <math display="inline"><mo class="MathClass-rel" stretchy="false">|</mo><mi>a</mi> <mo class="MathClass-bin" stretchy="false">−</mo> <mn>1</mn> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>b</mi><mo class="MathClass-rel" stretchy="false">|</mo> <mo class="MathClass-rel" stretchy="false">&#x003C;</mo> <mi>h</mi></math>
+сеть отбивает все мячи, и найдите площадь этой области. (б) Найдите численно среднюю
+долю отбитых при <math display="inline"><mi>a</mi> <mo class="MathClass-rel" stretchy="false">∼</mo> <mi>U</mi><mo class="MathClass-open" stretchy="false">(</mo><mo class="MathClass-bin" stretchy="false">−</mo><mn>1</mn><mo class="MathClass-punc" stretchy="false">,</mo><mn>1</mn><mo class="MathClass-close" stretchy="false">)</mo></math>,
+<math display="inline"><mi>b</mi> <mo class="MathClass-rel" stretchy="false">∼</mo> <mi>U</mi><mo class="MathClass-open" stretchy="false">(</mo><mn>0</mn><mo class="MathClass-punc" stretchy="false">,</mo><mn>1</mn><mo class="MathClass-close" stretchy="false">)</mo></math>.
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">(а) Параллелограмм площади <math display="inline"><mn>4</mn><msup><mrow><mi>h</mi></mrow><mrow><mn>2</mn></mrow></msup 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>0</mn><mn>4</mn></math>
+(с учётом ограничения <math display="inline"><mi>p</mi></math>
+— численно <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>0</mn><mn>4</mn><mn>5</mn></math>).
+(б) <math display="inline"> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn><mn>8</mn></math>.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x25-219005r5"></a>
+<span class="labx-1095">Задача 22.5 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Моделирование: забор вокруг настроек. </span>В копии <span class="latt-1095">dishbrain_model.py </span>дайте <math display="inline"><mn>2</mn><mn>0</mn><mn>0</mn></math>
+культурам по <math display="inline"><mn>2</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mn>0</mn><mn>0</mn><mn>0</mn></math>
+розыгрышей. Какова доля отбитых в последних <math display="inline"><mn>5</mn><mn>0</mn><mn>0</mn></math>?
+А если после каждого толчка обрезать настройку прямоугольником <math display="inline"><mi>a</mi> <mo class="MathClass-rel" stretchy="false">∈</mo> <mo class="MathClass-open" stretchy="false">[</mo><mo class="MathClass-bin" stretchy="false">−</mo><mn>1</mn><mo class="MathClass-punc" stretchy="false">,</mo><mn>2</mn><mo class="MathClass-close" stretchy="false">]</mo></math>,
+<math display="inline"><mi>b</mi> <mo class="MathClass-rel" stretchy="false">∈</mo> <mo class="MathClass-open" stretchy="false">[</mo><mo class="MathClass-bin" stretchy="false">−</mo><mn>1</mn><mo class="MathClass-punc" stretchy="false">,</mo><mn>1</mn><mo class="MathClass-close" stretchy="false">]</mo></math>?
+Объясните разницу с помощью задачи <a href="#x25-219003r3">22.3</a>.
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent"><math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>4</mn><mn>9</mn></math>:
+часть культур уходит в область, где промах почти всегда, и бродит там. С ограничением —
+<math display="inline"><mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>0</mn><mn>0</mn></math>: на ограниченном
+множестве плотность <math display="inline"> <mo class="MathClass-rel" stretchy="false">∝</mo> <mn>1</mn><mo class="MathClass-bin" stretchy="false">∕</mo><mi>P</mi></math>
+собирается в поглощающей области.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x25-219006r6"></a>
+<span class="labx-1095">Задача 22.6 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Проектирование входного кода. </span>Мяч отбит, если ошибка по высоте меньше <math display="inline"><mi>h</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn></math>;
+сеть читает вход за <math display="inline"><mi>T</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn><mn>5</mn></math> с,
+до частоты <math display="inline"><mi>r</mi></math>
+различимо около <math display="inline"><msqrt><mrow><mi>r</mi><mi>T</mi></mrow></msqrt></math>
+уровней, стимуляция не чаще <math display="inline"><mn>4</mn><mn>0</mn></math>
+импульсов в секунду. (а) Хватит ли кода местом на восьми электродах? (б) Можно ли
+передать высоту частотой на одном электроде?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">(а) Нужно <math display="inline"> <mo class="MathClass-rel" stretchy="false">≥</mo> <mn>5</mn></math> уровней;
+<math display="inline"><mn>8</mn></math> электродов хватает.
+(б) Нет: нужно <math display="inline"><msub><mrow><mi>r</mi></mrow><mrow><mi class="qopname">max</mi><mo> ⁡ </mo></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">≥</mo> <mn>2</mn><mn>5</mn><mo class="MathClass-bin" stretchy="false">∕</mo><mi>T</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mn>0</mn><mn>0</mn></math> Гц.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x25-219007r7"></a>
+<span class="labx-1095">Задача 22.7 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo><mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Исследование: предсказание или перемешивание? </span>Обобщите модель на <math display="inline"><mi>d</mi></math>
+настраиваемых чисел (<math display="inline"><mi>p</mi> <mo class="MathClass-rel" stretchy="false">=</mo><msub><mrow> <mi class="MathClass-op">∑</mi><mo> ⁡</mo>
+ </mrow><mrow><mi>i</mi><mo class="MathClass-rel" stretchy="false">&#x003C;</mo><mi>d</mi></mrow></msub 
+><msub><mrow><mi>a</mi></mrow><mrow><mi>i</mi></mrow></msub 
+><msup><mrow><mi>y</mi></mrow><mrow><mi>i</mi></mrow></msup 
+></math>).
+Как растёт с <math display="inline"><mi>d</mi></math>
+число розыгрышей до доли отбитых <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn></math>
+при перемешивании и при правиле со знаком ошибки (<a href="06.html#x9-61001r6">6.6</a>)? Какой опыт на стенде разделил
+бы две гипотезы?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">Открытая задача. Время случайного поиска растёт с
+<math display="inline"><mi>d</mi></math> примерно как отношение
+объёмов <math display="inline"><msup><mrow><mo class="MathClass-open" stretchy="false">(</mo><mi>L</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mi>h</mi><mo class="MathClass-close" stretchy="false">)</mo></mrow><mrow><mi>d</mi></mrow></msup 
+></math>, у поиска со знаком
+ошибки — линейно по <math display="inline"><mi>d</mi></math>.
+Разделяет гипотезы опыт с перестановкой: после промаха — предсказуемый, но сильный стимул,
+после удара — непредсказуемый, но слабый; нужно несколько десятков культур в каждой
+группе.
+</p>
+<p class="indent"> <a id="tailfullap3.html"></a> </p></div></details>
+
+<p class="indent"> <a id="tailfullch22.html"></a> </p> 
+
+  </article>
+  <article class="text short" id="text-short" hidden>
+
+ <a id="s-x25-11500022"></a>
+<p class="noindent">Самый знаменитый опыт с живыми нейронами на чипе —
+DishBrain, «мозг в чашке». Около миллиона нейронов,
+выращенных на чипе с двадцатью шестью тысячами
+электродов, играли в простейший компьютерный теннис: мяч
+летает по экрану, ракетка ходит вверх и вниз.
+</p>
+ <h3 class="likesectionHead"> <a id="s-x25-116000"></a>Как устроена игра</h3>
+<p class="noindent">Мяч попадает в сеть через восемь электродов. Какой
+из них щёлкает — говорит, на какой высоте мяч. Как
+часто щёлкает — говорит, далеко ли мяч: четыре раза
+в секунду, когда он у дальней стены, и всё чаще, до
+сорока, когда он подлетает к ракетке. Выход — две
+области электродов: щелчки в одной двигают ракетку
+вверх, в другой — вниз. Каждые десять миллисекунд
+компьютер считает щелчки и двигает ракетку. Эти десять
+миллисекунд — такт компьютера стенда, не культуры:
+сама сеть работает асинхронно, как всякая нервная
+сеть.
+</p>
+<div class="center">
+<p class="noindent"><img src="img/short40x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<div class="minipage"><p class="noindent"><span class="lati-1000">Мяч, ракетка и миллион нейронов, которые её</span>
+<span class="lati-1000">двигают.</span> </p></div></div>
+ <h3 class="likesectionHead"> <a id="s-x25-117000"></a>Учитель</h3>
+<p class="noindent">Никакого дофамина. После удачного удара сеть получает
+короткий и совершенно предсказуемый сигнал: все восемь
+электродов разом, одна десятая секунды. После промаха —
+четыре секунды беспорядочной стимуляции в случайных
+местах и в случайные моменты, потом пауза, и новая
+подача.
+</p>
+ <h3 class="likesectionHead"> <a id="s-x25-118000"></a>Что вышло</h3>
+<p class="noindent">За двадцатиминутный сеанс розыгрыши у живых культур
+становились длиннее, а пропущенных подач — меньше.
+Лучше всего это получалось при полной обратной связи.
+Когда вместо сигналов после удара и промаха просто
+наступала тишина, улучшение тоже было, но слабее; без
+обратной связи его не было. Человеческие нейроны играли
+немного лучше мышиных. А вот обучение, растянутое на
+несколько дней, надёжным не оказалось.
+</p>
+ <h3 class="likesectionHead"> <a id="s-x25-119000"></a>Почему сеть учится</h3>
+<p class="noindent">Авторы объясняют результат так: сеть стремится сделать
+свои ощущения предсказуемыми. Промах приносит хаос,
+удар — порядок, и сеть меняется, чтобы порядка стало
+больше. Но есть и более приземлённое объяснение, которое
+тоже согласуется с данными: «встряхивай после промаха,
+не трогай после удара». Каждая встряска немного
+перемешивает связи наугад. Настройки, при которых сеть
+часто промахивается, всё время перемешиваются, а удачные
+остаются нетронутыми. Сеть сама собой задерживается
+там, где промахов мало, — никто её не учил, её просто
+перестают трясти. В нашей простой модели такое правило
+действительно поднимает долю ударов.
+</p>
+<div class="center">
+<p class="noindent"><img src="img/short41x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<div class="minipage"><p class="noindent"><span class="lati-1000">Промах встряхивает настройки сети наугад, удар</span>
+<span class="lati-1000">оставляет их в покое. Там, где промахов много,</span>
+<span class="lati-1000">сеть не задерживается. Где их мало, её перестают</span>
+<span class="lati-1000">трясти, и она остаётся там — хотя никто её</span>
+<span class="lati-1000">туда не вёл.</span> </p></div></div>
+<p class="indent"> Как различить два объяснения? Нужен опыт, которого не
+было: после промаха подавать не хаотичный, а <span class="lati-1095">предсказуемый</span>
+сигнал той же длительности и силы. Если сеть учится и так,
+дело не в предсказуемости, а просто в разнице между «после
+удара» и «после промаха». Этот опыт ещё ждёт своего
+исполнителя.
+</p><p class="indent"> Вот и конец нашего пути. Машина на двадцати ваттах
+собрана из простых деталей, но как именно она складывает
+их в мысль, мы пока понимаем лишь отчасти. Возможно,
+следующую главу напишете вы.
+</p><p class="noindent"><span class="lati-1000">Формулы, модели, задачи и источники — в полной версии,</span>
+<span class="lati-1000">глава</span><span class="lati-1000"> 22.</span>
+</p>
+<p class="indent"> <a id="s-tailshortch22.html"></a> </p> 
+
+  </article>
+
+  <aside class="starline"><span data-ru="Книга бесплатная и открытая. Если глава была полезной, поставьте книге звезду на GitHub: так её найдут другие." data-en="The book is free and open. If this chapter was useful, star the book on GitHub so others can find it.">Книга бесплатная и открытая.</span> <a href="https://github.com/kladkogex/20-watt-computer" target="_blank" rel="noopener" data-ru="★ Звезда на GitHub" data-en="★ Star on GitHub">★ Звезда на GitHub</a></aside>
+  <nav class="pager">
+    <a class="prev" href="21.html"><span data-ru="← Назад" data-en="← Previous">← Назад</span><b>Машина из живых нейронов</b></a>
+    <a class="next" href="a.html"><span data-ru="Дальше →" data-en="Next →">Дальше →</span><b>Вещества, которые не задают тип нейрона</b></a>
+  </nav>
+  <footer>
+    <span data-ru='Константин Кладько · текст — <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.ru">CC BY-NC-SA 4.0</a>' data-en='Konstantin Kladko · text: <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>'>Константин Кладько</span>
+    <span><a href="../pdf/20-watt-computer-ru.pdf">PDF</a> · <a href="../breadboard/" data-ru="Макетная плата" data-en="Breadboard">Макетная плата</a> · <a href="https://github.com/kladkogex/20-watt-computer">GitHub</a></span>
+  </footer>
+</main>
+
+<script>
+(function(){
+  const NAV = [{"slug": "00", "title": "Как читать эту книгу", "kicker": "Введение"}, {"slug": "01", "title": "Типы нейронов", "kicker": "Глава 1"}, {"slug": "02", "title": "Что вычисляют GLUT-нейроны", "kicker": "Глава 2"}, {"slug": "03", "title": "GLUT и GABA вместе", "kicker": "Глава 3"}, {"slug": "04", "title": "Азбука Морзе: что мы знаем о языке, на котором говорят GLUT- и GABA-нейроны", "kicker": "Глава 4"}, {"slug": "05", "title": "Что вычисляют SERO-нейроны", "kicker": "Глава 5"}, {"slug": "06", "title": "Нейронные сети, которые умеют учиться: добавляем DOPA", "kicker": "Глава 6"}, {"slug": "07", "title": "Альтернативные современные теории обучения на основе дофамина", "kicker": "Глава 7"}, {"slug": "08", "title": "Когда искать, а когда решать: добавляем NORA", "kicker": "Глава 8"}, {"slug": "09", "title": "Когда писать, а когда читать: добавляем ACET", "kicker": "Глава 9"}, {"slug": "10", "title": "Вся машина", "kicker": "Глава 10"}, {"slug": "11", "title": "Входы машины: как к ней подключены глаза, уши и другие датчики", "kicker": "Глава 11"}, {"slug": "12", "title": "Распознавание изображений и видео", "kicker": "Глава 12"}, {"slug": "13", "title": "Выходы машины: как мозг управляет мышцами", "kicker": "Глава 13"}, {"slug": "14", "title": "Боль: сигнал тревоги", "kicker": "Глава 14"}, {"slug": "15", "title": "Как машина учится двигаться", "kicker": "Глава 15"}, {"slug": "16", "title": "Второй выход: как мозг управляет химией тела", "kicker": "Глава 16"}, {"slug": "17", "title": "Отладка машины", "kicker": "Глава 17"}, {"slug": "18", "title": "Типы нейронов по электрической функции", "kicker": "Глава 18"}, {"slug": "19", "title": "Нейроны по числу дендритов", "kicker": "Глава 19"}, {"slug": "20", "title": "Что делают нейроны во сне", "kicker": "Глава 20"}, {"slug": "21", "title": "Машина из живых нейронов", "kicker": "Глава 21"}, {"slug": "22", "title": "DishBrain", "kicker": "Глава 22"}, {"slug": "a", "title": "Вещества, которые не задают тип нейрона", "kicker": "Приложение A"}, {"slug": "b", "title": "Обозначения", "kicker": "Приложение B"}, {"slug": "c", "title": "Ответы", "kicker": "Приложение C"}, {"slug": "d", "title": "Экспериментальное приложение", "kicker": "Приложение D"}, {"slug": "refs", "title": "Литература", "kicker": ""}];
+  const SLUG = "22";
+  const store = {get(k){try{return localStorage.getItem(k)}catch(e){return null}}, set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+
+  // chapter selector
+  const sel = document.getElementById("jump");
+  NAV.forEach(p => { const o = document.createElement("option"); o.value = p.slug;
+    o.textContent = (p.kicker ? p.kicker + ". " : "") + p.title; if (p.slug === SLUG) o.selected = true; sel.appendChild(o); });
+  sel.addEventListener("change", () => { location.href = sel.value + ".html" + (location.hash === "#short" ? "#short" : ""); });
+
+  // Коротко / Полностью
+  const modeBox = document.querySelector(".mode");
+  const hasShort = modeBox.dataset.hasShort === "true";
+  const full = document.getElementById("text-full"), short = document.getElementById("text-short");
+  function setMode(m, remember){
+    if (!hasShort) m = "full";
+    document.body.dataset.mode = m;
+    full.hidden = m !== "full"; short.hidden = m !== "short";
+    modeBox.querySelectorAll(".seg").forEach(b => b.setAttribute("aria-pressed", b.dataset.mode === m));
+    if (remember) store.set("20w-mode", m);
+  }
+  if (!hasShort) modeBox.hidden = true;
+  modeBox.addEventListener("click", e => { const b = e.target.closest(".seg"); if (b) { setMode(b.dataset.mode, true); history.replaceState(null, "", "#" + b.dataset.mode); } });
+  document.addEventListener("click", e => { const a = e.target.closest("a[data-mode]"); if (a) { e.preventDefault(); setMode(a.dataset.mode, true); window.scrollTo(0, 0); } });
+  // a link into the text (#x...) that lives in the other version switches to it
+  function follow(){
+    const h = decodeURIComponent(location.hash.slice(1));
+    if (h === "short" || h === "full") { setMode(h, true); return; }
+    if (!h) return;
+    const t = document.getElementById(h);
+    if (t) { setMode(short.contains(t) ? "short" : "full", false); t.scrollIntoView(); }
+  }
+  setMode(store.get("20w-mode") || "full", false);
+  follow();
+  window.addEventListener("hashchange", follow);
+  // links that leave the book open in the whole window when the page sits inside the reader
+  if (document.documentElement.classList.contains("embedded"))
+    document.querySelectorAll('a[href^="../"], a[href^="http"]').forEach(a => { a.target = a.href.startsWith(location.origin) ? "_top" : "_blank"; });
+
+  // interface language (the text itself is Russian)
+  function setLang(l){
+    document.querySelectorAll("[data-ru]").forEach(el => { el.innerHTML = el.dataset[l]; });
+    document.getElementById("lang-ru").setAttribute("aria-pressed", l === "ru");
+    document.getElementById("lang-en").setAttribute("aria-pressed", l === "en");
+    store.set("20w-lang", l);
+  }
+  document.getElementById("lang-ru").onclick = () => setLang("ru");
+  document.getElementById("lang-en").onclick = () => setLang("en");
+  setLang(store.get("20w-lang") === "en" ? "en" : "ru");
+  window.addEventListener("storage", e => {
+    if (e.key === "20w-lang" && (e.newValue === "ru" || e.newValue === "en")) setLang(e.newValue);
+    if (e.key === "20w-theme" && (e.newValue === "light" || e.newValue === "dark")) document.documentElement.setAttribute("data-theme", e.newValue);
+  });
+})();
+</script>
+<script>
+(function(){var b=document.getElementById("theme");if(!b)return;var r=document.documentElement;function cur(){var t=r.getAttribute("data-theme");if(t)return t;return window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";}function show(){b.textContent=cur()==="dark"?"☀":"☾";b.setAttribute("aria-pressed",cur()==="dark");}b.onclick=function(){var t=cur()==="dark"?"light":"dark";r.setAttribute("data-theme",t);try{localStorage.setItem("20w-theme",t);}catch(e){}show();};if(window.matchMedia)matchMedia("(prefers-color-scheme: dark)").addEventListener("change",show);show();})();
+</script>
+</body>
+</html>

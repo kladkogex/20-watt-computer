@@ -1,0 +1,634 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<script>try{var t=localStorage.getItem("20w-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);}catch(e){}if(window.self!==window.top)document.documentElement.classList.add("embedded");</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Глава 19. Нейроны по числу дендритов · Компьютер на 20 ваттах</title>
+<meta name="description" content="В главе 1 мы сортировали нейроны по тому, что выбрасывает их выход, а в главе 18 — по тому, каким прибором они работают. Есть и третий признак, который инженер заметит сразу: …">
+<link rel="canonical" href="https://kladkogex.github.io/20-watt-computer/read/19.html">
+<meta property="og:type" content="book">
+<meta property="og:title" content="Глава 19. Нейроны по числу дендритов · Компьютер на 20 ваттах">
+<meta property="og:description" content="В главе 1 мы сортировали нейроны по тому, что выбрасывает их выход, а в главе 18 — по тому, каким прибором они работают. Есть и третий признак, который инженер заметит сразу: …">
+<meta property="og:url" content="https://kladkogex.github.io/20-watt-computer/read/19.html">
+<meta property="og:locale" content="ru_RU">
+<meta property="og:image" content="https://kladkogex.github.io/20-watt-computer/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Your brain runs on 20 watts. Here is its datasheet. The 20-Watt Computer, a free textbook for engineers.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://kladkogex.github.io/20-watt-computer/og-card.png">
+<meta name="twitter:title" content="Глава 19. Нейроны по числу дендритов · The 20-Watt Computer">
+<meta name="twitter:description" content="В главе 1 мы сортировали нейроны по тому, что выбрасывает их выход, а в главе 18 — по тому, каким прибором они работают. Есть и третий признак, который инженер заметит сразу: …">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Chapter", "name": "Нейроны по числу дендритов", "url": "https://kladkogex.github.io/20-watt-computer/read/19.html", "position": 19, "inLanguage": "ru", "isAccessibleForFree": true, "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/", "author": {"@type": "Person", "name": "Константин Кладько", "alternateName": "Konstantin Kladko"}, "isPartOf": {"@type": "Book", "name": "Компьютер на 20 ваттах. Как вычисляет мозг: количественный подход для инженеров", "alternateName": "The 20-Watt Computer: How the Brain Computes. A Quantitative Approach for Engineers", "author": {"@type": "Person", "name": "Константин Кладько", "alternateName": "Konstantin Kladko"}, "url": "https://kladkogex.github.io/20-watt-computer/", "inLanguage": "ru", "isAccessibleForFree": true, "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/"}}</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap">
+<link rel="stylesheet" href="book.css">
+</head>
+<body>
+<header class="bar">
+  <a class="home" href="../#toc"><span class="w">20</span> <span data-ru="Компьютер на 20 ваттах" data-en="The 20-Watt Computer">Компьютер на 20 ваттах</span></a>
+  <label class="jump"><span class="sr" data-ru="Перейти к главе" data-en="Go to chapter">Перейти к главе</span>
+    <select id="jump"></select></label>
+  <div class="langs" role="group" aria-label="Language">
+    <button class="chip" id="lang-ru" type="button">RU</button>
+    <button class="chip" id="lang-en" type="button">EN</button>
+    <button class="chip theme" id="theme" type="button" aria-label="Light or dark theme" title="Light / dark">☾</button>
+  </div>
+</header>
+
+<main class="page">
+  <div class="pagehead">
+    <p class="kicker" data-ru="Глава 19" data-en="Chapter 19">Глава 19</p>
+    <h1><span class="t-full">Нейроны по числу дендритов</span><span class="t-short">Сколько нужно входов</span></h1>
+    <div class="mode" role="group" aria-label="Version" data-has-short="true">
+      <button type="button" class="seg" data-mode="short"><b data-ru="Коротко" data-en="Short">Коротко</b><span data-ru="без формул, с рисунками" data-en="no formulas, with drawings">без формул, с рисунками</span></button>
+      <button type="button" class="seg" data-mode="full"><b data-ru="Полностью" data-en="Full">Полностью</b><span data-ru="формулы, модели, задачи" data-en="formulas, models, exercises">формулы, модели, задачи</span></button>
+    </div>
+    <p class="lang-note" data-ru="" data-en="The online reader is in Russian for now; the book in other languages is in the PDF downloads in the menu.">.</p>
+  </div>
+
+  <article class="text full" id="text-full">
+
+ <a id="x22-17000019"></a>
+ <h3 class="sectionHead"><span class="titlemark">19.1 </span> <a id="x22-17100019.1"></a>Число входов как параметр схемы</h3>
+<p class="noindent">В главе <a href="01.html#x4-40001">1</a> мы сортировали нейроны по тому, что выбрасывает их выход, а в главе <a href="18.html#x21-16300018">18</a> —
+по тому, каким прибором они работают. Есть и третий признак, который инженер
+заметит сразу: <span class="lati-1095">сколько у нейрона входов</span>. Входы собирают дендриты — ветви, на которых
+садятся чужие аксоны (глава <a href="06.html#x9-560006">6</a>, раздел <a href="06.html#x9-580006.2">6.2</a>). У одних нейронов дендритов нет вовсе,
+у других один или два, у третьих — дерево, собирающее сотню тысяч входов. Для
+электронщика это нагрузочная способность по входу, fan-in, и она почти всегда соответствует
+задаче.
+</p><p class="indent"> Почему число и размер дендритов так важны, видно из простой оценки. Мембрана — конденсатор с удельной ёмкостью
+<math display="inline"><msub><mrow><mi>c</mi></mrow><mrow><mi>m</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>1</mn></math> мкФ/см<math display="inline"><msup><mrow></mrow><mrow><mn>2</mn></mrow></msup 
+></math>,
+и чем больше площадь <math display="inline"><mi>A</mi></math>
+нейрона вместе с его дендритами, тем больше заряд нужно принести, чтобы поднять напряжение на
+<math display="inline"><mi mathvariant="normal">Δ</mi><mi>V</mi> </math>. Время, за которое
+входной ток <math display="inline"><mi>I</mi></math>
+это сделает, если не считать утечки,
+</p><div class="keyformula"><table class="equation"><tr><td>
+<math display="block" class="equation">
+ <mstyle id="x22-171001r1" class="label"></mstyle><mi>t</mi><mspace width="0.28em" class="thickpace"/> <mo class="MathClass-rel" stretchy="false">≈</mo><mspace width="0.28em" class="thickpace"/><mfrac><mrow><msub><mrow><mi>c</mi></mrow><mrow><mi>m</mi></mrow></msub 
+><mspace width="0.17em" class="thinspace"/><mi>A</mi><mspace width="0.17em" class="thinspace"/><mi mathvariant="normal">Δ</mi><mi>V</mi> </mrow> 
+ <mrow><mi>I</mi></mrow></mfrac> <mo class="MathClass-punc" stretchy="false">.</mo>
+</math></td><td class="eq-no">(19.1)</td></tr></table>
+</div><p class="noindent"> Маленький нейрон с несколькими короткими дендритами имеет площадь порядка
+<math display="inline"><mn>2</mn> <mo class="MathClass-bin" stretchy="false">⋅</mo> <mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mo class="MathClass-bin" stretchy="false">−</mo><mn>5</mn></mrow></msup 
+></math> см<math display="inline"><msup><mrow></mrow><mrow><mn>2</mn></mrow></msup 
+></math>
+и ёмкость около <math display="inline"><mn>2</mn><mn>0</mn></math> пФ.
+Один крупный синапс с током в несколько наноампер поднимает его на
+<math display="inline"><mn>2</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мВ</mtext></mstyle></math> меньше чем за
+десятую долю миллисекунды. У нейрона с большим деревом площадь раз в пятнадцать больше и ёмкость около
+<math display="inline"><mn>3</mn><mn>0</mn><mn>0</mn></math> пФ; обычный синапс
+с током около <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn></math> нА
+зарядил бы его за <math display="inline"><mn>6</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>
+— много дольше постоянной времени утечки, то есть не зарядил бы никогда. Такому нейрону
+нужны десятки одновременных входов. Числа здесь — порядки величин, но вывод
+от них не зависит: <span class="lati-1095">мало входов — быстро и точно, много входов — медленно и по</span>
+<span class="lati-1095">сумме</span>.
+</p>
+ <figure class="figure"> 
+<a id="x22-1710021"></a>
+<p class="noindent"><img src="img/full49x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<figcaption class="caption"><span class="id">Рис. 19.1: </span><span class="content">Пять классов по числу входов. Синим — дендриты (входы), красным — аксон
+(выход). Чем меньше входов, тем быстрее и точнее нейрон передаёт отдельный сигнал; чем
+больше, тем лучше он складывает и классифицирует. Схема, не рисунок формы клеток.</span></figcaption>
+ </figure>
+ <h3 class="sectionHead"><span class="titlemark">19.2 </span> <a id="x22-17200019.2"></a>Ноль дендритов: датчик на конце линии</h3>
+<p class="noindent">У чувствительных нейронов осязания, боли и растяжения мышц (главы <a href="11.html#x14-10400011">11</a>, <a href="14.html#x17-12900014">14</a>, <a href="13.html#x16-12100013">13</a>) на теле клетки
+нет ни одного дендрита. Аксон выходит из тела одной веточкой и тут же делится надвое: одна
+ветвь уходит к коже или мышце, и её конец сам служит датчиком; другая идёт в спинной мозг.
+Импульс бежит от датчика прямо в спинной мозг, минуя тело клетки. Для инженера это линия
+связи, у которой датчик стоит на дальнем конце, а тело клетки висит сбоку, как блок питания:
+оно снабжает линию, но в передаче не участвует. Выгода — скорость и надёжность: на пути нет
+ни одного места, где сигнал надо было бы суммировать и снова решать, передавать ли
+его.
+</p><p class="indent"> Датчики света и звука — ещё более крайний случай: это не нейроны-сборщики, а сами
+преобразователи, у которых входом служит не синапс, а белок-рецептор (рис. <a href="11.html#x14-1050011">11.1</a>).
+</p>
+ <h3 class="sectionHead"><span class="titlemark">19.3 </span> <a id="x22-17300019.3"></a>Один дендрит: буфер</h3>
+<p class="noindent">Нейрон с одним дендритом и одним аксоном принимает одну входную линию и передаёт её
+дальше. Так устроены обонятельные нейроны: единственный дендрит выходит к поверхности
+носа и несёт единственный тип рецептора <span class="cite">[<a href="refs.html#XMombaerts2004">97</a>]</span>; так устроены передаточные клетки сетчатки
+между датчиками света и выходными нейронами глаза; так устроены нейроны, связывающие
+датчики уха с мозгом. Инженер назвал бы их буфером или повторителем: они не вычисляют, а
+доставляют один сигнал, иногда меняя его форму — например, превращая плавное напряжение
+датчика в импульсы, как в главе <a href="11.html#x14-10400011">11</a>.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">19.4 </span> <a id="x22-17400019.4"></a>Два дендрита: «И» по времени</h3>
+<p class="noindent">Детекторы совпадений, определяющие направление на звук (рис. <a href="02.html#x5-200023">2.3</a>), у млекопитающих часто
+имеют ровно два дендрита, направленных в противоположные стороны: на один приходят
+входы от левого уха, на другой — от правого <span class="cite">[<a href="refs.html#XGrothe2010">57</a>]</span>. Зачем разносить входы? Вспомним
+формулу (<a href="03.html#x6-29001r3">3.3</a>): когда на одном участке мембраны открыто много возбуждающих каналов,
+напряжение там приближается к равновесному потенциалу, и каждый следующий
+вход добавляет всё меньше. Поэтому много входов от одного уха, собранных на одном
+дендрите, насыщают его и не могут в одиночку довести нейрон до порога. А по одному
+входу с каждого дендрита складываются почти линейно. Два дендрита превращают
+нейрон в более строгое «И»: срабатывай, только если сигналы пришли с обеих сторон и
+вместе. На моделях показано, что такое разнесение действительно улучшает детекцию
+совпадений <span class="cite">[<a href="refs.html#XAgmonSnir1998">197</a>]</span>.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">19.5 </span> <a id="x22-17500019.5"></a>Несколько коротких дендритов: смеситель и ретранслятор</h3>
+<p class="noindent"><span class="lati-1095">Смесители. </span>В цепи обучения движениям из главы <a href="15.html#x18-13800015">15</a> около семидесяти миллиардов маленьких
+<span class="nt">GLUT</span>-нейронов расширяют вход в очень длинный вектор. У каждого из них всего около
+четырёх коротких дендритов, и каждый заканчивается «когтем», который охватывает
+окончание одного входа. Каждый смеситель, таким образом, видит лишь около четырёх
+входов из многих и работает как маленький элемент «И» над своей четвёркой. Из
+<math display="inline"><mi>M</mi></math> входных линий
+можно выбрать <math display="inline"><mfenced separators="" open="(" close=")"><mfrac linethickness="0.0pt"><mrow><mi>M</mi></mrow>
+ <mrow><mn>4</mn></mrow></mfrac></mfenced> </math>
+разных четвёрок: при <math display="inline"><mi>M</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mn>0</mn><mn>0</mn></math>
+это почти четыре миллиона. Зачем столько? Пороговый элемент с
+<math display="inline"><mi>n</mi></math>
+входами может правильно разделить на два класса не больше
+</p><div class="keyformula"><table class="equation"><tr><td>
+<math display="block" class="equation">
+ <mstyle id="x22-175001r2" class="label"></mstyle><msub><mrow><mi>P</mi></mrow><mrow><mi class="qopname">max</mi><mo> ⁡ </mo></mrow></msub 
+><mspace width="0.28em" class="thickpace"/> <mo class="MathClass-rel" stretchy="false">≈</mo><mspace width="0.28em" class="thickpace"/><mn>2</mn><mi>n</mi>
+</math></td><td class="eq-no">(19.2)</td></tr></table>
+</div><p class="noindent"> случайных образов <span class="cite">[<a href="refs.html#XCover1965">118</a>]</span>. Выходной нейрон той же цепи получает около
+<math display="inline"><mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>5</mn></mrow></msup 
+></math>
+входов от смесителей, и по (<a href="#x22-175001r2">19.2</a>) верхняя граница для него — порядка
+<math display="inline"><mn>2</mn> <mo class="MathClass-bin" stretchy="false">⋅</mo> <mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>5</mn></mrow></msup 
+></math>
+разных соответствий. Это предел для идеального элемента: если все веса положительны, как у
+возбуждающих синапсов, и нужен запас на шум, оценка для этого же нейрона — около
+<math display="inline"><mn>4</mn> <mo class="MathClass-bin" stretchy="false">⋅</mo> <mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>4</mn></mrow></msup 
+></math>
+соответствий <span class="cite">[<a href="refs.html#XBrunel2004">358</a>]</span>. Смесители с малым числом входов нужны именно для того, чтобы у большого
+сумматора было много разных, почти независимых входов <span class="cite">[<a href="refs.html#XMarr1969">116</a>, <a href="refs.html#XAlbus1971">117</a>]</span>.
+</p><p class="indent"> <span class="lati-1095">Ретрансляторы. </span>На пути от уха к детекторам направления есть нейроны с немногими
+короткими дендритами, которые получают всего несколько огромных синапсов, а некоторые — по
+существу один. По (<a href="#x22-171001r1">19.1</a>) это ровно то, что нужно: маленькая ёмкость и большой ток, и нейрон
+срабатывает через доли миллисекунды после каждого входного импульса, почти не теряя
+точности времени. Один из таких ретрансляторов получает <span class="nt">GLUT</span>, а выдаёт <span class="nt">GLYC</span>: это инвертор
+с точностью в десятки микросекунд, поставляющий быстрое торможение детекторам
+направления <span class="cite">[<a href="refs.html#XBorstSoria2012">198</a>]</span>.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">19.6 </span> <a id="x22-17600019.6"></a>Тысячи входов: сумматор и классификатор</h3>
+<p class="noindent">На другом конце шкалы — <span class="nt">GLUT</span>-нейроны коры с десятком тысяч входов и выходные
+<span class="nt">GABA</span>-нейроны цепи обучения движениям с сотней тысяч. Такой нейрон по (<a href="#x22-171001r1">19.1</a>) медленный и
+не может откликнуться на отдельный вход: он складывает. Это интегрирующий нейрон главы <a href="02.html#x5-150002">2</a> и
+тот сумматор, из которого строятся классификаторы. Большое дерево добавляет и новое: его
+ветви работают как отдельные подсхемы со своими порогами, так что один нейрон ведёт себя как
+маленькая многослойная сеть <span class="cite">[<a href="refs.html#XBeniaguev2021">132</a>, <a href="refs.html#XGidon2020">133</a>]</span>.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">19.7 </span> <a id="x22-17700019.7"></a>Дендриты, которые ещё и выход</h3>
+<p class="noindent">Есть нейроны, у которых аксона нет вовсе, а дендриты служат и входом, и выходом: они
+получают сигналы и сами выбрасывают медиатор. Самый изученный пример — <span class="nt">GABA</span>-нейроны
+сетчатки, участвующие в определении направления движения (глава <a href="03.html#x6-250003">3</a>, рис. <a href="03.html#x6-280021">3.1</a>). У такого
+нейрона каждая ветвь сама по себе отвечает на движение от тела клетки к своему кончику и
+выдаёт торможение с этого кончика <span class="cite">[<a href="refs.html#XEuler2002">199</a>]</span>. Один нейрон — это несколько независимых детекторов
+направления, по одному на ветвь. Для инженера это не один элемент, а микросхема с
+несколькими каналами в одном корпусе.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">19.8 </span> <a id="x22-17800019.8"></a>Итог</h3>
+ <div class="table">
+<p class="indent"> <a id="x22-1780011"></a></p><figure class="float">
+<div class="tabular">
+ <table id="TBL-22" class="tabular"><colgroup id="TBL-22-1g"><col id="TBL-22-1" /><col id="TBL-22-2" /><col id="TBL-22-3" /><col id="TBL-22-4" /><col id="TBL-22-5" /></colgroup><tr style="vertical-align:baseline;" id="TBL-22-1-"><td style="text-align:left;" id="TBL-22-1-1" class="td11"> <p class="noindent"><span class="larm-0900">Дендритов</span> </p></td><td style="text-align:left;" id="TBL-22-1-2" class="td11"> <p class="noindent"><span class="larm-0900">Пример</span> </p></td><td style="text-align:left;" id="TBL-22-1-3" class="td11"> <p class="noindent"><span class="larm-0900">Прибор</span> </p></td><td style="text-align:left;" id="TBL-22-1-4" class="td11"> <p class="noindent"><span class="larm-0900">Входов</span> </p></td><td style="text-align:left;" id="TBL-22-1-5" class="td11"> <p class="noindent"><span class="larm-0900">Что</span>
+ <span class="larm-0900">известно</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-22-2-"><td style="text-align:left;" id="TBL-22-2-1" class="td11"> <p class="noindent"><math display="inline"><mn>0</mn></math> </p></td><td style="text-align:left;" id="TBL-22-2-2" class="td11"> <p class="noindent"><span class="larm-0900">датчики</span>
+ <span class="larm-0900">осязания,</span>
+ <span class="larm-0900">боли,</span>
+ <span class="larm-0900">растяжения</span> </p></td><td style="text-align:left;" id="TBL-22-2-3" class="td11"> <p class="noindent"><span class="larm-0900">линия</span>
+ <span class="larm-0900">с</span>
+ <span class="larm-0900">датчиком</span>
+ <span class="larm-0900">на</span>
+ <span class="larm-0900">конце</span> </p></td><td style="text-align:left;" id="TBL-22-2-4" class="td11"> <p class="noindent"><span class="larm-0900">—</span> </p></td><td style="text-align:left;" id="TBL-22-2-5" class="td11"> <p class="noindent"><span class="larm-0900">установлено</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-22-3-"><td style="text-align:left;" id="TBL-22-3-1" class="td11"> <p class="noindent"><math display="inline"><mn>1</mn></math> </p></td><td style="text-align:left;" id="TBL-22-3-2" class="td11"> <p class="noindent"><span class="larm-0900">обонятельные</span>
+ <span class="larm-0900">нейроны,</span>
+ <span class="larm-0900">передаточные</span>
+ <span class="larm-0900">клетки</span>
+ <span class="larm-0900">сетчатки,</span>
+ <span class="larm-0900">нейроны</span>
+ <span class="larm-0900">уха</span> </p></td><td style="text-align:left;" id="TBL-22-3-3" class="td11"> <p class="noindent"><span class="larm-0900">буфер,</span>
+ <span class="larm-0900">повторитель</span> </p></td><td style="text-align:left;" id="TBL-22-3-4" class="td11"> <p class="noindent"><math display="inline"><mn>1</mn></math><span class="larm-0900">–немного</span> </p> </td><td style="text-align:left;" id="TBL-22-3-5" class="td11"> <p class="noindent"><span class="larm-0900">установлено</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-22-4-"><td style="text-align:left;" id="TBL-22-4-1" class="td11"> <p class="noindent"><math display="inline"><mn>2</mn></math> </p></td><td style="text-align:left;" id="TBL-22-4-2" class="td11"> <p class="noindent"><span class="larm-0900">детекторы</span>
+ <span class="larm-0900">направления</span>
+ <span class="larm-0900">на</span>
+ <span class="larm-0900">звук</span> </p></td><td style="text-align:left;" id="TBL-22-4-3" class="td11"> <p class="noindent"><span class="larm-0900">«И»</span>
+ <span class="larm-0900">по</span>
+ <span class="larm-0900">времени</span> </p></td><td style="text-align:left;" id="TBL-22-4-4" class="td11"> <p class="noindent"><span class="larm-0900">два</span>
+ <span class="larm-0900">пучка</span> </p></td><td style="text-align:left;" id="TBL-22-4-5" class="td11"> <p class="noindent"><span class="larm-0900">строение</span>
+ <span class="larm-0900">установлено;</span>
+ <span class="larm-0900">выигрыш</span>
+ <span class="larm-0900">от</span>
+ <span class="larm-0900">разнесения</span>
+ <span class="larm-0900">входов</span>
+ <span class="larm-0900">показан</span>
+ <span class="larm-0900">на</span>
+ <span class="larm-0900">моделях</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-22-5-"><td style="text-align:left;" id="TBL-22-5-1" class="td11"> <p class="noindent"><math display="inline"> <mo class="MathClass-rel" stretchy="false">∼</mo><mn>4</mn></math> </p></td><td style="text-align:left;" id="TBL-22-5-2" class="td11"> <p class="noindent"><span class="larm-0900">смесители</span>
+ <span class="larm-0900">цепи</span>
+ <span class="larm-0900">обучения</span>
+ <span class="larm-0900">движениям</span> </p></td><td style="text-align:left;" id="TBL-22-5-3" class="td11"> <p class="noindent"><span class="larm-0900">маленький</span>
+ <span class="larm-0900">элемент</span>
+ <span class="larm-0900">«И»</span> </p></td><td style="text-align:left;" id="TBL-22-5-4" class="td11"> <p class="noindent"><math display="inline"> <mo class="MathClass-rel" stretchy="false">∼</mo><mn>4</mn></math> </p></td><td style="text-align:left;" id="TBL-22-5-5" class="td11"> <p class="noindent"><span class="larm-0900">установлено;</span>
+ <span class="larm-0900">роль</span>
+ <span class="larm-0900">расширения</span>
+ <span class="larm-0900">входа</span>
+ <span class="larm-0900">—</span>
+ <span class="larm-0900">хорошо</span>
+ <span class="larm-0900">обоснованная</span>
+ <span class="larm-0900">гипотеза</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-22-6-"><td style="text-align:left;" id="TBL-22-6-1" class="td11"> <p class="noindent"><span class="larm-0900">немного,</span>
+ <span class="larm-0900">короткие</span> </p></td><td style="text-align:left;" id="TBL-22-6-2" class="td11"> <p class="noindent"><span class="larm-0900">ретрансляторы</span>
+ <span class="larm-0900">на</span>
+ <span class="larm-0900">пути</span>
+ <span class="larm-0900">от</span>
+ <span class="larm-0900">уха</span> </p></td><td style="text-align:left;" id="TBL-22-6-3" class="td11"> <p class="noindent"><span class="larm-0900">ретранслятор,</span>
+ <span class="larm-0900">инвертор</span> </p></td><td style="text-align:left;" id="TBL-22-6-4" class="td11"> <p class="noindent"><math display="inline"><mn>1</mn></math><span class="larm-0900">–несколько</span>
+ <span class="larm-0900">огромных</span> </p></td><td style="text-align:left;" id="TBL-22-6-5" class="td11"> <p class="noindent"><span class="larm-0900">установлено</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-22-7-"><td style="text-align:left;" id="TBL-22-7-1" class="td11"> <p class="noindent"><span class="larm-0900">тысячи</span> </p></td><td style="text-align:left;" id="TBL-22-7-2" class="td11"> <p class="noindent"><span class="nt"><span class="larm-0900">GLUT</span></span><span class="larm-0900">-нейроны</span>
+ <span class="larm-0900">коры,</span>
+ <span class="larm-0900">выходные</span>
+ <span class="larm-0900">нейроны</span>
+ <span class="larm-0900">обучения</span>
+ <span class="larm-0900">движениям</span> </p></td><td style="text-align:left;" id="TBL-22-7-3" class="td11"> <p class="noindent"><span class="larm-0900">сумматор,</span>
+ <span class="larm-0900">классификатор</span> </p></td><td style="text-align:left;" id="TBL-22-7-4" class="td11"> <p class="noindent"><math display="inline"><mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>4</mn></mrow></msup 
+></math><span class="larm-0900">–</span><math display="inline"><mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>5</mn></mrow></msup 
+></math> </p> </td><td style="text-align:left;" id="TBL-22-7-5" class="td11"> <p class="noindent"><span class="larm-0900">установлено;</span>
+ <span class="larm-0900">ветви</span>
+ <span class="larm-0900">как</span>
+ <span class="larm-0900">подсхемы</span>
+ <span class="larm-0900">измерены</span>
+ <span class="larm-0900">на</span>
+ <span class="larm-0900">отдельных</span>
+ <span class="larm-0900">примерах</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-22-8-"><td style="text-align:left;" id="TBL-22-8-1" class="td11"> <p class="noindent"><span class="larm-0900">дендриты-выходы</span> </p> </td><td style="text-align:left;" id="TBL-22-8-2" class="td11"> <p class="noindent"><span class="nt"><span class="larm-0900">GABA</span></span><span class="larm-0900">-нейроны</span>
+ <span class="larm-0900">направления</span>
+ <span class="larm-0900">в</span>
+ <span class="larm-0900">сетчатке</span> </p></td><td style="text-align:left;" id="TBL-22-8-3" class="td11"> <p class="noindent"><span class="larm-0900">многоканальная</span>
+ <span class="larm-0900">микросхема</span> </p></td><td style="text-align:left;" id="TBL-22-8-4" class="td11"> <p class="noindent"><span class="larm-0900">много</span> </p></td><td style="text-align:left;" id="TBL-22-8-5" class="td11"> <p class="noindent"><span class="larm-0900">измерено</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-22-9-"><td style="text-align:left;" id="TBL-22-9-1" class="td11"> </td></tr></table> </div>
+<figcaption class="caption"><span class="id">Таблица 19.1: </span><span class="content">Нейроны по числу дендритов.</span></figcaption>
+ </figure>
+ </div>
+ <div class="tcolorbox keyblock" id="tcolobox-39"> 
+<div class="tcolorbox-content"><div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x22-178002r1"></a>
+<span class="labx-1095">Утверждение 19.1 </span>(Число входов следует за задачей)<span class="labx-1095">.</span> </span>
+<span class="lati-1095">Где нужна скорость и точность отдельного сигнала — на датчиках, ретрансляторах</span>
+<span class="lati-1095">и детекторах совпадений, — у нейронов мало дендритов, мало входов и большие</span>
+<span class="lati-1095">синапсы: малая ёмкость</span><span class="lati-1095"> </span>(<a href="#x22-171001r1">19.1</a>) <span class="lati-1095">заряжается быстро. Где нужно складывать и</span>
+<span class="lati-1095">классифицировать, у нейронов большие деревья с тысячами входов. Строение классов</span>
+<span class="lati-1095">измерено; вычислительное объяснение хорошо обосновано, но для многих классов</span>
+<span class="lati-1095">остаётся гипотезой.</span>
+</p>
+</div>
+ 
+</div> 
+</div>
+<p class="indent"> Таблица <a href="#x22-1780011">19.1</a> дополняет две прежние сортировки: по медиатору (таблица <a href="01.html#x4-60021">1.1</a>) и по прибору
+(таблица <a href="18.html#x21-163001r1">18.1</a>). Все три смотрят на один и тот же элемент с разных сторон: что он выдаёт, что он
+вычисляет и сколько он слушает.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">19.9 </span> <a id="x22-17900019.9"></a>Задачи</h3>
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x22-179001r1"></a>
+<span class="labx-1095">Задача 19.1 </span>(<math display="inline"><mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Сколько входов нужно большому нейрону. </span>Нейрон с <math display="inline"><mi>C</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>3</mn><mn>0</mn><mn>0</mn></math> пФ
+и <math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>m</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>2</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>
+получает синапсы — источники тока по <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn></math> нА,
+порог на <math display="inline"><mn>2</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мВ</mtext></mstyle></math>
+выше покоя. (а) Сколько синапсов должно работать одновременно, чтобы дойти до порога
+вообще; за <math display="inline"><mn>1</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>;
+за <math display="inline"><mn>5</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>?
+(б) За какое время дойдёт до порога нейрон с <math display="inline"><mi>C</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>2</mn><mn>0</mn></math> пФ
+от синапса в <math display="inline"><mn>4</mn></math> нА?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">(а) Один синапс даёт <math display="inline"><mn>6</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>7</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мВ</mtext></mstyle></math>
+(<math display="inline"><mi>R</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>6</mn><mn>6</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>7</mn></math> МОм), так что до порога
+вообще нужно не меньше <math display="inline"><mn>4</mn></math> (трёх
+хватает лишь асимптотически); <math display="inline"><mn>8</mn></math>
+за <math display="inline"><mn>1</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>;
+<math display="inline"><mn>1</mn><mn>4</mn></math> за
+<math display="inline"><mn>5</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>.
+(б) <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle> <mo class="MathClass-rel" stretchy="false">≪</mo> <msub><mrow><mi>τ</mi></mrow><mrow><mi>m</mi></mrow></msub 
+></math>, поправка
+от утечки <math display="inline"> <mo class="MathClass-rel" stretchy="false">∼</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn><mn>5</mn><mi>%</mi></math>.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x22-179002r2"></a>
+<span class="labx-1095">Задача 19.2 </span>(<math display="inline"><mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Почему четыре. </span>Смеситель — «И» над <math display="inline"><mi>k</mi></math>
+линиями из <math display="inline"><mi>M</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mn>0</mn><mn>0</mn></math>,
+в образе активна половина линий, смесителей <math display="inline"><mn>7</mn> <mo class="MathClass-bin" stretchy="false">⋅</mo> <mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>1</mn><mn>0</mn></mrow></msup 
+></math>.
+(а) Сколько их отвечает на образ при <math display="inline"><mi>k</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>2</mn></math>;
+<math display="inline"><mn>4</mn></math>;
+<math display="inline"><mn>4</mn><mn>0</mn></math>?
+(б) Во сколько раз смесители увеличивают число соответствий (<a href="#x22-175001r2">19.2</a>) выходного нейрона с
+<math display="inline"><mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>5</mn></mrow></msup 
+></math>
+входами против <math display="inline"><mi>M</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mn>0</mn><mn>0</mn></math>
+прямых линий?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">(а) <math display="inline"><mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>7</mn><mn>5</mn> <mo class="MathClass-bin" stretchy="false">⋅</mo> <mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>1</mn><mn>0</mn></mrow></msup 
+></math> (четверть смесителей
+отвечает на всё подряд), <math display="inline"><mn>4</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>4</mn> <mo class="MathClass-bin" stretchy="false">⋅</mo> <mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>9</mn></mrow></msup 
+></math>
+и <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>0</mn><mn>6</mn></math> (при
+<math display="inline"><mi>k</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>4</mn><mn>0</mn></math> не отвечает почти
+никогда). (б) В <math display="inline"><mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>3</mn></mrow></msup 
+></math>
+раз: <math display="inline"><mn>2</mn> <mo class="MathClass-bin" stretchy="false">⋅</mo> <mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>5</mn></mrow></msup 
+></math>
+против <math display="inline"><mn>2</mn><mn>0</mn><mn>0</mn></math>.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x22-179003r3"></a>
+<span class="labx-1095">Задача 19.3 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Откуда берётся </span><math display="inline"><mn>2</mn><mi>n</mi></math><span class="lati-1095">.</span>
+Гиперплоскость через начало координат делит <math display="inline"><mi>P</mi></math>
+точек общего положения в <math display="inline"><mi>n</mi></math>-мерном
+пространстве на два класса <math display="inline"><mi>C</mi><mo class="MathClass-open" stretchy="false">(</mo><mi>P</mi><mo class="MathClass-punc" stretchy="false">,</mo><mi>n</mi><mo class="MathClass-close" stretchy="false">)</mo> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>2</mn><msubsup><mrow><mi class="MathClass-op">∑</mi><mo> ⁡</mo>
+ </mrow><mrow><mi>k</mi><mo class="MathClass-rel" stretchy="false">=</mo><mn>0</mn></mrow><mrow><mi>n</mi><mo class="MathClass-bin" stretchy="false">−</mo><mn>1</mn></mrow></msubsup 
+><mfenced separators="" open="(" close=")"><mfrac linethickness="0.0pt"><mrow><mi>P</mi><mo class="MathClass-bin" stretchy="false">−</mo><mn>1</mn></mrow>
+ <mrow><mi>k</mi></mrow></mfrac></mfenced> </math>
+способами. (а) Докажите, что при <math display="inline"><mi>P</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>2</mn><mi>n</mi></math>
+разделима ровно половина из <math display="inline"><msup><mrow><mn>2</mn></mrow><mrow><mi>P</mi> </mrow></msup 
+></math>
+разбиений. (б) Какая их доля разделима при <math display="inline"><mi>n</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mn>0</mn><mn>0</mn></math>
+и <math display="inline"><mi>P</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mn>8</mn><mn>0</mn></math>;
+<math display="inline"><mn>2</mn><mn>2</mn><mn>0</mn></math>?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">(а) <math display="inline"><mi>C</mi><mo class="MathClass-open" stretchy="false">(</mo><mn>2</mn><mi>n</mi><mo class="MathClass-punc" stretchy="false">,</mo><mi>n</mi><mo class="MathClass-close" stretchy="false">)</mo> <mo class="MathClass-rel" stretchy="false">=</mo> <msup><mrow><mn>2</mn></mrow><mrow><mn>2</mn><mi>n</mi><mo class="MathClass-bin" stretchy="false">−</mo><mn>1</mn></mrow></msup 
+></math> по симметрии
+биномиальных коэффициентов. (б) <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>9</mn><mn>3</mn></math>
+и <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>0</mn><mn>9</mn></math>; ширина
+перехода <math display="inline"> <mo class="MathClass-rel" stretchy="false">∼</mo><msqrt><mrow><mn>2</mn><mi>n</mi></mrow></msqrt></math>
+по <math display="inline"><mi>P</mi></math>,
+относительная <math display="inline"> <mo class="MathClass-rel" stretchy="false">∼</mo> <mn>1</mn><mo class="MathClass-bin" stretchy="false">∕</mo><msqrt><mrow><mi>n</mi></mrow></msqrt></math>.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x22-179004r4"></a>
+<span class="labx-1095">Задача 19.4 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Два дендрита как строгое «И». </span>Дендрит — участок с утечкой <math display="inline"><msub><mrow><mi>g</mi></mrow><mrow><mi>L</mi></mrow></msub 
+></math>,
+каждый вход открывает на нём проводимость <math display="inline"><msub><mrow><mi>g</mi></mrow><mrow><mn>0</mn></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn><mspace width="0.17em" class="thinspace"/><msub><mrow><mi>g</mi></mrow><mrow><mi>L</mi></mrow></msub 
+></math>
+с потенциалом <math display="inline"><msub><mrow><mi>E</mi></mrow><mrow><mi>E</mi></mrow></msub 
+></math>,
+тело видит <math display="inline"><mi>κ</mi><mo class="MathClass-open" stretchy="false">(</mo><msub><mrow><mi>V</mi> </mrow><mrow><mn>1</mn></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">+</mo> <msub><mrow><mi>V</mi> </mrow><mrow><mn>2</mn></mrow></msub 
+><mo class="MathClass-close" stretchy="false">)</mo></math>,
+порог <math display="inline"><mi>𝜃</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn><mspace width="0.17em" class="thinspace"/><mi>κ</mi><msub><mrow><mi>E</mi></mrow><mrow><mi>E</mi></mrow></msub 
+></math>.
+Почему никакое число входов на одном дендрите не запускает нейрон и сколько входов
+нужно на каждом?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">С одного дендрита <math display="inline"><msub><mrow><mi>V</mi> </mrow><mrow><mstyle class="text"><mtext>тело</mtext></mstyle></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">&#x003C;</mo> <mi>κ</mi><msub><mrow><mi>E</mi></mrow><mrow><mi>E</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">&#x003C;</mo> <mi>𝜃</mi></math> при
+любом числе входов; при <math display="inline"><msub><mrow><mi>g</mi></mrow><mrow><mn>0</mn></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn><msub><mrow><mi>g</mi></mrow><mrow><mi>L</mi></mrow></msub 
+></math>
+нужно <math display="inline"><mi>n</mi> <mo class="MathClass-rel" stretchy="false">≥</mo> <mn>3</mn></math>
+на каждом дендрите.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x22-179005r5"></a>
+<span class="labx-1095">Задача 19.5 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Проектирование ретранслятора. </span>Дрожание импульса <math display="inline"><msub><mrow><mi>σ</mi></mrow><mrow><mi>t</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <msub><mrow><mi>σ</mi></mrow><mrow><mi>V</mi> </mrow></msub 
+><mo class="MathClass-bin" stretchy="false">∕</mo><mover accent="true"><mrow><mi>V</mi> </mrow><mo accent="true">˙</mo></mover></math>,
+где <math display="inline"><mover accent="true"><mrow><mi>V</mi> </mrow><mo accent="true">˙</mo></mover></math>
+— наклон напряжения у порога. Нужно <math display="inline"><msub><mrow><mi>σ</mi></mrow><mrow><mi>t</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">≤</mo> <mn>2</mn><mn>0</mn></math> мкс
+при шуме <math display="inline"><msub><mrow><mi>σ</mi></mrow><mrow><mi>V</mi> </mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мВ</mtext></mstyle></math>;
+утечкой пренебрегите. Сколько синхронных синапсов по <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn></math> нА
+нужно для этого нейрону с <math display="inline"><mi>C</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>3</mn><mn>0</mn><mn>0</mn></math> пФ
+и каково дрожание нейрона с <math display="inline"><mi>C</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>2</mn><mn>0</mn></math> пФ
+и одним синапсом в <math display="inline"><mn>4</mn></math> нА?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent"><math display="inline"><mi>I</mi> <mo class="MathClass-rel" stretchy="false">≥</mo> <mi>C</mi><msub><mrow><mi>σ</mi></mrow><mrow><mi>V</mi> </mrow></msub 
+><mo class="MathClass-bin" stretchy="false">∕</mo><msub><mrow><mi>σ</mi></mrow><mrow><mi>t</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mn>5</mn></math> нА,
+то есть <math display="inline"><mn>1</mn><mn>5</mn><mn>0</mn></math>
+синхронных синапсов — нереалистично; маленькому нейрону хватило бы
+<math display="inline"><mn>1</mn></math> нА, а с
+синапсом в <math display="inline"><mn>4</mn></math> нА
+дрожание <math display="inline"><mn>5</mn></math> мкс.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x22-179006r6"></a>
+<span class="labx-1095">Задача 19.6 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Моделирование: заряд длинного дендрита. </span>Смоделируйте пассивный кабель <math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>m</mi></mrow></msub 
+><msub><mrow><mi>∂</mi></mrow><mrow><mi>t</mi></mrow></msub 
+><mi>V</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <msup><mrow><mi>λ</mi></mrow><mrow><mn>2</mn></mrow></msup 
+><msubsup><mrow><mi>∂</mi></mrow><mrow><mi>x</mi></mrow><mrow><mn>2</mn></mrow></msubsup 
+><mi>V</mi> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>V</mi> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>i</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mi>g</mi></math>
+длины <math display="inline"><mi>L</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mi>ℓ</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mi>λ</mi></math>
+с закрытыми концами (<math display="inline"><mn>4</mn><mn>0</mn></math>
+участков, Эйлер). В дальний конец подан короткий импульс тока: когда и до какой доли
+напряжения от того же заряда, размазанного по всему дендриту, поднимается ближний
+конец при <math display="inline"><mi>L</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn></math>;
+<math display="inline"><mn>1</mn></math>;
+<math display="inline"><mn>2</mn></math>?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">Максимум на ближнем конце: <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>0</mn><mn>3</mn><mspace width="0.17em" class="thinspace"/><msub><mrow><mi>τ</mi></mrow><mrow><mi>m</mi></mrow></msub 
+></math>
+и <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>9</mn><mn>7</mn></math>
+(<math display="inline"><mi>L</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn></math>);
+<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>3</mn><mn>2</mn><mspace width="0.17em" class="thinspace"/><msub><mrow><mi>τ</mi></mrow><mrow><mi>m</mi></mrow></msub 
+></math> и
+<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>6</mn><mn>6</mn></math>
+(<math display="inline"><mi>L</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn></math>);
+<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>7</mn><mn>9</mn><mspace width="0.17em" class="thinspace"/><msub><mrow><mi>τ</mi></mrow><mrow><mi>m</mi></mrow></msub 
+></math> и
+<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>3</mn><mn>3</mn></math>
+(<math display="inline"><mi>L</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>2</mn></math>). Оценка (<a href="fullch19.html#x22-171001r1">19.1</a>) по полной
+ёмкости верна только при <math display="inline"><mi>L</mi> <mo class="MathClass-rel" stretchy="false">≪</mo> <mn>1</mn></math>.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x22-179007r7"></a>
+<span class="labx-1095">Задача 19.7 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo><mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Исследование: оптимальное число входов. </span>Ёмкость <math display="inline"><mi>C</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <msub><mrow><mi>C</mi></mrow><mrow><mn>0</mn></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>n</mi><msub><mrow><mi>c</mi></mrow><mrow><mi>s</mi></mrow></msub 
+></math>,
+одновременно работают <math display="inline"><mi>m</mi></math>
+входов по току <math display="inline"><msub><mrow><mi>I</mi></mrow><mrow><mi>s</mi></mrow></msub 
+></math>,
+нейрон запоминает <math display="inline"><mi>P</mi> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>2</mn><mi>n</mi></math>
+соответствий (<a href="#x22-175001r2">19.2</a>). Как время отклика зависит от <math display="inline"><mi>P</mi></math>
+при постоянном <math display="inline"><mi>m</mi></math>
+и при постоянной доле <math display="inline"><mi>m</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mi>φ</mi><mi>n</mi></math>?
+Предложите критерий стоимости и найдите оптимальное <math display="inline"><mi>n</mi></math>
+для ретранслятора и классификатора.
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">Открытая задача. При фиксированном
+<math display="inline"><mi>m</mi></math> время отклика растёт
+линейно с запоминаемым <math display="inline"><mi>P</mi></math>;
+при фиксированной доле <math display="inline"><mi>m</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mi>φ</mi><mi>n</mi></math>
+оно перестаёт зависеть от <math display="inline"><mi>n</mi></math>,
+и медленность большого нейрона — следствие суммирования многих входов, а не размера как
+такового.
+</p></div></details>
+
+<p class="indent"> <a id="tailfullch19.html"></a> </p> 
+
+  </article>
+  <article class="text short" id="text-short" hidden>
+
+ <a id="s-x22-9900019"></a>
+<p class="noindent">У нейрона есть ветвистые входные отростки — дендриты. У
+одних нейронов это целое дерево с тысячами контактов, у
+других — одна-две ветки или вовсе ничего. Для инженера
+число входов — параметр схемы, и он подобран под
+задачу.
+</p>
+ <h3 class="likesectionHead"> <a id="s-x22-100000"></a>От нуля до ста тысяч</h3>
+<p class="noindent">У датчиков прикосновения и боли дендритов нет совсем:
+провод просто тянется от кожи в спинной мозг, а датчик
+сидит на самом его конце. Это линия с датчиком на дальнем
+краю.
+</p>
+<div class="center">
+<p class="noindent"><img src="img/short34x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<div class="minipage"><p class="noindent"><span class="lati-1000">Много входов — сумматор; один огромный вход —</span>
+<span class="lati-1000">быстрый и точный ретранслятор.</span> </p></div></div>
+<p class="indent"> У нейронов обоняния и у нейронов, передающих сигнал
+от датчиков глаза и уха, — один дендрит. Один вход, один
+выход: повторитель, буфер.
+</p><p class="indent"> У детекторов направления звука — два дендрита,
+смотрящие в разные стороны, по одному на каждое ухо.
+Разнеся два входа по разным веткам, нейрон делает «и»
+строже: две порции тока в одной ветке мешали бы друг
+другу.
+</p><p class="indent"> У мелких нейронов схемы обучения движениям — около
+четырёх коротких дендритов, каждый хватает свой вход.
+Таких нейронов десятки миллиардов, и каждый складывает
+всего четыре сигнала. Зато вместе они раскладывают вход
+на миллионы комбинаций, а большой выходной нейрон с
+сотней тысяч входов выбирает из них нужные.
+</p><p class="indent"> И наконец, нейроны с огромными деревьями и тысячами
+входов — сумматоры и классификаторы, у которых
+отдельные ветки работают почти как самостоятельные
+маленькие схемы.
+</p>
+ <h3 class="likesectionHead"> <a id="s-x22-101000"></a>Почему так</h3>
+<p class="noindent">Всё решает зарядка. Маленький нейрон с немногими
+входами заряжается от одного крупного соединения за доли
+миллисекунды: такой нейрон точен во времени и надёжно
+передаёт сигнал дальше. Большое дерево одно соединение не
+зарядит никогда — заряд утечёт раньше. Ему нужны
+десятки сигналов, пришедших вместе, зато оно может
+их складывать и сравнивать. Мало входов и крупные
+соединения — для точного времени. Много входов — для
+счёта.
+</p>
+<div class="center">
+<p class="noindent"><img src="img/short35x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<div class="minipage"><p class="noindent"><span class="lati-1000">Маленький нейрон заряжается от одного крупного</span>
+<span class="lati-1000">соединения за доли миллисекунды и щёлкает сразу.</span>
+<span class="lati-1000">Большое дерево от одного входа почти не</span>
+<span class="lati-1000">меняется: ему нужны десятки сигналов,</span>
+<span class="lati-1000">пришедших вместе.</span> </p></div></div>
+<p class="indent"> Так мы получили третью сортировку нейронов: по
+веществу, по прибору и по числу входов. Каждая видит одну
+и ту же машину с новой стороны.
+</p><p class="noindent"><span class="lati-1000">Формулы, модели, задачи и источники — в полной версии,</span>
+<span class="lati-1000">глава</span><span class="lati-1000"> 19.</span>
+</p>
+<p class="indent"> <a id="s-tailshortch19.html"></a> </p> 
+
+  </article>
+
+  <aside class="starline"><span data-ru="Книга бесплатная и открытая. Если глава была полезной, поставьте книге звезду на GitHub: так её найдут другие." data-en="The book is free and open. If this chapter was useful, star the book on GitHub so others can find it.">Книга бесплатная и открытая.</span> <a href="https://github.com/kladkogex/20-watt-computer" target="_blank" rel="noopener" data-ru="★ Звезда на GitHub" data-en="★ Star on GitHub">★ Звезда на GitHub</a></aside>
+  <nav class="pager">
+    <a class="prev" href="18.html"><span data-ru="← Назад" data-en="← Previous">← Назад</span><b>Типы нейронов по электрической функции</b></a>
+    <a class="next" href="20.html"><span data-ru="Дальше →" data-en="Next →">Дальше →</span><b>Что делают нейроны во сне</b></a>
+  </nav>
+  <footer>
+    <span data-ru='Константин Кладько · текст — <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.ru">CC BY-NC-SA 4.0</a>' data-en='Konstantin Kladko · text: <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>'>Константин Кладько</span>
+    <span><a href="../pdf/20-watt-computer-ru.pdf">PDF</a> · <a href="../breadboard/" data-ru="Макетная плата" data-en="Breadboard">Макетная плата</a> · <a href="https://github.com/kladkogex/20-watt-computer">GitHub</a></span>
+  </footer>
+</main>
+
+<script>
+(function(){
+  const NAV = [{"slug": "00", "title": "Как читать эту книгу", "kicker": "Введение"}, {"slug": "01", "title": "Типы нейронов", "kicker": "Глава 1"}, {"slug": "02", "title": "Что вычисляют GLUT-нейроны", "kicker": "Глава 2"}, {"slug": "03", "title": "GLUT и GABA вместе", "kicker": "Глава 3"}, {"slug": "04", "title": "Азбука Морзе: что мы знаем о языке, на котором говорят GLUT- и GABA-нейроны", "kicker": "Глава 4"}, {"slug": "05", "title": "Что вычисляют SERO-нейроны", "kicker": "Глава 5"}, {"slug": "06", "title": "Нейронные сети, которые умеют учиться: добавляем DOPA", "kicker": "Глава 6"}, {"slug": "07", "title": "Альтернативные современные теории обучения на основе дофамина", "kicker": "Глава 7"}, {"slug": "08", "title": "Когда искать, а когда решать: добавляем NORA", "kicker": "Глава 8"}, {"slug": "09", "title": "Когда писать, а когда читать: добавляем ACET", "kicker": "Глава 9"}, {"slug": "10", "title": "Вся машина", "kicker": "Глава 10"}, {"slug": "11", "title": "Входы машины: как к ней подключены глаза, уши и другие датчики", "kicker": "Глава 11"}, {"slug": "12", "title": "Распознавание изображений и видео", "kicker": "Глава 12"}, {"slug": "13", "title": "Выходы машины: как мозг управляет мышцами", "kicker": "Глава 13"}, {"slug": "14", "title": "Боль: сигнал тревоги", "kicker": "Глава 14"}, {"slug": "15", "title": "Как машина учится двигаться", "kicker": "Глава 15"}, {"slug": "16", "title": "Второй выход: как мозг управляет химией тела", "kicker": "Глава 16"}, {"slug": "17", "title": "Отладка машины", "kicker": "Глава 17"}, {"slug": "18", "title": "Типы нейронов по электрической функции", "kicker": "Глава 18"}, {"slug": "19", "title": "Нейроны по числу дендритов", "kicker": "Глава 19"}, {"slug": "20", "title": "Что делают нейроны во сне", "kicker": "Глава 20"}, {"slug": "21", "title": "Машина из живых нейронов", "kicker": "Глава 21"}, {"slug": "22", "title": "DishBrain", "kicker": "Глава 22"}, {"slug": "a", "title": "Вещества, которые не задают тип нейрона", "kicker": "Приложение A"}, {"slug": "b", "title": "Обозначения", "kicker": "Приложение B"}, {"slug": "c", "title": "Ответы", "kicker": "Приложение C"}, {"slug": "d", "title": "Экспериментальное приложение", "kicker": "Приложение D"}, {"slug": "refs", "title": "Литература", "kicker": ""}];
+  const SLUG = "19";
+  const store = {get(k){try{return localStorage.getItem(k)}catch(e){return null}}, set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+
+  // chapter selector
+  const sel = document.getElementById("jump");
+  NAV.forEach(p => { const o = document.createElement("option"); o.value = p.slug;
+    o.textContent = (p.kicker ? p.kicker + ". " : "") + p.title; if (p.slug === SLUG) o.selected = true; sel.appendChild(o); });
+  sel.addEventListener("change", () => { location.href = sel.value + ".html" + (location.hash === "#short" ? "#short" : ""); });
+
+  // Коротко / Полностью
+  const modeBox = document.querySelector(".mode");
+  const hasShort = modeBox.dataset.hasShort === "true";
+  const full = document.getElementById("text-full"), short = document.getElementById("text-short");
+  function setMode(m, remember){
+    if (!hasShort) m = "full";
+    document.body.dataset.mode = m;
+    full.hidden = m !== "full"; short.hidden = m !== "short";
+    modeBox.querySelectorAll(".seg").forEach(b => b.setAttribute("aria-pressed", b.dataset.mode === m));
+    if (remember) store.set("20w-mode", m);
+  }
+  if (!hasShort) modeBox.hidden = true;
+  modeBox.addEventListener("click", e => { const b = e.target.closest(".seg"); if (b) { setMode(b.dataset.mode, true); history.replaceState(null, "", "#" + b.dataset.mode); } });
+  document.addEventListener("click", e => { const a = e.target.closest("a[data-mode]"); if (a) { e.preventDefault(); setMode(a.dataset.mode, true); window.scrollTo(0, 0); } });
+  // a link into the text (#x...) that lives in the other version switches to it
+  function follow(){
+    const h = decodeURIComponent(location.hash.slice(1));
+    if (h === "short" || h === "full") { setMode(h, true); return; }
+    if (!h) return;
+    const t = document.getElementById(h);
+    if (t) { setMode(short.contains(t) ? "short" : "full", false); t.scrollIntoView(); }
+  }
+  setMode(store.get("20w-mode") || "full", false);
+  follow();
+  window.addEventListener("hashchange", follow);
+  // links that leave the book open in the whole window when the page sits inside the reader
+  if (document.documentElement.classList.contains("embedded"))
+    document.querySelectorAll('a[href^="../"], a[href^="http"]').forEach(a => { a.target = a.href.startsWith(location.origin) ? "_top" : "_blank"; });
+
+  // interface language (the text itself is Russian)
+  function setLang(l){
+    document.querySelectorAll("[data-ru]").forEach(el => { el.innerHTML = el.dataset[l]; });
+    document.getElementById("lang-ru").setAttribute("aria-pressed", l === "ru");
+    document.getElementById("lang-en").setAttribute("aria-pressed", l === "en");
+    store.set("20w-lang", l);
+  }
+  document.getElementById("lang-ru").onclick = () => setLang("ru");
+  document.getElementById("lang-en").onclick = () => setLang("en");
+  setLang(store.get("20w-lang") === "en" ? "en" : "ru");
+  window.addEventListener("storage", e => {
+    if (e.key === "20w-lang" && (e.newValue === "ru" || e.newValue === "en")) setLang(e.newValue);
+    if (e.key === "20w-theme" && (e.newValue === "light" || e.newValue === "dark")) document.documentElement.setAttribute("data-theme", e.newValue);
+  });
+})();
+</script>
+<script>
+(function(){var b=document.getElementById("theme");if(!b)return;var r=document.documentElement;function cur(){var t=r.getAttribute("data-theme");if(t)return t;return window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";}function show(){b.textContent=cur()==="dark"?"☀":"☾";b.setAttribute("aria-pressed",cur()==="dark");}b.onclick=function(){var t=cur()==="dark"?"light":"dark";r.setAttribute("data-theme",t);try{localStorage.setItem("20w-theme",t);}catch(e){}show();};if(window.matchMedia)matchMedia("(prefers-color-scheme: dark)").addEventListener("change",show);show();})();
+</script>
+</body>
+</html>

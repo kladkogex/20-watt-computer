@@ -1,0 +1,706 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<script>try{var t=localStorage.getItem("20w-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);}catch(e){}if(window.self!==window.top)document.documentElement.classList.add("embedded");</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Глава 15. Как машина учится двигаться · Компьютер на 20 ваттах</title>
+<meta name="description" content="В главе 13 мы видели, как машина двигает мышцами, и остановились на гипотезе: быстрые и точные движения требуют внутренней модели тела, которая предсказывает результат команды [ …">
+<link rel="canonical" href="https://kladkogex.github.io/20-watt-computer/read/15.html">
+<meta property="og:type" content="book">
+<meta property="og:title" content="Глава 15. Как машина учится двигаться · Компьютер на 20 ваттах">
+<meta property="og:description" content="В главе 13 мы видели, как машина двигает мышцами, и остановились на гипотезе: быстрые и точные движения требуют внутренней модели тела, которая предсказывает результат команды [ …">
+<meta property="og:url" content="https://kladkogex.github.io/20-watt-computer/read/15.html">
+<meta property="og:locale" content="ru_RU">
+<meta property="og:image" content="https://kladkogex.github.io/20-watt-computer/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Your brain runs on 20 watts. Here is its datasheet. The 20-Watt Computer, a free textbook for engineers.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://kladkogex.github.io/20-watt-computer/og-card.png">
+<meta name="twitter:title" content="Глава 15. Как машина учится двигаться · The 20-Watt Computer">
+<meta name="twitter:description" content="В главе 13 мы видели, как машина двигает мышцами, и остановились на гипотезе: быстрые и точные движения требуют внутренней модели тела, которая предсказывает результат команды [ …">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Chapter", "name": "Как машина учится двигаться", "url": "https://kladkogex.github.io/20-watt-computer/read/15.html", "position": 15, "inLanguage": "ru", "isAccessibleForFree": true, "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/", "author": {"@type": "Person", "name": "Константин Кладько", "alternateName": "Konstantin Kladko"}, "isPartOf": {"@type": "Book", "name": "Компьютер на 20 ваттах. Как вычисляет мозг: количественный подход для инженеров", "alternateName": "The 20-Watt Computer: How the Brain Computes. A Quantitative Approach for Engineers", "author": {"@type": "Person", "name": "Константин Кладько", "alternateName": "Konstantin Kladko"}, "url": "https://kladkogex.github.io/20-watt-computer/", "inLanguage": "ru", "isAccessibleForFree": true, "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/"}}</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap">
+<link rel="stylesheet" href="book.css">
+</head>
+<body>
+<header class="bar">
+  <a class="home" href="../#toc"><span class="w">20</span> <span data-ru="Компьютер на 20 ваттах" data-en="The 20-Watt Computer">Компьютер на 20 ваттах</span></a>
+  <label class="jump"><span class="sr" data-ru="Перейти к главе" data-en="Go to chapter">Перейти к главе</span>
+    <select id="jump"></select></label>
+  <div class="langs" role="group" aria-label="Language">
+    <button class="chip" id="lang-ru" type="button">RU</button>
+    <button class="chip" id="lang-en" type="button">EN</button>
+    <button class="chip theme" id="theme" type="button" aria-label="Light or dark theme" title="Light / dark">☾</button>
+  </div>
+</header>
+
+<main class="page">
+  <div class="pagehead">
+    <p class="kicker" data-ru="Глава 15" data-en="Chapter 15">Глава 15</p>
+    <h1><span class="t-full">Как машина учится двигаться</span><span class="t-short">Как машина учится двигаться</span></h1>
+    <div class="mode" role="group" aria-label="Version" data-has-short="true">
+      <button type="button" class="seg" data-mode="short"><b data-ru="Коротко" data-en="Short">Коротко</b><span data-ru="без формул, с рисунками" data-en="no formulas, with drawings">без формул, с рисунками</span></button>
+      <button type="button" class="seg" data-mode="full"><b data-ru="Полностью" data-en="Full">Полностью</b><span data-ru="формулы, модели, задачи" data-en="formulas, models, exercises">формулы, модели, задачи</span></button>
+    </div>
+    <p class="lang-note" data-ru="" data-en="The online reader is in Russian for now; the book in other languages is in the PDF downloads in the menu.">.</p>
+  </div>
+
+  <article class="text full" id="text-full">
+
+ <a id="x18-13800015"></a>
+ <h3 class="sectionHead"><span class="titlemark">15.1 </span> <a id="x18-13900015.1"></a>Три учителя</h3>
+<p class="noindent">В главе <a href="13.html#x16-12100013">13</a> мы видели, как машина двигает мышцами, и остановились на гипотезе: быстрые и
+точные движения требуют внутренней модели тела, которая предсказывает результат
+команды <span class="cite">[<a href="refs.html#XWolpertGhahramani2000">103</a>]</span>. Откуда берётся эта модель? Её надо выучить, и выучить не так, как мы учились
+до сих пор.
+</p><p class="indent"> В книге уже было два учителя. Первый — <span class="lati-1095">никакой</span>: правило Хебба (глава <a href="06.html#x9-560006">6</a>) усиливает то, что
+часто бывает вместе, и сжимает входы. Второй — <span class="lati-1095">награда</span>: <span class="nt">DOPA</span> рассылает всем одно число,
+«лучше или хуже, чем ожидалось». Движению нужен третий учитель — <span class="lati-1095">ошибка</span>. Рука
+промахнулась мимо чашки на два сантиметра влево: это не «хуже», это вектор, который говорит
+каждому выходу, куда и насколько он ошибся. Инженер назвал бы это обучением с
+учителем.
+</p><p class="indent"> Разница между вторым и третьим учителем — это разница между одним проводом на всех и
+отдельным проводом на каждый выход. В утверждении <a href="06.html#x9-62001r4">6.4</a> обучение по одному общему числу
+замедлялось с каждым нейроном, чей шум влиял на результат. Если же каждый выход
+<math display="inline"><mi>i</mi></math> получает
+свою ошибку <math display="inline"><msub><mrow><mi>e</mi></mrow><mrow><mi>i</mi></mrow></msub 
+></math>,
+веса можно менять по простейшему правилу:
+</p><div class="keyformula"><table class="equation"><tr><td>
+<math display="block" class="equation">
+ <mstyle id="x18-139001r1" class="label"></mstyle><mfrac><mrow><mstyle mathvariant="normal"><mi>d</mi></mstyle><msub><mrow><mi>w</mi></mrow><mrow><mi>i</mi><mi>j</mi></mrow></msub 
+></mrow>
+ <mrow><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>t</mi></mrow></mfrac> <mspace width="0.28em" class="thickpace"/> <mo class="MathClass-rel" stretchy="false">=</mo> <mspace width="0.28em" class="thickpace"/> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>η</mi><mspace width="0.17em" class="thinspace"/><msub><mrow><mi>e</mi></mrow><mrow><mi>i</mi></mrow></msub 
+><mo class="MathClass-open" stretchy="false">(</mo><mi>t</mi><mo class="MathClass-close" stretchy="false">)</mo><mspace width="0.17em" class="thinspace"/><msub><mrow><mi>x</mi></mrow><mrow><mi>j</mi></mrow></msub 
+><mo class="MathClass-open" stretchy="false">(</mo><mi>t</mi><mo class="MathClass-close" stretchy="false">)</mo><mo class="MathClass-punc" stretchy="false">.</mo>
+</math></td><td class="eq-no">(15.1)</td></tr></table>
+</div><p class="noindent"> Это правило наименьших квадратов, давно известное в технике адаптивных фильтров <span class="cite">[<a href="refs.html#XWidrowHoff1960">115</a>]</span>:
+вес меняется пропорционально произведению своего входа на ошибку своего выхода и в среднем
+идёт по градиенту квадрата ошибки. Никакого шума-поиска, как в главе <a href="06.html#x9-560006">6</a>, не нужно:
+направление поправки приходит прямо по проводу ошибки. И скорость не падает с числом
+выходов, потому что чужие ошибки к синапсу не приходят.
+</p>
+ <div class="tcolorbox keyblock" id="tcolobox-33"> 
+<div class="tcolorbox-content"><div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x18-139002r1"></a>
+<span class="labx-1095">Утверждение 15.1 </span>(Три учителя)<span class="labx-1095">.</span> </span> <span class="lati-1095">Правило Хебба учит без учителя тому, что</span>
+<span class="lati-1095">часто; сигнал </span><span class="nt"><span class="lati-1095">DOPA</span></span> <span class="lati-1095">учит одним числом на всю сеть тому, что выгодно, и медленнее с</span>
+<span class="lati-1095">каждым нейроном; провод ошибки к каждому выходу учит по правилу</span><span class="lati-1095"> </span>(<a href="#x18-139001r1">15.1</a>) <span class="lati-1095">тому, что</span>
+<span class="lati-1095">точно, и скорость не зависит от числа выходов. Цена третьего способа — отдельный</span>
+<span class="lati-1095">провод на каждый выход и кто-то, кто знает правильный ответ.</span>
+</p>
+</div>
+ 
+</div> 
+</div>
+ <h3 class="sectionHead"><span class="titlemark">15.2 </span> <a id="x18-14000015.2"></a>Провод ошибки</h3>
+<p class="noindent">Кто может знать правильный ответ для движения? Сами датчики. Если рука ушла влево от
+цели, об этом сообщают глаз и датчики растяжения из главы <a href="11.html#x14-10400011">11</a>. Нужна схема, которая доставит
+эту ошибку к нужным выходам.
+</p><p class="indent"> В мозге есть область, которая, по-видимому, устроена ровно под это <span class="cite">[<a href="refs.html#XMarr1969">116</a>, <a href="refs.html#XAlbus1971">117</a>]</span>. Её схема
+необычно правильная, почти кристаллическая, и в ней легко узнать правило (<a href="#x18-139001r1">15.1</a>)
+(рис. <a href="#x18-1400011">15.1</a>).
+</p><p class="indent"> <span class="lati-1095">Расширитель входа. </span>Сигналы о команде и о состоянии тела приходят на огромный слой
+маленьких <span class="nt">GLUT</span>-нейронов. Их около семидесяти миллиардов — больше, чем во всём остальном
+мозге, вместе взятом <span class="cite">[<a href="refs.html#XAzevedo2009">1</a>]</span>. Каждый из них смешивает несколько входов, и сигнал раскладывается
+в очень длинный вектор. Инженеру этот приём знаком: если поднять размерность входа, в новом
+пространстве почти любую нужную зависимость можно получить простой взвешенной
+суммой <span class="cite">[<a href="refs.html#XCover1965">118</a>]</span>.
+</p><p class="indent"> <span class="lati-1095">Выходные нейроны. </span>Взвешенную сумму считают около тридцати миллионов больших
+выходных нейронов <span class="cite">[<a href="refs.html#XAndersen1992cereb">330</a>]</span>, у каждого — порядка ста тысяч входов от расширителя. И это
+<span class="nt">GABA</span>-нейроны: результат обучения передаётся дальше не возбуждением, а торможением, как в
+запрете главы <a href="03.html#x6-250003">3</a>.
+</p><p class="indent"> <span class="lati-1095">Провод ошибки. </span>Каждый выходной нейрон получает ещё один вход, особый:
+ровно один <span class="nt">GLUT</span>-провод, который срабатывает редко, около раза в секунду, но
+каждый раз вызывает в выходном нейроне мощную вспышку <span class="cite">[<a href="refs.html#XIto2001">119</a>]</span>. Это и есть
+<math display="inline"><msub><mrow><mi>e</mi></mrow><mrow><mi>i</mi></mrow></msub 
+></math>:
+вероятность вспышки зависит от направления ошибки движения <span class="cite">[<a href="refs.html#XHerzfeld2018">158</a>]</span>. Совпадение
+вспышки ошибки с активностью входа ослабляет этот вход — в точности член
+<math display="inline"> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>η</mi><mspace width="0.17em" class="thinspace"/><msub><mrow><mi>e</mi></mrow><mrow><mi>i</mi></mrow></msub 
+><msub><mrow><mi>x</mi></mrow><mrow><mi>j</mi></mrow></msub 
+></math>
+в (<a href="#x18-139001r1">15.1</a>).
+</p>
+ <figure class="figure"> 
+<a id="x18-1400011"></a>
+<p class="noindent"><img src="img/full45x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<figcaption class="caption"><span class="id">Рис. 15.1: </span><span class="content">Схема обучения с учителем, как её, по-видимому, реализует мозг. Команда
+и состояние тела раскладываются огромным слоем <span class="nt">GLUT</span>-нейронов в длинный вектор
+<math display="inline"><msub><mrow><mi>x</mi></mrow><mrow><mi>j</mi></mrow></msub 
+></math>;
+выходной <span class="nt">GABA</span>-нейрон складывает его с весами <math display="inline"><msub><mrow><mi>w</mi></mrow><mrow><mi>i</mi><mi>j</mi></mrow></msub 
+></math>.
+Единственный провод ошибки приносит <math display="inline"><msub><mrow><mi>e</mi></mrow><mrow><mi>i</mi></mrow></msub 
+></math>;
+совпадение ошибки с активным входом ослабляет вес этого входа, как в правиле (<a href="#x18-139001r1">15.1</a>).</span></figcaption>
+ </figure>
+<p class="indent"> Одна трудность знакома нам по главе <a href="06.html#x9-560006">6</a>: ошибка приходит позже, чем вход, который к ней
+привёл. Промах виден через десятки-сотни миллисекунд после команды. Значит, синапс должен
+помнить, что был активен, — нужен след, как в правиле (<a href="06.html#x9-60001r5">6.5</a>). И длина этого следа, судя по
+опытам, подстроена под задержку обратной связи в каждой задаче: там, где ошибка приходит
+через сто миллисекунд, сильнее всего ослабляется вход, бывший активным за сто миллисекунд до
+неё <span class="cite">[<a href="refs.html#XSuvrathan2016">120</a>]</span>.
+</p>
+ <div class="tcolorbox keyblock" id="tcolobox-34"> 
+<div class="tcolorbox-content"><div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x18-140002r2"></a>
+<span class="labx-1095">Утверждение 15.2 </span>(Провод ошибки)<span class="labx-1095">.</span> </span> <span class="lati-1095">В схеме, изображённой на рис.</span><span class="lati-1095"> </span><a href="#x18-1400011"><span class="lati-1095">15.1</span></a><span class="lati-1095">, каждый</span>
+<span class="lati-1095">выходной нейрон получает ровно один провод ошибки, и совпадение ошибки с входом</span>
+<span class="lati-1095">ослабляет этот вход. Это правило наименьших квадратов</span><span class="lati-1095"> </span>(<a href="#x18-139001r1">15.1</a>)<span class="lati-1095">, применённое к входу,</span>
+<span class="lati-1095">который расширен до огромной размерности. Устройство схемы и ослабление при</span>
+<span class="lati-1095">совпадении измерены; что вся схема работает как обучение с учителем, — ведущая</span>
+<span class="lati-1095">гипотеза.</span>
+</p>
+</div>
+ 
+</div> 
+</div>
+ <h3 class="sectionHead"><span class="titlemark">15.3 </span> <a id="x18-14100015.3"></a>Внутренняя модель как адаптивный фильтр</h3>
+<p class="noindent">Чему учится такая схема? Самый естественный ответ — предсказанию. Пусть на вход приходит
+команда <math display="inline"><mi>u</mi><mo class="MathClass-open" stretchy="false">(</mo><mi>t</mi><mo class="MathClass-close" stretchy="false">)</mo></math>,
+пропущенная через набор фильтров с разными постоянными времени, как в расширителе:
+<math display="inline"><msub><mrow><mi>x</mi></mrow><mrow><mi>j</mi></mrow></msub 
+><mo class="MathClass-open" stretchy="false">(</mo><mi>t</mi><mo class="MathClass-close" stretchy="false">)</mo> <mo class="MathClass-rel" stretchy="false">=</mo> <mo class="MathClass-open" stretchy="false">(</mo><msub><mrow><mi>g</mi></mrow><mrow><mi>j</mi></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">∗</mo> <mi>u</mi><mo class="MathClass-close" stretchy="false">)</mo><mo class="MathClass-open" stretchy="false">(</mo><mi>t</mi><mo class="MathClass-close" stretchy="false">)</mo></math>.
+Выход — их взвешенная сумма, предсказание того, что сообщат датчики:
+</p><div class="keyformula"><table class="equation"><tr><td>
+<math display="block" class="equation">
+ <mstyle id="x18-141001r2" class="label"></mstyle><mi>ŷ</mi><mo class="MathClass-open" stretchy="false">(</mo><mi>t</mi><mo class="MathClass-close" stretchy="false">)</mo><mspace width="0.28em" class="thickpace"/> <mo class="MathClass-rel" stretchy="false">=</mo> <mspace width="0.28em" class="thickpace"/><munder class="msub"><mrow><mo>∑</mo>
+ </mrow><mrow><mi>j</mi></mrow></munder 
+><msub><mrow><mi>w</mi></mrow><mrow><mi>j</mi></mrow></msub 
+><mspace width="0.17em" class="thinspace"/><mo class="MathClass-open" stretchy="false">(</mo><msub><mrow><mi>g</mi></mrow><mrow><mi>j</mi></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">∗</mo> <mi>u</mi><mo class="MathClass-close" stretchy="false">)</mo><mo class="MathClass-open" stretchy="false">(</mo><mi>t</mi><mo class="MathClass-close" stretchy="false">)</mo><mo class="MathClass-punc" stretchy="false">,</mo><mspace width="2em" class="qquad"/><mi>e</mi><mo class="MathClass-open" stretchy="false">(</mo><mi>t</mi><mo class="MathClass-close" stretchy="false">)</mo><mspace width="0.28em" class="thickpace"/> <mo class="MathClass-rel" stretchy="false">=</mo> <mspace width="0.28em" class="thickpace"/><mi>ŷ</mi><mo class="MathClass-open" stretchy="false">(</mo><mi>t</mi><mo class="MathClass-close" stretchy="false">)</mo> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>y</mi><mo class="MathClass-open" stretchy="false">(</mo><mi>t</mi><mo class="MathClass-close" stretchy="false">)</mo><mo class="MathClass-punc" stretchy="false">,</mo>
+</math></td><td class="eq-no">(15.2)</td></tr></table>
+</div><p class="noindent"> а веса учатся по (<a href="#x18-139001r1">15.1</a>). Это <span class="lati-1095">адаптивный фильтр</span>: схема, которая сама подбирает свою
+передаточную функцию так, чтобы повторить неизвестную систему <span class="cite">[<a href="refs.html#XFujita1982">121</a>]</span>. Здесь неизвестная
+система — собственное тело с его массой, упругостью и задержками. Выученный фильтр и
+есть внутренняя модель главы <a href="13.html#x16-12100013">13</a>: он говорит, что сообщат датчики, не дожидаясь
+их.
+</p><p class="indent"> Такая модель полезна дважды. Во-первых, её предсказание можно подать вместо
+запаздывающей обратной связи, и тогда условие устойчивости (<a href="13.html#x16-125001r5">13.5</a>) перестаёт связывать руки:
+исправлять можно быстро, по модели. Во-вторых, разница между предсказанным и полученным
+— это сигнал о <span class="lati-1095">неожиданном</span>. Всё, что машина сделала сама, модель предсказала и вычла;
+остаётся то, что сделал мир. Поэтому, по одной из гипотез, мы и не можем пощекотать сами
+себя <span class="cite">[<a href="refs.html#XBlakemore1998">122</a>]</span>.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">15.4 </span> <a id="x18-14200015.4"></a>Когда мир меняется: быстрое и медленное</h3>
+<p class="noindent">Проверим схему опытом, который легко поставить. Человек тянется к цели, а мир неожиданно
+меняется: например, на руку действует боковая сила. Первые движения промахиваются, потом
+промах уменьшается. Если силу убрать, рука сначала промахивается в <span class="lati-1095">другую </span>сторону — модель
+выучила силу и продолжает её компенсировать. Это прямое свидетельство того, что выучена
+модель, а не просто «стало получаться».
+</p><p class="indent"> Опыты показывают и более тонкую вещь: учатся одновременно два процесса —
+быстрый, который быстро учится и быстро забывает, и медленный, который учится
+медленно и помнит долго <span class="cite">[<a href="refs.html#XSmith2006">123</a>]</span>. Поправки обновляются после каждого движения, по
+событию:
+</p><div class="keyformula"><table class="equation"><tr><td>
+<math display="block" class="equation">
+ <mstyle id="x18-142001r3" class="label"></mstyle><mi>e</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mi>p</mi> <mo class="MathClass-bin" stretchy="false">−</mo> <mo class="MathClass-open" stretchy="false">(</mo><msub><mrow><mi>x</mi></mrow><mrow><mi>f</mi></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">+</mo> <msub><mrow><mi>x</mi></mrow><mrow><mi>s</mi></mrow></msub 
+><mo class="MathClass-close" stretchy="false">)</mo><mo class="MathClass-punc" stretchy="false">,</mo><mspace width="2em" class="qquad"/><msub><mrow><mi>x</mi></mrow><mrow><mi>f</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">←</mo> <msub><mrow><mi>A</mi></mrow><mrow><mi>f</mi></mrow></msub 
+><mspace width="0.17em" class="thinspace"/><msub><mrow><mi>x</mi></mrow><mrow><mi>f</mi></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">+</mo> <msub><mrow><mi>B</mi></mrow><mrow><mi>f</mi></mrow></msub 
+><mspace width="0.17em" class="thinspace"/><mi>e</mi><mo class="MathClass-punc" stretchy="false">,</mo><mspace width="2em" class="qquad"/><msub><mrow><mi>x</mi></mrow><mrow><mi>s</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">←</mo> <msub><mrow><mi>A</mi></mrow><mrow><mi>s</mi></mrow></msub 
+><mspace width="0.17em" class="thinspace"/><msub><mrow><mi>x</mi></mrow><mrow><mi>s</mi></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">+</mo> <msub><mrow><mi>B</mi></mrow><mrow><mi>s</mi></mrow></msub 
+><mspace width="0.17em" class="thinspace"/><mi>e</mi><mo class="MathClass-punc" stretchy="false">,</mo>
+</math></td><td class="eq-no">(15.3)</td></tr></table>
+</div><p class="noindent"> где <math display="inline"><mi>p</mi></math> —
+возмущение, <math display="inline"><msub><mrow><mi>x</mi></mrow><mrow><mi>f</mi></mrow></msub 
+></math> и
+<math display="inline"><msub><mrow><mi>x</mi></mrow><mrow><mi>s</mi></mrow></msub 
+></math> — выученные поправки
+двух процессов, <math display="inline"><mi>A</mi></math>
+— насколько поправка сохраняется до следующего движения,
+<math display="inline"><mi>B</mi></math>
+— насколько сильно она учится на ошибке. У быстрого процесса
+<math display="inline"><mi>B</mi></math> велико, а
+<math display="inline"><mi>A</mi></math>
+заметно меньше единицы; у медленного — наоборот.
+</p>
+ <figure class="figure"> 
+<a id="x18-1420022"></a>
+<p class="noindent"><img src="img/full46x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<figcaption class="caption"><span class="id">Рис. 15.2: </span><span class="content">Два процесса обучения по модели (<a href="#x18-142001r3">15.3</a>), <math display="inline"><msub><mrow><mi>A</mi></mrow><mrow><mi>f</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>9</mn><mn>2</mn></math>,
+<math display="inline"><msub><mrow><mi>B</mi></mrow><mrow><mi>f</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn></math>,
+<math display="inline"><msub><mrow><mi>A</mi></mrow><mrow><mi>s</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>9</mn><mn>9</mn><mn>6</mn></math>,
+<math display="inline"><msub><mrow><mi>B</mi></mrow><mrow><mi>s</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>0</mn><mn>2</mn></math>.
+Двести движений с возмущением <math display="inline"><mi>p</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn></math>,
+затем шесть с обратным, <math display="inline"><mi>p</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mo class="MathClass-bin" stretchy="false">−</mo><mn>1</mn></math>,
+пока сумма не вернётся к нулю. После штриховой линии ошибки перестают поступать, и
+сумма сама возвращается к старой поправке: быстрый процесс забыл обратное возмущение,
+медленный помнит прямое.</span></figcaption>
+ </figure>
+<p class="indent"> Модель (<a href="#x18-142001r3">15.3</a>) объясняет опыт, который трудно понять без неё (рис. <a href="#x18-1420022">15.2</a>). В
+нашем расчёте за двести движений с возмущением сумма поправок доходит до
+<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>8</mn><mn>4</mn></math>, причём большую часть
+держит медленный процесс, <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>6</mn><mn>3</mn></math>.
+Затем шесть движений с обратным возмущением возвращают сумму к нулю: быстрый процесс ушёл в минус,
+<math display="inline"> <mo class="MathClass-bin" stretchy="false">−</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn><mn>3</mn></math>, медленный
+ещё в плюсе, <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>4</mn><mn>6</mn></math>.
+Если теперь перестать сообщать ошибки, быстрый процесс забывает свою поправку
+за десятки движений, медленный — гораздо дольше, и сумма <span class="lati-1095">сама </span>поднимается до
+<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>3</mn><mn>7</mn></math> за
+сорок движений: старый навык возвращается без всякой тренировки. Такое спонтанное
+восстановление измерено у людей; модель с одним процессом его дать не может — без ошибок она
+просто затухает к нулю.
+</p><p class="indent"> Зачем два процесса? Правдоподобный инженерный ответ даёт оптимальный фильтр главы <a href="09.html#x12-860009">9</a>.
+Тело меняется по разным причинам с разной скоростью: мышцы устают за минуты, растут и
+слабеют за месяцы. Если помехи бывают быстрыми и медленными, наилучшая оценка состоит из
+двух фильтров с разными постоянными времени, и каждый ловит свою <span class="cite">[<a href="refs.html#XKording2007">124</a>]</span>. Быстрый процесс —
+это временная поправка, «рука устала»; медленный — «рука стала другой». Это пока гипотеза, но
+она объясняет, почему навык, выученный за один день, частично теряется к следующему и
+почему второй раз он учится быстрее.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">15.5 </span> <a id="x18-14300015.5"></a>Итог</h3>
+ <div class="table">
+<p class="indent"> <a id="x18-1430011"></a></p><figure class="float">
+<div class="tabular">
+ <table id="TBL-18" class="tabular"><colgroup id="TBL-18-1g"><col id="TBL-18-1" /><col id="TBL-18-2" /><col id="TBL-18-3" /></colgroup><tr style="vertical-align:baseline;" id="TBL-18-1-"><td style="text-align:left;" id="TBL-18-1-1" class="td11"> <p class="noindent"><span class="larm-0900">Что</span>
+ <span class="larm-0900">делает</span>
+ <span class="larm-0900">схема</span> </p></td><td style="text-align:left;" id="TBL-18-1-2" class="td11"> <p class="noindent"><span class="larm-0900">Как</span> </p></td><td style="text-align:left;" id="TBL-18-1-3" class="td11"> <p class="noindent"><span class="larm-0900">Что</span>
+ <span class="larm-0900">известно</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-18-2-"><td style="text-align:left;" id="TBL-18-2-1" class="td11"> <p class="noindent"><span class="larm-0900">учится</span>
+ <span class="larm-0900">с</span>
+ <span class="larm-0900">учителем</span> </p></td><td style="text-align:left;" id="TBL-18-2-2" class="td11"> <p class="noindent"><span class="larm-0900">провод</span>
+ <span class="larm-0900">ошибки</span>
+ <span class="larm-0900">к</span>
+ <span class="larm-0900">каждому</span>
+ <span class="larm-0900">выходу,</span>
+ <span class="larm-0900">правило</span><span class="larm-0900"> </span><span class="larm-0900">(</span><a href="#x18-139001r1"><span class="larm-0900">15.1</span></a><span class="larm-0900">)</span> </p></td><td style="text-align:left;" id="TBL-18-2-3" class="td11"> <p class="noindent"><span class="larm-0900">устройство</span>
+ <span class="larm-0900">схемы</span>
+ <span class="larm-0900">и</span>
+ <span class="larm-0900">ослабление</span>
+ <span class="larm-0900">при</span>
+ <span class="larm-0900">совпадении</span>
+ <span class="larm-0900">измерены;</span>
+ <span class="larm-0900">обучение</span>
+ <span class="larm-0900">с</span>
+ <span class="larm-0900">учителем</span>
+ <span class="larm-0900">—</span>
+ <span class="larm-0900">ведущая</span>
+ <span class="larm-0900">гипотеза</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-18-3-"><td style="text-align:left;" id="TBL-18-3-1" class="td11"> <p class="noindent"><span class="larm-0900">расширяет</span>
+ <span class="larm-0900">вход</span> </p></td><td style="text-align:left;" id="TBL-18-3-2" class="td11"> <p class="noindent"><span class="larm-0900">семьдесят</span>
+ <span class="larm-0900">миллиардов</span>
+ <span class="nt"><span class="larm-0900">GLUT</span></span><span class="larm-0900">-нейронов</span> </p></td><td style="text-align:left;" id="TBL-18-3-3" class="td11"> <p class="noindent"><span class="larm-0900">число</span>
+ <span class="larm-0900">нейронов</span>
+ <span class="larm-0900">измерено;</span>
+ <span class="larm-0900">роль</span>
+ <span class="larm-0900">расширения</span>
+ <span class="larm-0900">—</span>
+ <span class="larm-0900">теория</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-18-4-"><td style="text-align:left;" id="TBL-18-4-1" class="td11"> <p class="noindent"><span class="larm-0900">учитывает</span>
+ <span class="larm-0900">задержку</span>
+ <span class="larm-0900">ошибки</span> </p></td><td style="text-align:left;" id="TBL-18-4-2" class="td11"> <p class="noindent"><span class="larm-0900">след,</span>
+ <span class="larm-0900">подстроенный</span>
+ <span class="larm-0900">под</span>
+ <span class="larm-0900">задержку</span> </p></td><td style="text-align:left;" id="TBL-18-4-3" class="td11"> <p class="noindent"><span class="larm-0900">измерено</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-18-5-"><td style="text-align:left;" id="TBL-18-5-1" class="td11"> <p class="noindent"><span class="larm-0900">строит</span>
+ <span class="larm-0900">внутреннюю</span>
+ <span class="larm-0900">модель</span> </p></td><td style="text-align:left;" id="TBL-18-5-2" class="td11"> <p class="noindent"><span class="larm-0900">адаптивный</span>
+ <span class="larm-0900">фильтр</span><span class="larm-0900"> </span><span class="larm-0900">(</span><a href="#x18-141001r2"><span class="larm-0900">15.2</span></a><span class="larm-0900">)</span> </p></td><td style="text-align:left;" id="TBL-18-5-3" class="td11"> <p class="noindent"><span class="larm-0900">хорошо</span>
+ <span class="larm-0900">обоснованная</span>
+ <span class="larm-0900">гипотеза</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-18-6-"><td style="text-align:left;" id="TBL-18-6-1" class="td11"> <p class="noindent"><span class="larm-0900">учится</span>
+ <span class="larm-0900">двумя</span>
+ <span class="larm-0900">темпами</span> </p></td><td style="text-align:left;" id="TBL-18-6-2" class="td11"> <p class="noindent"><span class="larm-0900">быстрый</span>
+ <span class="larm-0900">и</span>
+ <span class="larm-0900">медленный</span>
+ <span class="larm-0900">процессы</span><span class="larm-0900"> </span><span class="larm-0900">(</span><a href="#x18-142001r3"><span class="larm-0900">15.3</span></a><span class="larm-0900">)</span> </p></td><td style="text-align:left;" id="TBL-18-6-3" class="td11"> <p class="noindent"><span class="larm-0900">последействие</span>
+ <span class="larm-0900">и</span>
+ <span class="larm-0900">спонтанный</span>
+ <span class="larm-0900">возврат</span>
+ <span class="larm-0900">измерены;</span>
+ <span class="larm-0900">два</span>
+ <span class="larm-0900">процесса</span>
+ <span class="larm-0900">—</span>
+ <span class="larm-0900">модель</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-18-7-"><td style="text-align:left;" id="TBL-18-7-1" class="td11"> </td></tr></table> </div>
+<figcaption class="caption"><span class="id">Таблица 15.1: </span><span class="content">Как машина учится двигаться.</span></figcaption>
+ </figure>
+ </div>
+<p class="indent"> Теперь у машины три учителя (таблица <a href="#x18-1430011">15.1</a>). Хебб сжимает то, что часто; <span class="nt">DOPA</span> одним
+числом учит выбирать выгодное; провод ошибки учит точности, и учит быстро, потому что к
+каждому выходу идёт своя ошибка. Мозг, по-видимому, пользуется всеми тремя, и каждым
+там, где он дешевле всего: широковещательным сигналом — для немногих решений,
+отдельными проводами — для точной подстройки тела, где правильный ответ сообщают сами
+датчики.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">15.6 </span> <a id="x18-14400015.6"></a>Задачи</h3>
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x18-144001r1"></a>
+<span class="labx-1095">Задача 15.1 </span>(<math display="inline"><mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Ёмкость схемы с проводом ошибки. </span>В схеме <math display="inline"><mn>3</mn> <mo class="MathClass-bin" stretchy="false">⋅</mo> <mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>7</mn></mrow></msup 
+></math>
+выходных нейронов по <math display="inline"><mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>5</mn></mrow></msup 
+></math>
+входов, у каждого свой провод ошибки (<math display="inline"><mn>1</mn></math> имп/с).
+Нейрон с <math display="inline"><mi>n</mi></math>
+входами выучивает любую разметку <math display="inline"> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>2</mn><mi>n</mi></math>
+векторов <span class="cite">[<a href="refs.html#XCover1965">118</a>]</span>. (а) Сколько ассоциаций хранит схема? (б) Оцените по (<a href="04.html#x7-37001r1">4.1</a>) при <math display="inline"><mi mathvariant="normal">Δ</mi><mi>t</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>
+наименьшее время заполнения ёмкости нейрона.
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">(а) <math display="inline"><mn>2</mn> <mo class="MathClass-bin" stretchy="false">⋅</mo> <mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>5</mn></mrow></msup 
+></math> на
+нейрон, <math display="inline"><mn>6</mn> <mo class="MathClass-bin" stretchy="false">⋅</mo> <mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>1</mn><mn>2</mn></mrow></msup 
+></math> на схему.
+(б) <math display="inline"> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>8</mn></math> бит/с на провод,
+не меньше <math display="inline"><mn>2</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn> <mo class="MathClass-bin" stretchy="false">⋅</mo> <mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>4</mn></mrow></msup 
+></math> с
+<math display="inline"> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>7</mn></math> ч.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x18-144002r2"></a>
+<span class="labx-1095">Задача 15.2 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Скорость правила наименьших квадратов. </span>Моды правила (<a href="#x18-139001r1">15.1</a>) затухают со скоростями
+<math display="inline"><mi>η</mi><msub><mrow><mi>λ</mi></mrow><mrow><mi>k</mi></mrow></msub 
+><mo class="MathClass-open" stretchy="false">(</mo><mi>C</mi><mo class="MathClass-close" stretchy="false">)</mo></math>.
+Для пяти фильтров (<a href="#x18-141001r2">15.2</a>) на белом шуме <math display="inline"><msub><mrow><mi>C</mi></mrow><mrow><mi>j</mi><mi>k</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>2</mn><msqrt><mrow><msub><mrow><mi>τ</mi></mrow><mrow><mi>j</mi> </mrow> </msub 
+> <msub><mrow><mi>τ</mi></mrow><mrow><mi>k</mi></mrow></msub 
+></mrow></msqrt><mo class="MathClass-bin" stretchy="false">∕</mo><mo class="MathClass-open" stretchy="false">(</mo><msub><mrow><mi>τ</mi></mrow><mrow><mi>j</mi></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">+</mo> <msub><mrow><mi>τ</mi></mrow><mrow><mi>k</mi></mrow></msub 
+><mo class="MathClass-close" stretchy="false">)</mo></math>.
+Найдите отношение самой быстрой и самой медленной скоростей, если <math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>j</mi></mrow></msub 
+></math>
+растут в <math display="inline"><mn>2</mn></math>
+раза (<math display="inline"><mn>1</mn><mn>0</mn></math>–<math display="inline"><mn>1</mn><mn>6</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>)
+и в <math display="inline"><mn>4</mn></math>
+раза.
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">Шаг <math display="inline"><mn>2</mn></math>: соседняя
+корреляция <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>9</mn><mn>4</mn><mn>3</mn></math>,
+<math display="inline"><mi>λ</mi></math> от
+<math display="inline"><mn>4</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn><mn>8</mn></math> до
+<math display="inline"><mn>7</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>3</mn> <mo class="MathClass-bin" stretchy="false">⋅</mo> <mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mo class="MathClass-bin" stretchy="false">−</mo><mn>4</mn></mrow></msup 
+></math>, отношение
+<math display="inline"> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>5</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>7</mn> <mo class="MathClass-bin" stretchy="false">⋅</mo> <mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>3</mn></mrow></msup 
+></math>; шаг
+<math display="inline"><mn>4</mn></math>: корреляция
+<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>8</mn></math>, отношение
+<math display="inline"> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>9</mn><mn>4</mn></math>.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x18-144003r3"></a>
+<span class="labx-1095">Задача 15.3 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Анализ двух процессов. </span>Запишите модель (<a href="#x18-142001r3">15.3</a>) с параметрами рис. <a href="#x18-1420022">15.2</a> как <math display="inline"><msub><mrow><mstyle mathvariant="bold"><mi>x</mi></mstyle></mrow><mrow><mi>n</mi><mo class="MathClass-bin" stretchy="false">+</mo><mn>1</mn></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mi>M</mi><msub><mrow><mstyle mathvariant="bold"><mi>x</mi></mstyle></mrow><mrow><mi>n</mi></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">+</mo> <mstyle mathvariant="bold"><mi>b</mi></mstyle><mspace width="0.17em" class="thinspace"/><mi>p</mi></math>.
+(а) Найдите по собственным числам <math display="inline"><mi>M</mi></math>
+постоянные времени в движениях. (б) Найдите установившиеся <math display="inline"><msub><mrow><mi>x</mi></mrow><mrow><mi>f</mi></mrow></msub 
+></math>,
+<math display="inline"><msub><mrow><mi>x</mi></mrow><mrow><mi>s</mi></mrow></msub 
+></math>
+и их сумму при постоянном <math display="inline"><mi>p</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn></math>.
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">(а) <math display="inline"><mi>λ</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>9</mn><mn>8</mn><mn>8</mn></math>
+и <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>8</mn><mn>0</mn><mn>8</mn></math>:
+<math display="inline"><mn>8</mn><mn>2</mn></math> и
+<math display="inline"><mn>4</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>7</mn></math> движения.
+(б) <math display="inline"><msubsup><mrow><mi>x</mi></mrow><mrow><mi>s</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">∗</mo></mrow></msubsup 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>6</mn><mn>9</mn><mn>0</mn></math>,
+<math display="inline"><msubsup><mrow><mi>x</mi></mrow><mrow><mi>f</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">∗</mo></mrow></msubsup 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn><mn>7</mn><mn>2</mn></math>, сумма
+<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>8</mn><mn>6</mn><mn>2</mn></math>.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x18-144004r4"></a>
+<span class="labx-1095">Задача 15.4 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Моделирование: второй раз быстрее. </span>По модели (<a href="#x18-142001r3">15.3</a>) с параметрами из <span class="latt-1095">models/motor_learning.py</span>
+найдите число движений до <math display="inline"><msub><mrow><mi>x</mi></mrow><mrow><mi>f</mi></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">+</mo> <msub><mrow><mi>x</mi></mrow><mrow><mi>s</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">≥</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>8</mn></math>
+при <math display="inline"><mi>p</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn></math>:
+(а) у необученной машины; (б) после <math display="inline"><mn>2</mn><mn>0</mn><mn>0</mn></math>
+движений с <math display="inline"><mi>p</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn></math>
+и обратного возмущения до нуля суммы, как на рис. <a href="#x18-1420022">15.2</a>. Может ли так ускориться модель
+с одним процессом?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">(а) <math display="inline"><mn>1</mn><mn>1</mn><mn>6</mn></math>
+движений. (б) <math display="inline"><mn>1</mn><mn>9</mn></math>.
+Модель с одним процессом при нулевой сумме экономии не даёт.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x18-144005r5"></a>
+<span class="labx-1095">Задача 15.5 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Регулятор с внутренней моделью. </span>Объект <math display="inline"><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>x</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>t</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mi>k</mi><mi>u</mi></math>
+виден с задержкой <math display="inline"><mi>d</mi></math>;
+регулятор <math display="inline"><mi>u</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mo class="MathClass-bin" stretchy="false">−</mo><mi>G</mi><mover accent="true"><mrow><mi>x</mi></mrow><mo accent="true">^</mo></mover></math>
+предсказывает <math display="inline"><mover accent="true"><mrow><mi>x</mi></mrow><mo accent="true">^</mo></mover><mo class="MathClass-open" stretchy="false">(</mo><mi>t</mi><mo class="MathClass-close" stretchy="false">)</mo> <mo class="MathClass-rel" stretchy="false">=</mo> <mi>x</mi><mo class="MathClass-open" stretchy="false">(</mo><mi>t</mi> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>d</mi><mo class="MathClass-close" stretchy="false">)</mo> <mo class="MathClass-bin" stretchy="false">+</mo> <mover accent="true"><mrow><mi>k</mi></mrow><mo accent="true">^</mo></mover><msubsup><mrow><mo>∫</mo>
+ </mrow><mrow><mi>t</mi><mo class="MathClass-bin" stretchy="false">−</mo><mi>d</mi></mrow><mrow><mi>t</mi></mrow></msubsup 
+><mi>u</mi><mspace width="0.17em" class="thinspace"/><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>s</mi></math>.
+(а) При <math display="inline"><mover accent="true"><mrow><mi>k</mi></mrow><mo accent="true">^</mo></mover> <mo class="MathClass-rel" stretchy="false">=</mo> <mi>k</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn></math>,
+<math display="inline"><mi>d</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mn>5</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>
+найдите <math display="inline"><mi>G</mi></math>
+для постоянной времени <math display="inline"><mn>2</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>
+и сравните с пределом (<a href="13.html#x16-125001r5">13.5</a>). (б) Устойчива ли схема при <math display="inline"><mover accent="true"><mrow><mi>k</mi></mrow><mo accent="true">^</mo></mover> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>4</mn><mi>k</mi></math>?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">(а) <math display="inline"><mi>G</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>5</mn><mn>0</mn></math> с<math display="inline"><msup><mrow></mrow><mrow><mo class="MathClass-bin" stretchy="false">−</mo><mn>1</mn></mrow></msup 
+></math>
+против предела <math display="inline"><mn>1</mn><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn></math> с<math display="inline"><msup><mrow></mrow><mrow><mo class="MathClass-bin" stretchy="false">−</mo><mn>1</mn></mrow></msup 
+></math>
+без модели. (б) Нет: при <math display="inline"><mi>G</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>5</mn><mn>0</mn></math> с<math display="inline"><msup><mrow></mrow><mrow><mo class="MathClass-bin" stretchy="false">−</mo><mn>1</mn></mrow></msup 
+></math>
+критическая задержка <math display="inline"><msub><mrow><mi>d</mi></mrow><mrow><mi>c</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>1</mn><mn>0</mn><mn>3</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>;
+при <math display="inline"><mi>d</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mn>5</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math> нужно
+<math display="inline"><mover accent="true"><mrow><mi>k</mi></mrow><mo accent="true">^</mo></mover> <mo class="MathClass-rel" stretchy="false">&#x003E;</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>4</mn><mn>4</mn><mn>5</mn><mi>k</mi></math> (при
+любых <math display="inline"><mi>G</mi></math>
+и <math display="inline"><mi>d</mi></math> —
+<math display="inline"><mover accent="true"><mrow><mi>k</mi></mrow><mo accent="true">^</mo></mover> <mo class="MathClass-rel" stretchy="false">&#x003E;</mo> <mi>k</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mn>2</mn></math>).
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x18-144006r6"></a>
+<span class="labx-1095">Задача 15.6 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Адаптивный фильтр учит мышцу. </span>Объект — подёргивание (<a href="13.html#x16-123001r1">13.1</a>) единичной площади,
+<math display="inline"><msub><mrow><mi>T</mi></mrow><mrow><mi>c</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>5</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>;
+фильтры (<a href="#x18-141001r2">15.2</a>) — RC-цепи с <math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>j</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mn>2</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn></math>,
+<math display="inline"><mn>2</mn><mn>5</mn></math>,
+<math display="inline"><mn>5</mn><mn>0</mn></math>,
+<math display="inline"><mn>1</mn><mn>0</mn><mn>0</mn></math>,
+<math display="inline"><mn>2</mn><mn>0</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>;
+вход — новое нормальное число каждые <math display="inline"><mn>1</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>.
+За сколько секунд правило (<a href="#x18-139001r1">15.1</a>) при <math display="inline"><mi>η</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>5</mn><mn>0</mn></math>
+и <math display="inline"><mn>2</mn><mn>0</mn><mn>0</mn></math>
+снижает ошибку до <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn><mi>%</mi></math>?
+Почему веса и через <math display="inline"><mn>3</mn><mn>0</mn><mn>0</mn></math> с
+далеки от наилучших?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">Ошибка падает ниже <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn><mi>%</mi></math> за
+<math display="inline"><mn>6</mn></math>–<math display="inline"><mn>3</mn><mn>0</mn></math> с,
+пол <math display="inline"> <mo class="MathClass-rel" stretchy="false">≈</mo> <mo class="MathClass-open" stretchy="false">(</mo><mn>6</mn></math>–<math display="inline"><mn>9</mn><mo class="MathClass-close" stretchy="false">)</mo> <mo class="MathClass-bin" stretchy="false">⋅</mo> <mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mo class="MathClass-bin" stretchy="false">−</mo><mn>4</mn></mrow></msup 
+></math>
+при наилучших весах <math display="inline"><mn>7</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn> <mo class="MathClass-bin" stretchy="false">⋅</mo> <mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mo class="MathClass-bin" stretchy="false">−</mo><mn>4</mn></mrow></msup 
+></math>; веса при
+<math display="inline"><mi>η</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>5</mn><mn>0</mn></math> ещё отличаются от наилучших
+на величину до <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn></math> вдоль плохо
+обусловленных направлений <math display="inline"><mi>C</mi></math>
+(задача <a href="fullch15.html#x18-144002r2">15.2</a>).
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x18-144007r7"></a>
+<span class="labx-1095">Задача 15.7 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo><mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Два процесса как оптимальный фильтр. </span>Возмущение — сумма процессов <math display="inline"><msubsup><mrow><mi>p</mi></mrow><mrow><mi>n</mi><mo class="MathClass-bin" stretchy="false">+</mo><mn>1</mn></mrow><mrow><mi>f</mi><mo class="MathClass-punc" stretchy="false">,</mo><mi>s</mi></mrow></msubsup 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <msub><mrow><mi>A</mi></mrow><mrow><mi>f</mi><mo class="MathClass-punc" stretchy="false">,</mo><mi>s</mi></mrow></msub 
+><mspace width="0.17em" class="thinspace"/><msubsup><mrow><mi>p</mi></mrow><mrow><mi>n</mi></mrow><mrow><mi>f</mi><mo class="MathClass-punc" stretchy="false">,</mo><mi>s</mi></mrow></msubsup 
+> <mo class="MathClass-bin" stretchy="false">+</mo> <msubsup><mrow><mi>w</mi></mrow><mrow><mi>n</mi></mrow><mrow><mi>f</mi><mo class="MathClass-punc" stretchy="false">,</mo><mi>s</mi></mrow></msubsup 
+></math>
+с дисперсиями шумов <math display="inline"><msub><mrow><mi>q</mi></mrow><mrow><mi>f</mi></mrow></msub 
+></math>,
+<math display="inline"><msub><mrow><mi>q</mi></mrow><mrow><mi>s</mi></mrow></msub 
+></math>,
+ошибка наблюдается с шумом дисперсии <math display="inline"><mi>R</mi></math>;
+фильтр Калмана даёт (<a href="#x18-142001r3">15.3</a>). При каких <math display="inline"><msub><mrow><mi>q</mi></mrow><mrow><mi>f</mi></mrow></msub 
+><mo class="MathClass-bin" stretchy="false">∕</mo><mi>R</mi></math>,
+<math display="inline"><msub><mrow><mi>q</mi></mrow><mrow><mi>s</mi></mrow></msub 
+><mo class="MathClass-bin" stretchy="false">∕</mo><mi>R</mi></math>
+из <math display="inline"><msub><mrow><mi>A</mi></mrow><mrow><mi>f</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>9</mn><mn>2</mn></math>,
+<math display="inline"><msub><mrow><mi>A</mi></mrow><mrow><mi>s</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>9</mn><mn>9</mn><mn>6</mn></math>
+выходит <math display="inline"><msub><mrow><mi>B</mi></mrow><mrow><mi>f</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn></math>,
+<math display="inline"><msub><mrow><mi>B</mi></mrow><mrow><mi>s</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>0</mn><mn>2</mn></math>?
+Как изменятся <math display="inline"><msub><mrow><mi>B</mi></mrow><mrow><mi>f</mi></mrow></msub 
+></math>,
+<math display="inline"><msub><mrow><mi>B</mi></mrow><mrow><mi>s</mi></mrow></msub 
+></math>,
+если учетверить <math display="inline"><msub><mrow><mi>q</mi></mrow><mrow><mi>s</mi></mrow></msub 
+></math>?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent"><math display="inline"><mstyle mathvariant="bold"><mi>B</mi></mstyle> <mo class="MathClass-rel" stretchy="false">=</mo> <mi>A</mi><mstyle mathvariant="bold"><mi>K</mi></mstyle></math>;
+<math display="inline"><msub><mrow><mi>q</mi></mrow><mrow><mi>f</mi></mrow></msub 
+><mo class="MathClass-bin" stretchy="false">∕</mo><mi>R</mi> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>0</mn><mn>3</mn><mn>5</mn></math>,
+<math display="inline"><msub><mrow><mi>q</mi></mrow><mrow><mi>s</mi></mrow></msub 
+><mo class="MathClass-bin" stretchy="false">∕</mo><mi>R</mi> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>8</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>6</mn> <mo class="MathClass-bin" stretchy="false">⋅</mo> <mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mo class="MathClass-bin" stretchy="false">−</mo><mn>4</mn></mrow></msup 
+></math>; при
+<math display="inline"><mn>4</mn><msub><mrow><mi>q</mi></mrow><mrow><mi>s</mi></mrow></msub 
+></math>
+<math display="inline"><msub><mrow><mi>B</mi></mrow><mrow><mi>f</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>0</mn><mn>8</mn><mn>8</mn></math>,
+<math display="inline"><msub><mrow><mi>B</mi></mrow><mrow><mi>s</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>0</mn><mn>4</mn><mn>7</mn></math>:
+медленный процесс учится более чем вдвое быстрее, а быстрый — медленнее.
+</p></div></details>
+
+<p class="indent"> <a id="tailfullch15.html"></a> </p> 
+
+  </article>
+  <article class="text short" id="text-short" hidden>
+
+ <a id="s-x18-8200015"></a>
+<p class="noindent">Мы видели два способа учиться. Без учителя — «вместе,
+значит связаны» — машина запоминает то, что часто
+встречается. С дофамином она учится на сюрпризах: вышло
+лучше или хуже, чем ожидалось. Но когда вы промахнулись,
+бросая мяч в корзину, вы знаете не только, что вышло плохо.
+Вы знаете, <span class="lati-1095">насколько </span>и <span class="lati-1095">в какую сторону </span>промахнулись. Это
+третий учитель — ошибка с направлением, личная для
+каждого выхода.
+</p>
+ <h3 class="likesectionHead"> <a id="s-x18-83000"></a>Провод ошибки</h3>
+<p class="noindent">В мозге есть отдельная схема для обучения движениям, и
+устроена она очень необычно. Огромное число мелких
+<span class="nt">GLUT</span>-нейронов, десятки миллиардов, раскладывает
+входные сигналы в очень длинный список признаков.
+Выходные нейроны этой схемы — тормозные, <span class="nt">GABA</span>, их
+десятки миллионов, и каждый слушает сотню тысяч входов.
+И к каждому выходному нейрону тянется ровно один особый
+провод — провод ошибки. Если ошибка пришла, пока вход
+был активен, этот вход ослабевает. Это классическое
+правило «уменьшай ошибку», которым инженеры учат
+адаптивные фильтры.
+</p>
+<div class="center">
+<p class="noindent"><img src="img/short28x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<div class="minipage"><p class="noindent"><span class="lati-1000">Промах сообщает не только «плохо», но и</span>
+<span class="lati-1000">«насколько и в какую сторону».</span> </p></div></div>
+<p class="indent"> Такой учитель быстрее дофаминового: у каждого выхода
+своя ошибка, и не нужно выуживать свою долю из общего
+сигнала на всех. Правда, ошибка приходит с опозданием, и
+соединению снова нужен «стикер», помнящий, что оно
+участвовало. Опыты показывают, что длительность этого
+стикера подобрана под задержку ошибки.
+</p>
+ <h3 class="likesectionHead"> <a id="s-x18-84000"></a>Внутренняя модель</h3>
+<p class="noindent">Что выучивает такая схема? Модель собственного тела:
+какой результат даст команда. С ней не нужно ждать
+запаздывающих датчиков — результат можно предсказать
+заранее. По одной из гипотез, поэтому вы не можете
+пощекотать сами себя: мозг заранее знает, что будет, и
+вычитает предсказанное.
+</p>
+ <h3 class="likesectionHead"> <a id="s-x18-85000"></a>Быстрый и медленный ученик</h3>
+<p class="noindent">Наденьте очки, сдвигающие картинку вбок, и бросайте
+дротики. Первые броски уходят в сторону, но за десятки
+попыток вы приспособитесь. Снимите очки — и снова промахи,
+теперь в другую сторону. Интересное начинается дальше.
+Опыты хорошо описываются двумя учениками сразу:
+быстрый быстро учится и быстро забывает, медленный
+учится медленно, но помнит долго. Если после долгого
+приспособления коротко переучиться обратно, общая
+поправка вернётся к нулю — но старое умение затем само
+частично всплывёт: быстрый ученик забыл, а медленный
+помнит. Модель с одним учеником так не умеет, а люди —
+умеют.
+</p>
+<div class="center">
+<p class="noindent"><img src="img/short29x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<div class="minipage"><p class="noindent"><span class="lati-1000">Поправка двух учеников в модели. После короткого</span>
+<span class="lati-1000">переучивания сумма на нуле, но медленный помнит</span>
+<span class="lati-1000">старое, и оно само всплывает.</span> </p></div></div>
+<p class="indent"> Зачем два ученика? По гипотезе, это тот же рецепт, что у
+штурмана из девятой главы: мир меняется и быстро, и
+медленно, и разумно следить за обоими.
+</p><p class="noindent"><span class="lati-1000">Формулы, модели, задачи и источники — в полной версии,</span>
+<span class="lati-1000">глава</span><span class="lati-1000"> 15.</span>
+</p>
+<p class="indent"> <a id="s-tailshortch15.html"></a> </p> 
+
+  </article>
+
+  <aside class="starline"><span data-ru="Книга бесплатная и открытая. Если глава была полезной, поставьте книге звезду на GitHub: так её найдут другие." data-en="The book is free and open. If this chapter was useful, star the book on GitHub so others can find it.">Книга бесплатная и открытая.</span> <a href="https://github.com/kladkogex/20-watt-computer" target="_blank" rel="noopener" data-ru="★ Звезда на GitHub" data-en="★ Star on GitHub">★ Звезда на GitHub</a></aside>
+  <nav class="pager">
+    <a class="prev" href="14.html"><span data-ru="← Назад" data-en="← Previous">← Назад</span><b>Боль: сигнал тревоги</b></a>
+    <a class="next" href="16.html"><span data-ru="Дальше →" data-en="Next →">Дальше →</span><b>Второй выход: как мозг управляет химией тела</b></a>
+  </nav>
+  <footer>
+    <span data-ru='Константин Кладько · текст — <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.ru">CC BY-NC-SA 4.0</a>' data-en='Konstantin Kladko · text: <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>'>Константин Кладько</span>
+    <span><a href="../pdf/20-watt-computer-ru.pdf">PDF</a> · <a href="../breadboard/" data-ru="Макетная плата" data-en="Breadboard">Макетная плата</a> · <a href="https://github.com/kladkogex/20-watt-computer">GitHub</a></span>
+  </footer>
+</main>
+
+<script>
+(function(){
+  const NAV = [{"slug": "00", "title": "Как читать эту книгу", "kicker": "Введение"}, {"slug": "01", "title": "Типы нейронов", "kicker": "Глава 1"}, {"slug": "02", "title": "Что вычисляют GLUT-нейроны", "kicker": "Глава 2"}, {"slug": "03", "title": "GLUT и GABA вместе", "kicker": "Глава 3"}, {"slug": "04", "title": "Азбука Морзе: что мы знаем о языке, на котором говорят GLUT- и GABA-нейроны", "kicker": "Глава 4"}, {"slug": "05", "title": "Что вычисляют SERO-нейроны", "kicker": "Глава 5"}, {"slug": "06", "title": "Нейронные сети, которые умеют учиться: добавляем DOPA", "kicker": "Глава 6"}, {"slug": "07", "title": "Альтернативные современные теории обучения на основе дофамина", "kicker": "Глава 7"}, {"slug": "08", "title": "Когда искать, а когда решать: добавляем NORA", "kicker": "Глава 8"}, {"slug": "09", "title": "Когда писать, а когда читать: добавляем ACET", "kicker": "Глава 9"}, {"slug": "10", "title": "Вся машина", "kicker": "Глава 10"}, {"slug": "11", "title": "Входы машины: как к ней подключены глаза, уши и другие датчики", "kicker": "Глава 11"}, {"slug": "12", "title": "Распознавание изображений и видео", "kicker": "Глава 12"}, {"slug": "13", "title": "Выходы машины: как мозг управляет мышцами", "kicker": "Глава 13"}, {"slug": "14", "title": "Боль: сигнал тревоги", "kicker": "Глава 14"}, {"slug": "15", "title": "Как машина учится двигаться", "kicker": "Глава 15"}, {"slug": "16", "title": "Второй выход: как мозг управляет химией тела", "kicker": "Глава 16"}, {"slug": "17", "title": "Отладка машины", "kicker": "Глава 17"}, {"slug": "18", "title": "Типы нейронов по электрической функции", "kicker": "Глава 18"}, {"slug": "19", "title": "Нейроны по числу дендритов", "kicker": "Глава 19"}, {"slug": "20", "title": "Что делают нейроны во сне", "kicker": "Глава 20"}, {"slug": "21", "title": "Машина из живых нейронов", "kicker": "Глава 21"}, {"slug": "22", "title": "DishBrain", "kicker": "Глава 22"}, {"slug": "a", "title": "Вещества, которые не задают тип нейрона", "kicker": "Приложение A"}, {"slug": "b", "title": "Обозначения", "kicker": "Приложение B"}, {"slug": "c", "title": "Ответы", "kicker": "Приложение C"}, {"slug": "d", "title": "Экспериментальное приложение", "kicker": "Приложение D"}, {"slug": "refs", "title": "Литература", "kicker": ""}];
+  const SLUG = "15";
+  const store = {get(k){try{return localStorage.getItem(k)}catch(e){return null}}, set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+
+  // chapter selector
+  const sel = document.getElementById("jump");
+  NAV.forEach(p => { const o = document.createElement("option"); o.value = p.slug;
+    o.textContent = (p.kicker ? p.kicker + ". " : "") + p.title; if (p.slug === SLUG) o.selected = true; sel.appendChild(o); });
+  sel.addEventListener("change", () => { location.href = sel.value + ".html" + (location.hash === "#short" ? "#short" : ""); });
+
+  // Коротко / Полностью
+  const modeBox = document.querySelector(".mode");
+  const hasShort = modeBox.dataset.hasShort === "true";
+  const full = document.getElementById("text-full"), short = document.getElementById("text-short");
+  function setMode(m, remember){
+    if (!hasShort) m = "full";
+    document.body.dataset.mode = m;
+    full.hidden = m !== "full"; short.hidden = m !== "short";
+    modeBox.querySelectorAll(".seg").forEach(b => b.setAttribute("aria-pressed", b.dataset.mode === m));
+    if (remember) store.set("20w-mode", m);
+  }
+  if (!hasShort) modeBox.hidden = true;
+  modeBox.addEventListener("click", e => { const b = e.target.closest(".seg"); if (b) { setMode(b.dataset.mode, true); history.replaceState(null, "", "#" + b.dataset.mode); } });
+  document.addEventListener("click", e => { const a = e.target.closest("a[data-mode]"); if (a) { e.preventDefault(); setMode(a.dataset.mode, true); window.scrollTo(0, 0); } });
+  // a link into the text (#x...) that lives in the other version switches to it
+  function follow(){
+    const h = decodeURIComponent(location.hash.slice(1));
+    if (h === "short" || h === "full") { setMode(h, true); return; }
+    if (!h) return;
+    const t = document.getElementById(h);
+    if (t) { setMode(short.contains(t) ? "short" : "full", false); t.scrollIntoView(); }
+  }
+  setMode(store.get("20w-mode") || "full", false);
+  follow();
+  window.addEventListener("hashchange", follow);
+  // links that leave the book open in the whole window when the page sits inside the reader
+  if (document.documentElement.classList.contains("embedded"))
+    document.querySelectorAll('a[href^="../"], a[href^="http"]').forEach(a => { a.target = a.href.startsWith(location.origin) ? "_top" : "_blank"; });
+
+  // interface language (the text itself is Russian)
+  function setLang(l){
+    document.querySelectorAll("[data-ru]").forEach(el => { el.innerHTML = el.dataset[l]; });
+    document.getElementById("lang-ru").setAttribute("aria-pressed", l === "ru");
+    document.getElementById("lang-en").setAttribute("aria-pressed", l === "en");
+    store.set("20w-lang", l);
+  }
+  document.getElementById("lang-ru").onclick = () => setLang("ru");
+  document.getElementById("lang-en").onclick = () => setLang("en");
+  setLang(store.get("20w-lang") === "en" ? "en" : "ru");
+  window.addEventListener("storage", e => {
+    if (e.key === "20w-lang" && (e.newValue === "ru" || e.newValue === "en")) setLang(e.newValue);
+    if (e.key === "20w-theme" && (e.newValue === "light" || e.newValue === "dark")) document.documentElement.setAttribute("data-theme", e.newValue);
+  });
+})();
+</script>
+<script>
+(function(){var b=document.getElementById("theme");if(!b)return;var r=document.documentElement;function cur(){var t=r.getAttribute("data-theme");if(t)return t;return window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";}function show(){b.textContent=cur()==="dark"?"☀":"☾";b.setAttribute("aria-pressed",cur()==="dark");}b.onclick=function(){var t=cur()==="dark"?"light":"dark";r.setAttribute("data-theme",t);try{localStorage.setItem("20w-theme",t);}catch(e){}show();};if(window.matchMedia)matchMedia("(prefers-color-scheme: dark)").addEventListener("change",show);show();})();
+</script>
+</body>
+</html>

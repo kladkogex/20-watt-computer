@@ -1,0 +1,890 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<script>try{var t=localStorage.getItem("20w-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);}catch(e){}if(window.self!==window.top)document.documentElement.classList.add("embedded");</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Глава 10. Вся машина · Компьютер на 20 ваттах</title>
+<meta name="description" content="Мы брали по одному типу нейронов из таблицы 1.1 и спрашивали, что он добавляет к вычислительной машине. Каждый раз правила были одни и те же: только то, что бывает в живом …">
+<link rel="canonical" href="https://kladkogex.github.io/20-watt-computer/read/10.html">
+<meta property="og:type" content="book">
+<meta property="og:title" content="Глава 10. Вся машина · Компьютер на 20 ваттах">
+<meta property="og:description" content="Мы брали по одному типу нейронов из таблицы 1.1 и спрашивали, что он добавляет к вычислительной машине. Каждый раз правила были одни и те же: только то, что бывает в живом …">
+<meta property="og:url" content="https://kladkogex.github.io/20-watt-computer/read/10.html">
+<meta property="og:locale" content="ru_RU">
+<meta property="og:image" content="https://kladkogex.github.io/20-watt-computer/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Your brain runs on 20 watts. Here is its datasheet. The 20-Watt Computer, a free textbook for engineers.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://kladkogex.github.io/20-watt-computer/og-card.png">
+<meta name="twitter:title" content="Глава 10. Вся машина · The 20-Watt Computer">
+<meta name="twitter:description" content="Мы брали по одному типу нейронов из таблицы 1.1 и спрашивали, что он добавляет к вычислительной машине. Каждый раз правила были одни и те же: только то, что бывает в живом …">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Chapter", "name": "Вся машина", "url": "https://kladkogex.github.io/20-watt-computer/read/10.html", "position": 10, "inLanguage": "ru", "isAccessibleForFree": true, "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/", "author": {"@type": "Person", "name": "Константин Кладько", "alternateName": "Konstantin Kladko"}, "isPartOf": {"@type": "Book", "name": "Компьютер на 20 ваттах. Как вычисляет мозг: количественный подход для инженеров", "alternateName": "The 20-Watt Computer: How the Brain Computes. A Quantitative Approach for Engineers", "author": {"@type": "Person", "name": "Константин Кладько", "alternateName": "Konstantin Kladko"}, "url": "https://kladkogex.github.io/20-watt-computer/", "inLanguage": "ru", "isAccessibleForFree": true, "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/"}}</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap">
+<link rel="stylesheet" href="book.css">
+</head>
+<body>
+<header class="bar">
+  <a class="home" href="../#toc"><span class="w">20</span> <span data-ru="Компьютер на 20 ваттах" data-en="The 20-Watt Computer">Компьютер на 20 ваттах</span></a>
+  <label class="jump"><span class="sr" data-ru="Перейти к главе" data-en="Go to chapter">Перейти к главе</span>
+    <select id="jump"></select></label>
+  <div class="langs" role="group" aria-label="Language">
+    <button class="chip" id="lang-ru" type="button">RU</button>
+    <button class="chip" id="lang-en" type="button">EN</button>
+    <button class="chip theme" id="theme" type="button" aria-label="Light or dark theme" title="Light / dark">☾</button>
+  </div>
+</header>
+
+<main class="page">
+  <div class="pagehead">
+    <p class="kicker" data-ru="Глава 10" data-en="Chapter 10">Глава 10</p>
+    <h1><span class="t-full">Вся машина</span><span class="t-short">Машина целиком</span></h1>
+    <div class="mode" role="group" aria-label="Version" data-has-short="true">
+      <button type="button" class="seg" data-mode="short"><b data-ru="Коротко" data-en="Short">Коротко</b><span data-ru="без формул, с рисунками" data-en="no formulas, with drawings">без формул, с рисунками</span></button>
+      <button type="button" class="seg" data-mode="full"><b data-ru="Полностью" data-en="Full">Полностью</b><span data-ru="формулы, модели, задачи" data-en="formulas, models, exercises">формулы, модели, задачи</span></button>
+    </div>
+    <p class="lang-note" data-ru="" data-en="The online reader is in Russian for now; the book in other languages is in the PDF downloads in the menu.">.</p>
+  </div>
+
+  <article class="text full" id="text-full">
+
+ <a id="x13-9500010"></a>
+ <h3 class="sectionHead"><span class="titlemark">10.1 </span> <a id="x13-9600010.1"></a>Что мы собрали</h3>
+<p class="noindent">Мы брали по одному типу нейронов из таблицы <a href="01.html#x4-60021">1.1</a> и спрашивали, что он добавляет к
+вычислительной машине. Каждый раз правила были одни и те же: только то, что бывает в
+живом организме, и никаких часов. Теперь соберём части в одну машину и посмотрим, как они
+работают вместе.
+</p><p class="indent"> Картина из главы <a href="01.html#x4-40001">1</a> подтвердилась и стала точнее. Огромная адресная сеть <span class="nt">GLUT</span>-нейронов
+несёт данные. <span class="nt">GABA</span>-нейроны управляют потоком этих данных. А над сетью висят четыре
+широковещательных канала, каждый со своей ручкой: <span class="nt">DOPA</span> говорит, какие изменения весов
+оставить, <span class="nt">SERO</span> держит общий уровень и, по гипотезе, горизонт планирования, <span class="nt">NORA</span> выбирает
+между поиском и решением, <span class="nt">ACET</span> — между записью и чтением (рис. <a href="#x13-960011">10.1</a>).
+</p>
+ <figure class="figure"> 
+<a id="x13-960011"></a>
+<p class="noindent"><img src="img/full33x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<figcaption class="caption"><span class="id">Рис. 10.1: </span><span class="content">Машина целиком. Шина <span class="nt">GLUT</span> несёт данные от датчиков к выбору действия;
+<span class="nt">GABA</span> управляет потоком внутри неё. Двойные кружки — широковещательные каналы;
+штриховые
+стрелки — рассылка их сигналов всей сети, у каждого своя ручка. <span class="nt">DOPA</span> получает награду
+<math display="inline"><mi>r</mi></math>
+и ожидание
+<math display="inline"><mi>V</mi> </math>
+от критика внутри шины (гл. <a href="06.html#x9-560006">6</a>); точечная стрелка — гипотеза, что о неожиданности <span class="nt">NORA</span>
+узнаёт по необычно большим ошибкам (гл. <a href="08.html#x11-770008">8</a>).</span></figcaption>
+ </figure>
+ <h3 class="sectionHead"><span class="titlemark">10.2 </span> <a id="x13-9700010.2"></a>Одна формула для всех ручек</h3>
+<p class="noindent">Ручки можно собрать в одну схематическую формулу. Это не новая модель, а сводка моделей
+глав <a href="02.html#x5-150002">2</a>–<a href="09.html#x12-860009">9</a>: каждый символ взят из своей главы.
+</p><div class="keyformula"><table class="equation"><tr><td>
+<math display="block" class="equation">
+<mstyle id="x13-97001r1" class="label"></mstyle><mtable class="aligned" displaystyle="true"><mtr><mtd columnalign="right"><mi>τ</mi><mspace width="0.17em" class="thinspace"/><mfrac><mrow><mstyle mathvariant="normal"><mi>d</mi></mstyle><msub><mrow><mi>r</mi></mrow><mrow><mi>i</mi></mrow></msub 
+></mrow> 
+ <mrow><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>t</mi></mrow></mfrac> <mspace width="0.28em" class="thickpace"/></mtd> <mtd columnalign="left"> <mo class="MathClass-rel" stretchy="false">=</mo> <mspace width="0.28em" class="thickpace"/> <mo class="MathClass-bin" stretchy="false">−</mo> <msub><mrow><mi>r</mi></mrow><mrow><mi>i</mi></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>F</mi><mrow><mo class="MathClass-open" fence="true" mathsize="1.61em">(</mo><mrow><mi>g</mi><mspace width="0.17em" class="thinspace"/><mrow><mo class="MathClass-open" fence="true" mathsize="1.61em">[</mo><mrow><mstyle displaystyle="false"><mfrac><mrow><mn>1</mn><mo class="MathClass-bin" stretchy="false">+</mo><mi>a</mi>
+ </mrow><mrow><mn>2</mn> </mrow></mfrac></mstyle><mspace width="0.17em" class="thinspace"/><msub><mrow><mi>x</mi></mrow><mrow><mi>i</mi></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">+</mo> <mo class="MathClass-open" stretchy="false">(</mo><mn>1</mn> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>a</mi><mo class="MathClass-close" stretchy="false">)</mo><munder class="msub"><mrow><mo>∑</mo>
+ </mrow><mrow><mi>j</mi></mrow></munder 
+><msub><mrow><mi>W</mi></mrow><mrow><mi>i</mi><mi>j</mi></mrow></msub 
+><mspace width="0.17em" class="thinspace"/><msub><mrow><mi>r</mi></mrow><mrow><mi>j</mi></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">−</mo><munder class="msub"><mrow><mo>∑</mo>
+ </mrow><mrow><mi>k</mi></mrow></munder 
+><msub><mrow><mi>M</mi></mrow><mrow><mi>i</mi><mi>k</mi></mrow></msub 
+><mspace width="0.17em" class="thinspace"/><msub><mrow><mi>q</mi></mrow><mrow><mi>k</mi></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>𝜃</mi></mrow><mo class="MathClass-close" fence="true" mathsize="1.61em">]</mo></mrow></mrow><mo class="MathClass-close" fence="true" mathsize="1.61em">)</mo></mrow><mo class="MathClass-punc" stretchy="false">,</mo></mtd><mtd columnalign="right"></mtd>
+</mtr><mtr><mtd columnalign="right"><mfrac><mrow><mstyle mathvariant="normal"><mi>d</mi></mstyle><msub><mrow><mi>W</mi></mrow><mrow><mi>i</mi><mi>j</mi></mrow></msub 
+></mrow>
+ <mrow><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>t</mi></mrow></mfrac> <mspace width="0.28em" class="thickpace"/></mtd><mtd columnalign="left"> <mo class="MathClass-rel" stretchy="false">=</mo> <mspace width="0.28em" class="thickpace"/><mi>η</mi><mspace width="0.17em" class="thinspace"/><mi>a</mi><mspace width="0.17em" class="thinspace"/><mi>δ</mi><mo class="MathClass-open" stretchy="false">(</mo><mi>t</mi><mo class="MathClass-close" stretchy="false">)</mo><mspace width="0.17em" class="thinspace"/><msub><mrow><mi>e</mi></mrow><mrow><mi>i</mi><mi>j</mi></mrow></msub 
+><mo class="MathClass-open" stretchy="false">(</mo><mi>t</mi><mo class="MathClass-close" stretchy="false">)</mo><mo class="MathClass-punc" stretchy="false">,</mo><mspace width="2em" class="qquad"/><msub><mrow><mi>τ</mi></mrow><mrow><mi>e</mi></mrow></msub 
+><mspace width="0.17em" class="thinspace"/><mfrac><mrow><mstyle mathvariant="normal"><mi>d</mi></mstyle><msub><mrow><mi>e</mi></mrow><mrow><mi>i</mi><mi>j</mi></mrow></msub 
+></mrow> 
+ <mrow><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>t</mi></mrow></mfrac> <mo class="MathClass-rel" stretchy="false">=</mo> <mo class="MathClass-bin" stretchy="false">−</mo><msub><mrow><mi>e</mi></mrow><mrow><mi>i</mi><mi>j</mi></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">+</mo> <msub><mrow><mi>r</mi></mrow><mrow><mi>i</mi></mrow></msub 
+><mspace width="0.17em" class="thinspace"/><msub><mrow><mi>r</mi></mrow><mrow><mi>j</mi></mrow></msub 
+><mo class="MathClass-punc" stretchy="false">,</mo><mspace width="2em" class="qquad"/><mi>δ</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mi>r</mi> <mo class="MathClass-bin" stretchy="false">+</mo> <mfrac><mrow><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>V</mi> </mrow> 
+ <mrow><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>t</mi></mrow></mfrac> <mo class="MathClass-bin" stretchy="false">−</mo> <mfrac><mrow><mi>V</mi> </mrow> 
+<mrow><msub><mrow><mi>τ</mi></mrow><mrow><mi>γ</mi></mrow></msub 
+></mrow></mfrac><mo class="MathClass-punc" stretchy="false">.</mo></mtd>
+ </mtr> </mtable>
+</math></td><td class="eq-no">(10.1)</td></tr></table>
+</div><p class="noindent"> Здесь <math display="inline"><msub><mrow><mi>r</mi></mrow><mrow><mi>i</mi></mrow></msub 
+></math> — частоты
+<span class="nt">GLUT</span>-нейронов, <math display="inline"><msub><mrow><mi>x</mi></mrow><mrow><mi>i</mi></mrow></msub 
+></math> — вход от
+датчиков, <math display="inline"><msub><mrow><mi>W</mi></mrow><mrow><mi>i</mi><mi>j</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">≥</mo> <mn>0</mn></math> — их взаимные
+веса (глава <a href="02.html#x5-150002">2</a>); <math display="inline"><msub><mrow><mi>q</mi></mrow><mrow><mi>k</mi></mrow></msub 
+></math> — частоты
+<span class="nt">GABA</span>-нейронов, <math display="inline"><msub><mrow><mi>M</mi></mrow><mrow><mi>i</mi><mi>k</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">≥</mo> <mn>0</mn></math> — сила
+их торможения (глава <a href="03.html#x6-250003">3</a>); <math display="inline"><msub><mrow><mi>e</mi></mrow><mrow><mi>i</mi><mi>j</mi></mrow></msub 
+></math>
+— след, <math display="inline"><mi>δ</mi></math> — ошибка <span class="nt">DOPA</span>
+(глава <a href="06.html#x9-560006">6</a>); <math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>γ</mi></mrow></msub 
+></math> — горизонт, по
+гипотезе задаваемый <span class="nt">SERO</span>; <math display="inline"><mi>g</mi></math>
+— усиление <span class="nt">NORA</span> (глава <a href="08.html#x11-770008">8</a>); <math display="inline"><mi>a</mi></math>
+— уровень <span class="nt">ACET</span> (глава <a href="09.html#x12-860009">9</a>).
+</p><p class="indent"> Посмотрите, чего в (<a href="#x13-97001r1">10.1</a>) нет. Нет такта: всё записано дифференциальными
+уравнениями, и каждый нейрон меняется сам. Нет отдельной памяти: помнят те же
+<math display="inline"><msub><mrow><mi>W</mi></mrow><mrow><mi>i</mi><mi>j</mi></mrow></msub 
+></math>, по которым идёт вычисление,
+и та же активность <math display="inline"><msub><mrow><mi>r</mi></mrow><mrow><mi>i</mi></mrow></msub 
+></math>.
+Нет персональных поправок для огромного большинства синапсов: их обучение — произведение
+местного следа и одного общего числа; отдельный провод ошибки к каждому выходу есть лишь в
+цепи, которая учит движения (глава <a href="15.html#x18-13800015">15</a>). И управляющих сигналов всего четыре рода:
+<math display="inline"><mi>δ</mi></math>,
+<math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>γ</mi></mrow></msub 
+></math>,
+<math display="inline"><mi>g</mi></math>,
+<math display="inline"><mi>a</mi></math>, на
+восемьдесят миллиардов нейронов. Каждый из них на самом деле не одно число, а небольшой
+жгут параллельных линий (утверждение <a href="07.html#x10-74002r3">7.3</a>), но линий в жгуте единицы.
+</p>
+ <div class="tcolorbox keyblock" id="tcolobox-27"> 
+<div class="tcolorbox-content"><div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x13-97002r1"></a>
+<span class="labx-1095">Утверждение 10.1 </span>(Архитектура)<span class="labx-1095">.</span> </span> <span class="lati-1095">Машину мозга, насколько мы её сейчас понимаем,</span>
+<span class="lati-1095">можно описать тремя слоями. Данные идут по адресной шине </span><span class="nt"><span class="lati-1095">GLUT</span></span><span class="lati-1095">. Поток</span>
+<span class="lati-1095">данных направляют, ограничивают и нормируют адресные </span><span class="nt"><span class="lati-1095">GABA</span></span><span class="lati-1095">-нейроны. Режим</span>
+<span class="lati-1095">работы задают несколько широковещательных каналов, каждый — небольшой жгут</span>
+<span class="lati-1095">параллельных линий, общих для больших участков сети. Первые два слоя установлены</span>
+<span class="lati-1095">твёрдо; распределение ролей между широковещательными каналами — в основном</span>
+<span class="lati-1095">гипотеза.</span>
+</p>
+</div>
+ 
+</div> 
+</div>
+ <h3 class="sectionHead"><span class="titlemark">10.3 </span> <a id="x13-9800010.3"></a>Все типы в одной таблице</h3>
+<p class="noindent">Таблица <a href="#x13-980011">10.1</a> сводит все типы нейронов книги. Четыре типа, которым не досталось своей главы,
+заняли в ней по строчке; двое из них нашли роль в главах о выходах машины: <span class="nt">GLYC</span> — в петлях
+спинного мозга (глава <a href="13.html#x16-12100013">13</a>), <span class="nt">ADRE</span> — в химическом выходе (глава <a href="16.html#x19-14500016">16</a>). Роль остальных двух в
+вычислении либо простая, либо неизвестна. Вещества, которые не задают тип нейрона, собраны в
+приложении <a href="a.html#x26-220000A">22.8</a>.
+</p>
+ <div class="table">
+<p class="indent"> <a id="x13-980011"></a></p><figure class="float">
+<div class="tabular">
+ <table id="TBL-12" class="tabular"><colgroup id="TBL-12-1g"><col id="TBL-12-1" /><col id="TBL-12-2" /><col id="TBL-12-3" /><col id="TBL-12-4" /><col id="TBL-12-5" /><col id="TBL-12-6" /></colgroup><tr style="vertical-align:baseline;" id="TBL-12-1-"><td style="text-align:left;" id="TBL-12-1-1" class="td11"> <p class="noindent"><span class="larm-0900">Тип</span> </p></td><td style="text-align:left;" id="TBL-12-1-2" class="td11"> <p class="noindent"><span class="larm-0900">Глава</span> </p></td><td style="text-align:left;" id="TBL-12-1-3" class="td11"> <p class="noindent"><span class="larm-0900">Что</span>
+ <span class="larm-0900">вычисляет</span> </p></td><td style="text-align:left;" id="TBL-12-1-4" class="td11"> <p class="noindent"><span class="larm-0900">Время</span> </p></td><td style="text-align:left;" id="TBL-12-1-5" class="td11"> <p class="noindent"><span class="larm-0900">Шина</span> </p></td><td style="text-align:left;" id="TBL-12-1-6" class="td11"> <p class="noindent"><span class="larm-0900">Что</span>
+ <span class="larm-0900">известно</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-12-2-"><td style="text-align:left;" id="TBL-12-2-1" class="td11"> <p class="noindent"><span class="nt"><span class="larm-0900">GLUT</span></span> </p></td><td style="text-align:left;" id="TBL-12-2-2" class="td11"> <p class="noindent"><a href="02.html#x5-150002"><span class="larm-0900">2</span></a><span class="larm-0900">,</span>
+ <a href="04.html#x7-350004"><span class="larm-0900">4</span></a><span class="larm-0900">,</span>
+ <a href="11.html#x14-10400011"><span class="larm-0900">11</span></a><span class="larm-0900">,</span>
+ <a href="15.html#x18-13800015"><span class="larm-0900">15</span></a><span class="larm-0900">,</span>
+ <a href="19.html#x22-17000019"><span class="larm-0900">19</span></a> </p></td><td style="text-align:left;" id="TBL-12-2-3" class="td11"> <p class="noindent"><span class="larm-0900">данные:</span>
+ <span class="larm-0900">совпадения,</span>
+ <span class="larm-0900">задержки,</span>
+ <span class="larm-0900">логика,</span>
+ <span class="larm-0900">память,</span>
+ <span class="larm-0900">последовательности</span> </p></td><td style="text-align:left;" id="TBL-12-2-4" class="td11"> <p class="noindent"><span class="larm-0900">мс</span> </p></td><td style="text-align:left;" id="TBL-12-2-5" class="td11"> <p class="noindent"><span class="larm-0900">адресная</span> </p></td><td style="text-align:left;" id="TBL-12-2-6" class="td11"> <p class="noindent"><span class="larm-0900">установлено</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-12-3-"><td style="text-align:left;" id="TBL-12-3-1" class="td11"> <p class="noindent"><span class="nt"><span class="larm-0900">GABA</span></span> </p></td><td style="text-align:left;" id="TBL-12-3-2" class="td11"> <p class="noindent"><a href="03.html#x6-250003"><span class="larm-0900">3</span></a><span class="larm-0900">,</span>
+ <a href="04.html#x7-350004"><span class="larm-0900">4</span></a><span class="larm-0900">,</span>
+ <a href="14.html#x17-12900014"><span class="larm-0900">14</span></a><span class="larm-0900">,</span>
+ <a href="15.html#x18-13800015"><span class="larm-0900">15</span></a> </p></td><td style="text-align:left;" id="TBL-12-3-3" class="td11"> <p class="noindent"><span class="larm-0900">управление</span>
+ <span class="larm-0900">потоком:</span>
+ <span class="larm-0900">запрет,</span>
+ <span class="larm-0900">выбор,</span>
+ <span class="larm-0900">деление,</span>
+ <span class="larm-0900">устойчивость,</span>
+ <span class="larm-0900">ритм;</span>
+ <span class="larm-0900">ворота</span>
+ <span class="larm-0900">боли</span> </p></td><td style="text-align:left;" id="TBL-12-3-4" class="td11"> <p class="noindent"><span class="larm-0900">мс</span> </p></td><td style="text-align:left;" id="TBL-12-3-5" class="td11"> <p class="noindent"><span class="larm-0900">адресная</span> </p></td><td style="text-align:left;" id="TBL-12-3-6" class="td11"> <p class="noindent"><span class="larm-0900">установлено;</span>
+ <span class="larm-0900">деление</span>
+ <span class="larm-0900">частоты</span>
+ <span class="larm-0900">—</span>
+ <span class="larm-0900">вместе</span>
+ <span class="larm-0900">с</span>
+ <span class="larm-0900">фоновым</span>
+ <span class="larm-0900">шумом</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-12-4-"><td style="text-align:left;" id="TBL-12-4-1" class="td11"> <p class="noindent"><span class="nt"><span class="larm-0900">SERO</span></span> </p></td><td style="text-align:left;" id="TBL-12-4-2" class="td11"> <p class="noindent"><a href="05.html#x8-470005"><span class="larm-0900">5</span></a><span class="larm-0900">,</span>
+ <a href="14.html#x17-12900014"><span class="larm-0900">14</span></a><span class="larm-0900">,</span>
+ <a href="20.html#x23-18000020"><span class="larm-0900">20</span></a> </p></td><td style="text-align:left;" id="TBL-12-4-3" class="td11"> <p class="noindent"><span class="larm-0900">регулятор</span>
+ <span class="larm-0900">уровня,</span>
+ <span class="larm-0900">сглаживание;</span>
+ <span class="larm-0900">горизонт</span>
+ <math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>γ</mi></mrow></msub 
+></math><span class="larm-0900">;</span>
+ <span class="larm-0900">громкость</span>
+ <span class="larm-0900">боли;</span>
+ <span class="larm-0900">режимы</span>
+ <span class="larm-0900">сна</span> </p></td><td style="text-align:left;" id="TBL-12-4-4" class="td11"> <p class="noindent"><span class="larm-0900">секунды</span> </p></td><td style="text-align:left;" id="TBL-12-4-5" class="td11"> <p class="noindent"><span class="larm-0900">объём</span> </p></td><td style="text-align:left;" id="TBL-12-4-6" class="td11"> <p class="noindent"><span class="larm-0900">самоторможение</span>
+ <span class="larm-0900">измерено;</span>
+ <span class="larm-0900">горизонт</span>
+ <span class="larm-0900">—</span>
+ <span class="larm-0900">гипотеза</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-12-5-"><td style="text-align:left;" id="TBL-12-5-1" class="td11"> <p class="noindent"><span class="nt"><span class="larm-0900">DOPA</span></span> </p></td><td style="text-align:left;" id="TBL-12-5-2" class="td11"> <p class="noindent"><a href="06.html#x9-560006"><span class="larm-0900">6</span></a><span class="larm-0900">,</span>
+ <a href="07.html#x10-670007"><span class="larm-0900">7</span></a> </p></td><td style="text-align:left;" id="TBL-12-5-3" class="td11"> <p class="noindent"><span class="larm-0900">ошибка</span>
+ <span class="larm-0900">предсказания</span>
+ <math display="inline"><mi>δ</mi></math><span class="larm-0900">;</span>
+ <span class="larm-0900">медленный</span>
+ <span class="larm-0900">уровень</span>
+ <span class="larm-0900">—</span>
+ <span class="larm-0900">цена</span>
+ <span class="larm-0900">времени</span> </p></td><td style="text-align:left;" id="TBL-12-5-4" class="td11"> <p class="noindent"><math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn></math><span class="larm-0900">с</span>
+ <span class="larm-0900">и</span>
+ <span class="larm-0900">минуты</span> </p></td><td style="text-align:left;" id="TBL-12-5-5" class="td11"> <p class="noindent"><span class="larm-0900">широковещ.</span> </p></td><td style="text-align:left;" id="TBL-12-5-6" class="td11"> <p class="noindent"><math display="inline"><mi>δ</mi></math>
+ <span class="larm-0900">измерено;</span>
+ <span class="larm-0900">расширения</span>
+ <span class="larm-0900">—</span>
+ <span class="larm-0900">гл.</span><span class="larm-0900"> </span><a href="07.html#x10-670007"><span class="larm-0900">7</span></a> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-12-6-"><td style="text-align:left;" id="TBL-12-6-1" class="td11"> <p class="noindent"><span class="nt"><span class="larm-0900">NORA</span></span> </p></td><td style="text-align:left;" id="TBL-12-6-2" class="td11"> <p class="noindent"><a href="08.html#x11-770008"><span class="larm-0900">8</span></a><span class="larm-0900">,</span>
+ <a href="14.html#x17-12900014"><span class="larm-0900">14</span></a><span class="larm-0900">,</span>
+ <a href="16.html#x19-14500016"><span class="larm-0900">16</span></a><span class="larm-0900">,</span>
+ <a href="20.html#x23-18000020"><span class="larm-0900">20</span></a> </p></td><td style="text-align:left;" id="TBL-12-6-3" class="td11"> <p class="noindent"><span class="larm-0900">усиление</span>
+ <math display="inline"><mi>g</mi></math><span class="larm-0900">:</span>
+ <span class="larm-0900">искать</span>
+ <span class="larm-0900">или</span>
+ <span class="larm-0900">решать;</span>
+ <span class="larm-0900">неожиданность;</span>
+ <span class="larm-0900">«газ»</span>
+ <span class="larm-0900">для</span>
+ <span class="larm-0900">органов</span> </p></td><td style="text-align:left;" id="TBL-12-6-4" class="td11"> <p class="noindent"><span class="larm-0900">секунды</span> </p></td><td style="text-align:left;" id="TBL-12-6-5" class="td11"> <p class="noindent"><span class="larm-0900">широковещ.</span> </p></td><td style="text-align:left;" id="TBL-12-6-6" class="td11"> <p class="noindent"><span class="larm-0900">рост</span>
+ <span class="larm-0900">отношения</span>
+ <span class="larm-0900">сигнала</span>
+ <span class="larm-0900">к</span>
+ <span class="larm-0900">шуму</span>
+ <span class="larm-0900">измерен;</span>
+ <span class="larm-0900">роль</span>
+ <span class="larm-0900">в</span>
+ <span class="larm-0900">поиске</span>
+ <span class="larm-0900">—</span>
+ <span class="larm-0900">гипотеза</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-12-7-"><td style="text-align:left;" id="TBL-12-7-1" class="td11"> <p class="noindent"><span class="nt"><span class="larm-0900">ACET</span></span> </p></td><td style="text-align:left;" id="TBL-12-7-2" class="td11"> <p class="noindent"><a href="09.html#x12-860009"><span class="larm-0900">9</span></a><span class="larm-0900">,</span>
+ <a href="13.html#x16-12100013"><span class="larm-0900">13</span></a><span class="larm-0900">,</span>
+ <a href="16.html#x19-14500016"><span class="larm-0900">16</span></a><span class="larm-0900">,</span>
+ <a href="20.html#x23-18000020"><span class="larm-0900">20</span></a> </p></td><td style="text-align:left;" id="TBL-12-7-3" class="td11"> <p class="noindent"><span class="larm-0900">запись</span>
+ <span class="larm-0900">или</span>
+ <span class="larm-0900">чтение;</span>
+ <span class="larm-0900">скорость</span>
+ <span class="larm-0900">обучения;</span>
+ <span class="larm-0900">выход</span>
+ <span class="larm-0900">на</span>
+ <span class="larm-0900">мышцу;</span>
+ <span class="larm-0900">«тормоз»</span>
+ <span class="larm-0900">для</span>
+ <span class="larm-0900">органов</span> </p></td><td style="text-align:left;" id="TBL-12-7-4" class="td11"> <p class="noindent"><span class="larm-0900">секунды</span> </p></td><td style="text-align:left;" id="TBL-12-7-5" class="td11"> <p class="noindent"><span class="larm-0900">обе</span> </p></td><td style="text-align:left;" id="TBL-12-7-6" class="td11"> <p class="noindent"><span class="larm-0900">три</span>
+ <span class="larm-0900">эффекта</span>
+ <span class="larm-0900">измерены;</span>
+ <span class="larm-0900">переключение</span>
+ <span class="larm-0900">режимов</span>
+ <span class="larm-0900">—</span>
+ <span class="larm-0900">гипотеза</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-12-8-"><td style="text-align:left;" id="TBL-12-8-1" class="td11"> <p class="noindent"><span class="nt"><span class="larm-0900">GLYC</span></span> </p></td><td style="text-align:left;" id="TBL-12-8-2" class="td11"> <p class="noindent"><a href="13.html#x16-12100013"><span class="larm-0900">13</span></a><span class="larm-0900">,</span>
+ <a href="14.html#x17-12900014"><span class="larm-0900">14</span></a> </p></td><td style="text-align:left;" id="TBL-12-8-3" class="td11"> <p class="noindent"><span class="larm-0900">отрицательный</span>
+ <span class="larm-0900">вес</span>
+ <span class="larm-0900">в</span>
+ <span class="larm-0900">спинном</span>
+ <span class="larm-0900">мозге</span>
+ <span class="larm-0900">и</span>
+ <span class="larm-0900">стволе:</span>
+ <span class="larm-0900">запрет</span>
+ <span class="larm-0900">мышцы-противника</span> </p></td><td style="text-align:left;" id="TBL-12-8-4" class="td11"> <p class="noindent"><span class="larm-0900">мс</span> </p></td><td style="text-align:left;" id="TBL-12-8-5" class="td11"> <p class="noindent"><span class="larm-0900">адресная</span> </p></td><td style="text-align:left;" id="TBL-12-8-6" class="td11"> <p class="noindent"><span class="larm-0900">установлено</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-12-9-"><td style="text-align:left;" id="TBL-12-9-1" class="td11"> <p class="noindent"><span class="nt"><span class="larm-0900">HIST</span></span> </p></td><td style="text-align:left;" id="TBL-12-9-2" class="td11"> <p class="noindent"><span class="larm-0900">—</span> </p></td><td style="text-align:left;" id="TBL-12-9-3" class="td11"> <p class="noindent"><span class="larm-0900">глобальный</span>
+ <span class="larm-0900">сигнал</span>
+ <span class="larm-0900">«бодрствуй»</span> </p></td><td style="text-align:left;" id="TBL-12-9-4" class="td11"> <p class="noindent"><span class="larm-0900">медленно</span> </p></td><td style="text-align:left;" id="TBL-12-9-5" class="td11"> <p class="noindent"><span class="larm-0900">широковещ.</span> </p></td><td style="text-align:left;" id="TBL-12-9-6" class="td11"> <p class="noindent"><span class="larm-0900">роль</span>
+ <span class="larm-0900">в</span>
+ <span class="larm-0900">вычислении</span>
+ <span class="larm-0900">не</span>
+ <span class="larm-0900">изучена</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-12-10-"><td style="text-align:left;" id="TBL-12-10-1" class="td11"> <p class="noindent"><span class="nt"><span class="larm-0900">ADRE</span></span> </p></td><td style="text-align:left;" id="TBL-12-10-2" class="td11"> <p class="noindent"><a href="16.html#x19-14500016"><span class="larm-0900">16</span></a> </p></td><td style="text-align:left;" id="TBL-12-10-3" class="td11"> <p class="noindent"><span class="larm-0900">«газ»</span>
+ <span class="larm-0900">для</span>
+ <span class="larm-0900">всего</span>
+ <span class="larm-0900">тела</span>
+ <span class="larm-0900">через</span>
+ <span class="larm-0900">кровь;</span>
+ <span class="larm-0900">в</span>
+ <span class="larm-0900">мозге</span>
+ <span class="larm-0900">неизвестно</span> </p></td><td style="text-align:left;" id="TBL-12-10-4" class="td11"> <p class="noindent"><span class="larm-0900">медленно</span> </p></td><td style="text-align:left;" id="TBL-12-10-5" class="td11"> <p class="noindent"><span class="larm-0900">широковещ.</span> </p></td><td style="text-align:left;" id="TBL-12-10-6" class="td11"> <p class="noindent"><span class="larm-0900">вне</span>
+ <span class="larm-0900">мозга</span>
+ <span class="larm-0900">установлено;</span>
+ <span class="larm-0900">роль</span>
+ <span class="larm-0900">в</span>
+ <span class="larm-0900">мозге</span>
+ <span class="larm-0900">неясна</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-12-11-"><td style="text-align:left;" id="TBL-12-11-1" class="td11"> <p class="noindent"><span class="nt"><span class="larm-0900">ASPA</span></span> </p></td><td style="text-align:left;" id="TBL-12-11-2" class="td11"> <p class="noindent"><span class="larm-0900">—</span> </p></td><td style="text-align:left;" id="TBL-12-11-3" class="td11"> <p class="noindent"><span class="larm-0900">слабый</span>
+ <span class="larm-0900">положительный</span>
+ <span class="larm-0900">вес</span> </p></td><td style="text-align:left;" id="TBL-12-11-4" class="td11"> <p class="noindent"><span class="larm-0900">мс</span> </p></td><td style="text-align:left;" id="TBL-12-11-5" class="td11"> <p class="noindent"><span class="larm-0900">адресная</span> </p></td><td style="text-align:left;" id="TBL-12-11-6" class="td11"> <p class="noindent"><span class="larm-0900">роль</span>
+ <span class="larm-0900">спорна</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-12-12-"><td style="text-align:left;" id="TBL-12-12-1" class="td11"> </td></tr></table> </div>
+<figcaption class="caption"><span class="id">Таблица 10.1: </span><span class="content">Все типы нейронов книги: что вычисляет каждый и насколько это известно.</span></figcaption>
+ </figure>
+ </div>
+ <h3 class="sectionHead"><span class="titlemark">10.4 </span> <a id="x13-9900010.4"></a>Как ручки работают вместе</h3>
+<p class="noindent">До сих пор каждая глава поворачивала одну ручку. Проследим теперь одно
+событие через всю машину (рис. <a href="#x13-990012">10.2</a>). Животное давно выучило, что действие
+<math display="inline"><mi>A</mi></math> приносит сок. В какой-то
+момент мир меняется: <math display="inline"><mi>A</mi></math>
+перестаёт приносить сок, а приносит его действие
+<math display="inline"><mi>B</mi></math>,
+которое животное почти не пробует.
+</p><p class="indent"> <span class="lati-1095">Ошибка. </span>Сок после <math display="inline"><mi>A</mi></math>
+не пришёл, и <span class="nt">DOPA</span>-нейроны отвечают провалом,
+<math display="inline"><mi>δ</mi> <mo class="MathClass-rel" stretchy="false">&#x003C;</mo> <mn>0</mn></math>
+по формуле ошибки (<a href="06.html#x9-63002r8">6.8</a>). Синапсы, которые только что выбрали
+<math display="inline"><mi>A</mi></math>, несут
+след и ослабевают.
+</p><p class="indent"> <span class="lati-1095">Неожиданность. </span>Один провал — обычная случайность. Но провалы повторяются, и ошибки
+становятся больше обычного. По гипотезе главы <a href="08.html#x11-770008">8</a>, это и есть сигнал <span class="nt">NORA</span>: мир изменился.
+Усиление <math display="inline"><mi>g</mi></math>
+падает, выбор становится мягким, и шум чаще приводит к пробе
+<math display="inline"><mi>B</mi></math>.
+</p><p class="indent"> <span class="lati-1095">Запись. </span>По гипотезе главы <a href="09.html#x12-860009">9</a>, после перемены <span class="nt">ACET</span> поднимается и переводит сеть в режим
+записи: внутренние связи, хранящие старую привычку, ослаблены, вход от датчиков усилен, веса
+меняются легко.
+</p><p class="indent"> <span class="lati-1095">Новая привычка. </span>Проба <math display="inline"><mi>B</mi></math>
+приносит сок, которого никто не ждал: всплеск,
+<math display="inline"><mi>δ</mi> <mo class="MathClass-rel" stretchy="false">&#x003E;</mo> <mn>0</mn></math>, и синапсы, выбравшие
+<math display="inline"><mi>B</mi></math>, усиливаются. Несколько
+таких попыток — и ожидание <math display="inline"><mi>V</mi> </math>
+догоняет новый мир, ошибки снова малы.
+</p><p class="indent"> <span class="lati-1095">Возврат. </span>Неожиданность прошла, <span class="nt">NORA</span> возвращает высокое усиление, выбор снова жёсткий; <span class="nt">ACET</span>
+опускается, сеть в режиме чтения пользуется выученным. Всё это время <span class="nt">SERO</span>, по гипотезе, задаёт
+горизонт <math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>γ</mi></mrow></msub 
+></math>:
+насколько далёкий сок ещё стоит ждать.
+</p>
+ <figure class="figure"> 
+<a id="x13-990012"></a>
+<p class="noindent"><img src="img/full34x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<figcaption class="caption"><span class="id">Рис. 10.2: </span><span class="content">Одно событие, прослеженное через всю машину. Это качественная
+схема по моделям и гипотезам глав <a href="06.html#x9-560006">6</a>–<a href="09.html#x12-860009">9</a>, а не результат расчёта. После перемены
+<span class="nt">DOPA</span> отвечает провалами; повторные провалы, по гипотезе, поднимают сигнал
+неожиданности, <span class="nt">NORA</span> снижает усиление, <span class="nt">ACET</span> включает запись; первый сок за
+<math display="inline"><mi>B</mi></math>
+даёт всплеск, выбор переходит на <math display="inline"><mi>B</mi></math>,
+и ручки возвращаются.</span></figcaption>
+ </figure>
+<p class="indent"> Заметьте, что ни одна ручка не знает, что делают другие. Каждая откликается на свои
+признаки — ошибку, её необычную величину, неопределённость, — и порядок действий
+складывается сам, как в асинхронной схеме, где каждый блок срабатывает, когда готовы его
+входы. Такую согласованную работу целиком, насколько нам известно, пока не проверяли: по
+отдельности ручки измерены, а их совместная работа — гипотеза.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">10.5 </span> <a id="x13-10000010.5"></a>Чем эта машина не похожа на компьютер</h3>
+ <div class="table">
+<p class="indent"> <a id="x13-1000012"></a></p><figure class="float">
+<div class="tabular">
+ <table id="TBL-13" class="tabular"><colgroup id="TBL-13-1g"><col id="TBL-13-1" /><col id="TBL-13-2" /><col id="TBL-13-3" /></colgroup><tr style="vertical-align:baseline;" id="TBL-13-1-"><td style="text-align:left;" id="TBL-13-1-1" class="td11"> </td><td style="text-align:left;" id="TBL-13-1-2" class="td11"> <p class="noindent"><span class="larm-0900">Обычный</span>
+ <span class="larm-0900">компьютер</span> </p></td><td style="text-align:left;" id="TBL-13-1-3" class="td11"> <p class="noindent"><span class="larm-0900">Мозг</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-13-2-"><td style="text-align:left;" id="TBL-13-2-1" class="td11"> <p class="noindent"><span class="larm-0900">время</span> </p></td><td style="text-align:left;" id="TBL-13-2-2" class="td11"> <p class="noindent"><span class="larm-0900">общий</span>
+ <span class="larm-0900">такт,</span>
+ <span class="larm-0900">около</span>
+ <span class="larm-0900">гигагерца</span> </p></td><td style="text-align:left;" id="TBL-13-2-3" class="td11"> <p class="noindent"><span class="larm-0900">часов</span>
+ <span class="larm-0900">нет;</span>
+ <span class="larm-0900">каждый</span>
+ <span class="larm-0900">нейрон</span>
+ <span class="larm-0900">меняется</span>
+ <span class="larm-0900">сам,</span>
+ <span class="larm-0900">окна</span>
+ <span class="larm-0900">задают</span>
+ <span class="larm-0900">события</span>
+ <span class="larm-0900">и</span>
+ <span class="larm-0900">местные</span>
+ <span class="larm-0900">ритмы</span>
+ <span class="larm-0900">(гл.</span><span class="larm-0900"> </span><a href="02.html#x5-150002"><span class="larm-0900">2</span></a><span class="larm-0900">,</span>
+ <a href="03.html#x6-250003"><span class="larm-0900">3</span></a><span class="larm-0900">,</span>
+ <a href="04.html#x7-350004"><span class="larm-0900">4</span></a><span class="larm-0900">)</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-13-3-"><td style="text-align:left;" id="TBL-13-3-1" class="td11"> <p class="noindent"><span class="larm-0900">элементы</span> </p></td><td style="text-align:left;" id="TBL-13-3-2" class="td11"> <p class="noindent"><span class="larm-0900">надёжные</span>
+ <span class="larm-0900">двоичные</span>
+ <span class="larm-0900">вентили</span> </p></td><td style="text-align:left;" id="TBL-13-3-3" class="td11"> <p class="noindent"><span class="larm-0900">аналоговые</span>
+ <span class="larm-0900">пороговые</span>
+ <span class="larm-0900">элементы;</span>
+ <span class="larm-0900">синапс</span>
+ <span class="larm-0900">теряет</span>
+ <span class="larm-0900">большую</span>
+ <span class="larm-0900">часть</span>
+ <span class="larm-0900">импульсов</span>
+ <span class="larm-0900">(гл.</span><span class="larm-0900"> </span><a href="04.html#x7-350004"><span class="larm-0900">4</span></a><span class="larm-0900">)</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-13-4-"><td style="text-align:left;" id="TBL-13-4-1" class="td11"> <p class="noindent"><span class="larm-0900">знак</span>
+ <span class="larm-0900">связи</span> </p></td><td style="text-align:left;" id="TBL-13-4-2" class="td11"> <p class="noindent"><span class="larm-0900">любой</span> </p></td><td style="text-align:left;" id="TBL-13-4-3" class="td11"> <p class="noindent"><span class="larm-0900">задаётся</span>
+ <span class="larm-0900">нейроном-отправителем</span>
+ <span class="larm-0900">(гл.</span><span class="larm-0900"> </span><a href="01.html#x4-40001"><span class="larm-0900">1</span></a><span class="larm-0900">)</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-13-5-"><td style="text-align:left;" id="TBL-13-5-1" class="td11"> <p class="noindent"><span class="larm-0900">память</span> </p></td><td style="text-align:left;" id="TBL-13-5-2" class="td11"> <p class="noindent"><span class="larm-0900">отдельно</span>
+ <span class="larm-0900">от</span>
+ <span class="larm-0900">процессора</span> </p></td><td style="text-align:left;" id="TBL-13-5-3" class="td11"> <p class="noindent"><span class="larm-0900">в</span>
+ <span class="larm-0900">тех</span>
+ <span class="larm-0900">же</span>
+ <span class="larm-0900">связях,</span>
+ <span class="larm-0900">что</span>
+ <span class="larm-0900">и</span>
+ <span class="larm-0900">вычисление,</span>
+ <span class="larm-0900">и</span>
+ <span class="larm-0900">в</span>
+ <span class="larm-0900">самоподдерживающейся</span>
+ <span class="larm-0900">активности</span>
+ <span class="larm-0900">(гл.</span><span class="larm-0900"> </span><a href="02.html#x5-150002"><span class="larm-0900">2</span></a><span class="larm-0900">,</span>
+ <a href="09.html#x12-860009"><span class="larm-0900">9</span></a><span class="larm-0900">)</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-13-6-"><td style="text-align:left;" id="TBL-13-6-1" class="td11"> <p class="noindent"><span class="larm-0900">обучение</span> </p></td><td style="text-align:left;" id="TBL-13-6-2" class="td11"> <p class="noindent"><span class="larm-0900">обратное</span>
+ <span class="larm-0900">распространение</span>
+ <span class="larm-0900">ошибки</span> </p></td><td style="text-align:left;" id="TBL-13-6-3" class="td11"> <p class="noindent"><span class="larm-0900">местные</span>
+ <span class="larm-0900">правила,</span>
+ <span class="larm-0900">одно</span>
+ <span class="larm-0900">широковещательное</span>
+ <span class="larm-0900">число</span>
+ <math display="inline"><mi>δ</mi></math>
+ <span class="larm-0900">(гл.</span><span class="larm-0900"> </span><a href="06.html#x9-560006"><span class="larm-0900">6</span></a><span class="larm-0900">)</span>
+ <span class="larm-0900">и</span>
+ <span class="larm-0900">провода</span>
+ <span class="larm-0900">ошибки</span>
+ <span class="larm-0900">к</span>
+ <span class="larm-0900">выходам</span>
+ <span class="larm-0900">цепи</span>
+ <span class="larm-0900">движений</span>
+ <span class="larm-0900">(гл.</span><span class="larm-0900"> </span><a href="15.html#x18-13800015"><span class="larm-0900">15</span></a><span class="larm-0900">)</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-13-7-"><td style="text-align:left;" id="TBL-13-7-1" class="td11"> <p class="noindent"><span class="larm-0900">управление</span> </p></td><td style="text-align:left;" id="TBL-13-7-2" class="td11"> <p class="noindent"><span class="larm-0900">регистры</span>
+ <span class="larm-0900">и</span>
+ <span class="larm-0900">шина</span>
+ <span class="larm-0900">команд</span> </p></td><td style="text-align:left;" id="TBL-13-7-3" class="td11"> <p class="noindent"><span class="larm-0900">четыре</span>
+ <span class="larm-0900">широковещательных</span>
+ <span class="larm-0900">канала,</span>
+ <span class="larm-0900">каждый</span>
+ <span class="larm-0900">—</span>
+ <span class="larm-0900">жгут</span>
+ <span class="larm-0900">из</span>
+ <span class="larm-0900">нескольких</span>
+ <span class="larm-0900">линий</span>
+ <span class="larm-0900">(гл.</span><span class="larm-0900"> </span><a href="05.html#x8-470005"><span class="larm-0900">5</span></a><span class="larm-0900">,</span>
+ <a href="06.html#x9-560006"><span class="larm-0900">6</span></a><span class="larm-0900">–</span><a href="09.html#x12-860009"><span class="larm-0900">9</span></a><span class="larm-0900">)</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-13-8-"><td style="text-align:left;" id="TBL-13-8-1" class="td11"> <p class="noindent"><span class="larm-0900">энергия</span> </p></td><td style="text-align:left;" id="TBL-13-8-2" class="td11"> <p class="noindent"><span class="larm-0900">десятки–сотни</span>
+ <span class="larm-0900">ватт</span>
+ <span class="larm-0900">на</span>
+ <span class="larm-0900">один</span>
+ <span class="larm-0900">процессор</span> </p></td><td style="text-align:left;" id="TBL-13-8-3" class="td11"> <p class="noindent"><span class="larm-0900">около</span>
+ <math display="inline"><mn>2</mn><mn>0</mn></math>
+ <span class="larm-0900">ватт</span>
+ <span class="larm-0900">на</span>
+ <span class="larm-0900">весь</span>
+ <span class="larm-0900">мозг,</span>
+ <span class="larm-0900">в</span>
+ <span class="larm-0900">среднем</span>
+ <span class="larm-0900">около</span>
+ <span class="larm-0900">импульса</span>
+ <span class="larm-0900">в</span>
+ <span class="larm-0900">секунду</span>
+ <span class="larm-0900">на</span>
+ <span class="larm-0900">нейрон</span>
+ <span class="larm-0900">(гл.</span><span class="larm-0900"> </span><a href="04.html#x7-350004"><span class="larm-0900">4</span></a><span class="larm-0900">)</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-13-9-"><td style="text-align:left;" id="TBL-13-9-1" class="td11"> </td></tr></table> </div>
+<figcaption class="caption"><span class="id">Таблица 10.2: </span><span class="content">Мозг и обычный компьютер.</span></figcaption>
+ </figure>
+ </div>
+<p class="indent"> Таблица <a href="#x13-1000012">10.2</a> сводит главные отличия. Каждое из них — не недостаток, который
+природа не успела исправить, а часть одного решения. Без общего такта нужны датчики
+«включения—выключения» и детекторы совпадений. Ненадёжным элементам нужна
+избыточность многих нейронов. Памяти, совмещённой с вычислением, нужен <span class="nt">ACET</span>, чтобы
+запись не портила чтение. Обучению без обратных проводов нужен <span class="nt">DOPA</span> и шум. А
+энергетический предел в один импульс в секунду заставляет весь язык быть скупым и тратить
+импульсы на новости.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">10.6 </span> <a id="x13-10100010.6"></a>Чего мы не знаем</h3>
+<p class="noindent">Честнее всего закончить эту сводку списком того, чего мы не знаем. Каждый пункт — задача для
+инженера.
+</p><p class="indent"> <span class="lati-1095">Код. </span>Мы знаем ёмкость импульсного канала и знаем, что получатель выбирает, какую часть
+сообщения читать (глава <a href="04.html#x7-350004">4</a>). Но насколько кора пользуется точным временем импульсов и есть
+ли у нейронов «слова», неизвестно.
+</p><p class="indent"> <span class="lati-1095">Обучение через много слоёв. </span>Широковещательный сигнал учит медленно, и медленнее с
+каждым нейроном, влияющим на результат (утверждение <a href="06.html#x9-62001r4">6.4</a>). Как тогда кора настраивает
+миллиарды весов в многослойных цепях, неизвестно; есть модели, в которых ошибку между
+слоями разносят пачки импульсов <span class="cite">[<a href="refs.html#XPayeur2021">153</a>]</span>. Возможно, часть ответа — в вычислениях
+внутри ветвей самого нейрона, где один нейрон ведёт себя как маленькая многослойная
+сеть: чтобы повторить ответ модели одного нейрона коры, искусственной сети нужно
+пять–восемь слоёв <span class="cite">[<a href="refs.html#XBeniaguev2021">132</a>]</span>, а ветви нейронов человека умеют вычислять даже исключающее
+ИЛИ <span class="cite">[<a href="refs.html#XGidon2020">133</a>]</span>. Другой кандидат — самообучение: если кора учится предсказывать собственные
+входы, ошибка возникает на месте, в каждом слое, и общий сигнал для этого не нужен
+(глава <a href="06.html#x9-560006">6</a>) <span class="cite">[<a href="refs.html#XKeller2018">164</a>]</span>.
+</p><p class="indent"> <span class="lati-1095">Что на самом деле передают широковещательные каналы. </span>Для <span class="nt">DOPA</span> есть стандартная
+картина и шесть её расширений (глава <a href="07.html#x10-670007">7</a>); для <span class="nt">NORA</span> и <span class="nt">ACET</span> — правдоподобные гипотезы
+(главы <a href="08.html#x11-770008">8</a>, <a href="09.html#x12-860009">9</a>); для <span class="nt">SERO</span> — в основном догадки.
+</p><p class="indent"> <span class="lati-1095">Согласование во времени. </span>Мы видели, как вычислить функцию, отмерить время от события и
+нарезать поток на окна местным ритмом. Но как огромная сеть без общего такта согласует
+работу далёких областей, понятно лишь отчасти.
+</p><p class="indent"> <span class="lati-1095">Энергия. </span>Двадцать ватт на всё. Мы понимаем, почему код должен быть разреженным
+(утверждение <a href="04.html#x7-44002r5">4.5</a>), но построить машину, которая делала бы то же самое при такой же
+мощности, пока не умеет никто <span class="cite">[<a href="refs.html#XMehonicKenyon2022">154</a>]</span>.
+</p><p class="indent"> Мозг — вычислительная машина, собранная не инженером, но по законам, которые любой
+инженер узнает: RC-цепи, пороги, обратные связи, фильтры, шины и широковещательные
+регистры. Её схему мы прочитали лишь частично. Дочитывать её будут те, кто умеет читать
+схемы.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">10.7 </span> <a id="x13-10200010.7"></a>Что дальше в книге</h3>
+<p class="noindent">Эта глава собрала вычислительное ядро машины. Остальные главы выходят за его пределы.
+Главы <a href="11.html#x14-10400011">11</a> и <a href="12.html#x15-11200012">12</a> — о входах: как датчики превращают свет, звук и молекулы в импульсы и как
+машина узнаёт в них предметы. Главы <a href="13.html#x16-12100013">13</a>–<a href="16.html#x19-14500016">16</a> — о выходах и о том, что их обслуживает: мышцы,
+боль как сигнал тревоги, обучение движениям по отдельным проводам ошибки и медленный
+химический выход в тело. Глава <a href="17.html#x20-15300017">17</a> — о том, как машину отлаживают снаружи, в том числе
+интерфейсами мозг—компьютер. Главы <a href="18.html#x21-16300018">18</a> и <a href="19.html#x22-17000019">19</a> ещё раз сортируют нейроны, теперь по
+электрической функции и по числу входов. Глава <a href="20.html#x23-18000020">20</a> — о том, что машина делает, когда
+отключена от мира, а главы <a href="21.html#x24-19000021">21</a> и <a href="22.html#x25-20300022">22</a> — о машинах, собранных из живых нейронов на
+чипе.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">10.8 </span> <a id="x13-10300010.8"></a>Задачи</h3>
+<p class="noindent">Задачи этой главы соединяют результаты разных глав: каждая опирается по меньшей мере на
+две из них.
+</p>
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x13-103001r1"></a>
+<span class="labx-1095">Задача 10.1 </span>(<math display="inline"><mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Шина и регистры. </span>Четыре широковещательных канала — жгуты примерно по пять линий
+(утверждение <a href="07.html#x10-74002r3">7.3</a>); каждая линия меняется раз в секунду и различима на четырёх уровнях.
+Сколько лет управлению понадобилось бы, чтобы передать то, что шина <span class="nt">GLUT</span> (<math display="inline"><mn>8</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>6</mn> <mo class="MathClass-bin" stretchy="false">⋅</mo> <mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>1</mn><mn>0</mn></mrow></msup 
+></math>
+нейронов с частотой (<a href="04.html#x7-44001r8">4.8</a>), точность <math display="inline"><mn>1</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>
+по (<a href="04.html#x7-37001r1">4.1</a>)) передаёт за секунду?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">Шина <math display="inline"> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>1</mn><mn>2</mn></mrow></msup 
+></math> бит/с
+(<math display="inline"><mn>1</mn><mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>4</mn></math> бита на импульс),
+управление <math display="inline"> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>4</mn><mn>0</mn></math>
+бит/с; <math display="inline"><mn>2</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn> <mo class="MathClass-bin" stretchy="false">⋅</mo> <mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>1</mn><mn>0</mn></mrow></msup 
+><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>с</mtext></mstyle></math>
+— около восьмисот лет.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x13-103002r2"></a>
+<span class="labx-1095">Задача 10.2 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Две ручки на одной петле. </span>В петле (<a href="03.html#x6-32001r5">3.5</a>) ручки (<a href="#x13-97001r1">10.1</a>) стоят на возбуждении: <math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>E</mi></mrow></msub 
+><mi>Ė</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mo class="MathClass-bin" stretchy="false">−</mo><mi>E</mi> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>g</mi><mo class="MathClass-open" stretchy="false">[</mo><mo class="MathClass-open" stretchy="false">(</mo><mn>1</mn> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>a</mi><mo class="MathClass-close" stretchy="false">)</mo><msub><mrow><mi>w</mi></mrow><mrow><mi>E</mi><mi>E</mi></mrow></msub 
+><mi>E</mi> <mo class="MathClass-bin" stretchy="false">−</mo> <msub><mrow><mi>w</mi></mrow><mrow><mi>E</mi><mi>I</mi></mrow></msub 
+><mi>I</mi> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>h</mi><mo class="MathClass-close" stretchy="false">]</mo></math>,
+<span class="nt">GABA</span> ими не управляется. При числах рис. <a href="03.html#x6-320064">3.4</a> пачка <span class="nt">NORA</span> поднимает <math display="inline"><mi>g</mi></math>
+до <math display="inline"><mn>6</mn></math>.
+При каком наименьшем <math display="inline"><mi>a</mi></math>
+петля устойчива? Можно ли крутить ручки <span class="nt">NORA</span> и <span class="nt">ACET</span> независимо?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent"><math display="inline"><mi>a</mi> <mo class="MathClass-rel" stretchy="false">&#x003E;</mo> <mn>1</mn><mo class="MathClass-bin" stretchy="false">∕</mo><mn>3</mn></math> (при
+<math display="inline"><mi>a</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn></math> — нарастающие колебания
+<math display="inline"> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>6</mn><mn>7</mn></math> Гц). Нет: устойчивость
+задаёт произведение <math display="inline"><mi>g</mi><mo class="MathClass-open" stretchy="false">(</mo><mn>1</mn> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>a</mi><mo class="MathClass-close" stretchy="false">)</mo></math>.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x13-103003r3"></a>
+<span class="labx-1095">Задача 10.3 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Откуда берётся цена широковещания. </span>Выходы <math display="inline"><mi>N</mi></math>
+нейронов <math display="inline"><msub><mrow><mi>y</mi></mrow><mrow><mi>k</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mi>f</mi><mo class="MathClass-open" stretchy="false">(</mo><msub><mrow><mi>u</mi></mrow><mrow><mi>k</mi></mrow></msub 
+><mo class="MathClass-close" stretchy="false">)</mo> <mo class="MathClass-bin" stretchy="false">+</mo> <msub><mrow><mi>ξ</mi></mrow><mrow><mi>k</mi></mrow></msub 
+></math>
+с независимым гауссовым шумом дисперсии <math display="inline"><msup><mrow><mi>σ</mi></mrow><mrow><mn>2</mn></mrow></msup 
+></math>;
+<math display="inline"><mi>R</mi> <mo class="MathClass-rel" stretchy="false">≈</mo> <msub><mrow><mi>R</mi></mrow><mrow><mn>0</mn></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">+</mo><msub><mrow> <mi class="MathClass-op">∑</mi><mo> ⁡</mo>
+ </mrow><mrow><mi>k</mi></mrow></msub 
+><msubsup><mrow><mi>R</mi></mrow><mrow><mi>k</mi></mrow><mrow><mi>′</mi></mrow></msubsup 
+><msub><mrow><mi>ξ</mi></mrow><mrow><mi>k</mi></mrow></msub 
+></math>
+с одинаковыми <math display="inline"><msubsup><mrow><mi>R</mi></mrow><mrow><mi>k</mi></mrow><mrow><mi>′</mi></mrow></msubsup 
+></math>,
+<span class="nt">DOPA</span> рассылает <math display="inline"><mi>δ</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mi>R</mi> <mo class="MathClass-bin" stretchy="false">−</mo> <msub><mrow><mi>R</mi></mrow><mrow><mn>0</mn></mrow></msub 
+></math>.
+Найдите отношение сигнала к шуму поправки <math display="inline"><mi>δ</mi><mspace width="0.17em" class="thinspace"/><msub><mrow><mi>ξ</mi></mrow><mrow><mi>j</mi></mrow></msub 
+><msub><mrow><mi>x</mi></mrow><mrow><mi>j</mi></mrow></msub 
+></math>
+за одну попытку. Как с <math display="inline"><mi>N</mi></math>
+растёт число попыток?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">Среднее <math display="inline"><msup><mrow><mi>σ</mi></mrow><mrow><mn>2</mn></mrow></msup 
+><msup><mrow><mi>R</mi></mrow><mrow><mi>′</mi></mrow></msup 
+><msub><mrow><mi>x</mi></mrow><mrow><mi>j</mi></mrow></msub 
+></math>,
+дисперсия <math display="inline"><mo class="MathClass-open" stretchy="false">(</mo><mi>N</mi> <mo class="MathClass-bin" stretchy="false">+</mo> <mn>1</mn><mo class="MathClass-close" stretchy="false">)</mo><mspace width="0.17em" class="thinspace"/><msubsup><mrow><mi>x</mi></mrow><mrow><mi>j</mi></mrow><mrow><mn>2</mn></mrow></msubsup 
+><msup><mrow><mi>σ</mi></mrow><mrow><mn>4</mn></mrow></msup 
+><msup><mrow><mi>R</mi><msup><mrow></mrow><mrow><mi>′</mi></mrow></msup 
+></mrow><mrow><mn>2</mn></mrow></msup 
+></math>;
+отношение <math display="inline"><mn>1</mn><mo class="MathClass-bin" stretchy="false">∕</mo><mo class="MathClass-open" stretchy="false">(</mo><mi>N</mi> <mo class="MathClass-bin" stretchy="false">+</mo> <mn>1</mn><mo class="MathClass-close" stretchy="false">)</mo></math>,
+нужно <math display="inline"><mi>n</mi> <mo class="MathClass-rel" stretchy="false">≈</mo> <msup><mrow><mi>z</mi></mrow><mrow><mn>2</mn></mrow></msup 
+><mo class="MathClass-open" stretchy="false">(</mo><mi>N</mi> <mo class="MathClass-bin" stretchy="false">+</mo> <mn>1</mn><mo class="MathClass-close" stretchy="false">)</mo> <mo class="MathClass-rel" stretchy="false">∝</mo> <mi>N</mi></math>
+попыток.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x13-103004r4"></a>
+<span class="labx-1095">Задача 10.4 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Связать звук и вспышку. </span>Звук приходит на шину через <math display="inline"><mn>5</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>,
+вспышка — через <math display="inline"><mn>3</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>
+плюс задержка первого импульса (<a href="04.html#x7-40001r4">4.4</a>) (<math display="inline"><mi>τ</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>,
+<math display="inline"><mi>U</mi></math>
+от <math display="inline"><mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn><mi>𝜃</mi></math>
+до <math display="inline"><mn>4</mn><mi>𝜃</mi></math>);
+фон на каждом входе — <math display="inline"><mn>5</mn></math>
+импульсов в секунду. Выберите задержку звуковой линии и наименьшее окно совпадений
+для всех контрастов. Сколько ложных связываний в секунду даст фон?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent"><math display="inline"><msub><mrow><mi>L</mi></mrow><mrow><mi>v</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">∈</mo> <mo class="MathClass-open" stretchy="false">[</mo><mn>3</mn><mn>2</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>9</mn><mo class="MathClass-punc" stretchy="false">,</mo><mspace width="0.17em" class="thinspace"/><mn>4</mn><mn>7</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>9</mn><mo class="MathClass-close" stretchy="false">]</mo><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>:
+задержка <math display="inline"><mn>3</mn><mn>5</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>4</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>,
+окно <math display="inline"> <mo class="MathClass-bin" stretchy="false">±</mo> <mn>7</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>; ложных
+связываний <math display="inline"><mn>2</mn><msub><mrow><mi mathvariant="normal">Δ</mi></mrow><mrow><mi class="qopname">max</mi><mo> ⁡ </mo></mrow></msub 
+><msub><mrow><mi>r</mi></mrow><mrow><mi>a</mi></mrow></msub 
+><msub><mrow><mi>r</mi></mrow><mrow><mi>v</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>3</mn><mn>8</mn></math>
+в секунду.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x13-103005r5"></a>
+<span class="labx-1095">Задача 10.5 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Моделирование: кто замечает перемену. </span>Критик видит <math display="inline"><mi>y</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mi>s</mi> <mo class="MathClass-bin" stretchy="false">+</mo> <mstyle class="text"><mtext>шум</mtext></mstyle></math>
+(<math display="inline"><mi>R</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn></math>);
+с вероятностью <math display="inline"><mn>1</mn><mo class="MathClass-bin" stretchy="false">∕</mo><mn>2</mn><mn>0</mn><mn>0</mn></math>
+<math display="inline"><mi>s</mi></math>
+скачком берёт новое значение с дисперсией <math display="inline"><msup><mrow><mi>J</mi></mrow><mrow><mn>2</mn></mrow></msup 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>4</mn></math>.
+Смоделируйте фильтр Калмана с <math display="inline"><mi>q</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn></math>,
+поднимающий <math display="inline"><mi>P</mi></math>
+до <math display="inline"><msup><mrow><mi>J</mi></mrow><mrow><mn>2</mn></mrow></msup 
+></math>,
+когда <math display="inline"><mi>E</mi> <mo class="MathClass-rel" stretchy="false">←</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>9</mn><mi>E</mi> <mo class="MathClass-bin" stretchy="false">+</mo> <msup><mrow><mi>δ</mi></mrow><mrow><mn>2</mn></mrow></msup 
+><mo class="MathClass-bin" stretchy="false">∕</mo><mo class="MathClass-open" stretchy="false">(</mo><mi>P</mi> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>R</mi><mo class="MathClass-close" stretchy="false">)</mo></math>
+превышает <math display="inline"><mn>2</mn><mn>0</mn></math>.
+На сколько его ошибка меньше, чем при лучшем постоянном <math display="inline"><mi>α</mi></math>?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent"><math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>0</mn><mn>9</mn><mn>8</mn></math>
+против <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn><mn>8</mn><mn>0</mn></math>
+при лучшем <math display="inline"><mi>α</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn></math>:
+на <math display="inline"><mn>4</mn><mn>5</mn><mspace width="0.17em" class="thinspace"/><mi>%</mi></math>
+меньше.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x13-103006r6"></a>
+<span class="labx-1095">Задача 10.6 </span>(<math display="inline"><mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Сколько попыток на смену привычки. </span>Сеть выучила <math display="inline"><msub><mrow><mi>Q</mi></mrow><mrow><mi>A</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>8</mn></math>,
+<math display="inline"><msub><mrow><mi>Q</mi></mrow><mrow><mi>B</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn></math>
+и выбирает по (<a href="08.html#x11-81001r4">8.4</a>), <math display="inline"><mi>σ</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn></math>,
+<math display="inline"><mi>g</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>8</mn></math>.
+Теперь <math display="inline"><mi>A</mi></math>
+даёт сок с вероятностью <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn></math>;
+<math display="inline"><msub><mrow><mi>Q</mi></mrow><mrow><mi>A</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">←</mo> <msub><mrow><mi>Q</mi></mrow><mrow><mi>A</mi></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>α</mi><mo class="MathClass-open" stretchy="false">(</mo><mi>r</mi> <mo class="MathClass-bin" stretchy="false">−</mo> <msub><mrow><mi>Q</mi></mrow><mrow><mi>A</mi></mrow></msub 
+><mo class="MathClass-close" stretchy="false">)</mo></math>,
+<math display="inline"><msub><mrow><mi>Q</mi></mrow><mrow><mi>B</mi></mrow></msub 
+></math>
+не меняется. Через сколько выборов <math display="inline"><mi>A</mi></math>
+вероятность выбрать <math display="inline"><mi>A</mi></math>
+упадёт до <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>6</mn></math>
+при <math display="inline"><mi>α</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn></math>
+и <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn></math>?
+А если <span class="nt">NORA</span> опустит <math display="inline"><mi>g</mi></math>
+до <math display="inline"><mn>2</mn></math>?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent"><math display="inline"><mi>n</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mi class="loglike">ln</mi><mo>⁡</mo><mrow><mo class="MathClass-open" fence="true" mathsize="1.19em">(</mo><mrow><mo><mi class="loglike">ln</mi><mo>⁡</mo></mo><mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn><mo class="MathClass-bin" stretchy="false">∕</mo><mo class="MathClass-open" stretchy="false">(</mo><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>6</mn><mi>g</mi><mo class="MathClass-close" stretchy="false">)</mo></mrow><mo class="MathClass-close" fence="true" mathsize="1.19em">)</mo></mrow><mo class="MathClass-bin" stretchy="false">∕</mo><mo><mi class="loglike">ln</mi><mo>⁡</mo></mo><mo class="MathClass-open" stretchy="false">(</mo><mn>1</mn> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>α</mi><mo class="MathClass-close" stretchy="false">)</mo></math>:
+<math display="inline"><mn>2</mn><mn>4</mn></math> и
+<math display="inline"><mn>4</mn></math>; при
+<math display="inline"><mi>g</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>2</mn></math> —
+<math display="inline"><mn>1</mn><mn>1</mn></math> и
+<math display="inline"><mn>2</mn></math>.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x13-103007r7"></a>
+<span class="labx-1095">Задача 10.7 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo><mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Жгут вместо провода. </span>Выходы <math display="inline"><msub><mrow><mi>y</mi></mrow><mrow><mi>k</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <msub><mrow><mi>w</mi></mrow><mrow><mi>k</mi></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">+</mo> <msub><mrow><mi>ξ</mi></mrow><mrow><mi>k</mi></mrow></msub 
+></math>,
+награда <math display="inline"><mi>R</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mo class="MathClass-bin" stretchy="false">−</mo><msub><mrow><mi class="MathClass-op">∑</mi><mo> ⁡</mo>
+ </mrow><mrow><mi>k</mi></mrow></msub 
+><msubsup><mrow><mi>y</mi></mrow><mrow><mi>k</mi></mrow><mrow><mn>2</mn></mrow></msubsup 
+></math>;
+линия жгута рассылает группе из <math display="inline"><mi>G</mi></math>
+нейронов ошибку её выходов, <math display="inline"><msub><mrow><mi>w</mi></mrow><mrow><mi>k</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">←</mo> <msub><mrow><mi>w</mi></mrow><mrow><mi>k</mi></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>η</mi><mspace width="0.17em" class="thinspace"/><msub><mrow><mi>δ</mi></mrow><mrow><mi>l</mi></mrow></msub 
+><msub><mrow><mi>ξ</mi></mrow><mrow><mi>k</mi></mrow></msub 
+></math>.
+Покажите, что при лучшем <math display="inline"><mi>η</mi></math>
+до <math display="inline"> <mi class="MathClass-op">∑</mi><mo> ⁡</mo>
+ <msubsup><mrow><mi>w</mi></mrow><mrow><mi>k</mi></mrow><mrow><mn>2</mn></mrow></msubsup 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mi>𝜀</mi><mo>∑</mo>
+ <msubsup><mrow><mi>w</mi></mrow><mrow><mi>k</mi></mrow><mrow><mn>2</mn></mrow></msubsup 
+><mo class="MathClass-open" stretchy="false">(</mo><mn>0</mn><mo class="MathClass-close" stretchy="false">)</mo></math>
+нужно <math display="inline"> <mo class="MathClass-rel" stretchy="false">≈</mo> <mo class="MathClass-open" stretchy="false">(</mo><mi>G</mi> <mo class="MathClass-bin" stretchy="false">+</mo> <mn>2</mn><mo class="MathClass-close" stretchy="false">)</mo><mi class="loglike">ln</mi><mo>⁡</mo><mo class="MathClass-open" stretchy="false">(</mo><mn>1</mn><mo class="MathClass-bin" stretchy="false">∕</mo><mi>𝜀</mi><mo class="MathClass-close" stretchy="false">)</mo></math>
+попыток. Сколько при <math display="inline"><mi>𝜀</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>0</mn><mn>1</mn></math>
+учится цепь из <math display="inline"><mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>6</mn></mrow></msup 
+></math>
+нейронов на пяти линиях, попытка раз в три секунды?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent"><math display="inline"><msup><mrow><mi>S</mi></mrow><mrow><mi>′</mi></mrow></msup 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mi>S</mi><mrow><mo class="MathClass-open" fence="true" mathsize="1.19em">(</mo><mrow><mn>1</mn> <mo class="MathClass-bin" stretchy="false">−</mo> <mn>4</mn><mi>η</mi><msup><mrow><mi>σ</mi></mrow><mrow><mn>2</mn></mrow></msup 
+> <mo class="MathClass-bin" stretchy="false">+</mo> <mn>4</mn><msup><mrow><mi>η</mi></mrow><mrow><mn>2</mn></mrow></msup 
+><msup><mrow><mi>σ</mi></mrow><mrow><mn>4</mn></mrow></msup 
+><mo class="MathClass-open" stretchy="false">(</mo><mi>G</mi> <mo class="MathClass-bin" stretchy="false">+</mo> <mn>2</mn><mo class="MathClass-close" stretchy="false">)</mo></mrow><mo class="MathClass-close" fence="true" mathsize="1.19em">)</mo></mrow></math>,
+лучшее <math display="inline"><mi>η</mi><msup><mrow><mi>σ</mi></mrow><mrow><mn>2</mn></mrow></msup 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mo class="MathClass-bin" stretchy="false">∕</mo><mo class="MathClass-open" stretchy="false">(</mo><mn>2</mn><mo class="MathClass-open" stretchy="false">(</mo><mi>G</mi> <mo class="MathClass-bin" stretchy="false">+</mo> <mn>2</mn><mo class="MathClass-close" stretchy="false">)</mo><mo class="MathClass-close" stretchy="false">)</mo></math>;
+<math display="inline"> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>6</mn></mrow></msup 
+></math>
+попыток — около месяца.
+</p></div></details>
+
+<p class="indent"> <a id="tailfullch10.html"></a> </p> 
+
+  </article>
+  <article class="text short" id="text-short" hidden>
+
+ <a id="s-x13-5500010"></a>
+<div class="center">
+<p class="noindent"><img src="img/short19x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<div class="minipage"><p class="noindent"><span class="lati-1000">Машина целиком: шина данных, тормоза в ней и</span>
+<span class="lati-1000">четыре радиоканала управления сверху.</span> </p></div></div>
+<p class="noindent">Мы брали по одному типу нейронов и спрашивали, что он
+добавляет к машине. Пора собрать детали вместе.
+</p><p class="indent"> Получилась машина из трёх слоёв. Внизу — огромная
+телефонная сеть <span class="nt">GLUT</span>-нейронов: по ней идут данные.
+Рядом — тормозные <span class="nt">GABA</span>-нейроны: они управляют
+потоком, решают, чему пройти, когда и насколько громко. А
+над всем этим — несколько радиостанций, у каждой своя
+ручка. <span class="nt">DOPA</span> говорит, какие изменения связей оставить.
+<span class="nt">SERO</span> держит общий уровень и, по гипотезе, горизонт
+терпения. <span class="nt">NORA</span> выбирает между поиском и решением.
+<span class="nt">ACET</span> — между записью и чтением. Каждая радиостанция
+на самом деле — небольшой пучок каналов, а не один
+провод, но каналов всё равно горстка на восемьдесят шесть
+миллиардов нейронов.
+</p>
+ <h3 class="likesectionHead"> <a id="s-x13-56000"></a>Одна история</h3>
+<p class="noindent">Проследим одно событие через всю машину. Животное давно
+знает: нажмёшь рычаг A — получишь сок. Однажды мир
+меняется: A больше не работает, а сок приносит рычаг B,
+которым животное почти не пользовалось.
+</p><p class="indent"> Сок после A не пришёл — дофамин отвечает провалом, и
+связи, выбравшие A, слабеют. Провалы повторяются,
+ошибки становятся больше обычного — норадреналин, по
+гипотезе, сообщает: мир изменился. Ручка контрастности
+опускается, выбор становится мягче, и шум чаще
+подталкивает попробовать B. Ацетилхолин переводит сеть в
+режим записи. Проба B приносит неожиданный сок —
+дофамин вспыхивает, связи, выбравшие B, крепнут.
+Через несколько попыток ожидание догоняет новый
+мир, сюрпризы кончаются, ручки возвращаются на
+место.
+</p><p class="indent"> Заметьте: ни одна ручка не знает, что делают другие.
+Каждая откликается на свои признаки, и порядок действий
+складывается сам, как в асинхронной схеме, где каждый
+блок срабатывает, когда готовы его входы. Что каждая
+ручка ведёт себя так по отдельности, в основном измерено.
+Что они слаженно работают вместе — пока гипотеза.
+</p>
+ <h3 class="likesectionHead"> <a id="s-x13-57000"></a>Чем она не похожа на ваш ноутбук</h3>
+<p class="noindent">У ноутбука есть общий такт — у мозга нет. Элементы
+ноутбука надёжны — синапс теряет больше половины
+сигналов. Память ноутбука отдельно от процессора
+— в мозге она в тех же связях. Ноутбук учится (если
+учится) обратным распространением ошибки — мозг
+местными правилами и одним широковещательным «лучше,
+чем ожидалось». И главное: ноутбук тратит десятки
+ватт на один процессор, а мозг — двадцать ватт на
+всё.
+</p>
+ <h3 class="likesectionHead"> <a id="s-x13-58000"></a>Чего мы не знаем</h3>
+<p class="noindent">Мы не знаем, насколько кора пользуется точным временем
+щелчков. Не знаем, как она настраивает миллиарды связей в
+многоэтажных цепях, если учитель у неё один на всех.
+Не до конца понимаем, что передают радиостанции.
+Не знаем, как далёкие части мозга согласуют работу
+без общего такта. И пока никто не умеет построить
+машину, которая делала бы то же самое на двадцати
+ваттах.
+</p><p class="indent"> Дальше книга выходит за пределы этого ядра: к входам
+и выходам машины, к её отладке, ко сну и к машинам из
+живых нейронов на чипе.
+</p><p class="noindent"><span class="lati-1000">Формулы, модели, задачи и источники — в полной версии,</span>
+<span class="lati-1000">глава</span><span class="lati-1000"> 10.</span>
+</p>
+<p class="indent"> <a id="s-tailshortch10.html"></a> </p> 
+
+  </article>
+
+  <aside class="starline"><span data-ru="Книга бесплатная и открытая. Если глава была полезной, поставьте книге звезду на GitHub: так её найдут другие." data-en="The book is free and open. If this chapter was useful, star the book on GitHub so others can find it.">Книга бесплатная и открытая.</span> <a href="https://github.com/kladkogex/20-watt-computer" target="_blank" rel="noopener" data-ru="★ Звезда на GitHub" data-en="★ Star on GitHub">★ Звезда на GitHub</a></aside>
+  <nav class="pager">
+    <a class="prev" href="09.html"><span data-ru="← Назад" data-en="← Previous">← Назад</span><b>Когда писать, а когда читать: добавляем ACET</b></a>
+    <a class="next" href="11.html"><span data-ru="Дальше →" data-en="Next →">Дальше →</span><b>Входы машины: как к ней подключены глаза, уши и другие датчики</b></a>
+  </nav>
+  <footer>
+    <span data-ru='Константин Кладько · текст — <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.ru">CC BY-NC-SA 4.0</a>' data-en='Konstantin Kladko · text: <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>'>Константин Кладько</span>
+    <span><a href="../pdf/20-watt-computer-ru.pdf">PDF</a> · <a href="../breadboard/" data-ru="Макетная плата" data-en="Breadboard">Макетная плата</a> · <a href="https://github.com/kladkogex/20-watt-computer">GitHub</a></span>
+  </footer>
+</main>
+
+<script>
+(function(){
+  const NAV = [{"slug": "00", "title": "Как читать эту книгу", "kicker": "Введение"}, {"slug": "01", "title": "Типы нейронов", "kicker": "Глава 1"}, {"slug": "02", "title": "Что вычисляют GLUT-нейроны", "kicker": "Глава 2"}, {"slug": "03", "title": "GLUT и GABA вместе", "kicker": "Глава 3"}, {"slug": "04", "title": "Азбука Морзе: что мы знаем о языке, на котором говорят GLUT- и GABA-нейроны", "kicker": "Глава 4"}, {"slug": "05", "title": "Что вычисляют SERO-нейроны", "kicker": "Глава 5"}, {"slug": "06", "title": "Нейронные сети, которые умеют учиться: добавляем DOPA", "kicker": "Глава 6"}, {"slug": "07", "title": "Альтернативные современные теории обучения на основе дофамина", "kicker": "Глава 7"}, {"slug": "08", "title": "Когда искать, а когда решать: добавляем NORA", "kicker": "Глава 8"}, {"slug": "09", "title": "Когда писать, а когда читать: добавляем ACET", "kicker": "Глава 9"}, {"slug": "10", "title": "Вся машина", "kicker": "Глава 10"}, {"slug": "11", "title": "Входы машины: как к ней подключены глаза, уши и другие датчики", "kicker": "Глава 11"}, {"slug": "12", "title": "Распознавание изображений и видео", "kicker": "Глава 12"}, {"slug": "13", "title": "Выходы машины: как мозг управляет мышцами", "kicker": "Глава 13"}, {"slug": "14", "title": "Боль: сигнал тревоги", "kicker": "Глава 14"}, {"slug": "15", "title": "Как машина учится двигаться", "kicker": "Глава 15"}, {"slug": "16", "title": "Второй выход: как мозг управляет химией тела", "kicker": "Глава 16"}, {"slug": "17", "title": "Отладка машины", "kicker": "Глава 17"}, {"slug": "18", "title": "Типы нейронов по электрической функции", "kicker": "Глава 18"}, {"slug": "19", "title": "Нейроны по числу дендритов", "kicker": "Глава 19"}, {"slug": "20", "title": "Что делают нейроны во сне", "kicker": "Глава 20"}, {"slug": "21", "title": "Машина из живых нейронов", "kicker": "Глава 21"}, {"slug": "22", "title": "DishBrain", "kicker": "Глава 22"}, {"slug": "a", "title": "Вещества, которые не задают тип нейрона", "kicker": "Приложение A"}, {"slug": "b", "title": "Обозначения", "kicker": "Приложение B"}, {"slug": "c", "title": "Ответы", "kicker": "Приложение C"}, {"slug": "d", "title": "Экспериментальное приложение", "kicker": "Приложение D"}, {"slug": "refs", "title": "Литература", "kicker": ""}];
+  const SLUG = "10";
+  const store = {get(k){try{return localStorage.getItem(k)}catch(e){return null}}, set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+
+  // chapter selector
+  const sel = document.getElementById("jump");
+  NAV.forEach(p => { const o = document.createElement("option"); o.value = p.slug;
+    o.textContent = (p.kicker ? p.kicker + ". " : "") + p.title; if (p.slug === SLUG) o.selected = true; sel.appendChild(o); });
+  sel.addEventListener("change", () => { location.href = sel.value + ".html" + (location.hash === "#short" ? "#short" : ""); });
+
+  // Коротко / Полностью
+  const modeBox = document.querySelector(".mode");
+  const hasShort = modeBox.dataset.hasShort === "true";
+  const full = document.getElementById("text-full"), short = document.getElementById("text-short");
+  function setMode(m, remember){
+    if (!hasShort) m = "full";
+    document.body.dataset.mode = m;
+    full.hidden = m !== "full"; short.hidden = m !== "short";
+    modeBox.querySelectorAll(".seg").forEach(b => b.setAttribute("aria-pressed", b.dataset.mode === m));
+    if (remember) store.set("20w-mode", m);
+  }
+  if (!hasShort) modeBox.hidden = true;
+  modeBox.addEventListener("click", e => { const b = e.target.closest(".seg"); if (b) { setMode(b.dataset.mode, true); history.replaceState(null, "", "#" + b.dataset.mode); } });
+  document.addEventListener("click", e => { const a = e.target.closest("a[data-mode]"); if (a) { e.preventDefault(); setMode(a.dataset.mode, true); window.scrollTo(0, 0); } });
+  // a link into the text (#x...) that lives in the other version switches to it
+  function follow(){
+    const h = decodeURIComponent(location.hash.slice(1));
+    if (h === "short" || h === "full") { setMode(h, true); return; }
+    if (!h) return;
+    const t = document.getElementById(h);
+    if (t) { setMode(short.contains(t) ? "short" : "full", false); t.scrollIntoView(); }
+  }
+  setMode(store.get("20w-mode") || "full", false);
+  follow();
+  window.addEventListener("hashchange", follow);
+  // links that leave the book open in the whole window when the page sits inside the reader
+  if (document.documentElement.classList.contains("embedded"))
+    document.querySelectorAll('a[href^="../"], a[href^="http"]').forEach(a => { a.target = a.href.startsWith(location.origin) ? "_top" : "_blank"; });
+
+  // interface language (the text itself is Russian)
+  function setLang(l){
+    document.querySelectorAll("[data-ru]").forEach(el => { el.innerHTML = el.dataset[l]; });
+    document.getElementById("lang-ru").setAttribute("aria-pressed", l === "ru");
+    document.getElementById("lang-en").setAttribute("aria-pressed", l === "en");
+    store.set("20w-lang", l);
+  }
+  document.getElementById("lang-ru").onclick = () => setLang("ru");
+  document.getElementById("lang-en").onclick = () => setLang("en");
+  setLang(store.get("20w-lang") === "en" ? "en" : "ru");
+  window.addEventListener("storage", e => {
+    if (e.key === "20w-lang" && (e.newValue === "ru" || e.newValue === "en")) setLang(e.newValue);
+    if (e.key === "20w-theme" && (e.newValue === "light" || e.newValue === "dark")) document.documentElement.setAttribute("data-theme", e.newValue);
+  });
+})();
+</script>
+<script>
+(function(){var b=document.getElementById("theme");if(!b)return;var r=document.documentElement;function cur(){var t=r.getAttribute("data-theme");if(t)return t;return window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";}function show(){b.textContent=cur()==="dark"?"☀":"☾";b.setAttribute("aria-pressed",cur()==="dark");}b.onclick=function(){var t=cur()==="dark"?"light":"dark";r.setAttribute("data-theme",t);try{localStorage.setItem("20w-theme",t);}catch(e){}show();};if(window.matchMedia)matchMedia("(prefers-color-scheme: dark)").addEventListener("change",show);show();})();
+</script>
+</body>
+</html>

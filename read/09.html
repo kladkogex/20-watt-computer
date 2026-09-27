@@ -1,0 +1,706 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<script>try{var t=localStorage.getItem("20w-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);}catch(e){}if(window.self!==window.top)document.documentElement.classList.add("embedded");</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Глава 9. Когда писать, а когда читать: добавляем ACET · Компьютер на 20 ваттах</title>
+<meta name="description" content="У микросхемы памяти, кроме проводов адреса и данных, есть ещё одна линия — разрешение записи. Пока она выключена, память только читается; когда включена, то, что лежит на линиях …">
+<link rel="canonical" href="https://kladkogex.github.io/20-watt-computer/read/09.html">
+<meta property="og:type" content="book">
+<meta property="og:title" content="Глава 9. Когда писать, а когда читать: добавляем ACET · Компьютер на 20 ваттах">
+<meta property="og:description" content="У микросхемы памяти, кроме проводов адреса и данных, есть ещё одна линия — разрешение записи. Пока она выключена, память только читается; когда включена, то, что лежит на линиях …">
+<meta property="og:url" content="https://kladkogex.github.io/20-watt-computer/read/09.html">
+<meta property="og:locale" content="ru_RU">
+<meta property="og:image" content="https://kladkogex.github.io/20-watt-computer/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Your brain runs on 20 watts. Here is its datasheet. The 20-Watt Computer, a free textbook for engineers.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://kladkogex.github.io/20-watt-computer/og-card.png">
+<meta name="twitter:title" content="Глава 9. Когда писать, а когда читать: добавляем ACET · The 20-Watt Computer">
+<meta name="twitter:description" content="У микросхемы памяти, кроме проводов адреса и данных, есть ещё одна линия — разрешение записи. Пока она выключена, память только читается; когда включена, то, что лежит на линиях …">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Chapter", "name": "Когда писать, а когда читать: добавляем ACET", "url": "https://kladkogex.github.io/20-watt-computer/read/09.html", "position": 9, "inLanguage": "ru", "isAccessibleForFree": true, "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/", "author": {"@type": "Person", "name": "Константин Кладько", "alternateName": "Konstantin Kladko"}, "isPartOf": {"@type": "Book", "name": "Компьютер на 20 ваттах. Как вычисляет мозг: количественный подход для инженеров", "alternateName": "The 20-Watt Computer: How the Brain Computes. A Quantitative Approach for Engineers", "author": {"@type": "Person", "name": "Константин Кладько", "alternateName": "Konstantin Kladko"}, "url": "https://kladkogex.github.io/20-watt-computer/", "inLanguage": "ru", "isAccessibleForFree": true, "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/"}}</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap">
+<link rel="stylesheet" href="book.css">
+</head>
+<body>
+<header class="bar">
+  <a class="home" href="../#toc"><span class="w">20</span> <span data-ru="Компьютер на 20 ваттах" data-en="The 20-Watt Computer">Компьютер на 20 ваттах</span></a>
+  <label class="jump"><span class="sr" data-ru="Перейти к главе" data-en="Go to chapter">Перейти к главе</span>
+    <select id="jump"></select></label>
+  <div class="langs" role="group" aria-label="Language">
+    <button class="chip" id="lang-ru" type="button">RU</button>
+    <button class="chip" id="lang-en" type="button">EN</button>
+    <button class="chip theme" id="theme" type="button" aria-label="Light or dark theme" title="Light / dark">☾</button>
+  </div>
+</header>
+
+<main class="page">
+  <div class="pagehead">
+    <p class="kicker" data-ru="Глава 9" data-en="Chapter 9">Глава 9</p>
+    <h1><span class="t-full">Когда писать, а когда читать: добавляем <span class="nt">ACET</span></span><span class="t-short">Запись и чтение</span></h1>
+    <div class="mode" role="group" aria-label="Version" data-has-short="true">
+      <button type="button" class="seg" data-mode="short"><b data-ru="Коротко" data-en="Short">Коротко</b><span data-ru="без формул, с рисунками" data-en="no formulas, with drawings">без формул, с рисунками</span></button>
+      <button type="button" class="seg" data-mode="full"><b data-ru="Полностью" data-en="Full">Полностью</b><span data-ru="формулы, модели, задачи" data-en="formulas, models, exercises">формулы, модели, задачи</span></button>
+    </div>
+    <p class="lang-note" data-ru="" data-en="The online reader is in Russian for now; the book in other languages is in the PDF downloads in the menu.">.</p>
+  </div>
+
+  <article class="text full" id="text-full">
+
+ <a id="x12-860009"></a>
+ <h3 class="sectionHead"><span class="titlemark">9.1 </span> <a id="x12-870009.1"></a>Чего не хватает</h3>
+<p class="noindent">У микросхемы памяти, кроме проводов адреса и данных, есть ещё одна линия — разрешение
+записи. Пока она выключена, память только читается; когда включена, то, что лежит на линиях
+данных, записывается. Без такой линии память не работает: если каждое чтение одновременно
+что-то записывает, прочитанное, в том числе прочитанное с ошибкой, тут же записывается
+обратно.
+</p><p class="indent"> В мозге эта задача стоит острее, чем в микросхеме. В главе <a href="02.html#x5-150002">2</a> память была группой
+<span class="nt">GLUT</span>-нейронов, которую держат включённой её собственные связи (рис. <a href="02.html#x5-210025">2.5</a>). В главе <a href="06.html#x9-560006">6</a> мы
+видели, что эти связи учатся правилом Хебба прямо по ходу работы. Значит, одни и те же
+синапсы и хранят старое, и принимают новое, а отдельной фазы записи, как и часов, нет. Чем
+сеть отличает момент, когда нужно запомнить то, что видишь, от момента, когда нужно
+вспомнить то, что знаешь? В главе <a href="01.html#x4-40001">1</a> мы предположили, что эту линию держит <span class="nt">ACET</span>.
+В этой главе мы проверим, как такая линия должна работать и почему без неё не
+обойтись.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">9.2 </span> <a id="x12-880009.2"></a>Три действия одного провода</h3>
+<p class="noindent">Ацетилхолиновых нейронов, работающих внутри мозга, немного, и собраны они в нескольких
+небольших группах, а их выходы расходятся по всей коре. Это широковещательный канал,
+такой же, как <span class="nt">DOPA</span> и <span class="nt">NORA</span>. Уровень ацетилхолина в коре высок при внимательном
+бодрствовании и низок в медленном сне <span class="cite">[<a href="refs.html#XHasselmo1999">78</a>]</span>. Как и у дофамина, смысл сигнала задаёт
+рецептор получателя (утверждение <a href="01.html#x4-12001r2">1.2</a>): у ацетилхолина есть и быстрые рецепторы,
+открывающие канал, и медленные, запускающие реакции внутри клетки. Для нас важны три
+действия.
+</p><p class="indent"> <span class="lati-1095">Первое: ослабить внутренние связи. </span>Опыты на срезах обонятельной коры показали, что
+ацетилхолин сильно подавляет передачу по связям между нейронами одной области и почти не
+трогает входы, приходящие в неё извне <span class="cite">[<a href="refs.html#XHasselmoBower1992">76</a>]</span>.
+</p><p class="indent"> <span class="lati-1095">Второе: усилить входы. </span>Ацетилхолин повышает возбудимость нейронов и облегчает передачу
+по некоторым входным путям; сигнал от органов чувств становится громче собственной
+активности сети <span class="cite">[<a href="refs.html#XHasselmo2006">54</a>]</span>.
+</p><p class="indent"> <span class="lati-1095">Третье: облегчить изменение весов. </span>При высоком уровне ацетилхолина связи меняются
+легче <span class="cite">[<a href="refs.html#XHasselmo2006">54</a>]</span>.
+</p><p class="indent"> Для инженера все три действия — одна операция: переключение из режима «читать» в режим
+«писать». Сеть перестаёт слушать саму себя, начинает слушать вход и запоминает то, что
+слышит.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">9.3 </span> <a id="x12-890009.3"></a>Сеть, которая дописывает</h3>
+<p class="noindent">Возьмём <math display="inline"><mi>N</mi></math>
+<span class="nt">GLUT</span>-нейронов, соединённых друг с другом. Сохраним в их связях несколько образов — наборов
+по <math display="inline"><mi>p</mi><mi>N</mi></math>
+одновременно активных нейронов — правилом Хебба <span class="cite">[<a href="refs.html#XHebb1949">64</a>]</span>. Если подать на такую сеть половину
+образа, связи возбудят недостающую половину: сеть <span class="lati-1095">дописывает </span>образ по части, как группа на
+рис. <a href="02.html#x5-210025">2.5</a> поддерживала сама себя. Это ассоциативная память: адресом служит часть
+содержимого. <span class="nt">GABA</span>, как в главе <a href="03.html#x6-250003">3</a>, держит общее число активных нейронов около
+<math display="inline"><mi>p</mi><mi>N</mi></math>, чтобы
+вместе не могли зажечься два образа.
+</p><p class="indent"> Обозначим уровень ацетилхолина <math display="inline"><mi>a</mi></math>,
+от <math display="inline"><mn>0</mn></math> до
+<math display="inline"><mn>1</mn></math>, и
+запишем три его действия в модель прямо:
+</p><div class="keyformula"><table class="equation"><tr><td>
+<math display="block" class="equation">
+ <mstyle id="x12-89001r1" class="label"></mstyle><mi>τ</mi> <mfrac><mrow><mstyle mathvariant="normal"><mi>d</mi></mstyle><msub><mrow><mi>r</mi></mrow><mrow><mi>i</mi></mrow></msub 
+></mrow> 
+ <mrow><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>t</mi></mrow></mfrac> <mo class="MathClass-rel" stretchy="false">=</mo> <mo class="MathClass-bin" stretchy="false">−</mo><msub><mrow><mi>r</mi></mrow><mrow><mi>i</mi></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>F</mi><mrow><mo class="MathClass-open" fence="true" mathsize="1.61em">(</mo><mrow><mstyle displaystyle="false"><mfrac><mrow><mn>1</mn><mo class="MathClass-bin" stretchy="false">+</mo><mi>a</mi>
+ </mrow><mrow><mn>2</mn> </mrow></mfrac></mstyle><mspace width="0.17em" class="thinspace"/><msub><mrow><mi>x</mi></mrow><mrow><mi>i</mi></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">+</mo> <mo class="MathClass-open" stretchy="false">(</mo><mn>1</mn> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>a</mi><mo class="MathClass-close" stretchy="false">)</mo><munder class="msub"><mrow><mo>∑</mo>
+ </mrow><mrow><mi>j</mi></mrow></munder 
+><msub><mrow><mi>W</mi></mrow><mrow><mi>i</mi><mi>j</mi></mrow></msub 
+><mspace width="0.17em" class="thinspace"/><msub><mrow><mi>r</mi></mrow><mrow><mi>j</mi></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>g</mi></mrow><mo class="MathClass-close" fence="true" mathsize="1.61em">)</mo></mrow><mo class="MathClass-punc" stretchy="false">,</mo><mspace width="2em" class="qquad"/><mfrac><mrow><mstyle mathvariant="normal"><mi>d</mi></mstyle><msub><mrow><mi>W</mi></mrow><mrow><mi>i</mi><mi>j</mi></mrow></msub 
+></mrow> 
+ <mrow><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>t</mi></mrow></mfrac> <mo class="MathClass-rel" stretchy="false">=</mo> <mi>η</mi><mspace width="0.17em" class="thinspace"/><mi>a</mi><mspace width="0.17em" class="thinspace"/><mo class="MathClass-open" stretchy="false">(</mo><msub><mrow><mi>r</mi></mrow><mrow><mi>i</mi></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>p</mi><mo class="MathClass-close" stretchy="false">)</mo><mo class="MathClass-open" stretchy="false">(</mo><msub><mrow><mi>r</mi></mrow><mrow><mi>j</mi></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>p</mi><mo class="MathClass-close" stretchy="false">)</mo><mo class="MathClass-punc" stretchy="false">.</mo>
+</math></td><td class="eq-no">(9.1)</td></tr></table>
+</div><p class="noindent"> Здесь <math display="inline"><msub><mrow><mi>r</mi></mrow><mrow><mi>i</mi></mrow></msub 
+></math> —
+частота нейрона <math display="inline"><mi>i</mi></math>,
+<math display="inline"><msub><mrow><mi>x</mi></mrow><mrow><mi>i</mi></mrow></msub 
+></math> — его вход от органов
+чувств, <math display="inline"><mi>F</mi></math> — пороговая
+передаточная характеристика, <math display="inline"><mi>g</mi></math>
+— общее торможение от <span class="nt">GABA</span>, растущее, когда активных нейронов больше
+<math display="inline"><mi>p</mi><mi>N</mi></math>. Множитель
+<math display="inline"><mfrac><mrow><mn>1</mn><mo class="MathClass-bin" stretchy="false">+</mo><mi>a</mi></mrow>
+ <mrow><mn>2</mn></mrow></mfrac> </math> — усиление входа,
+<math display="inline"><mn>1</mn> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>a</mi></math> — ослабление
+внутренних связей, <math display="inline"><mi>η</mi><mi>a</mi></math>
+— скорость обучения. Второе уравнение — правило Хебба (<a href="06.html#x9-59001r3">6.3</a>) в форме, удобной для редких
+образов <span class="cite">[<a href="refs.html#XTsodyks1988">79</a>]</span>: вес растёт, когда оба нейрона активнее обычного, и уменьшается, когда активен
+только один. Отрицательная часть весов, как всегда, стоит за <span class="nt">GABA</span>-посредниками. Часов нет: и
+нейроны, и веса меняются непрерывно.
+</p>
+ <figure class="figure"> 
+<a id="x12-890021"></a>
+<p class="noindent"><img src="img/full31x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<figcaption class="caption"><span class="id">Рис. 9.1: </span><span class="content"><span class="nt">ACET</span> как линия разрешения записи. Нейроны
+<math display="inline"><msub><mrow><mi>r</mi></mrow><mrow><mi>i</mi></mrow></msub 
+></math>
+получают вход
+<math display="inline"><msub><mrow><mi>x</mi></mrow><mrow><mi>i</mi></mrow></msub 
+></math>
+от органов чувств (синие стрелки) и возбуждают друг друга через внутренние связи
+<math display="inline"><mi>W</mi></math>
+(серые), в которых хранятся образы. Ацетилхолин (штриховые стрелки) усиливает вход,
+ослабляет внутренние связи и облегчает изменение весов, как в (<a href="#x12-89001r1">9.1</a>).</span></figcaption>
+ </figure>
+ <h3 class="sectionHead"><span class="titlemark">9.4 </span> <a id="x12-900009.4"></a>Запись и чтение мешают друг другу</h3>
+<p class="noindent">Проверим модель (<a href="#x12-89001r1">9.1</a>) на задаче, в которой запись и чтение действительно конфликтуют. Сеть из
+<math display="inline"><mn>2</mn><mn>0</mn><mn>0</mn></math> нейронов уже хранит
+пять образов по <math display="inline"><mn>2</mn><mn>0</mn></math>
+активных нейронов. Теперь нужно запомнить шестой, который наполовину совпадает с одним из
+старых: десять нейронов у них общие. Так бывает постоянно: новая комната похожа на
+знакомую, новое лицо — на старое.
+</p><p class="indent"> <span class="lati-1095">Запись при низком </span><math display="inline"><mi>a</mi></math><span class="lati-1095">.</span>
+Сначала отделим первые два действия ацетилхолина от третьего: оставим скорость обучения
+полной, а меняться будут только усиление входа и ослабление внутренних связей. При
+<math display="inline"><mi>a</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn></math> вход
+зажигает общие десять нейронов, а они через внутренние связи зажигают оставшуюся половину
+<span class="lati-1095">старого </span>образа. <span class="nt">GABA</span> не даёт гореть обоим сразу, и старый образ, поддержанный
+собственными связями, вытесняет новый, который держится только на входе. Сеть видит
+не то, что перед ней, а то, что помнит, — и правило Хебба старательно записывает
+увиденное.
+</p><p class="indent"> В итоге новый образ вообще не запомнился: по его отличительной половине
+сеть ничего не вспоминает. А старый испорчен: вызванный своей отличительной
+половиной, он тянет за собой в среднем шесть чужих нейронов из десяти. При
+<math display="inline"><mi>a</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn></math> новый
+образ уже запоминается, но сливается со старым, и порча даже сильнее: каждый из двух,
+вызванный своей половиной, тянет за собой около восьми чужих нейронов; начиная с
+<math display="inline"><mi>a</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn></math>
+запись чистая: лишних нейронов при вспоминании меньше одного (усреднение по десяти
+прогонам).
+</p><p class="indent"> <span class="lati-1095">Запись с настоящей скоростью обучения. </span>Теперь пусть ацетилхолин, как в (<a href="#x12-89001r1">9.1</a>), задаёт и
+скорость обучения. За одно предъявление новый образ запоминается целиком только при
+<math display="inline"><mi>a</mi> <mo class="MathClass-rel" stretchy="false">≥</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>9</mn></math>; при
+<math display="inline"><mi>a</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>7</mn><mn>5</mn></math> — на восемь
+десятых, при <math display="inline"><mi>a</mi> <mo class="MathClass-rel" stretchy="false">≤</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn></math>
+не запоминается совсем.
+</p><p class="indent"> <span class="lati-1095">Чтение. </span>Подадим на сеть с пятью чисто записанными образами половину образа, а потом уберём
+и её. При <math display="inline"><mi>a</mi> <mo class="MathClass-rel" stretchy="false">≤</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn></math>
+сеть дописывает образ целиком и держит его сама; при
+<math display="inline"><mi>a</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>3</mn></math> — почти
+целиком; при <math display="inline"><mi>a</mi> <mo class="MathClass-rel" stretchy="false">≥</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>4</mn></math>
+внутренние связи слишком ослаблены, и после того как подсказка исчезла, активность гаснет
+(рис. <a href="#x12-900012">9.2</a>).
+</p>
+ <figure class="figure"> 
+<a id="x12-900012"></a>
+<p class="noindent"><img src="img/full32x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<figcaption class="caption"><span class="id">Рис. 9.2: </span><span class="content">Модель (<a href="#x12-89001r1">9.1</a>): <math display="inline"><mn>2</mn><mn>0</mn><mn>0</mn></math>
+нейронов, образы по <math display="inline"><mn>2</mn><mn>0</mn></math>
+активных, среднее по десяти прогонам. Синие точки — чтение: какая доля образа
+восстановлена по его половине после того, как подсказка убрана. Красные точки —
+запись: какая доля нового образа, наполовину похожего на старый, вспоминается после
+одного предъявления, если ацетилхолин задаёт и скорость обучения. Чтение работает при
+<math display="inline"><mi>a</mi> <mo class="MathClass-rel" stretchy="false">≤</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>3</mn></math>,
+запись — при <math display="inline"><mi>a</mi> <mo class="MathClass-rel" stretchy="false">≥</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>9</mn></math>.</span></figcaption>
+ </figure>
+ <div class="tcolorbox keyblock" id="tcolobox-25"> 
+<div class="tcolorbox-content"><div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x12-90002r1"></a>
+<span class="labx-1095">Утверждение 9.1 </span>(Запись и чтение требуют разных режимов)<span class="labx-1095">.</span> </span> <span class="lati-1095">В</span>
+<span class="lati-1095">модели</span><span class="lati-1095"> </span>(<a href="#x12-89001r1">9.1</a>)<span class="lati-1095">, где одни и те же связи хранят старое и учатся</span>
+<span class="lati-1095">новому, а ацетилхолин задаёт и скорость обучения, нет уровня</span>
+<math display="inline"><mi>a</mi></math><span class="lati-1095">,</span>
+<span class="lati-1095">при котором одинаково хорошо идут и запись, и чтение. Для записи внутренние</span>
+<span class="lati-1095">связи нужно ослабить, иначе сеть запишет не вход, а вспомненное; для чтения их</span>
+<span class="lati-1095">нужно усилить, иначе она не допишет образ по части. Нужен переключатель, и один</span>
+<span class="lati-1095">широковещательный провод может им служить.</span>
+</p>
+</div>
+ 
+</div> 
+</div>
+<p class="indent"> Если бы ацетилхолин не менял скорость обучения, для обоих дел годилась бы узкая полоса
+<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn> <mo class="MathClass-rel" stretchy="false">≤</mo> <mi>a</mi> <mo class="MathClass-rel" stretchy="false">≤</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>3</mn></math>. Но
+тогда сеть училась бы и при каждом чтении, то есть заново записывала бы прочитанное вместе с
+его ошибками. Сама идея — подавлять внутренние связи во время обучения — взята из моделей,
+построенных по измерениям на срезах <span class="cite">[<a href="refs.html#XHasselmoAndersonBower1992">77</a>]</span>. Числа выше относятся к нашей упрощённой модели;
+где именно лежат границы режимов в мозге, неизвестно.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">9.5 </span> <a id="x12-910009.5"></a>Сколько верить глазам</h3>
+<p class="noindent">Переключатель «писать/читать» — крайний случай более общего вопроса: насколько верить
+входу и насколько — памяти? Для этого вопроса у инженеров есть точный ответ, и он
+проливает свет на то, почему один провод управляет сразу и режимом, и скоростью
+обучения.
+</p><p class="indent"> Пусть сеть следит за величиной <math display="inline"><mi>s</mi><mo class="MathClass-open" stretchy="false">(</mo><mi>t</mi><mo class="MathClass-close" stretchy="false">)</mo></math>,
+которая медленно блуждает: за секунду её дисперсия растёт на
+<math display="inline"><mi>q</mi></math>. Органы чувств
+сообщают <math display="inline"><mi>y</mi><mo class="MathClass-open" stretchy="false">(</mo><mi>t</mi><mo class="MathClass-close" stretchy="false">)</mo> <mo class="MathClass-rel" stretchy="false">=</mo> <mi>s</mi><mo class="MathClass-open" stretchy="false">(</mo><mi>t</mi><mo class="MathClass-close" stretchy="false">)</mo><mo class="MathClass-bin" stretchy="false">+</mo></math>шум с
+интенсивностью <math display="inline"><mi>R</mi></math>.
+Лучшая оценка <math display="inline"><mi>ŝ</mi></math>
+в непрерывном времени даётся фильтром Калмана–Бьюси <span class="cite">[<a href="refs.html#XKalmanBucy1961">80</a>]</span>:
+</p><div class="keyformula"><table class="equation"><tr><td>
+<math display="block" class="equation">
+ <mstyle id="x12-91001r2" class="label"></mstyle><mfrac><mrow><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>ŝ</mi></mrow>
+ <mrow><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>t</mi></mrow></mfrac> <mspace width="0.28em" class="thickpace"/> <mo class="MathClass-rel" stretchy="false">=</mo> <mspace width="0.28em" class="thickpace"/><mfrac><mrow><mi>P</mi></mrow> 
+<mrow><mi>R</mi></mrow></mfrac><mspace width="0.17em" class="thinspace"/><mrow><mo class="MathClass-open" fence="true" mathsize="1.19em">(</mo><mrow><mi>y</mi> <mo class="MathClass-bin" stretchy="false">−</mo><mi>ŝ</mi></mrow><mo class="MathClass-close" fence="true" mathsize="1.19em">)</mo></mrow><mo class="MathClass-punc" stretchy="false">,</mo><mspace width="2em" class="qquad"/><mfrac><mrow><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>P</mi></mrow> 
+ <mrow><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>t</mi></mrow></mfrac> <mspace width="0.28em" class="thickpace"/> <mo class="MathClass-rel" stretchy="false">=</mo> <mspace width="0.28em" class="thickpace"/><mi>q</mi> <mo class="MathClass-bin" stretchy="false">−</mo><mfrac><mrow><msup><mrow><mi>P</mi></mrow><mrow><mn>2</mn></mrow></msup 
+></mrow> 
+ <mrow><mi>R</mi></mrow></mfrac> <mo class="MathClass-punc" stretchy="false">,</mo>
+</math></td><td class="eq-no">(9.2)</td></tr></table>
+</div><p class="noindent"> где <math display="inline"><mi>P</mi></math> —
+дисперсия ошибки оценки, то есть насколько сеть сама не уверена в том, что знает. Первое
+уравнение — та же RC-цепь, что у мембраны в модели нейрона (<a href="02.html#x5-16001r1">2.1</a>), но с постоянной времени
+<math display="inline"><mi>R</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mi>P</mi></math>, которая меняется.
+Когда сеть не уверена, <math display="inline"><mi>P</mi></math>
+велико, постоянная времени мала, и оценка быстро следует за входом: это «писать». Когда уверена,
+<math display="inline"><mi>P</mi></math> мало,
+и оценка почти не слушает вход, держась за память: это «читать».
+</p><p class="indent"> В установившемся режиме <math display="inline"><mi>P</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <msqrt><mrow><mi>q</mi><mi>R</mi></mrow></msqrt></math> и
+постоянная времени памяти равна <math display="inline"><msqrt><mrow><mi>R</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mi>q</mi></mrow></msqrt></math>: если
+мир уходит на единицу за сто секунд, <math display="inline"><mi>q</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>0</mn><mn>1</mn></math>,
+а шум органов чувств <math display="inline"><mi>R</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn></math>,
+память должна помнить около десяти секунд.
+</p><p class="indent"> Главное здесь то, что одно число <math display="inline"><mi>P</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mi>R</mi></math>
+задаёт сразу две вещи: и вес входа по сравнению с памятью, и скорость, с
+которой меняется хранимая оценка. Это ровно то, что делает ацетилхолин
+в (<a href="#x12-89001r1">9.1</a>). По гипотезе <span class="cite">[<a href="refs.html#XYuDayan2005">61</a>]</span>, ацетилхолин и сообщает сети величину, подобную
+<math display="inline"><mi>P</mi></math>, —
+<span class="lati-1095">ожидаемую </span>неопределённость, ту, о которой сеть знает заранее. Медленным этот канал бывает не
+всегда: часть <span class="nt">ACET</span>-нейронов отвечает на награду и наказание за два десятка миллисекунд, тем
+сильнее, чем неожиданнее подкрепление <span class="cite">[<a href="refs.html#XHangya2015">156</a>]</span>.
+</p>
+ <div class="tcolorbox keyblock" id="tcolobox-26"> 
+<div class="tcolorbox-content"><div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x12-91002r2"></a>
+<span class="labx-1095">Утверждение 9.2 </span>(Одна ручка для веса входа и скорости обучения)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">В оптимальном фильтре</span><span class="lati-1095"> </span>(<a href="#x12-91001r2">9.2</a>) <span class="lati-1095">вес, с которым вход смешивается</span>
+<span class="lati-1095">с памятью, и скорость обучения — одна и та же величина</span>
+<math display="inline"><mi>P</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mi>R</mi></math><span class="lati-1095">.</span>
+<span class="lati-1095">Поэтому разумно управлять ими одним сигналом. При неизменных</span>
+<span class="lati-1095">свойствах мира этот сигнал выходит на постоянный уровень</span>
+<math display="inline"><msqrt><mrow><mi>q</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mi>R</mi></mrow></msqrt></math><span class="lati-1095">,</span>
+<span class="lati-1095">и подстраивать его нужно, только когда свойства мира меняются.</span>
+</p>
+</div>
+ 
+</div> 
+</div>
+<p class="indent"> Второе предложение утверждения объясняет результат главы <a href="08.html#x11-770008">8</a>, где подстройка скорости
+обучения по неожиданности не выиграла у лучшей постоянной: в мире с неизменными свойствами
+перемен лучшая скорость обучения и есть постоянная. Выигрыш появляется, когда
+мир внезапно становится другим. Тогда оценка вдруг оказывается далеко от входа, а
+<math display="inline"><mi>P</mi></math> об этом не знает. Правильное
+действие — резко поднять <math display="inline"><mi>P</mi></math>
+и тем самым перейти в режим записи. По гипотезе, которую мы обсуждали в главе <a href="08.html#x11-770008">8</a>, о такой
+<span class="lati-1095">неожиданной </span>перемене сообщает <span class="nt">NORA</span> <span class="cite">[<a href="refs.html#XYuDayan2005">61</a>]</span>. Разделение труда получается естественным: <span class="nt">NORA</span>
+замечает, что мир изменился, <span class="nt">ACET</span> держит сеть в режиме записи, пока новая обстановка не
+выучена.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">9.6 </span> <a id="x12-920009.6"></a>Сон как режим чтения</h3>
+<p class="noindent">Если высокий уровень ацетилхолина — режим записи, то что делает сеть при низком?
+В медленном сне уровень ацетилхолина падает, внутренние связи освобождаются от
+подавления, входа от органов чувств почти нет. Сеть в режиме чтения без подсказки
+проигрывает то, что в ней записано. Регистрация активности показывает, что нейроны,
+работавшие днём вместе, в медленном сне снова срабатывают вместе <span class="cite">[<a href="refs.html#XWilsonMcNaughton1994">81</a>]</span>, и даже в том же
+порядке <span class="cite">[<a href="refs.html#XSkaggs1996">90</a>]</span>. По гипотезе <span class="cite">[<a href="refs.html#XHasselmo1999">78</a>]</span>, эти повторы переписывают быстро выученное днём в
+долговременную память (искусственное удлинение коротких вспышек повторов улучшает
+память <span class="cite">[<a href="refs.html#XFernandezRuiz2019">157</a>]</span>): днём — запись с входа, ночью — перезапись изнутри. Для инженера это
+похоже на запись в быстрый буфер днём и его сброс в медленную постоянную память
+ночью.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">9.7 </span> <a id="x12-930009.7"></a>Итог</h3>
+ <div class="table">
+<p class="indent"> <a id="x12-930011"></a></p><figure class="float">
+<div class="tabular">
+ <table id="TBL-11" class="tabular"><colgroup id="TBL-11-1g"><col id="TBL-11-1" /><col id="TBL-11-2" /><col id="TBL-11-3" /></colgroup><tr style="vertical-align:baseline;" id="TBL-11-1-"><td style="text-align:left;" id="TBL-11-1-1" class="td11"> <p class="noindent"><span class="larm-0900">Что</span>
+ <span class="larm-0900">делает</span>
+ <span class="nt"><span class="larm-0900">ACET</span></span> </p></td><td style="text-align:left;" id="TBL-11-1-2" class="td11"> <p class="noindent"><span class="larm-0900">Как</span> </p></td><td style="text-align:left;" id="TBL-11-1-3" class="td11"> <p class="noindent"><span class="larm-0900">Что</span>
+ <span class="larm-0900">известно</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-11-2-"><td style="text-align:left;" id="TBL-11-2-1" class="td11"> <p class="noindent"><span class="larm-0900">ослабляет</span>
+ <span class="larm-0900">внутренние</span>
+ <span class="larm-0900">связи</span> </p></td><td style="text-align:left;" id="TBL-11-2-2" class="td11"> <p class="noindent"><span class="larm-0900">множитель</span>
+ <math display="inline"><mn>1</mn> <mo class="MathClass-bin" stretchy="false">−</mo><mi>a</mi></math>
+ <span class="larm-0900">в</span><span class="larm-0900"> </span><span class="larm-0900">(</span><a href="#x12-89001r1"><span class="larm-0900">9.1</span></a><span class="larm-0900">)</span> </p></td><td style="text-align:left;" id="TBL-11-2-3" class="td11"> <p class="noindent"><span class="larm-0900">измерено</span>
+ <span class="larm-0900">на</span>
+ <span class="larm-0900">срезах</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-11-3-"><td style="text-align:left;" id="TBL-11-3-1" class="td11"> <p class="noindent"><span class="larm-0900">усиливает</span>
+ <span class="larm-0900">вход</span> </p></td><td style="text-align:left;" id="TBL-11-3-2" class="td11"> <p class="noindent"><span class="larm-0900">множитель</span>
+ <math display="inline"><mfrac><mrow><mn>1</mn><mo class="MathClass-bin" stretchy="false">+</mo><mi>a</mi></mrow>
+ <mrow><mn>2</mn></mrow></mfrac> </math> </p></td><td style="text-align:left;" id="TBL-11-3-3" class="td11"> <p class="noindent"><span class="larm-0900">повышение</span>
+ <span class="larm-0900">возбудимости</span>
+ <span class="larm-0900">и</span>
+ <span class="larm-0900">передачи</span>
+ <span class="larm-0900">по</span>
+ <span class="larm-0900">входным</span>
+ <span class="larm-0900">путям</span>
+ <span class="larm-0900">измерено</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-11-4-"><td style="text-align:left;" id="TBL-11-4-1" class="td11"> <p class="noindent"><span class="larm-0900">облегчает</span>
+ <span class="larm-0900">обучение</span> </p></td><td style="text-align:left;" id="TBL-11-4-2" class="td11"> <p class="noindent"><span class="larm-0900">скорость</span>
+ <math display="inline"><mi>η</mi><mi>a</mi></math> </p></td><td style="text-align:left;" id="TBL-11-4-3" class="td11"> <p class="noindent"><span class="larm-0900">измерено</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-11-5-"><td style="text-align:left;" id="TBL-11-5-1" class="td11"> <p class="noindent"><span class="larm-0900">переключает</span>
+ <span class="larm-0900">«писать/читать»</span> </p></td><td style="text-align:left;" id="TBL-11-5-2" class="td11"> <p class="noindent"><span class="larm-0900">утверждение</span><span class="larm-0900"> </span><a href="#x12-90002r1"><span class="larm-0900">9.1</span></a> </p></td><td style="text-align:left;" id="TBL-11-5-3" class="td11"> <p class="noindent"><span class="larm-0900">следует</span>
+ <span class="larm-0900">из</span>
+ <span class="larm-0900">моделей;</span>
+ <span class="larm-0900">прямого</span>
+ <span class="larm-0900">измерения</span>
+ <span class="larm-0900">режимов</span>
+ <span class="larm-0900">нет</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-11-6-"><td style="text-align:left;" id="TBL-11-6-1" class="td11"> <p class="noindent"><span class="larm-0900">сообщает</span>
+ <span class="larm-0900">ожидаемую</span>
+ <span class="larm-0900">неопределённость</span> </p></td><td style="text-align:left;" id="TBL-11-6-2" class="td11"> <p class="noindent"><math display="inline"><mi>P</mi></math>
+ <span class="larm-0900">в</span><span class="larm-0900"> </span><span class="larm-0900">(</span><a href="#x12-91001r2"><span class="larm-0900">9.2</span></a><span class="larm-0900">)</span> </p></td><td style="text-align:left;" id="TBL-11-6-3" class="td11"> <p class="noindent"><span class="larm-0900">гипотеза</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-11-7-"><td style="text-align:left;" id="TBL-11-7-1" class="td11"> <p class="noindent"><span class="larm-0900">освобождает</span>
+ <span class="larm-0900">сеть</span>
+ <span class="larm-0900">для</span>
+ <span class="larm-0900">повторов</span>
+ <span class="larm-0900">во</span>
+ <span class="larm-0900">сне</span> </p></td><td style="text-align:left;" id="TBL-11-7-2" class="td11"> <p class="noindent"><span class="larm-0900">низкий</span>
+ <math display="inline"><mi>a</mi></math>
+ <span class="larm-0900">в</span>
+ <span class="larm-0900">медленном</span>
+ <span class="larm-0900">сне</span> </p></td><td style="text-align:left;" id="TBL-11-7-3" class="td11"> <p class="noindent"><span class="larm-0900">низкий</span>
+ <span class="larm-0900">уровень</span>
+ <span class="larm-0900">во</span>
+ <span class="larm-0900">сне</span>
+ <span class="larm-0900">и</span>
+ <span class="larm-0900">повторы</span>
+ <span class="larm-0900">измерены;</span>
+ <span class="larm-0900">перезапись</span>
+ <span class="larm-0900">в</span>
+ <span class="larm-0900">долговременную</span>
+ <span class="larm-0900">память</span>
+ <span class="larm-0900">—</span>
+ <span class="larm-0900">гипотеза</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-11-8-"><td style="text-align:left;" id="TBL-11-8-1" class="td11"> </td></tr></table> </div>
+<figcaption class="caption"><span class="id">Таблица 9.1: </span><span class="content">Что добавляет <span class="nt">ACET</span> к сети из <span class="nt">GLUT</span>, <span class="nt">GABA</span>, <span class="nt">DOPA</span> и <span class="nt">NORA</span>.</span></figcaption>
+ </figure>
+ </div>
+<p class="indent"> <span class="nt">DOPA</span> говорит сети, куда менять веса, <span class="nt">NORA</span> — насколько решительно пользоваться тем,
+что она знает, а <span class="nt">ACET</span> — слушать ли ей мир или себя (таблица <a href="#x12-930011">9.1</a>). Это последняя
+широковещательная линия управления из таблицы <a href="01.html#x4-60021">1.1</a>: разрешение записи, без которого память,
+хранящая образы в тех же связях, которыми она их читает, портила бы себя при каждом
+чтении.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">9.8 </span> <a id="x12-940009.8"></a>Задачи</h3>
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x12-94001r1"></a>
+<span class="labx-1095">Задача 9.1 </span>(<math display="inline"><mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Сколько помнить. </span>Фильтр (<a href="#x12-91001r2">9.2</a>) с <math display="inline"><mi>q</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>0</mn><mn>1</mn></math>,
+<math display="inline"><mi>R</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn></math>
+помнит около <math display="inline"><mn>1</mn><mn>0</mn></math> с.
+Найдите <math display="inline"><msub><mrow><mi>P</mi></mrow><mrow><mi>∞</mi></mrow></msub 
+></math>
+и память <math display="inline"><msqrt><mrow><mi>R</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mi>q</mi></mrow></msqrt></math>,
+если (а) шум датчика вырос вдвое по амплитуде; (б) мир стал блуждать в сто раз быстрее.
+(в) Во сколько раз должен вырасти шум, чтобы сеть помнила минуту?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">(а) <math display="inline"><msub><mrow><mi>P</mi></mrow><mrow><mi>∞</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn></math>,
+память <math display="inline"><mn>2</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>с</mtext></mstyle></math>.
+(б) <math display="inline"><msub><mrow><mi>P</mi></mrow><mrow><mi>∞</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn></math>,
+память <math display="inline"><mn>1</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>с</mtext></mstyle></math>.
+(в) Память пропорциональна амплитуде шума: вшестеро.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x12-94002r2"></a>
+<span class="labx-1095">Задача 9.2 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Режим записи после перемены. </span>Мир изменился, и неопределённость фильтра (<a href="#x12-91001r2">9.2</a>) с <math display="inline"><mi>q</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>0</mn><mn>1</mn></math>,
+<math display="inline"><mi>R</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn></math>
+подскочила до <math display="inline"><msub><mrow><mi>P</mi></mrow><mrow><mn>0</mn></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">→</mo><mi>∞</mi></math>.
+(а) С какой постоянной времени <math display="inline"><mi>P</mi></math>
+возвращается к <math display="inline"><msub><mrow><mi>P</mi></mrow><mrow><mi>∞</mi></mrow></msub 
+></math>?
+(б) Через сколько секунд скорость обучения превысит установившуюся не больше чем на
+<math display="inline"><mn>1</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mi>%</mi></math>?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent"><math display="inline"><mi>P</mi><mo class="MathClass-open" stretchy="false">(</mo><mi>t</mi><mo class="MathClass-close" stretchy="false">)</mo> <mo class="MathClass-rel" stretchy="false">=</mo> <msub><mrow><mi>P</mi></mrow><mrow><mi>∞</mi></mrow></msub 
+><mi class="loglike">coth</mi><mo>⁡</mo><mo class="MathClass-open" stretchy="false">(</mo><mi>t</mi><msqrt><mrow><mi>q</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mi>R</mi></mrow></msqrt><mo class="MathClass-close" stretchy="false">)</mo></math>.
+(а) <math display="inline"><mfrac><mrow><mn>1</mn></mrow>
+<mrow><mn>2</mn></mrow></mfrac><msqrt><mrow><mi>R</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mi>q</mi></mrow></msqrt> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>5</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>с</mtext></mstyle></math> — вдвое короче
+памяти. (б) <math display="inline"><mi>t</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mfrac><mrow><mn>1</mn></mrow> 
+<mrow><mn>2</mn></mrow></mfrac> <mi class="loglike">ln</mi><mo>⁡</mo><mn>2</mn><mn>1</mn><mspace width="0.17em" class="thinspace"/><msqrt><mrow><mi>R</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mi>q</mi></mrow></msqrt> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>1</mn><mn>5</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>с</mtext></mstyle></math>:
+столько должен держаться повышенный <span class="nt">ACET</span>.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x12-94003r3"></a>
+<span class="labx-1095">Задача 9.3 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Постоянная скорость обучения. </span>Сеть учится как <math display="inline"><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>ŝ</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>t</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mo class="MathClass-open" stretchy="false">(</mo><mi>y</mi> <mo class="MathClass-bin" stretchy="false">−</mo><mi>ŝ</mi><mo class="MathClass-close" stretchy="false">)</mo><mo class="MathClass-bin" stretchy="false">∕</mo><mi>T</mi></math>;
+мир блуждает, <math display="inline"><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>s</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>t</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mi>w</mi></math>,
+<math display="inline"><mi>y</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mi>s</mi> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>n</mi></math>,
+где <math display="inline"><mi>w</mi></math>
+и <math display="inline"><mi>n</mi></math>
+— белые шумы с интенсивностями <math display="inline"><mi>q</mi></math>
+и <math display="inline"><mi>R</mi></math>.
+Найдите лучшее <math display="inline"><mi>T</mi></math>
+и дисперсию ошибки при нём. Во сколько раз она вырастет, если <math display="inline"><mi>T</mi></math>
+ошибочно в <math display="inline"><mn>2</mn></math>
+и в <math display="inline"><mn>1</mn><mn>0</mn></math>
+раз?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">Дисперсия <math display="inline"><mi>q</mi><mi>T</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mn>2</mn> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>R</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mo class="MathClass-open" stretchy="false">(</mo><mn>2</mn><mi>T</mi><mo class="MathClass-close" stretchy="false">)</mo></math>;
+<math display="inline"><msup><mrow><mi>T</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">∗</mo></mrow></msup 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <msqrt><mrow><mi>R</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mi>q</mi></mrow></msqrt></math>, дисперсия
+<math display="inline"><msqrt><mrow>
+<mi>q</mi><mi>R</mi></mrow></msqrt> <mo class="MathClass-rel" stretchy="false">=</mo> <msub><mrow><mi>P</mi></mrow><mrow><mi>∞</mi></mrow></msub 
+></math>, как у фильтра (<a href="fullch9.html#x12-91001r2">9.2</a>);
+рост в <math display="inline"><mo class="MathClass-open" stretchy="false">(</mo><mi>κ</mi> <mo class="MathClass-bin" stretchy="false">+</mo> <mn>1</mn><mo class="MathClass-bin" stretchy="false">∕</mo><mi>κ</mi><mo class="MathClass-close" stretchy="false">)</mo><mo class="MathClass-bin" stretchy="false">∕</mo><mn>2</mn></math>
+раз: <math display="inline"><mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn><mn>5</mn></math> и
+<math display="inline"><mn>5</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>0</mn><mn>5</mn></math>.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x12-94004r4"></a>
+<span class="labx-1095">Задача 9.4 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Где граница записи. </span>В <span class="latt-1095">models/acet_memory.py </span>порог <math display="inline"><mi>𝜃</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>3</mn><mn>5</mn></math>,
+вес внутри образа <math display="inline"><mi>w</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>0</mn><mn>4</mn><mn>1</mn></math>
+(в идеале <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>0</mn><mn>4</mn><mn>5</mn></math>).
+Новый образ делит <math display="inline"><mi>m</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mn>0</mn></math>
+нейронов со старым. При каком <math display="inline"><mi>a</mi></math>
+в (<a href="#x12-89001r1">9.1</a>) остальные нейроны старого образа не зажигаются от этих <math display="inline"><mi>m</mi></math>
+(порог резкий)?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent"><math display="inline"><mi>a</mi> <mo class="MathClass-rel" stretchy="false">&#x003E;</mo> <msub><mrow><mi>a</mi></mrow><mrow><mi>w</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>𝜃</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mo class="MathClass-open" stretchy="false">(</mo><mi>m</mi><mi>w</mi><mo class="MathClass-close" stretchy="false">)</mo></math>:
+<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn><mn>5</mn></math> при
+<math display="inline"><mi>w</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>0</mn><mn>4</mn><mn>1</mn></math>,
+<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn><mn>2</mn></math> при
+<math display="inline"><mi>w</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>0</mn><mn>4</mn><mn>5</mn></math>.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x12-94005r5"></a>
+<span class="labx-1095">Задача 9.5 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Моделирование: ёмкость памяти. </span>Измените в <span class="latt-1095">models/acet_memory.py </span>функцию <span class="latt-1095">read_sweep</span>:
+при <math display="inline"><mi>a</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn></math>
+запишите <math display="inline"><mi>M</mi></math>
+образов (<math display="inline"><mi>M</mi></math>
+от <math display="inline"><mn>5</mn></math>
+до <math display="inline"><mn>1</mn><mn>0</mn><mn>0</mn></math>),
+затем при <math display="inline"><mi>a</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn></math>
+прочитайте первые десять по половине. При каком <math display="inline"><mi>M</mi></math>
+появляются ошибки и как предельное <math display="inline"><msub><mrow><mi>M</mi></mrow><mrow><mi class="qopname">max</mi><mo> ⁡ </mo></mrow></msub 
+></math>
+зависит от <math display="inline"><mi>N</mi></math>
+и <math display="inline"><mi>p</mi></math>?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">Ошибки появляются при <math display="inline"><mi>M</mi> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>4</mn><mn>0</mn></math>–<math display="inline"><mn>6</mn><mn>0</mn></math>,
+при <math display="inline"><mi>M</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>8</mn><mn>0</mn></math> —
+<math display="inline"><mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>9</mn></math> лишних нейрона,
+при <math display="inline"><mi>M</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mn>0</mn><mn>0</mn></math> — доля образа
+<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>8</mn><mn>6</mn></math>; помеха от чужих
+образов имеет дисперсию <math display="inline"> <mo class="MathClass-rel" stretchy="false">≈</mo> <mo class="MathClass-open" stretchy="false">(</mo><mi>M</mi> <mo class="MathClass-bin" stretchy="false">−</mo> <mn>1</mn><mo class="MathClass-close" stretchy="false">)</mo><mi>p</mi><mo class="MathClass-open" stretchy="false">(</mo><mn>1</mn> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>p</mi><mo class="MathClass-close" stretchy="false">)</mo><mo class="MathClass-bin" stretchy="false">∕</mo><mi>N</mi></math>,
+так что <math display="inline"><msub><mrow><mi>M</mi></mrow><mrow><mi class="qopname">max</mi><mo> ⁡ </mo></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>8</mn><mn>0</mn></math>,
+<math display="inline"><msub><mrow><mi>M</mi></mrow><mrow><mi class="qopname">max</mi><mo> ⁡ </mo></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">∝</mo> <mi>N</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mi>p</mi></math>.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x12-94006r6"></a>
+<span class="labx-1095">Задача 9.6 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Проектирование: запись без утечки. </span>Со скоростью обучения <math display="inline"><mi>η</mi><mi>a</mi></math>
+сеть учится и при чтении. Предложите монотонную <math display="inline"><mi>η</mi><mo class="MathClass-open" stretchy="false">(</mo><mi>a</mi><mo class="MathClass-close" stretchy="false">)</mo> <mo class="MathClass-rel" stretchy="false">≤</mo> <mi>η</mi></math>,
+равную нулю при <math display="inline"><mi>a</mi> <mo class="MathClass-rel" stretchy="false">≤</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>3</mn></math>
+и не хуже <math display="inline"><mi>η</mi><mi>a</mi></math>
+при <math display="inline"><mi>a</mi> <mo class="MathClass-rel" stretchy="false">≥</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>9</mn></math>.
+Проверьте: после <math display="inline"><mn>2</mn><mn>0</mn></math>
+чтений при <math display="inline"><mi>a</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn></math>
+с подсказкой, где три чужих нейрона, сколько их вошло в образ?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">Например, <math display="inline"><mi>η</mi><mo class="MathClass-open" stretchy="false">(</mo><mi>a</mi><mo class="MathClass-close" stretchy="false">)</mo> <mo class="MathClass-rel" stretchy="false">=</mo> <mi>η</mi><mi class="qopname">min</mi><mo> ⁡ </mo><mrow><mo class="MathClass-open" fence="true" mathsize="1.19em">(</mo><mrow><mn>1</mn><mo class="MathClass-punc" stretchy="false">,</mo><mi class="qopname">max</mi><mo> ⁡ </mo><mo class="MathClass-open" stretchy="false">(</mo><mn>0</mn><mo class="MathClass-punc" stretchy="false">,</mo><mo class="MathClass-open" stretchy="false">(</mo><mi>a</mi> <mo class="MathClass-bin" stretchy="false">−</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>3</mn><mo class="MathClass-close" stretchy="false">)</mo><mo class="MathClass-bin" stretchy="false">∕</mo><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>6</mn><mo class="MathClass-close" stretchy="false">)</mo></mrow><mo class="MathClass-close" fence="true" mathsize="1.19em">)</mo></mrow></math>. С
+<math display="inline"><mi>η</mi><mi>a</mi></math> все три чужих нейрона
+вошли в образ; с <math display="inline"><mi>η</mi><mo class="MathClass-open" stretchy="false">(</mo><mi>a</mi><mo class="MathClass-close" stretchy="false">)</mo></math> — ни
+одного, запись при <math display="inline"><mi>a</mi> <mo class="MathClass-rel" stretchy="false">≥</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>9</mn></math>
+та же (доля <math display="inline"><mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>0</mn><mn>0</mn></math>).
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x12-94007r7"></a>
+<span class="labx-1095">Задача 9.7 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo><mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Как переписать буфер ночью. </span>(а) Во сне <math display="inline"><mi>a</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>0</mn><mn>5</mn></math>,
+повтор длится <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>с</mtext></mstyle></math>
+против <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>с</mtext></mstyle></math>
+днём при <math display="inline"><mi>a</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn></math>.
+Сколько повторов накопят изменение весов одного дневного предъявления при скорости
+<math display="inline"><mi>η</mi><mi>a</mi></math>
+и при <math display="inline"><mi>η</mi><mo class="MathClass-open" stretchy="false">(</mo><mi>a</mi><mo class="MathClass-close" stretchy="false">)</mo></math>
+задачи <a href="#x12-94006r6">9.6</a>? (б) Хранилище учится в <math display="inline"><mn>1</mn><mn>0</mn><mn>0</mn></math>
+раз медленнее буфера и слышит образ <math display="inline"><mn>2</mn><mn>0</mn></math>
+раз за ночь по <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>с</mtext></mstyle></math>.
+Сколько нужно ночей?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">(а) <math display="inline"><mn>4</mn><mn>0</mn></math> повторов;
+с <math display="inline"><mi>η</mi><mo class="MathClass-open" stretchy="false">(</mo><mi>a</mi><mo class="MathClass-close" stretchy="false">)</mo></math> задачи <a href="fullch9.html#x12-94006r6">9.6</a> —
+никогда. (б) <math display="inline"><mn>2</mn><mn>0</mn><mn>0</mn></math>
+повторов, <math display="inline"><mn>1</mn><mn>0</mn></math>
+ночей.
+</p></div></details>
+
+<p class="indent"> <a id="tailfullch9.html"></a> </p> 
+
+  </article>
+  <article class="text short" id="text-short" hidden>
+
+ <a id="s-x12-500009"></a>
+<p class="noindent">У памяти в мозге есть неудобная особенность: хранят
+воспоминания те же связи, по которым идёт работа.
+Нет отдельного жёсткого диска. Каждый раз, когда
+сеть вспоминает, она пользуется своими связями, —
+и каждый раз, когда учится, она их меняет. Как не
+испортить старое, записывая новое? В компьютере на
+это есть отдельный сигнал — «разрешить запись». В
+мозге его роль, похоже, играет радиостанция <span class="nt">ACET</span> —
+ацетилхолин.
+</p>
+ <h3 class="likesectionHead"> <a id="s-x12-51000"></a>Два режима</h3>
+<p class="noindent">Представьте сеть, которая хранит несколько картинок:
+покажи ей половину — она дорисует остальное. Это чтение.
+Теперь покажите ей новую картинку, похожую на старую.
+Если сеть будет по привычке дорисовывать, она увидит не
+новое, а старое — и выучит ошибку. Чтобы записать новое,
+сеть должна на время перестать доверять своей памяти и
+смотреть на мир.
+</p>
+<div class="center">
+<p class="noindent"><img src="img/short17x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<div class="minipage"><p class="noindent"><span class="lati-1000">Один провод переключает сеть: записывать новое</span>
+<span class="lati-1000">или вспоминать старое.</span> </p></div></div>
+<p class="indent"> Ацетилхолин делает ровно это, и все три его эффекта
+измерены: он ослабляет внутренние связи сети, через
+которые она «вспоминает», усиливает сигналы, приходящие
+от органов чувств, и облегчает изменение связей. Много
+ацетилхолина — режим записи: сеть слушает мир и учится.
+Мало — режим чтения: сеть опирается на память и
+дорисовывает.
+</p><p class="indent"> В нашей модели нет такого уровня, при котором хорошо
+шло бы и то, и другое. Для записи внутренние связи нужно
+приглушить, а для чтения они нужны в полную силу.
+Поэтому переключатель необходим.
+</p>
+ <h3 class="likesectionHead"> <a id="s-x12-52000"></a>Сколько доверять глазам</h3>
+<p class="noindent">Инженеры давно решили похожую задачу. Когда корабль
+идёт по курсу, у штурмана есть расчёт, где корабль должен
+быть, и есть новые, но неточные наблюдения. Сколько
+доверять каждому? Оптимальный фильтр отвечает:
+доверяй наблюдениям тем больше, чем меньше уверен в
+расчёте. И в этом же рецепте есть второе: чем меньше
+уверенность, тем быстрее надо переучиваться. Одна ручка
+управляет сразу и весом входа, и скоростью обучения. Это
+ровно то, что делает ацетилхолин. Отсюда гипотеза: он
+сообщает сети, насколько неуверенна её собственная модель
+мира.
+</p>
+<div class="center">
+<p class="noindent"><img src="img/short18x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<div class="minipage"><p class="noindent"><span class="lati-1000">Сколько доверять глазам. Если сеть уверена в</span>
+<span class="lati-1000">своей модели мира, оценка почти вся из памяти.</span>
+<span class="lati-1000">Если не уверена — из наблюдений, и тогда же сеть</span>
+<span class="lati-1000">быстрее переучивается. По гипотезе, эту ручку</span>
+<span class="lati-1000">крутит ацетилхолин.</span> </p></div></div>
+ <h3 class="likesectionHead"> <a id="s-x12-53000"></a>Разделение труда</h3>
+<p class="noindent">Вспомните прошлую главу. Когда мир внезапно меняется,
+норадреналин, по гипотезе, замечает неожиданность. А
+ацетилхолин держит сеть в режиме записи, пока новая
+обстановка не выучена. Один сообщает «что-то изменилось»,
+другой — «пиши».
+</p>
+ <h3 class="likesectionHead"> <a id="s-x12-54000"></a>Ночная перезапись</h3>
+<p class="noindent">Во время глубокого сна уровень ацетилхолина низок. Сеть
+отключена от мира и находится в режиме чтения. Именно в
+это время в ней «проигрываются» дневные события — это
+измерено. Что при этом выученное за день переписывается в
+долговременную память, — правдоподобная гипотеза, к
+которой мы вернёмся в главе о сне.
+</p><p class="noindent"><span class="lati-1000">Формулы, модели, задачи и источники — в полной версии,</span>
+<span class="lati-1000">глава</span><span class="lati-1000"> 9.</span>
+</p>
+<p class="indent"> <a id="s-tailshortch9.html"></a> </p> 
+
+  </article>
+
+  <aside class="starline"><span data-ru="Книга бесплатная и открытая. Если глава была полезной, поставьте книге звезду на GitHub: так её найдут другие." data-en="The book is free and open. If this chapter was useful, star the book on GitHub so others can find it.">Книга бесплатная и открытая.</span> <a href="https://github.com/kladkogex/20-watt-computer" target="_blank" rel="noopener" data-ru="★ Звезда на GitHub" data-en="★ Star on GitHub">★ Звезда на GitHub</a></aside>
+  <nav class="pager">
+    <a class="prev" href="08.html"><span data-ru="← Назад" data-en="← Previous">← Назад</span><b>Когда искать, а когда решать: добавляем NORA</b></a>
+    <a class="next" href="10.html"><span data-ru="Дальше →" data-en="Next →">Дальше →</span><b>Вся машина</b></a>
+  </nav>
+  <footer>
+    <span data-ru='Константин Кладько · текст — <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.ru">CC BY-NC-SA 4.0</a>' data-en='Konstantin Kladko · text: <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>'>Константин Кладько</span>
+    <span><a href="../pdf/20-watt-computer-ru.pdf">PDF</a> · <a href="../breadboard/" data-ru="Макетная плата" data-en="Breadboard">Макетная плата</a> · <a href="https://github.com/kladkogex/20-watt-computer">GitHub</a></span>
+  </footer>
+</main>
+
+<script>
+(function(){
+  const NAV = [{"slug": "00", "title": "Как читать эту книгу", "kicker": "Введение"}, {"slug": "01", "title": "Типы нейронов", "kicker": "Глава 1"}, {"slug": "02", "title": "Что вычисляют GLUT-нейроны", "kicker": "Глава 2"}, {"slug": "03", "title": "GLUT и GABA вместе", "kicker": "Глава 3"}, {"slug": "04", "title": "Азбука Морзе: что мы знаем о языке, на котором говорят GLUT- и GABA-нейроны", "kicker": "Глава 4"}, {"slug": "05", "title": "Что вычисляют SERO-нейроны", "kicker": "Глава 5"}, {"slug": "06", "title": "Нейронные сети, которые умеют учиться: добавляем DOPA", "kicker": "Глава 6"}, {"slug": "07", "title": "Альтернативные современные теории обучения на основе дофамина", "kicker": "Глава 7"}, {"slug": "08", "title": "Когда искать, а когда решать: добавляем NORA", "kicker": "Глава 8"}, {"slug": "09", "title": "Когда писать, а когда читать: добавляем ACET", "kicker": "Глава 9"}, {"slug": "10", "title": "Вся машина", "kicker": "Глава 10"}, {"slug": "11", "title": "Входы машины: как к ней подключены глаза, уши и другие датчики", "kicker": "Глава 11"}, {"slug": "12", "title": "Распознавание изображений и видео", "kicker": "Глава 12"}, {"slug": "13", "title": "Выходы машины: как мозг управляет мышцами", "kicker": "Глава 13"}, {"slug": "14", "title": "Боль: сигнал тревоги", "kicker": "Глава 14"}, {"slug": "15", "title": "Как машина учится двигаться", "kicker": "Глава 15"}, {"slug": "16", "title": "Второй выход: как мозг управляет химией тела", "kicker": "Глава 16"}, {"slug": "17", "title": "Отладка машины", "kicker": "Глава 17"}, {"slug": "18", "title": "Типы нейронов по электрической функции", "kicker": "Глава 18"}, {"slug": "19", "title": "Нейроны по числу дендритов", "kicker": "Глава 19"}, {"slug": "20", "title": "Что делают нейроны во сне", "kicker": "Глава 20"}, {"slug": "21", "title": "Машина из живых нейронов", "kicker": "Глава 21"}, {"slug": "22", "title": "DishBrain", "kicker": "Глава 22"}, {"slug": "a", "title": "Вещества, которые не задают тип нейрона", "kicker": "Приложение A"}, {"slug": "b", "title": "Обозначения", "kicker": "Приложение B"}, {"slug": "c", "title": "Ответы", "kicker": "Приложение C"}, {"slug": "d", "title": "Экспериментальное приложение", "kicker": "Приложение D"}, {"slug": "refs", "title": "Литература", "kicker": ""}];
+  const SLUG = "09";
+  const store = {get(k){try{return localStorage.getItem(k)}catch(e){return null}}, set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+
+  // chapter selector
+  const sel = document.getElementById("jump");
+  NAV.forEach(p => { const o = document.createElement("option"); o.value = p.slug;
+    o.textContent = (p.kicker ? p.kicker + ". " : "") + p.title; if (p.slug === SLUG) o.selected = true; sel.appendChild(o); });
+  sel.addEventListener("change", () => { location.href = sel.value + ".html" + (location.hash === "#short" ? "#short" : ""); });
+
+  // Коротко / Полностью
+  const modeBox = document.querySelector(".mode");
+  const hasShort = modeBox.dataset.hasShort === "true";
+  const full = document.getElementById("text-full"), short = document.getElementById("text-short");
+  function setMode(m, remember){
+    if (!hasShort) m = "full";
+    document.body.dataset.mode = m;
+    full.hidden = m !== "full"; short.hidden = m !== "short";
+    modeBox.querySelectorAll(".seg").forEach(b => b.setAttribute("aria-pressed", b.dataset.mode === m));
+    if (remember) store.set("20w-mode", m);
+  }
+  if (!hasShort) modeBox.hidden = true;
+  modeBox.addEventListener("click", e => { const b = e.target.closest(".seg"); if (b) { setMode(b.dataset.mode, true); history.replaceState(null, "", "#" + b.dataset.mode); } });
+  document.addEventListener("click", e => { const a = e.target.closest("a[data-mode]"); if (a) { e.preventDefault(); setMode(a.dataset.mode, true); window.scrollTo(0, 0); } });
+  // a link into the text (#x...) that lives in the other version switches to it
+  function follow(){
+    const h = decodeURIComponent(location.hash.slice(1));
+    if (h === "short" || h === "full") { setMode(h, true); return; }
+    if (!h) return;
+    const t = document.getElementById(h);
+    if (t) { setMode(short.contains(t) ? "short" : "full", false); t.scrollIntoView(); }
+  }
+  setMode(store.get("20w-mode") || "full", false);
+  follow();
+  window.addEventListener("hashchange", follow);
+  // links that leave the book open in the whole window when the page sits inside the reader
+  if (document.documentElement.classList.contains("embedded"))
+    document.querySelectorAll('a[href^="../"], a[href^="http"]').forEach(a => { a.target = a.href.startsWith(location.origin) ? "_top" : "_blank"; });
+
+  // interface language (the text itself is Russian)
+  function setLang(l){
+    document.querySelectorAll("[data-ru]").forEach(el => { el.innerHTML = el.dataset[l]; });
+    document.getElementById("lang-ru").setAttribute("aria-pressed", l === "ru");
+    document.getElementById("lang-en").setAttribute("aria-pressed", l === "en");
+    store.set("20w-lang", l);
+  }
+  document.getElementById("lang-ru").onclick = () => setLang("ru");
+  document.getElementById("lang-en").onclick = () => setLang("en");
+  setLang(store.get("20w-lang") === "en" ? "en" : "ru");
+  window.addEventListener("storage", e => {
+    if (e.key === "20w-lang" && (e.newValue === "ru" || e.newValue === "en")) setLang(e.newValue);
+    if (e.key === "20w-theme" && (e.newValue === "light" || e.newValue === "dark")) document.documentElement.setAttribute("data-theme", e.newValue);
+  });
+})();
+</script>
+<script>
+(function(){var b=document.getElementById("theme");if(!b)return;var r=document.documentElement;function cur(){var t=r.getAttribute("data-theme");if(t)return t;return window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";}function show(){b.textContent=cur()==="dark"?"☀":"☾";b.setAttribute("aria-pressed",cur()==="dark");}b.onclick=function(){var t=cur()==="dark"?"light":"dark";r.setAttribute("data-theme",t);try{localStorage.setItem("20w-theme",t);}catch(e){}show();};if(window.matchMedia)matchMedia("(prefers-color-scheme: dark)").addEventListener("change",show);show();})();
+</script>
+</body>
+</html>

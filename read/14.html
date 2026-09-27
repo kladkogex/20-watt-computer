@@ -1,0 +1,679 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<script>try{var t=localStorage.getItem("20w-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);}catch(e){}if(window.self!==window.top)document.documentElement.classList.add("embedded");</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Глава 14. Боль: сигнал тревоги · Компьютер на 20 ваттах</title>
+<meta name="description" content="Все датчики главы 11 измеряли мир: сколько света, какой высоты звук, какое давление. Боль устроена иначе. Она сообщает не «что там», а «опасно, брось всё». Для инженера это не …">
+<link rel="canonical" href="https://kladkogex.github.io/20-watt-computer/read/14.html">
+<meta property="og:type" content="book">
+<meta property="og:title" content="Глава 14. Боль: сигнал тревоги · Компьютер на 20 ваттах">
+<meta property="og:description" content="Все датчики главы 11 измеряли мир: сколько света, какой высоты звук, какое давление. Боль устроена иначе. Она сообщает не «что там», а «опасно, брось всё». Для инженера это не …">
+<meta property="og:url" content="https://kladkogex.github.io/20-watt-computer/read/14.html">
+<meta property="og:locale" content="ru_RU">
+<meta property="og:image" content="https://kladkogex.github.io/20-watt-computer/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Your brain runs on 20 watts. Here is its datasheet. The 20-Watt Computer, a free textbook for engineers.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://kladkogex.github.io/20-watt-computer/og-card.png">
+<meta name="twitter:title" content="Глава 14. Боль: сигнал тревоги · The 20-Watt Computer">
+<meta name="twitter:description" content="Все датчики главы 11 измеряли мир: сколько света, какой высоты звук, какое давление. Боль устроена иначе. Она сообщает не «что там», а «опасно, брось всё». Для инженера это не …">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Chapter", "name": "Боль: сигнал тревоги", "url": "https://kladkogex.github.io/20-watt-computer/read/14.html", "position": 14, "inLanguage": "ru", "isAccessibleForFree": true, "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/", "author": {"@type": "Person", "name": "Константин Кладько", "alternateName": "Konstantin Kladko"}, "isPartOf": {"@type": "Book", "name": "Компьютер на 20 ваттах. Как вычисляет мозг: количественный подход для инженеров", "alternateName": "The 20-Watt Computer: How the Brain Computes. A Quantitative Approach for Engineers", "author": {"@type": "Person", "name": "Константин Кладько", "alternateName": "Konstantin Kladko"}, "url": "https://kladkogex.github.io/20-watt-computer/", "inLanguage": "ru", "isAccessibleForFree": true, "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/"}}</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap">
+<link rel="stylesheet" href="book.css">
+</head>
+<body>
+<header class="bar">
+  <a class="home" href="../#toc"><span class="w">20</span> <span data-ru="Компьютер на 20 ваттах" data-en="The 20-Watt Computer">Компьютер на 20 ваттах</span></a>
+  <label class="jump"><span class="sr" data-ru="Перейти к главе" data-en="Go to chapter">Перейти к главе</span>
+    <select id="jump"></select></label>
+  <div class="langs" role="group" aria-label="Language">
+    <button class="chip" id="lang-ru" type="button">RU</button>
+    <button class="chip" id="lang-en" type="button">EN</button>
+    <button class="chip theme" id="theme" type="button" aria-label="Light or dark theme" title="Light / dark">☾</button>
+  </div>
+</header>
+
+<main class="page">
+  <div class="pagehead">
+    <p class="kicker" data-ru="Глава 14" data-en="Chapter 14">Глава 14</p>
+    <h1><span class="t-full">Боль: сигнал тревоги</span><span class="t-short">Сигнал тревоги</span></h1>
+    <div class="mode" role="group" aria-label="Version" data-has-short="true">
+      <button type="button" class="seg" data-mode="short"><b data-ru="Коротко" data-en="Short">Коротко</b><span data-ru="без формул, с рисунками" data-en="no formulas, with drawings">без формул, с рисунками</span></button>
+      <button type="button" class="seg" data-mode="full"><b data-ru="Полностью" data-en="Full">Полностью</b><span data-ru="формулы, модели, задачи" data-en="formulas, models, exercises">формулы, модели, задачи</span></button>
+    </div>
+    <p class="lang-note" data-ru="" data-en="The online reader is in Russian for now; the book in other languages is in the PDF downloads in the menu.">.</p>
+  </div>
+
+  <article class="text full" id="text-full">
+
+ <a id="x17-12900014"></a>
+ <h3 class="sectionHead"><span class="titlemark">14.1 </span> <a id="x17-13000014.1"></a>Тревога, а не измерение</h3>
+<p class="noindent">Все датчики главы <a href="11.html#x14-10400011">11</a> измеряли мир: сколько света, какой высоты звук, какое давление. Боль
+устроена иначе. Она сообщает не «что там», а «опасно, брось всё». Для инженера это не
+измерительный канал, а <span class="lati-1095">сигнал тревоги</span>: линия с высшим приоритетом, которая должна
+пробиться сквозь любую текущую работу машины.
+</p><p class="indent"> От измерительного канала сигнализация отличается тремя свойствами, и все три у боли есть.
+Во-первых, её трудно приглушить привыканием: датчики боли привыкают гораздо слабее
+датчиков касания, а после лёгкого повреждения становятся даже чувствительнее <span class="cite">[<a href="refs.html#XLaMotte1982hyper">325</a>]</span>;
+ослабление ответа после сильного нагрева измерено лишь у одного их типа <span class="cite">[<a href="refs.html#XTreede1995heat">322</a>]</span>. Датчик света на
+постоянном фоне замолкает (рис. <a href="11.html#x14-1070022">11.2</a>), а сигнализация, которая замолчала через минуту,
+бесполезна. Во-вторых, у неё высокий порог: датчики боли срабатывают только тогда, когда
+воздействие близко к опасному, например на нагрев — у разных датчиков пороги от
+<math display="inline"><mn>4</mn><msup><mrow><mn>1</mn></mrow><mrow><mo class="MathClass-bin" stretchy="false">∘</mo></mrow></msup 
+></math> до
+<math display="inline"><mn>4</mn><mn>6</mn></math>–<math display="inline"><mn>4</mn><msup><mrow><mn>8</mn></mrow><mrow><mo class="MathClass-bin" stretchy="false">∘</mo></mrow></msup 
+></math>,
+в зависимости от типа <span class="cite">[<a href="refs.html#XTreede1995heat">322</a>, <a href="refs.html#XWeidner1999cfib">323</a>]</span>. В-третьих — и это главное для этой главы — громкость тревоги
+решает не только датчик, но и сама машина. Одна и та же рана болит по-разному в разной
+обстановке. Посмотрим, из каких уже знакомых деталей это собрано.
+</p><p class="indent"> Датчики боли — <span class="nt">GLUT</span>-нейроны, как и остальные чувствительные нейроны главы <a href="11.html#x14-10400011">11</a>. Часть
+из них вместе с глутаматом выбрасывает вещество P из приложения <a href="a.html#x26-220000A">22.8</a>, медленно
+усиливающее передачу.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">14.2 </span> <a id="x17-13100014.2"></a>Два провода: быстрая и медленная боль</h3>
+<p class="noindent">Ударьте палец — и вы почувствуете боль дважды: сначала короткую и резкую, а через секунду
+тупую и долгую. Это два разных провода. Быстрый провод изолирован и проводит импульсы со
+скоростью <math display="inline"><mi>v</mi></math>
+от <math display="inline"><mn>5</mn></math> до
+<math display="inline"><mn>3</mn><mn>0</mn></math>
+метров в секунду; медленный тонкий и голый,
+<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn></math>–<math display="inline"><mn>2</mn></math>
+метра в секунду. Сигнал от ступни проходит около метра, и время прихода
+</p><div class="keyformula"><table class="equation"><tr><td>
+<math display="block" class="equation">
+ <mstyle id="x17-131001r1" class="label"></mstyle><mi>t</mi><mspace width="0.28em" class="thickpace"/> <mo class="MathClass-rel" stretchy="false">=</mo> <mspace width="0.28em" class="thickpace"/><mfrac><mrow><mi>L</mi></mrow> 
+<mrow><mi>v</mi></mrow></mfrac>
+</math></td><td class="eq-no">(14.1)</td></tr></table>
+</div><p class="noindent"> для быстрого провода — десятки миллисекунд, для медленного — около секунды. Два
+провода несут два сообщения. Быстрый говорит <span class="lati-1095">где </span>и <span class="lati-1095">когда</span>: его импульсы приходят раньше и
+точнее, как в коде временем главы <a href="04.html#x7-350004">4</a>. Медленный говорит <span class="lati-1095">насколько плохо</span>, и его долгая тупая
+боль держит машину в режиме тревоги, пока повреждение не прошло.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">14.3 </span> <a id="x17-13200014.3"></a>Ворота в спинном мозге</h3>
+<p class="noindent">Первое, куда приходит сигнал боли, — спинной мозг, и там он проходит через <span class="lati-1095">ворота</span> <span class="cite">[<a href="refs.html#XMelzackWall1965">109</a>]</span>;
+конкретные нейроны этих ворот найдены сравнительно недавно <span class="cite">[<a href="refs.html#XDuan2014">159</a>]</span>. На выходной
+<span class="nt">GLUT</span>-нейрон, который передаёт боль дальше в мозг, сходятся провод боли и провод
+прикосновения. А рядом сидит тормозящий нейрон-посредник, <span class="nt">GABA</span> или <span class="nt">GLYC</span>, который
+прикосновение возбуждает (рис. <a href="#x17-1320011">14.1</a>). Прикосновение закрывает ворота. В исходной теории
+ворот <span class="cite">[<a href="refs.html#XMelzackWall1965">109</a>]</span> боль, наоборот, выключает этого посредника, и сильная боль ворота открывает; это
+допущение теории, на найденных нейронах ворот оно прямо не показано.
+</p>
+ <figure class="figure"> 
+<a id="x17-1320011"></a>
+<p class="noindent"><img src="img/full43x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<figcaption class="caption"><span class="id">Рис. 14.1: </span><span class="content">Ворота боли в спинном мозге по модели (<a href="#x17-132002r2">14.2</a>). Выходной <span class="nt">GLUT</span>-нейрон получает
+боль <math display="inline"><mi>ν</mi></math>
+и слабое возбуждение от касания <math display="inline"><mi>μ</mi></math>.
+Тормозящий посредник (<span class="nt">GABA</span> или <span class="nt">GLYC</span>) возбуждается касанием и, по допущению теории
+ворот, выключается болью. Сверху, по широковещательным каналам, приходит усиление
+<math display="inline"><mi>g</mi></math>.</span></figcaption>
+ </figure>
+<p class="indent"> Запишем это для частот, как в главе <a href="03.html#x6-250003">3</a>. Частота посредника
+<math display="inline"><mi>q</mi></math> и выходная
+частота <math display="inline"><mi>z</mi></math>
+равны
+</p><div class="keyformula"><table class="equation"><tr><td>
+<math display="block" class="equation">
+ <mstyle id="x17-132002r2" class="label"></mstyle><mi>q</mi><mspace width="0.28em" class="thickpace"/> <mo class="MathClass-rel" stretchy="false">=</mo> <mspace width="0.28em" class="thickpace"/><msub><mrow><mrow><mo class="MathClass-open" fence="true" mathsize="1.19em">[</mo><mrow><msub><mrow><mi>w</mi></mrow><mrow><mi>q</mi><mi>μ</mi></mrow></msub 
+><mspace width="0.17em" class="thinspace"/><mi>μ</mi> <mo class="MathClass-bin" stretchy="false">+</mo> <msub><mrow><mi>q</mi></mrow><mrow><mn>0</mn></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">−</mo> <msub><mrow><mi>w</mi></mrow><mrow><mi>q</mi><mi>ν</mi></mrow></msub 
+><mspace width="0.17em" class="thinspace"/><mi>ν</mi></mrow><mo class="MathClass-close" fence="true" mathsize="1.19em">]</mo></mrow></mrow><mrow><mo class="MathClass-bin" stretchy="false">+</mo></mrow></msub 
+><mo class="MathClass-punc" stretchy="false">,</mo><mspace width="2em" class="qquad"/><mi>z</mi><mspace width="0.28em" class="thickpace"/> <mo class="MathClass-rel" stretchy="false">=</mo> <mspace width="0.28em" class="thickpace"/><msub><mrow><mrow><mo class="MathClass-open" fence="true" mathsize="1.19em">[</mo><mrow><mspace width="0.17em" class="thinspace"/><mi>g</mi><mspace width="0.17em" class="thinspace"/><mo class="MathClass-open" stretchy="false">(</mo><mi>ν</mi> <mo class="MathClass-bin" stretchy="false">+</mo> <msub><mrow><mi>w</mi></mrow><mrow><mi>z</mi><mi>μ</mi></mrow></msub 
+><mspace width="0.17em" class="thinspace"/><mi>μ</mi><mo class="MathClass-close" stretchy="false">)</mo> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>β</mi><mspace width="0.17em" class="thinspace"/><mi>q</mi><mspace width="0.17em" class="thinspace"/></mrow><mo class="MathClass-close" fence="true" mathsize="1.19em">]</mo></mrow></mrow><mrow><mo class="MathClass-bin" stretchy="false">+</mo></mrow></msub 
+><mo class="MathClass-punc" stretchy="false">,</mo>
+</math></td><td class="eq-no">(14.2)</td></tr></table>
+</div><p class="noindent"> где <math display="inline"><mi>ν</mi></math> —
+вход боли, <math display="inline"><mi>μ</mi></math> —
+вход касания, <math display="inline"><mi>w</mi></math>
+— веса связей (первый индекс — кому, второй — от кого),
+<math display="inline"><mi>β</mi></math> — сила торможения,
+<math display="inline"><msub><mrow><mi>q</mi></mrow><mrow><mn>0</mn></mrow></msub 
+></math> — собственная фоновая
+активность посредника, <math display="inline"><mi>g</mi></math>
+— усиление, которое задают сверху (о нём ниже). Это запрет (<a href="03.html#x6-27001r1">3.1</a>) из главы <a href="03.html#x6-250003">3</a>: «боль, но не при
+касании», — с одной поправкой, взятой из теории ворот как допущение: сильная боль сама
+выключает запрещающий нейрон.
+</p><p class="indent"> Мы посчитали модель при <math display="inline"><msub><mrow><mi>w</mi></mrow><mrow><mi>q</mi><mi>μ</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn></math>,
+<math display="inline"><msub><mrow><mi>q</mi></mrow><mrow><mn>0</mn></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn></math>,
+<math display="inline"><msub><mrow><mi>w</mi></mrow><mrow><mi>q</mi><mi>ν</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn></math>,
+<math display="inline"><msub><mrow><mi>w</mi></mrow><mrow><mi>z</mi><mi>μ</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>3</mn></math>,
+<math display="inline"><mi>β</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn></math> (рис. <a href="#x17-1320032">14.2</a>). Без касания боль
+начинает проходить с <math display="inline"><mi>ν</mi> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn><mn>8</mn></math>. С
+касанием порог поднимается до <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>8</mn><mn>6</mn></math>,
+и при <math display="inline"><mi>ν</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn></math> выход
+падает вчетверо, с <math display="inline"><mn>1</mn></math>
+до <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn><mn>5</mn></math>. А при
+сильной боли, <math display="inline"><mi>ν</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>2</mn></math>,
+касание уже ничего не меняет: ворота распахнуты. Так и в жизни: потереть ушиб помогает, а при
+серьёзной травме — нет. Само касание, без боли, через ворота не проходит: тревога не
+поднимается от прикосновения.
+</p>
+ <figure class="figure"> 
+<a id="x17-1320032"></a>
+<p class="noindent"><img src="img/full44x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<figcaption class="caption"><span class="id">Рис. 14.2: </span><span class="content">Выход ворот (<a href="#x17-132002r2">14.2</a>) в зависимости от силы боли. Касание поднимает порог и
+приглушает слабую и среднюю боль, но не сильную. Сенсибилизация (штриховая линия)
+вдвое увеличивает усиление: та же боль передаётся вдвое громче, а порог опускается.</span></figcaption>
+ </figure>
+ <h3 class="sectionHead"><span class="titlemark">14.4 </span> <a id="x17-13300014.4"></a>Ручка громкости сверху</h3>
+<p class="noindent">Ворота управляются не только снизу. Из ствола мозга к ним идут нисходящие пути, которые меняют
+усиление <math display="inline"><mi>g</mi></math>
+в (<a href="#x17-132002r2">14.2</a>): <span class="nt">SERO</span>, <span class="nt">NORA</span> и опиоидные пептиды из приложения <a href="a.html#x26-220000A">22.8</a> <span class="cite">[<a href="refs.html#XFields2004">110</a>]</span>. Это те же
+широковещательные каналы, что и в главах <a href="05.html#x8-470005">5</a>–<a href="09.html#x12-860009">9</a>, только здесь их ручка — громкость тревоги.
+Они умеют крутить её в обе стороны: одни и те же нисходящие цепи могут и приглушать боль, и
+усиливать её.
+</p><p class="indent"> Зачем машине убавлять тревогу? Затем, что тревога — это прерывание, а прерывание не
+всегда уместно. Животное, убегающее от хищника, не должно останавливаться из-за раненой
+лапы: сначала бежать, потом зализывать рану. Ожидание облегчения тоже приглушает боль,
+и часть этого эффекта снимается, если заблокировать опиоидные рецепторы <span class="cite">[<a href="refs.html#XLevine1978">111</a>]</span>:
+ожидание, вычисленное в мозге, спускается по опиоидному каналу к воротам. Сама по
+себе эта картина измерена; как именно мозг решает, какой должна быть громкость, —
+гипотеза.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">14.5 </span> <a id="x17-13400014.5"></a>Сенсибилизация: тревога, которая учится</h3>
+<p class="noindent">После повреждения выходные нейроны ворот становятся чувствительнее: тот же вход
+вызывает больший выход, а порог опускается <span class="cite">[<a href="refs.html#XWoolf1983">112</a>]</span>. В модели (<a href="#x17-132002r2">14.2</a>) это рост усиления
+<math display="inline"><mi>g</mi></math>, и
+простейшее его описание — медленная RC-цепь, которую накачивает сама боль:
+</p><div class="keyformula"><table class="equation"><tr><td>
+<math display="block" class="equation">
+ <mstyle id="x17-134001r3" class="label"></mstyle><msub><mrow><mi>τ</mi></mrow><mrow><mi>s</mi></mrow></msub 
+><mspace width="0.17em" class="thinspace"/><mfrac><mrow><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>g</mi></mrow> 
+<mrow><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>t</mi></mrow></mfrac><mspace width="0.28em" class="thickpace"/> <mo class="MathClass-rel" stretchy="false">=</mo> <mspace width="0.28em" class="thickpace"/> <mo class="MathClass-bin" stretchy="false">−</mo> <mo class="MathClass-open" stretchy="false">(</mo><mi>g</mi> <mo class="MathClass-bin" stretchy="false">−</mo> <mn>1</mn><mo class="MathClass-close" stretchy="false">)</mo> <mo class="MathClass-bin" stretchy="false">+</mo> <msub><mrow><mi>k</mi></mrow><mrow><mi>s</mi></mrow></msub 
+><mspace width="0.17em" class="thinspace"/><mi>z</mi><mo class="MathClass-punc" stretchy="false">,</mo>
+</math></td><td class="eq-no">(14.3)</td></tr></table>
+</div><p class="noindent"> где <math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>s</mi></mrow></msub 
+></math> —
+время, за которое чувствительность возвращается к норме; оно больше длительности самой боли,
+потому что сенсибилизация держится и после того, как повреждающий стимул прекратился <span class="cite">[<a href="refs.html#XWoolf1983">112</a>]</span>, а
+<math display="inline"><msub><mrow><mi>k</mi></mrow><mrow><mi>s</mi></mrow></msub 
+></math>
+— сила накачки. Пока ткань повреждена, выход ворот держит
+<math display="inline"><mi>g</mi></math> выше
+единицы, и всё, что происходит рядом с раной, передаётся громче (штриховая линия на рис. <a href="#x17-1320032">14.2</a>:
+при <math display="inline"><mi>g</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>2</mn></math> порог
+опускается до <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn><mn>1</mn></math>,
+а выход удваивается). Это разумная настройка сигнализации: пока повреждение не зажило,
+лучше перестраховаться.
+</p><p class="indent"> Для инженера это положительная обратная связь с медленной
+утечкой: боль повышает усиление, усиление — боль. Пока петля слабая,
+<math display="inline"><mi>g</mi></math>
+возвращается к норме, когда рана зажила. Если же петля сильная, сигнализация может застрять
+во включённом состоянии и после того, как повреждения уже нет, — как группа с сильной
+обратной связью на рис. <a href="02.html#x5-210025">2.5</a>. Модель (<a href="#x17-134001r3">14.3</a>) — упрощение; то, что центральная сенсибилизация
+существует, измерено.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">14.6 </span> <a id="x17-13500014.6"></a>Боль как учитель и как прерывание</h3>
+<p class="noindent">У боли в машине две работы помимо сигнализации.
+</p><p class="indent"> <span class="lati-1095">Учитель. </span>Боль — отрицательная награда: в формуле ошибки (<a href="06.html#x9-63002r8">6.8</a>) она входит как
+<math display="inline"><mi>r</mi> <mo class="MathClass-rel" stretchy="false">&#x003C;</mo> <mn>0</mn></math>. Всё,
+что говорилось в главе <a href="06.html#x9-560006">6</a>, работает и здесь: предвестник боли начинает вызывать ошибку заранее,
+и сеть учится избегать того, что к боли ведёт. Опыты на людях показывают, что активность
+мозга при обучении на боли следует именно ошибке временных разностей <span class="cite">[<a href="refs.html#XSeymour2004">113</a>]</span>, а часть
+<span class="nt">DOPA</span>-нейронов отвечает и на неприятные события (глава <a href="07.html#x10-670007">7</a>).
+</p><p class="indent"> <span class="lati-1095">Прерывание. </span>Боль отрывает внимание от текущей задачи — это её назначение, а не побочный
+эффект <span class="cite">[<a href="refs.html#XEcclestonCrombez1999">114</a>]</span>. В главе <a href="08.html#x11-770008">8</a> та же роль «прерывания» обсуждалась для отрывистой пачки <span class="nt">NORA</span>. А
+самый быстрый ответ даже не доходит до мозга: отдёргивание руки от горячего замыкается
+прямо в спинном мозге той же парой мышц и тем же запретом противника, что на
+рис. <a href="13.html#x16-1240022">13.2</a>.
+</p>
+ <div class="tcolorbox keyblock" id="tcolobox-32"> 
+<div class="tcolorbox-content"><div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x17-135001r1"></a>
+<span class="labx-1095">Утверждение 14.1 </span>(Сигнал тревоги)<span class="labx-1095">.</span> </span> <span class="lati-1095">Боль — не измерение, а сигнал тревоги с</span>
+<span class="lati-1095">высоким приоритетом. Она привыкает гораздо слабее измерительных каналов, идёт</span>
+<span class="lati-1095">по двум проводам (быстрому — «где», медленному — «насколько плохо»), проходит</span>
+<span class="lati-1095">через ворота, которые закрывает касание (а сильная боль, по допущению теории</span>
+<span class="lati-1095">ворот, открывает), и её громкость задают сверху широковещательные каналы. Эти</span>
+<span class="lati-1095">устройства измерены, кроме открывания ворот болью; простые модели</span><span class="lati-1095"> </span>(<a href="#x17-132002r2">14.2</a>) <span class="lati-1095">и</span><span class="lati-1095"> </span>(<a href="#x17-134001r3">14.3</a>)
+<span class="lati-1095">— упрощения.</span>
+</p>
+</div>
+ 
+</div> 
+</div>
+ <h3 class="sectionHead"><span class="titlemark">14.7 </span> <a id="x17-13600014.7"></a>Итог</h3>
+ <div class="table">
+<p class="indent"> <a id="x17-1360011"></a></p><figure class="float">
+<div class="tabular">
+ <table id="TBL-17" class="tabular"><colgroup id="TBL-17-1g"><col id="TBL-17-1" /><col id="TBL-17-2" /><col id="TBL-17-3" /></colgroup><tr style="vertical-align:baseline;" id="TBL-17-1-"><td style="text-align:left;" id="TBL-17-1-1" class="td11"> <p class="noindent"><span class="larm-0900">Что</span>
+ <span class="larm-0900">делает</span>
+ <span class="larm-0900">боль</span> </p></td><td style="text-align:left;" id="TBL-17-1-2" class="td11"> <p class="noindent"><span class="larm-0900">Как</span> </p></td><td style="text-align:left;" id="TBL-17-1-3" class="td11"> <p class="noindent"><span class="larm-0900">Что</span>
+ <span class="larm-0900">известно</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-17-2-"><td style="text-align:left;" id="TBL-17-2-1" class="td11"> <p class="noindent"><span class="larm-0900">поднимает</span>
+ <span class="larm-0900">тревогу</span> </p></td><td style="text-align:left;" id="TBL-17-2-2" class="td11"> <p class="noindent"><span class="larm-0900">высокий</span>
+ <span class="larm-0900">порог,</span>
+ <span class="larm-0900">привыкание</span>
+ <span class="larm-0900">слабее,</span>
+ <span class="larm-0900">чем</span>
+ <span class="larm-0900">у</span>
+ <span class="larm-0900">касания</span> </p></td><td style="text-align:left;" id="TBL-17-2-3" class="td11"> <p class="noindent"><span class="larm-0900">порог</span>
+ <span class="larm-0900">измерен;</span>
+ <span class="larm-0900">сравнение</span>
+ <span class="larm-0900">привыкания</span>
+ <span class="larm-0900">—</span>
+ <span class="larm-0900">оценка</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-17-3-"><td style="text-align:left;" id="TBL-17-3-1" class="td11"> <p class="noindent"><span class="larm-0900">сообщает</span>
+ <span class="larm-0900">«где»</span>
+ <span class="larm-0900">и</span>
+ <span class="larm-0900">«насколько</span>
+ <span class="larm-0900">плохо»</span> </p></td><td style="text-align:left;" id="TBL-17-3-2" class="td11"> <p class="noindent"><span class="larm-0900">два</span>
+ <span class="larm-0900">провода</span>
+ <span class="larm-0900">с</span>
+ <span class="larm-0900">разной</span>
+ <span class="larm-0900">скоростью</span><span class="larm-0900"> </span><span class="larm-0900">(</span><a href="#x17-131001r1"><span class="larm-0900">14.1</span></a><span class="larm-0900">)</span> </p></td><td style="text-align:left;" id="TBL-17-3-3" class="td11"> <p class="noindent"><span class="larm-0900">измерено</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-17-4-"><td style="text-align:left;" id="TBL-17-4-1" class="td11"> <p class="noindent"><span class="larm-0900">проходит</span>
+ <span class="larm-0900">через</span>
+ <span class="larm-0900">ворота</span> </p></td><td style="text-align:left;" id="TBL-17-4-2" class="td11"> <p class="noindent"><span class="larm-0900">запрет</span>
+ <span class="larm-0900">через</span>
+ <span class="nt"><span class="larm-0900">GABA</span></span><span class="larm-0900">/</span><span class="nt"><span class="larm-0900">GLYC</span></span><span class="larm-0900"> </span><span class="larm-0900">(</span><a href="#x17-132002r2"><span class="larm-0900">14.2</span></a><span class="larm-0900">)</span> </p></td><td style="text-align:left;" id="TBL-17-4-3" class="td11"> <p class="noindent"><span class="larm-0900">ворота</span>
+ <span class="larm-0900">измерены;</span>
+ <span class="larm-0900">открывание</span>
+ <span class="larm-0900">болью</span>
+ <span class="larm-0900">—</span>
+ <span class="larm-0900">допущение</span>
+ <span class="larm-0900">теории;</span>
+ <span class="larm-0900">модель</span>
+ <span class="larm-0900">—</span>
+ <span class="larm-0900">упрощение</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-17-5-"><td style="text-align:left;" id="TBL-17-5-1" class="td11"> <p class="noindent"><span class="larm-0900">меняет</span>
+ <span class="larm-0900">громкость</span> </p></td><td style="text-align:left;" id="TBL-17-5-2" class="td11"> <p class="noindent"><span class="larm-0900">нисходящие</span>
+ <span class="nt"><span class="larm-0900">SERO</span></span><span class="larm-0900">,</span>
+ <span class="nt"><span class="larm-0900">NORA</span></span><span class="larm-0900">,</span>
+ <span class="larm-0900">опиоиды</span> </p></td><td style="text-align:left;" id="TBL-17-5-3" class="td11"> <p class="noindent"><span class="larm-0900">измерено;</span>
+ <span class="larm-0900">правило</span>
+ <span class="larm-0900">выбора</span>
+ <span class="larm-0900">громкости</span>
+ <span class="larm-0900">—</span>
+ <span class="larm-0900">гипотеза</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-17-6-"><td style="text-align:left;" id="TBL-17-6-1" class="td11"> <p class="noindent"><span class="larm-0900">учится</span>
+ <span class="larm-0900">после</span>
+ <span class="larm-0900">повреждения</span> </p></td><td style="text-align:left;" id="TBL-17-6-2" class="td11"> <p class="noindent"><span class="larm-0900">рост</span>
+ <span class="larm-0900">усиления</span><span class="larm-0900"> </span><span class="larm-0900">(</span><a href="#x17-134001r3"><span class="larm-0900">14.3</span></a><span class="larm-0900">)</span> </p></td><td style="text-align:left;" id="TBL-17-6-3" class="td11"> <p class="noindent"><span class="larm-0900">сенсибилизация</span>
+ <span class="larm-0900">измерена;</span>
+ <span class="larm-0900">модель</span>
+ <span class="larm-0900">—</span>
+ <span class="larm-0900">упрощение</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-17-7-"><td style="text-align:left;" id="TBL-17-7-1" class="td11"> <p class="noindent"><span class="larm-0900">учит</span>
+ <span class="larm-0900">избегать</span> </p></td><td style="text-align:left;" id="TBL-17-7-2" class="td11"> <p class="noindent"><span class="larm-0900">отрицательная</span>
+ <span class="larm-0900">награда</span>
+ <span class="larm-0900">в</span><span class="larm-0900"> </span><span class="larm-0900">(</span><a href="06.html#x9-63002r8"><span class="larm-0900">6.8</span></a><span class="larm-0900">)</span> </p></td><td style="text-align:left;" id="TBL-17-7-3" class="td11"> <p class="noindent"><span class="larm-0900">сходство</span>
+ <span class="larm-0900">с</span>
+ <span class="larm-0900">ошибкой</span>
+ <span class="larm-0900">временных</span>
+ <span class="larm-0900">разностей</span>
+ <span class="larm-0900">измерено</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-17-8-"><td style="text-align:left;" id="TBL-17-8-1" class="td11"> <p class="noindent"><span class="larm-0900">прерывает</span>
+ <span class="larm-0900">работу</span> </p></td><td style="text-align:left;" id="TBL-17-8-2" class="td11"> <p class="noindent"><span class="larm-0900">захват</span>
+ <span class="larm-0900">внимания;</span>
+ <span class="larm-0900">рефлекс</span>
+ <span class="larm-0900">отдёргивания</span> </p></td><td style="text-align:left;" id="TBL-17-8-3" class="td11"> <p class="noindent"><span class="larm-0900">измерено</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-17-9-"><td style="text-align:left;" id="TBL-17-9-1" class="td11"> </td></tr></table> </div>
+<figcaption class="caption"><span class="id">Таблица 14.1: </span><span class="content">Боль как сигнал тревоги.</span></figcaption>
+ </figure>
+ </div>
+<p class="indent"> Боль собрана из деталей, которые мы уже видели (таблица <a href="#x17-1360011">14.1</a>): <span class="nt">GLUT</span>-датчики, два
+провода, запрет через тормозящего посредника, широковещательная ручка громкости, медленная
+RC-цепь, ошибка предсказания и прерывание. Новое в ней одно: это единственный вход машины,
+громкость которого машина задаёт сама, — сигнализация, которую владелец может и
+приглушить, и перенастроить.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">14.8 </span> <a id="x17-13700014.8"></a>Задачи</h3>
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x17-137001r1"></a>
+<span class="labx-1095">Задача 14.1 </span>(<math display="inline"><mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Два провода. </span>Сигнал идёт от ступни, <math display="inline"><mi>L</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn></math> м.
+(а) Залп идёт по пучку проводов одного типа, скорости которых заполняют диапазон (<a href="#x17-131001r1">14.1</a>).
+На сколько он растягивается к приходу в спинной мозг для быстрого и медленного типа?
+(б) Волны боли по проводам <math display="inline"><mn>1</mn><mn>5</mn></math>
+и <math display="inline"><mn>1</mn></math> м/с
+различимы при разнице от <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn></math> с.
+С какого расстояния они сливаются?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">(а) На <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn><mn>7</mn></math> с и на
+<math display="inline"><mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn></math> с. (б) С расстояния
+меньше <math display="inline"><mn>1</mn><mn>1</mn></math> см.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x17-137002r2"></a>
+<span class="labx-1095">Задача 14.2 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Когда касание болит. </span>Ворота (<a href="#x17-132002r2">14.2</a>) с параметрами текста, усиление <math display="inline"><mi>g</mi></math>
+растёт при сенсибилизации. До какого <math display="inline"><mi>g</mi></math>
+касание без боли не проходит через ворота ни при какой силе <math display="inline"><mi>μ</mi></math>?
+При каком <math display="inline"><mi>g</mi></math>
+начинает проходить касание <math display="inline"><mi>μ</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn></math>?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">Касание без боли не проходит ни при каком
+<math display="inline"><mi>μ</mi></math>, пока
+<math display="inline"><mi>g</mi> <mo class="MathClass-rel" stretchy="false">≤</mo> <mi>β</mi><msub><mrow><mi>w</mi></mrow><mrow><mi>q</mi><mi>μ</mi></mrow></msub 
+><mo class="MathClass-bin" stretchy="false">∕</mo><msub><mrow><mi>w</mi></mrow><mrow><mi>z</mi><mi>μ</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>5</mn></math>; касание
+<math display="inline"><mi>μ</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn></math> проходит
+при <math display="inline"><mi>g</mi> <mo class="MathClass-rel" stretchy="false">&#x003E;</mo> <mn>6</mn></math>:
+сильная сенсибилизация делает болью обычное прикосновение.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x17-137003r3"></a>
+<span class="labx-1095">Задача 14.3 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Устойчивость сенсибилизации. </span>Входы постоянны, выход ворот линеен по <math display="inline"><mi>g</mi></math>:
+<math display="inline"><mi>z</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mi>g</mi><mi>A</mi> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>C</mi></math>,
+<math display="inline"><mi>A</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mi>ν</mi> <mo class="MathClass-bin" stretchy="false">+</mo> <msub><mrow><mi>w</mi></mrow><mrow><mi>z</mi><mi>μ</mi></mrow></msub 
+><mi>μ</mi></math>,
+<math display="inline"><mi>C</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mi>β</mi><mi>q</mi> <mo class="MathClass-rel" stretchy="false">≥</mo> <mn>0</mn></math>.
+(а) Найдите равновесие <math display="inline"><msup><mrow><mi>g</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">∗</mo></mrow></msup 
+></math>
+модели (<a href="#x17-134001r3">14.3</a>) и условие его устойчивости. (б) При <math display="inline"><msub><mrow><mi>k</mi></mrow><mrow><mi>s</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn></math>
+найдите силу боли, выше которой модель уходит вразнос, без касания и с касанием <math display="inline"><mi>μ</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn></math>.
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">(а) <math display="inline"><msup><mrow><mi>g</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">∗</mo></mrow></msup 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mo class="MathClass-open" stretchy="false">(</mo><mn>1</mn> <mo class="MathClass-bin" stretchy="false">−</mo> <msub><mrow><mi>k</mi></mrow><mrow><mi>s</mi></mrow></msub 
+><mi>C</mi><mo class="MathClass-close" stretchy="false">)</mo><mo class="MathClass-bin" stretchy="false">∕</mo><mo class="MathClass-open" stretchy="false">(</mo><mn>1</mn> <mo class="MathClass-bin" stretchy="false">−</mo> <msub><mrow><mi>k</mi></mrow><mrow><mi>s</mi></mrow></msub 
+><mi>A</mi><mo class="MathClass-close" stretchy="false">)</mo></math>, устойчиво
+при <math display="inline"><msub><mrow><mi>k</mi></mrow><mrow><mi>s</mi></mrow></msub 
+><mi>A</mi> <mo class="MathClass-rel" stretchy="false">&#x003C;</mo> <mn>1</mn></math>. (б) Без
+касания при <math display="inline"><mi>ν</mi> <mo class="MathClass-rel" stretchy="false">≥</mo> <mn>2</mn></math>, с
+касанием — уже при <math display="inline"><mi>ν</mi> <mo class="MathClass-rel" stretchy="false">≥</mo> <mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>7</mn></math>.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x17-137004r4"></a>
+<span class="labx-1095">Задача 14.4 </span>(<math display="inline"><mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Предвестник боли. </span>Сигнал в момент <math display="inline"><mn>0</mn></math>
+предсказывает боль в момент <math display="inline"><mi>T</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>2</mn></math> с,
+в (<a href="06.html#x9-63002r8">6.8</a>) <math display="inline"><mi>r</mi><mo class="MathClass-open" stretchy="false">(</mo><mi>t</mi><mo class="MathClass-close" stretchy="false">)</mo> <mo class="MathClass-rel" stretchy="false">=</mo> <mo class="MathClass-bin" stretchy="false">−</mo><mi>P</mi><mspace width="0.17em" class="thinspace"/><mi>δ</mi><mo class="MathClass-open" stretchy="false">(</mo><mi>t</mi> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>T</mi><mo class="MathClass-close" stretchy="false">)</mo></math>,
+<math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>γ</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>2</mn></math> с.
+(а) Найдите площадь всплеска <math display="inline"><mi>δ</mi></math>
+в момент сигнала. (б) Действие в момент <math display="inline"><msub><mrow><mi>t</mi></mrow><mrow><mi>e</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn></math> с
+отменяет боль. Каков всплеск <math display="inline"><mi>δ</mi></math>
+в этот момент и чему он научит сеть?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent"><math display="inline"><mi>V</mi> <mo class="MathClass-open" stretchy="false">(</mo><mi>t</mi><mo class="MathClass-close" stretchy="false">)</mo> <mo class="MathClass-rel" stretchy="false">=</mo> <mo class="MathClass-bin" stretchy="false">−</mo><mi>P</mi><msup><mrow><mi>e</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">−</mo><mo class="MathClass-open" stretchy="false">(</mo><mi>T</mi><mo class="MathClass-bin" stretchy="false">−</mo><mi>t</mi><mo class="MathClass-close" stretchy="false">)</mo><mo class="MathClass-bin" stretchy="false">∕</mo><msub><mrow><mi>τ</mi></mrow><mrow><mi>γ</mi></mrow></msub 
+></mrow></msup 
+></math>.
+(а) <math display="inline"> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>P</mi><msup><mrow><mi>e</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">−</mo><mi>T</mi><mo class="MathClass-bin" stretchy="false">∕</mo><msub><mrow><mi>τ</mi></mrow><mrow><mi>γ</mi></mrow></msub 
+></mrow></msup 
+> <mo class="MathClass-rel" stretchy="false">≈</mo><mo class="MathClass-bin" stretchy="false">−</mo><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>3</mn><mn>7</mn><mi>P</mi></math>.
+(б) <math display="inline"> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>P</mi><msup><mrow><mi>e</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">−</mo><mo class="MathClass-open" stretchy="false">(</mo><mi>T</mi><mo class="MathClass-bin" stretchy="false">−</mo><msub><mrow><mi>t</mi></mrow><mrow><mi>e</mi></mrow></msub 
+><mo class="MathClass-close" stretchy="false">)</mo><mo class="MathClass-bin" stretchy="false">∕</mo><msub><mrow><mi>τ</mi></mrow><mrow><mi>γ</mi></mrow></msub 
+></mrow></msup 
+> <mo class="MathClass-rel" stretchy="false">≈</mo> <mo class="MathClass-bin" stretchy="false">+</mo><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>6</mn><mn>1</mn><mi>P</mi></math>; он
+растёт с <math display="inline"><msub><mrow><mi>t</mi></mrow><mrow><mi>e</mi></mrow></msub 
+></math>
+до <math display="inline"> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>P</mi></math> и
+учит избегать боли.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x17-137005r5"></a>
+<span class="labx-1095">Задача 14.5 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Сигнализация, которая защёлкивается. </span>Дополните ворота из <span class="latt-1095">models/pain_gate.py </span>динамикой (<a href="#x17-134001r3">14.3</a>)
+и насыщением <math display="inline"><mi>z</mi> <mo class="MathClass-rel" stretchy="false">≤</mo> <mn>4</mn></math>.
+Касание <math display="inline"><mi>μ</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn></math>
+есть всегда, повреждение <math display="inline"><mi>ν</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>2</mn></math>
+длится время <math display="inline"><mi>T</mi></math>,
+затем <math display="inline"><mi>ν</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn></math>.
+Моделированием найдите наименьшее <math display="inline"><mi>T</mi></math>
+(в единицах <math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>s</mi></mrow></msub 
+></math>),
+после которого сигнализация остаётся включённой, при <math display="inline"><msub><mrow><mi>k</mi></mrow><mrow><mi>s</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>4</mn></math>,
+<math display="inline"><mn>4</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>6</mn></math>,
+<math display="inline"><mn>5</mn></math>,
+<math display="inline"><mn>6</mn></math>,
+<math display="inline"><mn>8</mn></math>.
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">При <math display="inline"><msub><mrow><mi>k</mi></mrow><mrow><mi>s</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>4</mn></math>
+защёлкивания нет (второе устойчивое состояние есть при
+<math display="inline"><msub><mrow><mi>k</mi></mrow><mrow><mi>s</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">≥</mo> <mn>4</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn><mn>8</mn></math>);
+<math display="inline"><msub><mrow><mi>T</mi></mrow><mrow><mi class="qopname">min</mi><mo> ⁡ </mo></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>4</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>3</mn><mn>5</mn></math>,
+<math display="inline"><mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>4</mn><mn>0</mn></math>,
+<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>6</mn><mn>5</mn></math>,
+<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>3</mn><mn>2</mn><mspace width="0.17em" class="thinspace"/><msub><mrow><mi>τ</mi></mrow><mrow><mi>s</mi></mrow></msub 
+></math> при
+<math display="inline"><msub><mrow><mi>k</mi></mrow><mrow><mi>s</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>4</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>6</mn></math>,
+<math display="inline"><mn>5</mn></math>,
+<math display="inline"><mn>6</mn></math>,
+<math display="inline"><mn>8</mn></math>.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x17-137006r6"></a>
+<span class="labx-1095">Задача 14.6 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Проектирование ворот. </span>При <math display="inline"><mi>β</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn></math>,
+<math display="inline"><msub><mrow><mi>w</mi></mrow><mrow><mi>z</mi><mi>μ</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>3</mn></math>,
+<math display="inline"><mi>g</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn></math>
+подберите в (<a href="#x17-132002r2">14.2</a>) <math display="inline"><msub><mrow><mi>q</mi></mrow><mrow><mn>0</mn></mrow></msub 
+></math>,
+<math display="inline"><msub><mrow><mi>w</mi></mrow><mrow><mi>q</mi><mi>ν</mi></mrow></msub 
+></math>,
+<math display="inline"><msub><mrow><mi>w</mi></mrow><mrow><mi>q</mi><mi>μ</mi></mrow></msub 
+></math>
+так, чтобы порог боли был <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn></math>
+без касания и <math display="inline"><mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>0</mn></math>
+с касанием <math display="inline"><mi>μ</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn></math>,
+а касание переставало приглушать боль при <math display="inline"><msub><mrow><mi>ν</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">×</mo></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>2</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn></math>.
+До какого усиления <math display="inline"><mi>g</mi></math>
+касание без боли не проходит через ворота?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent"><math display="inline"><msub><mrow><mi>w</mi></mrow><mrow><mi>q</mi><mi>ν</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>4</mn><mo class="MathClass-bin" stretchy="false">∕</mo><mn>9</mn> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>4</mn><mn>4</mn><mn>4</mn></math>,
+<math display="inline"><msub><mrow><mi>q</mi></mrow><mrow><mn>0</mn></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>2</mn><mo class="MathClass-bin" stretchy="false">∕</mo><mn>9</mn> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn><mn>2</mn><mn>2</mn></math>,
+<math display="inline"><msub><mrow><mi>w</mi></mrow><mrow><mi>q</mi><mi>μ</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>4</mn><mn>9</mn><mo class="MathClass-bin" stretchy="false">∕</mo><mn>4</mn><mn>5</mn> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>0</mn><mn>8</mn><mn>9</mn></math>; касание без боли
+безопасно до <math display="inline"><mi>g</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>4</mn><mn>9</mn><mo class="MathClass-bin" stretchy="false">∕</mo><mn>9</mn> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>5</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>4</mn></math>.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x17-137007r7"></a>
+<span class="labx-1095">Задача 14.7 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo><mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Ручка громкости. </span>Работа приносит ценность <math display="inline"><mi>V</mi> </math>
+в единицу времени, работа с повреждением <math display="inline"><mi>ν</mi></math>
+стоит <math display="inline"><mi>c</mi><mi>ν</mi></math>,
+так что прерывать выгодно при <math display="inline"><mi>ν</mi> <mo class="MathClass-rel" stretchy="false">&#x003E;</mo> <mi>V</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mi>c</mi></math>;
+боль прерывает при <math display="inline"><mi>z</mi> <mo class="MathClass-rel" stretchy="false">&#x003E;</mo> <mi>𝜃</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn></math>.
+(а) Какое усиление <math display="inline"><msup><mrow><mi>g</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">∗</mo></mrow></msup 
+></math>
+ворот (<a href="#x17-132002r2">14.2</a>) без касания даёт этот порог при <math display="inline"><mi>V</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mi>c</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn><mn>5</mn></math>,
+<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn></math>,
+<math display="inline"><mn>2</mn></math>?
+(б) Из каких сигналов книги машина могла бы оценивать <math display="inline"><mi>V</mi> </math>
+и <math display="inline"><mi>c</mi></math>?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">(а) Порог <math display="inline"><msub><mrow><mi>ν</mi></mrow><mrow><mi>c</mi></mrow></msub 
+><mo class="MathClass-open" stretchy="false">(</mo><mi>g</mi><mo class="MathClass-close" stretchy="false">)</mo> <mo class="MathClass-rel" stretchy="false">=</mo> <mi>𝜃</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mi>g</mi></math>
+при <math display="inline"><msub><mrow><mi>ν</mi></mrow><mrow><mi>c</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">≥</mo> <msub><mrow><mi>q</mi></mrow><mrow><mn>0</mn></mrow></msub 
+><mo class="MathClass-bin" stretchy="false">∕</mo><msub><mrow><mi>w</mi></mrow><mrow><mi>q</mi><mi>ν</mi></mrow></msub 
+></math>,
+иначе <math display="inline"><mo class="MathClass-open" stretchy="false">(</mo><mi>𝜃</mi> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>β</mi><msub><mrow><mi>q</mi></mrow><mrow><mn>0</mn></mrow></msub 
+><mo class="MathClass-close" stretchy="false">)</mo><mo class="MathClass-bin" stretchy="false">∕</mo><mo class="MathClass-open" stretchy="false">(</mo><mi>g</mi> <mo class="MathClass-bin" stretchy="false">+</mo> <mi>β</mi><msub><mrow><mi>w</mi></mrow><mrow><mi>q</mi><mi>ν</mi></mrow></msub 
+><mo class="MathClass-close" stretchy="false">)</mo></math>;
+<math display="inline"><msup><mrow><mi>g</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">∗</mo></mrow></msup 
+><mo class="MathClass-rel" stretchy="false">≈</mo> <mn>2</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>4</mn><mn>5</mn></math>,
+<math display="inline"><mn>1</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>0</mn></math>,
+<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn><mn>5</mn></math>.
+(б) Открытый вопрос.
+</p></div></details>
+
+<p class="indent"> <a id="tailfullch14.html"></a> </p> 
+
+  </article>
+  <article class="text short" id="text-short" hidden>
+
+ <a id="s-x17-7600014"></a>
+<div class="center">
+<p class="noindent"><img src="img/short26x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<div class="minipage"><p class="noindent"><span class="lati-1000">Боль — пожарная сигнализация, а не термометр.</span> </p></div></div>
+<p class="noindent">Все остальные чувства сообщают, каков мир. Боль — нет.
+Она сообщает, что что-то угрожает телу, и её громкость во
+многом задаёт сама машина, а не раздражитель. Боль — это
+пожарная сигнализация, а не термометр.
+</p><p class="indent"> Датчики боли срабатывают только на сильное: на жар
+выше сорока с лишним градусов, на сильное давление, на
+едкие вещества. Они привыкают гораздо слабее, чем датчики
+прикосновения, — сигнализация не должна замолкать, пока
+угроза есть.
+</p>
+ <h3 class="likesectionHead"> <a id="s-x17-77000"></a>Два провода</h3>
+<p class="noindent">Вспомните, как вы ударились пальцем. Сначала — острая,
+точная боль: где и когда. Через мгновение — тупая,
+разлитая, долгая: насколько плохо. Это два разных
+провода. Один быстрый, его сигнал долетает за десятки
+миллисекунд. Другой медленный, его сигнал идёт порядка
+секунды.
+</p>
+ <h3 class="likesectionHead"> <a id="s-x17-78000"></a>Ворота</h3>
+<p class="noindent">Почему, ударившись, мы трём ушиб? В спинном мозге
+сигнал боли проходит через «ворота». Прикосновение будит
+тормозной нейрон, который прикрывает их. Поэтому
+потереть ушиб действительно помогает — но только против
+умеренной боли; сильная проходит всё равно. Что сильная
+боль при этом сама выключает тормозной нейрон, — часть
+исходной теории ворот, её прямого подтверждения пока
+нет.
+</p>
+<div class="center">
+<p class="noindent"><img src="img/short27x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<div class="minipage"><p class="noindent"><span class="lati-1000">Ворота в спинном мозге. Сигнал боли проходит в</span>
+<span class="lati-1000">мозг через нейрон-ворота, а прикосновение будит</span>
+<span class="lati-1000">тормозной нейрон, который их прикрывает.</span>
+<span class="lati-1000">Поэтому потереть ушиб помогает, но только</span>
+<span class="lati-1000">против умеренной боли.</span> </p></div></div>
+ <h3 class="likesectionHead"> <a id="s-x17-79000"></a>Ручка громкости сверху</h3>
+<p class="noindent">Мозг умеет сам делать боль громче или тише. Сверху, из
+головного мозга, к воротам идут радиоканалы — <span class="nt">SERO</span>,
+<span class="nt">NORA</span> и особые вещества, похожие на обезболивающие,
+которые мозг выделяет сам. В опасной ситуации боль может
+почти исчезнуть: бегущему от опасности некогда хромать.
+Ожидание облегчения тоже приглушает боль, отчасти через
+те же вещества.
+</p>
+ <h3 class="likesectionHead"> <a id="s-x17-80000"></a>Когда сигнализация залипает</h3>
+<p class="noindent">Повторная боль повышает чувствительность: тот же удар
+начинает болеть сильнее. Это тоже обучение — петля,
+которая сама себя подкручивает, пока рана заживает. Но у
+сильной петли есть опасность: она может «залипнуть» и
+продолжать звонить, когда рана уже зажила, — как группа
+нейронов из второй главы, которая поддерживает сама
+себя.
+</p>
+ <h3 class="likesectionHead"> <a id="s-x17-81000"></a>Учитель и прерывание</h3>
+<p class="noindent">Боль — ещё и учитель: для дофаминового «лучше или хуже,
+чем ожидалось» она работает как отрицательная награда. И
+она прерывает текущее дело, как вспышка норадреналина:
+бросай всё, займись опасностью. А самая быстрая реакция
+— отдёрнуть руку от горячего — замыкается прямо в
+спинном мозге той самой парой мышц-противников из
+прошлой главы, ещё до того, как вы успели почувствовать
+боль.
+</p><p class="noindent"><span class="lati-1000">Формулы, модели, задачи и источники — в полной версии,</span>
+<span class="lati-1000">глава</span><span class="lati-1000"> 14.</span>
+</p>
+<p class="indent"> <a id="s-tailshortch14.html"></a> </p> 
+
+  </article>
+
+  <aside class="starline"><span data-ru="Книга бесплатная и открытая. Если глава была полезной, поставьте книге звезду на GitHub: так её найдут другие." data-en="The book is free and open. If this chapter was useful, star the book on GitHub so others can find it.">Книга бесплатная и открытая.</span> <a href="https://github.com/kladkogex/20-watt-computer" target="_blank" rel="noopener" data-ru="★ Звезда на GitHub" data-en="★ Star on GitHub">★ Звезда на GitHub</a></aside>
+  <nav class="pager">
+    <a class="prev" href="13.html"><span data-ru="← Назад" data-en="← Previous">← Назад</span><b>Выходы машины: как мозг управляет мышцами</b></a>
+    <a class="next" href="15.html"><span data-ru="Дальше →" data-en="Next →">Дальше →</span><b>Как машина учится двигаться</b></a>
+  </nav>
+  <footer>
+    <span data-ru='Константин Кладько · текст — <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.ru">CC BY-NC-SA 4.0</a>' data-en='Konstantin Kladko · text: <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>'>Константин Кладько</span>
+    <span><a href="../pdf/20-watt-computer-ru.pdf">PDF</a> · <a href="../breadboard/" data-ru="Макетная плата" data-en="Breadboard">Макетная плата</a> · <a href="https://github.com/kladkogex/20-watt-computer">GitHub</a></span>
+  </footer>
+</main>
+
+<script>
+(function(){
+  const NAV = [{"slug": "00", "title": "Как читать эту книгу", "kicker": "Введение"}, {"slug": "01", "title": "Типы нейронов", "kicker": "Глава 1"}, {"slug": "02", "title": "Что вычисляют GLUT-нейроны", "kicker": "Глава 2"}, {"slug": "03", "title": "GLUT и GABA вместе", "kicker": "Глава 3"}, {"slug": "04", "title": "Азбука Морзе: что мы знаем о языке, на котором говорят GLUT- и GABA-нейроны", "kicker": "Глава 4"}, {"slug": "05", "title": "Что вычисляют SERO-нейроны", "kicker": "Глава 5"}, {"slug": "06", "title": "Нейронные сети, которые умеют учиться: добавляем DOPA", "kicker": "Глава 6"}, {"slug": "07", "title": "Альтернативные современные теории обучения на основе дофамина", "kicker": "Глава 7"}, {"slug": "08", "title": "Когда искать, а когда решать: добавляем NORA", "kicker": "Глава 8"}, {"slug": "09", "title": "Когда писать, а когда читать: добавляем ACET", "kicker": "Глава 9"}, {"slug": "10", "title": "Вся машина", "kicker": "Глава 10"}, {"slug": "11", "title": "Входы машины: как к ней подключены глаза, уши и другие датчики", "kicker": "Глава 11"}, {"slug": "12", "title": "Распознавание изображений и видео", "kicker": "Глава 12"}, {"slug": "13", "title": "Выходы машины: как мозг управляет мышцами", "kicker": "Глава 13"}, {"slug": "14", "title": "Боль: сигнал тревоги", "kicker": "Глава 14"}, {"slug": "15", "title": "Как машина учится двигаться", "kicker": "Глава 15"}, {"slug": "16", "title": "Второй выход: как мозг управляет химией тела", "kicker": "Глава 16"}, {"slug": "17", "title": "Отладка машины", "kicker": "Глава 17"}, {"slug": "18", "title": "Типы нейронов по электрической функции", "kicker": "Глава 18"}, {"slug": "19", "title": "Нейроны по числу дендритов", "kicker": "Глава 19"}, {"slug": "20", "title": "Что делают нейроны во сне", "kicker": "Глава 20"}, {"slug": "21", "title": "Машина из живых нейронов", "kicker": "Глава 21"}, {"slug": "22", "title": "DishBrain", "kicker": "Глава 22"}, {"slug": "a", "title": "Вещества, которые не задают тип нейрона", "kicker": "Приложение A"}, {"slug": "b", "title": "Обозначения", "kicker": "Приложение B"}, {"slug": "c", "title": "Ответы", "kicker": "Приложение C"}, {"slug": "d", "title": "Экспериментальное приложение", "kicker": "Приложение D"}, {"slug": "refs", "title": "Литература", "kicker": ""}];
+  const SLUG = "14";
+  const store = {get(k){try{return localStorage.getItem(k)}catch(e){return null}}, set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+
+  // chapter selector
+  const sel = document.getElementById("jump");
+  NAV.forEach(p => { const o = document.createElement("option"); o.value = p.slug;
+    o.textContent = (p.kicker ? p.kicker + ". " : "") + p.title; if (p.slug === SLUG) o.selected = true; sel.appendChild(o); });
+  sel.addEventListener("change", () => { location.href = sel.value + ".html" + (location.hash === "#short" ? "#short" : ""); });
+
+  // Коротко / Полностью
+  const modeBox = document.querySelector(".mode");
+  const hasShort = modeBox.dataset.hasShort === "true";
+  const full = document.getElementById("text-full"), short = document.getElementById("text-short");
+  function setMode(m, remember){
+    if (!hasShort) m = "full";
+    document.body.dataset.mode = m;
+    full.hidden = m !== "full"; short.hidden = m !== "short";
+    modeBox.querySelectorAll(".seg").forEach(b => b.setAttribute("aria-pressed", b.dataset.mode === m));
+    if (remember) store.set("20w-mode", m);
+  }
+  if (!hasShort) modeBox.hidden = true;
+  modeBox.addEventListener("click", e => { const b = e.target.closest(".seg"); if (b) { setMode(b.dataset.mode, true); history.replaceState(null, "", "#" + b.dataset.mode); } });
+  document.addEventListener("click", e => { const a = e.target.closest("a[data-mode]"); if (a) { e.preventDefault(); setMode(a.dataset.mode, true); window.scrollTo(0, 0); } });
+  // a link into the text (#x...) that lives in the other version switches to it
+  function follow(){
+    const h = decodeURIComponent(location.hash.slice(1));
+    if (h === "short" || h === "full") { setMode(h, true); return; }
+    if (!h) return;
+    const t = document.getElementById(h);
+    if (t) { setMode(short.contains(t) ? "short" : "full", false); t.scrollIntoView(); }
+  }
+  setMode(store.get("20w-mode") || "full", false);
+  follow();
+  window.addEventListener("hashchange", follow);
+  // links that leave the book open in the whole window when the page sits inside the reader
+  if (document.documentElement.classList.contains("embedded"))
+    document.querySelectorAll('a[href^="../"], a[href^="http"]').forEach(a => { a.target = a.href.startsWith(location.origin) ? "_top" : "_blank"; });
+
+  // interface language (the text itself is Russian)
+  function setLang(l){
+    document.querySelectorAll("[data-ru]").forEach(el => { el.innerHTML = el.dataset[l]; });
+    document.getElementById("lang-ru").setAttribute("aria-pressed", l === "ru");
+    document.getElementById("lang-en").setAttribute("aria-pressed", l === "en");
+    store.set("20w-lang", l);
+  }
+  document.getElementById("lang-ru").onclick = () => setLang("ru");
+  document.getElementById("lang-en").onclick = () => setLang("en");
+  setLang(store.get("20w-lang") === "en" ? "en" : "ru");
+  window.addEventListener("storage", e => {
+    if (e.key === "20w-lang" && (e.newValue === "ru" || e.newValue === "en")) setLang(e.newValue);
+    if (e.key === "20w-theme" && (e.newValue === "light" || e.newValue === "dark")) document.documentElement.setAttribute("data-theme", e.newValue);
+  });
+})();
+</script>
+<script>
+(function(){var b=document.getElementById("theme");if(!b)return;var r=document.documentElement;function cur(){var t=r.getAttribute("data-theme");if(t)return t;return window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";}function show(){b.textContent=cur()==="dark"?"☀":"☾";b.setAttribute("aria-pressed",cur()==="dark");}b.onclick=function(){var t=cur()==="dark"?"light":"dark";r.setAttribute("data-theme",t);try{localStorage.setItem("20w-theme",t);}catch(e){}show();};if(window.matchMedia)matchMedia("(prefers-color-scheme: dark)").addEventListener("change",show);show();})();
+</script>
+</body>
+</html>

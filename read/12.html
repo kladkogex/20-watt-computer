@@ -1,0 +1,833 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<script>try{var t=localStorage.getItem("20w-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);}catch(e){}if(window.self!==window.top)document.documentElement.classList.add("embedded");</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Глава 12. Распознавание изображений и видео · Компьютер на 20 ваттах</title>
+<meta name="description" content="Глава 11 довела изображение до входа машины: около миллиона выходных нейронов глаза, сжатый поток, в котором передаются в основном края и перемены. Но между датчиком и действием …">
+<link rel="canonical" href="https://kladkogex.github.io/20-watt-computer/read/12.html">
+<meta property="og:type" content="book">
+<meta property="og:title" content="Глава 12. Распознавание изображений и видео · Компьютер на 20 ваттах">
+<meta property="og:description" content="Глава 11 довела изображение до входа машины: около миллиона выходных нейронов глаза, сжатый поток, в котором передаются в основном края и перемены. Но между датчиком и действием …">
+<meta property="og:url" content="https://kladkogex.github.io/20-watt-computer/read/12.html">
+<meta property="og:locale" content="ru_RU">
+<meta property="og:image" content="https://kladkogex.github.io/20-watt-computer/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Your brain runs on 20 watts. Here is its datasheet. The 20-Watt Computer, a free textbook for engineers.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://kladkogex.github.io/20-watt-computer/og-card.png">
+<meta name="twitter:title" content="Глава 12. Распознавание изображений и видео · The 20-Watt Computer">
+<meta name="twitter:description" content="Глава 11 довела изображение до входа машины: около миллиона выходных нейронов глаза, сжатый поток, в котором передаются в основном края и перемены. Но между датчиком и действием …">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Chapter", "name": "Распознавание изображений и видео", "url": "https://kladkogex.github.io/20-watt-computer/read/12.html", "position": 12, "inLanguage": "ru", "isAccessibleForFree": true, "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/", "author": {"@type": "Person", "name": "Константин Кладько", "alternateName": "Konstantin Kladko"}, "isPartOf": {"@type": "Book", "name": "Компьютер на 20 ваттах. Как вычисляет мозг: количественный подход для инженеров", "alternateName": "The 20-Watt Computer: How the Brain Computes. A Quantitative Approach for Engineers", "author": {"@type": "Person", "name": "Константин Кладько", "alternateName": "Konstantin Kladko"}, "url": "https://kladkogex.github.io/20-watt-computer/", "inLanguage": "ru", "isAccessibleForFree": true, "license": "https://creativecommons.org/licenses/by-nc-sa/4.0/"}}</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap">
+<link rel="stylesheet" href="book.css">
+</head>
+<body>
+<header class="bar">
+  <a class="home" href="../#toc"><span class="w">20</span> <span data-ru="Компьютер на 20 ваттах" data-en="The 20-Watt Computer">Компьютер на 20 ваттах</span></a>
+  <label class="jump"><span class="sr" data-ru="Перейти к главе" data-en="Go to chapter">Перейти к главе</span>
+    <select id="jump"></select></label>
+  <div class="langs" role="group" aria-label="Language">
+    <button class="chip" id="lang-ru" type="button">RU</button>
+    <button class="chip" id="lang-en" type="button">EN</button>
+    <button class="chip theme" id="theme" type="button" aria-label="Light or dark theme" title="Light / dark">☾</button>
+  </div>
+</header>
+
+<main class="page">
+  <div class="pagehead">
+    <p class="kicker" data-ru="Глава 12" data-en="Chapter 12">Глава 12</p>
+    <h1><span class="t-full">Распознавание изображений и видео</span><span class="t-short">Как узнать кошку</span></h1>
+    <div class="mode" role="group" aria-label="Version" data-has-short="true">
+      <button type="button" class="seg" data-mode="short"><b data-ru="Коротко" data-en="Short">Коротко</b><span data-ru="без формул, с рисунками" data-en="no formulas, with drawings">без формул, с рисунками</span></button>
+      <button type="button" class="seg" data-mode="full"><b data-ru="Полностью" data-en="Full">Полностью</b><span data-ru="формулы, модели, задачи" data-en="formulas, models, exercises">формулы, модели, задачи</span></button>
+    </div>
+    <p class="lang-note" data-ru="" data-en="The online reader is in Russian for now; the book in other languages is in the PDF downloads in the menu.">.</p>
+  </div>
+
+  <article class="text full" id="text-full">
+
+ <a id="x15-11200012"></a>
+ <h3 class="sectionHead"><span class="titlemark">12.1 </span> <a id="x15-11300012.1"></a>Задача: одно и то же при разных пикселях</h3>
+<p class="noindent">Глава <a href="11.html#x14-10400011">11</a> довела изображение до входа машины: около миллиона выходных нейронов глаза,
+сжатый поток, в котором передаются в основном края и перемены. Но между датчиком и
+действием есть шаг, о котором мы пока молчали. Кошка на картинке — это не набор пикселей.
+Сдвиньте её на полкадра, поверните, отодвиньте, выключите половину света — почти все пиксели
+станут другими, а ответ «кошка» должен остаться тем же. Инженер называет это
+<span class="lati-1095">инвариантностью</span>: ответ классификатора не должен меняться при сдвиге, масштабе, повороте и
+освещении.
+</p><p class="indent"> Трудность хорошо видна на простом опыте. Возьмём одномерную «сетчатку» из
+<math display="inline"><mn>2</mn><mn>4</mn></math>
+точек и две фигуры по пять точек, которые могут стоять где угодно. Классификатор,
+который сравнивает вход с образцом, запомненным в одном месте, угадывает в
+<math display="inline"><mn>4</mn><mn>9</mn></math>–<math display="inline"><mn>5</mn><mn>2</mn><mi>%</mi></math>
+случаев — столько же, сколько монетка. Сдвиг ломает сравнение по пикселям полностью. Нужна
+другая схема.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">12.2 </span> <a id="x15-11400012.2"></a>Конвейер из ступеней</h3>
+<p class="noindent">Как быстро мозг это делает, мы уже знаем из главы <a href="04.html#x7-350004">4</a>: животное на мгновенно показанной картинке узнаётся
+примерно за <math display="inline"><mn>1</mn><mn>5</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>,
+и сигнал проходит около десятка ступеней, по
+<math display="inline"><mn>1</mn><mn>0</mn></math>–<math display="inline"><mn>2</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>
+на каждую <span class="cite">[<a href="refs.html#XThorpe1996">21</a>]</span>. На каждой ступени нейрон успевает выдать ноль или один импульс. Значит,
+быстрое распознавание — это один проход по конвейеру, без долгих раздумий и повторов. Вопрос
+в том, что делает каждая ступень.
+</p><p class="indent"> Ответ, который подсказали измерения на первых ступенях зрения <span class="cite">[<a href="refs.html#XHubelWiesel1962">165</a>]</span>, состоит из двух
+чередующихся операций (рис. <a href="#x15-1140021">12.1</a>).
+</p><p class="indent"> <span class="lati-1095">Избирательность. </span>Нейрон ступени <math display="inline"><mi>S</mi></math>
+смотрит на небольшой участок входа и срабатывает, только если там есть определённое сочетание
+частей: вот этот край, а рядом тот. Это И по частям — пороговый нейрон главы <a href="02.html#x5-150002">2</a>, у которого
+порог выше, чем даёт любая одна часть.
+</p><p class="indent"> <span class="lati-1095">Инвариантность. </span>Нейрон ступени <math display="inline"><mi>C</mi></math>
+собирает выходы многих <math display="inline"><mi>S</mi></math>-нейронов,
+ищущих одно и то же сочетание в разных местах, и срабатывает, если оно нашлось хоть где-то.
+Это ИЛИ по положениям — а точнее, выбор наибольшего.
+</p><p class="indent"> Для одномерной модели обе операции записываются так:
+</p><div class="keyformula"><table class="equation"><tr><td>
+<math display="block" class="equation">
+ <mstyle id="x15-114001r1" class="label"></mstyle><msub><mrow><mi>s</mi></mrow><mrow><mi>f</mi><mo class="MathClass-punc" stretchy="false">,</mo><mi>p</mi></mrow></msub 
+><mspace width="0.28em" class="thickpace"/> <mo class="MathClass-rel" stretchy="false">=</mo> <mspace width="0.28em" class="thickpace"/><msub><mrow><mrow><mo class="MathClass-open" fence="true" mathsize="1.61em">[</mo><mrow><munder class="msub"><mrow><mo>∑</mo>
+ </mrow><mrow><mi>i</mi></mrow></munder 
+><msub><mrow><mi>t</mi></mrow><mrow><mi>f</mi><mo class="MathClass-punc" stretchy="false">,</mo><mi>i</mi></mrow></msub 
+><mspace width="0.17em" class="thinspace"/><msub><mrow><mi>x</mi></mrow><mrow><mi>p</mi><mo class="MathClass-bin" stretchy="false">+</mo><mi>i</mi></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">−</mo> <mi>𝜃</mi></mrow><mo class="MathClass-close" fence="true" mathsize="1.61em">]</mo></mrow></mrow><mrow><mo class="MathClass-bin" stretchy="false">+</mo></mrow></msub 
+><mo class="MathClass-punc" stretchy="false">,</mo><mspace width="2em" class="qquad"/><msub><mrow><mi>c</mi></mrow><mrow><mi>f</mi></mrow></msub 
+><mspace width="0.28em" class="thickpace"/> <mo class="MathClass-rel" stretchy="false">=</mo> <mspace width="0.28em" class="thickpace"/><munder class="msub"><mrow><mi class="qopname">max</mi><mo> ⁡ </mo></mrow><mrow><mi>p</mi></mrow></munder 
+><mspace width="0.17em" class="thinspace"/><msub><mrow><mi>s</mi></mrow><mrow><mi>f</mi><mo class="MathClass-punc" stretchy="false">,</mo><mi>p</mi></mrow></msub 
+><mo class="MathClass-punc" stretchy="false">,</mo>
+</math></td><td class="eq-no">(12.1)</td></tr></table>
+</div><p class="noindent"> где <math display="inline"><mi>x</mi></math> — вход,
+<math display="inline"><msub><mrow><mi>t</mi></mrow><mrow><mi>f</mi><mo class="MathClass-punc" stretchy="false">,</mo><mi>i</mi></mrow></msub 
+></math> — образец
+признака <math display="inline"><mi>f</mi></math>,
+<math display="inline"><mi>p</mi></math> —
+положение, <math display="inline"><mi>𝜃</mi></math>
+— порог. Первое выражение делает ответ избирательным, второе — независимым от положения.
+Наибольшее из многих входов сеть получает из средств главы <a href="03.html#x6-250003">3</a>: взаимное торможение оставляет
+самый сильный вход (утверждение <a href="03.html#x6-30003r2">3.2</a>), а деление на общую активность выравнивает ответы при
+разной яркости <span class="cite">[<a href="refs.html#XCarandini2012">14</a>]</span>.
+</p>
+ <figure class="figure"> 
+<a id="x15-1140021"></a>
+<p class="noindent"><img src="img/full38x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<figcaption class="caption"><span class="id">Рис. 12.1: </span><span class="content">Одна пара ступеней конвейера. Нейроны <math display="inline"><mi>S</mi></math>
+ищут одно и то же сочетание частей в разных местах; нейрон
+<math display="inline"><mi>C</mi></math>
+отвечает, если оно нашлось хоть где-то (<a href="#x15-114001r1">12.1</a>). Фигура в кадре 1 и в кадре 2 возбуждает
+разные <math display="inline"><mi>S</mi></math>-нейроны,
+но один и тот же <math display="inline"><mi>C</mi></math>.
+Следующие пары ступеней повторяют то же на всё более крупных и сложных сочетаниях.</span></figcaption>
+ </figure>
+<p class="indent"> В той же одномерной модели пара ступеней (<a href="#x15-114001r1">12.1</a>) узнаёт фигуру в любом месте
+без ошибок, а если каждую точку входа случайно перевернуть с вероятностью
+<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn></math> — в
+<math display="inline"><mn>8</mn><mn>6</mn><mi>%</mi></math> случаев, с
+вероятностью <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn></math>
+— в <math display="inline"><mn>7</mn><mn>0</mn><mi>%</mi></math>.
+Монетка по-прежнему даёт половину. Сложите несколько таких пар одну над другой: первая
+ищет края, следующая — сочетания краёв, ещё выше — части предметов, наверху — предметы
+целиком. С каждой парой сочетания крупнее, а ответ всё меньше зависит от того, где и как
+предмет лежит <span class="cite">[<a href="refs.html#XRiesenhuber1999">166</a>]</span>.
+</p>
+ <div class="tcolorbox keyblock" id="tcolobox-29"> 
+<div class="tcolorbox-content"><div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x15-114003r1"></a>
+<span class="labx-1095">Утверждение 12.1 </span>(Конвейер избирательности и инвариантности)<span class="labx-1095">.</span> </span> <span class="lati-1095">Быстрое</span>
+<span class="lati-1095">распознавание — один проход по десятку ступеней. На каждой паре ступеней И по</span>
+<span class="lati-1095">частям</span><span class="lati-1095"> </span>(<a href="#x15-114001r1">12.1</a>) <span class="lati-1095">делает ответ избирательным, а ИЛИ по положениям — независимым</span>
+<span class="lati-1095">от сдвига. Чередование этих двух операций даёт ответ, который различает предметы</span>
+<span class="lati-1095">и почти не зависит от того, где и как они видны. Устройство первых ступеней и</span>
+<span class="lati-1095">скорость прохода измерены; то, что вся цепочка сводится к этим двум операциям, —</span>
+<span class="lati-1095">упрощение.</span>
+</p>
+</div>
+ 
+</div> 
+</div>
+<p class="indent"> Если это устройство кажется знакомым, так и должно быть. Именно его чередование — поиск
+признака во всех местах, потом объединение по соседним местам — инженеры перенесли в
+искусственные <span class="lati-1095">свёрточные </span>сети <span class="cite">[<a href="refs.html#XFukushima1980">167</a>]</span>. А недавно пошли обратно: свёрточные сети, обученные
+распознавать предметы, оказались лучшей из известных моделей ответов нейронов на
+верхних ступенях зрения <span class="cite">[<a href="refs.html#XYamins2014">168</a>]</span>. Результат наверху читается просто: по суммарным
+частотам около сотни нейронов последней ступени линейный решающий блок узнаёт
+предмет через десятую долю секунды после показа <span class="cite">[<a href="refs.html#XHung2005">169</a>]</span>. Это частотный код группы из
+главы <a href="04.html#x7-350004">4</a>.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">12.3 </span> <a id="x15-11500012.3"></a>Учитель, которого нет: учиться на видео</h3>
+<p class="noindent">Свёрточную сеть учат на миллионах картинок с подписями. Мозгу подписей почти никто не даёт:
+ребёнок видит предметы часами, а слово «чашка» слышит изредка. Откуда тогда ступени
+<math display="inline"><mi>C</mi></math> знают, какие
+<math display="inline"><mi>S</mi></math>-нейроны
+объединять? Ведь чтобы объединить «эту фигуру здесь» с «этой фигурой там», надо уже знать,
+что это одна и та же фигура.
+</p><p class="indent"> Подсказку даёт само видео. Мир меняется непрерывно: предмет в поле зрения остаётся тем
+же предметом, пока он сдвигается, поворачивается и меняет освещение, и только иногда
+взгляд переходит на другой. Всё, что меняется <span class="lati-1095">медленно</span>, скорее всего относится к
+предмету, а всё, что меняется быстро, — к его положению и виду <span class="cite">[<a href="refs.html#XWiskottSejnowski2002">170</a>]</span>. Значит,
+<math display="inline"><mi>C</mi></math>-нейрону
+достаточно правила Хебба из главы <a href="06.html#x9-560006">6</a> со следом: связывать то, что шло подряд, а не только то,
+что шло одновременно <span class="cite">[<a href="refs.html#XFoldiak1991">171</a>]</span>:
+</p><div class="keyformula"><table class="equation"><tr><td>
+<math display="block" class="equation">
+ <mstyle id="x15-115001r2" class="label"></mstyle><msub><mrow><mi>τ</mi></mrow><mrow><mstyle class="text"><mtext>сл</mtext></mstyle></mrow></msub 
+><mspace width="0.17em" class="thinspace"/><mfrac><mrow><mstyle mathvariant="normal"><mi>d</mi></mstyle><msub><mrow><mi>ȳ</mi></mrow><mrow><mi>k</mi></mrow></msub 
+></mrow> 
+ <mrow><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>t</mi></mrow></mfrac> <mspace width="0.28em" class="thickpace"/> <mo class="MathClass-rel" stretchy="false">=</mo> <mspace width="0.28em" class="thickpace"/> <mo class="MathClass-bin" stretchy="false">−</mo><msub><mrow><mi>ȳ</mi></mrow><mrow><mi>k</mi></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">+</mo> <msub><mrow><mi>y</mi></mrow><mrow><mi>k</mi></mrow></msub 
+><mo class="MathClass-punc" stretchy="false">,</mo><mspace width="2em" class="qquad"/><mfrac><mrow><mstyle mathvariant="normal"><mi>d</mi></mstyle><msub><mrow><mstyle mathvariant="bold"><mi>w</mi></mstyle></mrow><mrow><mi>k</mi></mrow></msub 
+></mrow> 
+ <mrow><mstyle mathvariant="normal"><mi>d</mi></mstyle><mi>t</mi></mrow></mfrac> <mspace width="0.28em" class="thickpace"/> <mo class="MathClass-rel" stretchy="false">=</mo> <mspace width="0.28em" class="thickpace"/><mi>η</mi><mspace width="0.17em" class="thinspace"/><msub><mrow><mi>ȳ</mi></mrow><mrow><mi>k</mi></mrow></msub 
+><mspace width="0.17em" class="thinspace"/><mrow><mo class="MathClass-open" fence="true" mathsize="1.19em">(</mo><mrow><mstyle mathvariant="bold"><mi>x</mi></mstyle> <mo class="MathClass-bin" stretchy="false">−</mo><msub><mrow><mstyle mathvariant="bold"><mi>w</mi></mstyle></mrow><mrow><mi>k</mi></mrow></msub 
+></mrow><mo class="MathClass-close" fence="true" mathsize="1.19em">)</mo></mrow><mo class="MathClass-punc" stretchy="false">.</mo>
+</math></td><td class="eq-no">(12.2)</td></tr></table>
+</div><p class="noindent"> Здесь <math display="inline"><msub><mrow><mi>y</mi></mrow><mrow><mi>k</mi></mrow></msub 
+></math> —
+активность <math display="inline"><mi>C</mi></math>-нейрона
+<math display="inline"><mi>k</mi></math>, который выиграл соревнование
+через торможение, <math display="inline"><msub><mrow><mi>ȳ</mi></mrow><mrow><mi>k</mi></mrow></msub 
+></math>
+— её след, та же RC-цепь, что и в правиле (<a href="06.html#x9-60001r5">6.5</a>), а
+<math display="inline"><mstyle mathvariant="bold"><mi>x</mi></mstyle></math> — выходы
+<math display="inline"><mi>S</mi></math>-нейронов.
+Нейрон, выигравший на первом виде предмета, ещё помнит это, когда приходит второй вид, и
+подтягивает к себе и его.
+</p>
+ <figure class="figure"> 
+<a id="x15-1150022"></a>
+<p class="noindent"><img src="img/full39x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<figcaption class="caption"><span class="id">Рис. 12.2: </span><span class="content">Как видео учит инвариантности, схема. Предмет
+<math display="inline"><mi>A</mi></math>
+проходит через четыре положения, потом пауза, потом предмет
+<math display="inline"><mi>B</mi></math>.
+След (<a href="#x15-115001r2">12.2</a>) нейрона, выигравшего на первом виде <math display="inline"><mi>A</mi></math>,
+держится весь проход, и все виды <math display="inline"><mi>A</mi></math>
+оказываются связаны с одним нейроном. Пауза стирает след, и
+<math display="inline"><mi>B</mi></math>
+достаётся другому нейрону.</span></figcaption>
+ </figure>
+<p class="indent"> Мы проверили это на модели (рис. <a href="#x15-1150022">12.2</a>). Два
+<math display="inline"><mi>C</mi></math>-нейрона соревнуются
+за входы от <math display="inline"><mn>1</mn><mn>6</mn></math>
+<math display="inline"><mi>S</mi></math>-нейронов:
+две фигуры в восьми положениях. Фигура проезжает через все положения, по
+<math display="inline"><mn>5</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math> на каждое,
+потом пауза <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>3</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>с</mtext></mstyle></math>
+и следующая случайная фигура. Никаких подписей. Если след короткий,
+<math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mstyle class="text"><mtext>сл</mtext></mstyle></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>5</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>,
+нейроны делят вход по <span class="lati-1095">положению</span>, и ответ совпадает с фигурой не лучше монетки:
+<math display="inline"><mn>5</mn><mn>2</mn><mi>%</mi></math> в
+среднем по десяти прогонам. Если след сравним со временем показа одного положения, от
+<math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mstyle class="text"><mtext>сл</mtext></mstyle></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>2</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>,
+каждый нейрон собирает <span class="lati-1095">все </span>положения своей фигуры (при
+<math display="inline"><mn>2</mn><mn>0</mn></math>,
+<math display="inline"><mn>5</mn><mn>0</mn></math> и
+<math display="inline"><mn>2</mn><mn>0</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>
+— во всех десяти прогонах): инвариантность выучена на одном только видео. Пауза
+между предметами важна: без неё след перетекает на следующий предмет и путает
+их.
+</p><p class="indent"> То же самое видно в опыте. Если в эксперименте незаметно подменять предмет,
+пока глаз перескакивает с одного места на другое, то нейроны верхних ступеней за
+час-другой начинают отвечать на подменённый предмет как на тот же самый: они
+связывают то, что шло подряд <span class="cite">[<a href="refs.html#XLiDiCarlo2008">172</a>]</span>. Инвариантность в мозге действительно учится на
+непрерывности времени. Насколько этим правилом объясняется всё обучение зрения, —
+гипотеза.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">12.4 </span> <a id="x15-11600012.4"></a>Видео — это движение</h3>
+<p class="noindent">Видео — не только поток кадров для обучения, но и сама задача: что движется, куда и
+как быстро. Первый шаг нам знаком — детектор направления главы <a href="03.html#x6-250003">3</a> (рис. <a href="03.html#x6-280021">3.1</a>), в
+котором запаздывающее торможение гасит движение в одну сторону. Такие детекторы
+стоят по всему полю зрения, и дальше с ними поступают так же, как с признаками
+формы: ступени, собирающие много детекторов одного направления в разных местах,
+отвечают на движение крупного предмета независимо от того, где он. Это та же
+пара И и ИЛИ (<a href="#x15-114001r1">12.1</a>), только признак не «край», а «край, сдвинувшийся за время
+<math display="inline"><mi>d</mi></math>».
+</p><p class="indent"> Видео ещё и предсказуемо: следующий кадр почти такой же, как предыдущий. По гипотезе
+<span class="lati-1095">предсказывающего кодирования </span>верхние ступени посылают нижним предсказание, а вверх уходит
+главным образом ошибка — то, чего предсказание не учло <span class="cite">[<a href="refs.html#XRaoBallard1999">173</a>]</span>. Это та же экономия импульсов,
+что в утверждении <a href="04.html#x7-44002r5">4.5</a>: платить за новости, а не за то, что и так известно. Отдельные
+наблюдения с этой гипотезой согласуются, но как общее устройство конвейера она не
+доказана.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">12.5 </span> <a id="x15-11700012.5"></a>Мозг и свёрточная сеть</h3>
+<p class="noindent">Насколько далеко заходит сходство? Для быстрого распознавания одного предмета оно
+действительно глубокое <span class="cite">[<a href="refs.html#XYamins2014">168</a>]</span>. Но у мозга есть и то, чего нет у простой свёрточной
+сети.
+</p><p class="indent"> <span class="lati-1095">Обратные связи. </span>Конвейер мозга не только прямой: у каждой ступени есть связи назад и
+вбок. Для трудных картинок — с перекрытием, в плохом свете — ответ верхних ступеней
+складывается позже, и эти поздние ответы лучше описываются сетями с обратными связями,
+чем прямыми <span class="cite">[<a href="refs.html#XKar2019">174</a>]</span>. Один проход решает лёгкие случаи, трудные требуют нескольких
+кругов.
+</p><p class="indent"> <span class="lati-1095">Устойчивость. </span>Искусственную сеть можно обмануть незаметной для глаза подделкой
+пикселей <span class="cite">[<a href="refs.html#XSzegedy2014">175</a>]</span>: изменение, которое человек не видит, превращает «панду» в «гиббона» <span class="cite">[<a href="refs.html#XGoodfellow2015">308</a>]</span>.
+Зрение человека к таким подделкам гораздо устойчивее, но не неуязвимо: картинки,
+обманывающие сразу много сетей, при коротком показе сдвигают и выбор человека <span class="cite">[<a href="refs.html#XElsayed2018">309</a>]</span>. Почему
+устойчивость так различается — вопрос открытый; кандидаты — шум, деление на общую
+активность и обратные связи.
+</p><p class="indent"> <span class="lati-1095">Учитель. </span>Сети нужны миллионы подписанных примеров, мозгу — в основном видео без
+подписей (<a href="#x15-115001r2">12.2</a>) и немного подсказок от <span class="nt">DOPA</span> о том, что важно.
+</p><p class="indent"> <span class="lati-1095">Энергия. </span>Весь мозг — около <math display="inline"><mn>2</mn><mn>0</mn></math>
+ватт (утверждение <a href="04.html#x7-44002r5">4.5</a>), а распознавание занимает лишь часть этого; обученная свёрточная сеть
+на графическом ускорителе тратит сотни ватт.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">12.6 </span> <a id="x15-11800012.6"></a>Иллюзии: где машина ошибается и почему</h3>
+<p class="noindent">Инженер, который хочет понять чужую схему, подаёт на неё необычные сигналы и смотрит, где
+она ошибается. Для зрения такие сигналы давно придуманы — это зрительные иллюзии.
+Иллюзия — не поломка. Каждая указывает на определённый механизм машины, который в
+обычной обстановке работает правильно, а на специально подобранной картинке выдаёт
+себя.
+</p><p class="indent"> <span class="lati-1095">Разумные ожидания. </span>Вход шумный, и машина дополняет его тем, что обычно бывает в мире.
+Медленные движения встречаются чаще быстрых; когда вход ненадёжен — например, у картинки
+мало контраста, — оценка скорости сдвигается к медленной, и бледный предмет кажется
+движущимся медленнее яркого <span class="cite">[<a href="refs.html#XWeiss2002">176</a>]</span>. Так же объясняют многие иллюзии яркости: мы видим не
+яркость пикселя, а то, какой поверхности такая яркость чаще всего соответствовала в
+прошлом <span class="cite">[<a href="refs.html#XPurves2011">177</a>]</span>. Фотография платья, которое одни видят бело-золотым, а другие сине-чёрным, —
+тот же механизм: картинка двусмысленна, и люди расходятся в том, каким они неосознанно
+считают освещение <span class="cite">[<a href="refs.html#XLaferSousa2015">178</a>, <a href="refs.html#XWallisch2017">179</a>]</span>. Различия между людьми измерены; то, что мозг здесь
+сочетает вход с ожиданием по правилам теории вероятностей, — хорошо обоснованная
+гипотеза.
+</p><p class="indent"> <span class="lati-1095">Регулировка усиления. </span>Посмотрите минуту на водопад, потом на неподвижные
+камни: камни поплывут вверх. Каналы «вниз» и «вверх» — пара проводов, как в (<a href="02.html#x5-19001r4">2.4</a>);
+регулировка усиления (<a href="11.html#x14-107001r2">11.2</a>) приглушила уставший канал, и равновесие пары сдвинулось.
+Иллюзии наклона и контраста, в которых окружение меняет вид центра, объясняются
+делением на активность соседей <span class="cite">[<a href="refs.html#XSchwartz2009">180</a>]</span>, как в главе <a href="03.html#x6-250003">3</a>. Есть и поучительный пример
+осторожности: тёмные пятна на перекрёстках белых полос решётки долго объясняли простым
+торможением соседей, но опыты с изменённой решёткой показали, что это объяснение не
+работает <span class="cite">[<a href="refs.html#XSchillerCarvey2005">181</a>]</span>.
+</p><p class="indent"> <span class="lati-1095">Компенсация задержек. </span>Путь от глаза до верхних ступеней занимает десятки миллисекунд, и
+движущийся предмет за это время успевает сдвинуться. Если рядом с ним вспыхнет
+неподвижная точка, предмет кажется впереди вспышки, хотя они совпадали <span class="cite">[<a href="refs.html#XNijhawan1994">182</a>]</span>. По одному из
+объяснений машина продлевает движение вперёд, чтобы скомпенсировать задержку, — то же, что
+в главе <a href="13.html#x16-12100013">13</a>: при запаздывающей обратной связи приходится предсказывать. Объяснений у этой
+иллюзии несколько, и спор не решён.
+</p><p class="indent"> <span class="lati-1095">Ошибка в коде времени. </span>Неподвижная картинка из колец с резкими цветовыми переходами
+кажется вращающейся. Контрастные участки обрабатываются быстрее бледных, и разница
+задержек (<a href="04.html#x7-40001r4">4.4</a>) читается детекторами направления как движение <span class="cite">[<a href="refs.html#XConway2005">183</a>]</span>. Запускают иллюзию
+мелкие непроизвольные скачки глаза и моргания: каждый скачок обновляет вход, и
+детекторы снова видят «движение» <span class="cite">[<a href="refs.html#XOteroMillan2012">184</a>]</span>. Это код временем из главы <a href="04.html#x7-350004">4</a>, прочитанный
+неправильно.
+</p><p class="indent"> <span class="lati-1095">Две картинки в одной. </span>Каркас куба, который то смотрит на нас одной гранью, то другой, или
+разные картинки в двух глазах: восприятие перескакивает каждые несколько секунд. Лучшие
+модели — взаимное торможение двух толкований, медленная усталость и шум <span class="cite">[<a href="refs.html#XMorenoBote2007">185</a>]</span>, то
+есть та самая схема (<a href="13.html#x16-126001r6">13.6</a>), которая в главе <a href="13.html#x16-12100013">13</a> порождала ритм шага. Время смены
+задают шум и усталость; по модели <span class="cite">[<a href="refs.html#XMorenoBote2007">185</a>]</span> главную роль играет шум, а усталость лишь
+помогает.
+</p><p class="indent"> А искусственные сети? Сеть, обученная предсказывать следующий кадр видео, видит
+вращение на тех же неподвижных кольцах и не видит его на контрольных картинках <span class="cite">[<a href="refs.html#XWatanabe2018">186</a>]</span>. Сети,
+обученные очищать изображения от шума и повышать их резкость, поддаются тем же иллюзиям
+цвета и яркости, что и люди <span class="cite">[<a href="refs.html#XGomezVilla2020">187</a>]</span>. Значит, часть иллюзий — следствие самой задачи, которой
+учится машина, а не особенностей нервной ткани. Какие иллюзии свойственны только мозгу, —
+хорошая проверка для любой модели зрения.
+</p>
+ <div class="tcolorbox keyblock" id="tcolobox-30"> 
+<div class="tcolorbox-content"><div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x15-118001r2"></a>
+<span class="labx-1095">Утверждение 12.2 </span>(Иллюзии как отпечатки механизмов)<span class="labx-1095">.</span> </span> <span class="lati-1095">Иллюзия возникает, когда</span>
+<span class="lati-1095">механизм, полезный в обычном мире, получает необычный вход: ожидание побеждает</span>
+<span class="lati-1095">ненадёжный вход, регулировка усиления сдвигает пару каналов, компенсация</span>
+<span class="lati-1095">задержки уводит предмет вперёд, разница задержек читается как движение,</span>
+<span class="lati-1095">взаимное торможение с шумом и усталостью перескакивает. Каждая иллюзия —</span>
+<span class="lati-1095">испытательный сигнал, указывающий на свой механизм. Сами иллюзии измерены; их</span>
+<span class="lati-1095">объяснения — от хорошо обоснованных до спорных.</span>
+</p>
+</div>
+ 
+</div> 
+</div>
+ <h3 class="sectionHead"><span class="titlemark">12.7 </span> <a id="x15-11900012.7"></a>Итог</h3>
+ <div class="table">
+<p class="indent"> <a id="x15-1190011"></a></p><figure class="float">
+<div class="tabular">
+ <table id="TBL-15" class="tabular"><colgroup id="TBL-15-1g"><col id="TBL-15-1" /><col id="TBL-15-2" /><col id="TBL-15-3" /></colgroup><tr style="vertical-align:baseline;" id="TBL-15-1-"><td style="text-align:left;" id="TBL-15-1-1" class="td11"> <p class="noindent"><span class="larm-0900">Что</span>
+ <span class="larm-0900">делает</span>
+ <span class="larm-0900">машина</span> </p></td><td style="text-align:left;" id="TBL-15-1-2" class="td11"> <p class="noindent"><span class="larm-0900">Как</span> </p></td><td style="text-align:left;" id="TBL-15-1-3" class="td11"> <p class="noindent"><span class="larm-0900">Что</span>
+ <span class="larm-0900">известно</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-15-2-"><td style="text-align:left;" id="TBL-15-2-1" class="td11"> <p class="noindent"><span class="larm-0900">узнаёт</span>
+ <span class="larm-0900">за</span>
+ <math display="inline"><mn>1</mn><mn>5</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math> </p></td><td style="text-align:left;" id="TBL-15-2-2" class="td11"> <p class="noindent"><span class="larm-0900">один</span>
+ <span class="larm-0900">проход</span>
+ <span class="larm-0900">по</span>
+ <span class="larm-0900">десятку</span>
+ <span class="larm-0900">ступеней</span> </p></td><td style="text-align:left;" id="TBL-15-2-3" class="td11"> <p class="noindent"><span class="larm-0900">скорость</span>
+ <span class="larm-0900">измерена</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-15-3-"><td style="text-align:left;" id="TBL-15-3-1" class="td11"> <p class="noindent"><span class="larm-0900">делает</span>
+ <span class="larm-0900">ответ</span>
+ <span class="larm-0900">избирательным</span> </p></td><td style="text-align:left;" id="TBL-15-3-2" class="td11"> <p class="noindent"><span class="larm-0900">И</span>
+ <span class="larm-0900">по</span>
+ <span class="larm-0900">частям,</span>
+ <span class="larm-0900">ступень</span>
+ <math display="inline"><mi>S</mi></math><span class="larm-0900"> </span><span class="larm-0900">(</span><a href="#x15-114001r1"><span class="larm-0900">12.1</span></a><span class="larm-0900">)</span> </p> </td><td style="text-align:left;" id="TBL-15-3-3" class="td11"> <p class="noindent"><span class="larm-0900">измерено</span>
+ <span class="larm-0900">на</span>
+ <span class="larm-0900">первых</span>
+ <span class="larm-0900">ступенях</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-15-4-"><td style="text-align:left;" id="TBL-15-4-1" class="td11"> <p class="noindent"><span class="larm-0900">делает</span>
+ <span class="larm-0900">ответ</span>
+ <span class="larm-0900">инвариантным</span> </p></td><td style="text-align:left;" id="TBL-15-4-2" class="td11"> <p class="noindent"><span class="larm-0900">ИЛИ</span>
+ <span class="larm-0900">по</span>
+ <span class="larm-0900">положениям,</span>
+ <span class="larm-0900">ступень</span>
+ <math display="inline"><mi>C</mi></math><span class="larm-0900">;</span>
+ <span class="larm-0900">торможение</span>
+ <span class="larm-0900">и</span>
+ <span class="larm-0900">деление</span> </p></td><td style="text-align:left;" id="TBL-15-4-3" class="td11"> <p class="noindent"><span class="larm-0900">измерено</span>
+ <span class="larm-0900">на</span>
+ <span class="larm-0900">первых</span>
+ <span class="larm-0900">ступенях;</span>
+ <span class="larm-0900">для</span>
+ <span class="larm-0900">верхних</span>
+ <span class="larm-0900">—</span>
+ <span class="larm-0900">упрощение</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-15-5-"><td style="text-align:left;" id="TBL-15-5-1" class="td11"> <p class="noindent"><span class="larm-0900">выдаёт</span>
+ <span class="larm-0900">ответ</span> </p></td><td style="text-align:left;" id="TBL-15-5-2" class="td11"> <p class="noindent"><span class="larm-0900">частоты</span>
+ <span class="larm-0900">около</span>
+ <span class="larm-0900">сотни</span>
+ <span class="larm-0900">нейронов</span>
+ <span class="larm-0900">последней</span>
+ <span class="larm-0900">ступени,</span>
+ <span class="larm-0900">линейное</span>
+ <span class="larm-0900">чтение</span> </p></td><td style="text-align:left;" id="TBL-15-5-3" class="td11"> <p class="noindent"><span class="larm-0900">измерено</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-15-6-"><td style="text-align:left;" id="TBL-15-6-1" class="td11"> <p class="noindent"><span class="larm-0900">учится</span>
+ <span class="larm-0900">без</span>
+ <span class="larm-0900">подписей</span> </p></td><td style="text-align:left;" id="TBL-15-6-2" class="td11"> <p class="noindent"><span class="larm-0900">правило</span>
+ <span class="larm-0900">Хебба</span>
+ <span class="larm-0900">со</span>
+ <span class="larm-0900">следом</span><span class="larm-0900"> </span><span class="larm-0900">(</span><a href="#x15-115001r2"><span class="larm-0900">12.2</span></a><span class="larm-0900">)</span>
+ <span class="larm-0900">на</span>
+ <span class="larm-0900">непрерывном</span>
+ <span class="larm-0900">видео</span> </p></td><td style="text-align:left;" id="TBL-15-6-3" class="td11"> <p class="noindent"><span class="larm-0900">подмена</span>
+ <span class="larm-0900">предмета</span>
+ <span class="larm-0900">меняет</span>
+ <span class="larm-0900">ответы</span>
+ <span class="larm-0900">—</span>
+ <span class="larm-0900">измерено;</span>
+ <span class="larm-0900">как</span>
+ <span class="larm-0900">главное</span>
+ <span class="larm-0900">правило</span>
+ <span class="larm-0900">—</span>
+ <span class="larm-0900">гипотеза</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-15-7-"><td style="text-align:left;" id="TBL-15-7-1" class="td11"> <p class="noindent"><span class="larm-0900">видит</span>
+ <span class="larm-0900">движение</span> </p></td><td style="text-align:left;" id="TBL-15-7-2" class="td11"> <p class="noindent"><span class="larm-0900">детекторы</span>
+ <span class="larm-0900">направления,</span>
+ <span class="larm-0900">затем</span>
+ <span class="larm-0900">та</span>
+ <span class="larm-0900">же</span>
+ <span class="larm-0900">пара</span>
+ <span class="larm-0900">И/ИЛИ</span> </p></td><td style="text-align:left;" id="TBL-15-7-3" class="td11"> <p class="noindent"><span class="larm-0900">измерено</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-15-8-"><td style="text-align:left;" id="TBL-15-8-1" class="td11"> <p class="noindent"><span class="larm-0900">экономит</span>
+ <span class="larm-0900">на</span>
+ <span class="larm-0900">предсказуемом</span> </p></td><td style="text-align:left;" id="TBL-15-8-2" class="td11"> <p class="noindent"><span class="larm-0900">вверх</span>
+ <span class="larm-0900">идёт</span>
+ <span class="larm-0900">ошибка</span>
+ <span class="larm-0900">предсказания</span> </p></td><td style="text-align:left;" id="TBL-15-8-3" class="td11"> <p class="noindent"><span class="larm-0900">гипотеза</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-15-9-"><td style="text-align:left;" id="TBL-15-9-1" class="td11"> <p class="noindent"><span class="larm-0900">решает</span>
+ <span class="larm-0900">трудные</span>
+ <span class="larm-0900">случаи</span> </p></td><td style="text-align:left;" id="TBL-15-9-2" class="td11"> <p class="noindent"><span class="larm-0900">обратные</span>
+ <span class="larm-0900">связи,</span>
+ <span class="larm-0900">несколько</span>
+ <span class="larm-0900">кругов</span> </p></td><td style="text-align:left;" id="TBL-15-9-3" class="td11"> <p class="noindent"><span class="larm-0900">поздние</span>
+ <span class="larm-0900">ответы</span>
+ <span class="larm-0900">и</span>
+ <span class="larm-0900">роль</span>
+ <span class="larm-0900">обратных</span>
+ <span class="larm-0900">связей</span>
+ <span class="larm-0900">измерены</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-15-10-"><td style="text-align:left;" id="TBL-15-10-1" class="td11"> <p class="noindent"><span class="larm-0900">ошибается</span>
+ <span class="larm-0900">предсказуемо</span> </p></td><td style="text-align:left;" id="TBL-15-10-2" class="td11"> <p class="noindent"><span class="larm-0900">иллюзии:</span>
+ <span class="larm-0900">ожидания,</span>
+ <span class="larm-0900">регулировка</span>
+ <span class="larm-0900">усиления,</span>
+ <span class="larm-0900">задержки,</span>
+ <span class="larm-0900">взаимное</span>
+ <span class="larm-0900">торможение</span>
+ <span class="larm-0900">с</span>
+ <span class="larm-0900">шумом</span>
+ <span class="larm-0900">и</span>
+ <span class="larm-0900">усталостью</span> </p></td><td style="text-align:left;" id="TBL-15-10-3" class="td11"> <p class="noindent"><span class="larm-0900">иллюзии</span>
+ <span class="larm-0900">измерены;</span>
+ <span class="larm-0900">объяснения</span>
+ <span class="larm-0900">—</span>
+ <span class="larm-0900">от</span>
+ <span class="larm-0900">обоснованных</span>
+ <span class="larm-0900">до</span>
+ <span class="larm-0900">спорных</span> </p></td>
+</tr><tr style="vertical-align:baseline;" id="TBL-15-11-"><td style="text-align:left;" id="TBL-15-11-1" class="td11"> </td></tr></table> </div>
+<figcaption class="caption"><span class="id">Таблица 12.1: </span><span class="content">Как машина распознаёт изображения и видео.</span></figcaption>
+ </figure>
+ </div>
+<p class="indent"> Распознавание собрано из деталей, которые у нас уже были (таблица <a href="#x15-1190011">12.1</a>): порог даёт И по
+частям, взаимное торможение — ИЛИ по положениям, деление — независимость от
+яркости, правило Хебба со следом — учителя, которого нет. Инженеры взяли у зрения
+чередование избирательности и инвариантности и построили на нём свёрточные сети;
+обратно мозг пока не отдал главного — умения учиться на видео без подписей почти без
+энергии.
+</p>
+ <h3 class="sectionHead"><span class="titlemark">12.8 </span> <a id="x15-12000012.8"></a>Задачи</h3>
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x15-120001r1"></a>
+<span class="labx-1095">Задача 12.1 </span>(<math display="inline"><mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Частота на одной ступени. </span>Ступень конвейера длится <math display="inline"><mn>1</mn><mn>5</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>,
+нейроны работают с частотой <math display="inline"><mn>2</mn><mn>0</mn></math>
+импульсов в секунду, шумы коррелированы с <math display="inline"><mi>c</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn></math> (<a href="04.html#x7-39002r3">4.3</a>).
+Какова относительная ошибка частоты группы из ста нейронов и её предел при сколь угодно
+большой группе? Сколько уровней частоты различимо на ступени?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent"><math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>6</mn><mn>0</mn></math> (без
+корреляции было бы <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn><mn>8</mn></math>),
+предел <math display="inline"><msqrt><mrow><mi>c</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mo class="MathClass-open" stretchy="false">(</mo><mi>r</mi><mi>T</mi><mo class="MathClass-close" stretchy="false">)</mo></mrow></msqrt> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn><mn>8</mn></math>:
+сто нейронов различают лишь «есть/нет».
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x15-120002r2"></a>
+<span class="labx-1095">Задача 12.2 </span>(<math display="inline"><mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Энергия одного узнавания. </span>В одном проходе за <math display="inline"><mn>1</mn><mn>5</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>
+десять ступеней по <math display="inline"><mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>7</mn></mrow></msup 
+></math>
+нейронов выдают не больше одного импульса ценой <math display="inline"><mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mo class="MathClass-bin" stretchy="false">−</mo><mn>1</mn><mn>0</mn></mrow></msup 
+></math> Дж.
+(а) Какую долю энергии всего мозга за эти <math display="inline"><mn>1</mn><mn>5</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>
+стоит узнавание? (б) Во сколько раз больше тратит ускоритель мощностью <math display="inline"><mn>3</mn><mn>0</mn><mn>0</mn></math> Вт,
+узнающий картинку за <math display="inline"><mn>1</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">(а) <math display="inline"><mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>8</mn></mrow></msup 
+></math>
+импульсов, <math display="inline"> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>1</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мДж</mtext></mstyle></math>:
+<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>3</mn><mspace width="0.17em" class="thinspace"/><mi>%</mi></math> от
+<math display="inline"><mn>3</mn></math> Дж всего
+мозга. (б) <math display="inline"><mn>3</mn></math> Дж,
+в <math display="inline"> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>3</mn><mn>0</mn><mn>0</mn></math> раз
+больше.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x15-120003r3"></a>
+<span class="labx-1095">Задача 12.3 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Пороги ступени </span><math display="inline"><mi>S</mi></math><span class="lati-1095">.</span>
+«Сетчатка» из <math display="inline"><mn>2</mn><mn>4</mn></math>
+точек, фигуры <math display="inline"><mi>A</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mn>1</mn><mn>0</mn><mn>1</mn><mn>1</mn></math>
+и <math display="inline"><mi>B</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mn>0</mn><mn>1</mn><mn>0</mn><mn>1</mn></math>,
+образец (<a href="#x15-114001r1">12.1</a>) равен <math display="inline"> <mo class="MathClass-bin" stretchy="false">+</mo> <mn>1</mn></math>
+на единицах фигуры и <math display="inline"> <mo class="MathClass-bin" stretchy="false">−</mo> <mn>1</mn></math>
+на нулях. (а) При каких порогах <math display="inline"><mi>S</mi></math>-нейрон
+прощает одну перевёрнутую точку, но молчит на чужой фигуре? (б) Сколько <math display="inline"><mi>S</mi></math>-нейронов
+нужно для десяти признаков <math display="inline"><mn>5</mn> <mo class="MathClass-bin" stretchy="false">×</mo> <mn>5</mn></math>
+на картинке <math display="inline"><mn>1</mn><mn>0</mn><mn>0</mn> <mo class="MathClass-bin" stretchy="false">×</mo> <mn>1</mn><mn>0</mn><mn>0</mn></math>?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">(а) <math display="inline"><msub><mrow><mi>𝜃</mi></mrow><mrow><mi>A</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">∈</mo> <mo class="MathClass-open" stretchy="false">[</mo><mn>2</mn><mo class="MathClass-punc" stretchy="false">,</mo><mn>3</mn><mo class="MathClass-close" stretchy="false">)</mo></math>,
+<math display="inline"><msub><mrow><mi>𝜃</mi></mrow><mrow><mi>B</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">∈</mo> <mo class="MathClass-open" stretchy="false">[</mo><mn>1</mn><mo class="MathClass-punc" stretchy="false">,</mo><mn>2</mn><mo class="MathClass-close" stretchy="false">)</mo></math>; чужая фигура
+даёт не больше <math display="inline"><mn>2</mn></math>
+и <math display="inline"><mn>1</mn></math>.
+(б) <math display="inline"><mn>1</mn><mn>0</mn> <mo class="MathClass-bin" stretchy="false">⋅</mo> <mn>9</mn><msup><mrow><mn>6</mn></mrow><mrow><mn>2</mn></mrow></msup 
+> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>9</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>2</mn> <mo class="MathClass-bin" stretchy="false">⋅</mo> <mn>1</mn><msup><mrow><mn>0</mn></mrow><mrow><mn>4</mn></mrow></msup 
+></math>.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x15-120004r4"></a>
+<span class="labx-1095">Задача 12.4 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Сколько длится одна картинка из двух. </span>В схеме перескоков (<a href="13.html#x16-126001r6">13.6</a>) при <math display="inline"><mi>τ</mi> <mo class="MathClass-rel" stretchy="false">≪</mo> <msub><mrow><mi>τ</mi></mrow><mrow><mi>a</mi></mrow></msub 
+></math>,
+пока побеждает группа 1, <math display="inline"><msub><mrow><mi>r</mi></mrow><mrow><mn>2</mn></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn></math>
+и <math display="inline"><msub><mrow><mi>r</mi></mrow><mrow><mn>1</mn></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mi>I</mi> <mo class="MathClass-bin" stretchy="false">−</mo> <msub><mrow><mi>a</mi></mrow><mrow><mn>1</mn></mrow></msub 
+></math>.
+(а) Найдите длительность победы при <math display="inline"><mi>I</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn></math>,
+<math display="inline"><mi>β</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>2</mn></math>,
+<math display="inline"><mi>b</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>2</mn></math>,
+<math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>a</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>4</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>с</mtext></mstyle></math>.
+(б) Какое <math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>a</mi></mrow></msub 
+></math>
+даёт смену картинки каждые три секунды?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">(а) <math display="inline"><msub><mrow><mi>T</mi></mrow><mrow><mi>d</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>8</mn><mn>5</mn><mspace width="0.17em" class="thinspace"/><msub><mrow><mi>τ</mi></mrow><mrow><mi>a</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>3</mn><mn>4</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>с</mtext></mstyle></math>.
+(б) <math display="inline"><msub><mrow><mi>T</mi></mrow><mrow><mi>d</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">∝</mo> <msub><mrow><mi>τ</mi></mrow><mrow><mi>a</mi></mrow></msub 
+></math> и не
+зависит от <math display="inline"><mi>I</mi></math>:
+<math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mi>a</mi></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>3</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>с</mtext></mstyle></math> (моделирование:
+<math display="inline"><mn>3</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>с</mtext></mstyle></math>).
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x15-120005r5"></a>
+<span class="labx-1095">Задача 12.5 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Моделирование: цена инвариантности. </span>Функцией <span class="latt-1095">two_stage </span>из <span class="latt-1095">models/recognition_models.py</span>
+(<math display="inline"><mn>4</mn><mn>0</mn><mn>0</mn><mn>0</mn></math>
+попыток) найдите, при какой вероятности переворота точки <math display="inline"><mi>p</mi></math>
+пара ступеней <math display="inline"><mi>S</mi></math>,
+<math display="inline"><mi>C</mi></math>
+при <math display="inline"><mi>N</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>2</mn><mn>4</mn></math>
+ошибается в каждом четвёртом случае. Как меняется доля верных ответов при <math display="inline"><mi>p</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn></math>
+от <math display="inline"><mi>N</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>8</mn></math>
+до <math display="inline"><mi>N</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>1</mn><mn>9</mn><mn>2</mn></math>?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent"><math display="inline"><mi>p</mi> <mo class="MathClass-rel" stretchy="false">≈</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn><mn>7</mn></math>. Доля
+падает медленно: <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>9</mn><mn>0</mn></math>,
+<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>8</mn><mn>8</mn></math>,
+<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>8</mn><mn>6</mn></math>,
+<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>8</mn><mn>4</mn></math>,
+<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>8</mn><mn>2</mn></math>,
+<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>7</mn><mn>9</mn></math> при
+<math display="inline"><mi>N</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>8</mn></math>,
+<math display="inline"><mn>1</mn><mn>2</mn></math>,
+<math display="inline"><mn>2</mn><mn>4</mn></math>,
+<math display="inline"><mn>4</mn><mn>8</mn></math>,
+<math display="inline"><mn>9</mn><mn>6</mn></math>,
+<math display="inline"><mn>1</mn><mn>9</mn><mn>2</mn></math>.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x15-120006r6"></a>
+<span class="labx-1095">Задача 12.6 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Моделирование: окно следа. </span>Десять прогонов <span class="latt-1095">trace_learning </span>из <span class="latt-1095">models/recognition_models.py</span>
+с паузой <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>3</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>с</mtext></mstyle></math>:
+найдите, при каких <math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mstyle class="text"><mtext>сл</mtext></mstyle></mrow></msub 
+></math>
+от <math display="inline"><mn>5</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>
+до <math display="inline"><mn>2</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>с</mtext></mstyle></math>
+все прогоны выучивают инвариантность безошибочно. Откуда у этого окна верхняя граница?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">Все десять прогонов безошибочны при
+<math display="inline"><msub><mrow><mi>τ</mi></mrow><mrow><mstyle class="text"><mtext>сл</mtext></mstyle></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>2</mn><mn>0</mn></math>,
+<math display="inline"><mn>5</mn><mn>0</mn></math> и
+<math display="inline"><mn>2</mn><mn>0</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math> (при
+<math display="inline"><mn>3</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math> один прогон из десяти сорвался); при
+<math display="inline"><mn>5</mn></math>–<math display="inline"><mn>1</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>
+— около <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn></math>, при
+<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn></math>–<math display="inline"><mn>2</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>с</mtext></mstyle></math>
+качество падает до <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>8</mn><mn>6</mn></math>. Сверху:
+след должен угаснуть за паузу, <math display="inline"><msup><mrow><mi>e</mi></mrow><mrow><mo class="MathClass-bin" stretchy="false">−</mo><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>3</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>с</mtext></mstyle><mo class="MathClass-bin" stretchy="false">∕</mo><msub><mrow><mi>τ</mi></mrow><mrow><mstyle class="text"><mtext>сл</mtext></mstyle></mrow></msub 
+></mrow></msup 
+> <mo class="MathClass-rel" stretchy="false">≪</mo> <mn>1</mn></math>.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x15-120007r7"></a>
+<span class="labx-1095">Задача 12.7 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Движение в любом месте. </span>На соседних точках ряда с шагом <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><msup><mrow><mn>1</mn></mrow><mrow><mo class="MathClass-bin" stretchy="false">∘</mo></mrow></msup 
+></math>
+стоят детекторы направления главы <a href="03.html#x6-250003">3</a>: торможение от <math display="inline"><mi>A</mi></math>
+с задержкой <math display="inline"><mi>d</mi></math>
+гасит возбуждение от <math display="inline"><mi>B</mi></math>,
+если они разошлись не больше чем на <math display="inline"><mn>5</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>;
+над ними — ступень <math display="inline"><mi>C</mi></math>.
+Какие задержки нужны, чтобы <math display="inline"><mi>C</mi></math>
+молчал при обратном движении со скоростью от <math display="inline"><mn>5</mn></math>
+до <math display="inline"><mn>2</mn><msup><mrow><mn>0</mn></mrow><mrow><mo class="MathClass-bin" stretchy="false">∘</mo></mrow></msup 
+></math>
+в секунду?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent">Одной задержки мало: окно <math display="inline"> <mo class="MathClass-bin" stretchy="false">±</mo> <mn>5</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>
+не покрывает <math display="inline"><mi mathvariant="normal">Δ</mi><mi>x</mi><mo class="MathClass-bin" stretchy="false">∕</mo><mi>v</mi></math>
+от <math display="inline"><mn>5</mn></math> до
+<math display="inline"><mn>2</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>. Две ветви
+торможения с <math display="inline"><mn>5</mn> <mo class="MathClass-rel" stretchy="false">&#x003C;</mo> <msub><mrow><mi>d</mi></mrow><mrow><mn>1</mn></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">≤</mo> <mn>1</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>
+и <math display="inline"><mn>1</mn><mn>5</mn> <mo class="MathClass-rel" stretchy="false">≤</mo> <msub><mrow><mi>d</mi></mrow><mrow><mn>2</mn></mrow></msub 
+> <mo class="MathClass-rel" stretchy="false">≤</mo> <msub><mrow><mi>d</mi></mrow><mrow><mn>1</mn></mrow></msub 
+> <mo class="MathClass-bin" stretchy="false">+</mo> <mn>1</mn><mn>0</mn><mspace width="0.17em" class="thinspace"/><mstyle class="text"><mtext>мс</mtext></mstyle></math>.
+</p></div></details>
+
+ <div class="newtheorem">
+<p class="noindent"><span class="head">
+<a id="x15-120008r8"></a>
+<span class="labx-1095">Задача 12.8 </span>(<math display="inline"> <mo class="MathClass-bin" stretchy="false">⋆</mo> <mo class="MathClass-bin" stretchy="false">⋆</mo><mo class="MathClass-bin" stretchy="false">⋆</mo></math>)<span class="labx-1095">.</span>
+</span> <span class="lati-1095">Подделка пикселей. </span>Сколько перевёрнутых точек нужно, чтобы сменить ответ модели
+<span class="latt-1095">two_stage </span>(<math display="inline"><mi>N</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>2</mn><mn>4</mn></math>)
+на чистой фигуре? А классификатора «больше <math display="inline"><mn>3</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn></math>
+единиц на входе — это <math display="inline"><mi>A</mi></math>»,
+тоже инвариантного к сдвигу? Какова его доля верных ответов при <math display="inline"><mi>p</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn></math>
+против <math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>8</mn><mn>6</mn></math>
+у пары ступеней?
+</p>
+ </div><details class="answer"><summary data-ru="Ответ" data-en="Answer">Ответ</summary><div class="answer-body"><p class="noindent"><span class="latt-1095">two_stage</span>: <math display="inline"><mi mathvariant="normal">Δ</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>2</mn></math>,
+ничья от одного переворота, смена ответа — от двух. Счётчик единиц: один переворот;
+<math display="inline"><mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>5</mn><mn>7</mn></math> при
+<math display="inline"><mi>p</mi> <mo class="MathClass-rel" stretchy="false">=</mo> <mn>0</mn><mo class="MathClass-punc" stretchy="false">.</mo><mn>1</mn></math>.
+</p></div></details>
+
+<p class="indent"> <a id="tailfullch12.html"></a> </p> 
+
+  </article>
+  <article class="text short" id="text-short" hidden>
+
+ <a id="s-x15-6500012"></a>
+<div class="center">
+<p class="noindent"><img src="img/short22x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<div class="minipage"><p class="noindent"><span class="lati-1000">Большая кошка и маленькая — совсем разные</span>
+<span class="lati-1000">картинки на датчиках глаза, а ответ один.</span> </p></div></div>
+<p class="noindent">Кошка на картинке может быть слева или справа, близко
+или далеко, на солнце или в тени. Каждый раз на датчики
+глаза падает совсем другой узор, а вы узнаёте её за доли
+секунды. В этом и состоит трудность распознавания: одно и
+то же нужно узнать в тысячах разных видов.
+</p>
+ <h3 class="likesectionHead"> <a id="s-x15-66000"></a>Конвейер</h3>
+<p class="noindent">Мозг решает задачу конвейером из примерно десятка
+ступеней, и сигнал проходит его за полторы десятых
+секунды. На каждой ступени делаются две вещи. Сначала —
+«и»: нейрон срабатывает, если нужные детали стоят в
+нужном порядке, скажем, два отрезка сходятся уголком.
+Потом — «или по всем местам»: следующий нейрон
+срабатывает, если уголок есть где угодно поблизости,
+неважно где именно. Первая операция делает узнавание
+разборчивым, вторая — терпимым к сдвигу. Ступень
+за ступенью детали складываются в части, части — в
+предметы, а сдвиги и масштабы прощаются.
+</p>
+<div class="center">
+<p class="noindent"><img src="img/short23x.svg" loading="lazy" alt="[Picture]" />
+</p>
+<div class="minipage"><p class="noindent"><span class="lati-1000">Одна ступень конвейера: «и» собирает уголок в</span>
+<span class="lati-1000">одном месте, «или» прощает, где именно он</span>
+<span class="lati-1000">стоит.</span> </p></div></div>
+<p class="indent"> Именно эту схему скопировали свёрточные нейросети,
+которые распознают картинки в телефоне. И они отвечают
+взаимностью: сети, обученные узнавать предметы, неплохо
+предсказывают, как отвечают нейроны на верхних ступенях
+зрения.
+</p>
+ <h3 class="likesectionHead"> <a id="s-x15-67000"></a>Учиться у видео</h3>
+<p class="noindent">Но кто учил мозг? Никто не показывал вам миллион
+подписанных картинок «кошка». Правдоподобный ответ —
+видео. Мир течёт непрерывно, и за долю секунды предмет
+почти не меняется, а меняются его положение и освещение.
+Если связи крепнут между тем, что видно сейчас, и тем, что
+было мгновение назад, сеть сама свяжет разные виды
+одного предмета: медленное — это предмет, быстрое — это
+обстоятельства. Есть опыт, где предметы незаметно
+подменяли во время движения глаз, — и нейроны начинали
+считать разные предметы одним. Как общее правило это
+пока гипотеза.
+</p>
+ <h3 class="likesectionHead"> <a id="s-x15-68000"></a>Иллюзии — отпечатки механизмов</h3>
+<p class="noindent">Иллюзии — не поломки, а следы того, как машина
+устроена. Если глаз долго смотрит на водопад, а потом
+на неподвижные камни, камни «ползут» вверх: пара
+каналов «вниз» и «вверх» разбалансирована усталостью
+одного из них. Знаменитое платье, которое одни видят
+бело-золотым, а другие сине-чёрным, делит людей по
+тому, какое освещение их мозг молча предполагает.
+Нарисованные «вращающиеся змеи» кажутся движущимися,
+потому что яркие участки обрабатываются чуть быстрее
+тусклых, и разница во времени читается как движение. А
+куб, который то выпирает, то проваливается, — это
+две группы нейронов, соревнующиеся друг с другом;
+смену исхода, по одной из моделей, в основном решает
+шум.
+</p><p class="indent"> Любопытно, что нейросеть, обученная предсказывать
+следующий кадр видео, тоже «видит», как вращаются змеи.
+Значит, некоторые иллюзии — неизбежная цена за умение
+предсказывать.
+</p>
+ <h3 class="likesectionHead"> <a id="s-x15-69000"></a>Мозг против нейросети</h3>
+<p class="noindent">Сходство не полное. Мозгу хватает немногих примеров, он
+учится почти без подписей и тратит на всё двадцать ватт.
+Нейросеть можно обмануть незаметной человеку подделкой
+картинки. Правда, и людей подобные подделки немного
+сбивают, если показать их на мгновение. Где проходит
+настоящая граница между этими двумя машинами — ещё
+выясняют.
+</p><p class="noindent"><span class="lati-1000">Формулы, модели, задачи и источники — в полной версии,</span>
+<span class="lati-1000">глава</span><span class="lati-1000"> 12.</span>
+</p>
+<p class="indent"> <a id="s-tailshortch12.html"></a> </p> 
+
+  </article>
+
+  <aside class="starline"><span data-ru="Книга бесплатная и открытая. Если глава была полезной, поставьте книге звезду на GitHub: так её найдут другие." data-en="The book is free and open. If this chapter was useful, star the book on GitHub so others can find it.">Книга бесплатная и открытая.</span> <a href="https://github.com/kladkogex/20-watt-computer" target="_blank" rel="noopener" data-ru="★ Звезда на GitHub" data-en="★ Star on GitHub">★ Звезда на GitHub</a></aside>
+  <nav class="pager">
+    <a class="prev" href="11.html"><span data-ru="← Назад" data-en="← Previous">← Назад</span><b>Входы машины: как к ней подключены глаза, уши и другие датчики</b></a>
+    <a class="next" href="13.html"><span data-ru="Дальше →" data-en="Next →">Дальше →</span><b>Выходы машины: как мозг управляет мышцами</b></a>
+  </nav>
+  <footer>
+    <span data-ru='Константин Кладько · текст — <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.ru">CC BY-NC-SA 4.0</a>' data-en='Konstantin Kladko · text: <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>'>Константин Кладько</span>
+    <span><a href="../pdf/20-watt-computer-ru.pdf">PDF</a> · <a href="../breadboard/" data-ru="Макетная плата" data-en="Breadboard">Макетная плата</a> · <a href="https://github.com/kladkogex/20-watt-computer">GitHub</a></span>
+  </footer>
+</main>
+
+<script>
+(function(){
+  const NAV = [{"slug": "00", "title": "Как читать эту книгу", "kicker": "Введение"}, {"slug": "01", "title": "Типы нейронов", "kicker": "Глава 1"}, {"slug": "02", "title": "Что вычисляют GLUT-нейроны", "kicker": "Глава 2"}, {"slug": "03", "title": "GLUT и GABA вместе", "kicker": "Глава 3"}, {"slug": "04", "title": "Азбука Морзе: что мы знаем о языке, на котором говорят GLUT- и GABA-нейроны", "kicker": "Глава 4"}, {"slug": "05", "title": "Что вычисляют SERO-нейроны", "kicker": "Глава 5"}, {"slug": "06", "title": "Нейронные сети, которые умеют учиться: добавляем DOPA", "kicker": "Глава 6"}, {"slug": "07", "title": "Альтернативные современные теории обучения на основе дофамина", "kicker": "Глава 7"}, {"slug": "08", "title": "Когда искать, а когда решать: добавляем NORA", "kicker": "Глава 8"}, {"slug": "09", "title": "Когда писать, а когда читать: добавляем ACET", "kicker": "Глава 9"}, {"slug": "10", "title": "Вся машина", "kicker": "Глава 10"}, {"slug": "11", "title": "Входы машины: как к ней подключены глаза, уши и другие датчики", "kicker": "Глава 11"}, {"slug": "12", "title": "Распознавание изображений и видео", "kicker": "Глава 12"}, {"slug": "13", "title": "Выходы машины: как мозг управляет мышцами", "kicker": "Глава 13"}, {"slug": "14", "title": "Боль: сигнал тревоги", "kicker": "Глава 14"}, {"slug": "15", "title": "Как машина учится двигаться", "kicker": "Глава 15"}, {"slug": "16", "title": "Второй выход: как мозг управляет химией тела", "kicker": "Глава 16"}, {"slug": "17", "title": "Отладка машины", "kicker": "Глава 17"}, {"slug": "18", "title": "Типы нейронов по электрической функции", "kicker": "Глава 18"}, {"slug": "19", "title": "Нейроны по числу дендритов", "kicker": "Глава 19"}, {"slug": "20", "title": "Что делают нейроны во сне", "kicker": "Глава 20"}, {"slug": "21", "title": "Машина из живых нейронов", "kicker": "Глава 21"}, {"slug": "22", "title": "DishBrain", "kicker": "Глава 22"}, {"slug": "a", "title": "Вещества, которые не задают тип нейрона", "kicker": "Приложение A"}, {"slug": "b", "title": "Обозначения", "kicker": "Приложение B"}, {"slug": "c", "title": "Ответы", "kicker": "Приложение C"}, {"slug": "d", "title": "Экспериментальное приложение", "kicker": "Приложение D"}, {"slug": "refs", "title": "Литература", "kicker": ""}];
+  const SLUG = "12";
+  const store = {get(k){try{return localStorage.getItem(k)}catch(e){return null}}, set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+
+  // chapter selector
+  const sel = document.getElementById("jump");
+  NAV.forEach(p => { const o = document.createElement("option"); o.value = p.slug;
+    o.textContent = (p.kicker ? p.kicker + ". " : "") + p.title; if (p.slug === SLUG) o.selected = true; sel.appendChild(o); });
+  sel.addEventListener("change", () => { location.href = sel.value + ".html" + (location.hash === "#short" ? "#short" : ""); });
+
+  // Коротко / Полностью
+  const modeBox = document.querySelector(".mode");
+  const hasShort = modeBox.dataset.hasShort === "true";
+  const full = document.getElementById("text-full"), short = document.getElementById("text-short");
+  function setMode(m, remember){
+    if (!hasShort) m = "full";
+    document.body.dataset.mode = m;
+    full.hidden = m !== "full"; short.hidden = m !== "short";
+    modeBox.querySelectorAll(".seg").forEach(b => b.setAttribute("aria-pressed", b.dataset.mode === m));
+    if (remember) store.set("20w-mode", m);
+  }
+  if (!hasShort) modeBox.hidden = true;
+  modeBox.addEventListener("click", e => { const b = e.target.closest(".seg"); if (b) { setMode(b.dataset.mode, true); history.replaceState(null, "", "#" + b.dataset.mode); } });
+  document.addEventListener("click", e => { const a = e.target.closest("a[data-mode]"); if (a) { e.preventDefault(); setMode(a.dataset.mode, true); window.scrollTo(0, 0); } });
+  // a link into the text (#x...) that lives in the other version switches to it
+  function follow(){
+    const h = decodeURIComponent(location.hash.slice(1));
+    if (h === "short" || h === "full") { setMode(h, true); return; }
+    if (!h) return;
+    const t = document.getElementById(h);
+    if (t) { setMode(short.contains(t) ? "short" : "full", false); t.scrollIntoView(); }
+  }
+  setMode(store.get("20w-mode") || "full", false);
+  follow();
+  window.addEventListener("hashchange", follow);
+  // links that leave the book open in the whole window when the page sits inside the reader
+  if (document.documentElement.classList.contains("embedded"))
+    document.querySelectorAll('a[href^="../"], a[href^="http"]').forEach(a => { a.target = a.href.startsWith(location.origin) ? "_top" : "_blank"; });
+
+  // interface language (the text itself is Russian)
+  function setLang(l){
+    document.querySelectorAll("[data-ru]").forEach(el => { el.innerHTML = el.dataset[l]; });
+    document.getElementById("lang-ru").setAttribute("aria-pressed", l === "ru");
+    document.getElementById("lang-en").setAttribute("aria-pressed", l === "en");
+    store.set("20w-lang", l);
+  }
+  document.getElementById("lang-ru").onclick = () => setLang("ru");
+  document.getElementById("lang-en").onclick = () => setLang("en");
+  setLang(store.get("20w-lang") === "en" ? "en" : "ru");
+  window.addEventListener("storage", e => {
+    if (e.key === "20w-lang" && (e.newValue === "ru" || e.newValue === "en")) setLang(e.newValue);
+    if (e.key === "20w-theme" && (e.newValue === "light" || e.newValue === "dark")) document.documentElement.setAttribute("data-theme", e.newValue);
+  });
+})();
+</script>
+<script>
+(function(){var b=document.getElementById("theme");if(!b)return;var r=document.documentElement;function cur(){var t=r.getAttribute("data-theme");if(t)return t;return window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";}function show(){b.textContent=cur()==="dark"?"☀":"☾";b.setAttribute("aria-pressed",cur()==="dark");}b.onclick=function(){var t=cur()==="dark"?"light":"dark";r.setAttribute("data-theme",t);try{localStorage.setItem("20w-theme",t);}catch(e){}show();};if(window.matchMedia)matchMedia("(prefers-color-scheme: dark)").addEventListener("change",show);show();})();
+</script>
+</body>
+</html>
