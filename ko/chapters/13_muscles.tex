@@ -112,14 +112,14 @@ G\,d \;<\; \frac{\pi}{2} ,
 
 \section{운동 리듬 발생기}
 
-걷기, 숨쉬기, 씹기는 리듬 운동이다. 여기에 클럭이 필요할까? 아니다. 척수와 뇌간에는 리듬적인 입력이 전혀 없어도 스스로 리듬을 만들어 내는 작은 네트워크가 있다~\cite{MarderBucher2001}. 가장 단순한 그런 네트워크는 우리가 이미 가진 부품으로 조립된다. 그림~\ref{fig:wta}에서처럼 \nt{GABA} 또는 \nt{GLYC} 중개 뉴런을 거쳐 서로 억제하고, \ref{sec:glutcomputer}장의 기억처럼 천천히 지치는 \nt{GLUT} 뉴런 집단 두 개이다.
+걷기, 숨쉬기, 씹기는 리듬 운동이다. 여기에 클럭이 필요할까? 아니다. 척수와 뇌간에는 리듬적인 입력이 전혀 없어도 스스로 리듬을 만들어 내는 작은 네트워크가 있다~\cite{MarderBucher2001}. 가장 단순한 그런 네트워크는 우리가 이미 가진 부품으로 조립된다. 그림~\ref{fig:wta}에서처럼 \nt{GABA} 또는 \nt{GLYC} 중개 뉴런을 거쳐 서로 억제하고, \ref{sec:glutcomputer}장의 기억처럼 천천히 지치는 \nt{GLUT} 뉴런 무리 두 개이다.
 \begin{empheq}[box=\keybox]{equation}
 \tau\,\frac{\dd r_i}{\dd t} = -r_i + \bigl[I - \beta\,r_j - a_i\bigr]_+ ,
 \qquad
 \tau_a\,\frac{\dd a_i}{\dd t} = -a_i + b\,r_i ,
 \label{eq:halfcentre}
 \end{empheq}
-여기서 $a_i$는 집단 $i$의 피로, $j$는 다른 집단이다. $\beta>1$인 상호 억제가 승자를 고른다(명제~\ref{prop:wta}). 승자는 일하면서 지친다. 피로가 입력을 잡아먹으면, 이미 쉬고 난 패자가 앞으로 치고 나와 이번에는 자기가 지치기 시작한다. 두 집단은 번갈아 일하고, 각 집단은 쌍의 자기 근육을 제어한다(그림~\ref{fig:halfcentre}).
+여기서 $a_i$는 무리 $i$의 피로, $j$는 다른 무리이다. $\beta>1$인 상호 억제가 승자를 고른다(명제~\ref{prop:wta}). 승자는 일하면서 지친다. 피로가 입력을 잡아먹으면, 이미 쉬고 난 패자가 앞으로 치고 나와 이번에는 자기가 지치기 시작한다. 두 무리는 번갈아 일하고, 각 무리는 쌍의 자기 근육을 제어한다(그림~\ref{fig:halfcentre}).
 
 \begin{figure}[t]
 \centering
@@ -129,14 +129,14 @@ G\,d \;<\; \frac{\pi}{2} ,
 \foreach \t in {0,1,2,3,4}{\draw[gray!60!black] (\t,-0.03) -- (\t,0.03); \node[below,font=\scriptsize] at (\t,0) {\t};}
 \draw[thick,blue!60!black] plot file {figures/halfcentre1.dat};
 \draw[thick,orange!85!black] plot file {figures/halfcentre2.dat};
-\node[font=\scriptsize,blue!60!black,anchor=west] at (1.6,1.28) {집단 1: “앞으로”};
-\node[font=\scriptsize,orange!85!black,anchor=west] at (2.7,1.28) {집단 2: “뒤로”};
+\node[font=\scriptsize,blue!60!black,anchor=west] at (1.6,1.28) {무리 1: “앞으로”};
+\node[font=\scriptsize,orange!85!black,anchor=west] at (2.7,1.28) {무리 2: “뒤로”};
 \end{tikzpicture}
-\caption{모델~\eqref{eq:halfcentre}에 따른 리듬 발생기: $I=1$, $\beta=2$, $b=2$, $\tau=20\ms$, $\tau_a=0.4\,\text{s}$. 상호 억제와 피로를 가진 두 집단이, 입력은 일정한데도 주기 $0.84\,\text{s}$로 번갈아 일한다.}
+\caption{모델~\eqref{eq:halfcentre}에 따른 리듬 발생기: $I=1$, $\beta=2$, $b=2$, $\tau=20\ms$, $\tau_a=0.4\,\text{s}$. 상호 억제와 피로를 가진 두 무리가, 입력은 일정한데도 주기 $0.84\,\text{s}$로 번갈아 일한다.}
 \label{fig:halfcentre}
 \end{figure}
 
-우리 모델에서 입력이 일정할 때 두 집단은 주기 $0.84\,\text{s}$로 교대한다. 피로 시간 $\tau_a$의 약 두 배이다. 위에서 오는 일정한 명령 “걸어라”가 그 자리에서 리듬으로 바뀐다. 이것은 \ref{sec:gaba}장의 \nt{GLUT}--\nt{GABA} 루프 리듬과 같은 또 하나의 국소 리듬이다. 네트워크가 일할 때만 생기고, 자기가 제어하는 근육에만 박자를 준다.
+우리 모델에서 입력이 일정할 때 두 무리는 주기 $0.84\,\text{s}$로 교대한다. 피로 시간 $\tau_a$의 약 두 배이다. 위에서 오는 일정한 명령 “걸어라”가 그 자리에서 리듬으로 바뀐다. 이것은 \ref{sec:gaba}장의 \nt{GLUT}--\nt{GABA} 루프 리듬과 같은 또 하나의 국소 리듬이다. 네트워크가 일할 때만 생기고, 자기가 제어하는 근육에만 박자를 준다.
 
 \begin{keyblock}
 \begin{proposition}[기계의 출력]
@@ -175,7 +175,7 @@ G\,d \;<\; \frac{\pi}{2} ,
 
 \begin{exercise}[\lvlA]
 \label{ex:13:1}
-\emph{숫자로 보는 부동소수점.} 근육에 힘이 $f_n=f_1q^{\,n-1}$인 운동 단위 $N=100$개가 있다. 가장 강한 단위는 가장 약한 단위보다 $100$배 강하다. (가)~$q$, 상대 단계~\eqref{eq:sizeprinciple}, 데시벨 단위의 동적 범위를 구하라. (나)~전체 힘이 같은 동일한 단위 $100$개로 된 “선형 DAC”에서 힘 $10f_1$일 때의 단계는?
+\emph{숫자로 보는 부동소수점.} 근육에 힘이 $f_n=f_1q^{\,n-1}$인 운동 단위 $N=100$개가 있다. 가장 강한 단위는 가장 약한 단위보다 $100$배 강하다. (a)~$q$, 상대 단계~\eqref{eq:sizeprinciple}, 데시벨 단위의 동적 범위를 구하라. (b)~전체 힘이 같은 동일한 단위 $100$개로 된 “선형 DAC”에서 힘 $10f_1$일 때의 단계는?
 \end{exercise}
 
 \begin{exercise}[\lvlA]
@@ -185,17 +185,17 @@ G\,d \;<\; \frac{\pi}{2} ,
 
 \begin{exercise}[\lvlB]
 \label{ex:13:3}
-\emph{필터로서의 근육.} $T_c=50\ms$인 연축~\eqref{eq:twitch}은 선형 시스템의 임펄스 응답이다. (가)~전달 함수 $H(s)$와 차단 주파수를 구하라. (나)~규칙적인 스파이크의 발화율이 얼마일 때 힘의 맥동 폭이 평균 힘의 $10\%$가 되는가?
+\emph{필터로서의 근육.} $T_c=50\ms$인 연축~\eqref{eq:twitch}은 선형 시스템의 임펄스 응답이다. (a)~전달 함수 $H(s)$와 차단 주파수를 구하라. (b)~규칙적인 스파이크의 발화율이 얼마일 때 힘의 맥동 폭이 평균 힘의 $10\%$가 되는가?
 \end{exercise}
 
 \begin{exercise}[\lvlB]
 \label{ex:13:4}
-\emph{지연보다 빨리 바로잡을 수는 없다.} 조절기 $\dd x/\dd t=-G\,x(t-d)$. (가)~편차가 진동 없이 가장 빨리 감쇠하는 것은 $Gd=1/e$일 때이며 그 속도가 $1/d$임을 보여라. (나)~척수 루프 $d=30\ms$와 눈을 거치는 루프 $d=150\ms$에 대해 이 $G$와 감쇠 시간 상수를 구하라.
+\emph{지연보다 빨리 바로잡을 수는 없다.} 조절기 $\dd x/\dd t=-G\,x(t-d)$. (a)~편차가 진동 없이 가장 빨리 감쇠하는 것은 $Gd=1/e$일 때이며 그 속도가 $1/d$임을 보여라. (b)~척수 루프 $d=30\ms$와 눈을 거치는 루프 $d=150\ms$에 대해 이 $G$와 감쇠 시간 상수를 구하라.
 \end{exercise}
 
 \begin{exercise}[\lvlB]
 \label{ex:13:5}
-\emph{리듬 발생기의 주기.} $\tau\ll\tau_a$일 때 모델~\eqref{eq:halfcentre}의 주기 $T$는 방정식 $(\beta-1)(1-E^{2+b})/(\beta-E)=b\,(1-E^{1+b})/(1+b)$로 정해진다. 여기서 $E=e^{-T/(2\tau_a)}$이다. (가)~$\beta=b=2$, $\tau_a=0.4$~s일 때 $T$를 구하라. (나)~$T$가 입력 $I$와 무관하며, 리듬은 $b>\beta-1$일 때만 가능함을 보여라.
+\emph{리듬 발생기의 주기.} $\tau\ll\tau_a$일 때 모델~\eqref{eq:halfcentre}의 주기 $T$는 방정식 $(\beta-1)(1-E^{2+b})/(\beta-E)=b\,(1-E^{1+b})/(1+b)$로 정해진다. 여기서 $E=e^{-T/(2\tau_a)}$이다. (a)~$\beta=b=2$, $\tau_a=0.4$~s일 때 $T$를 구하라. (b)~$T$가 입력 $I$와 무관하며, 리듬은 $b>\beta-1$일 때만 가능함을 보여라.
 \end{exercise}
 
 \begin{exercise}[\lvlB]
