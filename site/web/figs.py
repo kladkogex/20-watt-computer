@@ -26,6 +26,9 @@ def prepare(src):
         s = main.read_text(encoding="utf-8")
         # the covers are print artwork (the web reader keeps the plain title): not figures of the web pages
         s = re.sub(r"^\\input\{(?:paperback/cover|figures/bookcover)\}.*$", "", s, flags=re.M)
+        # nor are the chapter bands and goal boxes of the print design (figures/booklook.tex draws them with TikZ)
+        s = s.replace("\\input{figures/booklook}", "\\input{figures/booklook}\\makeatletter\\def\\booklook@band#1{}\\makeatother"
+                      "\\renewenvironment{chaptergoals}{\\begin{itemize}}{\\end{itemize}}", 1)
         i = s.index("\\begin{document}")
         out.write_text(s[:i] + PREVIEW + s[i:], encoding="utf-8")
     (src / "figs-full.tex").write_text("\\input{figs-full-main}\n", encoding="utf-8")
