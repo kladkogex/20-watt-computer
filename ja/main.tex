@@ -1,0 +1,122 @@
+\documentclass[11pt,openany]{book}
+\setcounter{secnumdepth}{3}
+\usepackage[margin=1.1in]{geometry}
+% Japanese edition: build with XeLaTeX (see the Makefile)
+\usepackage{xeCJK}
+\setCJKmainfont{IPAexMincho}
+\setCJKsansfont{IPAexGothic}
+\setCJKmonofont{IPAexGothic}
+\xeCJKsetup{CJKecglue={\hskip 0.15em plus 0.05em minus 0.05em}}
+\usepackage{titlesec}
+\newcommand{\chaptersuffix}{章}
+\titleformat{\chapter}[display]{\normalfont\huge\bfseries}{\ifx\chaptersuffix\empty\appendixname\thechapter\else 第\thechapter\chaptersuffix\fi}{20pt}{\Huge}
+\AtBeginDocument{\renewcommand{\contentsname}{目次}\renewcommand{\figurename}{図}\renewcommand{\tablename}{表}\renewcommand{\bibname}{参考文献}\renewcommand{\appendixname}{付録~}\renewcommand{\proofname}{証明}}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,decorations.markings,decorations.pathmorphing,decorations.pathreplacing,calc}
+\input{figures/icons}
+\usepackage[unicode,colorlinks=true,linkcolor=blue!60!black,citecolor=blue!60!black]{hyperref}
+\usepackage{microtype}
+\usepackage{empheq}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{longtable}
+\usepackage{circuitikz}
+\definecolor{keyyellow}{rgb}{1.0,0.97,0.78}
+% key equations: \begin{empheq}[box=\keybox]{equation} ... \end{empheq} -- light-yellow box, number stays outside
+\newcommand{\keybox}[1]{{\setlength{\fboxsep}{7pt}\colorbox{keyyellow}{#1}}}
+\usepackage[most]{tcolorbox}
+% key statements (propositions etc.): the same light-yellow background, breakable across pages
+\newtcolorbox{keyblock}{enhanced,breakable,colback=keyyellow,colframe=keyyellow,boxrule=0pt,arc=0pt,left=6pt,right=6pt,top=2pt,bottom=2pt,boxsep=0pt}
+\renewcommand{\chaptermark}[1]{\markboth{\small 第\thechapter 章\quad #1}{}}
+\renewcommand{\sectionmark}[1]{\markright{\small\thesection.\ #1}}
+\renewcommand{\topfraction}{0.95}
+\renewcommand{\textfraction}{0.05}
+\renewcommand{\floatpagefraction}{0.75}
+
+% part pages: title at the top third, and text may follow on the same page (used for the part introductions)
+\makeatletter
+\renewcommand\part{\if@openright\cleardoublepage\else\clearpage\fi\thispagestyle{plain}\if@twocolumn\onecolumn\@tempswatrue\else\@tempswafalse\fi\null\vspace{0.18\textheight}\secdef\@part\@spart}
+\renewcommand\@endpart{\par\vspace{3em}\if@tempswa\twocolumn\fi}
+\makeatother
+\newtheorem{theorem}{定理}[chapter]
+\newtheorem{proposition}{命題}[chapter]
+\newtheorem{lemma}{補題}[chapter]
+\theoremstyle{remark}
+\newtheorem{remark}{注意}[chapter]
+% exercises: \begin{exercise}[\lvlB] ... \end{exercise}, numbered "Exercise 4.3"; difficulty marks
+\theoremstyle{definition}
+\newtheorem{exercise}{問題}[chapter]
+\newcommand{\lvlA}{$\star$}
+\newcommand{\lvlB}{$\star\star$}
+\newcommand{\lvlC}{$\star\star\star$}
+% answer to an exercise in the Answers appendix: \answer{ex:NN:k}{text}
+\newcommand{\answer}[2]{\par\noindent\textbf{\ref{#1}.}~#2\par\smallskip}
+\newcommand{\dd}{\mathrm{d}}
+% neuron type code: first four letters of the primary mediator
+\newcommand{\nt}[1]{\textsf{\textbf{#1}}}
+\newcommand{\mV}{\,\text{mV}}
+\newcommand{\ms}{\,\text{ms}}
+\newcommand{\mM}{\,\text{mM}}
+\newcommand{\um}{\,\text{\textmu m}}
+\newcommand{\ion}[2]{\mathrm{#1}^{#2}}
+\newcommand{\Na}{\ion{Na}{+}}
+\newcommand{\K}{\ion{K}{+}}
+\newcommand{\Cl}{\ion{Cl}{-}}
+\newcommand{\Ca}{\ion{Ca}{2+}}
+\newcommand{\conc}[1]{[\mathrm{#1}]}
+
+\title{\Huge 20ワットのコンピュータ\\[16pt] \Large 脳はどのように計算するか：エンジニアのための定量的アプローチ}
+\hypersetup{pdftitle={20ワットのコンピュータ. 脳はどのように計算するか：エンジニアのための定量的アプローチ},pdfauthor={Konstantin Kladko}}
+\author{\Large コンスタンチン・クラドコ（Konstantin Kladko）}
+\date{}
+
+\begin{document}
+\frontmatter
+\maketitle
+\thispagestyle{empty}
+\vspace*{\fill}
+\noindent{\small \copyright~2026 Konstantin Kladko（コンスタンチン・クラドコ）。\\[4pt]
+本書の本文・図・問題・解答は、クリエイティブ・コモンズ 表示—非営利—継承 4.0 国際ライセンス（CC BY-NC-SA 4.0）の下で公開されています：\url{https://creativecommons.org/licenses/by-nc-sa/4.0/deed.ja}。著者を表示し、派生物を同じライセンスで公開する限り、非営利目的で自由に複製し、授業に使い、翻訳し、改変することができます。\\[4pt]
+モデルとビルドのプログラムは MIT ライセンスの下で公開されています。\\[4pt]
+ロシア語版からの翻訳。\\[4pt]
+ソース、モデル、最新版：\url{https://github.com/kladkogex/20-watt-computer}。}
+\clearpage
+
+\tableofcontents
+\input{chapters/00_roadmap}
+\mainmatter
+
+\input{chapters/01b_neurontypes}
+\input{chapters/02_glutcomputer}
+\input{chapters/03_gaba}
+\input{chapters/04_code}
+\input{chapters/05_serocomputer}
+\input{chapters/06_dofa}
+\input{chapters/07_dofaalt}
+\input{chapters/08_nora}
+\input{chapters/09_acet}
+\input{chapters/10_synthesis}
+\input{chapters/11_sensors}
+\input{chapters/12_recognition}
+\input{chapters/13_muscles}
+\input{chapters/14_pain}
+\input{chapters/15_motorlearning}
+\input{chapters/16_chemoutput}
+\input{chapters/17_debugging}
+\input{chapters/18_eetypes}
+\input{chapters/19_dendrites}
+\input{chapters/20_sleep}
+\input{chapters/21_living}
+\input{chapters/22_dishbrain}
+\appendix
+\renewcommand{\chaptersuffix}{}
+\input{chapters/appendix_othermediators}
+\input{chapters/appendix_notation}
+\input{chapters/appendix_answers}
+\input{chapters/appendix_supplement}
+\input{chapters/bibliography}
+
+\end{document}

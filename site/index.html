@@ -2,6 +2,7 @@
 <html lang="ru">
 <head>
 <meta charset="utf-8">
+<script>try{var t=localStorage.getItem("20w-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>The 20-Watt Computer</title>
 <meta name="description" content="Компьютер на 20 ваттах / The 20-Watt Computer — how the brain computes: a quantitative approach for engineers. Free book, PDF and interactive breadboard.">
@@ -27,8 +28,10 @@
   --mono:"IBM Plex Mono", ui-monospace, Menlo, monospace;
 }
 @media (prefers-color-scheme: dark){
-  :root{ color-scheme:dark; --bg:#10161D; --panel:#161E27; --grid:#1C2631; --ink:#E4E9EF; --muted:#93A1B1; --line:#2E3C4B; --glut:#86ACEA; --gaba:#F08C7F; --spike:#F2C14E; }
+  :root:not([data-theme="light"]){ color-scheme:dark; --bg:#10161D; --panel:#161E27; --grid:#1C2631; --ink:#E4E9EF; --muted:#93A1B1; --line:#2E3C4B; --glut:#86ACEA; --gaba:#F08C7F; --spike:#F2C14E; }
 }
+:root[data-theme="dark"]{ color-scheme:dark; --bg:#10161D; --panel:#161E27; --grid:#1C2631; --ink:#E4E9EF; --muted:#93A1B1; --line:#2E3C4B; --glut:#86ACEA; --gaba:#F08C7F; --spike:#F2C14E; }
+:root[data-theme="light"]{color-scheme:light}
 *{box-sizing:border-box}
 html{background:var(--bg);min-height:100%}
 body{margin:0;min-height:100vh;color:var(--ink);font:16px/1.55 var(--sans);padding-inline:16px;padding-block:20px 40px;
@@ -81,6 +84,7 @@ footer a{color:var(--ink)}
     <div class="langs" role="group" aria-label="Language">
       <button class="chip" id="lang-ru" type="button">RU</button>
       <button class="chip" id="lang-en" type="button">EN</button>
+      <button class="chip theme" id="theme" type="button" aria-label="Light or dark theme" title="Light / dark">☾</button>
     </div>
   </header>
 
@@ -170,6 +174,9 @@ footer a{color:var(--ink)}
   document.getElementById("lang-en").onclick=()=>set("en");
   render();
 })();
+</script>
+<script>
+(function(){var b=document.getElementById("theme");if(!b)return;var r=document.documentElement;function cur(){var t=r.getAttribute("data-theme");if(t)return t;return window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";}function show(){b.textContent=cur()==="dark"?"☀":"☾";b.setAttribute("aria-pressed",cur()==="dark");}b.onclick=function(){var t=cur()==="dark"?"light":"dark";r.setAttribute("data-theme",t);try{localStorage.setItem("20w-theme",t);}catch(e){}show();};if(window.matchMedia)matchMedia("(prefers-color-scheme: dark)").addEventListener("change",show);show();})();
 </script>
 </body>
 </html>

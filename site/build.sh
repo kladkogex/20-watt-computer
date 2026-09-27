@@ -10,6 +10,7 @@ cp ru/20-watt-computer-ru.pdf ru/20-watt-computer-ru-paperback.pdf _site/pdf/
 {
   printf '<!doctype html>\n<html lang="ru">\n<head>\n<meta charset="utf-8">\n'
   printf '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n'
+  printf '%s\n' '<script>try{var t=localStorage.getItem("20w-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>'
   printf '<style>[hidden]{display:none!important}body{margin:0}</style>\n</head>\n<body>\n'
   cat site/breadboard/breadboard.html
   printf '\n</body>\n</html>\n'

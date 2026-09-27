@@ -142,6 +142,7 @@ footer code{font-family:var(--mono);font-size:12px}
     <div class="langs" role="group" aria-label="Language">
       <button class="chip" id="lang-ru" aria-pressed="false">RU</button>
       <button class="chip" id="lang-en" aria-pressed="false">EN</button>
+      <button class="chip theme" id="theme" type="button" aria-label="Light or dark theme" title="Light / dark">☾</button>
     </div>
   </header>
 
@@ -776,4 +777,5 @@ if(location.hash==="#selftest"){
   document.body.innerHTML=`<pre id="selftest">${lines.join("\n")}\nTOTAL ${ok}/${CH.length}</pre>`; document.title=`PASS ${ok}/${CH.length}`;
 } else renderAll();
 })();
+(function(){var b=document.getElementById("theme");if(!b)return;var r=document.documentElement;function cur(){var t=r.getAttribute("data-theme");if(t)return t;return window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";}function show(){b.textContent=cur()==="dark"?"☀":"☾";b.setAttribute("aria-pressed",cur()==="dark");}b.onclick=function(){var t=cur()==="dark"?"light":"dark";r.setAttribute("data-theme",t);try{localStorage.setItem("20w-theme",t);}catch(e){}show();};if(window.matchMedia)matchMedia("(prefers-color-scheme: dark)").addEventListener("change",show);show();})();
 </script>
