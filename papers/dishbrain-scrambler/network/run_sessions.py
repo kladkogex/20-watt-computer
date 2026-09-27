@@ -30,17 +30,20 @@ BURN_MS, GAME_MS, REST_MS = 60_000, 1_200_000, 600_000
 
 
 SET = os.environ.get("CALSET", "weak")      # calibrated parameter set: weak / medium / strong E->E coupling
+NSIZE = int(os.environ.get("NSIZE", "3000"))  # network size; sets from calib_sets_<N>.json when N > 3000
+TAG = "" if NSIZE == 3000 else f"_N{NSIZE}"
 
 
 def calibrated(name=None):
     """One of three parameter sets that fit the Rest statistics equally well (calib_sets.json) but differ in
     recurrent coupling, which the Rest data do not constrain."""
-    sets = json.load(open(os.path.join(HERE, "calib_sets.json")))
+    sets = json.load(open(os.path.join(HERE, "calib_sets.json" if NSIZE == 3000 else f"calib_sets_{NSIZE}.json")))
     c = dict(sets[name or SET]); c.pop("search_loss", None)
     return c
 
 
 def base_params(**kw):
+    kw.setdefault("N", NSIZE)
     p = Params(**{k: v for k, v in kw.items() if k in Params.__dataclass_fields__})
     return p
 
@@ -56,7 +59,7 @@ def play(conds, cultures, P, per_run_extra=None, minutes=None, seed=0):
         pr[k] = np.broadcast_to(np.asarray(v, float), (R,)).copy()
     topo = Topology([1000 + s for s in range(cultures)], P)
     sim = Sim(topo, [s for _, s in runs], [c for c, _ in runs], P, noise_seed=seed, per_run=pr,
-              m_max=max(2048, R * 12))
+              m_max=max(2048, R * max(12, NSIZE // 125)))
     t0 = time.time()
     sim.run(BURN_MS, game=False, plastic=False)
     ms = minutes * 60_000 if minutes else GAME_MS
@@ -155,7 +158,7 @@ def evoked(cultures=8, trials=40):
     strong = torch.tensor(([False] * cultures + [True] * cultures) * len(combos), device="cuda")
     topo = Topology([1000 + s for s in range(cultures)], P)
     sim = Sim(topo, [r % cultures for r in range(R)], ["rest"] * R, P, noise_seed=7, per_run=pr,
-              m_max=max(2048, R * 12))
+              m_max=max(2048, R * max(12, NSIZE // 125)))
     sim.run(20_000, game=False, plastic=False)
     k75 = torch.tensor(pr["kick75"], device="cuda", dtype=torch.float32)
     pre = torch.zeros(R, 8, 4, device="cuda"); post = torch.zeros_like(pre); pre2 = torch.zeros_like(pre)
@@ -234,7 +237,7 @@ if __name__ == "__main__":
         summ = {c: {k: (float(v) if np.isscalar(v) else None) for k, v in r.items() if k != "T2_values"}
                 for c, r in rows.items()}
         json.dump(dict(rule=rule, eta=eta, set=SET, cultures=n, info=info, conditions=summ),
-                  open(os.path.join(RES, f"main_{SET}_{rule}_{eta}.json"), "w"), indent=1)
+                  open(os.path.join(RES, f"main_{SET}_{rule}_{eta}{TAG}.json"), "w"), indent=1)
     elif what == "rules":
         for rule, etas in (("gated", (0.005, 0.02, 0.08)), ("stdp", (0.002, 0.008)), ("kick", (0,))):
             for eta in etas:
@@ -254,7 +257,7 @@ def play_runs(meta, pr, P, minutes, seed=0, cultures=16):
     R = len(meta)
     topo = Topology([1000 + s for s in range(cultures)], P)
     sim = Sim(topo, [m["culture"] for m in meta], [m["cond"] for m in meta], P, noise_seed=seed,
-              per_run=pr, m_max=max(2048, R * 12))
+              per_run=pr, m_max=max(2048, R * max(12, NSIZE // 125)))
     t0 = time.time()
     sim.run(BURN_MS, game=False, plastic=False)
     sim.clock.zero_()
@@ -332,7 +335,7 @@ def kappa_batch(rule, eta, cultures=16, minutes=5, recruits=("default", "wide", 
         r.update(miss_excess=excess, kappa=kap)
         print(f"{r['set']:7s} {r['recruit']:8s} {r['cond']:12s} {r['hit_frac']:5.2f} {r['outcomes']:5.0f} "
               f"{r['dW_hit']:12.3g} {r['dW_miss']:13.3g} {r['drift_per_s']:9.3g} {kap:10.3f} {r['kappa_eff']:14.3f}")
-    json.dump(rows, open(os.path.join(RES, f"kappa_{rule}_{eta}.json"), "w"), indent=1, default=float)
+    json.dump(rows, open(os.path.join(RES, f"kappa_{rule}_{eta}{TAG}.json"), "w"), indent=1, default=float)
     return rows
 
 

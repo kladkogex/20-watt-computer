@@ -102,39 +102,54 @@ def dev():
 
 # ----------------------------------------------------------------------------------------------- topology
 class Topology:
-    """Positions and wiring of S cultures (seeds), shared by every run with the same seed (paired design)."""
+    """Positions and wiring of S cultures (seeds), shared by every run with the same seed (paired design).
+
+    Inputs are drawn with probability proportional to exp(-d / lam) over the sheet. Up to N = 20000 this is done
+    exactly (multinomial over all neurons, without replacement); for larger N the distance of each input is drawn
+    from the radial law d e^{-d/lam} (Gamma(2, lam)), the direction uniformly, and the input is a random neuron in
+    the grid cell at that point; draws outside the sheet, into empty cells or onto the neuron itself are redrawn,
+    which gives the same distribution restricted to the sheet (duplicates are allowed; they are rare).
+    Index tables are int32 to halve memory at large N."""
+
+    EXACT_MAX = 20000
 
     def __init__(self, seeds, P: Params):
         d_ = dev()
         self.P, self.S, N, K = P, len(seeds), P.N, P.K
         self.NE = int(round(P.fE * N))
-        pre = torch.empty(self.S, N, K, dtype=torch.int64, device=d_)
+        pre = torch.empty(self.S, N, K, dtype=torch.int32, device=d_)
         pos = torch.empty(self.S, N, 2, device=d_)
         for s, seed in enumerate(seeds):
             g = torch.Generator(device=d_).manual_seed(int(seed))
             p = torch.rand(N, 2, generator=g, device=d_) * torch.tensor([WX, WY], device=d_)
-            w = torch.exp(-torch.cdist(p, p) / P.lam)
-            w.fill_diagonal_(0)
-            pre[s] = torch.multinomial(w, K, replacement=False, generator=g)
+            if N <= self.EXACT_MAX:
+                w = torch.exp(-torch.cdist(p, p) / P.lam)
+                w.fill_diagonal_(0)
+                pre[s] = torch.multinomial(w, K, replacement=False, generator=g).to(torch.int32)
+                del w
+            else:
+                pre[s] = self._grid_inputs(p, N, K, P.lam, g)
             pos[s] = p
         self.pos, self.pre = pos, pre
         outdeg = torch.zeros(self.S, N, dtype=torch.int64, device=d_)
-        outdeg.scatter_add_(1, pre.view(self.S, -1), torch.ones_like(pre.view(self.S, -1)))
+        for s in range(self.S):
+            outdeg[s] = torch.bincount(pre[s].reshape(-1).long(), minlength=N)
         D = int(outdeg.max())
         self.D = D
-        out_post = torch.full((self.S, N, D), N, dtype=torch.int64, device=d_)
-        in_d = torch.zeros(self.S, N, K, dtype=torch.int64, device=d_)
+        out_post = torch.full((self.S, N, D), N, dtype=torch.int32, device=d_)
+        in_d = torch.zeros(self.S, N, K, dtype=torch.int16 if D < 32767 else torch.int32, device=d_)
         for s in range(self.S):
-            j = pre[s].reshape(-1)
+            j = pre[s].reshape(-1).long()
             order = torch.argsort(j, stable=True)
             js = j[order]
             start = torch.zeros(N + 1, dtype=torch.int64, device=d_)
             start[1:] = torch.cumsum(outdeg[s], 0)
             rank = torch.arange(js.numel(), device=d_) - start[js]
-            post = torch.arange(N, device=d_).repeat_interleave(K)[order]
-            slot = torch.arange(K, device=d_).repeat(N)[order]
-            out_post[s, js, rank] = post
-            in_d[s, post, slot] = rank
+            post = torch.div(order, K, rounding_mode="floor")
+            slot = order - post * K
+            out_post[s, js, rank] = post.to(torch.int32)
+            in_d[s, post, slot] = rank.to(in_d.dtype)
+            del j, order, js, start, rank, post, slot
         self.out_post, self.in_d = out_post, in_d
         el = torch.tensor([[c * PITCH, r * PITCH] for c, r in STIM_ELECTRODES], device=d_)
         self.el_dist = torch.cdist(pos, el.unsqueeze(0).expand(self.S, -1, -1))   # (S, N, 8), mm
@@ -146,6 +161,43 @@ class Topology:
             region[inside] = k
         self.region = region
         self.onehot = torch.nn.functional.one_hot(region.clamp(min=0), 4).float() * (region >= 0).unsqueeze(-1)
+
+    @staticmethod
+    def _grid_inputs(p, N, K, lam, g, chunk=20_000_000):
+        d_ = p.device
+        c = math.sqrt(WX * WY / N)
+        nx, ny = int(math.ceil(WX / c)), int(math.ceil(WY / c))
+        cx = (p[:, 0] / c).long().clamp(max=nx - 1); cy = (p[:, 1] / c).long().clamp(max=ny - 1)
+        cell = cx * ny + cy
+        order = torch.argsort(cell)
+        cnt = torch.bincount(cell, minlength=nx * ny)
+        start = torch.zeros(nx * ny + 1, dtype=torch.int64, device=d_); start[1:] = torch.cumsum(cnt, 0)
+        out = torch.empty(N * K, dtype=torch.int32, device=d_)
+        for a in range(0, N * K, chunk):
+            b = min(a + chunk, N * K)
+            post = torch.arange(a, b, device=d_) // K
+            res = torch.full((b - a,), -1, dtype=torch.int64, device=d_)
+            todo = torch.arange(b - a, device=d_)
+            for it in range(200):
+                if todo.numel() == 0:
+                    break
+                n = todo.numel()
+                e = torch.rand(n, 2, generator=g, device=d_).clamp(min=1e-12)
+                dist = -lam * torch.log(e).sum(1)                              # Gamma(2, lam)
+                th = torch.rand(n, generator=g, device=d_) * (2 * math.pi)
+                q = p[post[todo]] + torch.stack([dist * torch.cos(th), dist * torch.sin(th)], 1)
+                ok = (q[:, 0] >= 0) & (q[:, 0] < WX) & (q[:, 1] >= 0) & (q[:, 1] < WY)
+                qx = (q[:, 0] / c).long().clamp(0, nx - 1); qy = (q[:, 1] / c).long().clamp(0, ny - 1)
+                cc = qx * ny + qy
+                ok &= cnt[cc] > 0
+                off = (torch.rand(n, generator=g, device=d_) * cnt[cc]).long().clamp(max=cnt[cc].clamp(min=1) - 1)
+                pick = order[(start[cc] + off).clamp(max=N - 1)]          # empty cells are rejected below
+                ok &= pick != post[todo]
+                res[todo[ok]] = pick[ok]
+                todo = todo[~ok]
+            assert todo.numel() == 0, "input sampling did not converge"
+            out[a:b] = res.to(torch.int32)
+        return out.view(N, K)
 
 
 # ----------------------------------------------------------------------------------------------- fused update
@@ -283,27 +335,39 @@ class Sim:
             return torch.as_tensor(v, dtype=torch.float32, device=d_).expand(R).clone()
         self.pr = {k: col(k) for k in ("mu", "mu_sd", "sigma", "J_ee", "J_ie", "J_ei", "J_ii", "U", "b_a",
                                        "H", "r75", "r150", "kick75", "blank")}
-        # weights in out-list layout, flat, with one trailing dummy row (row R*N) that absorbs padded updates
-        out_post = topo.out_post[self.seed_of]
-        pre_e = (torch.arange(N, device=d_) < NE).view(1, N, 1)
-        post_e = out_post < NE
-        pad = out_post >= N
-        u = torch.rand(out_post.shape, device=d_)
-        J = {k: self.pr[k].view(R, 1, 1) for k in ("J_ee", "J_ie", "J_ei", "J_ii")}
-        W = torch.where(pre_e & post_e, 2 * J["J_ee"] * u,
-            torch.where(pre_e & ~post_e, J["J_ie"].expand_as(u),
-            torch.where(~pre_e & post_e, J["J_ei"].expand_as(u), J["J_ii"].expand_as(u))))
-        W.masked_fill_(pad, 0.0)
-        self.Wflat = torch.cat([W.reshape(-1), torch.zeros(D, device=d_)])      # + one dummy row
+        # weights in out-list layout, flat, with one trailing dummy row (row R*N) that absorbs padded updates;
+        # built run by run to avoid (R, N, D) temporaries at large N
+        self.Wflat = torch.zeros(R * N * D + D, device=d_)
         self.W = self.Wflat[:R * N * D].view(R, N, D)
         self.Wrows = self.Wflat.view(R * N + 1, D)
-        self.ee = (pre_e & post_e & ~pad)
-        del out_post, u, W, pad, post_e
+        pre_e = (torch.arange(N, device=d_) < NE).view(N, 1)
+        need_ee = P.rule == "kick"
+        self.ee = torch.zeros(R, N, D, dtype=torch.bool, device=d_) if need_ee else None
+        for r in range(R):
+            op = topo.out_post[int(run_seed[r])]
+            post_e = op < NE
+            pad = op >= N
+            u = torch.rand(N, D, device=d_)
+            Jr = {k: float(self.pr[k][r]) for k in ("J_ee", "J_ie", "J_ei", "J_ii")}
+            w = torch.where(pre_e & post_e, 2 * Jr["J_ee"] * u,
+                torch.where(pre_e & ~post_e, torch.full_like(u, Jr["J_ie"]),
+                torch.where(~pre_e & post_e, torch.full_like(u, Jr["J_ei"]), torch.full_like(u, Jr["J_ii"]))))
+            self.W[r] = w.masked_fill_(pad, 0.0)
+            if need_ee:
+                self.ee[r] = pre_e & post_e & ~pad
+            del op, post_e, pad, u, w
         self.wmax = 2 * self.pr["J_ee"]                 # per run
         # neuron state
         self.V = torch.rand(R, N, device=d_) * 0.5
-        self.I = torch.zeros(R, 2, N + 1, device=d_)
-        self.x = torch.ones(R, N, device=d_)
+        # synaptic currents and depression resources, each followed by a private dummy area for padded entries:
+        # padded updates then never collide on one address (atomic contention was the bottleneck at large N)
+        nI = R * 2 * (N + 1)
+        self.I_ext = torch.zeros(nI + self.m_max * D, device=d_)
+        self.I = self.I_ext[:nI].view(R, 2, N + 1)
+        self.I_pad = nI + torch.arange(self.m_max * D, device=d_).view(self.m_max, D)
+        self.x_ext = torch.ones(R * N + self.m_max, device=d_)
+        self.x = self.x_ext[:R * N].view(R, N)
+        self.x_pad = R * N + torch.arange(self.m_max, device=d_)
         self.a = torch.zeros(R, N, device=d_)
         self.ref = torch.zeros(R, N, device=d_)
         self.tr = torch.zeros(R, N, device=d_)
@@ -398,15 +462,17 @@ class Sim:
         valid = flat < R * N
         f = flat.clamp(max=R * N - 1)
         rr, jj = torch.div(f, N, rounding_mode="floor"), torch.remainder(f, N)
-        posts = self.t.out_post[self.seed_of[rr], jj]                   # (M, D)
+        posts = self.t.out_post[self.seed_of[rr], jj].long()            # (M, D)
         w = self.W[rr, jj]
         e = jj < self.NE
         xj = self.x[rr, jj]
         Ur = self.pr["U"][rr]
         eff = torch.where(e, Ur * xj, torch.ones_like(xj)) * valid
-        idx = ((rr.unsqueeze(1) * 2 + (~e).long().unsqueeze(1)) * (N + 1) + posts).reshape(-1)
-        self.I.view(-1).index_add_(0, idx, (w * eff.unsqueeze(1)).reshape(-1))
-        self.x.view(-1).index_add_(0, f, -(Ur * xj) * (e & valid))
+        idx = (rr.unsqueeze(1) * 2 + (~e).long().unsqueeze(1)) * (N + 1) + posts
+        idx = torch.where(valid.unsqueeze(1) & (posts < N), idx, self.I_pad)
+        self.I_ext.index_add_(0, idx.reshape(-1), (w * eff.unsqueeze(1)).reshape(-1))
+        xi = torch.where(e & valid, f, self.x_pad)
+        self.x_ext.index_add_(0, xi, -(Ur * xj) * (e & valid))
         if P.rule in ("gated", "stdp"):
             self._plasticity(rr, jj, e & valid, posts, w)
         if self.rec_units is not None:                                  # row pointer on the GPU (graph safe)
@@ -419,8 +485,8 @@ class Sim:
         P, N, D = self.P, self.N, self.D
         wr, on = self.wmax[rr].unsqueeze(1), self.plastic
         s = self.seed_of[rr]
-        pres = self.t.pre[s, jj]                                        # (M, K) inputs of each spiking neuron
-        ds = self.t.in_d[s, jj]
+        pres = self.t.pre[s, jj].long()                                 # (M, K) inputs of each spiking neuron
+        ds = self.t.in_d[s, jj].long()
         is_ee = (pres < self.NE) & ev.unsqueeze(1)
         trace = self.tr[rr.unsqueeze(1), pres]                          # pre traces before this step's reset
         widx = (rr.unsqueeze(1) * N + pres) * D + ds
