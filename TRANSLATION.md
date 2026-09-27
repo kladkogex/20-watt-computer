@@ -101,4 +101,4 @@ For terms not listed, use the standard term of neuroscience or electrical engine
 - Chinese: simplified characters, full-width punctuation in running text (，。：；（）), half-width inside math and
   code; a space between Chinese and Latin/number runs is optional but be consistent within a file (prefer none,
   except around inline math which ctex handles).
-- Quotes: EN "…"; ZH “…”. Russian «…» must not remain.
+- Quotes: EN "…"; ZH “…”. «…» only where they are the standard marks of the language (ru, uk, fr).
