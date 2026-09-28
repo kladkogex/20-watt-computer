@@ -1,0 +1,44 @@
+% Supplemental Information (Document S1) for the Neuron Letter in main.tex.
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage[italic]{mathastext}
+\usepackage{amsmath,amssymb}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{titlesec}
+\usepackage[colorlinks=true,linkcolor=blue!50!black,citecolor=blue!50!black,urlcolor=blue!50!black]{hyperref}
+\usepackage{microtype}
+\titleformat{\section}{\large\bfseries}{}{0pt}{}
+\setlength{\parskip}{4pt}
+\setlength{\parindent}{0pt}
+\setlength{\emergencystretch}{2em}
+
+\begin{document}
+
+{\large\bfseries Supplemental Information}\par\smallskip
+Within-session learning in DishBrain is likely explained by asymmetric feedback rather than by unpredictability\par
+Konstantin Kladko\par\medskip
+Document S1. Methods of the re-analysis and statistics, derivation of the stationary density, and the closed-loop model.
+
+\section*{Data and code}
+Data: per-rally gameplay and Rest data of Kagan et al.\ (2022), Open Science Framework, \url{https://doi.org/10.17605/osf.io/5u6qv}, file \texttt{in\_vitro\_cells\_sentience\_2.pkl}. Code: \url{https://github.com/kladkogex/20-watt-computer}, folder \texttt{papers/dishbrain-scrambler}: \texttt{reanalysis/kagan2022\_reanalysis.py} (all statistics), \texttt{reanalysis/figure\_data.py} (Figure 1A), \texttt{scrambler.py} (closed-loop model, Figure 1B; standard-library Python).
+
+\section*{Re-analysis}
+Each row of the data file is one rally, with chip, session, time in session, number of hits and condition. Groups 0, 1 and 2 are Stimulus, Silent (tagged ``no\_feedback'') and No feedback (tagged ``open\_loop''); each chip's Rest session, without stimulation, is marked \texttt{control}~$=1$. T1 and T2 are the first 5 and the remaining 15 minutes of gameplay (column \texttt{half}, as in the authors' analysis notebook). The unit of analysis is the chip (culture). For each chip, hits per rally is the mean over all its rallies in T1, in T2 and at Rest; chips without both T1 and T2 are excluded, leaving 24 Stimulus, 17 Silent and 15 No feedback cultures. Cell line is read from the recording tag: Stimulus 12 human GFP-iPSC, 7 human NGN2 and 5 primary mouse cultures; Silent 11, 7 and 0; No feedback 2, 6 and 7. Mean within-session gains by cell line (hits per rally): Stimulus $+0.123$, $+0.127$, $+0.257$; Silent $-0.055$, $+0.005$; No feedback $+0.005$, $-0.014$, $+0.007$.
+
+\section*{Statistics}
+Within-condition changes T2$-$T1 were tested with two-sided Wilcoxon signed-rank tests over cultures; differences between conditions (T2 levels, Rest baselines) with Kruskal--Wallis tests. Values in Figure~1A are mean $\pm$ SEM over cultures. No correction for multiple comparisons was applied; the three within-condition tests give $p=0.0002$, $0.35$ and $1$.
+
+\section*{Stationary density}
+Let $\psi$ be the network's setting in a bounded region, $P(\psi)$ its miss probability, and let each approach move $\psi$ by a random, symmetric step of variance $\sigma_m^2$ after a miss and $\sigma_h^2$ after a hit, the step being set by the outcome at the point of departure. For small steps the density obeys $\partial_t\rho=\nabla^2(D\rho)$ with $D=\tfrac12[\sigma_m^2P+\sigma_h^2(1-P)]$ (Schnitzer, 1993). With a reflecting boundary the stationary flux $-\nabla(D\rho)$ vanishes, so $\rho\propto1/D\propto1/[\kappa+(1-\kappa)P]$ with $\kappa=\sigma_h^2/\sigma_m^2$. Writing $w=1/[\kappa+(1-\kappa)P]$ and $\mathbb{E}_u$ for the uniform average, the long-run miss rate is $\mathbb{E}_u[Pw]/\mathbb{E}_u[w]$. For $\kappa<1$, $w$ decreases with $P$ and Chebyshev's association inequality gives $\mathbb{E}_u[Pw]\le\mathbb{E}_u[P]\,\mathbb{E}_u[w]$: the miss rate is below the uniform average $\mathbb{E}_u[P]$, the miss rate of a random setting. For $\kappa>1$ the inequality reverses, and for $\kappa=1$ the density is uniform. Since $D=\tfrac12\sigma_m^2[\kappa+(1-\kappa)P]$, changing $\sigma_m$ at fixed $\kappa$ rescales time only: it changes the rate of convergence, not the stationary state. A Schr\"odinger and a Boltzmann form of these dynamics are given in the companion preprint.
+
+\section*{Closed-loop model}
+Court $1\times1$; paddle half-length 0.1 on the right wall; steps of 20~ms. Each serve starts at the far wall with horizontal speed 1 and vertical speed uniform in $[-0.8,0.8]$; the ball reflects from the other walls. The ball's height relative to the paddle selects one of 8 channels, $k=\lfloor8(y-p+\tfrac12)\rfloor$, and its position $x$ sets the rate $s=(4+36x)/40$, as in DishBrain's place and rate code. Two motor rates are $[W_{\uparrow,\downarrow}[k]\,s+\xi]_+$ with Gaussian noise (SD 0.35 per step), and the paddle moves by $1.5(r_\uparrow-r_\downarrow)$ court heights per second. The 16 weights start uniform in $[-1,1]$ and reflect at $\pm1$. After every approach each weight receives a Gaussian kick of SD 0.01, then one of SD $\sigma_h$ after a hit or $\sigma_m=0.08$ after a miss; $\kappa=(\sigma_h/0.08)^2$. Each of 400 simulated cultures per value of $\kappa$ plays one session of 2000 approaches; performance is the hit fraction over approaches 501--2000, averaged over cultures. The information-free level is the performance at $\kappa=1$.
+
+\section*{Spiking-network model}
+The network model referred to in the main text (leaky integrate-and-fire neurons on the $3.85\times2.10$~mm electrode array with the published electrode layout, stimulation programs, decoder and session timing, calibrated to eight statistics of the 168 Rest recordings of the human cultures) and the measurement of $\kappa$ under activity-gated and spike-timing-dependent plasticity are described in the companion preprint; code in folder \texttt{network}.
+
+\end{document}
