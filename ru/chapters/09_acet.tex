@@ -128,7 +128,40 @@
 \end{proposition}
 \end{keyblock}
 
-Второе предложение утверждения объясняет результат главы~\ref{sec:nora}, где подстройка скорости обучения по неожиданности не выиграла у лучшей постоянной: в мире с неизменными свойствами перемен лучшая скорость обучения и есть постоянная. Выигрыш появляется, когда мир внезапно становится другим. Тогда оценка вдруг оказывается далеко от входа, а $P$ об этом не знает. Правильное действие --- резко поднять $P$ и тем самым перейти в режим записи. По гипотезе, которую мы обсуждали в главе~\ref{sec:nora}, о такой \emph{неожиданной} перемене сообщает \nt{NORA}~\cite{YuDayan2005}. Разделение труда получается естественным: \nt{NORA} замечает, что мир изменился, \nt{ACET} держит сеть в режиме записи, пока новая обстановка не выучена.
+Второе предложение утверждения объясняет результат главы~\ref{sec:nora}, где подстройка скорости обучения по неожиданности не выиграла у лучшей постоянной: в мире с неизменными свойствами перемен лучшая скорость обучения и есть постоянная. Выигрыш появляется, когда мир внезапно становится другим. Тогда оценка вдруг оказывается далеко от входа, а $P$ об этом не знает. Правильное действие --- резко поднять $P$ и тем самым перейти в режим записи (рис.~\ref{fig:kalman}). По гипотезе, которую мы обсуждали в главе~\ref{sec:nora}, о такой \emph{неожиданной} перемене сообщает \nt{NORA}~\cite{YuDayan2005}. Разделение труда получается естественным: \nt{NORA} замечает, что мир изменился, \nt{ACET} держит сеть в режиме записи, пока новая обстановка не выучена.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=0.12cm,y=0.85cm]
+% top: world, sensors, two estimates
+\begin{scope}
+\clip (-1,-1.6) rectangle (102,3.1);
+\draw[only marks,mark=*,mark size=0.5pt,gray!55] plot file {figures/kalman_y.dat};
+\end{scope}
+\draw[gray!70!black] (0,-1.5) -- (0,3);
+\foreach \v in {-1,0,1,2,3}{\draw[gray!60!black] (-0.6,\v) -- (0.6,\v); \node[left,font=\scriptsize] at (0,\v) {$\v$};}
+\draw[thick,black] plot file {figures/kalman_s.dat};
+\draw[thick,blue!60!black] plot file {figures/kalman_plain.dat};
+\draw[thick,orange!85!black] plot file {figures/kalman_reset.dat};
+\draw[densely dotted,gray!60!black] (50,-1.5) -- (50,3) node[above,font=\scriptsize,black,fill=white,inner sep=1pt] {мир изменился};
+\draw[thick,black] (0,4.05) -- (5,4.05); \node[font=\scriptsize,anchor=west] at (5.5,4.05) {величина $s$};
+\fill[gray!55] (2.5,3.7) circle (1.2pt); \node[font=\scriptsize,anchor=west] at (5.5,3.7) {вход $y$, среднее за $1$~с};
+\draw[thick,blue!60!black] (40,4.05) -- (45,4.05); \node[font=\scriptsize,anchor=west] at (45.5,4.05) {оценка $\hat s$: $P$ о перемене не знает};
+\draw[thick,orange!85!black] (40,3.7) -- (45,3.7); \node[font=\scriptsize,anchor=west] at (45.5,3.7) {оценка $\hat s$: $P$ поднято в момент перемены};
+% bottom: memory time constant R/P
+\begin{scope}[yshift=-4.3cm,y=0.19cm]
+\draw[->,gray!70!black] (0,0) -- (104,0) node[right,font=\small,black] {$t$, с};
+\draw[->,gray!70!black] (0,0) -- (0,11.5) node[left,font=\small,black] {$R/P$, с};
+\foreach \t in {0,20,40,60,80,100}{\draw[gray!60!black] (\t,-0.3) -- (\t,0.3); \node[below,font=\scriptsize] at (\t,0) {\t};}
+\foreach \v in {0,5,10}{\draw[gray!60!black] (-0.6,\v) -- (0.6,\v); \node[left,font=\scriptsize] at (0,\v) {\v};}
+\draw[thick,orange!85!black] plot file {figures/kalman_tau_reset.dat};
+\draw[thick,blue!60!black,dashed] plot file {figures/kalman_tau_plain.dat};
+\draw[densely dotted,gray!60!black] (50,0) -- (50,11);
+\end{scope}
+\end{tikzpicture}
+\caption{Фильтр~\eqref{eq:kalman} как память с переменной постоянной времени: $q=0.01$~с$^{-1}$, $R=1$, в момент $t=50$~с величина $s$ скачком сдвигается на $3$ (\texttt{models/kalman\_filter.py}). Сверху --- оценки, снизу --- постоянная времени памяти $R/P$. В начале сеть не уверена, $R/P$ мало, и оценка быстро следует за входом; затем $R/P$ выходит на $\sqrt{R/q}=10$~с. До перемены обе оценки совпадают. После неё фильтр, который о перемене не знает, проходит две трети скачка лишь за $9$~с, а фильтр, в котором $P$ подняли, --- за $1$~с.}
+\label{fig:kalman}
+\end{figure}
 
 \section{Сон как режим чтения}
 

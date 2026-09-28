@@ -5,7 +5,8 @@
 2. Half-centre oscillator: two GLUT groups with mutual inhibition (beta) and slow fatigue a_i:
      tau dr_i/dt = -r_i + [I - beta r_j - a_i]_+ ,   tau_a da_i/dt = -a_i + b r_i .
    Writes figures/halfcentre1.dat and halfcentre2.dat (t, r) and prints the period.
-3. Delayed feedback x'(t) = -G x(t-d): prints the oscillation onset G*d = pi/2 check.
+3. Delayed feedback x'(t) = -G x(t-d): prints the oscillation onset G*d = pi/2 check and writes
+   figures/delayed_G40.dat, delayed_G55.dat (t in s, x) for d = 30 ms, x = 1 before t = 0.
 """
 import math
 
@@ -35,12 +36,13 @@ def halfcentre(I=1.0, beta=2.0, b=2.0, tau=0.02, tau_a=0.4, T=4.0, dt=1e-4):
     periods = [y - x for x, y in zip(ups, ups[1:])]
     return rec, periods
 
-def delayed(G, d, T=3.0, dt=1e-4):
+def delayed(G, d, T=3.0, dt=1e-4, trace=None):
     n = int(d / dt); hist = [1.0] * (n + 1); x = 1.0; peak_late = 0.0
     for i in range(int(T / dt)):
         x += dt * (-G * hist[-n - 1] if n else -G * x)
         hist.append(x)
         if i * dt > T - 1.0: peak_late = max(peak_late, abs(x))
+        if trace is not None and i % 20 == 0: trace.append(((i + 1) * dt, x))
     return peak_late
 
 if __name__ == "__main__":
@@ -58,3 +60,8 @@ if __name__ == "__main__":
     d = 0.03
     for G in (40, 50, 55, 60):
         print(f"delay {d*1000:.0f} ms, G={G}/s (G*d={G*d:.2f}, pi/2=1.57): late amplitude {delayed(G, d):.3g}")
+    for G in (40, 55):
+        tr = [(-d, 1.0), (0.0, 1.0)]
+        delayed(G, d, T=1.0, trace=tr)
+        with open(f"figures/delayed_G{G}.dat", "w") as f:
+            f.writelines(f"{t:.4f} {x:.4f}\n" for t, x in tr)

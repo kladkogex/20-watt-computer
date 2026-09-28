@@ -124,9 +124,28 @@ R_{\max} \;\approx\; r\,\log_2\frac{e}{r\,\Delta t}\ \ \text{бит/с},
 \begin{keyblock}
 \begin{proposition}[Предел усреднения]
 \label{prop:pooling}
-При коррелированном шуме усреднение по группе уменьшает ошибку не больше чем в $1/\sqrt{c}$ раз. При $c=0.1$ это втрое, и такой выигрыш достигается уже на нескольких десятках нейронов; добавлять больше бесполезно.
+При коррелированном шуме усреднение по группе уменьшает ошибку не больше чем в $1/\sqrt{c}$ раз. При $c=0.1$ это втрое, и такой выигрыш достигается уже на нескольких десятках нейронов; добавлять больше бесполезно (рис.~\ref{fig:pooling}).
 \end{proposition}
 \end{keyblock}
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=3.3cm,y=4.2cm]
+\draw[->,gray!70!black] (0,0) -- (3.25,0) node[right,font=\small,black] {$N$};
+\draw[->,gray!70!black] (0,0) -- (0,1.12) node[above,font=\small,black] {$\sigma_N/\sigma_1$};
+\foreach \k/\l in {0/1,1/10,2/100,3/1000}{\draw[gray!60!black] (\k,-0.02) -- (\k,0.02); \node[below,font=\scriptsize] at (\k,0) {\l};}
+\foreach \v in {0.25,0.5,0.75,1}{\draw[gray!60!black] (-0.02,\v) -- (0.02,\v); \node[left,font=\scriptsize] at (0,\v) {\v};}
+\draw[dashed,gray] (0,{sqrt(0.1)}) -- (3.1,{sqrt(0.1)}) node[pos=0.97,above,font=\scriptsize,black] {$\sqrt{c}=0.32$};
+\draw[thick,blue!60!black,domain=0:3,samples=80] plot (\x,{1/sqrt(10^\x)});
+\draw[thick,orange!85!black,domain=0:3,samples=80] plot (\x,{sqrt((1+(10^\x-1)*0.1)/10^\x)});
+\fill[orange!85!black] ({log10(30)},{sqrt(3.9/30)}) circle (0.9pt);
+\draw[densely dotted,orange!85!black] ({log10(30)},{sqrt(3.9/30)}) -- ({log10(30)},0) node[below,font=\scriptsize] {30};
+\node[font=\scriptsize,blue!60!black,anchor=west] at (1.75,0.1) {$c=0$: $1/\sqrt{N}$};
+\node[font=\scriptsize,orange!85!black,anchor=south west] at (1.9,0.37) {$c=0.1$};
+\end{tikzpicture}
+\caption{Предел усреднения~\eqref{eq:correlated}: ошибка суммы $N$ нейронов по отношению к ошибке одного, по горизонтали --- логарифмическая шкала. При независимом шуме ошибка падает как $1/\sqrt{N}$ без предела. При корреляции $c=0.1$ она упирается в $\sqrt{c}\approx0.32$, и тридцать нейронов уже дают $0.36$: почти весь возможный выигрыш.}
+\label{fig:pooling}
+\end{figure}
 
 Не всякая корреляция одинаково вредна. Ограничивает точность только та часть общего шума, которая \emph{похожа на сам сигнал}, то есть сдвигает всю группу так же, как её сдвинуло бы изменение измеряемой величины~\cite{MorenoBote2014}. Сколько такого шума в мозге на самом деле, ещё выясняют.
 
@@ -139,7 +158,29 @@ R_{\max} \;\approx\; r\,\log_2\frac{e}{r\,\Delta t}\ \ \text{бит/с},
 t_1 \;=\; \tau\,\ln\frac{U}{U-\theta}, \qquad U>\theta .
 \label{eq:latency}
 \end{empheq}
-Сильный вход --- ранний импульс, слабый --- поздний, подпороговый --- никакого. При $\tau=10\ms$ вход $U=4\theta$ даёт первый импульс через $2.9\ms$, $U=2\theta$ --- через $6.9\ms$, $U=1.2\theta$ --- через $17.9\ms$. Один-единственный импульс несёт число.
+Сильный вход --- ранний импульс, слабый --- поздний, подпороговый --- никакого. При $\tau=10\ms$ вход $U=4\theta$ даёт первый импульс через $2.9\ms$, $U=2\theta$ --- через $6.9\ms$, $U=1.2\theta$ --- через $17.9\ms$. Один-единственный импульс несёт число (рис.~\ref{fig:latency}).
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[>=Stealth,x=0.5cm,y=2.6cm]
+\draw[->,gray!70!black] (0,0) -- (25.6,0) node[right,font=\small,black] {$t$, мс};
+\draw[->,gray!70!black] (0,0) -- (0,1.45) node[left,font=\small,black] {$V$};
+\foreach \t in {0,5,10,15,20,25}{\draw[gray!60!black] (\t,-0.02) -- (\t,0.02); \node[below,font=\scriptsize] at (\t,0) {\t};}
+\draw[dashed,gray] (0,1) -- (25,1) node[right,font=\scriptsize,black] {$\theta$};
+\foreach \U/\tone/\col/\lab in {4/2.877/red!70!black/{4\theta},2/6.931/orange!85!black/{2\theta},1.2/17.918/blue!60!black/{1.2\theta}}{
+  \draw[thick,\col,domain=0:\tone,samples=40] plot (\x,{\U*(1-exp(-\x/10))});
+  \draw[thick,\col] (\tone,1) -- (\tone,1.35);
+  \draw[densely dotted,\col] (\tone,1) -- (\tone,0);
+  \node[font=\scriptsize,\col,anchor=south] at (\tone,1.35) {$U=\lab$};
+  \fill[\col] (\tone,-0.2) rectangle ++(0.14,0.13);}
+\draw[thick,gray!60!black,domain=0:25,samples=40] plot (\x,{0.8*(1-exp(-\x/10))});
+\node[font=\scriptsize,gray!60!black,anchor=west] at (19.5,0.62) {$U=0.8\theta$: импульса нет};
+\node[font=\scriptsize,anchor=east] at (-0.3,-0.14) {импульсы};
+\foreach \tone/\l in {2.877/2.9,6.931/6.9,17.918/17.9}{\node[font=\scriptsize,anchor=north] at (\tone+0.07,-0.21) {$\l$};}
+\end{tikzpicture}
+\caption{Код задержкой~\eqref{eq:latency}, $\tau=10\ms$. Постоянный вход, включённый в момент $t=0$, поднимает напряжение к уровню $U$; чем сильнее вход, тем раньше оно пересекает порог $\theta$. Число записано в моменте единственного импульса: $2.9$, $6.9$ и $17.9\ms$; подпороговый вход импульса не даёт.}
+\label{fig:latency}
+\end{figure}
 
 Но от какого момента отсчитывать $t_1$? Часов нет, и получатель не знает, когда начался раздражитель. Есть три ответа.
 
