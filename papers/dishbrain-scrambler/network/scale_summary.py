@@ -53,7 +53,7 @@ for N in SIZES:
     fr = [r["frac_abs_z3"] for r in d["rows"]]; ss = [r["same_sign_across_cultures"] for r in d["rows"]]
     rs = [np.corrcoef(v, steer)[0, 1] for v in V]
     print(f"  N={N:>9,d} cultures={d['cultures']} trials={d['trials']}  |z|>3 max {max(fr):.3f} mean {np.mean(fr):.3f}"
-          f"  same sign across cultures {np.mean(ss):.2f}  mean |change| {np.abs(V).mean():.1f} spikes"
+          f"  same sign across cultures {np.mean(ss):.2f} (chance {2.0 ** (1 - d['cultures']):.3f})  mean |change| {np.abs(V).mean():.1f} spikes"
           f"  r(steer) mean {np.mean(rs):+.2f}, {sum(x < 0 for x in rs)}/9 negative, of mean pattern"
           f" {np.corrcoef(V.mean(0), steer)[0, 1]:+.2f}")
 pairs = list(itertools.combinations(sorted(tmeans), 2))
