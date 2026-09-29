@@ -6,7 +6,9 @@ proportional to exp(-d / lambda), lambda = 1 mm, as in the model.
 
     python3 fig_array.py   -> fig_array.pdf (and a count of the inputs that lie within a stimulation catchment)
 """
+import os
 import numpy as np
+RU = os.environ.get("LANG", "").lower().startswith("ru")
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -38,7 +40,7 @@ for name, c0, c1 in MOTOR:
     m = (cols.ravel() >= c0) & (cols.ravel() <= c1) & (rows.ravel() >= MROWS[0]) & (rows.ravel() <= MROWS[1])
     col = "#3b5bdb" if name == "up" else "#c92a2a"
     ax.scatter(ex[m], ey[m], s=0.5, c=col, linewidths=0, rasterized=True, zorder=2, alpha=0.8)
-    ax.text((c0 + c1) / 2 * PITCH, (MROWS[1] + 1) * PITCH + 0.03, name, ha="center", va="bottom", fontsize=6.5, color=col)
+    ax.text((c0 + c1) / 2 * PITCH, (MROWS[1] + 1) * PITCH + 0.03, {"up": "вверх", "down": "вниз"}[name] if RU else name, ha="center", va="bottom", fontsize=6.5, color=col)
 
 # neurons: one realization of the model's uniform placement, 80% excitatory
 rng = np.random.default_rng(1000)
@@ -65,38 +67,38 @@ for k, (x, y) in enumerate(zip(sx, sy), 1):
 k0 = 5
 for r, ls in [(R75_WIDE, "--"), (R150_WIDE, ":")]:
     ax.add_patch(Circle((sx[k0], sy[k0]), r, fill=False, ec="#e8590c", lw=0.6, ls=ls, zorder=7))
-ax.annotate("75 mV, wide", (sx[k0] + R75_WIDE * 0.7, sy[k0] + R75_WIDE * 0.7), (sx[k0] + 0.25, sy[k0] + 0.24),
+ax.annotate("75 мВ, широкое" if RU else "75 mV, wide", (sx[k0] + R75_WIDE * 0.7, sy[k0] + R75_WIDE * 0.7), (sx[k0] + 0.25, sy[k0] + 0.24),
             fontsize=5.5, color="#a63c06", ha="left", va="center", arrowprops=dict(arrowstyle="-", lw=0.4, color="#a63c06"))
-ax.annotate("150 mV, wide", (sx[k0] - R150_WIDE * 0.7, sy[k0] + R150_WIDE * 0.7), (sx[k0] - 0.3, sy[k0] + 0.32),
+ax.annotate("150 мВ, широкое" if RU else "150 mV, wide", (sx[k0] - R150_WIDE * 0.7, sy[k0] + R150_WIDE * 0.7), (sx[k0] - 0.3, sy[k0] + 0.36),
             fontsize=5.5, color="#a63c06", ha="right", va="center", arrowprops=dict(arrowstyle="-", lw=0.4, color="#a63c06"))
 
 # distance from the sensory band to the motor regions
 k1 = 7
 ax.annotate("", (sx[k1], MROWS[0] * PITCH), (sx[k1], sy[k1] + 0.05),
             arrowprops=dict(arrowstyle="<->", lw=0.5, color="0.3", shrinkA=0, shrinkB=0))
-ax.text(sx[k1] - 0.04, (sy[k1] + MROWS[0] * PITCH) / 2, f"{MROWS[0]*PITCH - sy[k1]:.2f} mm", fontsize=5.5,
+ax.text(sx[k1] - 0.04, (sy[k1] + MROWS[0] * PITCH) / 2, f"{MROWS[0]*PITCH - sy[k1]:.2f} " + ("мм" if RU else "mm"), fontsize=5.5,
         color="0.3", va="center", ha="right")
 fig.text(0.005, 0.975, "(a)", fontsize=8, va="top", ha="left")
 
 ax.set_xlim(-0.02, WX + 0.02); ax.set_ylim(-0.02, WY + 0.02)
 ax.set_xticks([0, 1, 2, 3, 3.85]); ax.set_yticks([0, 1, 2.1])
 ax.set_xticklabels(["0", "1", "2", "3", "3.85"]); ax.set_yticklabels(["0", "1", "2.1"])
-ax.set_xlabel("mm", labelpad=1); ax.set_ylabel("mm", labelpad=1)
+ax.set_xlabel("мм" if RU else "mm", labelpad=1); ax.set_ylabel("мм" if RU else "mm", labelpad=1)
 ax.tick_params(length=2, pad=1.5, labelsize=6)
 
 handles = [
-    Line2D([], [], marker="o", ls="", ms=2, mfc="0.78", mec="none", label="electrode"),
-    Line2D([], [], marker="o", ls="", ms=3.5, mfc="#e8590c", mec="k", mew=0.4, label="stimulation electrode"),
-    Line2D([], [], marker="s", ls="", ms=3, mfc="#3b5bdb", mec="none", label="motor, up"),
-    Line2D([], [], marker="s", ls="", ms=3, mfc="#c92a2a", mec="none", label="motor, down"),
-    Line2D([], [], marker="o", ls="", ms=2, mfc="0.15", mec="none", label="excitatory neuron"),
-    Line2D([], [], marker="o", ls="", ms=2, mfc="#7048e8", mec="none", label="inhibitory neuron"),
-    Line2D([], [], color="#0b7285", lw=0.6, label="inputs of one neuron"),
+    Line2D([], [], marker="o", ls="", ms=2, mfc="0.78", mec="none", label="электрод" if RU else "electrode"),
+    Line2D([], [], marker="o", ls="", ms=3.5, mfc="#e8590c", mec="k", mew=0.4, label="стимулирующий электрод" if RU else "stimulation electrode"),
+    Line2D([], [], marker="s", ls="", ms=3, mfc="#3b5bdb", mec="none", label="моторная, вверх" if RU else "motor, up"),
+    Line2D([], [], marker="s", ls="", ms=3, mfc="#c92a2a", mec="none", label="моторная, вниз" if RU else "motor, down"),
+    Line2D([], [], marker="o", ls="", ms=2, mfc="0.15", mec="none", label="возбуждающий нейрон" if RU else "excitatory neuron"),
+    Line2D([], [], marker="o", ls="", ms=2, mfc="#7048e8", mec="none", label="тормозный нейрон" if RU else "inhibitory neuron"),
+    Line2D([], [], color="#0b7285", lw=0.6, label="входы одного нейрона" if RU else "inputs of one neuron"),
 ]
-fig.legend(handles=handles, loc="lower center", ncol=4, fontsize=5.2, frameon=False, handletextpad=0.3,
-           columnspacing=0.8, bbox_to_anchor=(0.5, 0.0))
+fig.legend(handles=handles, loc="lower center", ncol=4, fontsize=4.6 if RU else 5.2, frameon=False, handletextpad=0.3,
+           columnspacing=0.5 if RU else 0.8, bbox_to_anchor=(0.5, 0.0))
 fig.subplots_adjust(left=0.08, right=0.99, top=0.97, bottom=0.25)
-fig.savefig("fig_array.pdf", dpi=600)
+fig.savefig("fig_array_ru.pdf" if RU else "fig_array.pdf", dpi=600)
 
 within = sum(np.min(np.hypot(pos[i, 0] - sx, pos[i, 1] - sy)) <= R150_WIDE for i in inputs)
 print(f"neuron {j} at ({pos[j,0]:.2f}, {pos[j,1]:.2f}) mm: {within} of {K} inputs within {R150_WIDE} mm of a "
