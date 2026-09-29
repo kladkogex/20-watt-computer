@@ -29,7 +29,65 @@ A system whose parameters receive random kicks of variance $\sigma_m^2$ after a 
 
 Random search that is interrupted by success is among the oldest learning mechanisms: Ashby's ultrastable homeostat changes its parameters at random until its essential variables stay in range \cite{Ashby1952}, finite automata that switch state only when penalized behave better than chance \cite{Tsetlin1961,Tsetlin1963,Robbins1952}, and woodlice gather in damp places by moving more in dry air \cite{Gunn1937}. In physical terms these are random walks whose step size depends on position, and random walkers accumulate where they move slowly \cite{Schnitzer1993,vanKampen1988,Landauer1988}. How strongly they accumulate, and in which convention the multiplicative noise must be read, are classical questions of stochastic dynamics \cite{Volpe2016}.
 
-Here the position is the setting of a learning system and the step size depends on its performance. The experimental motivation is DishBrain \cite{Kagan2022}, in which cortical cultures on a high-density electrode array play Pong. Spikes in four motor regions move a paddle, and the ball's position is delivered to eight sensory electrodes. After a hit the culture receives a ``predictable'' stimulus (100~Hz for 100~ms on all eight electrodes at 75~mV); after a miss, an ``unpredictable'' one (150~mV at 5~Hz at random sites and times for 4~s), followed by 4~s without stimulation before a new serve. Cultures improved within a session, and this was read as evidence that neurons act to make their input predictable, as the free-energy principle proposes \cite{Friston2010,Kagan2022}. The 150~mV amplitude was chosen, however, to force action potentials ``regardless of the state the cell was in, thereby being even more disruptive to the culture'' \cite{Kagan2022}: the feedback after a miss is less predictable and more disruptive at once, and the published controls do not separate the two. Earlier criticism concerned the terms intelligence and sentience \cite{Balci2023,Kagan2023reply}; closer precedents in cultures are the stimulus-regulation principle \cite{Shahaf2001,Marom2002} and learning by stimulation avoidance \cite{Sinapayen2017,Masumori2020}.
+Here the position is the setting of a learning system and the step size depends on its performance. The experimental motivation is DishBrain \cite{Kagan2022}, in which cortical cultures on a high-density electrode array play Pong (Fig.~\ref{fig:dish}). Spikes in four motor regions move a paddle, and the ball's position is delivered to eight sensory electrodes. After a hit the culture receives a ``predictable'' stimulus (100~Hz for 100~ms on all eight electrodes at 75~mV); after a miss, an ``unpredictable'' one (150~mV at 5~Hz at random sites and times for 4~s), followed by 4~s without stimulation before a new serve. Cultures improved within a session, and this was read as evidence that neurons act to make their input predictable, as the free-energy principle proposes \cite{Friston2010,Kagan2022}. The 150~mV amplitude was chosen, however, to force action potentials ``regardless of the state the cell was in, thereby being even more disruptive to the culture'' \cite{Kagan2022}: the feedback after a miss is less predictable and more disruptive at once, and the published controls do not separate the two. Earlier criticism concerned the terms intelligence and sentience \cite{Balci2023,Kagan2023reply}; closer precedents in cultures are the stimulus-regulation principle \cite{Shahaf2001,Marom2002} and learning by stimulation avoidance \cite{Sinapayen2017,Masumori2020}.
+
+\begin{figure*}[t]
+\centering
+\begin{tikzpicture}[x=1.75cm,y=1.75cm,font=\scriptsize]
+\node[font=\small,anchor=south west,inner sep=0] at (0,2.14) {(a)};
+\draw[fill=gray!4] (0,0) rectangle (3.85,2.10);
+\fill[orange!12] (0.12,0.2) rectangle (3.73,0.78);
+\node[orange!60!black,anchor=west] at (0.12,0.97) {sensory band: eight stimulation electrodes (place code)};
+\draw[orange!60!black,thin] (0.385,0.35)--(0.805,0.6125)--(1.225,0.35)--(1.645,0.6125)--(2.0475,0.35)--(2.485,0.6125)--(2.8875,0.35)--(3.325,0.6125);
+\foreach \x/\y/\k in {0.385/0.35/1,0.805/0.6125/2,1.225/0.35/3,1.645/0.6125/4,2.0475/0.35/5,2.485/0.6125/6,2.8875/0.35/7,3.325/0.6125/8}{
+  \fill[orange!80!black] (\x,\y) circle (0.04);
+  \node[orange!60!black,anchor=north,inner sep=1.5pt] at (\x,\y-0.04) {\k};}
+\fill[blue!12] (0.315,1.365) rectangle (0.8575,1.9425); \node[blue!60!black] at (0.586,1.65) {down};
+\fill[red!12] (0.8575,1.365) rectangle (1.40,1.9425); \node[red!60!black] at (1.13,1.65) {up};
+\fill[blue!12] (2.45,1.365) rectangle (2.99,1.9425); \node[blue!60!black] at (2.72,1.65) {down};
+\fill[red!12] (2.99,1.365) rectangle (3.535,1.9425); \node[red!60!black] at (3.26,1.65) {up};
+\node[anchor=south,inner sep=1pt] at (1.925,1.955) {motor regions, $31\times33$ electrodes each};
+\draw[|-|] (2.85,-0.1) -- (3.85,-0.1); \node[anchor=north,inner sep=2pt] at (3.35,-0.12) {1 mm};
+\node[anchor=north west,inner sep=2pt] at (0,-0.03) {MaxOne array, $220\times120$ electrodes};
+\end{tikzpicture}\hfill
+\begin{tikzpicture}[x=1.1cm,y=1.1cm,font=\scriptsize]
+\node[font=\small,anchor=south west,inner sep=0] at (-1.35,3.3) {(b)};
+\node[anchor=south,align=center,blue!70!black,inner sep=2pt] at (1.3,2.62) {every 10 ms, spikes in the up minus the down regions\\(each scaled to a 20 Hz running mean) move the paddle};
+\draw[thick] (0,0) rectangle (2.6,2.6);
+\foreach \i in {1,...,7}{\draw[orange!50!black,dotted] (2.42,{\i*0.325}) -- (2.6,{\i*0.325});}
+\foreach \i in {0,...,7}{\pgfmathtruncatemacro{\k}{\i+1}\node[orange!50!black,anchor=west,inner sep=1pt] at (2.64,{0.1625+\i*0.325}) {\k};}
+\draw[line width=3pt,blue!70!black] (2.6,1.04) -- (2.6,1.56);
+\node[blue!70!black,anchor=east,inner sep=2pt] at (2.52,1.3) {paddle $p$};
+\fill (0.9,1.95) circle (0.055); \draw[-latex] (0.9,1.95) -- (1.45,1.72);
+\draw[orange!50!black,dashed] (0.9,1.95) -- (2.6,1.95);
+\node[anchor=south west,inner sep=1pt] at (0.95,2.0) {ball $(x,y)$};
+\draw[-latex,orange!50!black] (0.15,-0.2) -- (2.45,-0.2);
+\node[orange!50!black,anchor=north,align=center,inner sep=2pt] at (1.3,-0.25) {rate code: 4 pulses/s at the far wall, 40 at the paddle wall\\place code: electrode $k=\lfloor8(y-p+\tfrac12)\rfloor$, ticks at right};
+\end{tikzpicture}
+
+\vspace{8pt}
+\begin{tikzpicture}[x=0.85cm,y=1cm,font=\scriptsize]
+\node[font=\small,anchor=south west,inner sep=0] at (-3.6,2.85) {(c)};
+\node[anchor=east] at (-0.2,2.55) {after a hit};
+\fill[red!70!black] (0,2.4) rectangle (0.12,2.7);
+\node[anchor=west] at (0.2,2.55) {75 mV, 100 pulses/s, 100 ms, all eight electrodes at once (Silent: 100 ms of silence); the ball returns};
+\node[anchor=east] at (-0.2,1.75) {Stimulus, after a miss};
+\draw[red!70!black] (0,1.75) -- (4,1.75);
+\foreach \t in {0.13,0.41,0.55,0.9,1.27,1.5,1.83,2.1,2.4,2.62,2.95,3.2,3.44,3.7,3.88}{\draw[red!70!black,line width=1.2pt] (\t,1.6)--(\t,1.9);}
+\node[anchor=north,red!70!black] at (2,1.56) {150 mV, 5 pulses/s, random electrodes and times, 4 s};
+\draw[gray,dashed] (4,1.6) rectangle (8,1.9); \node[gray!40!black] at (6,1.75) {no stimulation, 4 s};
+\node[anchor=west] at (8.05,1.75) {new serve};
+\node[anchor=east] at (-0.2,0.85) {Silent, after a miss};
+\draw[gray,dashed] (0,0.7) rectangle (8,1.0); \node[gray!40!black] at (4,0.85) {no stimulation, 8 s};
+\node[anchor=west] at (8.05,0.85) {new serve};
+\node[anchor=east] at (-0.2,0.15) {No feedback, after a miss};
+\draw[orange!50!black,thick] (0,0.15) -- (8.4,0.15);
+\node[anchor=north,orange!50!black] at (4.2,0.1) {the ball bounces off the wall and play continues; place and rate code uninterrupted};
+\draw[-latex] (0,-0.62) -- (8.8,-0.62); \foreach \t in {0,2,4,6,8}{\draw (\t,-0.57)--(\t,-0.67); \node[anchor=north] at (\t,-0.68) {\t};} \node[anchor=north] at (8.85,-0.68) {s};
+\end{tikzpicture}
+\caption{DishBrain as simulated. (a) The array to scale, with the eight stimulation electrodes of the sensory band in the zig-zag of Fig.~4D of Ref.~\cite{Kagan2022} and the four motor regions, counterbalanced up and down, about 1~mm away; electrode pitch 17.5~$\mu$m. (b) The game: the ball's height relative to the paddle selects the electrode (place code) and its distance from the paddle's wall sets the pulse rate (rate code); every 10~ms the spike counts of the up and down regions, each normalized by a running 20~Hz gain, move the paddle. (c) Feedback after each outcome in the three conditions. Rest sessions run the game with no stimulation at all. Voltages, rates, durations and the electrode layout are from Ref.~\cite{Kagan2022}; court size, paddle half-length and ball speed are the model's choices (Appendix~\ref{app:net}).}
+\label{fig:dish}
+\end{figure*}
 
 We formulate learning by outcome-contingent perturbation as a drift-free diffusion with outcome-dependent diffusivity (Sec.~\ref{sec:model}), solve its stationary state and relaxation exactly (Sec.~\ref{sec:results}), and test the predictions against the published data (Sec.~\ref{sec:data}) and a spiking network calibrated to the cultures (Sec.~\ref{sec:net}).
 
@@ -146,7 +204,7 @@ The per-rally gameplay data of the feedback study are public \cite{OSF2022}. Tak
 
 \section{Calibrated spiking network}\label{sec:net}
 
-To ask whether DishBrain's actual stimuli realize $\kappa<1$ through local plasticity, we simulated 3000 leaky integrate-and-fire neurons on the $3.85\times2.10$~mm array with the exact protocol: electrode layout, place and rate code, hit and miss programs, four motor regions with the 20~Hz gain normalization, readout blanking, No feedback as one continuous rally, and session timing (Appendix~\ref{app:net}). The paddle size gives the published Rest level of 0.73 hits per rally.
+To ask whether DishBrain's actual stimuli realize $\kappa<1$ through local plasticity, we simulated 3000 leaky integrate-and-fire neurons on the $3.85\times2.10$~mm array with the exact protocol: electrode layout, place and rate code, hit and miss programs, four motor regions with the 20~Hz gain normalization, readout blanking, No feedback as one continuous rally, and session timing (Fig.~\ref{fig:dish}; Appendix~\ref{app:net}). The paddle size gives the published Rest level of 0.73 hits per rally.
 
 \emph{Calibration.} Free parameters were fitted to eight statistics of the Rest recordings of the human cultures, computed identically for model and data (Table~\ref{tab:calib}). The fit lies within the data's interquartile range except for rates about 0.1~Hz high and pairwise correlations near zero. The Rest statistics fix rates, irregularity, synchrony and the absence of bursts but not recurrent coupling: parameter sets with excitatory weights spanning a factor of 40 fit about equally well, so we carry three (weak, medium and strong coupling).
 
