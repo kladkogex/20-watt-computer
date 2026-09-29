@@ -29,7 +29,7 @@ A system whose parameters receive random kicks of variance $\sigma_m^2$ after a 
 
 Random search that is interrupted by success is among the oldest learning mechanisms: Ashby's ultrastable homeostat changes its parameters at random until its essential variables stay in range \cite{Ashby1952}, finite automata that switch state only when penalized behave better than chance \cite{Tsetlin1961,Tsetlin1963,Robbins1952}, and woodlice gather in damp places by moving more in dry air \cite{Gunn1937}. In physical terms these are random walks whose step size depends on position, and random walkers accumulate where they move slowly \cite{Schnitzer1993,vanKampen1988,Landauer1988}. How strongly they accumulate, and in which convention the multiplicative noise must be read, are classical questions of stochastic dynamics \cite{Volpe2016}.
 
-Here the position is the setting of a learning system and the step size depends on its performance. The experimental motivation is DishBrain \cite{Kagan2022}, in which cortical cultures on a high-density electrode array play Pong (Fig.~\ref{fig:dish}). Spikes in four motor regions move a paddle, and the ball's position is delivered to eight sensory electrodes. After a hit the culture receives a ``predictable'' stimulus (100~Hz for 100~ms on all eight electrodes at 75~mV); after a miss, an ``unpredictable'' one (150~mV at 5~Hz at random sites and times for 4~s), followed by 4~s without stimulation before a new serve. Cultures improved within a session, and this was read as evidence that neurons act to make their input predictable, as the free-energy principle proposes \cite{Friston2010,Kagan2022}. The 150~mV amplitude was chosen, however, to force action potentials ``regardless of the state the cell was in, thereby being even more disruptive to the culture'' \cite{Kagan2022}: the feedback after a miss is less predictable and more disruptive at once, and the published controls do not separate the two. Earlier criticism concerned the terms intelligence and sentience \cite{Balci2023,Kagan2023reply}; closer precedents in cultures are the stimulus-regulation principle \cite{Shahaf2001,Marom2002} and learning by stimulation avoidance \cite{Sinapayen2017,Masumori2020}.
+Here the position is the configuration of a learning network and the step size depends on its performance. The experimental motivation is DishBrain \cite{Kagan2022}, in which cortical cultures on a high-density electrode array play Pong (Fig.~\ref{fig:dish}). Spikes in four motor regions move a paddle, and the ball's position is delivered to eight sensory electrodes. After a hit the culture receives a ``predictable'' stimulus (100~Hz for 100~ms on all eight electrodes at 75~mV); after a miss, an ``unpredictable'' one (150~mV at 5~Hz at random sites and times for 4~s), followed by 4~s without stimulation before a new serve. Cultures improved within a session, and this was read as evidence that neurons act to make their input predictable, as the free-energy principle proposes \cite{Friston2010,Kagan2022}. The 150~mV amplitude was chosen, however, to force action potentials ``regardless of the state the cell was in, thereby being even more disruptive to the culture'' \cite{Kagan2022}: the feedback after a miss is less predictable and more disruptive at once, and the published controls do not separate the two. Earlier criticism concerned the terms intelligence and sentience \cite{Balci2023,Kagan2023reply}; closer precedents in cultures are the stimulus-regulation principle \cite{Shahaf2001,Marom2002} and learning by stimulation avoidance \cite{Sinapayen2017,Masumori2020}.
 
 \begin{figure*}[t]
 \centering
@@ -77,13 +77,13 @@ We formulate learning by outcome-contingent perturbation as a drift-free diffusi
 
 \section{Model}\label{sec:model}
 
-\subsection{Setting, outcome and kick}
+\subsection{Network configuration, outcome and kick}
 Let $\psi(t)\in\Omega$ be the configuration of the neural network as a function of time: the vector of all variables that determine how it plays, for a culture its synaptic weights and excitabilities. Each ball approach $t=0,1,2,\dots$ ends in a miss with probability $P(\psi(t))\in(0,1)$ and in a hit otherwise, where
 \begin{equation}
 P(\psi)=\int dy\,p(y)\,\mathbf{1}[\text{miss}\mid\psi,y]
 \label{eq:P}
 \end{equation}
-averages over the serve distribution $p(y)$ of the ball; $P$ is a fixed function of $\psi$ because the setting does not change during an approach. The setting then moves by a kick whose law depends only on the outcome $o(t)\in\{h,m\}$ that has just occurred,
+averages over the serve distribution $p(y)$ of the ball; $P$ is a fixed function of $\psi$ because the network configuration does not change during an approach. The network configuration then moves by a kick whose law depends only on the outcome $o(t)\in\{h,m\}$ that has just occurred,
 \begin{equation}
 \psi(t+1)=\psi(t)+\xi(t),\qquad \xi(t)\sim K_{o(t)}(\psi(t),\cdot),
 \label{eq:kick}
@@ -93,10 +93,10 @@ with kernels $K_o(\psi,\psi')$ that are stochastic, $\int d\psi'\,K_o(\psi,\psi'
 \int d\psi'\,(\psi'-\psi)_i(\psi'-\psi)_j\,K_o(\psi,\psi')=\sigma_o^2\,\delta_{ij},
 \label{eq:moments}
 \end{equation}
-so that a miss moves the setting by a root-mean-square distance $\sigma_m\sqrt n$ and a hit by $\sigma_h\sqrt n$. Kicks that would leave $\Omega$ are reflected. Nothing else enters: the outcome selects which of the two kernels is used and nothing more, and neither kernel has a preferred direction. The model contains no prediction, no reward and no error signal; the kicks are the only teacher.
+so that a miss moves the network configuration by a root-mean-square distance $\sigma_m\sqrt n$ and a hit by $\sigma_h\sqrt n$. Kicks that would leave $\Omega$ are reflected. Nothing else enters: the outcome selects which of the two kernels is used and nothing more, and neither kernel has a preferred direction. The model contains no prediction, no reward and no error signal; the kicks are the only teacher.
 
 \subsection{Master equation}
-The distribution over settings evolves as
+The distribution over network configurations evolves as
 \begin{equation}
 \rho_{t+1}(\psi)=\int d\psi'\,T(\psi,\psi')\,\rho_t(\psi'),
 \label{eq:master}
@@ -105,7 +105,7 @@ The distribution over settings evolves as
 T(\psi,\psi')=P(\psi')\,K_m(\psi,\psi')+\bigl(1-P(\psi')\bigr)K_h(\psi,\psi'),
 \label{eq:T}
 \end{equation}
-that is $\rho_{t+1}=T\rho_t$ with $T=K_m\,\mathrm{diag}(P)+K_h\,\mathrm{diag}(1-P)$ on a finite $\Omega$. $T$ conserves probability, and it is irreducible and aperiodic whenever the kernels connect $\Omega$, so $\rho_t$ converges to a unique stationary law $\rho_\infty$ from any start. The case treated first in Sec.~\ref{sec:results}, a hit leaving the setting where it is, is $K_h=I$ and gives
+that is $\rho_{t+1}=T\rho_t$ with $T=K_m\,\mathrm{diag}(P)+K_h\,\mathrm{diag}(1-P)$ on a finite $\Omega$. $T$ conserves probability, and it is irreducible and aperiodic whenever the kernels connect $\Omega$, so $\rho_t$ converges to a unique stationary law $\rho_\infty$ from any start. The case treated first in Sec.~\ref{sec:results}, a hit leaving the network configuration where it is, is $K_h=I$ and gives
 \begin{equation}
 \rho_{t+1}=\rho_t-(I-K)\,\mathrm{diag}(P)\,\rho_t ,
 \label{eq:chain}
@@ -124,7 +124,7 @@ $\kappa=\sigma_h^2/\sigma_m^2$, and to second order
 \partial_t\rho=\nabla^2\bigl(D\rho\bigr)=\nabla\cdot\bigl(D\nabla\rho\bigr)+\nabla\cdot\bigl(\rho\,\nabla D\bigr),
 \label{eq:FP}
 \end{equation}
-with reflecting boundaries, $\partial_n(D\rho)=0$ on $\partial\Omega$, and $t$ now continuous in units of approaches. This is the It\^o, or departure-point, form of the Fokker--Planck equation, with no drift term \cite{Schnitzer1993,vanKampen1988,Volpe2016}: the variance of a step is set by the outcome at the point from which the step is taken, which is what Eq.~\eqref{eq:kick} says. The convention is therefore not a modeling choice; a Stratonovich reading, with the step size set midway, would describe a different experiment. The second form of Eq.~\eqref{eq:FP} shows the mechanism in one line: undirected kicks whose size varies over $\Omega$ produce an effective drift $-\nabla D$ toward the settings that are kicked least, which for $\kappa<1$ are the settings that miss least. The model is a random walk with a state-dependent step, the structure of a run-and-tumble walker whose speed or tumbling rate varies in space \cite{Schnitzer1993}, and like that walker it accumulates where its diffusivity is lowest.
+with reflecting boundaries, $\partial_n(D\rho)=0$ on $\partial\Omega$, and $t$ now continuous in units of approaches. This is the It\^o, or departure-point, form of the Fokker--Planck equation, with no drift term \cite{Schnitzer1993,vanKampen1988,Volpe2016}: the variance of a step is set by the outcome at the point from which the step is taken, which is what Eq.~\eqref{eq:kick} says. The convention is therefore not a modeling choice; a Stratonovich reading, with the step size set midway, would describe a different experiment. The second form of Eq.~\eqref{eq:FP} shows the mechanism in one line: undirected kicks whose size varies over $\Omega$ produce an effective drift $-\nabla D$ toward the network configurations that are kicked least, which for $\kappa<1$ are the network configurations that miss least. The model is a random walk with a state-dependent step, the structure of a run-and-tumble walker whose speed or tumbling rate varies in space \cite{Schnitzer1993}, and like that walker it accumulates where its diffusivity is lowest.
 
 \subsection{Parameters and realizations}
 Table~\ref{tab:params} lists the quantities of the model and their values in the two solvable realizations studied in Sec.~\ref{sec:results}. Two extensions are used later. A kick of variance $\sigma_0^2$ delivered after every approach regardless of outcome, as in the closed-loop model, adds a constant to $D$,
@@ -142,8 +142,8 @@ which leaves every result below unchanged with $\kappa$ replaced by $\kappa_0=(\
 \begin{tabular}{@{}lp{1.9cm}p{2.2cm}p{2.4cm}@{}}
  & Meaning & Grid chain & Closed-loop model \\
 \hline
-$\Omega$ & setting space & $31\times21$ grid in $(a,b)$ & $[-1,1]^{16}$ \\
-$\psi$ & setting & paddle law $p=\mathrm{clip}(ay+b)$ & 16 sensorimotor weights \\
+$\Omega$ & configuration space & $31\times21$ grid in $(a,b)$ & $[-1,1]^{16}$ \\
+$\psi$ & network configuration & paddle law $p=\mathrm{clip}(ay+b)$ & 16 sensorimotor weights \\
 $n$ & dimension & 2 & 16 \\
 $P(\psi)$ & miss probability & mean over 400 ball heights & mean over serves \\
 $K_m$ & kick after a miss & nearest neighbor, uniform & Gaussian, $\sigma_m=0.02$--$0.08$ \\
@@ -165,14 +165,14 @@ For the chain (\ref{eq:chain}), $\rho\propto1/P$ satisfies detailed balance, $\r
 \langle P\rangle_\infty=\frac{|\Omega|}{\sum_\psi1/P(\psi)}\le\frac1{|\Omega|}\sum_\psi P(\psi),
 \label{eq:harmonic}
 \end{equation}
-below the arithmetic mean, the miss rate of a setting drawn at random, unless $P$ is constant. A setting that misses ten times less often is kept ten times longer.
+below the arithmetic mean, the miss rate of a network configuration drawn at random, unless $P$ is constant. A network configuration that misses ten times less often is kept ten times longer.
 
 For the continuum (\ref{eq:FP}) the stationary flux $-\nabla(D\rho)$ vanishes, so
 \begin{equation}
 \rho_\infty\propto\frac1D\propto\frac1{\kappa+(1-\kappa)P}.
 \label{eq:rho}
 \end{equation}
-With $w=1/[\kappa+(1-\kappa)P]$ and $\mathbb E_u$ the uniform average (the stationary law of information-free kicks), $\langle P\rangle_\infty=\mathbb E_u[Pw]/\mathbb E_u[w]$. For $\kappa<1$, $w$ decreases with $P$ and Chebyshev's association inequality \cite{Chebyshev1882} gives $\langle P\rangle_\infty<\mathbb E_u[P]$: learning. At $\kappa=1$ there is no learning, and for $\kappa>1$ the inequality reverses: anti-learning. Predictability does not enter; only how far each outcome moves the setting does.
+With $w=1/[\kappa+(1-\kappa)P]$ and $\mathbb E_u$ the uniform average (the stationary law of information-free kicks), $\langle P\rangle_\infty=\mathbb E_u[Pw]/\mathbb E_u[w]$. For $\kappa<1$, $w$ decreases with $P$ and Chebyshev's association inequality \cite{Chebyshev1882} gives $\langle P\rangle_\infty<\mathbb E_u[P]$: learning. At $\kappa=1$ there is no learning, and for $\kappa>1$ the inequality reverses: anti-learning. Predictability does not enter; only how far each outcome moves the network configuration does.
 
 \subsection{Imaginary-time Schr\"odinger form}
 
@@ -206,11 +206,11 @@ so that
 \label{eq:boltz}
 \end{equation}
 up to an additive constant in $U$,
-an equilibrium with detailed balance in any dimension, with $U=\ln P$ at $\kappa=0$. There is no force: the potential is induced by the state dependence of the noise, as in Landauer's ``blowtorch'' \cite{Landauer1988}. Three consequences follow. (i) The temperature is pinned at 1: rescaling all kicks by $c$ shifts $U$ by $2\ln c$ and leaves $\rho_\infty$ unchanged, the same speed--endpoint separation as above. (ii) Concentration is weak: occupancies stand in the ratio of the miss rates, not exponentially in them, which is why the gain is only the gap between the arithmetic and harmonic means. (iii) The system can be cooled: if the per-approach variance grows as $P^\alpha$, then $\rho_\infty\propto P^{-\alpha}$, an effective temperature $1/\alpha$. On the test landscape the stationary miss rate falls from 0.323 ($\alpha=1$) to 0.210 ($\alpha=2$) and 0.155 ($\alpha=3$), against 0.454 for a random setting and 0.109 for the best one. Finally, any Markov process with stationary law $e^{-U}$ lowers $F[\rho]=\langle U\rangle_\rho-S[\rho]$, the relative entropy to $\rho_\infty$ up to a constant. Here $U$ is the logarithm of the failure rate, not a sensory surprise, so a decrease of free energy during learning does not by itself indicate predictive processing.
+an equilibrium with detailed balance in any dimension, with $U=\ln P$ at $\kappa=0$. There is no force: the potential is induced by the state dependence of the noise, as in Landauer's ``blowtorch'' \cite{Landauer1988}. Three consequences follow. (i) The temperature is pinned at 1: rescaling all kicks by $c$ shifts $U$ by $2\ln c$ and leaves $\rho_\infty$ unchanged, the same speed--endpoint separation as above. (ii) Concentration is weak: occupancies stand in the ratio of the miss rates, not exponentially in them, which is why the gain is only the gap between the arithmetic and harmonic means. (iii) The system can be cooled: if the per-approach variance grows as $P^\alpha$, then $\rho_\infty\propto P^{-\alpha}$, an effective temperature $1/\alpha$. On the test landscape the stationary miss rate falls from 0.323 ($\alpha=1$) to 0.210 ($\alpha=2$) and 0.155 ($\alpha=3$), against 0.454 for a random network configuration and 0.109 for the best one. Finally, any Markov process with stationary law $e^{-U}$ lowers $F[\rho]=\langle U\rangle_\rho-S[\rho]$, the relative entropy to $\rho_\infty$ up to a constant. Here $U$ is the logarithm of the failure rate, not a sensory surprise, so a decrease of free energy during learning does not by itself indicate predictive processing.
 
 \subsection{A closed-loop Pong model}
 
-A two-parameter paddle, $p=\mathrm{clip}(ay+b)$ for a ball at height $y\sim U(0,1)$, with a miss moving $(a,b)$ to a random neighbor on a $31\times21$ grid, has a predicted stationary miss rate of 0.815 and a simulated one of 0.810, against 0.845 for a random setting. In a DishBrain-like loop (Appendix~\ref{app:abstract}) the ball is place- and rate-coded on eight channels as in the experiment, two motor populations read it through 16 plastic weights, and the only teacher is a random kick to all weights after each approach. Over 400 simulated cultures the within-session gain in hit fraction is $+0.161\pm0.014$ for $(\sigma_h,\sigma_m)=(0,0.08)$, $+0.068\pm0.012$ for a weaker $(0,0.03)$, $+0.017\pm0.007$ without kicks, $-0.010\pm0.007$ for equal kicks and $-0.019\pm0.006$ for reversed ones $(0.08,0.02)$; performance falls monotonically with $\kappa$ and crosses the information-free level at $\kappa=1$ (Fig.~\ref{fig:sim}). The model is not fitted to data. In the experiment a rally lasts $12.7+5.9h$~s with $h$ hits (fit to the gameplay data), so a 20-min session holds about 170 approaches and 95 misses, against 2000 approaches here; a culture learning within one session needs per-miss perturbations about ten times larger.
+A two-parameter paddle, $p=\mathrm{clip}(ay+b)$ for a ball at height $y\sim U(0,1)$, with a miss moving $(a,b)$ to a random neighbor on a $31\times21$ grid, has a predicted stationary miss rate of 0.815 and a simulated one of 0.810, against 0.845 for a random network configuration. In a DishBrain-like loop (Appendix~\ref{app:abstract}) the ball is place- and rate-coded on eight channels as in the experiment, two motor populations read it through 16 plastic weights, and the only teacher is a random kick to all weights after each approach. Over 400 simulated cultures the within-session gain in hit fraction is $+0.161\pm0.014$ for $(\sigma_h,\sigma_m)=(0,0.08)$, $+0.068\pm0.012$ for a weaker $(0,0.03)$, $+0.017\pm0.007$ without kicks, $-0.010\pm0.007$ for equal kicks and $-0.019\pm0.006$ for reversed ones $(0.08,0.02)$; performance falls monotonically with $\kappa$ and crosses the information-free level at $\kappa=1$ (Fig.~\ref{fig:sim}). The model is not fitted to data. In the experiment a rally lasts $12.7+5.9h$~s with $h$ hits (fit to the gameplay data), so a 20-min session holds about 170 approaches and 95 misses, against 2000 approaches here; a culture learning within one session needs per-miss perturbations about ten times larger.
 
 \begin{figure*}[t]
 \centering
@@ -329,7 +329,7 @@ The abstract model (\texttt{scrambler.py}), the analytical checks (\texttt{theor
 
 \section{Closed-loop Pong model}\label{app:abstract}
 
-The court is $1\times1$ with the paddle on the right wall (half-length 0.1). Each serve starts at the far wall with horizontal speed 1 and vertical speed uniform in $[-0.8,0.8]$; the ball reflects from the other walls. The ball's height relative to the paddle selects one of eight channels, $k=\lfloor8(y-p+0.5)\rfloor$, and its position $x$ sets the rate $s=(4+36x)/40$. The motor rates are $[W_{\uparrow,\downarrow}[k]\,s+\xi]_+$ with Gaussian noise of s.d.\ 0.35 per 20-ms step, and the paddle moves by $1.5(r_\uparrow-r_\downarrow)$ court heights per second. The 16 weights start uniform in $[-1,1]$ and reflect at $\pm1$, so information-free kicks leave the uniform law invariant. After every approach each weight receives a Gaussian kick of s.d.\ 0.01, then one of s.d.\ $\sigma_h$ after a hit or $\sigma_m$ after a miss. Each culture plays 2000 approaches; the gain is the hit fraction over the last 1500 minus that over the first 500. In this model a miss is followed by a new serve in all conditions, whereas in the experiment No feedback is one continuous rally; the network of Sec.~\ref{sec:net} plays the exact protocol. The grid check uses $a\in\{-1,-0.9,\dots,2\}$, $b\in\{-1,-0.9,\dots,1\}$ and 400 ball heights; moves off the grid or into one of the seven never-miss settings are rejected, which keeps the kernel symmetric, and the chain runs for $3\times10^6$ approaches.
+The court is $1\times1$ with the paddle on the right wall (half-length 0.1). Each serve starts at the far wall with horizontal speed 1 and vertical speed uniform in $[-0.8,0.8]$; the ball reflects from the other walls. The ball's height relative to the paddle selects one of eight channels, $k=\lfloor8(y-p+0.5)\rfloor$, and its position $x$ sets the rate $s=(4+36x)/40$. The motor rates are $[W_{\uparrow,\downarrow}[k]\,s+\xi]_+$ with Gaussian noise of s.d.\ 0.35 per 20-ms step, and the paddle moves by $1.5(r_\uparrow-r_\downarrow)$ court heights per second. The 16 weights start uniform in $[-1,1]$ and reflect at $\pm1$, so information-free kicks leave the uniform law invariant. After every approach each weight receives a Gaussian kick of s.d.\ 0.01, then one of s.d.\ $\sigma_h$ after a hit or $\sigma_m$ after a miss. Each culture plays 2000 approaches; the gain is the hit fraction over the last 1500 minus that over the first 500. In this model a miss is followed by a new serve in all conditions, whereas in the experiment No feedback is one continuous rally; the network of Sec.~\ref{sec:net} plays the exact protocol. The grid check uses $a\in\{-1,-0.9,\dots,2\}$, $b\in\{-1,-0.9,\dots,1\}$ and 400 ball heights; moves off the grid or into one of the seven never-miss network configurations are rejected, which keeps the kernel symmetric, and the chain runs for $3\times10^6$ approaches.
 
 \section{Network model}\label{app:net}
 
