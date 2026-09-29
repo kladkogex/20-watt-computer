@@ -33,23 +33,7 @@ Here the position is the setting of a learning system and the step size depends 
 
 \begin{figure*}[t]
 \centering
-\begin{tikzpicture}[x=1.75cm,y=1.75cm,font=\scriptsize]
-\node[font=\small,anchor=south west,inner sep=0] at (0,2.14) {(a)};
-\draw[fill=gray!4] (0,0) rectangle (3.85,2.10);
-\fill[orange!12] (0.12,0.2) rectangle (3.73,0.78);
-\node[orange!60!black,anchor=west] at (0.12,0.97) {sensory band: eight stimulation electrodes (place code)};
-\draw[orange!60!black,thin] (0.385,0.35)--(0.805,0.6125)--(1.225,0.35)--(1.645,0.6125)--(2.0475,0.35)--(2.485,0.6125)--(2.8875,0.35)--(3.325,0.6125);
-\foreach \x/\y/\k in {0.385/0.35/1,0.805/0.6125/2,1.225/0.35/3,1.645/0.6125/4,2.0475/0.35/5,2.485/0.6125/6,2.8875/0.35/7,3.325/0.6125/8}{
-  \fill[orange!80!black] (\x,\y) circle (0.04);
-  \node[orange!60!black,anchor=north,inner sep=1.5pt] at (\x,\y-0.04) {\k};}
-\fill[blue!12] (0.315,1.365) rectangle (0.8575,1.9425); \node[blue!60!black] at (0.586,1.65) {down};
-\fill[red!12] (0.8575,1.365) rectangle (1.40,1.9425); \node[red!60!black] at (1.13,1.65) {up};
-\fill[blue!12] (2.45,1.365) rectangle (2.99,1.9425); \node[blue!60!black] at (2.72,1.65) {down};
-\fill[red!12] (2.99,1.365) rectangle (3.535,1.9425); \node[red!60!black] at (3.26,1.65) {up};
-\node[anchor=south,inner sep=1pt] at (1.925,1.955) {motor regions, $31\times33$ electrodes each};
-\draw[|-|] (2.85,-0.1) -- (3.85,-0.1); \node[anchor=north,inner sep=2pt] at (3.35,-0.12) {1 mm};
-\node[anchor=north west,inner sep=2pt] at (0,-0.03) {MaxOne array, $220\times120$ electrodes};
-\end{tikzpicture}\hfill
+\includegraphics[width=0.56\textwidth]{fig_array.pdf}\hfill
 \begin{tikzpicture}[x=1.1cm,y=1.1cm,font=\scriptsize]
 \node[font=\small,anchor=south west,inner sep=0] at (-1.35,3.3) {(b)};
 \node[anchor=south,align=center,blue!70!black,inner sep=2pt] at (1.3,2.62) {every 10 ms, spikes in the up minus the down regions\\(each scaled to a 20 Hz running mean) move the paddle};
@@ -85,7 +69,7 @@ Here the position is the setting of a learning system and the step size depends 
 \node[anchor=north,orange!50!black] at (4.2,0.1) {the ball bounces off the wall and play continues; place and rate code uninterrupted};
 \draw[-latex] (0,-0.62) -- (8.8,-0.62); \foreach \t in {0,2,4,6,8}{\draw (\t,-0.57)--(\t,-0.67); \node[anchor=north] at (\t,-0.68) {\t};} \node[anchor=north] at (8.85,-0.68) {s};
 \end{tikzpicture}
-\caption{DishBrain as simulated. (a) The array to scale, with the eight stimulation electrodes of the sensory band in the zig-zag of Fig.~4D of Ref.~\cite{Kagan2022} and the four motor regions, counterbalanced up and down, about 1~mm away; electrode pitch 17.5~$\mu$m. (b) The game: the ball's height relative to the paddle selects the electrode (place code) and its distance from the paddle's wall sets the pulse rate (rate code); every 10~ms the spike counts of the up and down regions, each normalized by a running 20~Hz gain, move the paddle. (c) Feedback after each outcome in the three conditions. Rest sessions run the game with no stimulation at all. Voltages, rates, durations and the electrode layout are from Ref.~\cite{Kagan2022}; court size, paddle half-length and ball speed are the model's choices (Appendix~\ref{app:net}).}
+\caption{DishBrain as simulated. (a) The array as the network model has it, to scale: all 26\,400 electrodes of the $220\times120$ grid (pitch 17.5~$\mu$m), the eight stimulation electrodes of the sensory band in the zig-zag of Fig.~4D of Ref.~\cite{Kagan2022}, the four $31\times33$-electrode motor regions, counterbalanced up and down, the wide recruitment radii of a 75 and a 150~mV pulse (0.12 and 0.20~mm) around electrode 6, one realization of the 3000 neurons (80\% excitatory), and the 100 inputs of one neuron of an up region, drawn with probability $\propto e^{-d/\lambda}$, $\lambda=1$~mm: their median distance is 1.0~mm and 10 of them lie within 0.2~mm of a stimulation electrode. (b) The game: the ball's height relative to the paddle selects the electrode (place code) and its distance from the paddle's wall sets the pulse rate (rate code); every 10~ms the spike counts of the up and down regions, each normalized by a running 20~Hz gain, move the paddle. (c) Feedback after each outcome in the three conditions. Rest sessions run the game with no stimulation at all. Voltages, rates, durations and the electrode layout are from Ref.~\cite{Kagan2022}; court size, paddle half-length and ball speed are the model's choices (Appendix~\ref{app:net}).}
 \label{fig:dish}
 \end{figure*}
 
@@ -93,23 +77,84 @@ We formulate learning by outcome-contingent perturbation as a drift-free diffusi
 
 \section{Model}\label{sec:model}
 
-Let $\psi\in\Omega$ be the setting of the system, all variables that determine its play, and $P(\psi)\in(0,1)$ its probability of missing a ball. Time is counted in ball approaches. After a miss the setting jumps with a symmetric kernel, $K(\psi,\psi')=K(\psi',\psi)$; after a hit it stays. On a finite $\Omega$ the distribution evolves as
+\subsection{Setting, outcome and kick}
+Let $\psi\in\Omega$ be the setting of the system: the vector of all variables that determine how it plays, for a culture its synaptic weights and excitabilities, for the models below a small set of parameters. $\Omega$ is a bounded region of $\mathbb{R}^n$ or a finite set. Each ball approach $t=0,1,2,\dots$ ends in a miss with probability $P(\psi_t)\in(0,1)$ and in a hit otherwise, where
 \begin{equation}
-\rho_{t+1}=\rho_t-(I-K)\,\mathrm{diag}(P)\,\rho_t .
+P(\psi)=\int dy\,p(y)\,\mathbf{1}[\text{miss}\mid\psi,y]
+\label{eq:P}
+\end{equation}
+averages over the serve distribution $p(y)$ of the ball; $P$ is a fixed function of $\psi$ because the setting does not change during an approach. The setting then moves by a kick whose law depends only on the outcome $o_t\in\{h,m\}$ that has just occurred,
+\begin{equation}
+\psi_{t+1}=\psi_t+\xi_t,\qquad \xi_t\sim K_{o_t}(\psi_t,\cdot),
+\label{eq:kick}
+\end{equation}
+with kernels $K_o(\psi,\psi')$ that are stochastic, $\int d\psi'\,K_o(\psi,\psi')=1$, symmetric, $K_o(\psi,\psi')=K_o(\psi',\psi)$, and, in the continuum, isotropic with zero mean and covariance
+\begin{equation}
+\int d\psi'\,(\psi'-\psi)_i(\psi'-\psi)_j\,K_o(\psi,\psi')=\sigma_o^2\,\delta_{ij},
+\label{eq:moments}
+\end{equation}
+so that a miss moves the setting by a root-mean-square distance $\sigma_m\sqrt n$ and a hit by $\sigma_h\sqrt n$. Kicks that would leave $\Omega$ are reflected. Nothing else enters: the outcome selects which of the two kernels is used and nothing more, and neither kernel has a preferred direction. The model contains no prediction, no reward and no error signal; the kicks are the only teacher.
+
+\subsection{Master equation}
+The distribution over settings evolves as
+\begin{equation}
+\rho_{t+1}(\psi)=\int d\psi'\,T(\psi,\psi')\,\rho_t(\psi'),
+\label{eq:master}
+\end{equation}
+\begin{equation}
+T(\psi,\psi')=P(\psi')\,K_m(\psi,\psi')+\bigl(1-P(\psi')\bigr)K_h(\psi,\psi'),
+\label{eq:T}
+\end{equation}
+that is $\rho_{t+1}=T\rho_t$ with $T=K_m\,\mathrm{diag}(P)+K_h\,\mathrm{diag}(1-P)$ on a finite $\Omega$. $T$ conserves probability, and it is irreducible and aperiodic whenever the kernels connect $\Omega$, so $\rho_t$ converges to a unique stationary law $\rho_\infty$ from any start. The case treated first in Sec.~\ref{sec:results}, a hit leaving the setting where it is, is $K_h=I$ and gives
+\begin{equation}
+\rho_{t+1}=\rho_t-(I-K)\,\mathrm{diag}(P)\,\rho_t ,
 \label{eq:chain}
 \end{equation}
-In general both outcomes perturb, with variances $\sigma_m^2$ after a miss and $\sigma_h^2$ after a hit. For small isotropic steps whose size is set at the point of departure, the setting diffuses with
+with $K=K_m$: the part of $\rho_t$ that misses is redistributed by $K$, the part that hits stays.
+
+\subsection{Continuum limit}
+When the kicks are small on the scale $\ell_P=P/|\nabla P|$ over which the miss probability varies, and on the scale of $\Omega$, Eq.~\eqref{eq:master} has a Kramers--Moyal expansion \cite{vanKampen1988} whose first jump moment vanishes by the symmetry of the kernels and whose second moment, from Eq.~\eqref{eq:moments}, is the outcome-averaged variance $P\sigma_m^2+(1-P)\sigma_h^2$. Writing it as $2D$,
 \begin{equation}
 D(\psi)=\tfrac12\bigl[\sigma_m^2P(\psi)+\sigma_h^2\bigl(1-P(\psi)\bigr)\bigr]
 =\tfrac12\sigma_m^2\bigl[\kappa+(1-\kappa)P\bigr],
 \label{eq:D}
 \end{equation}
-$\kappa=\sigma_h^2/\sigma_m^2$, and the density obeys the It\^o form of the Fokker--Planck equation with no drift \cite{Schnitzer1993,vanKampen1988,Volpe2016},
+$\kappa=\sigma_h^2/\sigma_m^2$, and to second order
 \begin{equation}
-\partial_t\rho=\nabla^2\bigl(D\rho\bigr),
+\partial_t\rho=\nabla^2\bigl(D\rho\bigr)=\nabla\cdot\bigl(D\nabla\rho\bigr)+\nabla\cdot\bigl(\rho\,\nabla D\bigr),
 \label{eq:FP}
 \end{equation}
-with reflecting boundaries. The It\^o convention is not a choice here: a kick is drawn with the variance of the outcome that has just occurred, at the current setting. Nothing in the model computes a prediction, a reward, or the sign of an error.
+with reflecting boundaries, $\partial_n(D\rho)=0$ on $\partial\Omega$, and $t$ now continuous in units of approaches. This is the It\^o, or departure-point, form of the Fokker--Planck equation, with no drift term \cite{Schnitzer1993,vanKampen1988,Volpe2016}: the variance of a step is set by the outcome at the point from which the step is taken, which is what Eq.~\eqref{eq:kick} says. The convention is therefore not a modeling choice; a Stratonovich reading, with the step size set midway, would describe a different experiment. The second form of Eq.~\eqref{eq:FP} shows the mechanism in one line: undirected kicks whose size varies over $\Omega$ produce an effective drift $-\nabla D$ toward the settings that are kicked least, which for $\kappa<1$ are the settings that miss least. The model is a random walk with a state-dependent step, the structure of a run-and-tumble walker whose speed or tumbling rate varies in space \cite{Schnitzer1993}, and like that walker it accumulates where its diffusivity is lowest.
+
+\subsection{Parameters and realizations}
+Table~\ref{tab:params} lists the quantities of the model and their values in the two solvable realizations studied in Sec.~\ref{sec:results}. Two extensions are used later. A kick of variance $\sigma_0^2$ delivered after every approach regardless of outcome, as in the closed-loop model, adds a constant to $D$,
+\begin{equation}
+D=\tfrac12\bigl[\sigma_0^2+\sigma_h^2+(\sigma_m^2-\sigma_h^2)P\bigr],
+\label{eq:D0}
+\end{equation}
+which leaves every result below unchanged with $\kappa$ replaced by $\kappa_0=(\sigma_0^2+\sigma_h^2)/(\sigma_0^2+\sigma_m^2)$, closer to 1: undirected background plasticity weakens learning without changing its sign. In the spiking network of Sec.~\ref{sec:net}, $\psi$ is the vector of excitatory weights, the kicks are produced by local plasticity rules acting on the activity that follows each outcome, and $\sigma_h^2$ and $\sigma_m^2$ are not parameters but measurements: the mean squared weight change from an outcome to the next, from which $\kappa$ follows.
+
+\begin{table}[b]
+\caption{Quantities of the model and their values in the two solvable realizations. Kicks in the closed-loop model are Gaussian and isotropic; the grid chain moves to a uniformly chosen neighbor.}
+\label{tab:params}
+\footnotesize
+\begin{ruledtabular}
+\begin{tabular}{@{}lp{1.9cm}p{2.2cm}p{2.4cm}@{}}
+ & Meaning & Grid chain & Closed-loop model \\
+\hline
+$\Omega$ & setting space & $31\times21$ grid in $(a,b)$ & $[-1,1]^{16}$ \\
+$\psi$ & setting & paddle law $p=\mathrm{clip}(ay+b)$ & 16 sensorimotor weights \\
+$n$ & dimension & 2 & 16 \\
+$P(\psi)$ & miss probability & mean over 400 ball heights & mean over serves \\
+$K_m$ & kick after a miss & nearest neighbor, uniform & Gaussian, $\sigma_m=0.02$--$0.08$ \\
+$K_h$ & kick after a hit & none & Gaussian, $\sigma_h=0$--$0.16$ \\
+$\sigma_0$ & background kick & 0 & 0.01 \\
+$\kappa$ & $\sigma_h^2/\sigma_m^2$ & 0 & 0--4 \\
+$t$ & time & $3\times10^6$ approaches & 2000 approaches per session \\
+$\partial\Omega$ & boundary & moves off the grid rejected & reflection at $\pm1$ \\
+\end{tabular}
+\end{ruledtabular}
+\end{table}
 
 \section{Analytical results}\label{sec:results}
 
